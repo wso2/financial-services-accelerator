@@ -516,6 +516,24 @@ public class OBIdentifierAuthenticator extends AbstractApplicationAuthenticator
     }
 
     /**
+     * Get redirect_uri using request_uri.
+     *
+     * @param requestUri - request_uri
+     * @return redirect_uri
+     * @throws OpenBankingException - OpenBankingException
+     */
+    public String getRedirectUri(String requestUri) throws OpenBankingException {
+
+        JSONObject requestObjectVal = getParRequestObject(requestUri);
+        if (requestObjectVal.has(REDIRECT_URI)) {
+            return requestObjectVal.get(REDIRECT_URI).toString();
+        } else {
+            log.error("redirect_uri could not be found in the par request object.");
+            throw new OpenBankingException("redirect_uri could not be found in the par request object.");
+        }
+    }
+
+    /**
      * Retrieve PAR request object from session data cache.
      *
      * @param sessionData session data
@@ -529,6 +547,37 @@ public class OBIdentifierAuthenticator extends AbstractApplicationAuthenticator
         String[] requestUri = sessionData.get(REQUEST_URI).toString().split(":");
         String requestUriRef = requestUri[requestUri.length - 1];
 
+        SessionDataCacheKey cacheKey = new SessionDataCacheKey(requestUriRef);
+        SessionDataCacheEntry cacheEntry = SessionDataCache.getInstance().getValueFromCache(cacheKey);
+
+        if (cacheEntry != null) {
+            String essentialClaims = cacheEntry.getoAuth2Parameters().getEssentialClaims();
+            byte[] requestObject;
+            try {
+                requestObject = Base64.getDecoder().decode(essentialClaims.split("\\.")[1]);
+            } catch (IllegalArgumentException e) {
+                // Decode if the requestObject is base64-url encoded.
+                requestObject = Base64.getUrlDecoder().decode(essentialClaims.split("\\.")[1]);
+            }
+            return new JSONObject(new String(requestObject, StandardCharsets.UTF_8));
+        } else {
+            log.error("Could not able to fetch par request object from session data cache.");
+            throw new OpenBankingException("Could not able to fetch par request object from session data cache.");
+        }
+    }
+
+    /**
+     * Retrieve PAR request object from request_uri.
+     *
+     * @param requestUri - request_uri
+     * @return Request object json.
+     * @throws OpenBankingException - OpenBankingException
+     */
+    @Generated(message = "Excluding from code coverage since it requires a valid cache entry")
+    private JSONObject getParRequestObject(String requestUri) throws OpenBankingException {
+
+        String[] requestUriArr = requestUri.split(":");
+        String requestUriRef = requestUriArr[requestUriArr.length - 1];
         SessionDataCacheKey cacheKey = new SessionDataCacheKey(requestUriRef);
         SessionDataCacheEntry cacheEntry = SessionDataCache.getInstance().getValueFromCache(cacheKey);
 
