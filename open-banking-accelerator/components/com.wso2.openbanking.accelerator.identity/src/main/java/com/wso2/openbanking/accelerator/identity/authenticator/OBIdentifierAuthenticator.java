@@ -544,26 +544,8 @@ public class OBIdentifierAuthenticator extends AbstractApplicationAuthenticator
     private JSONObject getParRequestObject(JSONObject sessionData) throws OpenBankingException {
 
         //get request ref Ex -> "IVL...." from "urn::IVL..."
-        String[] requestUri = sessionData.get(REQUEST_URI).toString().split(":");
-        String requestUriRef = requestUri[requestUri.length - 1];
-
-        SessionDataCacheKey cacheKey = new SessionDataCacheKey(requestUriRef);
-        SessionDataCacheEntry cacheEntry = SessionDataCache.getInstance().getValueFromCache(cacheKey);
-
-        if (cacheEntry != null) {
-            String essentialClaims = cacheEntry.getoAuth2Parameters().getEssentialClaims();
-            byte[] requestObject;
-            try {
-                requestObject = Base64.getDecoder().decode(essentialClaims.split("\\.")[1]);
-            } catch (IllegalArgumentException e) {
-                // Decode if the requestObject is base64-url encoded.
-                requestObject = Base64.getUrlDecoder().decode(essentialClaims.split("\\.")[1]);
-            }
-            return new JSONObject(new String(requestObject, StandardCharsets.UTF_8));
-        } else {
-            log.error("Could not able to fetch par request object from session data cache.");
-            throw new OpenBankingException("Could not able to fetch par request object from session data cache.");
-        }
+        String requestUri = sessionData.get(REQUEST_URI).toString();
+        return getParRequestObject(requestUri);
     }
 
     /**
@@ -578,7 +560,20 @@ public class OBIdentifierAuthenticator extends AbstractApplicationAuthenticator
 
         String[] requestUriArr = requestUri.split(":");
         String requestUriRef = requestUriArr[requestUriArr.length - 1];
-        SessionDataCacheKey cacheKey = new SessionDataCacheKey(requestUriRef);
+        return getRequestObjectUsingUriReference(requestUriRef);
+    }
+
+    /**
+     * Retrieve PAR request object using request_uri reference.
+     *
+     * @param requestUriReference - request_uri reference (i.e:last part of request_uri split by :)
+     * @return Request object json.
+     * @throws OpenBankingException - OpenBankingException
+     */
+    @Generated(message = "Excluding from code coverage since it requires a valid cache entry")
+    private JSONObject getRequestObjectUsingUriReference(String requestUriReference) throws OpenBankingException {
+
+        SessionDataCacheKey cacheKey = new SessionDataCacheKey(requestUriReference);
         SessionDataCacheEntry cacheEntry = SessionDataCache.getInstance().getValueFromCache(cacheKey);
 
         if (cacheEntry != null) {
@@ -592,8 +587,8 @@ public class OBIdentifierAuthenticator extends AbstractApplicationAuthenticator
             }
             return new JSONObject(new String(requestObject, StandardCharsets.UTF_8));
         } else {
-            log.error("Could not able to fetch par request object from session data cache.");
-            throw new OpenBankingException("Could not able to fetch par request object from session data cache.");
+            log.error("Unable to fetch par request object from session data cache.");
+            throw new OpenBankingException("Unable to fetch par request object from session data cache.");
         }
     }
 
