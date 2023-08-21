@@ -1,0 +1,70 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.cardView{
+    width: 18rem;
+    margin:20px;
+    box-shadow: 0 2px 20px 0 rgba(0,0,0,0.1);
+    border-radius: 0.8rem;
+    transition: transform 200ms ease-in;
+    align-items: center;
+}
+
+.card-image{
+    height: 10rem;
+    width: 100%;
+    object-fit: cover;
+    border-color: #AAA7A7 ;
+    border: 2px;
+}
+
+.card-button{
+    padding: 0.1rem  ;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 1rem;
+    border: 1px solid #081247;
+    color: #ffffff;
+    border-radius:  0.6rem;
+    transition: background 200ms ease-in, color 200ms ease-in;
+    background-color: #081247;
+    justify-content: center;
+    width: 180px;
+    justify-items: center;
+    height: 40px;
+}
+
+.card-button:hover{
+    background-color: white;
+    color: #081247;
+    border-color: #AAA7A7;
+}
+
+.card:hover{
+    transform: scale(1.05);
+}
+
+.home-tile{
+    display: flex;
+    flex-direction: row;
+    margin: 50px;
+    margin-top: 100px;
+    margin-bottom: 200px;
+    justify-content: center;
+}

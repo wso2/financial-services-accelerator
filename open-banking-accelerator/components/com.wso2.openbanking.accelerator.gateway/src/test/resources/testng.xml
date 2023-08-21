@@ -1,0 +1,80 @@
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="identity-base-test-suite">
+    <test name="executor-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.core.UtilityTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.core.TestOBExtensionImpl"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.consent.TestEnforcementExecutor"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.CertRevocationValidationExecutorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.MTLSEnforcementExecutorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.tpp.validation.executor.APITPPValidationExecutorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.tpp.validation.executor.DCRTPPValidationExecutorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtilsTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.dcr.DCRExecutorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.core.DefaultRequestRouterTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.selfcare.portal.UserPermissionValidationExecutorTest"></class>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.jws.JwsResponseSignatureHandlingExecutorTests"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.jws.JwsRequestSignatureHandlingExecutorTests"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.mediator.BasicAuthMediatorTests"/>
+        </classes>
+    </test>
+    <test name="revocation-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.revocation.CRLValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.revocation.OCSPValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.service.RevocationValidatorFactoryTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.service.CertValidationServiceTest"/>
+        </classes>
+    </test>
+    <test name="config-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.internal.TPPCertValidatorDataHolderTest"/>
+        </classes>
+    </test>
+    <test name="timestamp-data-publishing-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.reporter.TimestampPublishingTest"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.reporter.OBAnalyticsMetricReporterTest"/>
+        </classes>
+    </test>
+    <test name="idempotency-validation-test">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.idempotency.OpenBankingIdempotencyHandlingExecutorTests"/>
+        </classes>
+    </test>
+    <test name="dispute-resolution-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.synapse.handler.DisputeResolutionSynapseHandlerTest"/>
+        </classes>
+    </test>
+    <test name="util-test">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.util.GatewayUtilsTest"/>
+        </classes>
+    </test>
+    <test name="handler-test">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.gateway.handler.JwsResponseSignatureHandlerTest"/>
+        </classes>
+    </test>
+</suite>

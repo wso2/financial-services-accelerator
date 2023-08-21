@@ -1,0 +1,216 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+.inputBox {
+  margin-top: 10px;
+  margin-left: 0;
+  border-radius: 15px;
+  border: 1px solid gray;
+  width: 10vw;
+  min-width: 15vw;
+  padding: 0.25em 1.75em;
+  -webkit-box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+  box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+}
+
+.searchcontent {
+  transition: opacity 0.5s ease-out;
+  display: none;
+  opacity: 0;
+  height: 0;
+  width: 100%;
+}
+
+.calIcon {
+  font-size: 1.6em;
+}
+
+.calBorder {
+  margin-left: 0;
+  margin-top: 0.1em;
+  width: auto;
+  height: auto;
+  border-radius: 15px;
+  background-color: white;
+  border: 1px solid rgba(8, 18, 71, 1);
+  align-content: center;
+  padding: 0.3em;
+}
+
+.calBorder:hover {
+  background-color: rgba(8, 18, 71, 1);
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.calBorder:hover .calIcon {
+  background-color: rgba(8, 18, 71, 1);
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.calBorder:hover .calIcon {
+  color: white;
+}
+
+.sIcon {
+  font-size: 1.1em;
+  text-align: center;
+  color: white;
+}
+
+.sIcon:hover {
+  color: white;
+}
+
+.sBorder {
+  width: 4em;
+  height: auto;
+  border-radius: 15px;
+  background-color: #081247;
+  border: 1px solid rgba(8, 18, 71, 1);
+  align-content: center;
+  padding: 0.3em;
+  border-color: #081247;
+  display: inline-block;
+  float: right;
+  margin: 10px;
+}
+
+.sBorder:hover {
+  background-color: white;
+  border: 1px solid rgba(8, 18, 71, 1);
+  cursor: pointer;
+  color: rgba(8, 18, 71, 1);
+}
+
+.sBorder:hover .sIcon {
+  color:rgba(8, 18, 71, 1);
+}
+
+.sbBorder {
+  margin-left: 0;
+  margin-right: 0em;
+  width: 23vw;
+  height: auto;
+  border-radius: 15px;
+  background-color: white;
+  border: 1px solid rgba(8, 18, 71, 1);
+  align-content: center;
+  padding: 0.3em;
+}
+
+.sbBorder:hover {
+  background-color: rgba(8, 18, 71, 1);
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.sbBorder:hover .sIcon {
+  color: white;
+}
+
+.calandarArea {
+  display: none;
+}
+
+.calander {
+  margin: 0em;
+  border-radius: 15px;
+  border: 0.5px solid gray;
+  padding: 0.25em 1.75em;
+  -webkit-box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+  box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+}
+
+.inputBox:focus {
+  outline: none;
+  outline-color: none;
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.53);
+  transition: all ease-in-out 0.2s;
+}
+
+button,
+input {
+  overflow: visible;
+  color: rgba(8, 18, 71, 1);
+}
+
+.searchButton {
+  background-color: white;
+  color: rgba(8, 18, 71, 1);
+  border: 1px solid rgba(8, 18, 71, 1);
+  border-radius: 15px;
+  padding: 0.25em 0.7em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 1rem;
+
+  -webkit-box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+  box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+}
+
+.searchButton:hover {
+  color: white;
+  background-color: rgba(8, 18, 71, 1);
+  transition: all ease-in-out 0.2s;
+  text-decoration: none;
+}
+
+.searchButton:focus {
+  outline: none;
+}
+
+#filterDropdown {
+  background-color: white;
+  color: rgba(8, 18, 71, 1);
+  border: 1px solid rgba(8, 18, 71, 1);
+  border-radius: 15px;
+  padding: 0.25em 0.7em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 1rem;
+
+  -webkit-box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+  box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+}
+
+#filterDropdown[aria-expanded="true"] {
+  color: white;
+  background-color: rgba(8, 18, 71, 1);
+  transition: all ease-in-out 0.2s;
+  text-decoration: none;
+}
+.dropdown-menu.show {
+  min-width: 10rem;
+  padding: 1em 1em;
+}
+
+.formCheckbox {
+  margin-bottom: 0;
+}
+.checkItem {
+  color: rgba(8, 18, 71, 1);
+}
+
+.form-check-label {
+  color: rgba(8, 18, 71, 1);
+}

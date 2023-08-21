@@ -1,0 +1,36 @@
+{
+  "name": "@bfsi-react/auth",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "rimraf ./lib && webpack --mode production --stats=errors-only"
+  },
+  "author": "BFSI",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.3",
+    "ts-loader": "^9.4.3",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "js-cookie": "^3.0.5"
+  },
+  "peerDependencies": {
+    "@babel/preset-env": "^7.22.5",
+    "@babel/preset-react": "^7.22.5",
+    "react-router-dom": "^6.13.0"
+  },
+  "keywords": [
+    "BFSI",
+    "OB",
+    "auth"
+  ],
+  "engines": {
+    "node": ">=18.16.0",
+    "npm": ">=9.7.0"
+  },
+  "files": [
+    "lib/*"
+  ]
+}

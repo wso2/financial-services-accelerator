@@ -1,0 +1,58 @@
+/* ----- SidebarItem.js ----- */
+@import "../../../../utils/styles/Theme.scss";
+
+.sidebarItem {
+  width: 100%;
+  height: 50px;
+
+  @include flexbox;
+
+  position: relative;
+
+  padding: $padding-04 $padding-04 $padding-04 0px;
+  margin-bottom: $margin-10;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  :only-child {
+    width: 100%;
+    height: 100%;
+
+    @include flexbox;
+    justify-content: flex-end;
+
+    text-decoration: none;
+
+    .sidebarItem__icon {
+      height: 100%;
+
+      position: absolute;
+      left: 0px;
+      @include flexbox;
+      justify-content: flex-start;
+      padding: $padding-04 0px $padding-04 $padding-04;
+
+      .sidebarItem__icon__container {
+        width: 28px;
+        // background-color: lightpink;
+        @include flexbox;
+      }
+    }
+    .sidebarItem__text {
+      height: 100%;
+
+      @include flexbox;
+
+      padding-left: $padding-10;
+
+      p {
+        @include flexbox;
+        justify-content: flex-start;
+
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+}

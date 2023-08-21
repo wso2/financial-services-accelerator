@@ -1,0 +1,194 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+@import "../../utils/styles/Theme.scss";
+
+.consentDetails {
+  width: 100%;
+  height: 100svh;
+
+  // Header
+  .consentDetails__header {
+    width: 100%;
+    height: 80px;
+
+    padding: 0px $padding-18;
+
+    @include flexbox;
+    justify-content: flex-start;
+  }
+
+  //   Body
+  .consentDetails__body {
+    width: 100%;
+    height: calc(100% - 160px);
+
+    @include flexbox;
+    align-items: flex-start;
+
+    padding: 0px $padding-18;
+
+    overflow-y: auto;
+
+    .consentDetails__body__overview {
+      width: 400px;
+      min-height: calc(100svh - 160px);
+
+      padding-right: $padding-18;
+      padding-bottom: $padding-18;
+
+      &:first-child {
+        min-height: calc(100svh - 160px);
+
+        // Image
+        .consentDetails__body__overview__image {
+          width: 100%;
+          height: 150px;
+
+          @include flexbox;
+
+          border-radius: 5px;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            object-fit: contain;
+            object-position: center center;
+          }
+        }
+        // Name
+        .consentDetails__body__overview__name {
+          width: 100%;
+          min-height: 20px;
+
+          @include flexbox;
+          margin: $margin-16 0px $margin-04 0px;
+        }
+        // Download
+        .consentDetails__body__overview__download {
+          width: 100%;
+          min-height: 20px;
+
+          @include flexbox;
+
+          :only-child {
+            cursor: pointer;
+          }
+        }
+        // Status
+        .consentDetails__body__overview__status {
+          width: 100%;
+          min-height: 80px;
+
+          @include flexbox;
+        }
+        // Accredition
+        .consentDetails__body__overview__accredition {
+          .consentDetails__body__overview__accredition__description {
+            width: 100%;
+          }
+          .consentDetails__body__overview__accredition__badge {
+            width: 100%;
+            height: 80px;
+
+            @include flexbox;
+
+            border-radius: 5px;
+            padding: $padding-08;
+            margin-bottom: $margin-12;
+
+            .consentDetails__body__overview__accredition__badge__icon {
+              width: 60px;
+              height: 100%;
+
+              @include flexbox;
+            }
+
+            .consentDetails__body__overview__accredition__badge__text {
+              width: calc(100% - 60px);
+              height: 100%;
+
+              @include flexbox;
+              flex-direction: column;
+
+              padding-left: $padding-08;
+
+              .consentDetails__body__overview__accredition__badge__text__title1 {
+                width: 100%;
+
+                margin-bottom: $margin-04;
+
+                p {
+                  font-size: $font-regular;
+                }
+              }
+              .consentDetails__body__overview__accredition__badge__text__title2 {
+                width: 100%;
+              }
+            }
+          }
+        }
+        // Other Important Information */}
+        .consentDetails__body__overview__information {
+          .consentDetails__body__overview__information__description {
+            width: 100%;
+            margin-bottom: $margin-12;
+          }
+        }
+        // Button
+        .consentDetails__body__overview__button {
+          width: 100%;
+          height: 120px;
+
+          @include flexbox;
+
+          margin-top: $margin-12;
+        }
+      }
+    }
+
+    .consentDetails__body__details {
+      width: calc(100% - 400px);
+      min-height: calc(100svh - 160px);
+
+      padding-left: $padding-18;
+      padding-bottom: $padding-18;
+    }
+  }
+}
+
+// Media Queries
+@media (width<=1000px) {
+  .consentDetails {
+    .consentDetails__body {
+      flex-direction: column;
+      height: unset;
+      .consentDetails__body__overview {
+        width: 100%;
+
+        padding-right: unset;
+      }
+      .consentDetails__body__details {
+        min-height: unset;
+        width: 100%;
+
+        padding-left: unset;
+      }
+    }
+  }
+}

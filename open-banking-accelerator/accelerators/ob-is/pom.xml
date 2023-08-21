@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.wso2</groupId>
+        <artifactId>open-banking</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>wso2-obiam-accelerator</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 Open Banking - OB Identity Server Accelerator Module</name>
+    <url>http://wso2.org</url>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
+                            <excludes>
+                                <exclude>**/commons-beanutils-1.9.4.jar</exclude>
+                                <exclude>**/mysql-connector-java-5.1.44.jar</exclude>
+                                <exclude>**/hibernate-validator-6.0.20.Final.jar</exclude>
+                                <exclude>**/validation-api-2.0.1.Final.jar</exclude>
+                            </excludes>
+                        </fileset>
+                        <fileset>
+                            <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
+                            <excludes>
+                                <exclude>**/classmate-1.5.1.jar</exclude>
+                                <exclude>**/org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt-2.3.9.jar</exclude>
+                                <exclude>**/quartz_2.1.1.wso2v1.jar</exclude>
+                                <exclude>**/org.wso2.carbon.identity.application.authenticator.push-0.1.1.jar</exclude>
+                                <exclude>**/org.wso2.carbon.identity.application.authenticator.push.common-0.1.1.jar</exclude>
+                                <exclude>**/org.wso2.carbon.identity.application.authenticator.push.device.handler-0.1.1.jar</exclude>
+                                <exclude>**/hazelcast-5.0.2.jar</exclude>
+                            </excludes>
+                        </fileset>
+                        <fileset>
+                            <directory>${project.basedir}/carbon-home/repository/deployment/server/webapps/api/WEB-INF/lib</directory>
+                            <excludes>
+                                <exclude>**/org.wso2.carbon.identity.api.user.push.device.common-0.1.1.jar</exclude>
+                                <exclude>**/org.wso2.carbon.identity.api.user.push.device.handler.v1-0.1.1.jar</exclude>
+                            </excludes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>auto-clean</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>create-solution</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <!-- Copying jars to dropins -->
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.accelerator.identity/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.identity-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.accelerator.common/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.common-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
+                                    <fileset
+                                            dir="../../components/consent-management/com.wso2.openbanking.accelerator.consent.mgt.service/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.consent.service-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
+                                    <fileset
+                                            dir="../../components/consent-management/com.wso2.openbanking.accelerator.consent.extensions/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.consent.extensions-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../components/consent-management/com.wso2.openbanking.accelerator.consent.mgt.dao/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.consent.dao-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../components/ob-throttler/com.wso2.openbanking.accelerator.throttler.dao/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.throttler.dao-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
+                                    <fileset
+                                            dir="../../components/ob-throttler/com.wso2.openbanking.accelerator.throttler.service/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.throttler.service-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.accelerator.data.publisher/com.wso2.openbanking.accelerator.data.publisher.common/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.data.publisher.common-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.accelerator.data.publisher/com.wso2.openbanking.accelerator.authentication.data.publisher/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.authentication.data.publisher-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <!-- Copying jars to carbon-home/lib -->
+                                <copy todir="${project.basedir}/carbon-home/lib/runtimes/cxf3" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.accelerator.runtime/com.wso2.openbanking.accelerator.runtime.identity.authn.filter/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.accelerator.runtime.identity.authn.filter-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+
+                                <unzip src="../../internal-apis/internal-webapps/com.wso2.openbanking.accelerator.consent.endpoint/target/api#openbanking#consent.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#consent/"/>
+                                <unzip src="../../internal-apis/internal-webapps/com.wso2.openbanking.accelerator.dcr.endpoint/target/api#openbanking#dynamic-client-registration.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#dynamic-client-registration/"/>
+                                <unzip src="../../internal-apis/internal-webapps/com.wso2.openbanking.authentication.webapp/target/ob#authenticationendpoint.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/ob#authenticationendpoint/"/>
+                                <unzip src="../../internal-apis/internal-webapps/com.wso2.openbanking.accelerator.application.info.endpoint/target/api#openbanking#application.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#application/"/>
+                                <unzip src="../../../react-apps/self-care-portal/target/consentmgr.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consentmgr/"/>
+                                <unzip src="../../internal-apis/internal-webapps/com.wso2.openbanking.accelerator.push.authorization.endpoint/target/api#openbanking#push-authorization.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#push-authorization/"/>
+
+                                <copy todir="${project.basedir}/repository/resources/internal-apis/" overwrite="true">
+                                    <fileset dir="../../internal-apis/internal-swaggers">
+                                        <filename regex="\.*.yaml$"/>
+                                    </fileset>
+                                </copy>
+                                <copy overwrite="true" todir="${project.basedir}/carbon-home/repository/components/dropins">
+                                    <fileset dir="../../components/com.wso2.openbanking.accelerator.service.activator/target">
+                                        <filename regex="com.wso2.openbanking.accelerator.service.activator-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/assembly/bin.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
+</project>
