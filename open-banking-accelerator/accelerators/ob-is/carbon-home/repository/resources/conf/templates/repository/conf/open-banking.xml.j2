@@ -959,6 +959,11 @@
         {% else %}
             <EventPollingHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler</EventPollingHandler>
         {% endif %}
+        {% if open_banking.event.notifications.event_subscription_handler is defined %}
+            <EventSubscriptionHandler>{{open_banking.event.notifications.event_subscription_handler}}</EventSubscriptionHandler>
+        {% else %}
+            <EventSubscriptionHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
+        {% endif %}
          {% if open_banking.event.notifications.event_notification_generator is defined %}
             <NotificationGenerator>{{open_banking.event.notifications.event_notification_generator}}</NotificationGenerator>
         {% else %}
