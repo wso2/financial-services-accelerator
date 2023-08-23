@@ -48,8 +48,3 @@
 | ---------------- | ------------------ | ---------- | -------- |
 | *Security Suite* | *VX.X*             | *Foo, Bar* | *Passed* |
 
-## Resources
-
-**Knowledge Base:** https://sites.google.com/wso2.com/open-banking/
-
-**Guides:** https://sites.google.com/wso2.com/open-banking/developer-guides
