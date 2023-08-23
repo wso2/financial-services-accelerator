@@ -12,7 +12,7 @@
 
 ### Development Checklist
 
-1. [ ] Built complete solution with pull request in place.
+1. [ ] Build complete solution with pull request in place.
 2. [ ] Ran checkstyle plugin with pull request in place.
 3. [ ] Ran Findbugs plugin with pull request in place.
 4. [ ] Ran FindSecurityBugs plugin and verified report.
