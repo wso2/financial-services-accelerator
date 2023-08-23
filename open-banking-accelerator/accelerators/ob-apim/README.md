@@ -17,7 +17,7 @@ to [ Complete install and Setup Guide ](https://ob.docs.wso2.com/en/latest/insta
 
 Steps:
 1. Extract the Base product (WSO2 API Manager product) to a preferred location (<WSO2_APIM_HOME>)
-2. Extract WSO2 OB APIM Accelerator ((wso2-obam-accelerator-3.0.0.zip) to WSO2_APIM_HOME 
+2. Extract WSO2 OB APIM Accelerator (wso2-obam-accelerator-3.0.0.zip) to WSO2_APIM_HOME 
 3. Run <WSO2_OB_APIM_ACC_HOME>/bin/merge.sh. This will copy/install the Open Banking artifacts to 
 the WSO2 API Manager product
 4. Run <WSO2_OB_APIM_ACC_HOME>/bin/configure.sh. This will configure the server and create databases and  tables.
