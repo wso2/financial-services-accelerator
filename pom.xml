@@ -141,9 +141,9 @@
     </pluginRepositories>
 
     <scm>
-        <url>https://github.com/wso2-enterprise/financial-open-banking.git</url>
-        <developerConnection>scm:git:https://github.com/wso2-enterprise/financial-open-banking.git</developerConnection>
-        <connection>scm:git:https://github.com/wso2-enterprise/financial-open-banking.git</connection>
+        <url>https://github.com/wso2/financial-open-banking.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/financial-open-banking.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/financial-open-banking.git</connection>
         <tag>HEAD</tag>
     </scm>
 
