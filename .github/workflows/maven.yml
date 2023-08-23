@@ -36,7 +36,7 @@ jobs:
       - name: Set up JDK 8
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 11
       - uses: actions/checkout@v3
       - name: Set up Node 16
         uses: actions/setup-node@v3
@@ -49,91 +49,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Install DNS-Utils
-        run: sudo apt-get install dnsutils
-      - name: Add hosts to /etc/hosts
-        run: |
-          IP_Address=$(dig +short internal-Private-mvn-ent-wso2-com-LB-1306279662.us-east-1.elb.amazonaws.com | tail -n1)
-          sudo echo $IP_Address "maven.enterprise.wso2.com" | sudo tee -a /etc/hosts
-      - name: Install Open VPN
-        run: sudo apt-get install openvpn
-      - name: Setup VPN config
-        run: |
-          echo "${{ secrets.VPN_FILE }}" > .github/workflows/config.ovpn
-      - name: Connect VPN
-        run: sudo openvpn --config ".github/workflows/config.ovpn" --daemon
-      - name: Setup Maven settings.xml
-        uses: whelk-io/maven-settings-xml-action@v11
-        with:
-          repositories: >
-            [
-              {
-                "id": "enterprise-maven",
-                "name": "enterprise-maven-repository",
-                "url": "https://maven.enterprise.wso2.com/repository/wso2-releases/",
-                "releases": {
-                  "enabled": "true",
-                  "updatePolicy": "daily",
-                  "checksumPolicy": "ignore"
-                }
-              }
-            ]
-          plugin_repositories: >
-            [
-              {
-                "id": "enterprise-maven",
-                "name": "enterprise-maven-repository",
-                "url": "https://maven.enterprise.wso2.com/repository/wso2-releases/",
-                "releases": {
-                  "enabled": "true"
-                },
-                "snapshots": {
-                  "enabled": "false"
-                }
-              }
-            ]
-          servers: >
-            [
-              {
-                "id": "enterprise-maven",
-                "username": "${{secrets.MAVEN_ENTERPRISE_REPO_USERNAME}}",
-                "password": "${{secrets.MAVEN_ENTERPRISE_REPO_PASSWORD}}"
-              }
-            ]
-          mirrors: >
-            [
-              {
-                "id": "wso2-nexus",
-                "mirrorOf": "wso2-nexus",
-                "url": "http://maven.wso2.org/nexus/content/groups/wso2-public/"
-              },
-              {
-                "id": "wso2.releases",
-                "mirrorOf": "wso2.releases",
-                "url": "http://maven.wso2.org/nexus/content/repositories/releases/"
-              },
-              {
-                "id": "wso2.snapshots",
-                "mirrorOf": "wso2.snapshots",
-                "url": "http://maven.wso2.org/nexus/content/repositories/snapshots/"
-              },
-              {
-                "id": "knopflerfish",
-                "mirrorOf": "knopflerfish",
-                "url": "http://resources.knopflerfish.org/repo/maven2/release"
-              }
-            ]
       - name: Build with Maven
         run: |
           export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
           mvn -B install --file pom.xml
-      - name: kill vpn
-        if: always()
-        run: sudo killall openvpn
 
-# Repositories mirrored due to the use of HTTP repositories. Mirrors can be removed after the respective repositories
-# are updated.
-#        [wso2-nexus (http://maven.wso2.org/nexus/content/groups/wso2-public/, default, releases+snapshots),
-#        wso2.releases (http://maven.wso2.org/nexus/content/repositories/releases/, default, releases+snapshots),
-#        wso2.snapshots (http://maven.wso2.org/nexus/content/repositories/snapshots/, default, snapshots),
-#        knopflerfish (http://resources.knopflerfish.org/repo/maven2/release, default, releases+snapshots)]
