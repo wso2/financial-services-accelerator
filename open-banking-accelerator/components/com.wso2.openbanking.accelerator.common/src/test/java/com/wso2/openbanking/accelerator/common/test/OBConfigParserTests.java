@@ -104,9 +104,9 @@ public class OBConfigParserTests {
         stepsConfig.get("Retrieve").get(1).equals("com.wso2.openbanking.accelerator.common.test.CustomStep1");
 
         Map<String, List<String>> apiMap = openBankingConfigParser.getAllowedAPIs();
-        List<String> roles = apiMap.get("CDR-DynamicClientRegistration");
+        List<String> roles = apiMap.get("DynamicClientRegistration");
         Assert.assertNotNull(apiMap);
-        Assert.assertNotNull(apiMap.get("CDR-DynamicClientRegistration"));
+        Assert.assertNotNull(apiMap.get("DynamicClientRegistration"));
         Assert.assertTrue(apiMap.get("AccountandTransactionAPI") instanceof List);
         Assert.assertTrue(roles.contains("AISP"));
         Assert.assertFalse(openBankingConfigParser.getServiceActivatorSubscribers().isEmpty());

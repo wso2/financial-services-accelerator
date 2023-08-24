@@ -178,7 +178,7 @@
     </DataPublishing>
     <DCR>
         <RegulatoryAPINames>
-            <API name = "CDR-DynamicClientRegistration"  roles = "AISP, PISP"/>
+            <API name = "DynamicClientRegistration"  roles = "AISP, PISP"/>
             <API name = "AccountandTransactionAPI"  roles = "AISP"/>
         </RegulatoryAPINames>
         <RegistrationRequestParams>

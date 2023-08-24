@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  title: CDR-DynamicClientRegistration
+  title: DynamicClientRegistration
   description:
     This specification defines the APIs for Data Holders exposing Dynamic Client Registration endpoints
   version: '0.1'
@@ -14,7 +14,7 @@ produces:
 paths:
   /register:
     post:
-      summary: Register a client using a CDR Register issued Software Statement Assertion
+      summary: Register a client using a authoritative Register issued Software Statement Assertion
       tags:
         - Client Registration
       parameters:

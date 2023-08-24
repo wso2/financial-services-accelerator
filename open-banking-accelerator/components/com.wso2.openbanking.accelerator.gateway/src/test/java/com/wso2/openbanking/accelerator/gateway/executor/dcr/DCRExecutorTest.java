@@ -128,7 +128,7 @@ public class DCRExecutorTest {
         dcrRoles.add("PISP");
         List<String> accountRoles = new ArrayList<>();
         accountRoles.add("AISP");
-        configuredAPIList.put("CDR-DynamicClientRegistration", dcrRoles);
+        configuredAPIList.put("DynamicClientRegistration", dcrRoles);
         configuredAPIList.put("AccountandTransactionAPI", accountRoles);
     }
 
@@ -152,7 +152,7 @@ public class DCRExecutorTest {
             "   \"list\":[\n" +
             "      {\n" +
             "         \"id\":\"01234567-0123-0123-0123-012345678901\",\n" +
-            "         \"name\":\"CDR-DynamicClientRegistration\"\n" +
+            "         \"name\":\"DynamicClientRegistration\"\n" +
             "      },\n" +
             "      {\n" +
             "         \"id\":\"2962f3bb-8330-438e-baee-0ee1d6434ba4\",\n" +
@@ -175,11 +175,11 @@ public class DCRExecutorTest {
             "      \"apiId\":\"2962f3bb-8330-438e-baee-0ee1d6434ba4\",\n" +
             "      \"apiInfo\":{\n" +
             "         \"id\":\"01234567-0123-0123-0123-012345678901\",\n" +
-            "         \"name\":\"CDR-DynamicClientRegistration\"\n" +
+            "         \"name\":\"DynamicClientRegistration\"\n" +
             "      },\n" +
             "      \"applicationInfo\":{\n" +
             "         \"applicationId\":\"01234567-0123-0123-0123-012345678901\",\n" +
-            "         \"name\":\"CDR-DynamicClientRegistration\",\n" +
+            "         \"name\":\"DynamicClientRegistration\",\n" +
             "         \"throttlingPolicy\":\"Unlimited\",\n" +
             "         \"description\":\"Sample calculator application\",\n" +
             "         \"status\":\"APPROVED\",\n" +
@@ -291,13 +291,13 @@ public class DCRExecutorTest {
         dcrRoles.add("PISP");
         List<String> accountRoles = new ArrayList<>();
         accountRoles.add("AISP");
-        configuredAPIList.put("CDR-DynamicClientRegistration", dcrRoles);
+        configuredAPIList.put("DynamicClientRegistration", dcrRoles);
         configuredAPIList.put("AccountandTransactionAPI", accountRoles);
 
         JsonArray publishedAPIs = new JsonArray();
         JsonObject dcrApi = new JsonObject();
         dcrApi.addProperty("id", "1");
-        dcrApi.addProperty("name", "CDR-DynamicClientRegistration");
+        dcrApi.addProperty("name", "DynamicClientRegistration");
         publishedAPIs.add(dcrApi);
 
         DCRExecutor dcrExecutor = new DCRExecutor();
@@ -343,13 +343,13 @@ public class DCRExecutorTest {
         dcrRoles.add("PISP");
         List<String> accountRoles = new ArrayList<>();
         accountRoles.add("AISP");
-        configuredAPIList.put("CDR-DynamicClientRegistration", dcrRoles);
+        configuredAPIList.put("DynamicClientRegistration", dcrRoles);
         configuredAPIList.put("AccountandTransactionAPI", accountRoles);
 
         JsonArray subscribedAPIs = new JsonArray();
         JsonObject dcrApi = new JsonObject();
         JsonObject apiInfo = new JsonObject();
-        apiInfo.addProperty("name", "CDR-DynamicClientRegistration");
+        apiInfo.addProperty("name", "DynamicClientRegistration");
         dcrApi.add("apiInfo", apiInfo);
         dcrApi.addProperty("subscriptionId", "1");
         subscribedAPIs.add(dcrApi);

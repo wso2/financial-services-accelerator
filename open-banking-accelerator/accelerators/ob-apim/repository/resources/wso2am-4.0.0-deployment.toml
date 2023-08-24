@@ -424,7 +424,7 @@ api_subscribe = "api/am/devportal/v2/subscriptions/multiple"
 retrieve_subscribe="api/am/devportal/v2/subscriptions"
 
 [[open_banking.dcr.regulatory_api]]
-api_name = "CDR-DynamicClientRegistration"
+api_name = "DynamicClientRegistration"
 roles = "AISP,PISP"
 
 [[open_banking.dcr.regulatory_api]]
