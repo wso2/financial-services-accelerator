@@ -2,13 +2,6 @@ swagger: '2.0'
 info:
   title: AccountandTransactionAPI
   description: Swagger for Account and Transaction API Specification
-  termsOfService: 'https://www.openbanking.org.uk/terms'
-  contact:
-    name: Service Desk
-    email: ServiceDesk@openbanking.org.uk
-  license:
-    name: open-licence
-    url: 'https://www.openbanking.org.uk/open-licence'
   version: v3.1
 basePath: /open-banking/{version}/aisp
 tags:
@@ -1805,36 +1798,36 @@ definitions:
     type: object
     properties:
       ErrorCode:
-        description: 'Low level textual error code, e.g., UK.OBIE.Field.Missing'
+        description: 'Low level textual error code, e.g., WSO2.Sample.Field.Missing'
         type: string
         x-namespaced-enum:
-          - UK.OBIE.Field.Expected
-          - UK.OBIE.Field.Invalid
-          - UK.OBIE.Field.InvalidDate
-          - UK.OBIE.Field.Missing
-          - UK.OBIE.Field.Unexpected
-          - UK.OBIE.Header.Invalid
-          - UK.OBIE.Header.Missing
-          - UK.OBIE.Reauthenticate
-          - UK.OBIE.Resource.ConsentMismatch
-          - UK.OBIE.Resource.InvalidConsentStatus
-          - UK.OBIE.Resource.InvalidFormat
-          - UK.OBIE.Resource.NotFound
-          - UK.OBIE.Rules.AfterCutOffDateTime
-          - UK.OBIE.Rules.DuplicateReference
-          - UK.OBIE.Signature.Invalid
-          - UK.OBIE.Signature.InvalidClaim
-          - UK.OBIE.Signature.Malformed
-          - UK.OBIE.Signature.Missing
-          - UK.OBIE.Signature.MissingClaim
-          - UK.OBIE.Signature.Unexpected
-          - UK.OBIE.UnexpectedError
-          - UK.OBIE.Unsupported.AccountIdentifier
-          - UK.OBIE.Unsupported.AccountSecondaryIdentifier
-          - UK.OBIE.Unsupported.Currency
-          - UK.OBIE.Unsupported.Frequency
-          - UK.OBIE.Unsupported.LocalInstrument
-          - UK.OBIE.Unsupported.Scheme
+          - WSO2.Sample.Field.Expected
+          - WSO2.Sample.Field.Invalid
+          - WSO2.Sample.Field.InvalidDate
+          - WSO2.Sample.Field.Missing
+          - WSO2.Sample.Field.Unexpected
+          - WSO2.Sample.Header.Invalid
+          - WSO2.Sample.Header.Missing
+          - WSO2.Sample.Reauthenticate
+          - WSO2.Sample.Resource.ConsentMismatch
+          - WSO2.Sample.Resource.InvalidConsentStatus
+          - WSO2.Sample.Resource.InvalidFormat
+          - WSO2.Sample.Resource.NotFound
+          - WSO2.Sample.Rules.AfterCutOffDateTime
+          - WSO2.Sample.Rules.DuplicateReference
+          - WSO2.Sample.Signature.Invalid
+          - WSO2.Sample.Signature.InvalidClaim
+          - WSO2.Sample.Signature.Malformed
+          - WSO2.Sample.Signature.Missing
+          - WSO2.Sample.Signature.MissingClaim
+          - WSO2.Sample.Signature.Unexpected
+          - WSO2.Sample.UnexpectedError
+          - WSO2.Sample.Unsupported.AccountIdentifier
+          - WSO2.Sample.Unsupported.AccountSecondaryIdentifier
+          - WSO2.Sample.Unsupported.Currency
+          - WSO2.Sample.Unsupported.Frequency
+          - WSO2.Sample.Unsupported.LocalInstrument
+          - WSO2.Sample.Unsupported.Scheme
       Message:
         description: >-
           A description of the error that occurred. e.g., 'A mandatory field
@@ -1902,29 +1895,29 @@ definitions:
       external list.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.BBAN
-      - UK.OBIE.IBAN
-      - UK.OBIE.PAN
-      - UK.OBIE.Paym
-      - UK.OBIE.SortCodeAccountNumber
+      - WSO2.Sample.BBAN
+      - WSO2.Sample.IBAN
+      - WSO2.Sample.PAN
+      - WSO2.Sample.Paym
+      - WSO2.Sample.SortCodeAccountNumber
   OBExternalAccountRole1Code:
     description: A party�s role with respect to the related account.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.Administrator
-      - UK.OBIE.Beneficiary
-      - UK.OBIE.CustodianForMinor
-      - UK.OBIE.Granter
-      - UK.OBIE.LegalGuardian
-      - UK.OBIE.OtherParty
-      - UK.OBIE.PowerOfAttorney
-      - UK.OBIE.Principal
-      - UK.OBIE.Protector
-      - UK.OBIE.RegisteredShareholderName
-      - UK.OBIE.SecondaryOwner
-      - UK.OBIE.SeniorManagingOfficial
-      - UK.OBIE.Settlor
-      - UK.OBIE.SuccessorOnDeath
+      - WSO2.Sample.Administrator
+      - WSO2.Sample.Beneficiary
+      - WSO2.Sample.CustodianForMinor
+      - WSO2.Sample.Granter
+      - WSO2.Sample.LegalGuardian
+      - WSO2.Sample.OtherParty
+      - WSO2.Sample.PowerOfAttorney
+      - WSO2.Sample.Principal
+      - WSO2.Sample.Protector
+      - WSO2.Sample.RegisteredShareholderName
+      - WSO2.Sample.SecondaryOwner
+      - WSO2.Sample.SeniorManagingOfficial
+      - WSO2.Sample.Settlor
+      - WSO2.Sample.SuccessorOnDeath
   OBExternalAccountSubType1Code:
     description: Specifies the sub type of account (product family group).
     type: string
@@ -1949,23 +1942,23 @@ definitions:
       external list.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.BICFI
+      - WSO2.Sample.BICFI
   OBExternalLegalStructureType1Code:
     description: Legal standing of the party.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.CIC
-      - UK.OBIE.CIO
-      - UK.OBIE.Charity
-      - UK.OBIE.CoOp
-      - UK.OBIE.GeneralPartnership
-      - UK.OBIE.Individual
-      - UK.OBIE.LimitedLiabilityPartnership
-      - UK.OBIE.LimitedPartnership
-      - UK.OBIE.PrivateLimitedCompany
-      - UK.OBIE.PublicLimitedCompany
-      - UK.OBIE.ScottishLimitedPartnership
-      - UK.OBIE.Sole
+      - WSO2.Sample.CIC
+      - WSO2.Sample.CIO
+      - WSO2.Sample.Charity
+      - WSO2.Sample.CoOp
+      - WSO2.Sample.GeneralPartnership
+      - WSO2.Sample.Individual
+      - WSO2.Sample.LimitedLiabilityPartnership
+      - WSO2.Sample.LimitedPartnership
+      - WSO2.Sample.PrivateLimitedCompany
+      - WSO2.Sample.PublicLimitedCompany
+      - WSO2.Sample.ScottishLimitedPartnership
+      - WSO2.Sample.Sole
   OBExternalPartyType1Code:
     description: 'Party type, in a coded form.'
     type: string
@@ -1989,114 +1982,114 @@ definitions:
     description: 'Amount type, in a coded form.'
     type: string
     x-namespaced-enum:
-      - UK.OBIE.ArrearsClosingBalance
-      - UK.OBIE.AvailableBalance
-      - UK.OBIE.AverageBalanceWhenInCredit
-      - UK.OBIE.AverageBalanceWhenInDebit
-      - UK.OBIE.AverageDailyBalance
-      - UK.OBIE.BalanceTransferClosingBalance
-      - UK.OBIE.CashClosingBalance
-      - UK.OBIE.ClosingBalance
-      - UK.OBIE.CreditLimit
-      - UK.OBIE.CurrentPayment
-      - UK.OBIE.DirectDebitPaymentDue
-      - UK.OBIE.FSCSInsurance
-      - UK.OBIE.MinimumPaymentDue
-      - UK.OBIE.PendingTransactionsBalance
-      - UK.OBIE.PreviousClosingBalance
-      - UK.OBIE.PreviousPayment
-      - UK.OBIE.PurchaseClosingBalance
-      - UK.OBIE.StartingBalance
-      - UK.OBIE.TotalAdjustments
-      - UK.OBIE.TotalCashAdvances
-      - UK.OBIE.TotalCharges
-      - UK.OBIE.TotalCredits
-      - UK.OBIE.TotalDebits
-      - UK.OBIE.TotalPurchases
+      - WSO2.Sample.ArrearsClosingBalance
+      - WSO2.Sample.AvailableBalance
+      - WSO2.Sample.AverageBalanceWhenInCredit
+      - WSO2.Sample.AverageBalanceWhenInDebit
+      - WSO2.Sample.AverageDailyBalance
+      - WSO2.Sample.BalanceTransferClosingBalance
+      - WSO2.Sample.CashClosingBalance
+      - WSO2.Sample.ClosingBalance
+      - WSO2.Sample.CreditLimit
+      - WSO2.Sample.CurrentPayment
+      - WSO2.Sample.DirectDebitPaymentDue
+      - WSO2.Sample.FSCSInsurance
+      - WSO2.Sample.MinimumPaymentDue
+      - WSO2.Sample.PendingTransactionsBalance
+      - WSO2.Sample.PreviousClosingBalance
+      - WSO2.Sample.PreviousPayment
+      - WSO2.Sample.PurchaseClosingBalance
+      - WSO2.Sample.StartingBalance
+      - WSO2.Sample.TotalAdjustments
+      - WSO2.Sample.TotalCashAdvances
+      - WSO2.Sample.TotalCharges
+      - WSO2.Sample.TotalCredits
+      - WSO2.Sample.TotalDebits
+      - WSO2.Sample.TotalPurchases
   OBExternalStatementBenefitType1Code:
     description: 'Benefit type, in a coded form.'
     type: string
     x-namespaced-enum:
-      - UK.OBIE.Cashback
-      - UK.OBIE.Insurance
-      - UK.OBIE.TravelDiscount
-      - UK.OBIE.TravelInsurance
+      - WSO2.Sample.Cashback
+      - WSO2.Sample.Insurance
+      - WSO2.Sample.TravelDiscount
+      - WSO2.Sample.TravelInsurance
   OBExternalStatementDateTimeType1Code:
     description: 'Date time type, in a coded form.'
     type: string
     x-namespaced-enum:
-      - UK.OBIE.BalanceTransferPromoEnd
-      - UK.OBIE.DirectDebitDue
-      - UK.OBIE.LastPayment
-      - UK.OBIE.LastStatement
-      - UK.OBIE.NextStatement
-      - UK.OBIE.PaymentDue
-      - UK.OBIE.PurchasePromoEnd
-      - UK.OBIE.StatementAvailable
+      - WSO2.Sample.BalanceTransferPromoEnd
+      - WSO2.Sample.DirectDebitDue
+      - WSO2.Sample.LastPayment
+      - WSO2.Sample.LastStatement
+      - WSO2.Sample.NextStatement
+      - WSO2.Sample.PaymentDue
+      - WSO2.Sample.PurchasePromoEnd
+      - WSO2.Sample.StatementAvailable
   OBExternalStatementFeeFrequency1Code:
     description: How frequently the fee is applied to the Account.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.ChargingPeriod
-      - UK.OBIE.PerTransactionAmount
-      - UK.OBIE.PerTransactionPercentage
-      - UK.OBIE.Quarterly
-      - UK.OBIE.StatementMonthly
-      - UK.OBIE.Weekly
+      - WSO2.Sample.ChargingPeriod
+      - WSO2.Sample.PerTransactionAmount
+      - WSO2.Sample.PerTransactionPercentage
+      - WSO2.Sample.Quarterly
+      - WSO2.Sample.StatementMonthly
+      - WSO2.Sample.Weekly
   OBExternalStatementFeeRateType1Code:
     description: Description that may be available for the statement fee rate type.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.AER
-      - UK.OBIE.EAR
+      - WSO2.Sample.AER
+      - WSO2.Sample.EAR
   OBExternalStatementFeeType1Code:
     description: 'Fee type, in a coded form.'
     type: string
     x-namespaced-enum:
-      - UK.OBIE.Annual
-      - UK.OBIE.BalanceTransfer
-      - UK.OBIE.CashAdvance
-      - UK.OBIE.CashTransaction
-      - UK.OBIE.ForeignCashTransaction
-      - UK.OBIE.ForeignTransaction
-      - UK.OBIE.Gambling
-      - UK.OBIE.LatePayment
-      - UK.OBIE.MoneyTransfer
-      - UK.OBIE.Monthly
-      - UK.OBIE.Overlimit
-      - UK.OBIE.PostalOrder
-      - UK.OBIE.PrizeEntry
-      - UK.OBIE.StatementCopy
-      - UK.OBIE.Total
+      - WSO2.Sample.Annual
+      - WSO2.Sample.BalanceTransfer
+      - WSO2.Sample.CashAdvance
+      - WSO2.Sample.CashTransaction
+      - WSO2.Sample.ForeignCashTransaction
+      - WSO2.Sample.ForeignTransaction
+      - WSO2.Sample.Gambling
+      - WSO2.Sample.LatePayment
+      - WSO2.Sample.MoneyTransfer
+      - WSO2.Sample.Monthly
+      - WSO2.Sample.Overlimit
+      - WSO2.Sample.PostalOrder
+      - WSO2.Sample.PrizeEntry
+      - WSO2.Sample.StatementCopy
+      - WSO2.Sample.Total
   OBExternalStatementInterestFrequency1Code:
     description: Specifies the statement fee type requested
     type: string
     x-namespaced-enum:
-      - UK.OBIE.Daily
-      - UK.OBIE.HalfYearly
-      - UK.OBIE.Monthly
-      - UK.OBIE.PerStatementDate
-      - UK.OBIE.Quarterly
-      - UK.OBIE.Weekly
-      - UK.OBIE.Yearly
+      - WSO2.Sample.Daily
+      - WSO2.Sample.HalfYearly
+      - WSO2.Sample.Monthly
+      - WSO2.Sample.PerStatementDate
+      - WSO2.Sample.Quarterly
+      - WSO2.Sample.Weekly
+      - WSO2.Sample.Yearly
   OBExternalStatementInterestRateType1Code:
     description: Description that may be available for the statement Interest rate type.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.BOEBaseRate
-      - UK.OBIE.FixedRate
-      - UK.OBIE.Gross
-      - UK.OBIE.LoanProviderBaseRate
-      - UK.OBIE.Net
+      - WSO2.Sample.BOEBaseRate
+      - WSO2.Sample.FixedRate
+      - WSO2.Sample.Gross
+      - WSO2.Sample.LoanProviderBaseRate
+      - WSO2.Sample.Net
   OBExternalStatementInterestType1Code:
     description: 'Interest amount type, in a coded form.'
     type: string
     x-namespaced-enum:
-      - UK.OBIE.BalanceTransfer
-      - UK.OBIE.Cash
-      - UK.OBIE.EstimatedNext
-      - UK.OBIE.Purchase
-      - UK.OBIE.Total
+      - WSO2.Sample.BalanceTransfer
+      - WSO2.Sample.Cash
+      - WSO2.Sample.EstimatedNext
+      - WSO2.Sample.Purchase
+      - WSO2.Sample.Total
   OBExternalStatementRateType1Code:
     description: Rate associated with the statement rate type.
     type: string
@@ -2114,14 +2107,14 @@ definitions:
     description: Value associated with the statement value type.
     type: string
     x-namespaced-enum:
-      - UK.OBIE.AirMilesPoints
-      - UK.OBIE.AirMilesPointsBalance
-      - UK.OBIE.Credits
-      - UK.OBIE.Debits
-      - UK.OBIE.HotelPoints
-      - UK.OBIE.HotelPointsBalance
-      - UK.OBIE.RetailShoppingPoints
-      - UK.OBIE.RetailShoppingPointsBalance
+      - WSO2.Sample.AirMilesPoints
+      - WSO2.Sample.AirMilesPointsBalance
+      - WSO2.Sample.Credits
+      - WSO2.Sample.Debits
+      - WSO2.Sample.HotelPoints
+      - WSO2.Sample.HotelPointsBalance
+      - WSO2.Sample.RetailShoppingPoints
+      - WSO2.Sample.RetailShoppingPointsBalance
   OBMerchantDetails1:
     type: object
     description: Details of the merchant involved in the transaction.
