@@ -79,7 +79,7 @@ public class JwsResponseSignatureHandlingExecutorTests {
     private String sampleResponsePayload = "{\n" +
             "    \"Data\": {\n" +
             "        \"Initiation\": {\n" +
-            "            \"FileType\": \"WSO2.Sample.pain.001.001.08\",\n" +
+            "            \"FileType\": \"UK.OBIE.pain.001.001.08\",\n" +
             "            \"FileHash\": \"sof6XBU7RAkxekFddW38uJ2h2TBknlgLLiRSCP7qVdw=\",\n" +
             "            \"FileReference\": \"test\"\n" +
             "        }\n" +

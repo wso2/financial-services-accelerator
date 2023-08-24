@@ -90,7 +90,7 @@ public class JwsRequestSignatureHandlingExecutorTests {
     String sampleRequestPayload = "{\"Data\":{\"Initiation\":{\"InstructionIdentification\":" +
             "\"ACME412\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":" +
             "{\"Amount\":\"165.88\",\"Currency\":\"GBP\"},\"CreditorAccount\":" +
-            "{\"SchemeName\":\"WSO2.Sample.SortCodeAccountNumber\",\"Identification\":\"08080021325698\"" +
+            "{\"SchemeName\":\"UK.OBIE.SortCodeAccountNumber\",\"Identification\":\"08080021325698\"" +
             "\"Name\":\"ACME Inc\",\"SecondaryIdentification\":\"0002\"}," +
             "\"RemittanceInformation\":{\"Reference\":\"FRESCO-101\",\"Unstructured\":\"" +
             "Internal ops code 5120101\"}}}," +
