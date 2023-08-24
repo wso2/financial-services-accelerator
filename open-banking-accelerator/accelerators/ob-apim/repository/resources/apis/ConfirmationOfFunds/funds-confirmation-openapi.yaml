@@ -2,13 +2,6 @@ openapi: "3.0.0"
 info:
   title: "ConfirmationOfFundsAPI"
   description: "Swagger for Confirmation of Funds API Specification"
-  termsOfService: "https://www.openbanking.org.uk/terms"
-  contact:
-    name: "Service Desk"
-    email: "ServiceDesk@openbanking.org.uk"
-  license:
-    name: "open-licence"
-    url: "https://www.openbanking.org.uk/open-licence"
   version: "v3.1"
 servers:
 - url: "/open-banking/{version}/cbpii"

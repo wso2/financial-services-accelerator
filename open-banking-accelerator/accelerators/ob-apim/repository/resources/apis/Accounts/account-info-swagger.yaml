@@ -2,13 +2,6 @@ swagger: '2.0'
 info:
   title: AccountandTransactionAPI
   description: Swagger for Account and Transaction API Specification
-  termsOfService: 'https://www.openbanking.org.uk/terms'
-  contact:
-    name: Service Desk
-    email: ServiceDesk@openbanking.org.uk
-  license:
-    name: open-licence
-    url: 'https://www.openbanking.org.uk/open-licence'
   version: v3.1
 basePath: /open-banking/{version}/aisp
 tags:
