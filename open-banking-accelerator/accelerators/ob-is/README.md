@@ -3,7 +3,7 @@
 **Try Locally:**
 
 Prerequisites:
-1. Download WSO2 IS product 
+1. Download WSO2 Identity Server product 
 2. Build the repository completely using the below command to create accelerator zip files.
    <code>mvn clean install -PSolution</code>
 3. Locate the Accelerator Zip file (wso2-obiam-accelerator-3.0.0.zip) from
