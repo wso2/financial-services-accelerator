@@ -1,4 +1,6 @@
 <sequence xmlns="http://ws.apache.org/ns/synapse" name="SCPTokenExchange">
     <property name="Authorization" scope="transport" action="remove"/>
-    <property name="Authorization" value="Basic YWRtaW5Ad3NvMi5jb206d3NvMjEyMw==" scope="transport"/>
+    <!-- Replace the  <AUTH_HEADER_VALUE> with Base64 encoded "username:password" value.
+     i.e Base64(username:password) -->
+    <property name="Authorization" value="<AUTH_HEADER_VALUE>" scope="transport"/>
 </sequence>

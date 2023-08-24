@@ -21,7 +21,9 @@
     
     <!--Appending Basic Auth for Consent Management APIs -->
     <property name="Authorization" scope="transport" action="remove"/>
-    <header name="Authorization" value="Basic YWRtaW5Ad3NvMi5jb206d3NvMjEyMw==" scope="transport"/>
+    <!-- Replace the  <AUTH_HEADER_VALUE> with Base64 encoded "username:password" value.
+    i.e Base64(username:password) -->
+    <property name="Authorization" value="<AUTH_HEADER_VALUE>" scope="transport"/>
     
     <filter regex=".*\/account-access-consents.*" source="$ctx:endpointURI">
         <then>
