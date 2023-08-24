@@ -16,8 +16,8 @@ please refer to [Quick Start Guide](https://ob.docs.wso2.com/en/latest/get-start
 to [ Complete install and Setup Guide ](https://ob.docs.wso2.com/en/latest/install-and-setup/)
 
 Steps:
-1. Extract the Base product (WSO2 Streaming Integrator product) to a preferred location (<WSO2_BI_HOME>)
+1. Extract the Base product (WSO2 Streaming Integrator product) to a preferred location (<WSO2_SI_HOME>)
 2. Extract WSO2 OB BI Accelerator (wso2-obbi-accelerator-3.0.0.zip) to WSO2_BI_HOME 
 3. Run <WSO2_OB_BI_ACC_HOME>/bin/merge.sh. This will copy the artifacts to the WSO2 SI
 4. Run <WSO2_OB_BI_ACC_HOME>/bin/configure.sh. This will configure the server and create databases.
-5. Run <WSO2_BI_HOME>/bin/server.sh to start the server
+5. Run <WSO2_SI_HOME>/bin/server.sh to start the server
