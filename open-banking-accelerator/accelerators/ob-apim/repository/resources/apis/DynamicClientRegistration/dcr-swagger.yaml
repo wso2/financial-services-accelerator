@@ -189,7 +189,7 @@ definitions:
       client_uri:
         description: 'URL string of a web page providing information about the client'
         type: string
-        example: 'https://www.mockcompany.com.au'
+        example: 'https://www.mockcompany.com'
       org_id:
         description: 'A unique identifier string assigned by the CDR Register that identifies the Accredited Data Recipient Brand'
         type: string
@@ -204,27 +204,27 @@ definitions:
         items:
           type: string
           format: uri
-        example: ['https://www.mockcompany.com.au/redirects/redirect1', 'https://www.mockcompany.com.au/redirects/redirect2']
+        example: ['https://www.mockcompany.com/redirects/redirect1', 'https://www.mockcompany.com/redirects/redirect2']
       logo_uri:
         description: 'URL string that references a logo for the client. If present, the server SHOULD display this image to the end-user during approval'
         type: string
-        example: 'https://www.mockcompany.com.au/logos/logo1.png'
+        example: 'https://www.mockcompany.com/logos/logo1.png'
       tos_uri:
         description: 'URL string that points to a human-readable terms of service document for the Software Product'
         type: string
-        example: 'https://www.mockcompany.com.au/tos.html'
+        example: 'https://www.mockcompany.com/tos.html'
       policy_uri:
         description: 'URL string that points to a human-readable policy document for the Software Product'
         type: string
-        example: 'https://www.mockcompany.com.au/policy.html'
+        example: 'https://www.mockcompany.com/policy.html'
       jwks_uri:
         description: 'URL string referencing the client JSON Web Key (JWK) Set [RFC7517] document, which contains the client public keys'
         type: string
-        example: 'https://www.mockcompany.com.au/jwks'
+        example: 'https://www.mockcompany.com/jwks'
       revocation_uri:
         description: 'URI string that references the location of the Software Product consent revocation endpoint'
         type: string
-        example: 'https://www.mockcompany.com.au/revocation'
+        example: 'https://www.mockcompany.com/revocation'
       token_endpoint_auth_method:
         description: 'The requested authentication method for the token endpoint'
         type: string
