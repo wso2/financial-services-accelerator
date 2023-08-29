@@ -163,6 +163,7 @@ public class ConsentValidationEndpoint {
             //Adding query parameters to the resource map
             resourceParams = ConsentUtils.addQueryParametersToResourceParamMap(resourceParams);
         } catch (URISyntaxException e) {
+            log.error("Error while extracting query parameters", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while extracting query parameters");
         }
 
@@ -173,6 +174,7 @@ public class ConsentValidationEndpoint {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
             consentValidateData.setComprehensiveConsent(consentResource);
         } catch (ConsentManagementException e) {
+            log.error("Exception while getting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Exception while getting consent");
         }
 

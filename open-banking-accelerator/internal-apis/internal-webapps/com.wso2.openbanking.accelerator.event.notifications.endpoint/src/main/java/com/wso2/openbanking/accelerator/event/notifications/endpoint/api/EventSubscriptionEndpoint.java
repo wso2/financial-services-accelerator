@@ -99,6 +99,7 @@ public class EventSubscriptionEndpoint {
                             getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
                                     EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
         } catch (ParseException e) {
+            log.error("Failed to parse the payload", e);
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(EventNotificationUtils.
                             getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
