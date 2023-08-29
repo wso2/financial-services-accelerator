@@ -2,7 +2,9 @@ swagger: '2.0'
 info:
   title: DynamicClientRegistration
   description:
-    This specification defines the APIs for Data Holders exposing Dynamic Client Registration endpoints
+    This specification defines generic set of APIs for Dynamic Client Registration. 
+    Dynamic Client Registration API from Australian Consumer Data Standards was used as a 
+    template when building this generic API set
   version: '0.1'
 basePath: /open-banking/{version}
 schemes:
