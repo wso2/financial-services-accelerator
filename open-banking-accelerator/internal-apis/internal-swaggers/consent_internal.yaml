@@ -4,12 +4,12 @@ info:
   title: ConsentAPI
   description: This specifies a RESTful API for making interactions with the consent module
   contact:
-    name: WSO2
-    url: http://wso2.com/solutions/financial/open-banking/
-    email: openbankingdemo@wso2.com
+    name: wso2
+    url: 'https://wso2.com/solutions/financial-services/open-banking/'
+    email: "architecture@wso2.com"
   license:
-    name: WSO2 Commercial License
-    url: https://wso2.com
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
 servers:
   - url: https://{ob_km_host}:{ob_km_port}/api/openbanking/consent/
     variables:

@@ -7,12 +7,12 @@ info:
     Assertion to an ASPSP for the purpose of creating OAuth clients that are
     registered with ASPSP.
   contact:
-    name: Wso2
-    url: 'http://wso2.com/solutions/financial/open-banking/'
-    email: "openbankingdemo@wso2.com"
+    name: wso2
+    url: 'https://wso2.com/solutions/financial-services/open-banking/'
+    email: "architecture@wso2.com"
   license:
-    name: WSO2 Commercial License
-    url: "https://wso2.com"
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
 host: api.financial.wso2.com
 schemes:
   - https
