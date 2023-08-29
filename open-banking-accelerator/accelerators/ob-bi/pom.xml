@@ -31,7 +31,7 @@
 
     <artifactId>wso2-obbi-accelerator</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Open Banking - OB Business Intelligence Accelerator Module</name>
+    <name>WSO2 Open Banking - Business Intelligence Accelerator Module</name>
     <url>http://wso2.org</url>
 
     <properties>
