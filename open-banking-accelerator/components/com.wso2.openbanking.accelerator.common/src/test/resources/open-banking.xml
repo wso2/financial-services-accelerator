@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<Server xmlns="http://wso2.org/projects/carbon/open-banking.xml">
+
+    <JDBCPersistenceManager>
+        <DataSource>
+            <Name>sampleDataSourceName</Name>
+        </DataSource>
+        <ConnectionVerificationTimeout>1000</ConnectionVerificationTimeout>
+    </JDBCPersistenceManager>
+    <JDBCRetentionDataPersistenceManager>
+        <DataSource>
+            <Name>jdbc/WSO2OB_RET_DB</Name>
+        </DataSource>
+        <ConnectionVerificationTimeout>1</ConnectionVerificationTimeout>
+    </JDBCRetentionDataPersistenceManager>
+    <Identity>
+        <Extensions>
+            <RequestObjectValidator>
+                sampleRequestObjectValidator
+            </RequestObjectValidator>
+        </Extensions>
+        <AuthenticationWebApp>
+            <ServletExtension>
+                sampleServletExtension
+            </ServletExtension>
+        </AuthenticationWebApp>
+        <CIBAAuthenticationEndpointWebApp>
+            <ServletExtension>
+                sampleCIBAServletExtension
+            </ServletExtension>
+        </CIBAAuthenticationEndpointWebApp>
+        <ApplicationInformationEndpoint>
+            <SPMetadataFilterExtension>
+                sampleSPMetadataFilterExtension
+            </SPMetadataFilterExtension>
+        </ApplicationInformationEndpoint>
+    </Identity>
+
+    <Sample>
+        <OBHandler>DummyValue</OBHandler>
+        <OBHandler2>${some.property}</OBHandler2>
+        <OBHandler3 prop="somevalue"></OBHandler3>
+        <OBHandler4>${carbon.home}</OBHandler4>
+    </Sample>
+    <Sample2>
+        <SomethingArray>
+            <Something>Nothing</Something>
+            <Something>Everything</Something>
+            <Something>Anything</Something>
+        </SomethingArray>
+    </Sample2>
+    <Gateway>
+        <OpenBankingGatewayExecutors>
+            <CustomType1>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler" priority="2"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler2" priority="1"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler3" priority="3"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.SampleOBExecutor" priority="4"/>
+            </CustomType1>
+            <CustomType2>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler" priority="1"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler2" priority="2"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler3" priority="3"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.SampleOBExecutor" priority="4"/>
+            </CustomType2>
+            <CustomType3>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler" priority="2"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler2" priority="1"/>
+            </CustomType3>
+        </OpenBankingGatewayExecutors>
+
+        <TPPManagement>
+            <TPPValidation>
+                <Enabled>false</Enabled>
+                <ServiceImplClass></ServiceImplClass>
+            </TPPValidation>
+
+            <PSD2RoleValidation>
+                <Enabled>true</Enabled>
+            </PSD2RoleValidation>
+
+            <AllowedScopes>
+                <Scope name="scope 1" roles="PISP"/>
+                <Scope name="scope 2" roles="AISP, PISP"/>
+            </AllowedScopes>
+        </TPPManagement>
+
+        <CertificateManagement>
+            <ClientCertificateCacheExpiry>3600</ClientCertificateCacheExpiry>
+            <TPPValidationCacheExpiry>3600</TPPValidationCacheExpiry>
+            <TrustStoreDynamicLoadingInterval>86400</TrustStoreDynamicLoadingInterval>
+
+            <CertificateRevocationValidationEnabled>true</CertificateRevocationValidationEnabled>
+            <CertificateRevocationValidationRetryCount>3</CertificateRevocationValidationRetryCount>
+
+            <CertificateRevocationProxy>
+                <Enabled>true</Enabled>
+                <ProxyHost>PROXY_HOSTNAME</ProxyHost>
+                <ProxyPort>8080</ProxyPort>
+            </CertificateRevocationProxy>
+
+            <RevocationValidators>
+                <RevocationValidator type="OCSP" priority="1"/>
+                <RevocationValidator type="CRL" priority="2"/>
+            </RevocationValidators>
+
+            <RevocationValidationExcludedIssuers>
+                <IssuerDN>CN=Test Pre-Production Issuing CA, O=Test, C=GB</IssuerDN>
+            </RevocationValidationExcludedIssuers>
+
+            <TransportCertIssuerValidationEnabled>true</TransportCertIssuerValidationEnabled>
+        </CertificateManagement>
+
+    </Gateway>
+    <Consent>
+        <DataRetention>
+            <Enabled>true</Enabled>
+            <DBSyncEnabled>true</DBSyncEnabled>
+            <CronValue>0 0 0 * * ?</CronValue>
+        </DataRetention>
+        <PeriodicalExpiration>
+            <Enabled>false</Enabled>
+            <CronValue>0 0 0 * * ?</CronValue>
+            <ExpiredConsentStatusValue>Expired</ExpiredConsentStatusValue>
+            <EligibleStatuses>authorised</EligibleStatuses>
+        </PeriodicalExpiration>
+        <AuthorizeSteps>
+            <Retrieve>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep1" priority="1"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep2" priority="2"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep3" priority="3"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep4" priority="4"/>
+            </Retrieve>
+            <Persist>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep1" priority="2"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep2" priority="1"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep3" priority="3"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep4" priority="4"/>
+            </Persist>
+        </AuthorizeSteps>
+    </Consent>
+    <DataPublishing>
+        <Thrift>
+            <Streams>
+                <DataStream1>
+                    <Attribute name="attribute1" priority="1"/>
+                    <Attribute name="attribute2" priority="2"/>
+                </DataStream1>
+                <DataStream2>
+                    <Attribute name="attribute11" priority="1"/>
+                    <Attribute name="attribute12" priority="2"/>
+                    <Attribute name="attribute13" priority="3"/>
+                </DataStream2>
+            </Streams>
+        </Thrift>
+        <DisputeResolution>
+            <Enabled>true</Enabled>
+            <PublishNonErrorDisputeResolutionData>true</PublishNonErrorDisputeResolutionData>
+        </DisputeResolution>
+    </DataPublishing>
+    <DCR>
+        <RegulatoryAPINames>
+            <API name = "DynamicClientRegistration"  roles = "AISP, PISP"/>
+            <API name = "AccountandTransactionAPI"  roles = "AISP"/>
+        </RegulatoryAPINames>
+        <RegistrationRequestParams>
+            <ParameterType>
+                <Required>true</Required>
+                <AllowedValues>
+                    <Value>Sample</Value>
+                </AllowedValues>
+            </ParameterType>
+        </RegistrationRequestParams>
+        <JWKS-Retriever>
+            <ConnectionTimeout>1000</ConnectionTimeout>
+            <ReadTimeout>3000</ReadTimeout>
+        </JWKS-Retriever>
+    </DCR>
+    <HTTPConnectionPool>
+        <MaxConnections>1000</MaxConnections>
+        <MaxConnectionsPerRoute>500</MaxConnectionsPerRoute>
+    </HTTPConnectionPool>
+
+    <ServiceActivator>
+        <Subscribers>
+            <Subscriber>full.qualified.name.class1</Subscriber>
+            <Subscriber>full.qualified.name.class2</Subscriber>
+        </Subscribers>
+    </ServiceActivator>
+
+    <KeyManager>
+        <KeyManagerExtensionImpl></KeyManagerExtensionImpl>
+        <KeyManagerAdditionalProperties>
+            <Property name="name" label="label" type="text" tooltip="tooltip" default="" values="" required="false" mask="false" multiple="false" priority="1" />
+        </KeyManagerAdditionalProperties>
+    </KeyManager>
+
+    <OBEventNotifications>
+        <TokenIssuer>www.wso2.com</TokenIssuer>
+        <NumberOfSetsToReturn>5</NumberOfSetsToReturn>
+        <EventCreationHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler</EventCreationHandler>
+        <EventPollingHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler</EventPollingHandler>
+        <NotificationGenerator>com.wso2.openbanking.accelerator.event.notifications.service.service.DefaultEventNotificationGenerator</NotificationGenerator>
+        <EventSubscriptionHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
+        <PollingResponseParams>
+            <IsSubClaimAvailable>true</IsSubClaimAvailable>
+            <IsTxnClaimAvailable>true</IsTxnClaimAvailable>
+            <IsToeClaimAvailable>true</IsToeClaimAvailable>
+        </PollingResponseParams>
+    </OBEventNotifications>
+
+    <JwsSignatureConfiguration>
+        <SignatureValidation>
+            <Enable>false</Enable>
+            <AllowedAlgorithms>
+                <Algorithm>PS256</Algorithm>
+                <Algorithm>ES256</Algorithm>
+            </AllowedAlgorithms>
+        </SignatureValidation>
+        <ResponseSigning>
+            <Enable>false</Enable>
+            <AllowedAlgorithms>
+                <Algorithm>PS256</Algorithm>
+                <Algorithm>ES256</Algorithm>
+            </AllowedAlgorithms>
+        </ResponseSigning>
+    </JwsSignatureConfiguration>
+
+    <OBIdentityRetriever>
+        <Server>
+            <SigningCertificateAlias>wso2carbon</SigningCertificateAlias>
+            <SandboxSigningCertificateAlias>wso2carbon-sandbox</SandboxSigningCertificateAlias>
+            <SigningCertificateKid>1234</SigningCertificateKid>
+            <SandboxCertificateKid>5678</SandboxCertificateKid>
+        </Server>
+        <JWKSRetriever>
+            <SizeLimit>51200</SizeLimit>
+            <ConnectionTimeout>2000</ConnectionTimeout>
+            <ReadTimeout>2000</ReadTimeout>
+        </JWKSRetriever>
+    </OBIdentityRetriever>
+
+    <Event>
+        <QueueSize></QueueSize>
+        <WorkerThreadCount></WorkerThreadCount>
+        <EventExecutors>
+            <Executor class="com.wso2.openbanking.accelerator.common.test.CustomEventExecutor1" priority="1"/>
+            <Executor class="com.wso2.openbanking.accelerator.common.test.CustomEventExecutor2" priority="2"/>
+        </EventExecutors>
+    </Event>
+
+    <RealtimeEventNotification>
+        <Enable>true</Enable>
+        <PeriodicCronExpression>0 0/1 0 ? * * *</PeriodicCronExpression>
+        <TimeoutInSeconds>60</TimeoutInSeconds>
+        <MaxRetries>5</MaxRetries>
+        <InitialBackoffTimeInSeconds>60</InitialBackoffTimeInSeconds>
+        <BackoffFunction>EX</BackoffFunction>
+        <CircuitBreakerOpenTimeoutInSeconds>600</CircuitBreakerOpenTimeoutInSeconds>
+        <EventNotificationThreadPoolSize>20</EventNotificationThreadPoolSize>
+        <RequestGenerator>com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
+    </RealtimeEventNotification>
+</Server>

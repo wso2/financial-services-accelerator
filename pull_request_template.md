@@ -1,52 +1,50 @@
-## Purpose
-> Describe the problems, issues, or needs driving this feature/fix and include links to related issues in the following format: Resolves issue1, issue2, etc.
+## Pull Request Title
 
-## Goals
-> Describe the solutions that this feature/fix will introduce to resolve the problems described above
+> Explain  in a few lines the purpose of this pull request
 
-## Approach
-> Describe how you are implementing the solutions. Include an animated GIF or screenshot if the change affects the UI (email documentation@wso2.com to review all UI text). Include a link to a Markdown file or Google doc if the feature write-up is too long to paste here.
+**Issue link:** *required*
 
-## User stories
-> Summary of user stories addressed by this change>
+**Doc Issue:** *Optional, link issue from [documentation repository](https://github.com/wso2/docs-ob/issues)*
 
-## Release note
-> Brief description of the new feature or bug fix as it will appear in the release notes
+**Applicable Labels:** *Spec, product, version, type (specify requested labels)*
 
-## Documentation
-> Link(s) to product documentation that addresses the changes of this PR. If no doc impact, enter “N/A” plus brief explanation of why there’s no doc impact
+------
 
-## Training
-> Link to the PR for changes to the training content in https://github.com/wso2/WSO2-Training, if applicable
+### Development Checklist
 
-## Certification
-> Type “Sent” when you have provided new/updated certification questions, plus four answers for each question (correct answer highlighted in bold), based on this change. Certification questions/answers should be sent to certification@wso2.com and NOT pasted in this PR. If there is no impact on certification exams, type “N/A” and explain why.
+1. [ ] Built complete solution with pull request in place.
+2. [ ] Ran checkstyle plugin with pull request in place.
+3. [ ] Ran Findbugs plugin with pull request in place.
+4. [ ] Formatted code according to WSO2 code style.
+5. [ ] Migration scripts written (if applicable).
 
-## Marketing
-> Link to drafts of marketing content that will describe and promote this feature, including product page changes, technical articles, blog posts, videos, etc., if applicable
+### Secure Development Checklist
 
-## Automation tests
- - Unit tests 
-   > Code coverage information
- - Integration tests
-   > Details about the test cases and coverage
+1. [ ] Ran FindSecurityBugs plugin and verified report.
+2. [ ] Ran Dependency-check plugin and verified report for new dependencies added.
+2. [ ] Ran Dependency-check plugin and verified report for dependency version changes.
+3. [ ] Have you verify the PR does't commit any keys, passwords, tokens, usernames, or other secrets?
+4. [ ] Have you followed secure coding standards in [WSO2 Secure Engineering Guidelines](http://wso2.com/technical-reports/wso2-secure-engineering-guidelines)?
 
-## Security checks
- - Followed secure coding standards in http://wso2.com/technical-reports/wso2-secure-engineering-guidelines? yes/no
- - Ran FindSecurityBugs plugin and verified report? yes/no
- - Confirmed that this PR doesn't commit any keys, passwords, tokens, usernames, or other secrets? yes/no
+### Testing Checklist
 
-## Samples
-> Provide high-level details about the samples related to this feature
+1. [ ] Written unit tests.
+2. [ ] Documented test scenarios(link available in guides).
+3. [ ] Written automation tests (link available in guides).
+4. [ ] Verified tests in multiple database environments (if applicable).
+5. [ ] Verified tests in multiple deployed specifications (if applicable).
+6. [ ] Tested with OBBI enabled  (if applicable).
+7. [ ] Tested with specification regulatory conformance suites  (if applicable).
 
-## Related PRs
-> List any other related PRs
+**Automation Test Details**
 
-## Migrations (if applicable)
-> Describe migration steps and platforms on which migration has been tested
+| Test Suite        | Test Script IDs   |
+| ----------------- | ----------------- |
+| Integration Suite | *TCXXXXX, TCXXXX* |
 
-## Test environment
-> List all JDK versions, operating systems, databases, and browser/versions on which this feature/fix was tested
- 
-## Learning
-> Describe the research phase and any blog posts, patterns, libraries, or add-ons you used to solve the problem.
+**Conformance Tests Details**
+
+| Test Suite Name  | Test Suite Version | Scenarios  | Result   |
+| ---------------- | ------------------ | ---------- | -------- |
+| *Security Suite* | *VX.X*             | *Foo, Bar* | *Passed* |
+

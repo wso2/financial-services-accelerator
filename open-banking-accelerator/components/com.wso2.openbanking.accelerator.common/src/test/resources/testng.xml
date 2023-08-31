@@ -1,0 +1,68 @@
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="identity-base-test-suite">
+    <test name="identity-base-test-all">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.OBConfigParserTests"/>
+            <class name="com.wso2.openbanking.accelerator.common.test.util.HTTPClientUtilsTest"/>
+            <class name="com.wso2.openbanking.accelerator.common.test.config.TextFileReaderTest"/>
+            <class name="com.wso2.openbanking.accelerator.common.test.util.HTTPClientUtilsTest"/>
+            <class name="com.wso2.openbanking.accelerator.common.test.util.SPQueryExecutorUtilTest"/>
+        </classes>
+    </test>
+    <test name="validator-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.validator.LogicValidatorsTest"/>
+            <class name="com.wso2.openbanking.accelerator.common.test.validator.ModelValidatorsTest"/>
+            <class name="com.wso2.openbanking.accelerator.common.test.validator.ModelValidatorsTest"/>
+        </classes>
+    </test>
+    <test name="eidas-extractor-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.util.eidas.certificate.extractor.CertificateContentExtractorTest"/>
+        </classes>
+    </test>
+    <test name="event-executor-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.event.executor.OBEventExecutorTests"/>
+        </classes>
+    </test>
+    <test name="common-certificate-util-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.util.CertificateUtilsTest"/>
+        </classes>
+    </test>
+    <test name="distributed-cache-tcp-test">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.distributed.caching.OpenBankingDistributedCacheTCPTest"/>
+        </classes>
+    </test>
+    <test name="distributed-cache-multicast-test">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.distributed.caching.OpenBankingDistributedCacheMulticastTest"/>
+        </classes>
+    </test>
+    <test name="open-banking-utils-test">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.util.OpenBankingUtilsTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,34 @@
+{
+  "name": "@bfsi-react/i18n",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "rimraf ./lib && webpack --mode production --stats=errors-only"
+  },
+  "author": "BFSI",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "react-intl": "^6.4.4"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.4.3",
+    "webpack-cli": "^5.1.4"
+  },
+  "peerDependencies": {
+    "@babel/preset-env": "^7.22.5",
+    "@babel/preset-react": "^7.22.5"
+  },
+  "keywords": [
+    "BFSI",
+    "OB",
+    "i18n"
+  ],
+  "engines": {
+    "node": ">=18.16.0",
+    "npm": ">=9.7.0"
+  },
+  "files": [
+    "lib/*"
+  ]
+}

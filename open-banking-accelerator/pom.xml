@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.wso2</groupId>
+        <artifactId>open-banking</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <name>WSO2 Open Banking Accelerator</name>
+    <artifactId>open-banking-accelerator</artifactId>
+    <packaging>pom</packaging>
+    <version>3.0.0</version>
+
+    <modules>
+        <module>components/com.wso2.openbanking.accelerator.common</module>
+        <module>components/consent-management/com.wso2.openbanking.accelerator.consent.mgt.dao</module>
+        <module>components/com.wso2.openbanking.accelerator.gateway</module>
+        <module>components/com.wso2.openbanking.accelerator.identity</module>
+        <module>components/com.wso2.openbanking.accelerator.runtime</module>
+        <module>components/com.wso2.openbanking.accelerator.keymanager</module>
+        <module>components/consent-management/com.wso2.openbanking.accelerator.consent.extensions</module>
+        <module>components/com.wso2.openbanking.accelerator.data.publisher</module>
+        <module>components/consent-management/com.wso2.openbanking.accelerator.consent.mgt.service</module>
+        <module>components/ob-throttler/com.wso2.openbanking.accelerator.throttler.dao</module>
+        <module>components/ob-throttler/com.wso2.openbanking.accelerator.throttler.service</module>
+        <module>components/event-notifications/com.wso2.openbanking.accelerator.event.notifications.service</module>
+        <module>components/account-metadata/com.wso2.openbanking.accelerator.account.metadata.service</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.ciba.authentication.endpoint</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.consent.endpoint</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.dcr.endpoint</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.authentication.webapp</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.application.info.endpoint</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.demo.backend</module>
+        <module>components/com.wso2.openbanking.accelerator.service.activator</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.push.authorization.endpoint</module>
+        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.event.notifications.endpoint</module>
+    </modules>
+</project>

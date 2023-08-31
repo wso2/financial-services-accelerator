@@ -1,0 +1,76 @@
+{
+  "name": "@bfsi-react/consentmgr",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@bfsi-react/auth": "^1.0.0",
+    "@bfsi-react/bfsi-ui": "^1.0.0",
+    "@bfsi-react/i18n": "^1.0.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.13.7",
+    "@mui/material": "^5.14.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.4.0",
+    "framer-motion": "^10.12.18",
+    "hamburger-react": "^2.5.0",
+    "json-loader": "^0.5.7",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.11.2",
+    "react-scripts": "^5.0.1",
+    "react-table": "^7.8.0",
+    "sass": "^1.62.1",
+    "web-vitals": "^2.1.4",
+    "cross-env": "^7.0.3"
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=development && webpack serve --mode development",
+    "build": "rimraf site/public/libs/ site/public/dist/ && cross-env NODE_ENV=production webpack --mode production --stats=errors-only",
+    "build:dev": "rimraf site/public/dist/ && cross-env NODE_ENV=production webpack --mode development --watch --progress",
+    "build:prod": "rimraf site/public/dist/ && cross-env NODE_ENV=production webpack --mode production --stats=errors-only"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.22.5",
+    "@babel/preset-react": "^7.22.5",
+    "babel-loader": "^9.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.4",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.1",
+    "sass-loader": "^13.2.2",
+    "style-loader": "^3.3.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.83.1",
+    "webpack-cli": "^5.1.1",
+    "webpack-dev-server": "^4.15.0"
+  },
+  "workspaces": [
+    "site/public/libs/*"
+  ]
+}

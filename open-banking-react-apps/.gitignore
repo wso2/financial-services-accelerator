@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+**/node_modules
+
+# production
+**/target
+**/npm
+**/dist
+**libs
+/lib/**/lib
+
+# misc
+.DS_Store
+.env
+npm-debug.log
+/.idea
+/.vscode
+*.iws
+*.iml

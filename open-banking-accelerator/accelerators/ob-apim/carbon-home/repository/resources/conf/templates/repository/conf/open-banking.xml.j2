@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<Server xmlns="http://wso2.org/projects/carbon/open-banking.xml">
+    <Common>
+        <Identity>
+            <Cache>
+                {% if open_banking.common.identity.cache.cache_access_expiry_minutes is defined %}
+                <CacheAccessExpiry>{{open_banking.common.identity.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+                {% else %}
+                <CacheAccessExpiry>60</CacheAccessExpiry>
+                {% endif %}
+                {% if open_banking.common.identity.cache.cache_modified_expiry_minutes is defined %}
+                <CacheModifiedExpiry>{{open_banking.common.identity.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+                {% else %}
+                <CacheModifiedExpiry>60</CacheModifiedExpiry>
+                {% endif %}
+            </Cache>
+        </Identity>
+    </Common>
+    <Gateway>
+        {% if open_banking.gateway.request_router is defined %}
+        <RequestRouter>{{open_banking.gateway.request_router}}</RequestRouter>
+        {% else %}
+        <RequestRouter>com.wso2.openbanking.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
+        {% endif %}
+        {% if open_banking.gateway.throttling.throttling_data_publisher is defined %}
+        <CustomThrottleDataPublisher>{{open_banking.gateway.throttling.throttling_data_publisher}}</CustomThrottleDataPublisher>
+        {% endif %}
+        <OpenBankingGatewayExecutors>
+            {% for type in open_banking.gateway.openbanking_gateway_executors.type %}
+                <{{type.name}}>
+                    {% for executor in type.executors %}
+                       <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
+                        {% endfor %}
+                 </{{type.name}}>
+            {% endfor %}
+        </OpenBankingGatewayExecutors>
+        {% if open_banking.gateway.consent.validation.endpoint is defined %}
+        <ConsentValidationEndpoint>{{open_banking.gateway.consent.validation.endpoint}}</ConsentValidationEndpoint>
+        {% else %}
+        <ConsentValidationEndpoint>https://localhost:9446/api/openbanking/consent/validate</ConsentValidationEndpoint>
+        {% endif %}
+        <Cache>
+            <GatewayCache>
+                {% if open_banking.gateway.cache.cache_access_expiry_minutes is defined %}
+                    <CacheAccessExpiry>{{open_banking.gateway.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+                {% endif %}
+                {% if open_banking.gateway.cache.cache_modified_expiry_minutes is defined %}
+                    <CacheModifiedExpiry>{{open_banking.gateway.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+                {% endif %}
+            </GatewayCache>
+            <IdempotencyValidationCache>
+                {% if open_banking.gateway.cache.idempotency_validation_cache.cache_time_to_live is defined %}
+                    <CacheTimeToLive>{{open_banking.gateway.cache.idempotency_validation_cache.cache_time_to_live}}</CacheTimeToLive>
+                {% else %}
+                    <CacheTimeToLive>1440</CacheTimeToLive>
+                {% endif %}
+            </IdempotencyValidationCache>
+        </Cache>
+
+        <CertificateManagement>
+
+                <!-- Expiry time for the cache (in seconds) for storing the validation result of the certificates-->
+        		{% if open_banking.gateway.certificate_management.certificate.cache_expiry is defined %}
+                <ClientCertificateCacheExpiry>{{open_banking.gateway.certificate_management.certificate.cache_expiry}}</ClientCertificateCacheExpiry>
+        		{% else %}
+        		<ClientCertificateCacheExpiry>3600</ClientCertificateCacheExpiry>
+        		{% endif %}
+
+                <!-- Enable certificate OCSP and CRL validation -->
+        		{% if open_banking.gateway.certificate_management.certificate.revocation.enabled is defined %}
+                <CertificateRevocationValidationEnabled>{{open_banking.gateway.certificate_management.certificate.revocation.enabled}}</CertificateRevocationValidationEnabled>
+        		{% else %}
+        		<CertificateRevocationValidationEnabled>true</CertificateRevocationValidationEnabled>
+        		{% endif %}
+
+        		<!-- Enable certificate issuer validation -->
+        		{% if open_banking.gateway.certificate_management.certificate.issuer.validation.enabled is defined %}
+                <TransportCertIssuerValidationEnabled>{{open_banking.gateway.certificate_management.certificate.issuer.validation.enabled}}</TransportCertIssuerValidationEnabled>
+        		{% else %}
+        		<TransportCertIssuerValidationEnabled>true</TransportCertIssuerValidationEnabled>
+        		{% endif %}
+
+                <!-- Proxy server configuration to do TPP certificate revocation checks -->
+                <CertificateRevocationProxy>
+        			{% if open_banking.gateway.certificate_management.certificate.revocation.proxy.enabled is defined %}
+                    <Enabled>{{open_banking.gateway.certificate_management.certificate.revocation.proxy.enabled}}</Enabled>
+        			{% else %}
+        			<Enabled>false</Enabled>
+        			{% endif %}
+
+        			{% if open_banking.gateway.certificate_management.certificate.revocation.proxy.host is defined %}
+                    <ProxyHost>{{open_banking.gateway.certificate_management.certificate.revocation.proxy.host}}</ProxyHost>
+                    {% else %}
+        			<ProxyHost>PROXY_HOSTNAME</ProxyHost>
+        			{% endif %}
+
+        			{% if open_banking.gateway.certificate_management.certificate.revocation.proxy.port is defined %}
+        			<ProxyPort>{{open_banking.gateway.certificate_management.certificate.revocation.proxy.port}}</ProxyPort>
+        			{% else %}
+        			<ProxyPort>8080</ProxyPort>
+        			{% endif %}
+                </CertificateRevocationProxy>
+
+        		<!-- Set OCSP and CRL validation order -->
+        		<RevocationValidators>
+        			{% for validator in open_banking.gateway.certificate_management.certificate.revocation.validator %}
+        				<RevocationValidator type="{{validator.type}}" priority="{{validator.priority}}" />
+                    {% endfor %}
+        		</RevocationValidators>
+
+                <!-- Retry count for validating certificate OCSP and CRL revocation status -->
+        		{% if open_banking.gateway.certificate_management.certificate.revocation.retry_count is defined %}
+                <CertificateRevocationValidationRetryCount>{{open_banking.gateway.certificate_management.certificate.revocation.retry_count}}</CertificateRevocationValidationRetryCount>
+        		{% else %}
+        		<CertificateRevocationValidationRetryCount>3</CertificateRevocationValidationRetryCount>
+        		{% endif %}
+
+                <!-- ConnectTimeout for validating certificate OCSP and CRL revocation status -->
+                {% if open_banking.gateway.certificate_management.certificate.revocation.connect_timeout is defined %}
+                <CertificateRevocationValidationConnectTimeout>{{open_banking.gateway.certificate_management.certificate.revocation.connect_timeout}}</CertificateRevocationValidationConnectTimeout>
+                {% else %}
+                <CertificateRevocationValidationConnectTimeout>10000</CertificateRevocationValidationConnectTimeout>
+                {% endif %}
+
+                <!-- ConnectionRequestTimeout for validating certificate OCSP and CRL revocation status -->
+                {% if open_banking.gateway.certificate_management.certificate.revocation.connection_request_timeout is defined %}
+                <CertificateRevocationValidationConnectionRequestTimeout>{{open_banking.gateway.certificate_management.certificate.revocation.connection_request_timeout}}</CertificateRevocationValidationConnectionRequestTimeout>
+                {% else %}
+                <CertificateRevocationValidationConnectionRequestTimeout>10000</CertificateRevocationValidationConnectionRequestTimeout>
+                {% endif %}
+
+                <!-- SocketTimeout for validating certificate OCSP and CRL revocation status -->
+                {% if open_banking.gateway.certificate_management.certificate.revocation.socket_timeout is defined %}
+                <CertificateRevocationValidationSocketTimeout>{{open_banking.gateway.certificate_management.certificate.revocation.socket_timeout}}</CertificateRevocationValidationSocketTimeout>
+                {% else %}
+                <CertificateRevocationValidationSocketTimeout>10000</CertificateRevocationValidationSocketTimeout>
+                {% endif %}
+
+                <!-- List of issuer DNs whose issued certificates needs to be skipped from certificate revocation
+                validation.
+                e.g. <IssuerDN>CN=Test Pre-Production Issuing CA, O=Test, C=GB</IssuerDN>
+                -->
+                <RevocationValidationExcludedIssuers>
+                    {% for excluded in open_banking.gateway.certificate_management.certificate.revocation.excluded %}
+        			<IssuerDN>{{excluded.issuer_dn}}</IssuerDN>
+        			{% endfor %}
+                </RevocationValidationExcludedIssuers>
+
+                <!--Truststore dynamic loading interval (in seconds). Default value has been set to 86400 seconds-->
+        		{% if open_banking.gateway.certificate_management.truststore.dynamic_loading_interval is defined %}
+                <TrustStoreDynamicLoadingInterval>{{open_banking.gateway.certificate_management.truststore.dynamic_loading_interval}}</TrustStoreDynamicLoadingInterval>
+        		{% else %}
+        		<TrustStoreDynamicLoadingInterval>86400</TrustStoreDynamicLoadingInterval>
+        		{% endif %}
+            </CertificateManagement>
+
+            <TPPManagement>
+
+            	<TPPValidation>
+
+        			{% if open_banking.gateway.tpp_management.tpp_validation.cache_expiry is defined %}
+            		<TPPValidationCacheExpiry>{{open_banking.gateway.tpp_management.tpp_validation.cache_expiry}}</TPPValidationCacheExpiry>
+            		{% else %}
+        			<TPPValidationCacheExpiry>3600</TPPValidationCacheExpiry>
+        			{% endif %}
+
+        			{% if open_banking.gateway.tpp_management.tpp_validation.enabled is defined %}
+            		<Enabled>{{open_banking.gateway.tpp_management.tpp_validation.enabled}}</Enabled>
+            		{% else %}
+        			<Enabled>false</Enabled>
+        			{% endif %}
+
+        			{% if open_banking.gateway.tpp_management.tpp_validation.implementation_path is defined %}
+        			<ServiceImplClass>{{open_banking.gateway.tpp_management.tpp_validation.implementation_path}}</ServiceImplClass>
+        			{% else %}
+        			<ServiceImplClass>path.to.impl.class</ServiceImplClass>
+        			{% endif %}
+            	</TPPValidation>
+
+            	<PSD2RoleValidation>
+        			{% if open_banking.gateway.tpp_management.psd2_role_validation.enabled is defined %}
+            		<Enabled>{{open_banking.gateway.tpp_management.psd2_role_validation.enabled}}</Enabled>
+        			{% else %}
+        			<Enabled>true</Enabled>
+        			{% endif %}
+            	</PSD2RoleValidation>
+
+            	<AllowedScopes>
+        			{% for scope in open_banking.gateway.tpp_management.allowed_scopes %}
+            	    <Scope name="{{scope.name}}" roles="{{scope.roles}}" />
+        			{% endfor %}
+            	</AllowedScopes>
+
+            </TPPManagement>
+
+        <Idempotency>
+            {% if open_banking.gateway.idempotency.enabled is defined %}
+                <IsEnabled>{{open_banking.gateway.idempotency.enabled}}</IsEnabled>
+            {% else %}
+                <IsEnabled>false</IsEnabled>
+            {% endif %}
+
+            {% if open_banking.gateway.idempotency.allowed_time_duration is defined %}
+                <AllowedTimeDuration>{{open_banking.gateway.idempotency.allowed_time_duration}}</AllowedTimeDuration>
+            {% else %}
+                <AllowedTimeDuration>1440</AllowedTimeDuration>
+            {% endif %}
+
+            {% if open_banking.gateway.idempotency.idempotency_key_header is defined %}
+                <IdempotencyKeyHeader>{{open_banking.gateway.idempotency.idempotency_key_header}}</IdempotencyKeyHeader>
+            {% else %}
+                <IdempotencyKeyHeader>x-idempotency-key</IdempotencyKeyHeader>
+            {% endif %}
+        </Idempotency>
+    </Gateway>
+    <DCR>
+        <APIMRESTEndPoints>
+            {% if open_banking.dcr.apim_rest_endpoints.app_creation is defined %}
+                <AppCreation>{{open_banking.dcr.apim_rest_endpoints.app_creation}}</AppCreation>
+            {% else %}
+                <AppCreation>api/am/devportal/v2/applications</AppCreation>
+            {% endif %}
+            {% if open_banking.dcr.apim_rest_endpoints.key_generation is defined %}
+                <KeyGeneration>{{open_banking.dcr.apim_rest_endpoints.key_generation}}</KeyGeneration>
+            {% else %}
+                <KeyGeneration>api/am/devportal/v2/applications/application-id/map-keys</KeyGeneration>
+            {% endif %}
+            {% if open_banking.dcr.apim_rest_endpoints.api_retrieve is defined %}
+                <RetrieveAPIS>{{open_banking.dcr.apim_rest_endpoints.api_retrieve}}</RetrieveAPIS>
+            {% else %}
+                <RetrieveAPIS>api/am/devportal/v2/apis</RetrieveAPIS>
+            {% endif %}
+            {% if open_banking.dcr.apim_rest_endpoints.api_subscribe is defined %}
+                <SubscribeAPIs>{{open_banking.dcr.apim_rest_endpoints.api_subscribe}}</SubscribeAPIs>
+            {% else %}
+                <SubscribeAPIs>api/am/devportal/v2/subscriptions/multiple</SubscribeAPIs>
+            {% endif %}
+            {% if open_banking.dcr.apim_rest_endpoints.retrieve_subscribe is defined %}
+                <RetrieveSubscribedAPIs>{{open_banking.dcr.apim_rest_endpoints.retrieve_subscribe}}</RetrieveSubscribedAPIs>
+            {% else %}
+                <RetrieveSubscribedAPIs>api/am/devportal/v2/subscriptions</RetrieveSubscribedAPIs>
+            {% endif %}
+        </APIMRESTEndPoints>
+        <RegulatoryAPINames>
+        {% for api in open_banking.dcr.regulatory_api %}
+            <API name = "{{api.api_name}}"  roles = "{{api.roles}}"/>
+        {% endfor %}
+        </RegulatoryAPINames>
+        {% if open_banking.dcr.jwks_endpoint_name is defined %}
+        <JWKSEndpointName>{{open_banking.dcr.jwks_endpoint_name}}</JWKSEndpointName>
+        {% else %}
+        <JWKSEndpointName>software_jwks_endpoint</JWKSEndpointName>
+        {% endif %}
+        {% if open_banking.dcr.app_name_claim is defined %}
+        <ApplicationName>{{open_banking.dcr.app_name_claim}}</ApplicationName>
+        {% else %}
+        <ApplicationName>software_client_name</ApplicationName>
+        {% endif %}
+        {% if open_banking.dcr.token_endpoint is defined %}
+        <TokenEndpoint>{{open_banking.dcr.token_endpoint}}</TokenEndpoint>
+        {% else %}
+        <TokenEndpoint>https://localhost:9443/oauth2/token</TokenEndpoint>
+        {% endif %}
+        <JWKS-Retriever>
+            {% if open_banking.dcr.jwks_retriever.connection_timeout is defined %}
+            <ConnectionTimeout>{{open_banking.dcr.jwks_retriever.connection_timeout}}</ConnectionTimeout>
+            {% else %}
+            <ConnectionTimeout>0</ConnectionTimeout>
+            {% endif %}
+            {% if open_banking.dcr.jwks_retriever.read_timeout is defined %}
+            <ReadTimeout>{{open_banking.dcr.jwks_retriever.read_timeout}}</ReadTimeout>
+            {% else %}
+            <ReadTimeout>0</ReadTimeout>
+            {% endif %}
+        </JWKS-Retriever>
+        {% if open_banking.dcr.use_softwareIdForAppName is defined %}
+        <UseSoftwareIdAsAppName>{{open_banking.dcr.use_softwareIdForAppName}}</UseSoftwareIdAsAppName>
+        {% else %}
+        <UseSoftwareIdAsAppName>true</UseSoftwareIdAsAppName>
+        {% endif %}
+        {% if open_banking.dcr.isRequestJWT is defined %}
+        <RequestJWTValidation>{{open_banking.dcr.isRequestJWT}}</RequestJWTValidation>
+        {% else %}
+        <RequestJWTValidation>true</RequestJWTValidation>
+        {% endif %}
+    </DCR>
+    <KeyManagerName>{{open_banking.keyManager.name}}</KeyManagerName>
+    {% if open_banking.publisher.hostname is defined %}
+    <PublisherURL>{{open_banking.publisher.hostname}}</PublisherURL>
+    {% else %}
+    <PublisherURL>https://localhost:9443</PublisherURL>
+    {% endif %}
+    <APIMAnalytics>
+    {% if open_banking.apim.analytics.enable is defined %}
+        <Enabled>{{open_banking.apim.analytics.enable}}</Enabled>
+    {% else %}
+        <Enabled>false</Enabled>
+    {% endif %}
+    </APIMAnalytics>
+    <DataPublishing>
+    {% if open_banking.data_publishing.enable is defined %}
+        <Enabled>{{open_banking.data_publishing.enable}}</Enabled>
+    {% else %}
+        <Enabled>false</Enabled>
+    {% endif %}
+        <!-- Administrator username to login to the SI server for data publishing. -->
+    {% if open_banking.data_publishing.username is defined %}
+        <Username>{{open_banking.data_publishing.username}}</Username>
+    {% else %}
+        <Username>admin@wso2.com@carbon.super</Username>
+    {% endif %}
+        <!-- Administrator password to login to the SI server for data publishing. -->
+    {% if open_banking.data_publishing.password is defined %}
+        <Password>{{open_banking.data_publishing.password}}</Password>
+    {% else %}
+        <Password>wso2123</Password>
+    {% endif %}
+        <!-- Server URL of the remote SI server used to collect statistics. Must
+        be specified in {protocol://hostname:port/} format. -->
+    {% if open_banking.data_publishing.server_url is defined %}
+        <ServerURL>{{open_banking.data_publishing.server_url}}</ServerURL>
+    {% else %}
+        <ServerURL>{tcp://ANALYTICS_HOSTNAME:7612}</ServerURL>
+    {% endif %}
+    {% if open_banking.data_publishing.auth_url is defined %}
+        <AuthURL>{{open_banking.data_publishing.auth_url}}</AuthURL>
+    {% endif %}
+        <!-- Allowed values: Thrift -->
+    {% if open_banking.data_publishing.protocol is defined %}
+        <Protocol>{{open_banking.data_publishing.protocol}}</Protocol>
+    {% else %}
+        <Protocol>Thrift</Protocol>
+    {% endif %}
+    {% if open_banking.data_publishing.pool_size is defined %}
+        <PoolSize>{{open_banking.data_publishing.pool_size}}</PoolSize>
+    {% else %}
+        <PoolSize>10</PoolSize>
+    {% endif %}
+    {% if open_banking.data_publishing.queue_size is defined %}
+        <QueueSize>{{open_banking.data_publishing.queue_size}}</QueueSize>
+    {% else %}
+        <QueueSize>32768</QueueSize>
+    {% endif %}
+    {% if open_banking.data_publishing.worker_thread_count is defined %}
+        <WorkerThreadCount>{{open_banking.data_publishing.worker_thread_count}}</WorkerThreadCount>
+    {% else %}
+        <WorkerThreadCount>10</WorkerThreadCount>
+    {% endif %}
+    {% if open_banking.data_publishing.pool_wait_time_Ms is defined %}
+        <PoolWaitTimeMs>{{open_banking.data_publishing.pool_wait_time_Ms}}</PoolWaitTimeMs>
+    {% else %}
+        <PoolWaitTimeMs>60000</PoolWaitTimeMs>
+    {% endif %}
+
+    {% if open_banking.data_publishing.protocol == "Thrift" or open_banking.data_publishing.protocol is not defined%}
+        <Thrift>
+        {% if open_banking.data_publishing.thrift.publishing_timeout is defined %}
+            <PublishingTimeout>{{open_banking.data_publishing.thrift.publishing_timeout}}</PublishingTimeout>
+        {% else %}
+            <PublishingTimeout>2000</PublishingTimeout>
+        {% endif %}
+            <Streams>
+            {% for stream in open_banking.data_publishing.thrift.stream %}
+                <{{stream.name}}>
+                    {% for attribute in stream.attributes %}
+                        {% if attribute.required is defined %}
+                            {% set required = "{{attribute.required}}" %}
+                        {% else %}
+                            {% set required = "false" %}
+                        {% endif %}
+                        {% if attribute.type is defined %}
+                            {% set type = "{{attribute.type}}" %}
+                        {% else %}
+                            {% set type = "string" %}
+                        {% endif %}
+                    <Attribute name="{{attribute.name}}" priority="{{attribute.priority}}" required="{{required}}" type="{{type}}"/>
+                    {% endfor %}
+                </{{stream.name}}>
+            {% endfor %}
+            </Streams>
+        </Thrift>
+    {% endif %}
+        <DisputeResolution>
+            {% if open_banking.data_publishing.dispute_resolution.enable is defined %}
+                <Enabled>{{open_banking.data_publishing.dispute_resolution.enable}}</Enabled>
+            {% else %}
+                <Enabled>false</Enabled>
+            {% endif %}
+            {% if open_banking.data_publishing.dispute_resolution.publishNonErrorDisputeResolutionData is defined %}
+                <PublishNonErrorDisputeResolutionData>{{open_banking.data_publishing.dispute_resolution.publishNonErrorDisputeResolutionData}}</PublishNonErrorDisputeResolutionData>
+            {% else %}
+                <PublishNonErrorDisputeResolutionData>false</PublishNonErrorDisputeResolutionData>
+            {% endif %}
+            {% if open_banking.data_publishing.dispute_resolution.maxRequestBodyLength is defined %}
+                <MaxRequestBodyLength>{{open_banking.data_publishing.dispute_resolution.maxRequestBodyLength}}</MaxRequestBodyLength>
+            {% else %}
+                <MaxRequestBodyLength>4096</MaxRequestBodyLength>
+            {% endif %}
+            {% if open_banking.data_publishing.dispute_resolution.maxResponseBodyLength is defined %}
+                <MaxResponseBodyLength>{{open_banking.data_publishing.dispute_resolution.maxResponseBodyLength}}</MaxResponseBodyLength>
+            {% else %}
+                <MaxResponseBodyLength>4096</MaxResponseBodyLength>
+            {% endif %}
+            {% if open_banking.data_publishing.dispute_resolution.maxHeaderLength is defined %}
+                <MaxHeaderLength>{{open_banking.data_publishing.dispute_resolution.maxHeaderLength}}</MaxHeaderLength>
+            {% else %}
+                <MaxHeaderLength>2048</MaxHeaderLength>
+            {% endif %}
+        </DisputeResolution>
+    </DataPublishing>
+    <Identity>
+        {% if open_banking.identity.consent_id_claim_name is defined %}
+            <ConsentIDClaimName>{{open_banking.identity.consent_id_claim_name}}</ConsentIDClaimName>
+        {% else %}
+            <ConsentIDClaimName>consent_id</ConsentIDClaimName>
+        {% endif %}
+    </Identity>
+    <HTTPConnectionPool>
+        {% if open_banking.http_connection_pool.max_connections is defined %}
+        <MaxConnections>{{open_banking.http_connection_pool.max_connections}}</MaxConnections>
+        {% endif %}
+        {% if open_banking.http_connection_pool.max_connections_per_route is defined %}
+        <MaxConnectionsPerRoute>{{open_banking.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
+        {% endif %}
+    </HTTPConnectionPool>
+    <Event>
+    {% if open_banking.event.queue_size is defined %}
+        <QueueSize>{{open_banking.event.queue_size}}</QueueSize>
+    {% else %}
+        <QueueSize>32768</QueueSize>
+    {% endif %}
+    {% if open_banking.event.worker_thread_count is defined %}
+        <WorkerThreadCount>{{open_banking.event.worker_thread_count}}</WorkerThreadCount>
+    {% else %}
+        <WorkerThreadCount>10</WorkerThreadCount>
+    {% endif %}
+        <EventExecutors>
+	{% if open_banking.event.event_executors is defined %}
+            {% for executor in open_banking.event.event_executors %}
+                   <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
+            {% endfor %}
+ 	{% else %}
+            {% if open_banking.event.event_executor is defined %}
+                <Executor class="{{open_banking.event.event_executor}}"/>
+            {% else %}
+                <Executor class="com.wso2.openbanking.accelerator.common.event.executor.DefaultOBEventExecutor"/>
+            {% endif %}
+ 	{% endif %}
+        </EventExecutors>
+    </Event>
+    <KeyManager>
+        {% if open_banking.keymanager.extension.impl is defined %}
+    	<KeyManagerExtensionImpl>{{open_banking.keymanager.extension.impl.class}}</KeyManagerExtensionImpl>
+    	{% endif %}
+        <KeyManagerAdditionalProperties>
+            {% if open_banking.keymanager.application.type.attributes is defined %}
+                {% for attribute in open_banking.keymanager.application.type.attributes %}
+                    <Property name="{{attribute.name}}" label="{{attribute.label}}" type="{{attribute.type}}" tooltip="{{attribute.tooltip}}" values="{{attribute.values}}" default="{{attribute.default}}" required="{{attribute.required}}" mask="{{attribute.mask}}" multiple="{{attribute.multiple}}" priority="{{attribute.priority}}" />
+                {% endfor %}
+            {% endif %}
+        </KeyManagerAdditionalProperties>
+    </KeyManager>
+    <DistributedCache>
+        {% if open_banking.distributed_cache.enabled is defined %}
+            <Enabled>{{open_banking.distributed_cache.enabled}}</Enabled>
+        {% else %}
+            <Enabled>false</Enabled>
+        {% endif %}
+        {% if open_banking.distributed_cache.host_name is defined %}
+            <HostName>{{open_banking.distributed_cache.host_name}}</HostName>
+        {% else %}
+            <HostName>localhost</HostName>
+        {% endif %}
+        {% if open_banking.distributed_cache.port is defined %}
+            <Port>{{open_banking.distributed_cache.port}}</Port>
+        {% else %}
+            <Port>5701</Port>
+        {% endif %}
+        {% if ( (open_banking.distributed_cache.discovery_mechanism is defined) and (open_banking.distributed_cache.discovery_mechanism == "TCP") ) %}
+            <DiscoveryMechanism>{{open_banking.distributed_cache.discovery_mechanism}}</DiscoveryMechanism>
+            {% if open_banking.distributed_cache.members is defined %}
+                <Members>
+                    {% for member in open_banking.distributed_cache.members %}
+                        <Member>{{member}}</Member>
+                    {% endfor %}
+                </Members>
+            {% else %}
+                <Members></Members>
+            {% endif %}
+        {% else %}
+            <DiscoveryMechanism>Multicast</DiscoveryMechanism>
+            {% if open_banking.distributed_cache.multicast_group is defined %}
+                <MulticastGroup>{{open_banking.distributed_cache.multicast_group}}</MulticastGroup>
+            {% else %}
+                <MulticastGroup>224.2.2.3</MulticastGroup>
+            {% endif %}
+            {% if open_banking.distributed_cache.multicast_port is defined %}
+                <MulticastPort>{{open_banking.distributed_cache.multicast_port}}</MulticastPort>
+            {% else %}
+                <MulticastPort>54321</MulticastPort>
+            {% endif %}
+            {% if open_banking.distributed_cache.trusted_interfaces is defined %}
+                <TrustedInterfaces>
+                    {% for trusted_interface in open_banking.distributed_cache.trusted_interfaces %}
+                        <TrustedInterface>{{trusted_interface}}</TrustedInterface>
+                    {% endfor %}
+                </TrustedInterfaces>
+            {% else %}
+                <TrustedInterfaces></TrustedInterfaces>
+            {% endif %}
+        {% endif %}
+        <Properties>
+            {% if open_banking.distributed_cache.properties.max_heartbeat is defined %}
+                <MaxHeartbeat>{{open_banking.distributed_cache.properties.max_heartbeat}}</MaxHeartbeat>
+            {% else %}
+                <MaxHeartbeat>600</MaxHeartbeat>
+            {% endif %}
+            {% if open_banking.distributed_cache.properties.max_master_confirmation is defined %}
+                <MaxMasterConfirmation>{{open_banking.distributed_cache.properties.max_master_confirmation}}</MaxMasterConfirmation>
+            {% else %}
+                <MaxMasterConfirmation>900</MaxMasterConfirmation>
+            {% endif %}
+            {% if open_banking.distributed_cache.properties.merge_first_run_delay is defined %}
+                <MergeFirstRunDelay>{{open_banking.distributed_cache.properties.merge_first_run_delay}}</MergeFirstRunDelay>
+            {% else %}
+                <MergeFirstRunDelay>60</MergeFirstRunDelay>
+            {% endif %}
+            {% if open_banking.distributed_cache.properties.merge_next_run_delay is defined %}
+                <MergeNextRunDelay>{{open_banking.distributed_cache.properties.merge_next_run_delay}}</MergeNextRunDelay>
+            {% else %}
+                <MergeNextRunDelay>30</MergeNextRunDelay>
+            {% endif %}
+            {% if open_banking.distributed_cache.properties.logging_type is defined %}
+                <LoggingType>{{open_banking.distributed_cache.properties.logging_type}}</LoggingType>
+            {% else %}
+                <LoggingType>none</LoggingType>
+            {% endif %}
+        </Properties>
+    </DistributedCache>
+    <!--This configuration applies for Request Validation and Response Signing for `x-jws-signature`.  -->
+    <JwsSignatureConfiguration>
+        <!-- Configs for  Signature Validation -->
+        <SignatureValidation>
+        {% if open_banking.jws_signature.signature_validation.enabled is defined %}
+            <Enable>{{open_banking.jws_signature.signature_validation.enabled}}</Enable>
+        {% else %}
+            <Enable>false</Enable>
+        {% endif %}
+            <AllowedAlgorithms>
+            {% if open_banking.jws_signature.signature_validation.allowed_algorithms is defined %}
+                {% for algorithm in open_banking.jws_signature.signature_validation.allowed_algorithms %}
+                <Algorithm>{{algorithm}}</Algorithm>
+                {% endfor %}
+            {% else %}
+                <Algorithm>PS256</Algorithm>
+            {% endif %}
+            </AllowedAlgorithms>
+        </SignatureValidation>
+        <!-- Configs for Response Signing -->
+        <ResponseSigning>
+        {% if open_banking.jws_signature.response_signing.enabled is defined %}
+            <Enable>{{open_banking.jws_signature.response_signing.enabled}}</Enable>
+        {% else %}
+            <Enable>false</Enable>
+        {% endif %}
+        {% if open_banking.jws_signature.response_signing.allowed_algorithm is defined %}
+            <AllowedAlgorithm>{{open_banking.jws_signature.response_signing.allowed_algorithm}}</AllowedAlgorithm>
+        {% else %}
+            <AllowedAlgorithm>PS256</AllowedAlgorithm>
+        {% endif %}
+        </ResponseSigning>
+    </JwsSignatureConfiguration>
+
+    <OBIdentityRetriever>
+        <Server>
+            <!-- Signing certificate alias for primary environment-->
+        {% if open_banking.ob_identity_retriever.server.signing_cert_alias is defined %}
+            <SigningCertificateAlias>{{open_banking.ob_identity_retriever.server.signing_cert_alias}}</SigningCertificateAlias>
+        {% else %}
+            <SigningCertificateAlias>wso2carbon</SigningCertificateAlias>
+        {% endif %}
+            <!-- Signing certificate alias for sandbox environment-->
+        {% if open_banking.ob_identity_retriever.server.sandbox_signing_cert_alias is defined %}
+            <SandboxSigningCertificateAlias>{{open_banking.ob_identity_retriever.server.sandbox_signing_cert_alias}}</SandboxSigningCertificateAlias>
+        {% else %}
+            <SandboxSigningCertificateAlias>wso2carbon-sandbox</SandboxSigningCertificateAlias>
+        {% endif %}
+        <!-- KID value for primary signing certificate -->
+        {% if open_banking.ob_identity_retriever.server.signing_cert_kid is defined %}
+            <SigningCertificateKid>{{open_banking.ob_identity_retriever.server.signing_cert_kid}}</SigningCertificateKid>
+        {% else %}
+            <SigningCertificateKid>1234</SigningCertificateKid>
+        {% endif %}
+        <!-- KID value for sandbox signing certificate -->
+        {% if open_banking.ob_identity_retriever.server.sandbox_signing_cert_kid is defined %}
+            <SandboxCertificateKid>{{open_banking.ob_identity_retriever.server.sandbox_signing_cert_kid}}</SandboxCertificateKid>
+        {% else %}
+            <SandboxCertificateKid>5678</SandboxCertificateKid>
+        {% endif %}
+        </Server>
+        <JWKSRetriever>
+        {% if open_banking.ob_identity_retriever.jwks_retriever.size_limit is defined %}
+            <SizeLimit>{{open_banking.ob_identity_retriever.jwks_retriever.size_limit}}</SizeLimit>
+        {% else %}
+            <SizeLimit>51200</SizeLimit>
+        {% endif %}
+        {% if open_banking.ob_identity_retriever.jwks_retriever.connection_timeout is defined %}
+            <ConnectionTimeout>{{open_banking.ob_identity_retriever.jwks_retriever.connection_timeout}}</ConnectionTimeout>
+        {% else %}
+            <ConnectionTimeout>2000</ConnectionTimeout>
+        {% endif %}
+        {% if open_banking.ob_identity_retriever.jwks_retriever.read_timeout is defined %}
+            <ReadTimeout>{{open_banking.ob_identity_retriever.jwks_retriever.read_timeout}}</ReadTimeout>
+        {% else %}
+            <ReadTimeout>2000</ReadTimeout>
+        {% endif %}
+        </JWKSRetriever>
+    </OBIdentityRetriever>
+</Server>

@@ -1,0 +1,40 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package com.wso2.openbanking.accelerator.authentication.data.publisher.constant;
+
+/**
+ * Class containing the constants for Open Banking Authentication Data Publisher module.
+ */
+public class AuthPublisherConstants {
+
+    public static final String AUTHENTICATION_SUCCESSFUL = "AuthenticationSuccessful";
+    public static final String AUTHENTICATION_FAILED = "AuthenticationFailed";
+    public static final String AUTHENTICATION_ATTEMPTED = "AuthenticationAttempted";
+    public static final String AUTHENTICATED_USER = "authenticatedUser";
+    public static final String BASIC_AUTHENTICATOR = "BasicAuthenticator";
+    public static final String LAST_LOGIN_FAILED_USER = "lastLoginFailedUser";
+    public static final String USER_ID = "userId";
+    public static final String AUTHENTICATION_STATUS = "authenticationStatus";
+    public static final String AUTHENTICATION_STEP = "authenticationStep";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String AUTHENTICATION_APPROACH = "authenticationApproach";
+    public static final String AUTHENTICATION_INPUT_STREAM = "AuthenticationInputStream";
+    public static final String REDIRECT = "redirect";
+    public static final String STREAM_VERSION = "1.0.0";
+}

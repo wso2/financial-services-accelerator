@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "jsx": "react",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "allowJs": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./lib",
+    "declarationDir": "./lib",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,  
+    "strict": true
+  },
+  "exclude": ["node_modules/**/*"],
+  "include": ["src/**/*"]
+}

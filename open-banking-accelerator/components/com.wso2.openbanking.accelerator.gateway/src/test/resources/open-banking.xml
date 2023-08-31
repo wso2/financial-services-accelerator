@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<Server xmlns="http://wso2.org/projects/carbon/open-banking.xml">
+
+    <JDBCPersistenceManager>
+        <DataSource>
+            <Name>sampleDataSourceName</Name>
+        </DataSource>
+    </JDBCPersistenceManager>
+
+    <Identity>
+        <Extensions>
+            <RequestObjectValidator>
+                sampleRequestObjectValidator
+            </RequestObjectValidator>
+        </Extensions>
+    </Identity>
+
+    <Sample>
+        <OBHandler>DummyValue</OBHandler>
+        <OBHandler2>${some.property}</OBHandler2>
+        <OBHandler3 prop="somevalue"></OBHandler3>
+        <OBHandler4>${carbon.home}</OBHandler4>
+    </Sample>
+    <Sample2>
+        <SomethingArray>
+            <Something>Nothing</Something>
+            <Something>Everything</Something>
+            <Something>Anything</Something>
+        </SomethingArray>
+    </Sample2>
+    <Gateway>
+        <OpenBankingGatewayExecutors>
+            <CustomType1>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler" priority="2"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler2" priority="1"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler3" priority="3"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.SampleOBExecutor" priority="4"/>
+            </CustomType1>
+            <CustomType2>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler" priority="1"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler2" priority="2"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler3" priority="3"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.SampleOBExecutor" priority="4"/>
+            </CustomType2>
+            <CustomType3>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler" priority="2"/>
+                <Executor class="com.wso2.openbanking.accelerator.common.test.CustomHandler2" priority="1"/>
+            </CustomType3>
+        </OpenBankingGatewayExecutors>
+
+        <TPPManagement>
+            <TPPValidation>
+                <Enabled>false</Enabled>
+                <ServiceImplClass></ServiceImplClass>
+            </TPPValidation>
+
+            <PSD2RoleValidation>
+                <Enabled>true</Enabled>
+            </PSD2RoleValidation>
+
+            <AllowedScopes>
+                <Scope name="scope 1" roleopen-bankings="PISP"/>
+                <Scope name="scope 2" roles="AISP, PISP"/>
+            </AllowedScopes>
+        </TPPManagement>
+
+        <CertificateManagement>
+            <ClientCertificateCacheExpiry>3600</ClientCertificateCacheExpiry>
+            <TPPValidationCacheExpiry>3600</TPPValidationCacheExpiry>
+            <TrustStoreDynamicLoadingInterval>86400</TrustStoreDynamicLoadingInterval>
+
+            <CertificateRevocationValidationEnabled>true</CertificateRevocationValidationEnabled>
+            <CertificateRevocationValidationRetryCount>3</CertificateRevocationValidationRetryCount>
+
+            <CertificateRevocationProxy>
+                <Enabled>true</Enabled>
+                <ProxyHost>PROXY_HOSTNAME</ProxyHost>
+                <ProxyPort>8080</ProxyPort>
+            </CertificateRevocationProxy>
+
+            <RevocationValidators>
+                <RevocationValidator type="OCSP" priority="1"/>
+                <RevocationValidator type="CRL" priority="2"/>
+            </RevocationValidators>
+
+            <RevocationValidationExcludedIssuers>
+                <IssuerDN>CN=Test Pre-Production Issuing CA, O=Test, C=GB</IssuerDN>
+            </RevocationValidationExcludedIssuers>
+
+            <TransportCertIssuerValidationEnabled>true</TransportCertIssuerValidationEnabled>
+        </CertificateManagement>
+
+    </Gateway>
+    <Consent>
+        <AuthorizeSteps>
+            <Retrieve>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep1" priority="1"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep2" priority="2"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep3" priority="3"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep4" priority="4"/>
+            </Retrieve>
+            <Persist>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep1" priority="2"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep2" priority="1"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep3" priority="3"/>
+                <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep4" priority="4"/>
+            </Persist>
+        </AuthorizeSteps>
+    </Consent>
+    <DataPublishing>
+        <Thrift>
+            <Streams>
+                <DataStream1>
+                    <Attribute name="attribute1" priority="1"/>
+                    <Attribute name="attribute2" priority="2"/>
+                </DataStream1>
+                <DataStream2>
+                    <Attribute name="attribute11" priority="1"/>
+                    <Attribute name="attribute12" priority="2"/>
+                    <Attribute name="attribute13" priority="3"/>
+                </DataStream2>
+            </Streams>
+        </Thrift>
+    </DataPublishing>
+    <DCR>
+        <RegistrationRequestParams>
+            <ParameterType>
+                <Required>true</Required>
+                <AllowedValues>
+                    <Value>Sample</Value>
+                </AllowedValues>
+            </ParameterType>
+        </RegistrationRequestParams>
+    </DCR>
+</Server>

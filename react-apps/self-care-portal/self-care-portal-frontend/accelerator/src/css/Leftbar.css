@@ -1,0 +1,103 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.leftbar{
+    background: #081247;
+    color: #fff;
+    height: 100%;
+    transition: all 0.5s;
+}
+
+@media (max-width: 500px) {
+    .leftbar {
+        width: 150px;
+    }
+    .list-options {
+        font-size: 12px;
+        padding: 10px 1px;
+    }
+    .Lefticon {
+        font-size: 12px;
+    }
+    .bars {
+        font-size: 20px;
+    }
+}
+
+.leftbar-options {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: fit-content;
+}
+
+.list-options {
+    display: flex;
+    color: white;
+    gap: 10px;
+    padding: 10px 15px;
+    text-decoration: none;
+    transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.list-options:hover {
+    transition: 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    background-color: rgb(45, 51, 89) ;
+    color: white ;
+    font-weight: bold;
+    border-radius: 200px;
+    transform: scale(1.05);
+}
+
+.list-options.active {
+    background-color: rgb(45, 51, 89)  !important;
+    color: white !important ;
+    border-radius: 200px;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 60%;
+    width: max-content;
+}
+
+.Lefticon {
+    width: 30px;
+    height: 25px;
+    border-radius: 12px;
+}
+
+.top-section {
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+}
+
+.bars {
+    display: flex;
+    font-size: 25px;
+    margin-left: 0px;
+    cursor: pointer;
+}
