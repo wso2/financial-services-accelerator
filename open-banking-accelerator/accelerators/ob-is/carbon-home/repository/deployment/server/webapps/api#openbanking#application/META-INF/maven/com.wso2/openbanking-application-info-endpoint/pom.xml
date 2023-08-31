@@ -95,6 +95,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi.generator.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
