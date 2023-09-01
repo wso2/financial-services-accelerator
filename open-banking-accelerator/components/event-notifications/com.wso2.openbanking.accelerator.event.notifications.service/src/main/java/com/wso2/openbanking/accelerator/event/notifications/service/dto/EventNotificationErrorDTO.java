@@ -29,7 +29,7 @@ public class EventNotificationErrorDTO {
     private String error;
 
     @JsonProperty("error_description")
-    public String getError_description() {
+    public String getErrorDescription() {
 
         return errorDescription;
     }

@@ -32,12 +32,6 @@ public class EventNotificationConstants {
     public static final String OPEN = "OPEN";
 
     //Response Status
-    public static final int NOT_FOUND_CODE = 404;
-    public static final int OK_CODE = 200;
-    public static final int CREATED_CODE = 201;
-    public static final int BAD_REQUEST_CODE = 400;
-    public static final int NO_CONTENT_CODE = 204;
-    public static final int INTERNAL_SERVER_ERROR_CODE = 500;
     public static final String NOT_FOUND = "NOTFOUND";
     public static final String OK = "OK";
     public static final String CREATED = "CREATED";
@@ -119,4 +113,6 @@ public class EventNotificationConstants {
             "subscription in the database. ";
     public static final String EVENT_SUBSCRIPTION_NOT_FOUND = "Event subscription not found.";
     public static final String EVENT_SUBSCRIPTIONS_NOT_FOUND = "Event subscriptions not found for the given client id.";
+    public static final String ERROR_HANDLING_EVENT_SUBSCRIPTION = "Error occurred while handling the vent subscription " +
+            "request";
 }

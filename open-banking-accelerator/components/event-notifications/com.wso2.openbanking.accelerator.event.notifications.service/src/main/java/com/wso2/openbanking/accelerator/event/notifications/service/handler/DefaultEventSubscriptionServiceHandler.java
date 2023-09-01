@@ -28,6 +28,7 @@ import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNo
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +48,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to create event subscriptions.
      *
-     * @param eventSubscriptionRequestDto Event Subscription DTO
-     * @return EventSubscriptionResponse Event Subscription Response
+     * @param eventSubscriptionRequestDto    Event Subscription DTO
+     * @return EventSubscriptionResponse     Event Subscription Response
      */
     public EventSubscriptionResponse createEventSubscription(EventSubscriptionDTO eventSubscriptionRequestDto) {
         EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
@@ -64,16 +65,15 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             EventSubscription createEventSubscriptionResponse = eventSubscriptionService.
                     createEventSubscription(eventSubscription);
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.CREATED_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.CREATED_201);
             eventSubscriptionResponse.
                     setResponseBody(mapSubscriptionModelToResponseJson(createEventSubscriptionResponse));
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while creating event subscription", e);
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST,
-                    "Error occurred while creating event subscription"));
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
         }
 
@@ -82,10 +82,10 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to retrieve a single event subscription.
      *
-     * @param clientId       Client ID of the subscription created
-     * @param subscriptionId Subscription ID of the subscription created
+     * @param clientId                      Client ID of the subscription created
+     * @param subscriptionId                Subscription ID of the subscription created
      * @return EventSubscriptionResponse    Event Subscription Response containing subscription
-     * details for the given subscription ID
+     *                                      details for the given subscription ID
      */
     public EventSubscriptionResponse getEventSubscription(String clientId, String subscriptionId) {
         EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
@@ -99,21 +99,19 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.OK_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
             eventSubscriptionResponse.setResponseBody(mapSubscriptionModelToResponseJson(eventSubscription));
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while retrieving event subscription", e);
             if (e.getMessage().equals(EventNotificationConstants.EVENT_SUBSCRIPTION_NOT_FOUND)) {
-                eventSubscriptionResponse.setStatus(EventNotificationConstants.BAD_REQUEST_CODE);
+                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                        EventNotificationConstants.INVALID_REQUEST,
-                        "Event subscription not found"));
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             } else {
-                eventSubscriptionResponse.setStatus(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE);
+                eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                        EventNotificationConstants.INVALID_REQUEST,
-                        "Error occurred while retrieving event subscription"));
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             }
             return eventSubscriptionResponse;
         }
@@ -122,8 +120,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to retrieve all event subscriptions of a client.
      *
-     * @param clientId Client ID
-     * @return EventSubscriptionResponse Event Subscription Response containing all the subscriptions
+     * @param clientId                       Client ID
+     * @return EventSubscriptionResponse     Event Subscription Response containing all the subscriptions
      */
     public EventSubscriptionResponse getAllEventSubscriptions(String clientId) {
         EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
@@ -141,15 +139,14 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             for (EventSubscription eventSubscription : eventSubscriptionList) {
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.OK_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
             eventSubscriptionResponse.setResponseBody(eventSubscriptionResponseList);
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while retrieving event subscriptions", e);
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST,
-                    "Error occurred while retrieving event subscription."));
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
         }
     }
@@ -157,9 +154,10 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to retrieve all event subscriptions by event type.
      *
-     * @param clientId  Client ID
-     * @param eventType Event Type to retrieve subscriptions
-     * @return EventSubscriptionResponse Event Subscription Response containing subscriptions per specified event type
+     * @param clientId                      Client ID
+     * @param eventType                     Event Type to retrieve subscriptions
+     * @return EventSubscriptionResponse    Event Subscription Response containing subscriptions per specified
+     *                                      event type
      */
     public EventSubscriptionResponse getEventSubscriptionsByEventType(String clientId, String eventType) {
         EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
@@ -177,15 +175,14 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             for (EventSubscription eventSubscription : eventSubscriptionList) {
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.OK_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
             eventSubscriptionResponse.setResponseBody(eventSubscriptionResponseList);
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while retrieving event subscriptions", e);
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST,
-                    "Error occurred while retrieving event subscription."));
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
         }
     }
@@ -193,8 +190,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to update an event subscription.
      *
-     * @param eventSubscriptionUpdateRequestDto   Event Subscription Update Request DTO
-     * @return EventSubscriptionResponse  Event Subscription Response containing the updated subscription
+     * @param eventSubscriptionUpdateRequestDto     Event Subscription Update Request DTO
+     * @return EventSubscriptionResponse            Event Subscription Response containing the updated subscription
      */
     public EventSubscriptionResponse updateEventSubscription(EventSubscriptionDTO eventSubscriptionUpdateRequestDto) {
         EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
@@ -211,13 +208,13 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             Boolean isUpdated = eventSubscriptionService.updateEventSubscription(eventSubscription);
             if (!isUpdated) {
-                eventSubscriptionResponse.setStatus(EventNotificationConstants.BAD_REQUEST_CODE);
+                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                         EventNotificationConstants.INVALID_REQUEST,
                         "Event subscription not found."));
                 return eventSubscriptionResponse;
             }
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.OK_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
             EventSubscription eventSubscriptionUpdateResponse = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(eventSubscriptionUpdateRequestDto.getSubscriptionId());
             eventSubscriptionResponse.
@@ -225,10 +222,9 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while updating event subscription", e);
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST,
-                    "Error occurred while updating event subscription."));
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
         }
     }
@@ -236,9 +232,9 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to delete an event subscription.
      *
-     * @param clientId    Client ID
-     * @param subscriptionId  Subscription ID to be deleted
-     * @return EventSubscriptionResponse Event Subscription Response containing the deleted subscription
+     * @param clientId                      Client ID
+     * @param subscriptionId                Subscription ID to be deleted
+     * @return EventSubscriptionResponse    Event Subscription Response containing the deleted subscription
      */
     public EventSubscriptionResponse deleteEventSubscription(String clientId, String subscriptionId) {
         EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
@@ -251,20 +247,19 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             Boolean isDeleted = eventSubscriptionService.deleteEventSubscription(subscriptionId);
             if (!isDeleted) {
-                eventSubscriptionResponse.setStatus(EventNotificationConstants.BAD_REQUEST_CODE);
+                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                         EventNotificationConstants.INVALID_REQUEST,
                         "Event subscription not found"));
                 return eventSubscriptionResponse;
             }
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.NO_CONTENT_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.NO_CONTENT_204);
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while deleting event subscription", e);
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST,
-                    "Error occurred while deleting event subscription"));
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
         }
     }
@@ -272,8 +267,9 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to validate the client ID.
      *
-     * @param clientId  Client ID
-     * @return EventSubscriptionResponse if the client ID is invalid, if the client ID is valid, null will be returned.
+     * @param clientId                      Client ID
+     * @return EventSubscriptionResponse    Return EventSubscriptionResponse if the client ID is
+     *                                      invalid, if the client ID is valid, null will be returned.
      */
     private EventSubscriptionResponse validateClientId(String clientId) {
         try {
@@ -281,10 +277,9 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         } catch (OBEventNotificationException e) {
             log.error("Invalid client ID", e);
             EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-            eventSubscriptionResponse.setStatus(EventNotificationConstants.BAD_REQUEST_CODE);
+            eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST,
-                    "A client was not found for the client id in the database."));
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
         }
         return null;
@@ -294,8 +289,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
      * This method will map the event subscription DTO to event subscription model
      * to be passed to the dao layer.
      *
-     * @param eventSubscriptionDTO Event Subscription DTO
-     * @return EventSubscription Event Subscription Model mapped
+     * @param eventSubscriptionDTO      Event Subscription DTO
+     * @return EventSubscription        Event Subscription Model mapped
      */
     private EventSubscription mapEventSubscriptionDtoToModel(EventSubscriptionDTO eventSubscriptionDTO) {
         EventSubscription eventSubscription = new EventSubscription();
@@ -326,7 +321,7 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     /**
      * This method is used to create the response JSON object from the event subscription model.
      *
-     * @param eventSubscription Event Subscription Model
+     * @param eventSubscription     Event Subscription Model
      * @return JSONObject containing mapped subscription
      */
     public JSONObject mapSubscriptionModelToResponseJson(EventSubscription eventSubscription) {

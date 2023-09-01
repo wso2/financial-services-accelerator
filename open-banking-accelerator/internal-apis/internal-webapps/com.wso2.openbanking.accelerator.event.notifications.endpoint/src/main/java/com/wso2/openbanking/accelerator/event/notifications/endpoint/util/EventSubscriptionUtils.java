@@ -21,12 +21,15 @@ package com.wso2.openbanking.accelerator.event.notifications.endpoint.util;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
+import com.wso2.openbanking.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import com.wso2.openbanking.accelerator.event.notifications.service.handler.EventSubscriptionServiceHandler;
 import com.wso2.openbanking.accelerator.event.notifications.service.response.EventSubscriptionResponse;
+import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.io.IOException;
 
@@ -74,9 +77,16 @@ public class EventSubscriptionUtils {
     public static Response mapEventSubscriptionServiceResponse(EventSubscriptionResponse eventSubscriptionResponse) {
         int status = eventSubscriptionResponse.getStatus();
         if (eventSubscriptionResponse.getErrorResponse() == null) {
-            return Response.status(status)
-                    .entity(eventSubscriptionResponse.getResponseBody())
-                    .build();
+            if (eventSubscriptionResponse.getResponseBody() != null) {
+                return Response.status(status)
+                        .entity(eventSubscriptionResponse.getResponseBody())
+                        .build();
+            } else {
+                return Response.status(HttpStatus.INTERNAL_SERVER_ERROR_500)
+                        .entity(EventNotificationServiceUtil.getErrorDTO(EventNotificationConstants.INVALID_REQUEST,
+                                EventNotificationConstants.ERROR_HANDLING_EVENT_SUBSCRIPTION))
+                        .build();
+            }
         } else  {
             return Response.status(status)
                     .entity(eventSubscriptionResponse.getErrorResponse())

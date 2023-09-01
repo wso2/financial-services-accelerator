@@ -157,6 +157,9 @@ public class EventNotificationServiceUtil {
 
     /**
      * Method to map Event subscription Service error to API response.
+     *
+     * @param error             Error code
+     * @param errorDescription  Error description
      * @return EventNotificationErrorDTO
      */
     public static EventNotificationErrorDTO getErrorDTO(String error, String errorDescription) {
