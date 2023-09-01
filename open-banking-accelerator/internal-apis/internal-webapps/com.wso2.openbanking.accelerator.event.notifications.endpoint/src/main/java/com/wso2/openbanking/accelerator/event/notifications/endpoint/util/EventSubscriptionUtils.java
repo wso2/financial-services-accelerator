@@ -21,8 +21,6 @@ package com.wso2.openbanking.accelerator.event.notifications.endpoint.util;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
-import com.wso2.openbanking.accelerator.event.notifications.endpoint.constants.EventNotificationEndPointConstants;
-import com.wso2.openbanking.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import com.wso2.openbanking.accelerator.event.notifications.service.handler.EventSubscriptionServiceHandler;
 import com.wso2.openbanking.accelerator.event.notifications.service.response.EventSubscriptionResponse;
 import net.minidev.json.JSONObject;
@@ -74,34 +72,16 @@ public class EventSubscriptionUtils {
      * @return Response
      */
     public static Response mapEventSubscriptionServiceResponse(EventSubscriptionResponse eventSubscriptionResponse) {
-        String status = eventSubscriptionResponse.getStatus();
+        int status = eventSubscriptionResponse.getStatus();
         if (eventSubscriptionResponse.getErrorResponse() == null) {
-            switch (status) {
-                case EventNotificationConstants.CREATED:
-                    return Response.status(Response.Status.CREATED)
-                            .entity(eventSubscriptionResponse.getResponseBody())
-                            .build();
-                case EventNotificationConstants.OK:
-                    return Response.status(Response.Status.OK)
-                            .entity(eventSubscriptionResponse.getResponseBody())
-                            .build();
-                case EventNotificationConstants.NO_CONTENT:
-                    return Response.status(Response.Status.NO_CONTENT)
-                            .entity(eventSubscriptionResponse.getResponseBody())
-                            .build();
-            }
-        } else if (status.equals(EventNotificationConstants.BAD_REQUEST)) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(EventNotificationUtils.getErrorDTO(
-                            EventNotificationEndPointConstants.INVALID_REQUEST,
-                            eventSubscriptionResponse.getErrorResponse()))
+            return Response.status(status)
+                    .entity(eventSubscriptionResponse.getResponseBody())
+                    .build();
+        } else  {
+            return Response.status(status)
+                    .entity(eventSubscriptionResponse.getErrorResponse())
                     .build();
         }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(EventNotificationUtils.getErrorDTO(
-                        "Internal Server Error",
-                        eventSubscriptionResponse.getErrorResponse()))
-                .build();
 
     }
 }

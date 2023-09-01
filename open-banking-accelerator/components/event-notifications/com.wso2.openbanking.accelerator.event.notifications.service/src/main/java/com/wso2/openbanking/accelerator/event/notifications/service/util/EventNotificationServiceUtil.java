@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.accelerator.event.notifications.service.constants.EventNotificationConstants;
+import com.wso2.openbanking.accelerator.event.notifications.service.dto.EventNotificationErrorDTO;
 import com.wso2.openbanking.accelerator.event.notifications.service.exceptions.OBEventNotificationException;
 import com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler;
 import com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationRequestGenerator;
@@ -77,6 +78,8 @@ public class EventNotificationServiceUtil {
 
     /**
      * Method to modify event notification payload with custom eventValues.
+     *
+     * @param jsonNode Json Node to convert
      * @return String eventNotificationPayload
      */
     public static String getCustomNotificationPayload(JsonNode jsonNode) {
@@ -87,8 +90,8 @@ public class EventNotificationServiceUtil {
 
     /**
      * Method to get event JSON from eventInformation payload string.
-     * @param eventInformation
-     * @return
+     * @param eventInformation String event Information
+     * @return JSONObject converted event json
      * @throws ParseException
      */
     public static JSONObject getEventJSONFromString(String eventInformation) throws ParseException {
@@ -99,7 +102,7 @@ public class EventNotificationServiceUtil {
 
     /**
      * Validate if the client ID is existing.
-     * @param clientId
+     * @param clientId  client ID of the TPP
      * @throws OBEventNotificationException
      */
     @Generated(message = "Excluded since this needs OAuth2Util service provider")
@@ -150,5 +153,16 @@ public class EventNotificationServiceUtil {
      */
     public static DefaultEventCreationServiceHandler getDefaultEventCreationServiceHandler() {
         return new DefaultEventCreationServiceHandler();
+    }
+
+    /**
+     * Method to map Event subscription Service error to API response.
+     * @return EventNotificationErrorDTO
+     */
+    public static EventNotificationErrorDTO getErrorDTO(String error, String errorDescription) {
+        EventNotificationErrorDTO eventNotificationErrorDTO = new EventNotificationErrorDTO();
+        eventNotificationErrorDTO.setError(error);
+        eventNotificationErrorDTO.setErrorDescription(errorDescription);
+        return eventNotificationErrorDTO;
     }
 }

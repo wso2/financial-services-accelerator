@@ -32,6 +32,12 @@ public class EventNotificationConstants {
     public static final String OPEN = "OPEN";
 
     //Response Status
+    public static final int NOT_FOUND_CODE = 404;
+    public static final int OK_CODE = 200;
+    public static final int CREATED_CODE = 201;
+    public static final int BAD_REQUEST_CODE = 400;
+    public static final int NO_CONTENT_CODE = 204;
+    public static final int INTERNAL_SERVER_ERROR_CODE = 500;
     public static final String NOT_FOUND = "NOTFOUND";
     public static final String OK = "OK";
     public static final String CREATED = "CREATED";
@@ -53,6 +59,7 @@ public class EventNotificationConstants {
     public static final String REQUEST = "REQUEST";
 
     //Error Constants
+    public static final String INVALID_REQUEST = "invalid_request";
     public static final String EVENT_NOTIFICATION_CREATION_ERROR = "Error occurred while saving event " +
             "notifications in the  database";
     public static final String MISSING_REQ_PAYLOAD = "No request payload found";

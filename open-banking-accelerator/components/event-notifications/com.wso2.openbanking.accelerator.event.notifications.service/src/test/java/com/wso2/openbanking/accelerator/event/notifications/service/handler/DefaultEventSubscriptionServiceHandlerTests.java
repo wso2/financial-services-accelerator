@@ -73,7 +73,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
         EventSubscriptionResponse eventSubscriptionCreationResponse = defaultEventSubscriptionServiceHandler
                 .createEventSubscription(EventNotificationTestUtils.getSampleEventSubscriptionDTO());
 
-        Assert.assertEquals(eventSubscriptionCreationResponse.getStatus(), EventNotificationConstants.CREATED);
+        Assert.assertEquals(eventSubscriptionCreationResponse.getStatus(), EventNotificationConstants.CREATED_CODE);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
                 .createEventSubscription(EventNotificationTestUtils.getSampleEventSubscriptionDTO());
 
         Assert.assertEquals(eventSubscriptionCreationResponse.getStatus(),
-                EventNotificationConstants.INTERNAL_SERVER_ERROR);
+                EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
                 .getEventSubscription(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
 
-        Assert.assertEquals(EventNotificationConstants.OK, eventSubscriptionRetrieveResponse.getStatus());
+        Assert.assertEquals(EventNotificationConstants.OK_CODE, eventSubscriptionRetrieveResponse.getStatus());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
                 .getEventSubscription(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
 
-        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE,
                 eventSubscriptionRetrieveResponse.getStatus());
     }
 
@@ -147,7 +147,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
         EventSubscriptionResponse eventSubscriptionRetrieveResponse = defaultEventSubscriptionServiceHandler
                 .getAllEventSubscriptions(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
 
-        Assert.assertEquals(EventNotificationConstants.OK, eventSubscriptionRetrieveResponse.getStatus());
+        Assert.assertEquals(EventNotificationConstants.OK_CODE, eventSubscriptionRetrieveResponse.getStatus());
     }
 
     @Test
@@ -165,7 +165,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
         EventSubscriptionResponse eventSubscriptionRetrieveResponse = defaultEventSubscriptionServiceHandler
                 .getAllEventSubscriptions(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
 
-        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE,
                 eventSubscriptionRetrieveResponse.getStatus());
     }
 
@@ -184,7 +184,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
                 .getEventSubscriptionsByEventType(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPE_1);
 
-        Assert.assertEquals(EventNotificationConstants.OK, eventSubscriptionRetrieveResponse.getStatus());
+        Assert.assertEquals(EventNotificationConstants.OK_CODE, eventSubscriptionRetrieveResponse.getStatus());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
                 .getEventSubscriptionsByEventType(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPE_1);
 
-        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE,
                 eventSubscriptionRetrieveResponse.getStatus());
     }
 
@@ -223,7 +223,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
         EventSubscriptionResponse eventSubscriptionUpdateResponse = defaultEventSubscriptionServiceHandler
                 .updateEventSubscription(EventNotificationTestUtils.getSampleEventSubscriptionUpdateDTO());
 
-        Assert.assertEquals(EventNotificationConstants.OK, eventSubscriptionUpdateResponse.getStatus());
+        Assert.assertEquals(EventNotificationConstants.OK_CODE, eventSubscriptionUpdateResponse.getStatus());
     }
 
     @Test
@@ -243,7 +243,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
         EventSubscriptionResponse eventSubscriptionUpdateResponse = defaultEventSubscriptionServiceHandler
                 .updateEventSubscription(EventNotificationTestUtils.getSampleEventSubscriptionUpdateDTO());
 
-        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE,
                 eventSubscriptionUpdateResponse.getStatus());
     }
 
@@ -262,7 +262,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
                 .deleteEventSubscription(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
 
-        Assert.assertEquals(EventNotificationConstants.NO_CONTENT, eventSubscriptionDeletionResponse.getStatus());
+        Assert.assertEquals(EventNotificationConstants.NO_CONTENT_CODE, eventSubscriptionDeletionResponse.getStatus());
     }
 
     @Test
@@ -281,7 +281,7 @@ public class DefaultEventSubscriptionServiceHandlerTests extends PowerMockTestCa
                 .deleteEventSubscription(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
 
-        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(EventNotificationConstants.INTERNAL_SERVER_ERROR_CODE,
                 eventSubscriptionDeletionResponse.getStatus());
     }
 
