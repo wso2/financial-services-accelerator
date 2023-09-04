@@ -21,14 +21,15 @@ package com.wso2.openbanking.accelerator.event.notifications.endpoint.util;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
-import com.wso2.openbanking.accelerator.event.notifications.endpoint.constants.EventNotificationEndPointConstants;
 import com.wso2.openbanking.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import com.wso2.openbanking.accelerator.event.notifications.service.handler.EventSubscriptionServiceHandler;
 import com.wso2.openbanking.accelerator.event.notifications.service.response.EventSubscriptionResponse;
+import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.io.IOException;
 
@@ -74,34 +75,23 @@ public class EventSubscriptionUtils {
      * @return Response
      */
     public static Response mapEventSubscriptionServiceResponse(EventSubscriptionResponse eventSubscriptionResponse) {
-        String status = eventSubscriptionResponse.getStatus();
+        int status = eventSubscriptionResponse.getStatus();
         if (eventSubscriptionResponse.getErrorResponse() == null) {
-            switch (status) {
-                case EventNotificationConstants.CREATED:
-                    return Response.status(Response.Status.CREATED)
-                            .entity(eventSubscriptionResponse.getResponseBody())
-                            .build();
-                case EventNotificationConstants.OK:
-                    return Response.status(Response.Status.OK)
-                            .entity(eventSubscriptionResponse.getResponseBody())
-                            .build();
-                case EventNotificationConstants.NO_CONTENT:
-                    return Response.status(Response.Status.NO_CONTENT)
-                            .entity(eventSubscriptionResponse.getResponseBody())
-                            .build();
+            if (eventSubscriptionResponse.getResponseBody() != null) {
+                return Response.status(status)
+                        .entity(eventSubscriptionResponse.getResponseBody())
+                        .build();
+            } else {
+                return Response.status(HttpStatus.INTERNAL_SERVER_ERROR_500)
+                        .entity(EventNotificationServiceUtil.getErrorDTO(EventNotificationConstants.INVALID_REQUEST,
+                                EventNotificationConstants.ERROR_HANDLING_EVENT_SUBSCRIPTION))
+                        .build();
             }
-        } else if (status.equals(EventNotificationConstants.BAD_REQUEST)) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(EventNotificationUtils.getErrorDTO(
-                            EventNotificationEndPointConstants.INVALID_REQUEST,
-                            eventSubscriptionResponse.getErrorResponse()))
+        } else  {
+            return Response.status(status)
+                    .entity(eventSubscriptionResponse.getErrorResponse())
                     .build();
         }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(EventNotificationUtils.getErrorDTO(
-                        "Internal Server Error",
-                        eventSubscriptionResponse.getErrorResponse()))
-                .build();
 
     }
 }

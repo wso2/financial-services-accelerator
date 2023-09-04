@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package com.wso2.openbanking.accelerator.event.notifications.endpoint.dto;
+package com.wso2.openbanking.accelerator.event.notifications.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,7 +29,7 @@ public class EventNotificationErrorDTO {
     private String error;
 
     @JsonProperty("error_description")
-    public String getError_description() {
+    public String getErrorDescription() {
 
         return errorDescription;
     }

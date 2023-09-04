@@ -23,15 +23,15 @@ package com.wso2.openbanking.accelerator.event.notifications.service.response;
  */
 public class EventSubscriptionResponse {
 
-    private String status;
+    private int status;
     private Object responseBody;
-    private String errorResponse;
+    private Object errorResponse;
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
@@ -43,11 +43,11 @@ public class EventSubscriptionResponse {
         this.responseBody = responseBody;
     }
 
-    public String getErrorResponse() {
+    public Object getErrorResponse() {
         return errorResponse;
     }
 
-    public void setErrorResponse(String errorResponse) {
+    public void setErrorResponse(Object errorResponse) {
         this.errorResponse = errorResponse;
     }
 

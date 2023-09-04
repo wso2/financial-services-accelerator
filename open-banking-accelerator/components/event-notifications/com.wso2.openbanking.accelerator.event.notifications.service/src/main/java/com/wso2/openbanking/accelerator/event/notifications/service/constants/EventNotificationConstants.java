@@ -53,6 +53,7 @@ public class EventNotificationConstants {
     public static final String REQUEST = "REQUEST";
 
     //Error Constants
+    public static final String INVALID_REQUEST = "invalid_request";
     public static final String EVENT_NOTIFICATION_CREATION_ERROR = "Error occurred while saving event " +
             "notifications in the  database";
     public static final String MISSING_REQ_PAYLOAD = "No request payload found";
@@ -112,4 +113,6 @@ public class EventNotificationConstants {
             "subscription in the database. ";
     public static final String EVENT_SUBSCRIPTION_NOT_FOUND = "Event subscription not found.";
     public static final String EVENT_SUBSCRIPTIONS_NOT_FOUND = "Event subscriptions not found for the given client id.";
+    public static final String ERROR_HANDLING_EVENT_SUBSCRIPTION = "Error occurred while handling the event " +
+            "subscription  request";
 }
