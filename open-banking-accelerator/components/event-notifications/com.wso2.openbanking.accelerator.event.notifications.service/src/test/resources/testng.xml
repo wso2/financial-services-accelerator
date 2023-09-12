@@ -31,7 +31,6 @@
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.service.EventPollingServiceTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.service.EventCreationServiceTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.service.EventSubscriptionServiceTests"></class>
-            <class name="com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtilTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.EventNotificationProducerServiceTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationLoaderServiceTest"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationSenderServiceTests"></class>
