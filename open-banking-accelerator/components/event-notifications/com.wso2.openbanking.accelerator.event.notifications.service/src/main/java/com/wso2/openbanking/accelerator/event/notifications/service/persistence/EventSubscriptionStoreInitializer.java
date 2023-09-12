@@ -19,6 +19,7 @@
 package com.wso2.openbanking.accelerator.event.notifications.service.persistence;
 
 import com.wso2.openbanking.accelerator.common.persistence.JDBCPersistenceManager;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.event.notifications.service.dao.EventSubscriptionDAO;
 import com.wso2.openbanking.accelerator.event.notifications.service.dao.EventSubscriptionDAOImpl;
 import com.wso2.openbanking.accelerator.event.notifications.service.dao.EventSubscriptionSqlStatements;
@@ -32,6 +33,7 @@ import java.sql.SQLException;
 /**
  * Initializer Class for EventSubscription Service DB.
  */
+@Generated(message = "Datastore initializer classes")
 public class EventSubscriptionStoreInitializer {
 
     private static Log log = LogFactory.getLog(EventSubscriptionStoreInitializer.class);
