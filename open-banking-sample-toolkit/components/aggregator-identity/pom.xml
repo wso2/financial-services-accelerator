@@ -21,8 +21,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>open-banking-sample-toolkit</artifactId>
-        <groupId>com.wso2</groupId>
-        <version>3.0.0</version>
+        <groupId>com.wso2.openbanking.accelerator</groupId>
+        <version>3.1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>com.wso2.openbanking.sample.aggregator.identity</artifactId>
@@ -30,7 +30,7 @@
     <name>WSO2 Open Banking - Sample Aggregator Identity</name>
     <dependencies>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
         </dependency>
         <dependency>
@@ -46,11 +46,11 @@
             <artifactId>json-smart</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
         </dependency>
     </dependencies>

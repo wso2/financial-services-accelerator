@@ -23,8 +23,8 @@
 
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
-        <groupId>com.wso2</groupId>
-        <version>3.0.0</version>
+        <groupId>com.wso2.openbanking.accelerator</groupId>
+        <version>3.1.0</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -39,11 +39,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
         </dependency>
         <dependency>
@@ -61,11 +61,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -102,7 +102,7 @@
             <artifactId>org.wso2.carbon.identity.application.authenticator.push</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.event.notifications.service</artifactId>
         </dependency>
     </dependencies>

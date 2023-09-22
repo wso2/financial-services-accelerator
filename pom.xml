@@ -18,10 +18,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.wso2</groupId>
+    <groupId>com.wso2.openbanking.accelerator</groupId>
     <artifactId>open-banking</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
 
     <profiles>
         <profile>
@@ -253,67 +253,67 @@
         <dependencies>
             <!--Open banking components-->
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.gateway</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.runtime.identity.authn.filter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.data.publisher.common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.keymanager</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.throttler.dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.throttler.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.event.notifications.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.event.notifications.endpoint</artifactId>
                 <version>${project.version}</version>
             </dependency>
