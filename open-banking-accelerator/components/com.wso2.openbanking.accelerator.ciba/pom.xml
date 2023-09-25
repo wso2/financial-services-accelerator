@@ -24,8 +24,8 @@
 
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
-        <groupId>com.wso2</groupId>
-        <version>3.0.0</version>
+        <groupId>com.wso2.openbanking.accelerator</groupId>
+        <version>3.1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>com.wso2.openbanking.accelerator.ciba</artifactId>
@@ -33,12 +33,12 @@
     <name>WSO2 Open Banking - Common component</name>
     <dependencies>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -61,7 +61,7 @@
             <artifactId>powermock-api-mockito</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
         </dependency>
         <dependency>
