@@ -27,7 +27,7 @@ public class EventPollingResponse {
 
     private String status;
     private JSONObject responseBody;
-    private String errorResponse;
+    private Object errorResponse;
 
     public String getStatus() {
         return status;
@@ -45,11 +45,11 @@ public class EventPollingResponse {
         this.responseBody = responseBody;
     }
 
-    public String getErrorResponse() {
+    public Object getErrorResponse() {
         return errorResponse;
     }
 
-    public void setErrorResponse(String errorResponse) {
+    public void setErrorResponse(Object errorResponse) {
         this.errorResponse = errorResponse;
     }
 }
