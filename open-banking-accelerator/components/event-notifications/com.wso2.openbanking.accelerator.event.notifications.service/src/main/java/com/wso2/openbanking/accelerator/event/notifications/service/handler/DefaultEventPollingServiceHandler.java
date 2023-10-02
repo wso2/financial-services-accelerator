@@ -65,9 +65,9 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         } catch (OBEventNotificationException e) {
             log.error("Invalid client ID", e);
             eventPollingResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
-            eventPollingResponse.setErrorResponse(String.format("A client was not found" +
-                            " for the client id : '%s' in the database.. ",
-                    eventPollingDTO.getClientId()));
+            eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, String.format("A client was not found" +
+                            " for the client id : '%s' in the database.. ", eventPollingDTO.getClientId())));
             return eventPollingResponse;
         }
 
@@ -80,7 +80,8 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         } catch (OBEventNotificationException e) {
             log.error("OB Event Notification error" , e);
             eventPollingResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
-            eventPollingResponse.setErrorResponse(e.getMessage());
+            eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventPollingResponse;
         }
 
