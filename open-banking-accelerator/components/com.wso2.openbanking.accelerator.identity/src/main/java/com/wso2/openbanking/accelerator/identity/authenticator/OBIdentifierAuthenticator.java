@@ -522,6 +522,7 @@ public class OBIdentifierAuthenticator extends AbstractApplicationAuthenticator
      * @return redirect_uri
      * @throws OpenBankingException - OpenBankingException
      */
+    @Generated(message = "Excluding from code coverage since it requires a valid cache entry")
     public String getRedirectUri(String requestUri) throws OpenBankingException {
 
         JSONObject requestObjectVal = getParRequestObject(requestUri);
