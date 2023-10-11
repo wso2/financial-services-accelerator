@@ -249,7 +249,11 @@ public class RegistrationUtils {
                 alteredAttributes.put(entry.getKey().toString(), gson.toJson(entry.getValue()));
             } else {
                 //remove unnecessary inverted commas.
-                alteredAttributes.put(entry.getKey().toString(), entry.getValue().toString());
+                if (entry.getValue() != null) {
+                    // This is to handle optional nullable params.
+                    // Ex: "software_on_behalf_of_org":null
+                    alteredAttributes.put(entry.getKey().toString(), entry.getValue().toString());
+                }
             }
         }
     }
