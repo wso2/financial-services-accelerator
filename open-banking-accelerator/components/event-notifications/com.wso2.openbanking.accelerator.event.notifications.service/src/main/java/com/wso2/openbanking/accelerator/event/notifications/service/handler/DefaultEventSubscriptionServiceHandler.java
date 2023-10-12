@@ -28,7 +28,7 @@ import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNo
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,13 +65,13 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             EventSubscription createEventSubscriptionResponse = eventSubscriptionService.
                     createEventSubscription(eventSubscription);
-            eventSubscriptionResponse.setStatus(HttpStatus.CREATED_201);
+            eventSubscriptionResponse.setStatus(HttpStatus.CREATED.value());
             eventSubscriptionResponse.
                     setResponseBody(mapSubscriptionModelToResponseJson(createEventSubscriptionResponse));
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while creating event subscription", e);
-            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                     EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
@@ -99,17 +99,17 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
-            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK.value());
             eventSubscriptionResponse.setResponseBody(mapSubscriptionModelToResponseJson(eventSubscription));
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while retrieving event subscription", e);
             if (e.getMessage().equals(EventNotificationConstants.EVENT_SUBSCRIPTION_NOT_FOUND)) {
-                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
+                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                         EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             } else {
-                eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                         EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             }
@@ -139,12 +139,12 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             for (EventSubscription eventSubscription : eventSubscriptionList) {
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
-            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK.value());
             eventSubscriptionResponse.setResponseBody(eventSubscriptionResponseList);
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while retrieving event subscriptions", e);
-            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                     EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
@@ -175,12 +175,12 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             for (EventSubscription eventSubscription : eventSubscriptionList) {
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
-            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK.value());
             eventSubscriptionResponse.setResponseBody(eventSubscriptionResponseList);
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while retrieving event subscriptions", e);
-            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                     EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
@@ -208,13 +208,13 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             Boolean isUpdated = eventSubscriptionService.updateEventSubscription(eventSubscription);
             if (!isUpdated) {
-                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
+                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                         EventNotificationConstants.INVALID_REQUEST,
                         "Event subscription not found."));
                 return eventSubscriptionResponse;
             }
-            eventSubscriptionResponse.setStatus(HttpStatus.OK_200);
+            eventSubscriptionResponse.setStatus(HttpStatus.OK.value());
             EventSubscription eventSubscriptionUpdateResponse = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(eventSubscriptionUpdateRequestDto.getSubscriptionId());
             eventSubscriptionResponse.
@@ -222,7 +222,7 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while updating event subscription", e);
-            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                     EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
@@ -247,17 +247,17 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         try {
             Boolean isDeleted = eventSubscriptionService.deleteEventSubscription(subscriptionId);
             if (!isDeleted) {
-                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
+                eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
                 eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                         EventNotificationConstants.INVALID_REQUEST,
                         "Event subscription not found"));
                 return eventSubscriptionResponse;
             }
-            eventSubscriptionResponse.setStatus(HttpStatus.NO_CONTENT_204);
+            eventSubscriptionResponse.setStatus(HttpStatus.NO_CONTENT.value());
             return eventSubscriptionResponse;
         } catch (OBEventNotificationException e) {
             log.error("Error occurred while deleting event subscription", e);
-            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+            eventSubscriptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                     EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;
@@ -277,7 +277,7 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         } catch (OBEventNotificationException e) {
             log.error("Invalid client ID", e);
             EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-            eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST_400);
+            eventSubscriptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             eventSubscriptionResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                     EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventSubscriptionResponse;

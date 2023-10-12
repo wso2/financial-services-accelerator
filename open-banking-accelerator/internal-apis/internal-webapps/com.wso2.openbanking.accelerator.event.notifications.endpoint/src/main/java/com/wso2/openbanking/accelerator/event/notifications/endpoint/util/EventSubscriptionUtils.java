@@ -76,7 +76,10 @@ public class EventSubscriptionUtils {
      */
     public static Response mapEventSubscriptionServiceResponse(EventSubscriptionResponse eventSubscriptionResponse) {
         int status = eventSubscriptionResponse.getStatus();
-        if (eventSubscriptionResponse.getErrorResponse() == null) {
+        if (HttpStatus.NO_CONTENT_204 == status) {
+            return Response.status(status)
+                    .build();
+        } else if (eventSubscriptionResponse.getErrorResponse() == null) {
             if (eventSubscriptionResponse.getResponseBody() != null) {
                 return Response.status(status)
                         .entity(eventSubscriptionResponse.getResponseBody())
@@ -92,6 +95,5 @@ public class EventSubscriptionUtils {
                     .entity(eventSubscriptionResponse.getErrorResponse())
                     .build();
         }
-
     }
 }
