@@ -83,37 +83,43 @@ public class EventPollingEndpoint {
             eventPollingData = parameterMap.get(EventNotificationEndPointConstants.REQUEST).
                     toString().replaceAll("\\\\r|\\\\n|\\r|\\n|\\[|]| ", StringUtils.EMPTY);
 
-            byte[] decodedBytes = Base64.getDecoder().decode(eventPollingData);
-            String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
-            try {
-                eventPollingRequest = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(decodedString);
+            if (!eventPollingData.isEmpty()) {
+                byte[] decodedBytes = Base64.getDecoder().decode(eventPollingData);
+                String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+                try {
+                    eventPollingRequest = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(decodedString);
 
-                //check if the client id is present in the header
-                String clientId = request.getHeader(EventNotificationConstants.X_WSO2_CLIENT_ID);
-                if (!StringUtils.isBlank(clientId)) {
-                    eventPollingRequest.put(EventNotificationConstants.X_WSO2_CLIENT_ID, request.
-                            getHeader(EventNotificationConstants.X_WSO2_CLIENT_ID));
-                } else {
+                    //check if the client id is present in the header
+                    String clientId = request.getHeader(EventNotificationConstants.X_WSO2_CLIENT_ID);
+                    if (!StringUtils.isBlank(clientId)) {
+                        eventPollingRequest.put(EventNotificationConstants.X_WSO2_CLIENT_ID, request.
+                                getHeader(EventNotificationConstants.X_WSO2_CLIENT_ID));
+                    } else {
+                        return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationUtils.getErrorDTO(
+                                EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
+                                EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                    }
+
+                    EventPollingResponse eventPollingResponse = eventPollingServiceHandler.
+                            pollEvents(eventPollingRequest);
+
+                    return EventNotificationUtils.mapEventPollingServiceResponse(eventPollingResponse);
+
+                } catch (ParseException e) {
+                    log.error("Exception when parsing the request payload", e);
                     return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationUtils.getErrorDTO(
-                            EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                            EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
+                            EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
+                } catch (ClassCastException e) {
+                    log.error(EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR, e);
+                    return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationUtils.getErrorDTO(
+                            EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
+                            EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
                 }
-
-                EventPollingResponse eventPollingResponse = eventPollingServiceHandler.
-                        pollEvents(eventPollingRequest);
-
-                return EventNotificationUtils.mapEventPollingServiceResponse(eventPollingResponse);
-
-            } catch (ParseException e) {
-                log.error("Exception when parsing the request payload", e);
+            } else {
                 return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationUtils.getErrorDTO(
                         EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
-                        EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
-            } catch (ClassCastException e) {
-                log.error(EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR, e);
-                return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationUtils.getErrorDTO(
-                        EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
-                        EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
+                        EventNotificationEndPointConstants.EMPTY_REQ_PAYLOAD)).build();
             }
         } else {
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationUtils.getErrorDTO(
