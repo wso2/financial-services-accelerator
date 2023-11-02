@@ -51,7 +51,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
 
     /**
      * This method is used to Poll Events as per request params.
-     * @param eventPollingRequest
+     * @param eventPollingRequest JSON request for event polling
      * @return
      */
     public EventPollingResponse pollEvents(JSONObject eventPollingRequest) {
@@ -89,7 +89,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
 
     /**
      * This method will map the eventPollingRequest JSON to EventPollingDTO.
-     * @param eventPollingRequest
+     * @param eventPollingRequest JSON request for event polling
      * @return EventPollingDTO
      */
     public EventPollingDTO mapPollingRequest(JSONObject eventPollingRequest) {
