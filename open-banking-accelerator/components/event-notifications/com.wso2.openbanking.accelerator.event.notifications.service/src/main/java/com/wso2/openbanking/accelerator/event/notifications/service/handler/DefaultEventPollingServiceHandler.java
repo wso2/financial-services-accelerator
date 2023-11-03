@@ -66,7 +66,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
             log.error("Invalid client ID", e);
             eventPollingResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
             eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST, String.format("A client was not found" +
+                            EventNotificationConstants.INVALID_REQUEST, String.format("A client was not found" +
                             " for the client id : '%s' in the database.. ", eventPollingDTO.getClientId())));
             return eventPollingResponse;
         }

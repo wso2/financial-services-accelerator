@@ -50,8 +50,8 @@ public class EventPollingService {
     /**
      * The pollEvents methods will return the Aggregated Polling Response for
      * event polling request.
-     * @param eventPollingDTO
-     *
+     * @param eventPollingDTO Event polling request DTO
+     * @return AggregatedPollingResponse Aggregated Polling Response
      * @throws OBEventNotificationException
      */
     public AggregatedPollingResponse pollEvents(EventPollingDTO eventPollingDTO)
@@ -107,13 +107,13 @@ public class EventPollingService {
                 if (notificationList.isEmpty()) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("No OB Event Notifications available for for the client " +
-                                "with ID : '%s'.", eventPollingDTO.getClientId()));
+                                "with ID : '%s'.", eventPollingDTO.getClientId().replaceAll("[\r\n]", "")));
                     }
                     aggregatedPollingResponse.setStatus(EventNotificationConstants.NOT_FOUND);
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("OB Event Notifications available for the client " +
-                                "with ID : '%s'.", eventPollingDTO.getClientId()));
+                                "with ID : '%s'.", eventPollingDTO.getClientId().replaceAll("[\r\n]", "")));
                     }
                     aggregatedPollingResponse.setStatus(EventNotificationConstants.OK);
 

@@ -61,7 +61,7 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
         Connection connection = DatabaseUtil.getDBConnection();
         if (log.isDebugEnabled()) {
             log.debug(String.format("Database connection is established for updating notification with " +
-                    "ID : '%s' in the database. ", notificationId));
+                    "ID : '%s' in the database. ", notificationId.replaceAll("[\r\n]", "")));
         }
         try {
             connection.setAutoCommit(false);
@@ -78,32 +78,31 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
                 if (affectedRows != 0) {
                     connection.commit();
                     if (log.isDebugEnabled()) {
-                        log.debug("Updated notification with Notification ID : " + notificationId);
+                        log.debug(String.format("Updated notification with Notification ID '%s'",
+                                notificationId.replaceAll("[\r\n]", "")));
                     }
 
                     return true;
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("Failed updating notification with ID : " + notificationId);
+                        log.debug(String.format("Failed updating notification with ID : '%s'",
+                                notificationId.replaceAll("[\r\n]", "")));
                     }
                     return false;
                 }
             } catch (SQLException e) {
                 connection.rollback(savepoint);
-                log.error(String.format(EventNotificationConstants.DB_ERROR_UPDATING, notificationId), e);
+                log.error(String.format(EventNotificationConstants.DB_ERROR_UPDATING,
+                        notificationId.replaceAll("[\r\n]", "")), e);
                 throw new OBEventNotificationException(String.format(EventNotificationConstants.DB_ERROR_UPDATING,
                         notificationId));
             }
         } catch (SQLException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("SQL exception when updating notification status", e);
-            }
+            log.debug("SQL exception when updating notification status", e);
             throw new OBEventNotificationException("Database error while closing the connection to the" +
                     " the database.");
         } finally {
-            if (log.isDebugEnabled()) {
-                log.debug(EventNotificationConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
-            }
+            log.debug(EventNotificationConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
             DatabaseUtil.closeConnection(connection);
         }
     }
@@ -119,8 +118,9 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
             connection.setAutoCommit(false);
 
             if (log.isDebugEnabled()) {
-                log.debug("Database connection is established for storing error notification with ID : "
-                        + notificationError.getNotificationId());
+                log.debug(String.format("Database connection is established for storing error notification with ID" +
+                        " : '%s' in the database. ",
+                        notificationError.getNotificationId().replaceAll("[\r\n]", "")));
             }
 
             final String storeErrorNotificationQuery = sqlStatements.storeErrorNotificationQuery();
@@ -138,14 +138,14 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
                 if (affectedRows == 1) {
                     connection.commit();
                     if (log.isDebugEnabled()) {
-                        log.debug("Successfully stored error notification with ID : " +
-                                notificationError.getNotificationId());
+                        log.debug(String.format("Successfully stored error notification with ID:'%s'.",
+                                notificationError.getNotificationId().replaceAll("[\r\n]", "")));
                     }
                     response.put(notificationError.getNotificationId(), notificationError);
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug(EventNotificationConstants.DB_FAILED_ERROR_NOTIFICATION_STORING
-                                + notificationError.getNotificationId());
+                        log.debug(String.format("Failed store error notification with ID:'%s'.",
+                                notificationError.getNotificationId().replaceAll("[\r\n]", "")));
                     }
                     throw new OBEventNotificationException(EventNotificationConstants.
                             DB_FAILED_ERROR_NOTIFICATION_STORING + notificationError.getNotificationId());
@@ -176,7 +176,8 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
             notificationList = new ArrayList<>();
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format(EventNotificationConstants.DB_CONN_ESTABLISHED, clientId));
+                log.debug(String.format(EventNotificationConstants.DB_CONN_ESTABLISHED,
+                        clientId.replaceAll("[\r\n]", "")));
             }
 
             final String sql = sqlStatements.getMaxNotificationsQuery();
@@ -215,12 +216,12 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
 
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.RETRIEVED_NOTIFICATION_CLIENT,
-                                    clientId));
+                                    clientId.replaceAll("[\r\n]", "")));
                         }
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.NO_NOTIFICATIONS_FOUND_CLIENT,
-                                    clientId));
+                                    clientId.replaceAll("[\r\n]", "")));
                         }
                     }
                 }
@@ -268,7 +269,7 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
                                     (EventNotificationConstants.EVENT_TYPE));
                             event.setEventInformation(EventNotificationServiceUtil.
                                     getEventJSONFromString(eventsResultSet.getString
-                                            (EventNotificationConstants.EVENT_INFO)));
+                                    (EventNotificationConstants.EVENT_INFO)));
                             eventList.add(event);
                         }
                         eventsResultSet.close();
@@ -276,21 +277,23 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
 
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.RETRIEVED_EVENTS_NOTIFICATION,
-                                    notificationId));
+                                    notificationId.replaceAll("[\r\n]", "")));
                         }
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.NO_EVENTS_NOTIFICATION_ID,
-                                    notificationId));
+                                    notificationId.replaceAll("[\r\n]", "")));
                         }
                     }
                 } catch (ParseException e) {
-                    log.error(String.format(EventNotificationConstants.PARSE_ERROR_NOTIFICATION_ID, notificationId), e);
+                    log.error(String.format(EventNotificationConstants.PARSE_ERROR_NOTIFICATION_ID,
+                            notificationId.replaceAll("[\r\n]", "")), e);
                     throw new OBEventNotificationException(String.format (
                             EventNotificationConstants.PARSE_ERROR_NOTIFICATION_ID, notificationId), e);
                 }
             } catch (SQLException e) {
-                log.error(String.format(EventNotificationConstants.DB_ERROR_EVENTS_RETRIEVE, notificationId), e);
+                log.error(String.format(EventNotificationConstants.DB_ERROR_EVENTS_RETRIEVE,
+                        notificationId.replaceAll("[\r\n]", "")), e);
                 throw new OBEventNotificationException(String.format
                         (EventNotificationConstants.DB_ERROR_EVENTS_RETRIEVE, notificationId), e);
             }
@@ -337,7 +340,8 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
                         notificationResultSet.close();
                         getNotificationsPreparedStatement.close();
                         if (log.isDebugEnabled()) {
-                            log.debug(EventNotificationConstants.RETRIEVED_NOTIFICATION_CLIENT);
+                            log.debug(
+                                    EventNotificationConstants.RETRIEVED_NOTIFICATION_CLIENT);
                         }
                     } else {
                         if (log.isDebugEnabled()) {
@@ -378,7 +382,7 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
 
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("Retrieved notification count for client ID: '%s'. ",
-                                    clientId));
+                                    clientId.replaceAll("[\r\n]", "")));
                         }
 
                         return count;
@@ -386,7 +390,7 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(
                                     EventNotificationConstants.NO_NOTIFICATIONS_FOUND_CLIENT,
-                                    clientId));
+                                    clientId.replaceAll("[\r\n]", "")));
                         }
 
                         return 0;
@@ -394,8 +398,7 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
                 }
             } catch (SQLException e) {
                 throw new OBEventNotificationException(String.format
-                        (EventNotificationConstants.DB_ERROR_NOTIFICATION_RETRIEVE,
-                                clientId), e);
+                        (EventNotificationConstants.DB_ERROR_NOTIFICATION_RETRIEVE, clientId), e);
             }
         } finally {
             log.debug(EventNotificationConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
@@ -422,13 +425,14 @@ public class AggregatedPollingDAOImpl implements AggregatedPollingDAO {
                             isOpenStatus = true;
                         }
 
-                        return isOpenStatus;
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("No notifications found for notification ID : " + notificationId);
-                        }
-                    }
-                }
+                         return isOpenStatus;
+                     } else {
+                         if (log.isDebugEnabled()) {
+                             log.debug(String.format("No notifications found for notification ID - '%s'",
+                                     notificationId.replaceAll("[\r\n]", "")));
+                         }
+                     }
+                 }
             } catch (SQLException e) {
                 throw new OBEventNotificationException(String.format
                         ("Error occurred while retrieving status for the notifications ID : '%s'.",
