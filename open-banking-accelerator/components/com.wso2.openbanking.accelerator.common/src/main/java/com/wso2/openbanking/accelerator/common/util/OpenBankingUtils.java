@@ -20,10 +20,10 @@ package com.wso2.openbanking.accelerator.common.util;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.identity.IdentityConstants;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.minidev.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
