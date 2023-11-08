@@ -1398,6 +1398,28 @@ public class OpenBankingConfigParser {
     }
 
     /**
+     * Method to get software environment identification SSA property name.
+     *
+     * @return String software environment identification SSA property name.
+     */
+    public String getSoftwareEnvIdentificationSSAPropertyName() {
+        return getConfigElementFromKey(OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_PROPERTY_NAME) == null ?
+                OpenBankingConstants.SOFTWARE_ENVIRONMENT : (String) getConfigElementFromKey(
+                OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_PROPERTY_NAME);
+    }
+
+    /**
+     * Method to get software environment identification value for sandbox in SSA.
+     *
+     * @return String software environment identification value for sandbox.
+     */
+    public String getSoftwareEnvIdentificationSSAPropertyValueForSandbox() {
+        return getConfigElementFromKey(OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX) == null ?
+                "sandbox" : (String) getConfigElementFromKey(
+                        OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX);
+    }
+
+    /**
      * Get config related for checking whether PSU is a federated user or not.
      *
      * @return Boolean value indicating whether PSU is a federated user or not

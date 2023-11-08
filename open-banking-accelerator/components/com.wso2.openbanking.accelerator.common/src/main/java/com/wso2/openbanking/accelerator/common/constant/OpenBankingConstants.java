@@ -62,6 +62,10 @@ public class OpenBankingConstants {
     public static final String DCR_JWKS_NAME = "DCR.JWKSEndpointName";
     public static final String DCR_APPLICATION_NAME_KEY = "DCR.ApplicationName";
     public static final String OB_KM_NAME = "KeyManagerName";
+    public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_PROPERTY_NAME =
+            "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyName";
+    public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX =
+            "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyValueForSandbox";
 
     public static final String APIM_APPCREATION = "DCR.APIMRESTEndPoints.AppCreation";
     public static final String APIM_KEYGENERATION = "DCR.APIMRESTEndPoints.KeyGeneration";

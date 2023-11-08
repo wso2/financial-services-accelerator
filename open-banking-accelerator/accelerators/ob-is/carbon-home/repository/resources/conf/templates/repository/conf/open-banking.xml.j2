@@ -455,6 +455,18 @@
        <RegistrationClientURI>https://localhost:8243/open-banking/0.1/register/</RegistrationClientURI>
        {% endif %}
        <RegistrationRequestParams>
+            <SoftwareEnvironmentIdentification>
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_name is defined %}
+                    <PropertyName>{{open_banking.dcr.registration.software_environment_identification.ssa_property_name}}</PropertyName>
+                {% else %}
+                    <PropertyName>software_environment</PropertyName>
+                {% endif %}
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_sandbox is defined %}
+                    <PropertyValueForSandbox>{{open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_sandbox}}</PropertyValueForSandbox>
+                {% else %}
+                    <PropertyValueForSandbox>sandbox</PropertyValueForSandbox>
+                {% endif %}
+            </SoftwareEnvironmentIdentification>
             <GrantTypes>
                 {% if open_banking.dcr.registration.grant_types.required is defined %}
                 <Required>{{open_banking.dcr.registration.grant_types.required}}</Required>

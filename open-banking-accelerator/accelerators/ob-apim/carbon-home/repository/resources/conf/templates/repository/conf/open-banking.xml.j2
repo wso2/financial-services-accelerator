@@ -301,6 +301,20 @@
         {% else %}
         <RequestJWTValidation>true</RequestJWTValidation>
         {% endif %}
+        <RegistrationRequestParams>
+            <SoftwareEnvironmentIdentification>
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_name is defined %}
+                    <PropertyName>{{open_banking.dcr.registration.software_environment_identification.ssa_property_name}}</PropertyName>
+                {% else %}
+                    <PropertyName>software_environment</PropertyName>
+                {% endif %}
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_sandbox is defined %}
+                    <PropertyValueForSandbox>{{open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_sandbox}}</PropertyValueForSandbox>
+                {% else %}
+                    <PropertyValueForSandbox>sandbox</PropertyValueForSandbox>
+                {% endif %}
+            </SoftwareEnvironmentIdentification>
+        </RegistrationRequestParams>
     </DCR>
     <KeyManagerName>{{open_banking.keyManager.name}}</KeyManagerName>
     {% if open_banking.publisher.hostname is defined %}
