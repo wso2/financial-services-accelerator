@@ -1420,6 +1420,18 @@ public class OpenBankingConfigParser {
     }
 
     /**
+     * Method to get software environment identification value for production in SSA.
+     *
+     * @return String software environment identification value for production.
+     */
+    public String getSoftwareEnvIdentificationSSAPropertyValueForProduction() {
+        return getConfigElementFromKey(
+                OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_PRODUCTION) == null ?
+                "production" : (String) getConfigElementFromKey(
+                OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_PRODUCTION);
+    }
+
+    /**
      * Get config related for checking whether PSU is a federated user or not.
      *
      * @return Boolean value indicating whether PSU is a federated user or not

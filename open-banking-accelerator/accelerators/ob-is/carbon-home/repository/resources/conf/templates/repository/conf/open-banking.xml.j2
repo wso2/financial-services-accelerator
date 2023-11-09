@@ -466,6 +466,11 @@
                 {% else %}
                     <PropertyValueForSandbox>sandbox</PropertyValueForSandbox>
                 {% endif %}
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_production is defined %}
+                    <PropertyValueForProduction>{{open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_production}}</PropertyValueForProduction>
+                {% else %}
+                    <PropertyValueForProduction>production</PropertyValueForProduction>
+                {% endif %}
             </SoftwareEnvironmentIdentification>
             <GrantTypes>
                 {% if open_banking.dcr.registration.grant_types.required is defined %}

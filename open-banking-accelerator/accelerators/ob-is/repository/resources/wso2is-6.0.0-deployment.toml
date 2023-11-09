@@ -408,7 +408,9 @@ name = "OpenBanking Ltd"
 
 [open_banking.dcr.registration.software_environment_identification]
 ssa_property_name = "software_environment"
+# If both below values doesnt match, Then software_environment is default to production.
 ssa_property_value_for_sandbox = "sandbox"
+ssa_property_value_for_production = "production"
 
 #Signature algorithm types that are allowed
 #[[open_banking.signature_validation.allowed_algorithms]]
