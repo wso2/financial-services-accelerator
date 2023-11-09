@@ -19,11 +19,14 @@ package com.wso2.openbanking.accelerator.common.util;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
+import com.wso2.openbanking.accelerator.common.identity.IdentityConstants;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 
 /**
  * Open Banking common utility class.
@@ -52,6 +55,36 @@ public class OpenBankingUtils {
             throw new OpenBankingRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
     }
+
+    /**
+     * Extract software_environment (SANDBOX or PRODUCTION) from SSA
+     *
+     * @param softwareStatement software statement (jwt) extracted from request payload
+     * @return software_environment
+     * @throws ParseException
+     */
+    public static String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
+
+        String sandboxEnvIdentificationPropertyName = OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyName();
+        String sandboxEnvIdentificationValue = OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
+        String prodEnvIdentificationValue = OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyValueForProduction();
+        String softwareEnvironment = IdentityConstants.PRODUCTION;
+        // decode software statement and get softwareEnvironment
+        JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement, "body");
+        Object softwareEnvironmentValue = softwareStatementBody.get(sandboxEnvIdentificationPropertyName);
+        if (softwareEnvironmentValue != null &&
+                softwareEnvironmentValue.toString().equalsIgnoreCase(sandboxEnvIdentificationValue)) {
+            softwareEnvironment = IdentityConstants.SANDBOX;
+        } else if (softwareEnvironmentValue != null &&
+                softwareEnvironmentValue.toString().equalsIgnoreCase(prodEnvIdentificationValue)) {
+            softwareEnvironment = IdentityConstants.PRODUCTION;
+        }
+        return softwareEnvironment;
+    }
+
 
     /**
      * Method to obtain boolean value for check if the Dispute Resolution Data is publishable.
