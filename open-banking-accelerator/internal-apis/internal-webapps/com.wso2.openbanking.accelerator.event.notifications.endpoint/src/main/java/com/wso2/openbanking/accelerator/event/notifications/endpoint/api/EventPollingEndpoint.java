@@ -83,7 +83,7 @@ public class EventPollingEndpoint {
             eventPollingData = parameterMap.get(EventNotificationEndPointConstants.REQUEST).
                     toString().replaceAll("\\\\r|\\\\n|\\r|\\n|\\[|]| ", StringUtils.EMPTY);
 
-            if (!eventPollingData.isEmpty()) {
+            if (!eventPollingData.isBlank()) {
                 byte[] decodedBytes = Base64.getDecoder().decode(eventPollingData);
                 String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
                 try {
