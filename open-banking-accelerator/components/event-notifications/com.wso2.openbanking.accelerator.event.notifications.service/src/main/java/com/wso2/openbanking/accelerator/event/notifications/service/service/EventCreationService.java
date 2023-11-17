@@ -48,10 +48,9 @@ public class EventCreationService {
 
     /**
      * The publishOBEventNotification methods will call the dao layer to persist the event
-     * notifications
-     * event polling request.
-     * @param notificationCreationDTO
-     *
+     * notifications for event polling request.
+     * @param notificationCreationDTO Notification Creation DTO
+     * @return Event Response
      * @throws OBEventNotificationException
      */
     public String publishOBEventNotification(NotificationCreationDTO notificationCreationDTO)
@@ -84,7 +83,8 @@ public class EventCreationService {
     /**
      * The getEvents method is used to get the NotificationEvents Array list from payload.
      *
-     * @param notificationEvents
+     * @param notificationEvents Notification Events to convert
+     * @return Event notification List
      */
     @Generated(message = "Private methods invoked when calling referred method")
     private ArrayList<NotificationEvent> getEvents(Map<String, JSONObject> notificationEvents) {
@@ -104,7 +104,8 @@ public class EventCreationService {
     /**
      * The getNotification method is used to get the NotificationDAO from payload.
      *
-     * @param notificationCreationDTO
+     * @param notificationCreationDTO Notification Creation DTO
+     * @return Notification Details
      */
     @Generated(message = "Private methods invoked when calling referred method")
     private NotificationDTO getNotification(NotificationCreationDTO notificationCreationDTO) {

@@ -35,9 +35,10 @@ public interface EventNotificationGenerator {
     /**
      * This method is to generate event notification body. To generate custom values
      * for the body this method should be extended.
-     * @param notificationDTO
-     * @param notificationEventList
-     * @return
+     * @param notificationDTO Notification details DTO
+     * @param notificationEventList List of notification events
+     *
+     * @return Event Notification Body
      * @throws OBEventNotificationException
      */
     Notification generateEventNotificationBody(NotificationDTO notificationDTO, List<NotificationEvent>

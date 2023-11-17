@@ -39,6 +39,15 @@ public class EventNotificationPersistenceServiceHandler {
         return instance;
     }
 
+    /**
+     * This method is to persist authorization revoke event.
+     *
+     * @param clientId - client ID
+     * @param resourceId - resource ID
+     * @param notificationType - notification type
+     * @param notificationInfo - notification info
+     * @return EventCreationResponse
+     */
     public EventCreationResponse persistRevokeEvent(String clientId,
                                               String resourceId,
                                               String notificationType, JSONObject notificationInfo) {

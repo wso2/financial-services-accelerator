@@ -32,14 +32,14 @@ public interface EventPollingServiceHandler {
      * This method follows the IETF Specification for SET delivery over HTTP.
      * The method supports event acknowledgment in both positive and negative.
      * Also, can be used to POLL for available OPEN notifications.
-     * @param eventPollingRequest
+     * @param eventPollingRequest  JSON request for event polling
      * @return EventPollingResponse to the polling endpoint.
      */
     EventPollingResponse pollEvents(JSONObject eventPollingRequest);
 
     /**
-     * This method is used to map the eventPollingRequest to EventPollingDTO.
-     * @param eventPollingRequest
+     * This method is used to map the eventPollingRequest to EventPollingDTO
+     * @param eventPollingRequest JSON request for event polling
      * @return eventPollingDTO with the request parameters.
      */
     EventPollingDTO mapPollingRequest(JSONObject eventPollingRequest);

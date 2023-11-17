@@ -98,13 +98,16 @@ public class EventNotificationUtils {
 
         if (EventNotificationConstants.OK.equals(eventPollingResponse.getStatus())) {
             return Response.status(Response.Status.OK).entity(eventPollingResponse.getResponseBody()).build();
+        } else if (EventNotificationConstants.NOT_FOUND.equals(eventPollingResponse.getStatus())) {
+            return Response.status(Response.Status.NOT_FOUND).entity(eventPollingResponse.getResponseBody()).build();
         } else {
             if (eventPollingResponse.getErrorResponse() instanceof String) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationUtils.getErrorDTO(
-                        EventNotificationEndPointConstants.INVALID_REQUEST,
-                        eventPollingResponse.getErrorResponse().toString())).build();
+                return Response.status(getErrorResponseStatus(eventPollingResponse.getStatus()))
+                        .entity(EventNotificationUtils.getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST,
+                                eventPollingResponse.getErrorResponse().toString())).build();
             } else {
-                return Response.status(Response.Status.BAD_REQUEST).entity(eventPollingResponse.getErrorResponse())
+                return Response.status(getErrorResponseStatus(eventPollingResponse.getStatus()))
+                        .entity(eventPollingResponse.getErrorResponse())
                         .build();
             }
         }
@@ -119,5 +122,21 @@ public class EventNotificationUtils {
         eventNotificationErrorDTO.setError(error);
         eventNotificationErrorDTO.setErrorDescription(errorDescription);
         return eventNotificationErrorDTO;
+    }
+
+    /**
+     * Get mapped Response.Status for the given status value.
+     * @param status status value
+     * @return Mapped Response.Status
+     */
+    private static Response.Status getErrorResponseStatus(String status) {
+
+        if (EventNotificationConstants.NOT_FOUND.equals(status)) {
+            return Response.Status.NOT_FOUND;
+        } else if (EventNotificationConstants.BAD_REQUEST.equals(status)) {
+            return Response.Status.BAD_REQUEST;
+        } else {
+            return Response.Status.INTERNAL_SERVER_ERROR;
+        }
     }
 }

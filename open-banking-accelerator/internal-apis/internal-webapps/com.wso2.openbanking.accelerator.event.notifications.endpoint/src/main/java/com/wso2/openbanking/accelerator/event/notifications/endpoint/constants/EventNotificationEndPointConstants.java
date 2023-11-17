@@ -29,6 +29,7 @@ public class EventNotificationEndPointConstants {
     public static final String POLLING_ERROR_RESPONSE = "OB Event Notification Polling error";
     public static final String EVENT_CREATION_ERROR_RESPONSE = "OB Event Notification Creation error";
     public static final String REQUEST_PAYLOAD_ERROR = "Error in the request payload";
+    public static final String EMPTY_REQ_PAYLOAD = "Request payload cannot be empty";
     public static final String INVALID_REQUEST = "invalid_request";
     public static final String INVALID_REQUEST_PAYLOAD = "invalid_request_payload";
     public static final String MISSING_REQUEST_PAYLOAD = "missing_request_payload";

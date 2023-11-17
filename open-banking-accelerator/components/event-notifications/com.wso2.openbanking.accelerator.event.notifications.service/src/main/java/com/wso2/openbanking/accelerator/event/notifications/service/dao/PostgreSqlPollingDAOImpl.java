@@ -59,7 +59,8 @@ public class PostgreSqlPollingDAOImpl extends AggregatedPollingDAOImpl {
             notificationList = new ArrayList<>();
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format(EventNotificationConstants.DB_CONN_ESTABLISHED, clientId));
+                log.debug(String.format(EventNotificationConstants.DB_CONN_ESTABLISHED,
+                        clientId.replaceAll("[\r\n]", "")));
             }
 
             final String sql = sqlStatements.getMaxNotificationsQuery();
@@ -99,13 +100,13 @@ public class PostgreSqlPollingDAOImpl extends AggregatedPollingDAOImpl {
 
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.RETRIEVED_NOTIFICATION_CLIENT,
-                                    clientId));
+                                    clientId.replaceAll("[\r\n]", "")));
                         }
 
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.NO_NOTIFICATIONS_FOUND_CLIENT,
-                                    clientId));
+                                    clientId.replaceAll("[\r\n]", "")));
                         }
                     }
                 }
@@ -162,21 +163,23 @@ public class PostgreSqlPollingDAOImpl extends AggregatedPollingDAOImpl {
 
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.RETRIEVED_EVENTS_NOTIFICATION,
-                                    notificationId));
+                                    notificationId.replaceAll("[\r\n]", "")));
                         }
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(EventNotificationConstants.NO_EVENTS_NOTIFICATION_ID,
-                                    notificationId));
+                                    notificationId.replaceAll("[\r\n]", "")));
                         }
                     }
                 } catch (ParseException e) {
-                    log.error(String.format(EventNotificationConstants.PARSE_ERROR_NOTIFICATION_ID, notificationId), e);
+                    log.error(String.format(EventNotificationConstants.PARSE_ERROR_NOTIFICATION_ID,
+                            notificationId.replaceAll("[\r\n]", "")), e);
                     throw new OBEventNotificationException(String.format (
                             EventNotificationConstants.PARSE_ERROR_NOTIFICATION_ID, notificationId), e);
                 }
             } catch (SQLException e) {
-                log.error(String.format(EventNotificationConstants.DB_ERROR_EVENTS_RETRIEVE, notificationId), e);
+                log.error(String.format(EventNotificationConstants.DB_ERROR_EVENTS_RETRIEVE,
+                        notificationId.replaceAll("[\r\n]", "")), e);
                 throw new OBEventNotificationException(String.format
                         (EventNotificationConstants.DB_ERROR_EVENTS_RETRIEVE, notificationId), e);
             }
