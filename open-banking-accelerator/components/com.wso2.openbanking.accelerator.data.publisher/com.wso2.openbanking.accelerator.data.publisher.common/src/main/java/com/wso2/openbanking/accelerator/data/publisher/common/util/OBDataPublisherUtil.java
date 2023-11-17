@@ -18,6 +18,9 @@
 
 package com.wso2.openbanking.accelerator.data.publisher.common.util;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.AnalyticsLogsUtils;
 import com.wso2.openbanking.accelerator.data.publisher.common.DataPublisherPool;
 import com.wso2.openbanking.accelerator.data.publisher.common.EventQueue;
 import com.wso2.openbanking.accelerator.data.publisher.common.OpenBankingDataPublisher;
@@ -59,6 +62,16 @@ public class OBDataPublisherUtil {
      * This method will put received data to an event queue and take care of asynchronous data publishing.
      */
     public static void publishData(String streamName, String streamVersion, Map<String, Object> analyticsData) {
+
+        // Analytics data will be added to the OB analytics logfile for processing if ELK is configured for the server.
+        if (Boolean.parseBoolean((String) OpenBankingConfigParser.getInstance().getConfiguration()
+                .get(DataPublishingConstants.ELK_ANALYTICS_ENABLED))) {
+            try {
+                AnalyticsLogsUtils.addAnalyticsLogs("OB_LOG", streamName, streamVersion, analyticsData);
+            } catch (OpenBankingException e) {
+                log.error("Error occurred while writing analytics logs", e);
+            }
+        }
 
         if (Boolean.parseBoolean((String) OBAnalyticsDataHolder.getInstance().getConfigurationMap()
                 .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {

@@ -436,6 +436,9 @@ ssa_property_value_for_production = "production"
 #required = false
 #allowed_values = ["web"]
 
+[open_banking.analytics.elk]
+enabled = false
+
 [open_banking.data_publishing]
 enable = false
 username="$ref{super_admin.username}@carbon.super"

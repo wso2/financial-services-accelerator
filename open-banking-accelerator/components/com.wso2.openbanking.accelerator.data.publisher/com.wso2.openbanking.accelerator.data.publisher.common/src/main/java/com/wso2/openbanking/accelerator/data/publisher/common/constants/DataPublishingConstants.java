@@ -31,6 +31,7 @@ public class DataPublishingConstants {
     public static final String DATA_PUBLISHING_POOL_WAIT_TIME = "DataPublishing.PoolWaitTimeMs";
     public static final String DATA_PUBLISHING_PROTOCOL = "DataPublishing.Protocol";
     public static final String DATA_PUBLISHING_ENABLED = "DataPublishing.Enabled";
+    public static final String ELK_ANALYTICS_ENABLED = "ELKAnalytics.Enabled";
     public static final String APIM_ANALYTICS_ENABLED = "APIMAnalytics.Enabled";
     public static final String QUEUE_SIZE = "DataPublishing.QueueSize";
     public static final String WORKER_THREAD_COUNT = "DataPublishing.WorkerThreadCount";
