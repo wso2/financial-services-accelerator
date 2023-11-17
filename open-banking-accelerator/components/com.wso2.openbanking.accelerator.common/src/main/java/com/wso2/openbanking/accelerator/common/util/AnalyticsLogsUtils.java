@@ -43,7 +43,7 @@ public class AnalyticsLogsUtils {
      * @param dataVersion   Version of the data stream to which the data belongs
      * @param analyticsData Data which belongs to the given data stream that needs to be logged via the given logger
      */
-    public static void addAnalyticsLogs (String logFile, String dataStream, String dataVersion, Map<String,
+    public static void addAnalyticsLogs(String logFile, String dataStream, String dataVersion, Map<String,
             Object> analyticsData) throws OpenBankingException {
         Log customLog = LogFactory.getLog(logFile);
         try {
