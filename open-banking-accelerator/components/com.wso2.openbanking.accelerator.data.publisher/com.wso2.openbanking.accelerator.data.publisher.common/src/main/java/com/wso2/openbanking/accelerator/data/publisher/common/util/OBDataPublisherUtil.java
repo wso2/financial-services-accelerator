@@ -67,7 +67,8 @@ public class OBDataPublisherUtil {
         if (Boolean.parseBoolean((String) OpenBankingConfigParser.getInstance().getConfiguration()
                 .get(DataPublishingConstants.ELK_ANALYTICS_ENABLED))) {
             try {
-                AnalyticsLogsUtils.addAnalyticsLogs("OB_LOG", streamName, streamVersion, analyticsData);
+                AnalyticsLogsUtils.addAnalyticsLogs(DataPublishingConstants.LOG_FILE_NAME, streamName,
+                        streamVersion, analyticsData);
             } catch (OpenBankingException e) {
                 log.error("Error occurred while writing analytics logs", e);
             }
