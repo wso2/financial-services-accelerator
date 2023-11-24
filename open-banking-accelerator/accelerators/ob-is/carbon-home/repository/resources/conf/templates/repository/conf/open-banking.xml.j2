@@ -206,6 +206,11 @@
         {% else %}
         <FundsConfirmationAPIURL>https://localhost:8243/open-banking/{version}/cbpii/</FundsConfirmationAPIURL>
         {% endif %}
+        {% if open_banking.consent.vrp_consent_self_link is defined %}
+        <VRPAPIURL>{{open_banking.consent.vrp_consent_self_link}}</VRPAPIURL>
+        {% else %}
+        <VRPAPIURL>https://localhost:8243/open-banking/{version}/vrp/</VRPAPIURL>
+        {% endif %}
         <DataRetention>
             {% if open_banking.consent.data_retention.enabled is defined %}
                 <Enabled>{{open_banking.consent.data_retention.enabled}}</Enabled>

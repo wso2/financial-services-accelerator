@@ -30,6 +30,8 @@ import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentM
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +44,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -153,7 +156,7 @@ public class ConsentManageUtil {
             log.error(ErrorConstants.INVALID_DEBTOR_ACC_IDENTIFICATION);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
             validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
-            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_DEBTOR_ACC_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.MISSING_DEBTOR_ACC_IDENTIFICATION);
 
             return validationResponse;
         }
@@ -320,7 +323,6 @@ public class ConsentManageUtil {
         Boolean shouldRevokeTokens;
         if (ConsentManageUtil.isConsentIdValid(consentId)) {
             try {
-
                 ConsentResource consentResource = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
                         .getConsent(consentId, false);
 
@@ -585,6 +587,9 @@ public class ConsentManageUtil {
         } else if (ConsentExtensionConstants.FUNDSCONFIRMATIONS.equals(type)) {
             baseUrl = (String) parser.getConfiguration().get(
                     ConsentExtensionConstants.COF_SELF_LINK);
+        } else if (ConsentExtensionConstants.VRP.equals(type)) {
+            baseUrl = (String) parser.getConfiguration().get(
+                    ConsentExtensionConstants.VRP_SELF_LINK);
         }
 
         String requestPath = consentManageData.getRequestPath();
@@ -621,4 +626,390 @@ public class ConsentManageUtil {
         }
     }
 
+    /**
+     * validate the maximum amount in the payload  in VRP.
+     */
+    public static boolean validateAmount(JSONObject maximumIndividualAmount) {
+        return (maximumIndividualAmount != null && maximumIndividualAmount
+                .containsKey(ConsentExtensionConstants.AMOUNT));
+    }
+
+    /**
+     * validate the currency in the payload  in VRP.
+     */
+    public static boolean validateCurrency(JSONObject maximumIndividualAmount) {
+        return (maximumIndividualAmount != null && maximumIndividualAmount
+                .containsKey(ConsentExtensionConstants.CURRENCY));
+    }
+
+    /**
+     * validate the periodiclimits in the payload  in VRP.
+     */
+    public static boolean validatePeriodicAlignment(JSONObject periodiclimit) {
+        String periodAlignment = (String) periodiclimit.get(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+
+        return (ConsentExtensionConstants.CONSENT.equals(periodAlignment) ||
+                ConsentExtensionConstants.CALENDER.equals(periodAlignment));
+    }
+
+    /**
+     * method to validate periodic type in VRP.
+     */
+    public static boolean validatePeriodicType(JSONObject periodiclimit) {
+        String periodType = (String) periodiclimit.get(ConsentExtensionConstants.PERIOD_TYPE);
+
+        List<String> periodTypes = Arrays.asList(ConsentExtensionConstants.DAY,
+                ConsentExtensionConstants.WEEK, ConsentExtensionConstants.FORTNIGHT,
+                ConsentExtensionConstants.MONTH, ConsentExtensionConstants.HALF_YEAR,
+                ConsentExtensionConstants.YEAR);
+
+        return (periodTypes.contains(periodType));
+    }
+
+    public static boolean validateRevokeStatus(JSONObject revokedNotification) {
+
+        String revokedStatus = (String) revokedNotification.get(ConsentExtensionConstants.REVOKED_STATUS);
+
+        return (ConsentExtensionConstants.REVOKED_STATUS.equals(revokedStatus));
+
+    }
+    /**
+     * Method to handle the Payment GET requests.
+     *
+     * @param consentManageData Object containing request details
+     * @param consent           Consent stored at initiation post
+     * @throws ConsentManagementException
+     */
+    private static void handlePaymentInitiationGet(ConsentManageData consentManageData, ConsentResource consent,
+                                                   String paymentType) throws ParseException {
+
+        String type = ConsentExtensionConstants.VRP.equals(paymentType) ? ConsentExtensionConstants.VRP :
+                ConsentExtensionConstants.PAYMENTS;
+        JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).
+                parse(consent.getReceipt());
+        consentManageData.setResponsePayload(ConsentManageUtil
+                .getInitiationRetrievalResponse(receiptJSON, consent, consentManageData, type));
+        consentManageData.setResponseStatus(ResponseStatus.OK);
+    }
+
+
+    /**
+     * Utility class to check whether the Debtor/Creditor AccountSecondary Identification is valid.
+     *
+     * @param accSecondaryIdentification Debtor/Creditor Account Secondary Identification
+     * @return
+     */
+    public static boolean isSecondaryIdentificationValid(String accSecondaryIdentification) {
+        return (accSecondaryIdentification.length() <= 34);
+    }
+
+    /**
+     * Utility class to check whether the Debtor/Creditor Account Name is valid.
+     *
+     * @param accName Debtor/Creditor Account Name
+     * @return
+     */
+    public static boolean isAccNameValid(String accName) {
+        return (accName.length() <= 350);
+    }
+
+
+    /**
+     * Utility class to check whether the Debtor/Creditor Account Identification is valid.
+     *
+     * @param identification Debtor/Creditor Account Identification
+     * @return
+     */
+    public static boolean isIdentificationValid(String identification) {
+        return (identification.length() <= 256);
+    }
+
+
+    /**
+     * Utility class to check whether the Debtor/Creditor Account Scheme name matches with Enum values.
+     *
+     * @param schemeName Debtor/Creditor Account Scheme Name
+     * @return
+     */
+    public static boolean isSchemeNameValid(String schemeName) {
+        EnumSet<DebtorAccountSchemeNameEnum> set = EnumSet.allOf(DebtorAccountSchemeNameEnum.class);
+        return set.contains(DebtorAccountSchemeNameEnum.fromValue(schemeName));
+    }
+
+    /**
+     * Utility class to check whether the Debtor/Creditor Account Scheme name length.
+     *
+     * @param schemeName Debtor/Creditor Account Scheme Name
+     * @return
+     */
+    public static boolean validateSchemeNameLength(String schemeName) {
+        return (schemeName.length() <= 256);
+    }
+
+    /**
+     * Method to validate debtor account in vrp.
+     *
+     * @param debtorAccount Debtor Account object
+     * @return validationResponse
+     */
+    public static JSONObject validateVRPDebtorAccount(JSONObject debtorAccount) {
+
+        JSONObject validationResponse = new JSONObject();
+
+        //Check Debtor Account exists
+        if (debtorAccount.containsKey(ConsentExtensionConstants.SCHEME_NAME)) {
+            //Check Debtor Account Scheme name exists
+            if (StringUtils.isEmpty(debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME))) {
+                  log.error(ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
+                return validationResponse;
+            }
+
+            Object schemeName = debtorAccount.get(ConsentExtensionConstants.SCHEME_NAME);
+
+            if (schemeName == null || StringUtils.isEmpty(schemeName.toString())) {
+                log.error(ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
+                return validationResponse;
+            }
+            //Validate Debtor Account Scheme name
+            if (!(schemeName instanceof String) ||
+                    ConsentManageUtil.isSchemeNameValid((String) schemeName) ||
+                    !ConsentManageUtil.validateSchemeNameLength((String) schemeName)) {
+                log.error(ErrorConstants.INVALID_DEBTOR_ACC_SCHEME_NAME);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_DEBTOR_ACC_SCHEME_NAME);
+                return validationResponse;
+            }
+        } else {
+            log.error(ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_DEBTOR_ACC_SCHEME_NAME);
+            return validationResponse;
+        }
+
+        //Check Debtor Account Identification existing
+        if (debtorAccount.containsKey(ConsentExtensionConstants.IDENTIFICATION)) {
+            //Check Debtor Account Identification is empty
+            if (StringUtils.isEmpty(debtorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION))) {
+                log.error(ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS,
+                        ErrorConstants.MISSING_DEBTOR_ACC_IDENTIFICATION);
+                return validationResponse;
+            }
+
+            Object identification = debtorAccount.get(ConsentExtensionConstants.IDENTIFICATION);
+            //Validate Debtor Account Identification
+            if (!(identification instanceof String) ||
+                    !ConsentManageUtil.isIdentificationValid((String) identification)) {
+                log.error(ErrorConstants.INVALID_DEBTOR_ACC_IDENTIFICATION);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS,
+                        ErrorConstants.MISSING_DEBTOR_ACC_IDENTIFICATION);
+                return validationResponse;
+            }
+        } else {
+            log.error(ErrorConstants.MISSING_DEBTOR_ACC_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.MISSING_DEBTOR_ACC_IDENTIFICATION);
+            return validationResponse;
+        }
+
+        //Validate Debtor Account Name
+
+        Object debtorAcc = debtorAccount.get(ConsentExtensionConstants.NAME);
+
+        if (debtorAcc == null || StringUtils.isEmpty(debtorAcc.toString())) {
+            log.error(ErrorConstants.FIELD_MISSING);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.FIELD_MISSING);
+            return validationResponse;
+        }
+
+        if (debtorAccount.containsKey(ConsentExtensionConstants.NAME) &&
+                (!(debtorAccount.get(ConsentExtensionConstants.NAME) instanceof String) ||
+                        !ConsentManageUtil.isAccNameValid(debtorAccount
+                                .getAsString(ConsentExtensionConstants.NAME)))) {
+            log.error(ErrorConstants.INVALID_DEBTOR_ACC_NAME);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_DEBTOR_ACC_NAME);
+            return validationResponse;
+        }
+
+        //Validate Debtor Account Secondary Identification
+        if (debtorAccount.containsKey(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) &&
+                (!(debtorAccount.get(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) instanceof String) ||
+                        !ConsentManageUtil.isSecondaryIdentificationValid(debtorAccount
+                                .getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION)))) {
+            log.error(ErrorConstants.INVALID_DEBTOR_ACC_SEC_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS,
+                    ErrorConstants.INVALID_DEBTOR_ACC_SEC_IDENTIFICATION);
+            return validationResponse;
+        }
+
+        //Validate Sort Code number scheme
+        String schemeName = debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME);
+        String identification = debtorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION);
+        if (!checkSortCodeSchemeNameAndIdentificationValidity(schemeName, identification)) {
+            log.error(ErrorConstants.INVALID_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_IDENTIFICATION);
+            return validationResponse;
+        }
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+        return validationResponse;
+    }
+
+
+    /**
+     * Validate creditor account in  vrp initiation payload.
+     *
+     * @param creditorAccount Creditor Account object
+     *
+     * @return validationResponse
+     */
+    public static JSONObject validateVRPCreditorAccount(JSONObject creditorAccount) {
+
+        JSONObject validationResponse = new JSONObject();
+
+        //Check Creditor Account exists
+        if (creditorAccount.containsKey(ConsentExtensionConstants.SCHEME_NAME)) {
+            //Check Creditor Account Scheme name exists
+            if (StringUtils.isEmpty(creditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME))) {
+                  log.error(ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS,
+                        ErrorConstants.MISSING_CREDITOR_ACC_SCHEME_NAME);
+                return validationResponse;
+            }
+
+            Object schemeName = creditorAccount.get(ConsentExtensionConstants.SCHEME_NAME);
+            //Validate Creditor Account Scheme name
+            if (!(schemeName instanceof String) ||
+                    ConsentManageUtil.isSchemeNameValid((String) schemeName) ||
+                    !ConsentManageUtil.validateSchemeNameLength((String) schemeName)) {
+                log.error(ErrorConstants.INVALID_CREDITOR_ACC_SCHEME_NAME);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS,
+                        ErrorConstants.INVALID_CREDITOR_ACC_SCHEME_NAME);
+                return validationResponse;
+            }
+        } else {
+            log.error(ErrorConstants.MISSING_CREDITOR_ACC_SCHEME_NAME);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS,
+                    ErrorConstants.INVALID_CREDITOR_ACC_SCHEME_NAME);
+            return validationResponse;
+        }
+
+        //Check  Creditor Account Identification existing
+        if (creditorAccount.containsKey(ConsentExtensionConstants.IDENTIFICATION)) {
+            //Check Creditor Account Identification is empty
+            if (StringUtils.isEmpty(creditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION))) {
+                log.error(ErrorConstants.MISSING_CREDITOR_ACC_IDENTIFICATION);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS,
+                        ErrorConstants.MISSING_CREDITOR_ACC_IDENTIFICATION);
+                return validationResponse;
+            }
+
+            Object identification = creditorAccount.get(ConsentExtensionConstants.IDENTIFICATION);
+            //Validate Creditor Account Identification
+            if (!(identification instanceof String) ||
+                    !ConsentManageUtil.isIdentificationValid((String) identification)) {
+                log.error(ErrorConstants.INVALID_CREDITOR_ACC_IDENTIFICATION);
+                validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+                validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+                validationResponse.put(ConsentExtensionConstants.ERRORS,
+                        ErrorConstants.MISSING_CREDITOR_ACC_IDENTIFICATION);
+                return validationResponse;
+            }
+        } else {
+            log.error(ErrorConstants.MISSING_CREDITOR_ACC_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS,
+                    ErrorConstants.MISSING_CREDITOR_ACC_IDENTIFICATION);
+            return validationResponse;
+        }
+
+        //Validate Creditor Account Name
+        Object creditorAcc = creditorAccount.get(ConsentExtensionConstants.NAME);
+
+        if (creditorAcc == null || StringUtils.isEmpty(creditorAcc.toString())) {
+            log.error(ErrorConstants.FIELD_MISSING);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.FIELD_MISSING);
+            return validationResponse;
+        }
+        if (creditorAccount.containsKey(ConsentExtensionConstants.NAME) &&
+                (!(creditorAccount.get(ConsentExtensionConstants.NAME) instanceof String) ||
+                        !ConsentManageUtil.isAccNameValid(creditorAccount
+                                .getAsString(ConsentExtensionConstants.NAME)))) {
+            log.error(ErrorConstants.INVALID_CREDITOR_ACC_NAME);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_CREDITOR_ACC_NAME);
+            return validationResponse;
+        }
+
+        //Validate Creditor Account Secondary Identification
+        Object creditorAccSecondaryIdentification = creditorAccount.get(ConsentExtensionConstants
+                .SECONDARY_IDENTIFICATION);
+
+        if (creditorAccSecondaryIdentification == null || StringUtils.isEmpty
+                (creditorAccSecondaryIdentification.toString())) {
+            log.error(ErrorConstants.FIELD_MISSING);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.FIELD_MISSING);
+            return validationResponse;
+        }
+        if (creditorAccount.containsKey(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) &&
+                (!(creditorAccount.get(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) instanceof String) ||
+                        !ConsentManageUtil.isSecondaryIdentificationValid(creditorAccount
+                                .getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION)))) {
+            log.error(ErrorConstants.INVALID_CREDITOR_ACC_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS,
+                    ErrorConstants.INVALID_CREDITOR_ACC_SEC_IDENTIFICATION);
+            return validationResponse;
+        }
+
+        //Validate Sort Code number scheme
+        String schemeName = creditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME);
+        String identification = creditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION);
+        if (!checkSortCodeSchemeNameAndIdentificationValidity(schemeName, identification)) {
+            log.error(ErrorConstants.INVALID_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_IDENTIFICATION);
+            return validationResponse;
+        }
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+        return validationResponse;
+    }
 }
+
+

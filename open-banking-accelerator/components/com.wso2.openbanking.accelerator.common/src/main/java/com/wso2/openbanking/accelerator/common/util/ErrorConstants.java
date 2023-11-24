@@ -108,7 +108,6 @@ public class ErrorConstants {
     public static final String PATH_CONSENT_ID = "Data.Initiation.Consent-id";
     public static final String PATH_DATA = "Data";
     public static final String PATH_INITIATION = "Data.Initiation";
-    public static final String PATH_RISK = "Data.Risk";
     public static final String PATH_URL = "Data.Url";
     public static final String PATH_EXPIRATION_DATE = "Data.Expiration-Date";
     public static final String MSG_MISSING_DEBTOR_ACC = "Mandatory parameter DebtorAccount is missing in the payload.";
@@ -207,9 +206,6 @@ public class ErrorConstants {
             ErrorConstants.PATH_DATA;
     public static final String INITIATION_NOT_FOUND = "Initiation is not found or empty in the request.:" +
             ErrorConstants.PATH_INITIATION;
-    public static final String RISK_MISMATCH = "RISK Does Not Match.:" + ErrorConstants.PATH_RISK;
-    public static final String RISK_NOT_FOUND = "RISK is not found or empty in the request.:" +
-            ErrorConstants.PATH_RISK;
     public static final String INVALID_URI_ERROR = "Path requested is invalid. :" + ErrorConstants.PATH_URL;
     public static final String COF_CONSENT_STATE_INVALID = "Confirmation of Funds validation failed due to invalid" +
             " consent state.:" + ErrorConstants.PATH_STATUS;
@@ -221,9 +217,15 @@ public class ErrorConstants {
             " retrieval request";
     public static final String INVALID_CONSENT_ID = "Invalid Consent Id found in the request";
     public static final String CONSENT_ID_NOT_FOUND = "Consent ID not available in consent data";
-
     public static final String FIELD_INVALID_DATE = "OB.Field.InvalidDate";
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
-
+    public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT = "Data.ControlParameters.MaximumIndividualAmount.Amount";
+    public static final String INVALID_MAXIMUM_INDIVIDUAL_AMOUNT = "Invalid value for Amount in MaximumIndividualAmount";
+    public static final String INVALID_CURRENCY = "Invalid value for currency in MaximumIndividualAmount" ;
+    public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
+    public static final String INVALID_PERIOD_TYPE = "Invalid value for period type in PeriodicLimits";
+    public static final String PATH_PERIOD_TYPE = "Data.ControlParameters.PeriodicLimits.PeriodType";
+    public static final String INVALID_VALID_TO_DATE = "Valid to Date specified in the request is invalid";
+    public static final String PATH_VALID_TO_DATE = "Data.ControlParameters.ValidToDateTime";
 }
 
