@@ -1,13 +1,19 @@
 /**
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
- * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package com.wso2.openbanking.accelerator.consent.extensions.manage.validator;
@@ -31,19 +37,6 @@ import java.util.Iterator;
 public class VRPConsentRequestValidator {
 
     private static final Log log = LogFactory.getLog(VRPConsentRequestValidator.class);
-
-    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND = "Instructed Amount isn't present in the payload";
-
-    public static final String PATH_MAXIMUM_INDIVIDUAL_CURRENCY = "Data.ControlParameters." +
-            "MaximumIndividualAmount.Currency";
-
-    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND = "Instructed currency isn't " +
-            "present in the payload";
-
-    public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
-
-    public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodLimits.PeriodAlignment";
-
     /**
      * Method to validate variable recurring payment control parameters.
      *
@@ -57,27 +50,28 @@ public class VRPConsentRequestValidator {
         if (controlParameters.containsKey(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)) {
             JSONObject maximumIndividualAmount = (JSONObject) controlParameters
                     .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
-            Object amount = maximumIndividualAmount.get(ConsentExtensionConstants.AMOUNT);
-            Object currency = maximumIndividualAmount.get(ConsentExtensionConstants.CURRENCY);
+            String amount = maximumIndividualAmount.getAsString(ConsentExtensionConstants.AMOUNT);
+            String currency = maximumIndividualAmount.getAsString(ConsentExtensionConstants.CURRENCY);
 
             // validate amount
-            if (!ConsentManageUtil.validateAmount(maximumIndividualAmount)) {
+            if (!ConsentManageUtil.validateMaximumIndividualAmount(maximumIndividualAmount)) {
                 log.error(ErrorConstants.INVALID_MAXIMUM_INDIVIDUAL_AMOUNT);
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
                         ErrorConstants.INVALID_MAXIMUM_INDIVIDUAL_AMOUNT,
                         ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
             }
 
-            if (amount == null || StringUtils.isEmpty(amount.toString())) {
-                log.error(MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
+            if (StringUtils.isEmpty(amount)) {
+                log.error(ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
-                validationResponse.put(ConsentExtensionConstants.ERRORS, MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
+                validationResponse.put(ConsentExtensionConstants.ERRORS,
+                         ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
                 return validationResponse;
             }
 
             //validate currency
-            if (!ConsentManageUtil.validateCurrency(maximumIndividualAmount)) {
+            if (!ConsentManageUtil.validateMaximumIndividualAmountCurrency(maximumIndividualAmount)) {
                 log.error(ErrorConstants.INVALID_CURRENCY);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -87,12 +81,12 @@ public class VRPConsentRequestValidator {
                         ErrorConstants.INVALID_CURRENCY, ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
             }
 
-            if (currency == null || StringUtils.isEmpty(currency.toString())) {
-                log.error(MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
+            if (StringUtils.isEmpty(currency)) {
+                log.error(ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
                 validationResponse.put(ConsentExtensionConstants.ERRORS,
-                        MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
+                        ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
                 return validationResponse;
             }
         }
@@ -123,40 +117,40 @@ public class VRPConsentRequestValidator {
             while (it.hasNext()) {
                 JSONObject limit = (JSONObject) it.next();
 
-                Object amount =  limit.get(ConsentExtensionConstants.AMOUNT);
-                Object currency = limit.get(ConsentExtensionConstants.CURRENCY);
-                Object periodType = limit.get(ConsentExtensionConstants.PERIOD_TYPE);
+                String amount =  limit.getAsString(ConsentExtensionConstants.AMOUNT);
+                String currency = limit.getAsString(ConsentExtensionConstants.CURRENCY);
+                String periodType = limit.getAsString(ConsentExtensionConstants.PERIOD_TYPE);
 
                 // validate amount
-                if (!ConsentManageUtil.validateAmount(limit)) {
+                if (!ConsentManageUtil.validateMaximumIndividualAmount(limit)) {
                     log.error(ErrorConstants.INVALID_MAXIMUM_INDIVIDUAL_AMOUNT);
                     return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INVALID_MAXIMUM_INDIVIDUAL_AMOUNT,
                             ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
                 }
 
-                if (amount == null || StringUtils.isEmpty(amount.toString())) {
-                    log.error(MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
+                if (StringUtils.isEmpty(amount)) {
+                    log.error(ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
                     validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                     validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
                     validationResponse.put(ConsentExtensionConstants.ERRORS,
-                            MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
+                            ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND);
                     return validationResponse;
                 }
 
                 //validate currency
-                if (!ConsentManageUtil.validateCurrency(limit)) {
+                if (!ConsentManageUtil.validateMaximumIndividualAmountCurrency(limit)) {
                     log.error(ErrorConstants.INVALID_CURRENCY);
                     return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INVALID_CURRENCY, ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
                 }
 
-                if (currency == null || StringUtils.isEmpty(currency.toString())) {
-                    log.error(MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
+                if (StringUtils.isEmpty(currency)) {
+                    log.error(ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
                     validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                     validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
                     validationResponse.put(ConsentExtensionConstants.ERRORS,
-                           MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
+                           ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND);
                     return validationResponse;
                 }
 
@@ -164,7 +158,7 @@ public class VRPConsentRequestValidator {
                 if (ConsentManageUtil.validatePeriodicAlignment(limit)) {
                     log.error(ErrorConstants.INVALID_PERIOD_ALIGNMENT);
                     return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-                            INVALID_PERIOD_ALIGNMENT, PATH_PERIOD_ALIGNMENT);
+                            ErrorConstants.INVALID_PERIOD_ALIGNMENT, ErrorConstants.PATH_PERIOD_ALIGNMENT);
                 }
 
                 //validate period type
@@ -174,7 +168,7 @@ public class VRPConsentRequestValidator {
                             ErrorConstants.INVALID_PERIOD_TYPE, ErrorConstants.PATH_PERIOD_TYPE);
                 }
 
-                if (periodType == null || StringUtils.isEmpty(periodType.toString())) {
+                if (StringUtils.isEmpty(periodType)) {
                     log.error(ErrorConstants.INVALID_PERIOD_TYPE);
                     validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                     validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);

@@ -122,8 +122,8 @@ public class ConsentExtensionConstants {
     public static final String INSTRUCTION_IDENTIFICATION = "InstructionIdentification";
     public static final String REJECTED_STATUS = "rejected";
     public static final String OPEN_ENDED_AUTHORIZATION = "Open Ended Authorization Requested";
-    public static final String DEBTOR_ACC_TITLE = "DebtorAccount";
-    public static final String SCHEME_NAME_TITLE = "SchemeName";
+    public static final String DEBTOR_ACC_TITLE = "Debtor Account";
+    public static final String SCHEME_NAME_TITLE = "Scheme Name";
     public static final String IDENTIFICATION_TITLE = "Identification";
     public static final String NAME_TITLE = "Name";
     public static final String SECONDARY_IDENTIFICATION_TITLE = "Secondary Identification";

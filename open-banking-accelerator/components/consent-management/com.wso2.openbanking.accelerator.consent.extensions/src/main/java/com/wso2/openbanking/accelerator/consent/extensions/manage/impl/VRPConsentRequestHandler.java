@@ -1,9 +1,19 @@
 /**
- * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
- * This software is the property of WSO2 LLC. and its suppliers, if any.
- * Dissemination of any information or reproduction of any material contained
- * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
- * You may not alter or remove any copyright or other notice from copies of this content.
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package com.wso2.openbanking.accelerator.consent.extensions.manage.impl;
@@ -12,7 +22,6 @@ import com.wso2.openbanking.accelerator.common.exception.ConsentManagementExcept
 import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
@@ -51,12 +60,6 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     public void handleConsentManagePost(ConsentManageData consentManageData) {
 
         try {
-            //Validate cutoff datetime
-            if (ConsentExtensionUtils.shouldInitiationRequestBeRejected()) {
-                log.error(ErrorConstants.MSG_ELAPSED_CUT_OFF_DATE_TIME);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR);
-            }
-
             //Get the request payload from the ConsentManageData
             Object request = consentManageData.getPayload();
             if (!(request instanceof JSONObject)) {
@@ -79,11 +82,11 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
             handlePaymentPost(consentManageData, requestObject, response);
 
         } catch (ConsentManagementException e) {
-            log.error(e.getMessage());
+            log.error("Error occurred while handling the initiation request", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR);
         }
-        }
+    }
 
 
     @Override
@@ -176,11 +179,12 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE, ((JSONObject) ((JSONArray) (controlParameters)
                 .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
                 .toString());
+        consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray) (controlParameters)
+                .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
+                .toString());
         consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)
                 ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
                 .get(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).toString());
-        consentAttributes.put(ConsentExtensionConstants.PAID_AMOUNT, "0");
-        consentAttributes.put(ConsentExtensionConstants.LAST_PAYMENT_DATE, "0");
 
         Map<String, String> headers = consentManageData.getHeaders();
         //Setting response headers

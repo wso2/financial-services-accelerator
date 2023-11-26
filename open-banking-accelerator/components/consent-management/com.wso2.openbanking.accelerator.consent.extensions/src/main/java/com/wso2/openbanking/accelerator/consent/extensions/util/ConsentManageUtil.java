@@ -30,8 +30,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentM
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -628,22 +626,28 @@ public class ConsentManageUtil {
 
     /**
      * validate the maximum amount in the payload  in VRP.
+     * @param maximumIndividualAmount Maximum Individual Amount
+     * @return
      */
-    public static boolean validateAmount(JSONObject maximumIndividualAmount) {
+    public static boolean validateMaximumIndividualAmount(JSONObject maximumIndividualAmount) {
         return (maximumIndividualAmount != null && maximumIndividualAmount
                 .containsKey(ConsentExtensionConstants.AMOUNT));
     }
 
     /**
      * validate the currency in the payload  in VRP.
+     * @param maximumIndividualAmount Maximum Individual Amount
+     * @return
      */
-    public static boolean validateCurrency(JSONObject maximumIndividualAmount) {
+    public static boolean validateMaximumIndividualAmountCurrency(JSONObject maximumIndividualAmount) {
         return (maximumIndividualAmount != null && maximumIndividualAmount
                 .containsKey(ConsentExtensionConstants.CURRENCY));
     }
 
     /**
      * validate the periodiclimits in the payload  in VRP.
+     * @param periodiclimit
+     * @return
      */
     public static boolean validatePeriodicAlignment(JSONObject periodiclimit) {
         String periodAlignment = (String) periodiclimit.get(ConsentExtensionConstants.PERIOD_ALIGNMENT);
@@ -654,6 +658,8 @@ public class ConsentManageUtil {
 
     /**
      * method to validate periodic type in VRP.
+     * @param periodiclimit Maximum Individual Amount
+     * @return
      */
     public static boolean validatePeriodicType(JSONObject periodiclimit) {
         String periodType = (String) periodiclimit.get(ConsentExtensionConstants.PERIOD_TYPE);
@@ -664,86 +670,6 @@ public class ConsentManageUtil {
                 ConsentExtensionConstants.YEAR);
 
         return (periodTypes.contains(periodType));
-    }
-
-    public static boolean validateRevokeStatus(JSONObject revokedNotification) {
-
-        String revokedStatus = (String) revokedNotification.get(ConsentExtensionConstants.REVOKED_STATUS);
-
-        return (ConsentExtensionConstants.REVOKED_STATUS.equals(revokedStatus));
-
-    }
-    /**
-     * Method to handle the Payment GET requests.
-     *
-     * @param consentManageData Object containing request details
-     * @param consent           Consent stored at initiation post
-     * @throws ConsentManagementException
-     */
-    private static void handlePaymentInitiationGet(ConsentManageData consentManageData, ConsentResource consent,
-                                                   String paymentType) throws ParseException {
-
-        String type = ConsentExtensionConstants.VRP.equals(paymentType) ? ConsentExtensionConstants.VRP :
-                ConsentExtensionConstants.PAYMENTS;
-        JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).
-                parse(consent.getReceipt());
-        consentManageData.setResponsePayload(ConsentManageUtil
-                .getInitiationRetrievalResponse(receiptJSON, consent, consentManageData, type));
-        consentManageData.setResponseStatus(ResponseStatus.OK);
-    }
-
-
-    /**
-     * Utility class to check whether the Debtor/Creditor AccountSecondary Identification is valid.
-     *
-     * @param accSecondaryIdentification Debtor/Creditor Account Secondary Identification
-     * @return
-     */
-    public static boolean isSecondaryIdentificationValid(String accSecondaryIdentification) {
-        return (accSecondaryIdentification.length() <= 34);
-    }
-
-    /**
-     * Utility class to check whether the Debtor/Creditor Account Name is valid.
-     *
-     * @param accName Debtor/Creditor Account Name
-     * @return
-     */
-    public static boolean isAccNameValid(String accName) {
-        return (accName.length() <= 350);
-    }
-
-
-    /**
-     * Utility class to check whether the Debtor/Creditor Account Identification is valid.
-     *
-     * @param identification Debtor/Creditor Account Identification
-     * @return
-     */
-    public static boolean isIdentificationValid(String identification) {
-        return (identification.length() <= 256);
-    }
-
-
-    /**
-     * Utility class to check whether the Debtor/Creditor Account Scheme name matches with Enum values.
-     *
-     * @param schemeName Debtor/Creditor Account Scheme Name
-     * @return
-     */
-    public static boolean isSchemeNameValid(String schemeName) {
-        EnumSet<DebtorAccountSchemeNameEnum> set = EnumSet.allOf(DebtorAccountSchemeNameEnum.class);
-        return set.contains(DebtorAccountSchemeNameEnum.fromValue(schemeName));
-    }
-
-    /**
-     * Utility class to check whether the Debtor/Creditor Account Scheme name length.
-     *
-     * @param schemeName Debtor/Creditor Account Scheme Name
-     * @return
-     */
-    public static boolean validateSchemeNameLength(String schemeName) {
-        return (schemeName.length() <= 256);
     }
 
     /**
@@ -769,7 +695,7 @@ public class ConsentManageUtil {
 
             Object schemeName = debtorAccount.get(ConsentExtensionConstants.SCHEME_NAME);
 
-            if (schemeName == null || StringUtils.isEmpty(schemeName.toString())) {
+            if (StringUtils.isEmpty(schemeName.toString())) {
                 log.error(ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -778,8 +704,8 @@ public class ConsentManageUtil {
             }
             //Validate Debtor Account Scheme name
             if (!(schemeName instanceof String) ||
-                    ConsentManageUtil.isSchemeNameValid((String) schemeName) ||
-                    !ConsentManageUtil.validateSchemeNameLength((String) schemeName)) {
+                    ConsentManageUtil.isDebtorAccSchemeNameValid((String) schemeName) ||
+                    !ConsentManageUtil.validateDebtorAccSchemeNameLength((String) schemeName)) {
                 log.error(ErrorConstants.INVALID_DEBTOR_ACC_SCHEME_NAME);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -809,7 +735,7 @@ public class ConsentManageUtil {
             Object identification = debtorAccount.get(ConsentExtensionConstants.IDENTIFICATION);
             //Validate Debtor Account Identification
             if (!(identification instanceof String) ||
-                    !ConsentManageUtil.isIdentificationValid((String) identification)) {
+                    !ConsentManageUtil.isDebtorAccIdentificationValid((String) identification)) {
                 log.error(ErrorConstants.INVALID_DEBTOR_ACC_IDENTIFICATION);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -839,36 +765,12 @@ public class ConsentManageUtil {
 
         if (debtorAccount.containsKey(ConsentExtensionConstants.NAME) &&
                 (!(debtorAccount.get(ConsentExtensionConstants.NAME) instanceof String) ||
-                        !ConsentManageUtil.isAccNameValid(debtorAccount
+                        !ConsentManageUtil.isDebtorAccNameValid(debtorAccount
                                 .getAsString(ConsentExtensionConstants.NAME)))) {
             log.error(ErrorConstants.INVALID_DEBTOR_ACC_NAME);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
             validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
             validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_DEBTOR_ACC_NAME);
-            return validationResponse;
-        }
-
-        //Validate Debtor Account Secondary Identification
-        if (debtorAccount.containsKey(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) &&
-                (!(debtorAccount.get(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) instanceof String) ||
-                        !ConsentManageUtil.isSecondaryIdentificationValid(debtorAccount
-                                .getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION)))) {
-            log.error(ErrorConstants.INVALID_DEBTOR_ACC_SEC_IDENTIFICATION);
-            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
-            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
-            validationResponse.put(ConsentExtensionConstants.ERRORS,
-                    ErrorConstants.INVALID_DEBTOR_ACC_SEC_IDENTIFICATION);
-            return validationResponse;
-        }
-
-        //Validate Sort Code number scheme
-        String schemeName = debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME);
-        String identification = debtorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION);
-        if (!checkSortCodeSchemeNameAndIdentificationValidity(schemeName, identification)) {
-            log.error(ErrorConstants.INVALID_IDENTIFICATION);
-            validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
-            validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
-            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_IDENTIFICATION);
             return validationResponse;
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -902,8 +804,8 @@ public class ConsentManageUtil {
             Object schemeName = creditorAccount.get(ConsentExtensionConstants.SCHEME_NAME);
             //Validate Creditor Account Scheme name
             if (!(schemeName instanceof String) ||
-                    ConsentManageUtil.isSchemeNameValid((String) schemeName) ||
-                    !ConsentManageUtil.validateSchemeNameLength((String) schemeName)) {
+                    ConsentManageUtil.isDebtorAccSchemeNameValid((String) schemeName) ||
+                    !ConsentManageUtil.validateDebtorAccSchemeNameLength((String) schemeName)) {
                 log.error(ErrorConstants.INVALID_CREDITOR_ACC_SCHEME_NAME);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -935,7 +837,7 @@ public class ConsentManageUtil {
             Object identification = creditorAccount.get(ConsentExtensionConstants.IDENTIFICATION);
             //Validate Creditor Account Identification
             if (!(identification instanceof String) ||
-                    !ConsentManageUtil.isIdentificationValid((String) identification)) {
+                    !ConsentManageUtil.isDebtorAccIdentificationValid((String) identification)) {
                 log.error(ErrorConstants.INVALID_CREDITOR_ACC_IDENTIFICATION);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -964,7 +866,7 @@ public class ConsentManageUtil {
         }
         if (creditorAccount.containsKey(ConsentExtensionConstants.NAME) &&
                 (!(creditorAccount.get(ConsentExtensionConstants.NAME) instanceof String) ||
-                        !ConsentManageUtil.isAccNameValid(creditorAccount
+                        !ConsentManageUtil.isDebtorAccNameValid(creditorAccount
                                 .getAsString(ConsentExtensionConstants.NAME)))) {
             log.error(ErrorConstants.INVALID_CREDITOR_ACC_NAME);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
@@ -987,7 +889,7 @@ public class ConsentManageUtil {
         }
         if (creditorAccount.containsKey(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) &&
                 (!(creditorAccount.get(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) instanceof String) ||
-                        !ConsentManageUtil.isSecondaryIdentificationValid(creditorAccount
+                        !ConsentManageUtil.isDebtorAccSecondaryIdentificationValid(creditorAccount
                                 .getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION)))) {
             log.error(ErrorConstants.INVALID_CREDITOR_ACC_IDENTIFICATION);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
