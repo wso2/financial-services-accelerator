@@ -57,7 +57,6 @@ public class AcceleratorConsentExtensionFactory {
                 consentManageRequestHandler = new PaymentConsentRequestHandler();
                 break;
             case ConsentExtensionConstants.VRP_CONSENT_PATH:
-            case ConsentExtensionConstants.VRP_RESPONSE_PROCESS_PATH:
                 consentManageRequestHandler = new VRPConsentRequestHandler();
                 break;
             default:

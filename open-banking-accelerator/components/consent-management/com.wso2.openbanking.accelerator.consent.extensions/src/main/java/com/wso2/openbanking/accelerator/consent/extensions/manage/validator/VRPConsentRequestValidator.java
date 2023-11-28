@@ -270,7 +270,6 @@ public class VRPConsentRequestValidator {
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
 }
 
 

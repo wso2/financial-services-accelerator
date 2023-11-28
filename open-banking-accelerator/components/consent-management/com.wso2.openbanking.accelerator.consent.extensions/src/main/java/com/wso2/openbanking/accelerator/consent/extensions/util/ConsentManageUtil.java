@@ -693,9 +693,9 @@ public class ConsentManageUtil {
                 return validationResponse;
             }
 
-            Object schemeName = debtorAccount.get(ConsentExtensionConstants.SCHEME_NAME);
+           String schemeName = debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME);
 
-            if (StringUtils.isEmpty(schemeName.toString())) {
+            if (StringUtils.isEmpty(schemeName)) {
                 log.error(ErrorConstants.MISSING_DEBTOR_ACC_SCHEME_NAME);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -704,8 +704,8 @@ public class ConsentManageUtil {
             }
             //Validate Debtor Account Scheme name
             if (!(schemeName instanceof String) ||
-                    ConsentManageUtil.isDebtorAccSchemeNameValid((String) schemeName) ||
-                    !ConsentManageUtil.validateDebtorAccSchemeNameLength((String) schemeName)) {
+                    ConsentManageUtil.isDebtorAccSchemeNameValid(schemeName) ||
+                    !ConsentManageUtil.validateDebtorAccSchemeNameLength(schemeName)) {
                 log.error(ErrorConstants.INVALID_DEBTOR_ACC_SCHEME_NAME);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -753,9 +753,9 @@ public class ConsentManageUtil {
 
         //Validate Debtor Account Name
 
-        Object debtorAcc = debtorAccount.get(ConsentExtensionConstants.NAME);
+        String debtorAcc = debtorAccount.getAsString(ConsentExtensionConstants.NAME);
 
-        if (debtorAcc == null || StringUtils.isEmpty(debtorAcc.toString())) {
+        if (debtorAcc == null || StringUtils.isEmpty(debtorAcc)) {
             log.error(ErrorConstants.FIELD_MISSING);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
             validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -801,11 +801,11 @@ public class ConsentManageUtil {
                 return validationResponse;
             }
 
-            Object schemeName = creditorAccount.get(ConsentExtensionConstants.SCHEME_NAME);
+            String schemeName = creditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME);
             //Validate Creditor Account Scheme name
             if (!(schemeName instanceof String) ||
-                    ConsentManageUtil.isDebtorAccSchemeNameValid((String) schemeName) ||
-                    !ConsentManageUtil.validateDebtorAccSchemeNameLength((String) schemeName)) {
+                    ConsentManageUtil.isDebtorAccSchemeNameValid(schemeName) ||
+                    !ConsentManageUtil.validateDebtorAccSchemeNameLength(schemeName)) {
                 log.error(ErrorConstants.INVALID_CREDITOR_ACC_SCHEME_NAME);
                 validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
                 validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -855,9 +855,9 @@ public class ConsentManageUtil {
         }
 
         //Validate Creditor Account Name
-        Object creditorAcc = creditorAccount.get(ConsentExtensionConstants.NAME);
+        String creditorAcc = creditorAccount.getAsString(ConsentExtensionConstants.NAME);
 
-        if (creditorAcc == null || StringUtils.isEmpty(creditorAcc.toString())) {
+        if (creditorAcc == null || StringUtils.isEmpty(creditorAcc)) {
             log.error(ErrorConstants.FIELD_MISSING);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
             validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
@@ -876,11 +876,11 @@ public class ConsentManageUtil {
         }
 
         //Validate Creditor Account Secondary Identification
-        Object creditorAccSecondaryIdentification = creditorAccount.get(ConsentExtensionConstants
+        String creditorAccSecondaryIdentification = creditorAccount.getAsString(ConsentExtensionConstants
                 .SECONDARY_IDENTIFICATION);
 
         if (creditorAccSecondaryIdentification == null || StringUtils.isEmpty
-                (creditorAccSecondaryIdentification.toString())) {
+                (creditorAccSecondaryIdentification)) {
             log.error(ErrorConstants.FIELD_MISSING);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
             validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
