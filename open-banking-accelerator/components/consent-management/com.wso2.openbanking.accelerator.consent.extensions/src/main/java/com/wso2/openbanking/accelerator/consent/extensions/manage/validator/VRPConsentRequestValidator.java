@@ -249,7 +249,7 @@ public class VRPConsentRequestValidator {
         if (initiation.containsKey(ConsentExtensionConstants.DEBTOR_ACC)) {
 
             JSONObject debtorAccount = (JSONObject) initiation.get(ConsentExtensionConstants.DEBTOR_ACC);
-            JSONObject validationResult = ConsentManageUtil.validateVRPDebtorAccount(debtorAccount);
+            JSONObject validationResult = ConsentManageUtil.validateDebtorAccount(debtorAccount);
 
             if (!(boolean) validationResult.get(ConsentExtensionConstants.IS_VALID)) {
                 return validationResult;
@@ -260,7 +260,7 @@ public class VRPConsentRequestValidator {
         if (initiation.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
             JSONObject creditorAccount = (JSONObject) initiation.get(ConsentExtensionConstants.CREDITOR_ACC);
 
-            JSONObject validationResult = ConsentManageUtil.validateVRPCreditorAccount(creditorAccount);
+            JSONObject validationResult = ConsentManageUtil.validateCreditorAccount(creditorAccount);
 
             if (!(boolean) validationResult.get(ConsentExtensionConstants.IS_VALID)) {
                 return validationResult;
