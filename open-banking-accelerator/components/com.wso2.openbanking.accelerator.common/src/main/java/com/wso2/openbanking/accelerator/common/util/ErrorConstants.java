@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
- *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -108,6 +105,7 @@ public class ErrorConstants {
     public static final String PATH_CONSENT_ID = "Data.Initiation.Consent-id";
     public static final String PATH_DATA = "Data";
     public static final String PATH_INITIATION = "Data.Initiation";
+    public static final String PATH_CONTROL_PARAMETERS = "Data.ControlParameters";
     public static final String PATH_RISK = "Data.Risk";
     public static final String PATH_URL = "Data.Url";
     public static final String PATH_EXPIRATION_DATE = "Data.Expiration-Date";
@@ -226,22 +224,39 @@ public class ErrorConstants {
     public static final String FIELD_INVALID_DATE = "OB.Field.InvalidDate";
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
     // vrp
-    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_NOT_FOUND = "Mandatory parameter MaximumIndividualAmount" +
+    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_IS_MISSING = "Mandatory parameter MaximumIndividualAmount" +
             " Amount is missing in the payload.";
-    public static final String PATH_MAXIMUM_INDIVIDUAL_CURRENCY = "Data.ControlParameters." +
-            "MaximumIndividualAmount.Currency";
-    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_NOT_FOUND = "Mandatory parameter " +
-            "MaximumIndividualAmount Currency is missing in the payload";
-    public static final String INVALID_MAXIMUM_INDIVIDUAL_AMOUNT = "Invalid value for Amount " +
-            "in MaximumIndividualAmount";
+    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING = "Mandatory parameter" +
+            "Currency in MaximumIndividualAmount is missing in the payload";
+    public static final String INVALID_AMOUNT = "Parameter in the payload for " +
+            "Amount" + "is missing in the payload or its null or not a string";
     public static final String INVALID_CURRENCY = "Mandatory parameter " +
-            "MaximumIndividualAmount Currency is missing in the payload";
+            "Currency is missing in the payload or its null or not a string";
     public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
-    public static final String INVALID_PERIOD_TYPE = "Mandatory parameter " +
+    public static final String MISSING_PERIOD_TYPE = "Mandatory parameter " +
             "period type is missing in the payload";
     public static final String INVALID_VALID_TO_DATE = "Valid to Date specified in the request is invalid";
+
+    // new error constants
+    public static final String INVALID_PARAMETER = "Parameter passed in is null , " +
+            "empty or not a JSONObject";
+    public static final String INVALID_DATE_TIME_FORMAT = "Date and Time  is not in correct JSON " +
+            "ISO-8601 date-time format";
+    public static final String INVALID_PARAMETER_PERIODIC_LIMITS = "Parameter passed in is null , " +
+            "empty or not a JSONArray";
+    public static final String MISSING_PERIOD_LIMITS = "Mandatory parameter " +
+            "periodic limits is missing in the payload";
+
     public static final String PATH_VALID_TO_DATE = "Data.ControlParameters.ValidToDateTime";
-    public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT = "Data.ControlParameters.MaximumIndividualAmount.Amount";
+    public static final String PATH_VALID_FROM_DATE = "Data.ControlParameters.ValidFromDateTime";
+    public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT = "Data.ControlParameters.MaximumIndividualAmount";
+    public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT_AMOUNT = "Data.ControlParameters." +
+            "MaximumIndividualAmount.Amount";
+    public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY = "Data.ControlParameters." +
+            "MaximumIndividualAmount.Currency";
+    public static final String PATH_PERIOD_LIMIT = "Data.ControlParameters.PeriodicLimits";
+    public static final String PATH_PERIOD_LIMIT_AMOUNT = "Data.ControlParameters.PeriodicLimits.Amount";
+    public static final String PATH_PERIOD_LIMIT_CURRENCY = "Data.ControlParameters.PeriodicLimits.Currency";
     public static final String PATH_PERIOD_TYPE = "Data.ControlParameters.PeriodicLimits.PeriodType";
     public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodLimits.PeriodAlignment";
 }

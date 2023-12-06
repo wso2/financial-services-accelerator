@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
- *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -48,13 +45,15 @@ import static com.wso2.openbanking.accelerator.consent.extensions.common.Consent
  * Consent Manage request handler class for VRP Payment Request Validation.
  */
 public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
-
     private static final Log log = LogFactory.getLog(VRPConsentRequestHandler.class);
-
     /**
-     * Method to handle Variable Recurring Payment Consent Manage Post Request.
+     * Method to handle Variable Recurring Payment Consent Manage POST Request.
+     * This method is responsible for processing a Variable Recurring Payment Consent Manage POST request.
+     * It validates the payment initiation request, checks for the existence of an idempotency key,
+     * and then delegates the handling to the specific payment initiation flows.
      *
-     * @param consentManageData Object containing request details
+     * @param consentManageData Object
+     *
      */
     @Override
     public void handleConsentManagePost(ConsentManageData consentManageData) {
@@ -62,15 +61,17 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         try {
             //Get the request payload from the ConsentManageData
             Object request = consentManageData.getPayload();
-            if (!(request instanceof JSONObject)) {
-                log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.INVALID_REQ_PAYLOAD);
+
+            //Validate Payment Initiation request
+            JSONObject validationResponse = VRPConsentRequestValidator.validateVRPPayload(request);
+
+            //Throw an error if the initiation payload is not valid
+            if (!((boolean) validationResponse.get(ConsentExtensionConstants.IS_VALID))) {
+                log.error(ErrorConstants.PAYLOAD_INVALID);
+                throw new ConsentException((ResponseStatus) validationResponse
+                        .get(ConsentExtensionConstants.HTTP_CODE),
+                        String.valueOf(validationResponse.get(ConsentExtensionConstants.ERRORS)));
             }
-
-            JSONObject requestObject = (JSONObject) request;
-
-            //Set request object to the response
-            JSONObject response = requestObject;
 
             //Check Idempotency key exists
             if (StringUtils.isEmpty(consentManageData.getHeaders()
@@ -79,7 +80,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
             }
 
             //Handle payment initiation flows
-            handlePaymentPost(consentManageData, requestObject, response);
+            handlePaymentPost(consentManageData, request);
 
         } catch (ConsentManagementException e) {
             log.error("Error occurred while handling the initiation request", e);
@@ -89,6 +90,15 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     }
 
 
+    /**
+     * Method to handle Variable Recurring Payment Consent Manage POST Request.
+     * This method is responsible for processing a Variable Recurring Payment Consent Manage POST request.
+     * It validates the payment initiation request, checks for the existence of an idempotency key,
+     * and then delegates the handling to the specific payment initiation flows.
+     *
+     * @param consentManageData Object
+     *
+     */
     @Override
     public void handleConsentManageGet(ConsentManageData consentManageData) {
 
@@ -122,6 +132,16 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         }
     }
 
+    /**
+     * Method to handle Variable Recurring Payment Consent Manage GET Request.
+     * This method retrieves and processes information related to a Variable Recurring Payment consent
+     * based on the provided consent ID. It validates the consent ID, checks if the consent exists,
+     * verifies if the consent belongs to the client making the request, and constructs a response payload
+     * containing relevant initiation retrieval details. The response status is set accordingly.
+     *
+     * @param consentManageData Object
+     *
+     */
     @Override
     public void handleConsentManageDelete(ConsentManageData consentManageData) {
 
@@ -129,64 +149,65 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     }
 
     /**
-     * Method to handle the Variable Recurring Payment POST requests.
+     * Method to handle Variable Recurring Payment POST requests.
+     * This private method processes Variable Recurring Payment POST requests, creating a new consent
+     * based on the provided request payload. It performs the following actions:
+     *   - Creates a DetailedConsentResource representing the consent initiation.
+     *   - Stores consent attributes, including the idempotency key, for tracking and retrieval.
+     *   - Constructs the response payload containing initiation details and sets appropriate headers.
+     *   - Sets the response status to Create.
      *
-     * @param consentManageData Object containing request details
-     * @param requestObject     Request payload
-     * @param response          Response
+     * @param consentManageData Object containing request details, including client ID, request payload, headers,
+     *                          and other relevant information.
      */
-    private void handlePaymentPost(ConsentManageData consentManageData, JSONObject requestObject, JSONObject response)
+    private void handlePaymentPost(ConsentManageData consentManageData, Object request)
             throws ConsentManagementException {
 
+        // Variable to store the created consent
         DetailedConsentResource createdConsent;
 
-        //Validate Payment Initiation request
-        JSONObject validationResponse = VRPConsentRequestValidator.validatePaymentInitiation(requestObject);
-
-        //Throw an error if the initiation payload is not valid
-        if (!((boolean) validationResponse.get(ConsentExtensionConstants.IS_VALID))) {
-
-            log.error(ErrorConstants.PAYLOAD_INVALID);
-            throw new ConsentException((ResponseStatus) validationResponse
-                    .get(ConsentExtensionConstants.HTTP_CODE),
-                    String.valueOf(validationResponse.get(ConsentExtensionConstants.ERRORS)));
-        }
-
+        JSONObject requestObject = (JSONObject) request;
+        // Create a ConsentResource representing the requested consent
         ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
                 requestObject.toJSONString(), ConsentExtensionConstants.VRP,
                 ConsentExtensionConstants.AWAITING_AUTH_STATUS);
 
+        // Create the consent and retrieve the detailed consent resource
         createdConsent = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
                 .createAuthorizableConsent(requestedConsent, null,
                         CREATED_STATUS, AUTH_TYPE_AUTHORIZATION, true);
 
         //Set consent attributes for storing
-        Map<String, String> consentAttributes = new HashMap();
+        Map<String, String> consentAttributes = new HashMap<>();
         consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
                 .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
         //Store consent attributes
         ConsentServiceUtil.getConsentService().storeConsentAttributes(createdConsent.getConsentID(),
                 consentAttributes);
-        consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(response, createdConsent,
+        consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(requestObject, createdConsent,
                 consentManageData, ConsentExtensionConstants.VRP_PAYMENT));
 
         //Set Control Parameters as consent attributes to store
         JSONObject controlParameters = (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
                 .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
-        consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT, ((JSONObject) (controlParameters)
+
+        consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT,
+                ((JSONObject) (controlParameters)
                 .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)).get(ConsentExtensionConstants.AMOUNT)
                 .toString());
+        consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
+                (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+                .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
         consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE, ((JSONObject) ((JSONArray) (controlParameters)
-                .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
-                .toString());
-        consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray) (controlParameters)
                 .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
                 .toString());
         consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)
                 ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
                 .get(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).toString());
 
+        // Get request headers
         Map<String, String> headers = consentManageData.getHeaders();
+
         //Setting response headers
         //Setting created time and idempotency to headers to handle idempotency in Gateway
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_IDEMPOTENCY_KEY,
