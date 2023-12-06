@@ -51,7 +51,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
 
     /**
      * This method is used to Poll Events as per request params.
-     * @param eventPollingRequest
+     * @param eventPollingRequest JSON request for event polling
      * @return
      */
     public EventPollingResponse pollEvents(JSONObject eventPollingRequest) {
@@ -65,9 +65,9 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         } catch (OBEventNotificationException e) {
             log.error("Invalid client ID", e);
             eventPollingResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
-            eventPollingResponse.setErrorResponse(String.format("A client was not found" +
-                            " for the client id : '%s' in the database.. ",
-                    eventPollingDTO.getClientId()));
+            eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
+                            EventNotificationConstants.INVALID_REQUEST, String.format("A client was not found" +
+                            " for the client id : '%s' in the database.. ", eventPollingDTO.getClientId())));
             return eventPollingResponse;
         }
 
@@ -80,7 +80,8 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         } catch (OBEventNotificationException e) {
             log.error("OB Event Notification error" , e);
             eventPollingResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
-            eventPollingResponse.setErrorResponse(e.getMessage());
+            eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventPollingResponse;
         }
 
@@ -88,7 +89,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
 
     /**
      * This method will map the eventPollingRequest JSON to EventPollingDTO.
-     * @param eventPollingRequest
+     * @param eventPollingRequest JSON request for event polling
      * @return EventPollingDTO
      */
     public EventPollingDTO mapPollingRequest(JSONObject eventPollingRequest) {

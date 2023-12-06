@@ -460,6 +460,23 @@
        <RegistrationClientURI>https://localhost:8243/open-banking/0.1/register/</RegistrationClientURI>
        {% endif %}
        <RegistrationRequestParams>
+            <SoftwareEnvironmentIdentification>
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_name is defined %}
+                    <PropertyName>{{open_banking.dcr.registration.software_environment_identification.ssa_property_name}}</PropertyName>
+                {% else %}
+                    <PropertyName>software_environment</PropertyName>
+                {% endif %}
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_sandbox is defined %}
+                    <PropertyValueForSandbox>{{open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_sandbox}}</PropertyValueForSandbox>
+                {% else %}
+                    <PropertyValueForSandbox>sandbox</PropertyValueForSandbox>
+                {% endif %}
+                {% if open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_production is defined %}
+                    <PropertyValueForProduction>{{open_banking.dcr.registration.software_environment_identification.ssa_property_value_for_production}}</PropertyValueForProduction>
+                {% else %}
+                    <PropertyValueForProduction>production</PropertyValueForProduction>
+                {% endif %}
+            </SoftwareEnvironmentIdentification>
             <GrantTypes>
                 {% if open_banking.dcr.registration.grant_types.required is defined %}
                 <Required>{{open_banking.dcr.registration.grant_types.required}}</Required>
@@ -774,6 +791,13 @@
         <IdpStep>{{open_banking.sca.idp.step}}</IdpStep>
         {% endif %}
     </SCA>
+    <ELKAnalytics>
+        {% if open_banking.analytics.elk is defined %}
+            <Enabled>{{open_banking.analytics.elk.enabled}}</Enabled>
+        {% else %}
+            <Enabled>false</Enabled>
+        {% endif %}
+    </ELKAnalytics>
     <DataPublishing>
     {% if open_banking.data_publishing.enable is defined %}
         <Enabled>{{open_banking.data_publishing.enable}}</Enabled>

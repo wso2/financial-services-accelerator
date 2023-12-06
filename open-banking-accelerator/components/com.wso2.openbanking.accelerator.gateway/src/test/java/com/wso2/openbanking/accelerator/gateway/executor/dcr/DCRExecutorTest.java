@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.gateway.executor.dcr;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
@@ -70,7 +71,7 @@ import static org.mockito.Mockito.verify;
  * Test for DCR executor.
  */
 @PowerMockIgnore("jdk.internal.reflect.*")
-@PrepareForTest({IdentityUtil.class, GatewayDataHolder.class})
+@PrepareForTest({IdentityUtil.class, GatewayDataHolder.class, OpenBankingConfigParser.class})
 public class DCRExecutorTest {
 
     @Mock
@@ -84,6 +85,9 @@ public class DCRExecutorTest {
 
     @Mock
     APIManagerConfiguration apiManagerConfiguration;
+
+    @Mock
+    OpenBankingConfigParser openBankingConfigParser;
 
     @InjectMocks
     DCRExecutor dcrExecutor = new DCRExecutor();
@@ -392,6 +396,10 @@ public class DCRExecutorTest {
     @Test
     public void testPostProcessResponseForRegister() throws Exception {
 
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        Mockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+        Mockito.when(OpenBankingConfigParser.getInstance()
+                        .getSoftwareEnvIdentificationSSAPropertyValueForSandbox()).thenReturn("sandbox");
         OBAPIResponseContext obapiResponseContext = Mockito.mock(OBAPIResponseContext.class);
         MsgInfoDTO msgInfoDTO = Mockito.mock(MsgInfoDTO.class);
         DCRExecutor dcrExecutor = Mockito.spy(DCRExecutor.class);
@@ -633,6 +641,10 @@ public class DCRExecutorTest {
         Mockito.doReturn(dcrResponsePayload).when(obapiResponseContext).getResponsePayload();
 
         Mockito.when(openBankingConfigurationService.getAllowedAPIs()).thenReturn(configuredAPIList);
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        Mockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+        Mockito.when(OpenBankingConfigParser.getInstance().getSoftwareEnvIdentificationSSAPropertyValueForSandbox())
+                .thenReturn("sandbox");
         GatewayDataHolder.getInstance().setApiManagerConfiguration(apiManagerConfigurationService);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
         Mockito.doReturn("admin").when(apiManagerConfiguration).getFirstProperty(anyString());

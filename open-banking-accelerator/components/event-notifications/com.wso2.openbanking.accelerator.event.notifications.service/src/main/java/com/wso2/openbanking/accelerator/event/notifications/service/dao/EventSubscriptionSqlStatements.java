@@ -24,48 +24,48 @@ package com.wso2.openbanking.accelerator.event.notifications.service.dao;
 public class EventSubscriptionSqlStatements {
 
     public String storeEventSubscriptionQuery() {
-        return "INSERT INTO NOTIFICATION_SUBSCRIPTION (SUBSCRIPTION_ID, CLIENT_ID, CALLBACK_URL, TIMESTAMP, " +
+        return "INSERT INTO OB_NOTIFICATION_SUBSCRIPTION (SUBSCRIPTION_ID, CLIENT_ID, CALLBACK_URL, TIMESTAMP, " +
                 "SPEC_VERSION, STATUS, REQUEST) VALUES (?,?,?,?,?,?,?)";
     }
 
     public String storeSubscribedEventTypesQuery() {
-        return "INSERT INTO NOTIFICATION_SUBSCRIPTION_EVENTS (SUBSCRIPTION_ID, EVENT_TYPE) VALUES (?,?)";
+        return "INSERT INTO OB_NOTIFICATION_SUBSCRIBED_EVENTS (SUBSCRIPTION_ID, EVENT_TYPE) VALUES (?,?)";
     }
 
     public String getEventSubscriptionBySubscriptionIdQuery() {
         return "SELECT ns.SUBSCRIPTION_ID, ns.CLIENT_ID, ns.REQUEST, ns.CALLBACK_URL, ns.TIMESTAMP, ns.SPEC_VERSION, " +
-                "ns.STATUS, nse.EVENT_TYPE FROM NOTIFICATION_SUBSCRIPTION ns LEFT JOIN " +
-                "NOTIFICATION_SUBSCRIPTION_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
+                "ns.STATUS, nse.EVENT_TYPE FROM OB_NOTIFICATION_SUBSCRIPTION ns LEFT JOIN " +
+                "OB_NOTIFICATION_SUBSCRIBED_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
                 "ns.SUBSCRIPTION_ID = ? AND ns.STATUS = 'CREATED'";
     }
 
     public String getEventSubscriptionsByClientIdQuery() {
         return "SELECT ns.SUBSCRIPTION_ID, ns.CLIENT_ID, ns.REQUEST, ns.CALLBACK_URL, ns.TIMESTAMP, ns.SPEC_VERSION, " +
-                "ns.STATUS, nse.EVENT_TYPE FROM NOTIFICATION_SUBSCRIPTION ns LEFT JOIN " +
-                "NOTIFICATION_SUBSCRIPTION_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
+                "ns.STATUS, nse.EVENT_TYPE FROM OB_NOTIFICATION_SUBSCRIPTION ns LEFT JOIN " +
+                "OB_NOTIFICATION_SUBSCRIBED_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
                 "ns.CLIENT_ID = ? AND ns.STATUS = 'CREATED'";
     }
 
     public String getEventSubscriptionsByEventTypeQuery() {
         return "SELECT ns.SUBSCRIPTION_ID, ns.CLIENT_ID, ns.REQUEST, ns.CALLBACK_URL, ns.TIMESTAMP, ns.SPEC_VERSION, " +
-                "ns.STATUS, nse.EVENT_TYPE FROM NOTIFICATION_SUBSCRIPTION ns LEFT JOIN " +
-                "NOTIFICATION_SUBSCRIPTION_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
-                "ns.SUBSCRIPTION_ID IN (SELECT ns.SUBSCRIPTION_ID FROM NOTIFICATION_SUBSCRIPTION ns LEFT " +
-                "JOIN NOTIFICATION_SUBSCRIPTION_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
+                "ns.STATUS, nse.EVENT_TYPE FROM OB_NOTIFICATION_SUBSCRIPTION ns LEFT JOIN " +
+                "OB_NOTIFICATION_SUBSCRIBED_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
+                "ns.SUBSCRIPTION_ID IN (SELECT ns.SUBSCRIPTION_ID FROM OB_NOTIFICATION_SUBSCRIPTION ns LEFT " +
+                "JOIN OB_NOTIFICATION_SUBSCRIBED_EVENTS nse ON ns.SUBSCRIPTION_ID = nse.SUBSCRIPTION_ID WHERE " +
                 "nse.EVENT_TYPE = ? AND ns.STATUS = 'CREATED')";
     }
 
     public String updateEventSubscriptionQuery() {
-        return "UPDATE NOTIFICATION_SUBSCRIPTION SET CALLBACK_URL = ?, TIMESTAMP = ?, REQUEST = ?" +
+        return "UPDATE OB_NOTIFICATION_SUBSCRIPTION SET CALLBACK_URL = ?, TIMESTAMP = ?, REQUEST = ?" +
                 "WHERE SUBSCRIPTION_ID = ?";
     }
 
     public String updateEventSubscriptionStatusQuery() {
-        return "UPDATE NOTIFICATION_SUBSCRIPTION SET STATUS = ? WHERE SUBSCRIPTION_ID = ? && STATUS = 'CREATED'";
+        return "UPDATE OB_NOTIFICATION_SUBSCRIPTION SET STATUS = ? WHERE SUBSCRIPTION_ID = ? && STATUS = 'CREATED'";
     }
 
     public String deleteSubscribedEventTypesQuery() {
-        return "DELETE FROM NOTIFICATION_SUBSCRIPTION_EVENTS WHERE SUBSCRIPTION_ID = ?";
+        return "DELETE FROM OB_NOTIFICATION_SUBSCRIBED_EVENTS WHERE SUBSCRIPTION_ID = ?";
     }
 
 }

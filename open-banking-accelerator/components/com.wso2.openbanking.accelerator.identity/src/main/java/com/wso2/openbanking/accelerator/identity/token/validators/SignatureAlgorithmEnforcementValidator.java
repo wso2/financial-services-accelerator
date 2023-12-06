@@ -47,7 +47,8 @@ public class SignatureAlgorithmEnforcementValidator implements OBIdentityFilterV
 
         if (request instanceof HttpServletRequest) {
             String signedObject = request.getParameter(IdentityCommonConstants.OAUTH_JWT_ASSERTION);
-            if (StringUtils.isNotEmpty(signedObject)) {
+            if (StringUtils.isNotEmpty(signedObject) &&
+                    StringUtils.isNotEmpty(getRegisteredSigningAlgorithm(clientId))) {
                 validateInboundSignatureAlgorithm(getRequestSigningAlgorithm(signedObject),
                         getRegisteredSigningAlgorithm(clientId));
             }

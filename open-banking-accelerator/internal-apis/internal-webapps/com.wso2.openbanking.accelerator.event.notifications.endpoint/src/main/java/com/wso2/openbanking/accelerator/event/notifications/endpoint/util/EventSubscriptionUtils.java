@@ -29,7 +29,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jetty.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 
@@ -76,22 +76,24 @@ public class EventSubscriptionUtils {
      */
     public static Response mapEventSubscriptionServiceResponse(EventSubscriptionResponse eventSubscriptionResponse) {
         int status = eventSubscriptionResponse.getStatus();
-        if (eventSubscriptionResponse.getErrorResponse() == null) {
+        if (HttpStatus.NO_CONTENT.value() == status) {
+            return Response.status(status)
+                    .build();
+        } else if (eventSubscriptionResponse.getErrorResponse() == null) {
             if (eventSubscriptionResponse.getResponseBody() != null) {
                 return Response.status(status)
                         .entity(eventSubscriptionResponse.getResponseBody())
                         .build();
             } else {
-                return Response.status(HttpStatus.INTERNAL_SERVER_ERROR_500)
+                return Response.status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                         .entity(EventNotificationServiceUtil.getErrorDTO(EventNotificationConstants.INVALID_REQUEST,
                                 EventNotificationConstants.ERROR_HANDLING_EVENT_SUBSCRIPTION))
                         .build();
             }
-        } else  {
+        } else {
             return Response.status(status)
                     .entity(eventSubscriptionResponse.getErrorResponse())
                     .build();
         }
-
     }
 }

@@ -35,18 +35,19 @@ public interface AggregatedPollingDAO {
      * This method is to update the notification status by ID, allowed values are.
      * OPEN,ACK and ERR
      *
-     * @param notificationId
-     * @param notificationStatus
-     * @return
+     * @param notificationId     Notification ID to update
+     * @param notificationStatus Notification status to update
+     * @return Update is success or not
      * @throws OBEventNotificationException
      */
     Boolean updateNotificationStatusById(String notificationId, String notificationStatus)
             throws OBEventNotificationException;
 
     /**
-     * This method is to store event notifications in the OB_NOTIFICATION table.
-     * @param notificationError
-     * @return
+     * This method is to store event notifications error details in the OB_NOTIFICATION table.
+     *
+     * @param notificationError  Notification error details
+     * @return Stored event notifications error details
      * @throws OBEventNotificationException
      */
     Map<String, NotificationError> storeErrorNotification(NotificationError notificationError)
@@ -54,10 +55,11 @@ public interface AggregatedPollingDAO {
 
     /**
      * This method is to retrieve given number of notifications in the OB_NOTIFICATION table by client and status.
-     * @param clientId
-     * @param status
-     * @param max
-     * @return
+     *
+     * @param clientId  Client ID to retrieve notifications
+     * @param status    Notification status to retrieve
+     * @param max       Maximum number of notifications to retrieve
+     * @return List of notifications by client and status
      * @throws OBEventNotificationException
      */
     List<NotificationDTO> getNotificationsByClientIdAndStatus(String clientId, String
@@ -65,28 +67,28 @@ public interface AggregatedPollingDAO {
 
     /**
      * This method is to retrieve notifications by NotificationID.
-     * @param notificationId
      *
-     * @return
+     * @param notificationId  Notification ID to retrieve
+     * @return List of notifications by notification ID
      * @throws OBEventNotificationException
      */
     List<NotificationEvent> getEventsByNotificationID(String notificationId) throws OBEventNotificationException;
 
     /**
      * This method is to retrieve notifications in the OB_NOTIFICATION table by status.
-     * @param status
      *
-     * @return List<NotificationDTO>
+     * @param status  Notification status to retrieve
+     * @return List of notifications by status
      * @throws OBEventNotificationException
      */
     List<NotificationDTO> getNotificationsByStatus(String status) throws OBEventNotificationException;
 
     /**
      * This method is to retrieve notificationsCount by ClientId and Status.
-     * @param clientId
-     * @param eventStatus
      *
-     * @return
+     * @param clientId    Client ID to retrieve notifications
+     * @param eventStatus Notification status to retrieve
+     * @return List of notifications by status and client id
      * @throws OBEventNotificationException
      */
     int getNotificationCountByClientIdAndStatus(String clientId, String eventStatus)
@@ -94,9 +96,9 @@ public interface AggregatedPollingDAO {
 
     /**
      * This method is to retrieve the notification status.
-     * @param notificationId
      *
-     * @return
+     * @param notificationId  Notification ID to retrieve
+     * @return Notification status by notification ID
      * @throws OBEventNotificationException
      */
     boolean getNotificationStatus(String notificationId) throws OBEventNotificationException;
