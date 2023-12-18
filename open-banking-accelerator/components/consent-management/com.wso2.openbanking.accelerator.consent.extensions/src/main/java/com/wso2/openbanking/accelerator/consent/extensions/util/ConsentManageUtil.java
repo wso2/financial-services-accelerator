@@ -52,14 +52,15 @@ public class ConsentManageUtil {
     /**
      * Check whether valid Data object is provided.
      *
-     * @param initiation Data object in initiation payload
+     * @param requestbody Data object in initiation payload
      * @return whether the Data object is valid
      */
-    public static JSONObject validateInitiationDataBody(JSONObject initiation) {
+    public static JSONObject validateInitiationDataBody(JSONObject requestbody) {
         JSONObject validationResponse = new JSONObject();
 
-        if (!initiation.containsKey(ConsentExtensionConstants.DATA) || !(initiation.get(ConsentExtensionConstants.DATA)
-                instanceof JSONObject) || ((JSONObject) initiation.get(ConsentExtensionConstants.DATA)).isEmpty()) {
+        if (!requestbody.containsKey(ConsentExtensionConstants.DATA) || !(requestbody.
+                get(ConsentExtensionConstants.DATA)
+                instanceof JSONObject) || ((JSONObject) requestbody.get(ConsentExtensionConstants.DATA)).isEmpty()) {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
             return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
                     ErrorConstants.PAYLOAD_FORMAT_ERROR, ErrorConstants.PATH_REQUEST_BODY);
@@ -69,16 +70,6 @@ public class ConsentManageUtil {
         return validationResponse;
     }
 
-
-    /**
-     * Check whether valid Data object is null.
-     *
-     * @param data Data object in initiation payload
-     * @return whether the Data object is valid
-     */
-    public static boolean validateDataIsNull(JSONObject data) {
-        return data != null;
-    }
 
     /**
      * Method to construct the consent manage validation response.
@@ -630,55 +621,28 @@ public class ConsentManageUtil {
             return false;
         }
     }
-
-    /**
-     * validate the maximum amount in the payload  in VRP.
-     *
-     * @param amount amount
-     *
-     */
-    public static boolean validateAmount(JSONObject amount) {
-
-        if (amount != null
-                && amount.containsKey(ConsentExtensionConstants.AMOUNT)
-        ) {
-            Object amountValue = amount.get(ConsentExtensionConstants.AMOUNT);
-
-            if (amountValue instanceof String) {
-                return true;
-            } else {
-                return false;
-            }
-
-        } else {
-            return false;
-        }
-    }
-
     /**
      * validate the maximum amount in the payload  in VRP.
      *
      * @param currency Currency
      *
      */
-    public static boolean validateCurrency(JSONObject currency) {
-
-        if (currency != null
-                && currency.containsKey(ConsentExtensionConstants.CURRENCY)
-        ) {
-            Object currencyValue = currency.get(ConsentExtensionConstants.CURRENCY);
-
-            if (currencyValue instanceof String) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-
+//    public static boolean validateCurrency(String currency) {
+//
+//        if (currency != null
+//                && currency.containsKey(ConsentExtensionConstants.CURRENCY)) {
+//            Object currencyValue = currency.get(ConsentExtensionConstants.CURRENCY);
+//
+//            if (currencyValue instanceof String) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else {
+//            return false;
+//        }
+//    }
+//
 
 
     /**
@@ -708,7 +672,6 @@ public class ConsentManageUtil {
 
         return (periodTypes.contains(periodType));
     }
-
 
 }
 

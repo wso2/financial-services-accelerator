@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.Map;
 
 /**
- * Open Banking common utility class to publish analytics logs
+ * Open Banking common utility class to publish analytics logs.
  */
 public class AnalyticsLogsUtils {
 
@@ -36,7 +36,7 @@ public class AnalyticsLogsUtils {
     private static final String DATA_PROCESSING_ERROR = "Error occurred while processing the analytics dataset";
 
     /**
-     * Method to add analytics logs to the OB analytics log file
+     * Method to add analytics logs to the OB analytics log file.
      *
      * @param logFile       Name of the logger which is used to log analytics data to the log file
      * @param dataStream    Name of the data stream to which the data belongs
