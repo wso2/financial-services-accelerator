@@ -53,7 +53,7 @@ public class ErrorConstants {
     public static final String PAYLOAD_INVALID = "Consent validation failed due to invalid initiation payload";
     public static final String NOT_JSON_OBJECT_ERROR = "Payload is not a JSON object";
     public static final String PAYLOAD_FORMAT_ERROR = "Request Payload is not in correct JSON format";
-    public static final String PAYLOAD_FORMAT_ERROR_VALID_TO_DATE = "Request Payload is not in correct JSON format " +
+    public static final String PAYLOAD_FORMAT_ERROR_VALID_TO_DATE = "Invalid valid to date parameter in the payload" +
             "for valid to date";
     public static final String PAYLOAD_FORMAT_ERROR_DEBTOR_ACC = "Request Payload is not in correct JSON " +
             "format for debtor account";
@@ -61,10 +61,11 @@ public class ErrorConstants {
             "format for creditor account";
     public static final String PAYLOAD_FORMAT_ERROR_VALID_FROM_DATE = "Request Payload is not in correct JSON format" +
             " for valid from date";
-    public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS = "Request Payload is not in correct " +
-            "JSON format for periodic limits";
-    public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT = "Request Payload is not in" +
-            " correct JSON format for maximum individual amount";
+    public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS = "Invalid periodic limits";
+    public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT = "Invalid maximum individual amount";
+
+    public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_CURRENCY = "Invalid maximum individual amount" +
+            " currency";
     public static final String PAYLOAD_FORMAT_ERROR_INITIATION = "Request Payload is not in correct JSON format" +
             " for initiation key";
     public static final String PAYLOAD_FORMAT_ERROR_RISK = "Request Payload is not in correct JSON format" +
@@ -229,7 +230,6 @@ public class ErrorConstants {
             ErrorConstants.PATH_DATA;
     public static final String INITIATION_NOT_FOUND = "Initiation is not found or empty in the request.:" +
             ErrorConstants.PATH_INITIATION;
-
     public static final String RISK_MISMATCH = "RISK Does Not Match.:" + ErrorConstants.PATH_RISK;
     public static final String RISK_NOT_FOUND = "RISK is not found or empty in the request.:" +
             ErrorConstants.PATH_RISK;
@@ -252,13 +252,10 @@ public class ErrorConstants {
             " Amount is missing in the payload.";
     public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING = "Mandatory parameter" +
             "Currency in MaximumIndividualAmount is missing in the payload";
-    public static final String INVALID_AMOUNT = "Parameter in the payload for " +
-            "Amount" + "is missing in the payload or its null or not a string";
-    public static final String INVALID_CURRENCY = "Mandatory parameter " +
-            "Currency is missing in the payload or its null or not a string";
+    public static final String INVALID_AMOUNT = "Missing required parameter Amount";
+    public static final String INVALID_CURRENCY = "Missing required parameter Currency";
     public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
-    public static final String MISSING_PERIOD_TYPE = "Mandatory parameter " +
-            "period type is missing in the payload";
+    public static final String MISSING_PERIOD_TYPE = "Missing required parameter Period type";
     public static final String INVALID_VALID_TO_DATE = "Valid to Date specified in the request is invalid";
 
     // new error constants
@@ -280,7 +277,7 @@ public class ErrorConstants {
             "empty or not a JSONObject in control parameter";
     public static final String INVALID_PARAMETER_MAXIMUM_INDIVIDUAL_AMOUNT = "Parameter passed in is null , " +
             "empty or not a JSONObject in maximum individual amount";
-    public static final String INVALID_DATE_TIME_FORMAT = "Date and Time  is not in correct JSON " +
+    public static final String INVALID_DATE_TIME_FORMAT = "Date and Time is not in correct JSON " +
             "ISO-8601 date-time format";
     public static final String INVALID_PARAMETER_PERIODIC_LIMITS = "Parameter passed in is null , " +
             "empty or not a JSONArray";

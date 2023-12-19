@@ -95,7 +95,7 @@ public class ConsentResource {
         this.consentID = consentID;
     }
 
-    public String getClientID() {
+    public Throwable getClientID() {
 
         return clientID;
     }

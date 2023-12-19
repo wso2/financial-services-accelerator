@@ -1,10 +1,13 @@
 /**
  * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -69,7 +72,6 @@ public class ConsentManageUtil {
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
 
     /**
      * Method to construct the consent manage validation response.
@@ -153,7 +155,7 @@ public class ConsentManageUtil {
             log.error(ErrorConstants.INVALID_DEBTOR_ACC_IDENTIFICATION);
             validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
             validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
-            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.MISSING_DEBTOR_ACC_IDENTIFICATION);
+            validationResponse.put(ConsentExtensionConstants.ERRORS, ErrorConstants.INVALID_DEBTOR_ACC_IDENTIFICATION);
 
             return validationResponse;
         }
@@ -621,29 +623,6 @@ public class ConsentManageUtil {
             return false;
         }
     }
-    /**
-     * validate the maximum amount in the payload  in VRP.
-     *
-     * @param currency Currency
-     *
-     */
-//    public static boolean validateCurrency(String currency) {
-//
-//        if (currency != null
-//                && currency.containsKey(ConsentExtensionConstants.CURRENCY)) {
-//            Object currencyValue = currency.get(ConsentExtensionConstants.CURRENCY);
-//
-//            if (currencyValue instanceof String) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } else {
-//            return false;
-//        }
-//    }
-//
-
 
     /**
      * validate the periodiclimits in the payload  in VRP.
@@ -663,14 +642,29 @@ public class ConsentManageUtil {
      * @return
      */
     public static boolean validatePeriodicType(JSONObject periodiclimit) {
-        String periodType = (String) periodiclimit.get(ConsentExtensionConstants.PERIOD_TYPE);
+        Object periodTypeObject = periodiclimit.get(ConsentExtensionConstants.PERIOD_TYPE);
 
-        List<String> periodTypes = Arrays.asList(ConsentExtensionConstants.DAY,
-                ConsentExtensionConstants.WEEK, ConsentExtensionConstants.FORTNIGHT,
-                ConsentExtensionConstants.MONTH, ConsentExtensionConstants.HALF_YEAR,
-                ConsentExtensionConstants.YEAR);
+        if (periodTypeObject instanceof String) {
+            String periodType = (String) periodTypeObject;
 
-        return (periodTypes.contains(periodType));
+            // Check if periodType is empty
+            if (periodType.isEmpty()) {
+                return false;
+            }
+
+            List<String> periodTypes = Arrays.asList(
+                    ConsentExtensionConstants.DAY,
+                    ConsentExtensionConstants.WEEK,
+                    ConsentExtensionConstants.FORTNIGHT,
+                    ConsentExtensionConstants.MONTH,
+                    ConsentExtensionConstants.HALF_YEAR,
+                    ConsentExtensionConstants.YEAR
+            );
+
+            return periodTypes.contains(periodType);
+        }
+
+        return false;
     }
 
 }
