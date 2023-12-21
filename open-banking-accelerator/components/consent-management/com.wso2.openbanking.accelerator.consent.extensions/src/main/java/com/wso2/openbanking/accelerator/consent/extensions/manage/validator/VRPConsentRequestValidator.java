@@ -65,7 +65,7 @@ public class VRPConsentRequestValidator {
         //Check request body is valid and not empty
         JSONObject dataValidationResult = ConsentManageUtil.validateInitiationDataBody(requestBody);
 
-        if (!(boolean) dataValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
+        if (!(Boolean.parseBoolean(dataValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
             log.error(dataValidationResult.get(ConsentExtensionConstants.ERRORS));
             return dataValidationResult;
         }
@@ -74,7 +74,7 @@ public class VRPConsentRequestValidator {
         //Check consent  initiation is valid and not empty
         JSONObject initiationValidationResult = VRPConsentRequestValidator.validateConsentInitiation(requestBody);
 
-        if (!(boolean) initiationValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
+        if (!(Boolean.parseBoolean(initiationValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
             log.error(initiationValidationResult.get(ConsentExtensionConstants.ERRORS));
             return initiationValidationResult;
         }
@@ -83,7 +83,7 @@ public class VRPConsentRequestValidator {
         JSONObject controlParameterValidationResult = VRPConsentRequestValidator.
                 validateConsentControlParameters(requestBody);
 
-        if (!(boolean) controlParameterValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
+        if (!(Boolean.parseBoolean(controlParameterValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
             log.error(controlParameterValidationResult.get(ConsentExtensionConstants.ERRORS));
             return controlParameterValidationResult;
         }
@@ -91,7 +91,7 @@ public class VRPConsentRequestValidator {
 
         JSONObject riskValidationResult = VRPConsentRequestValidator.validateConsentRisk(requestBody);
 
-        if (!(boolean) riskValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
+        if (!(Boolean.parseBoolean(riskValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
             log.error(riskValidationResult.get(ConsentExtensionConstants.ERRORS));
             return riskValidationResult;
         }
@@ -106,17 +106,16 @@ public class VRPConsentRequestValidator {
      * @param value The Object to be validated.
      * @return true if the object is a non-null and non-empty JSONObject.
      */
-
     public static boolean isValidJSONObject(Object value) {
         return value instanceof JSONObject && !((JSONObject) value).isEmpty();
     }
 
 
     /**
-     * Checks if the given Object is a non-null and non-empty JSONObject.
+     * Checks if the given object is a valid date-time string and it is non empty.
      *
-     * @param value The Object to be validated.
-     * @return true if the Object is a non-null and non-empty string representing a valid date-time.
+     * @param value The object to be checked for a valid date-time format.
+     * @return True if the object is a non-empty string in ISO date-time format, false otherwise.
      */
     public static boolean isValidDateTimeObject(Object value) {
 
@@ -152,20 +151,20 @@ public class VRPConsentRequestValidator {
         JSONObject validationResponse = new JSONObject();
 
         JSONObject maximumIndividualAmountResult = validateMaximumIndividualAmount(controlParameters);
-        if (!(boolean) maximumIndividualAmountResult.get(ConsentExtensionConstants.IS_VALID)) {
+        if (!(Boolean.parseBoolean(maximumIndividualAmountResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
             log.error(maximumIndividualAmountResult.get(ConsentExtensionConstants.ERRORS));
             return maximumIndividualAmountResult;
         }
 
         JSONObject validationResponses = validateParameterDateTime(controlParameters);
-        if (!(boolean) validationResponses.get(ConsentExtensionConstants.IS_VALID)) {
+        if (!(Boolean.parseBoolean(validationResponses.getAsString(ConsentExtensionConstants.IS_VALID)))){
             log.error(validationResponses.get(ConsentExtensionConstants.ERRORS));
             return validationResponses;
         }
 
         // Validate Periodic Limits
         JSONObject periodicLimitsValidationResult = validatePeriodicLimits(controlParameters);
-        if (!(boolean) periodicLimitsValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
+        if (!(Boolean.parseBoolean(validationResponses.getAsString(ConsentExtensionConstants.IS_VALID)))) {
             log.error(ErrorConstants.PAYLOAD_INVALID);
             return validationResponses;
         }
@@ -185,7 +184,12 @@ public class VRPConsentRequestValidator {
         return value instanceof JSONArray;
     }
 
-
+    /**
+     * Validates the Maximum Individual Amount in the control parameters of a consent request.
+     *
+     * @param controlParameters The JSON object representing the control parameters of the consent request.
+     * @return A JSON object containing the validation response.
+     */
     public static JSONObject validateMaximumIndividualAmount(JSONObject controlParameters) {
 
         JSONObject validationResponse = new JSONObject();
@@ -310,6 +314,14 @@ public class VRPConsentRequestValidator {
         return validationResponse;
     }
 
+
+    /**
+     * Validates the date-time parameters in the control parameters of a consent request.
+     *
+     * @param controlParameters The JSON object representing the control parameters of the consent request.
+     * @return A JSON object containing the validation response. If the date-time parameters are valid,
+     * it sets the "IS_VALID" field to true; otherwise, it contains an error response.
+     */
     public static JSONObject validateParameterDateTime(JSONObject controlParameters) {
         JSONObject validationResponse = new JSONObject();
 
@@ -378,9 +390,10 @@ public class VRPConsentRequestValidator {
                         ErrorConstants.INVALID_PARAMETER_DEBTOR_ACC,
                         ErrorConstants.PATH_DEBTOR_ACCOUNT);
             }
+
             JSONObject validationResult = ConsentManageUtil.validateDebtorAccount((JSONObject) debtorAccount);
 
-            if (!(boolean) validationResult.get(ConsentExtensionConstants.IS_VALID)) {
+            if (!(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
                 log.error(validationResult.get(ConsentExtensionConstants.ERRORS));
                 return validationResult;
             }
@@ -404,7 +417,7 @@ public class VRPConsentRequestValidator {
 
             JSONObject validationResult = ConsentManageUtil.validateCreditorAccount((JSONObject) creditorAccount);
 
-            if (!Boolean.parseBoolean(String.valueOf(validationResult))) {
+            if (!(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
                 log.error(validationResult.get(ConsentExtensionConstants.ERRORS));
                 return validationResult;
             }
@@ -510,7 +523,7 @@ public class VRPConsentRequestValidator {
             JSONObject initiationValidationResult = VRPConsentRequestValidator
                     .validateVRPInitiationPayload((JSONObject) data.get(ConsentExtensionConstants.INITIATION));
 
-            if (!(boolean) initiationValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
+            if (!(Boolean.parseBoolean(initiationValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
                 log.error(initiationValidationResult.get(ConsentExtensionConstants.ERRORS));
                 return initiationValidationResult;
             }
@@ -553,7 +566,7 @@ public class VRPConsentRequestValidator {
                     VRPConsentRequestValidator.validateControlParameters((JSONObject)
                             data.get(ConsentExtensionConstants.CONTROL_PARAMETERS));
 
-            if (!(boolean) controlParameterValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
+            if (!(Boolean.parseBoolean(controlParameterValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
                 log.error(controlParameterValidationResult.get(ConsentExtensionConstants.ERRORS));
                 return controlParameterValidationResult;
             }

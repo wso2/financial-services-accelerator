@@ -64,13 +64,12 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
 
             JSONObject validationResponse = VRPConsentRequestValidator.validateVRPPayload(request);
 
-            if (!((boolean) validationResponse.get(ConsentExtensionConstants.IS_VALID))) {
+            if (!(Boolean.parseBoolean(validationResponse.getAsString(ConsentExtensionConstants.IS_VALID)))) {
                 log.error(validationResponse.get(ConsentExtensionConstants.ERRORS));
                 throw new ConsentException((ResponseStatus) validationResponse
                         .get(ConsentExtensionConstants.HTTP_CODE),
                         String.valueOf(validationResponse.get(ConsentExtensionConstants.ERRORS)));
             }
-
 
             if (StringUtils.isEmpty(consentManageData.getHeaders()
                     .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY))) {
@@ -87,8 +86,6 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                     ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR);
         }
     }
-
-
     /**
      * This method is responsible for handling the GET request for retrieving consent initiation details.
      * It validates the consent ID, checks if the consent exists,verifies if the consent belongs to the
@@ -109,10 +106,11 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                 if (!consent.getClientID().equals(consentManageData.getClientId())) {
                     // Throwing same error as null scenario since client will not be able to identify if consent
                     // exists if consent does not belong to them
-
-                    log.debug(String.format("ClientIds missmatch. " +
-                                    "consent client id: %s, consent manage data client id: %s",
-                            consent.getClientID(), consentManageData.getClientId()));
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("ClientIds missmatch. " +
+                                        "consent client id: %s, consent manage data client id: %s",
+                                consent.getClientID(), consentManageData.getClientId()));
+                    }
                     throw new ConsentException(ResponseStatus.BAD_REQUEST,
                             ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
                 }

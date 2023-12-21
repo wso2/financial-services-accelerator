@@ -53,7 +53,7 @@ public class ErrorConstants {
     public static final String PAYLOAD_INVALID = "Consent validation failed due to invalid initiation payload";
     public static final String NOT_JSON_OBJECT_ERROR = "Payload is not a JSON object";
     public static final String PAYLOAD_FORMAT_ERROR = "Request Payload is not in correct JSON format";
-    public static final String PAYLOAD_FORMAT_ERROR_VALID_TO_DATE = "Invalid valid to date parameter in the payload" +
+    public static final String PAYLOAD_FORMAT_ERROR_VALID_TO_DATE = "Invalid valid_to_date parameter in the payload" +
             "for valid to date";
     public static final String PAYLOAD_FORMAT_ERROR_DEBTOR_ACC = "Request Payload is not in correct JSON " +
             "format for debtor account";
@@ -65,7 +65,7 @@ public class ErrorConstants {
     public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT = "Invalid maximum individual amount";
 
     public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_CURRENCY = "Invalid maximum individual amount" +
-            " currency";
+            "currency";
     public static final String PAYLOAD_FORMAT_ERROR_INITIATION = "Request Payload is not in correct JSON format" +
             " for initiation key";
     public static final String PAYLOAD_FORMAT_ERROR_RISK = "Request Payload is not in correct JSON format" +
