@@ -51,6 +51,7 @@ import static com.wso2.openbanking.accelerator.consent.extensions.common.Consent
 public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
 
     private static final Log log = LogFactory.getLog(VRPConsentRequestHandler.class);
+
     /**
      * This method is responsible for processing a Variable Recurring Payment Consent Manage POST request.
      * It validates the payment  request, checks for the existence of an idempotency key.
@@ -73,7 +74,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
 
             if (StringUtils.isEmpty(consentManageData.getHeaders()
                     .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY))) {
-                log.error(ErrorConstants.INVALID_INITIATION_PAYLOAD);
+                log.error(ErrorConstants.IDEMPOTENCY_KEY_NOT_FOUND);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.IDEMPOTENCY_KEY_NOT_FOUND);
             }
 

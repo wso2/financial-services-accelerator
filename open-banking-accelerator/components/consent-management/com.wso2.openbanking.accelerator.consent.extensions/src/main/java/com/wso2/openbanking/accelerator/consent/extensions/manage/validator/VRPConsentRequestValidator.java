@@ -59,7 +59,6 @@ public class VRPConsentRequestValidator {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
             return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
                     ErrorConstants.PAYLOAD_FORMAT_ERROR, ErrorConstants.PATH_REQUEST_BODY);
-            //throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.INVALID_REQ_PAYLOAD);
         }
 
         JSONObject requestBody = (JSONObject) request;
@@ -97,72 +96,12 @@ public class VRPConsentRequestValidator {
             return riskValidationResult;
         }
 
-        //  JSONObject data = (JSONObject) requestBody.get(ConsentExtensionConstants.DATA);
-//
-//        //Validate initiation in the VRP payload
-//        if (data.containsKey(ConsentExtensionConstants.INITIATION)) {
-//
-//            Object initiation = data.get(ConsentExtensionConstants.INITIATION);
-//
-//            if (!isValidJSONObject(initiation)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD_INITIATION,
-//                        ErrorConstants.INVALID_PARAMETER_INITIATION,
-//                        ErrorConstants.PATH_INITIATION);
-//            }
-//
-//            JSONObject initiationValidationResult = VRPConsentRequestValidator
-//                    .validateVRPInitiationPayload((JSONObject) data.get(ConsentExtensionConstants.INITIATION));
-//
-//            if (!(boolean) initiationValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
-//                log.error(initiationValidationResult.get(ConsentExtensionConstants.ERRORS));
-//                return initiationValidationResult;
-//            }
-//        } else {
-//            log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_INITIATION);
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-//                    ErrorConstants.PAYLOAD_FORMAT_ERROR_INITIATION, ErrorConstants.PATH_REQUEST_BODY);
-//        }
-
-        //Validate the ControlParameter in the payload
-//        if (data.containsKey(ConsentExtensionConstants.CONTROL_PARAMETERS)) {
-//
-//            Object controlParameters = data.get(ConsentExtensionConstants.CONTROL_PARAMETERS);
-//
-//            if (!isValidJSONObject(controlParameters)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD_CONTROL_PARAMETERS,
-//                        ErrorConstants.INVALID_PARAMETER_CONTROL_PARAMETERS,
-//                        ErrorConstants.PATH_CONTROL_PARAMETERS);
-//            }
-//
-//            JSONObject controlParameterValidationResult =
-//                    VRPConsentRequestValidator.validateControlParameters((JSONObject)
-//                            data.get(ConsentExtensionConstants.CONTROL_PARAMETERS));
-//
-//            if (!(boolean) controlParameterValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
-//                log.error(controlParameterValidationResult.get(ConsentExtensionConstants.ERRORS));
-//                return controlParameterValidationResult;
-//            }
-//        } else {
-//            log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER);
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-//                    ErrorConstants.PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER, ErrorConstants.PATH_REQUEST_BODY);
-//        }
-
-        // Check Risk key is mandatory
-//        if (!requestBody.containsKey(ConsentExtensionConstants.RISK) ||
-//                !(requestBody.get(ConsentExtensionConstants.RISK) instanceof JSONObject
-//                        || ((JSONObject) requestBody.get(ConsentExtensionConstants.DATA)).isEmpty())) {
-//            log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_RISK);
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-//                    ErrorConstants.PAYLOAD_FORMAT_ERROR_RISK, ErrorConstants.PATH_RISK);
-//        }
-
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
 
     /**
-     * Checks if the given Object is a non-null and non-empty JSONObject.
+     * Checks if the given Object is a JSONObject and the JSONObject is non-empty .
      *
      * @param value The Object to be validated.
      * @return true if the object is a non-null and non-empty JSONObject.
@@ -188,7 +127,7 @@ public class VRPConsentRequestValidator {
                 dateTimeFormat.parse((String) value);
                 return true;
             } catch (DateTimeParseException e) {
-                log.debug((Object) "Invalid date-time format: %d", (Throwable) value);
+                log.error("Invalid date-time format: %d");
                 return false;
             }
         } else {
@@ -218,51 +157,14 @@ public class VRPConsentRequestValidator {
             return maximumIndividualAmountResult;
         }
 
-
-//        //Validate Maximum individual amount in control parameters
-//        if (controlParameters.containsKey(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)) {
-//
-//            Object maximumIndividualAmount = controlParameters.
-//                    get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
-//            // Check if the control parameter is valid
-//            if (!isValidJSONObject(maximumIndividualAmount)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.
-//                                PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
-//                        ErrorConstants.INVALID_PARAMETER_MAXIMUM_INDIVIDUAL_AMOUNT,
-//                        ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
-//            }
-//
-//            if (!validateAmountCurrency((JSONObject) maximumIndividualAmount, ConsentExtensionConstants.AMOUNT)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.
-//                                PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
-//                        ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_IS_MISSING,
-//                        ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
-//            }
-//
-//            if (!validateAmountCurrency((JSONObject) maximumIndividualAmount, ConsentExtensionConstants.CURRENCY)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.
-//                                PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_CURRENCY,
-//                        ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING,
-//                        ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
-//            }
-//
-//        } else {
-//            log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT);
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-//                    ErrorConstants.PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT, ErrorConstants.PATH_REQUEST_BODY);
-//
-//        }
-
         JSONObject validationResponses = validateParameterDateTime(controlParameters);
         if (!(boolean) validationResponses.get(ConsentExtensionConstants.IS_VALID)) {
             log.error(validationResponses.get(ConsentExtensionConstants.ERRORS));
             return validationResponses;
         }
 
-
         // Validate Periodic Limits
         JSONObject periodicLimitsValidationResult = validatePeriodicLimits(controlParameters);
-
         if (!(boolean) periodicLimitsValidationResult.get(ConsentExtensionConstants.IS_VALID)) {
             log.error(ErrorConstants.PAYLOAD_INVALID);
             return validationResponses;
@@ -283,28 +185,6 @@ public class VRPConsentRequestValidator {
         return value instanceof JSONArray;
     }
 
-
-//    /**
-//     * Checks whether the given string represents a valid date-time in ISO-8601 format.
-//     * <p>
-//     * This method uses the ISO_DATE_TIME formatter to parse the provided date-time string.
-//     * It returns true if the parsing is successful, indicating that the string is in the correct
-//     * ISO-8601 date-time format. Otherwise, it returns false.
-//     *
-//     * @param value The string to be checked for ISO-8601 date-time format validity.
-//     * @return
-//     */
-//    public static boolean isValidISODateTimeFormat(String value) {
-//
-//        final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ISO_DATE_TIME;
-//        try {
-//            dateTimeFormat.parse(value);
-//            return true;
-//        } catch (DateTimeParseException e) {
-//            log.debug("");
-//            return false;
-//        }
-//    }
 
     public static JSONObject validateMaximumIndividualAmount(JSONObject controlParameters) {
 
@@ -416,10 +296,6 @@ public class VRPConsentRequestValidator {
                             ErrorConstants.MISSING_PERIOD_TYPE, ErrorConstants.PATH_PERIOD_TYPE);
                 }
 
-//                if (StringUtils.isEmpty((String) periodType)) {
-//                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                            ErrorConstants.MISSING_PERIOD_TYPE, ErrorConstants.PATH_PERIOD_TYPE);
-//                }
             }
 
         } else {
@@ -447,13 +323,6 @@ public class VRPConsentRequestValidator {
                         ErrorConstants.INVALID_DATE_TIME_FORMAT,
                         ErrorConstants.PATH_VALID_TO_DATE);
             }
-
-//            // Validate ISO datetime format for validTo
-//            if (!isValidISODateTimeFormat((String) validateToDateTime)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_VALID_TO_DATE,
-//                        ErrorConstants.INVALID_DATE_TIME_FORMAT,
-//                        ErrorConstants.PATH_VALID_TO_DATE);
-//            }
         }
 
         if (controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
@@ -466,15 +335,7 @@ public class VRPConsentRequestValidator {
                         ErrorConstants.INVALID_DATE_TIME_FORMAT,
                         ErrorConstants.PATH_VALID_TO_DATE);
             }
-
-            // Validate ISO datetime format for validTo
-//            if (!isValidISODateTimeFormat((String) validateFromDateTime)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_VALID_FROM_DATE,
-//                        ErrorConstants.INVALID_DATE_TIME_FORMAT,
-//                        ErrorConstants.PATH_VALID_TO_DATE);
-//            }
         }
-
 
         OffsetDateTime validToDateTime = OffsetDateTime.parse(controlParameters.
                 getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME));
@@ -558,7 +419,15 @@ public class VRPConsentRequestValidator {
         return validationResponse;
     }
 
-
+    /**
+     * Validates the presence of a specified key in a JSONObject (either the amount or the currency)
+     * and checks if the associated value is a non-empty string.
+     *
+     * @param parentObj The JSONObject to be validated.
+     * @param key       The key to be checked for presence in the parentObj.
+     * @return true if the specified key is present in the parentObj and the associated value is a
+     * non-empty string.
+     */
     public static boolean validateAmountCurrency(JSONObject parentObj, String key) {
         JSONObject validationResponse = new JSONObject();
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -566,10 +435,10 @@ public class VRPConsentRequestValidator {
         if (parentObj != null) {
             // Check if the specified key is present in the parentObj
             if (parentObj.containsKey(key)) {
-                Object amountValue = parentObj.get(key);
+                Object value = parentObj.get(key);
 
                 // Check if the value associated with the key is a non-empty string
-                if (amountValue instanceof String && !((String) amountValue).isEmpty()) {
+                if (value instanceof String && !((String) value).isEmpty()) {
                     return true; // Valid: The key is present, and the value is a non-empty String
                 } else {
                     return false; // Invalid: The value associated with the key is not a non-empty String
@@ -582,6 +451,16 @@ public class VRPConsentRequestValidator {
         return false; // Invalid: parentObj is null
     }
 
+
+    /**
+     * Validates the presence of a specified key in a JSONArray (either the amount or currency)
+     * and checks if the associated value at the specified index is a non-empty string.
+     *
+     * @param parentObj The JSONArray to be validated.
+     * @param key       The key to be checked for presence at the specified index in the parentObj.
+     * @return true if the specified key is present at the specified index in the parentObj and the
+     * associated value is a non-empty string.
+     */
     public static boolean validateAmountCurrencyPeriodicLimits(JSONArray parentObj, String key) {
         JSONObject validationResponse = new JSONObject();
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -589,9 +468,9 @@ public class VRPConsentRequestValidator {
         if (parentObj != null) {
             // Check if the specified key is present in the parentObj
             if (parentObj.contains(key)) {
-                Object amountValue = parentObj.get(Integer.parseInt(key));
+                Object value = parentObj.get(Integer.parseInt(key));
 
-                if (amountValue instanceof String && !((String) amountValue).isEmpty()) {
+                if (value instanceof String && !((String) value).isEmpty()) {
                     return true;
                 } else {
                     return false;
@@ -604,6 +483,12 @@ public class VRPConsentRequestValidator {
     }
 
 
+    /**
+     * Validates the consent initiation payload in the VRP request.
+     *
+     * @param request The JSONObject representing the VRP request.
+     * @return A JSONObject containing the validation response.
+     */
     public static JSONObject validateConsentInitiation(JSONObject request) {
 
         JSONObject validationResponse = new JSONObject();
@@ -639,6 +524,13 @@ public class VRPConsentRequestValidator {
         return validationResponse;
     }
 
+
+    /**
+     * Validates the consent control parameters in the VRP request payload.
+     *
+     * @param request The JSONObject representing the VRP request.
+     * @return A JSONObject containing the validation response.
+     */
     public static JSONObject validateConsentControlParameters(JSONObject request) {
 
         JSONObject validationResponse = new JSONObject();
@@ -674,6 +566,13 @@ public class VRPConsentRequestValidator {
         return validationResponse;
     }
 
+
+    /**
+     * Validates the  risk information in the VRP request payload.
+     *
+     * @param request The JSONObject representing the VRP request.
+     * @return A JSONObject containing the validation response.
+     */
     public static JSONObject validateConsentRisk(JSONObject request) {
 
         JSONObject validationResponse = new JSONObject();

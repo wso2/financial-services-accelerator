@@ -663,10 +663,6 @@ public class ConsentManageUtil {
 
             return periodTypes.contains(periodType);
         }
-
         return false;
     }
-
 }
-
-
