@@ -16,10 +16,7 @@
  * under the License.
  */
 
-
-
 package com.wso2.openbanking.accelerator.consent.extensions.manage.vrp;
-
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
@@ -28,26 +25,20 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.ConsentManageRequestHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.VRPConsentRequestHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.validator.VRPConsentRequestValidator;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentExtensionTestUtils;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
-import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.ParseException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
-import org.testng.Assert;
 import org.testng.IObjectFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -117,7 +108,6 @@ public class VRPConsentHandlerTest extends PowerMockTestCase {
         when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
 
     }
-
 
     @Test(expectedExceptions = ConsentException.class)
     public void testHandleConsentManageGetWithValidConsentIdAndMatchingClientId() throws ConsentManagementException {

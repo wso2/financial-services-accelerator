@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package com.wso2.openbanking.accelerator.consent.extensions.manage.vrp;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
