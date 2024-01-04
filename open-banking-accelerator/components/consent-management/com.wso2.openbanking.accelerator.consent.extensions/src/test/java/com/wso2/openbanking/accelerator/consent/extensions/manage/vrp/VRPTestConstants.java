@@ -19,7 +19,7 @@
 package com.wso2.openbanking.accelerator.consent.extensions.manage.vrp;
 
 /**
- * test.
+ * Constant class for consent manage tests.
  */
 public class VRPTestConstants {
 

@@ -52,7 +52,7 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertFalse;
 
 /**
- * test.
+ * Test class for VRPConsentRequestValidator
  */
 @PowerMockIgnore({"jdk.internal.reflect.*"})
 @PrepareForTest({OpenBankingConfigParser.class})
@@ -179,32 +179,27 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidateAmountCurrencyWithCurrencyKeys() {
 
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("Currency", "USD");
 
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
         assertTrue(result);
 
     }
 
     @Test
     public void testValidateAmountCurrencyWithInvalidKey() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
-        // Create a sample JSONArray with a JSONObject not containing the currency key
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("InvalidKey", "USD");
 
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
         Assert.assertFalse(result);
     }
@@ -212,11 +207,9 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidateAmountCurrencyWithEmptyArray() {
 
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
         JSONArray jsonArray = new JSONArray();
 
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
         Assert.assertFalse(result);
 
@@ -224,11 +217,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyWithNullArray() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
-        // Test the method with a null array
-        boolean result = yourClass.validateAmountCurrency(null, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrency(null, "Currency");
 
         // Assert that the result is false, indicating an invalid key in a null array
         Assert.assertFalse(result);
@@ -275,10 +264,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitsWithInvalidValue() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
-        // Create a sample JSONArray with a JSONObject containing the key and an invalid value
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("Currency", 123); // Invalid value, not a string
 
@@ -286,7 +272,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         jsonArray.add(jsonObject);
 
         // Test the method with an invalid value
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
         // Assert that the result is false, indicating an invalid value
         Assert.assertFalse(result);
@@ -295,9 +281,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitsWithInvalidKey() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
         // Test case: Invalid key, key not present in the JSON array
         JSONArray testData = new JSONArray();
         JSONObject limit = new JSONObject();
@@ -311,8 +294,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidationFailureForCurrency() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Create a sample JSONObject for periodic limits with invalid currency value
         JSONObject limit = new JSONObject();
@@ -323,7 +304,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         periodicLimits.add(limit);
 
         // Call the method that checks currency validation
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(periodicLimits,
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(periodicLimits,
                 ConsentExtensionConstants.CURRENCY);
 
         // Assert that the result is false, indicating a validation failure for currency
@@ -332,8 +313,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitsWithCurrencyKey() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Test case 2: Invalid currency key (empty value)
         JSONArray testData2 = new JSONArray();
@@ -609,8 +588,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitsWithValidKey() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Create a sample JSONArray with a JSONObject containing the valid key
         JSONObject jsonObject = new JSONObject();
@@ -620,7 +597,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         jsonArray.add(jsonObject);
 
         // Test the method with the valid key
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
         // Assert that the result is true, indicating a valid key
         assertTrue(result);
@@ -628,8 +605,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitsWithInvalidKeys() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Create a sample JSONArray with a JSONObject not containing the valid key
         JSONObject jsonObject = new JSONObject();
@@ -639,7 +614,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         jsonArray.add(jsonObject);
 
         // Test the method with an invalid key
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
         // Assert that the result is false, indicating an invalid key
         Assert.assertFalse(result);
@@ -647,14 +622,11 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitsWithEmptyArray() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
-        // Create an empty JSONArray
         JSONArray jsonArray = new JSONArray();
 
         // Test the method with an empty array
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
         // Assert that the result is false, indicating an invalid key in an empty array
         Assert.assertFalse(result);
@@ -662,11 +634,9 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitsWithNullArray() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Test the method with a null array
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(null, "Currency");
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(null, "Currency");
 
         // Assert that the result is false, indicating an invalid key in a null array
         Assert.assertFalse(result);
@@ -1132,11 +1102,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         controlParameters.put(ConsentExtensionConstants.VALID_FROM_DATE_TIME, "2023-01-01T00:00:00Z");
         controlParameters.put(ConsentExtensionConstants.VALID_TO_DATE_TIME, "2022-01-01T00:00:00Z");
 
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
         // Act
-        JSONObject validationResult = yourClass.validateParameterDateTime(controlParameters);
+        JSONObject validationResult = VRPConsentRequestValidator.validateParameterDateTime(controlParameters);
 
         // Assert
         Assert.assertFalse((boolean) validationResult.get(ConsentExtensionConstants.IS_VALID));
@@ -1241,8 +1208,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimits() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Test case 2: Key is null
         JSONArray testData2 = new JSONArray();
@@ -1268,9 +1233,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateKeyAndNonEmptyStringValue() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
 
         // Test case 2: Key is null
         JSONArray testData2 = new JSONArray();
@@ -1555,24 +1517,20 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         controlParameters.put(ConsentExtensionConstants.VALID_FROM_DATE_TIME, "2022-01-01T00:00:00Z");
         controlParameters.put(ConsentExtensionConstants.VALID_TO_DATE_TIME, "2023-01-01T00:00:00Z");
 
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
-        // Act
-        JSONObject validationResult = yourClass.validateParameterDateTime(controlParameters);
+        JSONObject validationResult = VRPConsentRequestValidator.validateParameterDateTime(controlParameters);
 
         // Assert
         Assert.assertFalse((Boolean) validationResult.get(ConsentExtensionConstants.IS_VALID));
 
         // Negative scenario: ValidToDateTime is older than the current date
         controlParameters.put(ConsentExtensionConstants.VALID_TO_DATE_TIME, "2021-01-01T00:00:00Z");
-        validationResult = yourClass.validatePeriodicLimits(controlParameters);
+        validationResult = VRPConsentRequestValidator.validatePeriodicLimits(controlParameters);
         Assert.assertFalse((Boolean) validationResult.get(ConsentExtensionConstants.IS_VALID));
 
         // Negative scenario: CurrentDate is older than ValidFromDateTime
         controlParameters.put(ConsentExtensionConstants.VALID_TO_DATE_TIME, "2023-01-01T00:00:00Z");
         controlParameters.put(ConsentExtensionConstants.VALID_FROM_DATE_TIME, "2024-01-01T00:00:00Z");
-        validationResult = yourClass.validateParameterDateTime(controlParameters);
+        validationResult = VRPConsentRequestValidator.validateParameterDateTime(controlParameters);
         Assert.assertFalse((Boolean) validationResult.get(ConsentExtensionConstants.IS_VALID));
     }
 
@@ -1948,31 +1906,28 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyWithCurrencyKey() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
-        // Test case 1: Valid currency key
         JSONObject testData1 = new JSONObject();
         testData1.put("currency", "USD");
 
-        boolean result1 = yourClass.validateAmountCurrency(testData1, "currency");
+        boolean result1 = VRPConsentRequestValidator.validateAmountCurrency(testData1, "currency");
         assertTrue(result1);
 
         // Test case 2: Invalid currency key (empty value)
         JSONObject testData2 = new JSONObject();
         testData2.put("currency", "");
 
-        boolean result2 = yourClass.validateAmountCurrency(testData2, "currency");
+        boolean result2 = VRPConsentRequestValidator.validateAmountCurrency(testData2, "currency");
         Assert.assertFalse(result2);
 
         // Test case 3: Invalid currency key (missing key)
         JSONObject testData3 = new JSONObject();
 
-        boolean result3 = yourClass.validateAmountCurrency(testData3, "currency");
+        boolean result3 = VRPConsentRequestValidator.validateAmountCurrency(testData3, "currency");
         Assert.assertFalse(result3);
 
         // Test case 4: Invalid currency key (null parentObj)
-        boolean result4 = yourClass.validateAmountCurrency(null, "currency");
+        boolean result4 = VRPConsentRequestValidator.validateAmountCurrency(null, "currency");
         Assert.assertFalse(result4);
 
         // Add more test cases as needed
@@ -1982,13 +1937,11 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidationFailureForNullCurrencyKey() {
 
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
         JSONArray periodicLimits = new JSONArray();
         periodicLimits.add(new JSONObject());
 
         // Call the method that checks currency validation
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(periodicLimits,
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(periodicLimits,
                 ConsentExtensionConstants.CURRENCY);
 
         Assert.assertFalse(result);
@@ -2012,8 +1965,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidationFailureForMissingKey() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Create a sample JSONArray with a JSONObject that does not contain the key
         JSONArray periodicLimits = new JSONArray();
@@ -2022,7 +1973,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         periodicLimits.add(jsonObject);
 
         // Call the method that checks currency validation
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(periodicLimits,
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(periodicLimits,
                 ConsentExtensionConstants.CURRENCY);
 
         // Assert that the result is false, indicating a validation failure for a missing key
@@ -2031,11 +1982,9 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidationFailureForNullParentArray() {
-        // Create an instance of YourClass
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         // Call the method with a null parentArray
-        boolean result = yourClass.validateAmountCurrencyPeriodicLimits(null,
+        boolean result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(null,
                 ConsentExtensionConstants.CURRENCY);
 
         // Assert that the result is false, indicating a validation failure for a null parentArray
@@ -2046,11 +1995,9 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidateControlParameters() {
 
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
         JSONObject controlParameters = new JSONObject();
 
-        JSONObject result = yourClass.validateControlParameters(controlParameters);
+        JSONObject result = VRPConsentRequestValidator.validateControlParameters(controlParameters);
 
         assertTrue(result.containsKey(ConsentExtensionConstants.IS_VALID));
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
@@ -2060,8 +2007,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidateAmountCurrencyPeriodicLimits_Invalid() {
 
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
-
         JSONObject controlParameters = new JSONObject();
         JSONArray periodicLimits = new JSONArray();
 
@@ -2070,7 +2015,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         controlParameters.put(ConsentExtensionConstants.PERIODIC_LIMITS, periodicLimits);
 
-        JSONObject result = yourClass.validateAmountCurrencyPeriodicLimit(controlParameters);
+        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimit(controlParameters);
 
         assertTrue(result.containsKey(ConsentExtensionConstants.IS_VALID));
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
@@ -2078,7 +2023,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimit_WithErrors() {
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         JSONObject controlParameters = new JSONObject();
         JSONArray periodicLimits = new JSONArray();
@@ -2088,7 +2032,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         controlParameters.put(ConsentExtensionConstants.PERIODIC_LIMITS, periodicLimits);
 
-        JSONObject periodicLimitType = yourClass.validateAmountCurrencyPeriodicLimit(controlParameters);
+        JSONObject periodicLimitType = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimit(controlParameters);
 
         Assert.assertFalse((boolean) periodicLimitType.get(ConsentExtensionConstants.IS_VALID));
 
@@ -2098,7 +2042,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateConsentRisk_ValidRequest() {
-        VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
         JSONObject validRequest = new JSONObject();
         JSONObject data = new JSONObject();
@@ -2107,7 +2050,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         validRequest.put(ConsentExtensionConstants.DATA, data);
         validRequest.put(ConsentExtensionConstants.RISK, new JSONObject());
 
-        JSONObject validationResponse = yourClass.validateConsentRisk(validRequest);
+        JSONObject validationResponse = VRPConsentRequestValidator.validateConsentRisk(validRequest);
 
         assertTrue((boolean) validationResponse.get(ConsentExtensionConstants.IS_VALID));
 
