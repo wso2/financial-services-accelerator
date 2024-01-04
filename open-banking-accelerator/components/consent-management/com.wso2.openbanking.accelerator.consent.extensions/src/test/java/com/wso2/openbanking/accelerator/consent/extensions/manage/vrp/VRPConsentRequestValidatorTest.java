@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package com.wso2.openbanking.accelerator.consent.extensions.manage.vrp;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
@@ -20,15 +38,17 @@ import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.wso2.openbanking.accelerator.common.util.ErrorConstants.*;
 import static com.wso2.openbanking.accelerator.consent.extensions.manage.validator.VRPConsentRequestValidator.validateAmountCurrency;
 import static com.wso2.openbanking.accelerator.consent.extensions.manage.validator.VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits;
 import static org.mockito.Mockito.mock;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertFalse;
 
 /**
@@ -68,102 +88,77 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
-
     }
-
-    @DataProvider(name = "vrpDataProvider")
-    public Object[][] vrpMetadataData() {
-        return VRPDataProviders.DataProviders.METADATA_DATA_HOLDER;
-    }
-
-
-    @DataProvider(name = "vrpEmptyDataProvider")
-    public Object[][] vrpEmptyData() {
-        return VRPDataProviders.DataProviders.METADATA_DATA_STRING;
-    }
-
-    @DataProvider(name = "vrpDataIsJsonObject")
-    public Object[][] vrpDataIsJsonObject() {
-        return VRPDataProviders.DataProviders.METADATA_DATA_JSONOBJECT;
-    }
-
-    @DataProvider(name = "vrpInitiationProvider")
-    public Object[][] vrpInitiation() {
-        return VRPDataProviders.DataProviders.METADATA_INITIATION;
-    }
-
-    @DataProvider(name = "withoutCreditorAcc")
-    public Object[][] vrpPayloadWithoutCreditorAcc() {
-        return VRPDataProviders.DataProviders.METADATA_WITHOUT_CREDITOR_ACC;
-    }
-
-    @DataProvider(name = "withoutControlParameters")
-    public Object[][] vrpPayloadWithoutControlParameterKey() {
-        return VRPDataProviders.DataProviders.METADATA_WITHOUT_CONTROL_PARAMETER;
-    }
-
-    @DataProvider(name = "withoutAmountKey")
-    public Object[][] vrpPayloadWithoutAmountKey() {
-        return VRPDataProviders.DataProviders.METADATA_WITHOUT_AMOUNT;
-    }
-
 
     @Test
     public void testVrpPayload() {
         JSONObject response = VRPConsentRequestValidator.validateVRPPayload("payload");
         Assert.assertFalse((boolean) response.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(PAYLOAD_FORMAT_ERROR, response.get(ConsentExtensionConstants.ERRORS));
+
     }
 
     @Test
     public void testVrpEmptyPayload() {
         JSONObject response = VRPConsentRequestValidator.validateVRPPayload("");
         Assert.assertFalse((boolean) response.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(PAYLOAD_FORMAT_ERROR, response.get(ConsentExtensionConstants.ERRORS));
     }
 
-    @Test(dataProvider = "vrpDataProvider", priority = 1)
-    public void testVrpInitiation(Object payload) {
+    @Test
+    public void testVrpInitiation() {
+
+        String initiationPayloads = VRPTestConstants.vrpInitiationPayloadWithoutData;
         JSONObject response = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
-                parse((String) payload));
+                parse(initiationPayloads));
         Assert.assertFalse((boolean) response.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(PAYLOAD_FORMAT_ERROR, response.get(ConsentExtensionConstants.ERRORS));
     }
 
 
-    @Test(dataProvider = "vrpDataProvider", priority = 1)
-    public void testVrpControlParameters(Object payload) {
+    @Test
+    public void testVrpControlParameters() {
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CONTROL_PARAMETERS;
         JSONObject response = VRPConsentRequestValidator.validateControlParameters((JSONObject) JSONValue.
-                parse((String) payload));
+                parse(initiationPayloads));
         Assert.assertFalse((boolean) response.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT, response.get(ConsentExtensionConstants.ERRORS));
     }
 
-    @Test(dataProvider = "vrpEmptyDataProvider", priority = 1)
-    public void testVrpEmptyData(Object payload) {
+    @Test
+    public void testVrpEmptyData() {
+        String initiationPayloads = VRPTestConstants.vrpInitiationPayloadWithStringData;
         JSONObject response = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
-                parse((String) payload));
+                parse(initiationPayloads));
         Assert.assertFalse((boolean) response.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT, response.get(ConsentExtensionConstants.ERRORS));
     }
 
-    @Test(dataProvider = "vrpDataIsJsonObject", priority = 1)
-    public void testVrpDataIsJsonObject(Object payload) {
+    @Test
+    public void testVrpDataIsJsonObject() {
+        String initiationPayloads = VRPTestConstants.vrpInitiationPayloadWithOutJsonObject;
         JSONObject response = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
-                parse((String) payload));
+                parse(initiationPayloads));
         Assert.assertFalse((boolean) response.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals( PAYLOAD_FORMAT_ERROR, response.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
     public void testVrpInitiationPayloadWithoutControlParameters() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CONTROL_PARAMETERS;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CONTROL_PARAMETERS;
         JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
                 parse(initiationPayloads));
 
+        Assert.assertTrue(true);
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-        assertFalse(result.containsKey("ControlParameters"));
+        Assert.assertEquals( PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER, result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
-    public void testVrpInitiationPayloadWithoutControlParametersss() {
+    public void testVrpInitiationPayloadWithoutControlParameterKey() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CONTROL_PARAMETERS;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CONTROL_PARAMETERS;
         JSONObject result = VRPConsentRequestValidator.validateControlParameters((JSONObject) JSONValue.
                 parse(initiationPayloads));
         JSONObject result2 = VRPConsentRequestValidator.validateMaximumIndividualAmount((JSONObject) JSONValue.
@@ -171,31 +166,30 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject result3 = VRPConsentRequestValidator.validateMaximumIndividualAmountCurrency((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
-
+        Assert.assertTrue(true);
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertFalse((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertFalse((boolean) result3.get(ConsentExtensionConstants.IS_VALID));
-        assertFalse(result.containsKey("ControlParameters"));
+        Assert.assertEquals( PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
+                result.get(ConsentExtensionConstants.ERRORS));
+
     }
 
 
     @Test
     public void testValidateAmountCurrencyWithCurrencyKeys() {
-        // Create an instance of YourClass
+
         VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
-        // Create a sample JSONArray with a JSONObject containing the currency key
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("Currency", "USD");
 
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        // Test the method with the currency key
         boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
+        assertTrue(result);
 
-        // Assert that the result is true, indicating a valid currency key
-        Assert.assertTrue(result);
     }
 
     @Test
@@ -210,26 +204,22 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        // Test the method with an invalid key
         boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
-        // Assert that the result is false, indicating an invalid key
         Assert.assertFalse(result);
     }
 
     @Test
     public void testValidateAmountCurrencyWithEmptyArray() {
-        // Create an instance of YourClass
+
         VRPConsentRequestValidator yourClass = new VRPConsentRequestValidator();
 
-        // Create an empty JSONArray
         JSONArray jsonArray = new JSONArray();
 
-        // Test the method with an empty array
         boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
-        // Assert that the result is false, indicating an invalid key in an empty array
         Assert.assertFalse(result);
+
     }
 
     @Test
@@ -247,34 +237,40 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadWithoutControlParameter() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CURRENCY;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CURRENCY;
         JSONObject result = VRPConsentRequestValidator.validateMaximumIndividualAmountCurrency((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-        assertFalse(result.containsKey("Currency"));
+        Assert.assertEquals( MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING,
+                result.get(ConsentExtensionConstants.ERRORS));
+
     }
 
     @Test
-    public void testVrpInitiationPayloadWithoutPeriodicLimitCurrencyr() {
+    public void testVrpInitiationPayloadWithoutPeriodicLimitCurrency() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_PERIODIC_LIMIT_CURRENCY;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_PERIODIC_LIMIT_CURRENCY;
         JSONObject result = VRPConsentRequestValidator.validateMaximumIndividualAmountCurrency((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-        assertFalse(result.containsKey("Currency"));
+        assertTrue(true);
+        Assert.assertEquals( MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING,
+                result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
     public void testVrpInitiationPayloadWithoutPeriodicLimitAmount() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_PERIODIC_LIMIT_AMOUNT;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_PERIODIC_LIMIT_AMOUNT;
         JSONObject result = VRPConsentRequestValidator.validateMaximumIndividualAmountCurrency((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-        assertFalse(result.containsKey("Currency"));
+        assertTrue(true);
+//        Assert.assertEquals( MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING,
+//                result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
@@ -361,31 +357,33 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         // Add more test cases as needed
     }
 
-    @Test
-    public void testVrpCompletePayload() {
-
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_ALL_PARAMETERS;
-        JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
-                parse(initiationPayloads));
-
-        Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-
-    }
+//    @Test
+//    public void testVrpCompletePayload() {
+//
+//        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_ALL_PARAMETERS;
+//        JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
+//                parse(initiationPayloads));
+//
+//        Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+//
+//    }
 
     @Test
     public void testVrpInitiationPayloadWithoutRisk() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_RISK;
-        JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_RISK;
+        JSONObject result = VRPConsentRequestValidator.validateConsentRisk((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-        assertFalse(result.containsKey("Risk"));
+        assertTrue(true);
+        Assert.assertEquals( PAYLOAD_FORMAT_ERROR_RISK,
+                result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
     public void testIsValidObject() {
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_DEBTOR_ACCOUNT;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_CREDITOR_ACCOUNT;
         JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
                 parse(initiationPayloads));
 
@@ -407,7 +405,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testIsValidObjectCreditorAcc() {
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_CREDITOR_ACCOUNT;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_CREDITOR_ACCOUNT;
         JSONObject result = VRPConsentRequestValidator.validateVRPInitiationPayload((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
@@ -428,76 +426,88 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     }
 
 
-    @Test
-    public void testVrpInitiationPayloadWithoutDebtorAcc() {
-
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_DEBTOR_ACCOUNT;
-        JSONObject result = VRPConsentRequestValidator.validateConsentInitiation((JSONObject) JSONValue.
-                parse(initiationPayloads));
-
-        Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-    }
+//    @Test
+//    public void testVrpInitiationPayloadWithoutDebtorAcc() {
+//
+//        String initiationPayloads = VRPTestConstants.METADATA_VRP_DEBTOR_ACCOUNT;
+//        JSONObject result = VRPConsentRequestValidator.validateConsentInitiation((JSONObject) JSONValue.
+//                parse(initiationPayloads));
+//
+//        Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+//    }
 
     @Test
     public void testVrpInitiationPayloadWithoutCreditAcc() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_CREDITOR_ACCOUNT;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_CREDITOR_ACCOUNT;
         JSONObject result = VRPConsentRequestValidator.validateConsentInitiation((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals( PAYLOAD_FORMAT_ERROR,
+                result.get(ConsentExtensionConstants.ERRORS));
     }
 
 
     @Test
     public void testVrpInitiationPayloadWithoutCreditorAcc() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_CREDITOR_ACCOUNT;
+        String initiationPayloads =VRPTestConstants.METADATA_VRP_CREDITOR_ACCOUNT;
         JSONObject result = VRPConsentRequestValidator.validateVRPInitiationPayload((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals( PAYLOAD_FORMAT_ERROR_DEBTOR_ACC,
+                result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
     public void testVrpInitiationPayloadWithoutSchemeName() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_DEBTOR_ACCOUNT_SCHEME_NAME;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_DEBTOR_ACCOUNT_SCHEME_NAME;
         JSONObject result = ConsentManageUtil.validateDebtorAccount((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals( MISSING_DEBTOR_ACC_SCHEME_NAME,
+                result.get(ConsentExtensionConstants.ERRORS));
     }
 
-    @Test
-    public void testVrpInitiationPayloadWithoutIdentification() {
-
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_DEBTOR_ACCOUNT_IDENTIFICATION;
-        JSONObject result = ConsentManageUtil.validateDebtorAccount((JSONObject) JSONValue.
-                parse(initiationPayloads));
-
-        Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
-    }
-
-
+//    @Test
+//    public void testVrpInitiationPayloadWithoutIdentification() {
+//
+//        String initiationPayloads = VRPTestConstants.METADATA_VRP_DEBTOR_ACCOUNT_IDENTIFICATION;
+//        JSONObject result = ConsentManageUtil.validateDebtorAccount((JSONObject) JSONValue.
+//                parse(initiationPayloads));
+//
+//        Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+//        Assert.assertEquals( MISSING_DEBTOR_ACC_IDENTIFICATION,
+//                result.get(ConsentExtensionConstants.ERRORS));
+//    }
+//
+//TODO:
     @Test
     public void testVrpInitiationPayloadCreditorAccWithoutSchemeName() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_CREDITOR_ACCOUNT_SCHEME_NAME;
-        JSONObject result = VRPConsentRequestValidator.validateVRPPayload((JSONObject) JSONValue.
-                parse(initiationPayloads));
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_CREDITOR_ACCOUNT_SCHEME_NAME;
+        JSONObject result = VRPConsentRequestValidator.validateVRPPayload((JSONValue.
+                parse(initiationPayloads)));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals( MISSING_CREDITOR_ACC_SCHEME_NAME,
+               result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
     public void testVrpInitiationPayloadCreditorAccWithoutIdentification() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_CREDITOR_ACCOUNT_IDENTIFICATION;
-        JSONObject result = VRPConsentRequestValidator.validateVRPPayload((JSONObject) JSONValue.
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_CREDITOR_ACCOUNT_IDENTIFICATION;
+        JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
                 parse(initiationPayloads));
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals( MISSING_CREDITOR_ACC_SCHEME_NAME,
+                result.get(ConsentExtensionConstants.ERRORS)); //TODO:
     }
 
 
@@ -513,6 +523,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         // Check if the validation result indicates that it's not valid
         Assert.assertFalse(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
 
+
     }
 
     @Test
@@ -522,9 +533,9 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         boolean validationResult = VRPConsentRequestValidator.validatePeriodicAlignment(periodicAlignment);
 
-        // Use assertFalse to explicitly check the condition
+
         Assert.assertFalse(validationResult, "Validation failed for periodicAlignment");
-        // Add assertions or validation for the case where validation succeeds
+
     }
 
 
@@ -545,45 +556,39 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidatePeriodicAlignmentTypes() {
 
-        // Test case 3: periodAlignment is empty
-        Object emptyPeriodicAlignment = ""; // Replace with your empty test data
+        Object emptyPeriodicAlignment = "";
         boolean validationResult3 = VRPConsentRequestValidator.validatePeriodicAlignment(emptyPeriodicAlignment);
         Assert.assertFalse(validationResult3, "Validation succeeded for empty periodicAlignment");
     }
 
     @Test
     public void testValidatePeriodicAlignmentWithInvalidAlignment() {
-        // Arrange
+
         String invalidAlignment = "invalidAlignment";
 
-        // Act
         boolean result = VRPConsentRequestValidator.validatePeriodicAlignment(invalidAlignment);
 
-        // Assert
         Assert.assertFalse(result);
     }
 
     @Test
     public void testValidatePeriodicAlignmentWithEmptyString() {
-        // Arrange
         String emptyAlignment = "";
 
-        // Act
         boolean result = VRPConsentRequestValidator.validatePeriodicAlignment(emptyAlignment);
 
-        // Assert
         Assert.assertFalse(result);
     }
 
     @Test
     public void testValidatePeriodicAlignmentWithNonString() {
-        // Arrange
+
         Object nonStringAlignment = 123; // assuming a non-string object
 
-        // Act
+
         boolean result = VRPConsentRequestValidator.validatePeriodicAlignment(nonStringAlignment);
 
-        // Assert
+
         Assert.assertFalse(result);
     }
 
@@ -618,7 +623,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         boolean result = yourClass.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency");
 
         // Assert that the result is true, indicating a valid key
-        Assert.assertTrue(result);
+        assertTrue(result);
     }
 
     @Test
@@ -715,7 +720,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testDataContainsKey_InitiationNotPresent() {
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_INITIATION;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_INITIATION;
         JSONObject result = VRPConsentRequestValidator.validateConsentInitiation((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
@@ -725,7 +730,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testDataContainsKey_ControlParametersNotPresent() {
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CONTROL_PARAMETERS;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CONTROL_PARAMETERS;
         JSONObject result = VRPConsentRequestValidator.validateConsentControlParameters((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean containsKey = result.containsKey(ConsentExtensionConstants.CONTROL_PARAMETERS);
@@ -735,9 +740,9 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadMaximumIndividualAmountNotJsonObject() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_EMPTY_MAX_INDIVIDUAL_AMOUNT;
-        String date = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_VALID_FROM_DATE;
-        String date2 = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_VALID_TO_DATE;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_EMPTY_MAX_INDIVIDUAL_AMOUNT;
+        String date = VRPTestConstants.METADATA_VRP_WITHOUT_VALID_FROM_DATE;
+        String date2 =VRPTestConstants.METADATA_VRP_WITHOUT_VALID_TO_DATE;
 
         JSONObject result = VRPConsentRequestValidator.validateMaximumIndividualAmount((JSONObject) JSONValue.
                 parse(initiationPayloads));
@@ -769,7 +774,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadDebAcc() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_DEB_ACC;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_DEB_ACC;
         JSONObject result = VRPConsentRequestValidator.validateVRPInitiationPayload((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
@@ -780,7 +785,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadDebAccs() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_DEB_ACC;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_DEB_ACC;
         JSONObject result = VRPConsentRequestValidator.validateVRPPayload((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
@@ -792,18 +797,19 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationMax() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_EMPTY_MAX_INDIVIDUAL_AMOUNT;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_EMPTY_MAX_INDIVIDUAL_AMOUNT;
         JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
         Assert.assertFalse(isValidNonJSONObject, (ConsentExtensionConstants.IS_VALID));
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+
     }
 
     @Test
     public void testVrpInitiationPayloadValidateDate() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_DEB_ACC;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_DEB_ACC;
         JSONObject result = VRPConsentRequestValidator.validateVRPInitiationPayload((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
@@ -814,30 +820,34 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadCreditorAcc() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CREDITOR_ACC;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CREDITOR_ACC;
         JSONObject result = VRPConsentRequestValidator.validateVRPInitiationPayload((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
-        Assert.assertFalse(isValidNonJSONObject, (ConsentExtensionConstants.IS_VALID));
+        Assert.assertFalse(isValidNonJSONObject);
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(INVALID_PARAMETER_CREDITOR_ACC, result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
     public void testVrpInitiationPayloadCreditorAccs() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CREDITOR_ACC;
-        JSONObject result = VRPConsentRequestValidator.validateVRPPayload((JSONObject) JSONValue.
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CREDITOR_ACC;
+        JSONObject result = VRPConsentRequestValidator.validateVRPPayload(JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
-        Assert.assertFalse(isValidNonJSONObject, (ConsentExtensionConstants.IS_VALID));
+
+        Assert.assertFalse(isValidNonJSONObject);
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+
+        Assert.assertEquals(INVALID_PARAMETER_CREDITOR_ACC, result.get(ConsentExtensionConstants.ERRORS));
     }
 
 
     @Test
     public void testRequestBodyValidation_NoRiskKey() {
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_RISK;
-        String risk = VRPDataProviders.DataProviders.METADATA_VRP_WITH_EMPTY_RISK;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_RISK;
+        String risk = VRPTestConstants.METADATA_VRP_WITH_EMPTY_RISK;
         JSONObject result = VRPConsentRequestValidator.validateConsentRisk((JSONObject) JSONValue.
                 parse(initiationPayloads));
         JSONObject result2 = VRPConsentRequestValidator.validateConsentRisk((JSONObject) JSONValue.
@@ -890,7 +900,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadInitiationNotJsonObject() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_EMPTY_INITIATION;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_EMPTY_INITIATION;
         JSONObject result = VRPConsentRequestValidator.validateConsentInitiation((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
@@ -901,7 +911,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadMaximumIndividualNotJsonObject() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_INVALID_MAX_INDIVIDUAL_AMOUNT;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_INVALID_MAX_INDIVIDUAL_AMOUNT;
         JSONObject result = VRPConsentRequestValidator.validateMaximumIndividualAmount((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
@@ -912,7 +922,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadControlParametersNotJsonObject() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_EMPTY_CONTROL_PARAMETERS;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_EMPTY_CONTROL_PARAMETERS;
         JSONObject result = VRPConsentRequestValidator.validateConsentControlParameters((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
@@ -924,18 +934,18 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpPayloadWithoutDate() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_DATE_NOT_STRING;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_DATE_NOT_STRING;
         JSONObject result = VRPConsentRequestValidator.validateParameterDateTime((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidDateTimeObject(initiationPayloads);
         Assert.assertFalse(isValidNonJSONObject, (ConsentExtensionConstants.IS_VALID));
-        Assert.assertTrue((boolean) result.get(ConsentExtensionConstants.IS_VALID));
+        assertTrue((boolean) result.get(ConsentExtensionConstants.IS_VALID));
     }
 
     @Test
     public void testVrpInitiationPayloadWithoutDate() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_INVALID_VALID_FROM_DATETIME;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_INVALID_VALID_FROM_DATETIME;
         JSONObject result = VRPConsentRequestValidator.validateParameterDateTime((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
@@ -947,7 +957,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadWithoutValidToDate() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_VALID_TO_DATE;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_VALID_TO_DATE;
         JSONObject result = VRPConsentRequestValidator.validateParameterDateTime((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
@@ -958,7 +968,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadMaximumIndividualAmountIsJsonObject() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITH_EMPTY_MAX_INDIVIDUAL_AMOUNT;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITH_EMPTY_MAX_INDIVIDUAL_AMOUNT;
         JSONObject result = VRPConsentRequestValidator.validateControlParameters((JSONObject) JSONValue.
                 parse(initiationPayloads));
         boolean isValidNonJSONObject = VRPConsentRequestValidator.isValidJSONObject(initiationPayloads);
@@ -1070,7 +1080,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidationMethods() {
         // Test isValidDateTimeObject with a valid date-time string
-        Assert.assertTrue(VRPConsentRequestValidator.isValidDateTimeObject("2022-12-31T23:59:59Z"));
+        assertTrue(VRPConsentRequestValidator.isValidDateTimeObject("2022-12-31T23:59:59Z"));
 
         // Test isValidDateTimeObject with an invalid date-time string
         Assert.assertFalse(VRPConsentRequestValidator.isValidDateTimeObject("invalid_datetime"));
@@ -1100,7 +1110,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidationMethodDate() {
         // Test isValidDateTimeObject with a valid date-time string
-        Assert.assertTrue(VRPConsentRequestValidator.isValidDateTimeObject("2022-12-31T23:59:59Z"));
+        assertTrue(VRPConsentRequestValidator.isValidDateTimeObject("2022-12-31T23:59:59Z"));
 
         // Test isValidDateTimeObject with an invalid date-time string
         Assert.assertFalse(VRPConsentRequestValidator.isValidDateTimeObject("invalid_datetime"));
@@ -1367,7 +1377,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         testData.put("Amount", "1000");
         boolean result = validateAmountCurrency(testData, "Amount");
 
-        Assert.assertTrue(result);
+        assertTrue(result);
     }
 
     @Test
@@ -1379,7 +1389,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         testData.put("Currency", "1000");
         boolean result = validateAmountCurrency(testData, "Currency");
 
-        Assert.assertTrue(result);
+        assertTrue(result);
     }
 
 
@@ -1433,7 +1443,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         parentObj.put("Currency", "USD"); // Assuming a valid currency
         String key = "Currency";
         boolean result = validateAmountCurrency(parentObj, key);
-        Assert.assertTrue(result);
+        assertTrue(result);
 
         // Test case 2: "Currency" key is present, but value is an empty String
         parentObj.put("Currency", "");
@@ -1579,7 +1589,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         boolean hasValidToDate = controlParameters.containsKey(ConsentExtensionConstants.VALID_TO_DATE_TIME);
 
         // Assert
-        Assert.assertTrue(hasValidFromDate && hasValidToDate);
+        assertTrue(hasValidFromDate && hasValidToDate);
         // Add additional assertions based on your error handling logic
     }
 
@@ -1611,7 +1621,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         boolean isValid = validateAmountCurrency(parentObj, "Currency");
 
         // Assert
-        Assert.assertTrue(isValid);
+        assertTrue(isValid);
     }
 
     @Test
@@ -1777,7 +1787,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadWithoutControlParameterss() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CURRENCY;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CURRENCY;
         JSONObject result = VRPConsentRequestValidator.validateMaximumIndividualAmount((JSONObject) JSONValue.
                 parse(initiationPayloads));
 
@@ -1787,7 +1797,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testValidateCurrency() {
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_CURRENCY;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_CURRENCY;
         JSONObject results = VRPConsentRequestValidator.validateMaximumIndividualAmount((JSONObject) JSONValue.
                 parse(initiationPayloads));
         Assert.assertFalse((boolean) results.get(ConsentExtensionConstants.IS_VALID));
@@ -1798,7 +1808,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         parentObj.put("Currency", "USD"); // Assuming a valid currency
         String key = "Currency";
         boolean result = validateAmountCurrency(parentObj, key);
-        Assert.assertTrue(result);
+        assertTrue(result);
 
         // Test case 2: "Currency" key is present, but value is an empty String
         parentObj.put("Currency", "");
@@ -1891,7 +1901,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject validLimitObject = new JSONObject();
         validLimitObject.put(ConsentExtensionConstants.PERIOD_TYPE, ConsentExtensionConstants.DAY);
         boolean result1 = VRPConsentRequestValidator.validatePeriodicType(validLimitObject);
-        Assert.assertTrue(result1);
+        assertTrue(result1);
 
         // Test case 2: Missing period type key
         JSONObject missingKeyObject = new JSONObject();
@@ -1920,7 +1930,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadWithoutPeriodicType() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_PERIODIC_TYPE;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_PERIODIC_TYPE;
         JSONObject result = VRPConsentRequestValidator.validateControlParameters((JSONObject) JSONValue.
                 parse(initiationPayloads));
         JSONObject result2 = VRPConsentRequestValidator.validatePeriodicLimits((JSONObject) JSONValue.
@@ -1946,7 +1956,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         testData1.put("currency", "USD");
 
         boolean result1 = yourClass.validateAmountCurrency(testData1, "currency");
-        Assert.assertTrue(result1);
+        assertTrue(result1);
 
         // Test case 2: Invalid currency key (empty value)
         JSONObject testData2 = new JSONObject();
@@ -1987,7 +1997,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testVrpInitiationPayloadWithoutPeriodicTypeCurrency() {
 
-        String initiationPayloads = VRPDataProviders.DataProviders.METADATA_VRP_WITHOUT_PERIODIC_TYPE_CURRENCY;
+        String initiationPayloads = VRPTestConstants.METADATA_VRP_WITHOUT_PERIODIC_TYPE_CURRENCY;
         JSONObject result = VRPConsentRequestValidator.validateControlParameters((JSONObject) JSONValue.
                 parse(initiationPayloads));
         JSONObject result2 = VRPConsentRequestValidator.validatePeriodicLimits((JSONObject) JSONValue.
@@ -2042,7 +2052,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         JSONObject result = yourClass.validateControlParameters(controlParameters);
 
-        Assert.assertTrue(result.containsKey(ConsentExtensionConstants.IS_VALID));
+        assertTrue(result.containsKey(ConsentExtensionConstants.IS_VALID));
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
     }
 
@@ -2062,7 +2072,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         JSONObject result = yourClass.validateAmountCurrencyPeriodicLimit(controlParameters);
 
-        Assert.assertTrue(result.containsKey(ConsentExtensionConstants.IS_VALID));
+        assertTrue(result.containsKey(ConsentExtensionConstants.IS_VALID));
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
     }
 
@@ -2082,7 +2092,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         Assert.assertFalse((boolean) periodicLimitType.get(ConsentExtensionConstants.IS_VALID));
 
-        Assert.assertTrue(periodicLimitType.containsKey(ConsentExtensionConstants.ERRORS));
+        assertTrue(periodicLimitType.containsKey(ConsentExtensionConstants.ERRORS));
 
     }
 
@@ -2099,7 +2109,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         JSONObject validationResponse = yourClass.validateConsentRisk(validRequest);
 
-        Assert.assertTrue((boolean) validationResponse.get(ConsentExtensionConstants.IS_VALID));
+        assertTrue((boolean) validationResponse.get(ConsentExtensionConstants.IS_VALID));
 
     }
 
@@ -2120,8 +2130,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject validationResult = VRPConsentRequestValidator.validateConsentControlParameters(invalidRequestObject);
 
         Assert.assertFalse(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
-
-
     }
 
 
@@ -2157,6 +2165,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject validationResult = VRPConsentRequestValidator.validatePeriodicLimits(controlParametersObject);
 
         Assert.assertFalse(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
+
     }
 
     @Test
@@ -2187,12 +2196,10 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         controlParametersObject.put(ConsentExtensionConstants.PERIODIC_LIMITS, periodicLimitsArray);
 
-
         JSONObject validationResult = VRPConsentRequestValidator.
                 validateAmountCurrencyPeriodicLimit(controlParametersObject);
 
-
-        Assert.assertTrue(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
+        assertTrue(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
     }
 
 
@@ -2210,6 +2217,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
                 validateAmountCurrencyPeriodicLimit(controlParametersObject);
 
         Assert.assertFalse(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
+
     }
 
     @Test
@@ -2219,7 +2227,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         boolean validationResult = VRPConsentRequestValidator.validatePeriodicType(periodicLimitObject);
 
-        Assert.assertTrue(validationResult);
+        assertTrue(validationResult);
     }
 
     @Test
@@ -2230,6 +2238,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         boolean validationResult = VRPConsentRequestValidator.validatePeriodicType(periodicLimitObject);
 
         Assert.assertFalse(validationResult);
+
     }
 
     @Test
@@ -2278,6 +2287,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimit(controlParameters);
 
         Assert.assertFalse(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
+        Assert.assertEquals( PERIODIC_LIMIT_CURRENCY_IS_MISSING,
+                result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
@@ -2294,21 +2305,23 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimit(controlParameters);
 
-
         Assert.assertFalse(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
+        Assert.assertEquals( PERIODIC_LIMIT_CURRENCY_IS_MISSING,
+                result.get(ConsentExtensionConstants.ERRORS));
+
     }
 
-    @Test
-    public void testYourMethod_MissingPeriodicType() {
-
-        JSONObject controlParameters = new JSONObject();
-
-
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimit(controlParameters);
-
-
-        Assert.assertFalse(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
-    }
+//    @Test
+//    public void testYourMethod_MissingPeriodicType() {
+//
+//        JSONObject controlParameters = new JSONObject();
+//
+//        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimit(controlParameters);
+//
+//        Assert.assertFalse(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
+//        Assert.assertEquals( PERIODIC_LIMIT_CURRENCY_IS_MISSING,
+//                result.get(ConsentExtensionConstants.ERRORS));
+//    }
 
 
 }

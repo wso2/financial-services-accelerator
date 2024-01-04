@@ -1,9 +1,27 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package com.wso2.openbanking.accelerator.consent.extensions.manage.vrp;
 
 /**
  * test.
  */
-public class VRPDataProviders {
+public class VRPTestConstants {
 
     public static String vrpInitiationPayloadWithoutData = "{\n" +
             "   \"\": {\n" +
@@ -558,85 +576,6 @@ public class VRPDataProviders {
             "   }\n" +
             "}";
 
-    /**
-     * test.
-     */
-    public static final class DataProviders {
-
-        public static final Object[][] METADATA_DATA_HOLDER = new Object[][]{
-                {
-                        vrpInitiationPayloadWithoutData,
-//                        vrpInitiationPayloadNotInstanceOfJsonObject,
-//                        vrpInitiationPayloadIsEmpty
-                }
-        };
-
-        public static final Object[][] METADATA_CONTROL_PARAMETER = new Object[][]{
-                {
-                        vrpInitiationPayloadWithoutMaximumIndividualAmount,
-                        vrpInitiationPayloadWithInvalidMaximumIndividualAmount
-                }
-        };
-
-        public static final Object[][] METADATA_DATA_STRING = new Object[][]{
-                {
-                        vrpInitiationPayloadWithStringData
-                }
-        };
-
-        public static final Object[][] METADATA_DATA_JSONOBJECT = new Object[][]{
-                {
-                        vrpInitiationPayloadWithOutJsonObject
-                }
-        };
-
-        public static final Object[][] METADATA_INITIATION = new Object[][]{
-                {
-                        vrpInitiationPayloadWithoutInitiation
-                }
-        };
-
-        public static final String METADATA_VRP_DEBTOR_ACCOUNT = "{\n" +
-                "    \"Data\": {\n" +
-                "       \"ReadRefundAccount\": \"true\",\n" +
-                "       \"ControlParameters\": {\n" +
-                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"MaximumIndividualAmount\": {\n" +
-                "               \"Amount\": \"9\",\n" +
-                "               \"Currency\": \"GBP\"\n" +
-                "           },\n" +
-                "           \"PeriodicLimits\": [\n" +
-                "               {\n" +
-                "                   \"Amount\": \"1000\",\n" +
-                "                   \"Currency\": \"GBP\",\n" +
-                "                   \"PeriodAlignment\": \"Consent\",\n" +
-                "                   \"PeriodType\": \"Half-year\"\n" +
-                "               }\n" +
-                "           ]\n" +
-                "       },\n" +
-                "       \"Initiation\": {\n" +
-                "           \"DebtorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30080012343456\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30949330000010\",\n" +
-                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"RemittanceInformation\": {\n" +
-                "               \"Reference\": \"Sweepco\"\n" +
-                "           }\n" +
-                "       }\n" +
-                "   },\n" +
-                "   \"Risk\": {\n" +
-                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-                "   }\n" +
-                "}";
-
 
         public static final String METADATA_VRP_CREDITOR_ACCOUNT = "{\n" +
                 "    \"Data\": {\n" +
@@ -678,7 +617,49 @@ public class VRPDataProviders {
                 "       \"PaymentContextCode\": \"PartyToParty\"\n" +
                 "   }\n" +
                 "}";
-        ;
+
+
+//        public static final String METADATA_VRP_CREDITO_ACCOUNT = "{\n" +
+//                "    \"Data\": {\n" +
+//                "       \"ReadRefundAccount\": \"true\",\n" +
+//                "       \"ControlParameters\": {\n" +
+//                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
+//                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
+//                "           \"MaximumIndividualAmount\": {\n" +
+//                "               \"Amount\": \"9\",\n" +
+//                "               \"Currency\": \"GBP\"\n" +
+//                "           },\n" +
+//                "           \"PeriodicLimits\": [\n" +
+//                "               {\n" +
+//                "                   \"Amount\": \"1000\",\n" +
+//                "                   \"Currency\": \"GBP\",\n" +
+//                "                   \"PeriodAlignment\": \"Consent\",\n" +
+//                "                   \"PeriodType\": \"Half-year\"\n" +
+//                "               }\n" +
+//                "           ]\n" +
+//                "       },\n" +
+//                "       \"Initiation\": {\n" +
+//                "           \"DebtorAccount\": {\n" +
+//                "               \"SchemeName\": \"OB.IBAN\",\n" +
+//                "               \"Identification\": \"30080012343456\",\n" +
+//                "               \"Name\": \"Marcus Sweepimus\"\n" +
+//                "           },\n" +
+//                "           \"\": {\n" +
+//                "               \"SchemeName\": \"OB.IBAN\",\n" +
+//                "               \"Identification\": \"30949330000010\",\n" +
+//                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
+//                "               \"Name\": \"Marcus Sweepimus\"\n" +
+//                "           },\n" +
+//                "           \"RemittanceInformation\": {\n" +
+//                "               \"Reference\": \"Sweepco\"\n" +
+//                "           }\n" +
+//                "       }\n" +
+//                "   },\n" +
+//                "   \"Risk\": {\n" +
+//                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
+//                "   }\n" +
+//                "}";
+//        ;
 
 
         public static final String METADATA_VRP_DEBTOR_ACCOUNT_SCHEME_NAME = "{\n" +
@@ -1754,32 +1735,6 @@ public class VRPDataProviders {
                 "       \"PaymentContextCode\": \"PartyToParty\"\n" +
                 "   }\n" +
                 "}";
-
-
-
-
-
-
-
-        public static final Object[][] METADATA_WITHOUT_CREDITOR_ACC = new Object[][]{
-                {
-                        vrpInitiationPayloadWithoutCreditorAcc
-                }
-        };
-
-
-        public static final Object[][] METADATA_WITHOUT_CONTROL_PARAMETER = new Object[][]{
-                {
-                        vrpInitiationPayloadWithoutControlParameterKey
-                }
-        };
-
-        public static final Object[][] METADATA_WITHOUT_AMOUNT = new Object[][]{
-                {
-                        vrpInitiationPayloadWithoutAmount
-                }
-        };
-
     }
-}
+
 
