@@ -51,6 +51,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
 
     private static final Log log = LogFactory.getLog(VRPConsentRequestHandler.class);
 
+
     /**
      * This method is responsible for processing a Variable Recurring Payment Consent Manage POST request.
      * It validates the payment  request, checks for the existence of an idempotency key.
