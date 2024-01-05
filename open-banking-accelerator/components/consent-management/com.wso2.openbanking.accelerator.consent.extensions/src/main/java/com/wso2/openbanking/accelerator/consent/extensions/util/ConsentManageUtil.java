@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionUtils;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
@@ -42,7 +43,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -322,7 +322,7 @@ public class ConsentManageUtil {
         Boolean shouldRevokeTokens;
         if (ConsentManageUtil.isConsentIdValid(consentId)) {
             try {
-                ConsentResource consentResource = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
+                ConsentResource consentResource = ConsentServiceUtil.getConsentService()
                         .getConsent(consentId, false);
 
                 if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
@@ -626,43 +626,61 @@ public class ConsentManageUtil {
 
     /**
      * validate the periodiclimits in the payload  in VRP.
+     *
      * @param limit
      * @return
      */
-    public static boolean validatePeriodicAlignment(JSONObject limit) {
-        String periodAlignment = (String) limit.get(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+//    public static boolean validatePeriodicAlignment(Object limit) {
+//        Object periodAlignment =limit.equals(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+//
+//        return (ConsentExtensionConstants.CONSENT.equals(periodAlignment) ||
+//                ConsentExtensionConstants.CALENDER.equals(periodAlignment));
+//    }
+//    public static boolean validatePeriodicAlignment(Object limit) {
+//        Object periodAlignment = limit.equals(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+//
+//        if (!VRPConsentRequestValidator.isValidString(periodAlignment)) {
+//            return false;
+//        } else {
+//            String periodAlignment1 = (String) periodAlignment;
+//
+//            // Check if periodType is empty
+//            if (periodAlignment1.isEmpty()) {
+//                return false;
+//            }
+//
+//            List<String> periodAlignments = Arrays.asList(
+//                    ConsentExtensionConstants.CONSENT,
+//                    ConsentExtensionConstants.CALENDER
+//            );
+//
+//            return periodAlignments.contains(periodAlignment1);
+//        }
+//
+//    }
 
-        return (ConsentExtensionConstants.CONSENT.equals(periodAlignment) ||
-                ConsentExtensionConstants.CALENDER.equals(periodAlignment));
-    }
 
     /**
      * method to validate periodic type in VRP.
+     *
      * @param periodiclimit periodic type
      * @return
      */
-    public static boolean validatePeriodicType(JSONObject periodiclimit) {
-        Object periodTypeObject = periodiclimit.get(ConsentExtensionConstants.PERIOD_TYPE);
-
-        if (periodTypeObject instanceof String) {
-            String periodType = (String) periodTypeObject;
-
-            // Check if periodType is empty
-            if (periodType.isEmpty()) {
-                return false;
-            }
-
-            List<String> periodTypes = Arrays.asList(
-                    ConsentExtensionConstants.DAY,
-                    ConsentExtensionConstants.WEEK,
-                    ConsentExtensionConstants.FORTNIGHT,
-                    ConsentExtensionConstants.MONTH,
-                    ConsentExtensionConstants.HALF_YEAR,
-                    ConsentExtensionConstants.YEAR
-            );
-
-            return periodTypes.contains(periodType);
-        }
-        return false;
-    }
+//    public static boolean validatePeriodicType(Object periodicLimit) {
+//        if (periodicLimit instanceof String && !((String) periodicLimit).isEmpty()) {
+//            String periodType = (String) periodicLimit;
+//
+//            List<String> validPeriodTypes = Arrays.asList(
+//                    ConsentExtensionConstants.DAY,
+//                    ConsentExtensionConstants.WEEK,
+//                    ConsentExtensionConstants.FORTNIGHT,
+//                    ConsentExtensionConstants.MONTH,
+//                    ConsentExtensionConstants.HALF_YEAR,
+//                    ConsentExtensionConstants.YEAR
+//            );
+//
+//            return validPeriodTypes.contains(periodType);
+//        }
+//        return false;
+//    }
 }
