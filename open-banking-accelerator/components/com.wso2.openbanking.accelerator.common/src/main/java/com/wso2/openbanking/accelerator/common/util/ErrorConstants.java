@@ -247,7 +247,7 @@ public class ErrorConstants {
     public static final String CONSENT_ID_NOT_FOUND = "Consent ID not available in consent data";
     public static final String FIELD_INVALID_DATE = "OB.Field.InvalidDate";
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
-    // vrp
+    // VRP error constants
     public static final String MAXIMUM_INDIVIDUAL_AMOUNT_IS_MISSING = "Mandatory parameter MaximumIndividualAmount" +
             " Amount is missing in the payload.";
     public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING = "Mandatory parameter" +
@@ -296,5 +296,7 @@ public class ErrorConstants {
     public static final String PATH_PERIOD_LIMIT_CURRENCY = "Data.ControlParameters.PeriodicLimits.Currency";
     public static final String PATH_PERIOD_TYPE = "Data.ControlParameters.PeriodicLimits.PeriodType";
     public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodLimits.PeriodAlignment";
+    public static final String PERIODIC_LIMIT_CURRENCY_IS_MISSING =  "Mandatory parameter Currency in Periodic limits" +
+            " is missing in the payload";
 }
 
