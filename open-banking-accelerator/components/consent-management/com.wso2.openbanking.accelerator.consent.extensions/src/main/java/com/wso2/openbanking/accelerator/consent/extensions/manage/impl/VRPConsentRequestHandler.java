@@ -25,7 +25,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.validator.VRPConsentRequestValidator;
 import com.wso2.openbanking.accelerator.consent.extensions.util.ConsentManageUtil;
@@ -111,8 +110,9 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                                         "consent client id: %s, consent manage data client id: %s",
                                 consent.getClientID(), consentManageData.getClientId()));
                     }
+                    //throw new RuntimeException()
                     throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+                            new String("test"));
                 }
 
                 JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).
@@ -122,7 +122,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                                 ConsentExtensionConstants.VRP));
                 consentManageData.setResponseStatus(ResponseStatus.OK);
             } catch (ConsentManagementException | ParseException e) {
-                log.error(ErrorConstants.INVALID_CLIENT_ID_MATCH);
+                log.error(ErrorConstants.INVALID_CLIENT_ID_MATCH, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         ErrorConstants.ACC_INITIATION_RETRIEVAL_ERROR);
             }
@@ -164,7 +164,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                 ConsentExtensionConstants.AWAITING_AUTH_STATUS);
 
         // Create the consent
-        DetailedConsentResource createdConsent = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
+        DetailedConsentResource createdConsent = ConsentServiceUtil.getConsentService()
                 .createAuthorizableConsent(requestedConsent, null,
                         CREATED_STATUS, AUTH_TYPE_AUTHORIZATION, true);
 
@@ -188,6 +188,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                 .toString());
         consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
                 (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+                //TODO: Improve the logic of storing the PERIODIC_LIMITS
                 .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
         consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE, ((JSONObject) ((JSONArray) (controlParameters)
                 .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
