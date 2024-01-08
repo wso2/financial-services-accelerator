@@ -107,7 +107,6 @@ public class VRPConsentRequestValidator {
         return value instanceof JSONObject && !((JSONObject) value).isEmpty();
     }
 
-
     /**
      * Checks if the given object is a valid date-time string and it is non empty.
      *
@@ -131,7 +130,6 @@ public class VRPConsentRequestValidator {
             return false;
         }
     }
-
 
     /**
      * Method to validate control parameters for variable recurring payments.
@@ -314,14 +312,12 @@ public class VRPConsentRequestValidator {
                     return periodicAlignment;
                 }
 
-
                 JSONObject periodicType = validatePeriodicTypes(controlParameters);
                 if (!(Boolean.parseBoolean(periodicType.
                         getAsString(ConsentExtensionConstants.IS_VALID)))) {
                     log.error(periodicType.get(ConsentExtensionConstants.ERRORS));
                     return periodicType;
                 }
-
             } else {
             // If periodic limits key is missing, return an error
             log.error(ErrorConstants.MISSING_PERIOD_LIMITS);
@@ -329,7 +325,6 @@ public class VRPConsentRequestValidator {
                     ErrorConstants.MISSING_PERIOD_LIMITS,
                     ErrorConstants.PATH_PERIOD_TYPE);
         }
-
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
@@ -355,7 +350,6 @@ public class VRPConsentRequestValidator {
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
-
     }
 
     /**
@@ -402,9 +396,7 @@ public class VRPConsentRequestValidator {
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
-
     }
-
 
     /**
      * Validates the date-time parameters in the control parameters of a consent request.
@@ -440,7 +432,6 @@ public class VRPConsentRequestValidator {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
                         ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_TO_DATE);
             }
-
         }
 
         if (controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
@@ -466,7 +457,6 @@ public class VRPConsentRequestValidator {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
                         ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_FROM_DATE);
             }
-
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
@@ -608,7 +598,6 @@ public class VRPConsentRequestValidator {
                 }
             }
         }
-
         return false; // Invalid: key is not present in parentArray or parentArray is null
     }
 
