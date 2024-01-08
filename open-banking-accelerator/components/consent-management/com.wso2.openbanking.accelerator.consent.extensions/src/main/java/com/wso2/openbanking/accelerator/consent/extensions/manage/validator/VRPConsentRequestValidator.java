@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package com.wso2.openbanking.accelerator.consent.extensions.manage.validator;
 
 import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
@@ -30,7 +29,6 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -204,27 +202,24 @@ public class VRPConsentRequestValidator {
 
             Object maximumIndividualAmount = controlParameters.
                     get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
+
+            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                    "maximum individual amount", "JSONObject");
+
             // Check if the control parameter is valid
             if (!isValidJSONObject(maximumIndividualAmount)) {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.
                                 PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
-                        ErrorConstants.INVALID_PARAMETER_MAXIMUM_INDIVIDUAL_AMOUNT,
+                        errorMessage,
                         ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
             }
 
-            if (!validateAmountCurrency((JSONObject) maximumIndividualAmount, ConsentExtensionConstants.AMOUNT)) {
+            if (!validateJsonObjectKey((JSONObject) maximumIndividualAmount, ConsentExtensionConstants.AMOUNT)) {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.
                                 PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
                         ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_IS_MISSING,
                         ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
             }
-
-//            if (!validateAmountCurrency((JSONObject) maximumIndividualAmount, ConsentExtensionConstants.CURRENCY)) {
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.
-//                                PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
-//                        ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING,
-//                        ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY);
-//            }
 
         } else {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT);
@@ -248,7 +243,7 @@ public class VRPConsentRequestValidator {
         Object maximumIndividualAmount = controlParameters.
                 get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
 
-        if (!validateAmountCurrency((JSONObject) maximumIndividualAmount, ConsentExtensionConstants.CURRENCY)) {
+        if (!validateJsonObjectKey((JSONObject) maximumIndividualAmount, ConsentExtensionConstants.CURRENCY)) {
             return ConsentManageUtil.getValidationResponse(ErrorConstants.
                             PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
                     ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING,
@@ -277,6 +272,9 @@ public class VRPConsentRequestValidator {
             // Retrieve the periodic limits from the control parameters
             Object periodicLimit = controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
 
+            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE, "periodic limit",
+                    "JSONObject");
+
             // Check if the control parameter is a valid JSON array
             if (!isValidJSONArray(periodicLimit)) {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
@@ -285,27 +283,13 @@ public class VRPConsentRequestValidator {
             }
 
             // Retrieve the JSON array of periodic limits
-            JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
+           // JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
 
             // Iterate through each periodic limit
-            Iterator<Object> periodicLimitIterator = periodicLimits.iterator();
+           // Iterator<Object> periodicLimitIterator = periodicLimits.iterator();
 
-            while (periodicLimitIterator.hasNext()) {
-                JSONObject limit = (JSONObject) periodicLimitIterator.next();
-
-                // Retrieve values for validation
-
-                Object periodicAlignment = limit.getAsString(ConsentExtensionConstants.PERIOD_ALIGNMENT);
-                Object periodType = limit.getAsString(ConsentExtensionConstants.PERIOD_TYPE);
-
-
-//                if (!validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
-//                        ConsentExtensionConstants.AMOUNT)) {
-//                    return ConsentManageUtil.getValidationResponse(ErrorConstants.
-//                                    PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
-//                            ErrorConstants.INVALID_PARAMETER_MAXIMUM_INDIVIDUAL_AMOUNT,
-//                            ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
-//                }
+         //   while (periodicLimitIterator.hasNext()) {
+               // JSONObject limit = (JSONObject) periodicLimitIterator.next();
 
                 JSONObject periodicLimitType = validateAmountCurrencyPeriodicLimit
                         (controlParameters);
@@ -323,35 +307,22 @@ public class VRPConsentRequestValidator {
                     return maximumIndividualAmountCurrencyPeriodicLimit;
                 }
 
-//                if (!validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
-//                        ConsentExtensionConstants.CURRENCY)) {
-//                    return ConsentManageUtil.getValidationResponse(ErrorConstants.
-//                                    PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_CURRENCY,
-//                            ErrorConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING,
-//                            ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
-//                }
-
-                //validate period alignment
-                if (!validatePeriodicAlignment(periodicLimits)) {
-                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-                            ErrorConstants.INVALID_PERIOD_ALIGNMENT, ErrorConstants.PATH_PERIOD_ALIGNMENT);
-                }
-
-                boolean periodicType = validatePeriodicType(controlParameters);
-                if (!(Boolean.parseBoolean(maximumIndividualAmountCurrencyPeriodicLimit.
+                JSONObject periodicAlignment = validatePeriodicAlignments(controlParameters);
+                if (!(Boolean.parseBoolean(periodicAlignment.
                         getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                    log.error(maximumIndividualAmountCurrencyPeriodicLimit.get(ConsentExtensionConstants.ERRORS));
-                    return maximumIndividualAmountCurrencyPeriodicLimit;
+                    log.error(periodicAlignment.get(ConsentExtensionConstants.ERRORS));
+                    return periodicAlignment;
                 }
-                //validate period type
-//                if (!validatePeriodicType(periodicLimits)) {
-//                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                            ErrorConstants.MISSING_PERIOD_TYPE, ErrorConstants.PATH_PERIOD_TYPE);
-//                }
 
-            }
 
-        } else {
+                JSONObject periodicType = validatePeriodicTypes(controlParameters);
+                if (!(Boolean.parseBoolean(periodicType.
+                        getAsString(ConsentExtensionConstants.IS_VALID)))) {
+                    log.error(periodicType.get(ConsentExtensionConstants.ERRORS));
+                    return periodicType;
+                }
+
+            } else {
             // If periodic limits key is missing, return an error
             log.error(ErrorConstants.MISSING_PERIOD_LIMITS);
             return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
@@ -388,6 +359,54 @@ public class VRPConsentRequestValidator {
     }
 
     /**
+     * Validates the periodicType in periodic limits in the control parameters of a consent request.
+     *
+     * @param controlParameters The JSON object representing the control parameters of the consent request.
+     * @return A JSONArray containing the validation response.
+     */
+    public static JSONObject validatePeriodicTypes(JSONObject controlParameters) {
+
+        JSONObject validationResponse = new JSONObject();
+
+        JSONArray periodicTypes = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
+        JSONArray periodicType = (JSONArray) periodicTypes.get(Integer.parseInt(ConsentExtensionConstants.PERIOD_TYPE));
+
+        if (!validatePeriodicType((JSONArray) periodicType)) {
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.
+                            PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
+                    ErrorConstants.MISSING_PERIOD_TYPE,
+                    ErrorConstants.PATH_PERIOD_TYPE);
+        }
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+        return validationResponse;
+    }
+
+    /**
+     * Validates the periodicAlignment in periodic limits in the control parameters of a consent request.
+     *
+     * @param controlParameters The JSON object representing the control parameters of the consent request.
+     * @return A JSONArray containing the validation response.
+     */
+    public static JSONObject validatePeriodicAlignments(JSONObject controlParameters) {
+
+        JSONObject validationResponse = new JSONObject();
+
+        JSONArray periodicAlignments = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
+        JSONArray periodicAlignment = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+
+        if (!validatePeriodicAlignment((JSONArray) periodicAlignment)) {
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.
+                            PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
+                    ErrorConstants.MISSING_PERIOD_ALIGNMENT,
+                    ErrorConstants.PATH_PERIOD_TYPE);
+        }
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+        return validationResponse;
+
+    }
+
+
+    /**
      * Validates the date-time parameters in the control parameters of a consent request.
      *
      * @param controlParameters The JSON object representing the control parameters of the consent request.
@@ -417,7 +436,7 @@ public class VRPConsentRequestValidator {
             //If the ValidToDAte is older than current date OR currentDate is older than ValidFromDAte, return error
             if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
                 log.error(String.format("Invalid date-time range, validToDateTime : %s , validFromDateTime : %s " +
-                        "and currentDateTime : %s ", validToDateTime, validFromDateTime,  currentDateTime));
+                        "and currentDateTime : %s ", validToDateTime, validFromDateTime, currentDateTime));
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
                         ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_TO_DATE);
             }
@@ -449,20 +468,6 @@ public class VRPConsentRequestValidator {
             }
 
         }
-
-//        OffsetDateTime validToDateTime = OffsetDateTime.parse(controlParameters.
-//                getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME));
-//        OffsetDateTime validFromDateTime = OffsetDateTime.parse(controlParameters.
-//                getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME));
-//        OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
-//
-//        //If the ValidToDAte is older than current date OR currentDate is older than ValidFromDAte, return error
-//        if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-//            log.debug("Invalid date-time range.");
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                    ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_TO_DATE);
-//        }
-
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
@@ -486,9 +491,12 @@ public class VRPConsentRequestValidator {
 
             Object debtorAccount = initiation.get(ConsentExtensionConstants.DEBTOR_ACC);
 
+            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                    "debtor account", "JSONObject");
+
             if (!isValidJSONObject(debtorAccount)) {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_DEBTOR_ACC,
-                        ErrorConstants.INVALID_PARAMETER_DEBTOR_ACC,
+                        errorMessage,
                         ErrorConstants.PATH_DEBTOR_ACCOUNT);
             }
 
@@ -510,9 +518,12 @@ public class VRPConsentRequestValidator {
 
             Object creditorAccount = initiation.get(ConsentExtensionConstants.CREDITOR_ACC);
 
+            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                    "creditor account", "JSONObject");
+
             if (!isValidJSONObject(creditorAccount)) {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_CREDITOR_ACC,
-                        ErrorConstants.INVALID_PARAMETER_CREDITOR_ACC,
+                        errorMessage,
                         ErrorConstants.PATH_CREDIT_ACCOUNT);
             }
 
@@ -542,7 +553,7 @@ public class VRPConsentRequestValidator {
      * @return true if the specified key is present in the parentObj and the associated value is a
      * non-empty string.
      */
-    public static boolean validateAmountCurrency(JSONObject parentObj, String key) {
+    public static boolean  validateJsonObjectKey(JSONObject parentObj, String key) {
         JSONObject validationResponse = new JSONObject();
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
 
@@ -567,10 +578,10 @@ public class VRPConsentRequestValidator {
 
     /**
      * Validates the presence of a specified key in a JSONArray (either the amount or the currency)
-     *  in periodiclimits and checks if the associated value is a non-empty string.
+     * in periodiclimits and checks if the associated value is a non-empty string.
      *
      * @param parentArray The JSONObject to be validated.
-     * @param key       The key to be checked for presence in the parentObj.
+     * @param key         The key to be checked for presence in the parentObj.
      * @return true if the specified key is present in the parentObj and the associated value is a
      * non-empty string.
      */
@@ -620,10 +631,12 @@ public class VRPConsentRequestValidator {
 
             Object initiation = data.get(ConsentExtensionConstants.INITIATION);
 
+            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                    "initiation", "JSONObject");
+
             if (!isValidJSONObject(initiation)) {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD_INITIATION,
-                        ErrorConstants.INVALID_PARAMETER_INITIATION,
-                        ErrorConstants.PATH_INITIATION);
+                       errorMessage, ErrorConstants.PATH_INITIATION);
             }
 
             JSONObject initiationValidationResult = VRPConsentRequestValidator
@@ -662,9 +675,12 @@ public class VRPConsentRequestValidator {
 
             Object controlParameters = data.get(ConsentExtensionConstants.CONTROL_PARAMETERS);
 
+            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                    "control parameters", "JSONObject");
+
             if (!isValidJSONObject(controlParameters)) {
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD_CONTROL_PARAMETERS,
-                        ErrorConstants.INVALID_PARAMETER_CONTROL_PARAMETERS,
+                        errorMessage,
                         ErrorConstants.PATH_CONTROL_PARAMETERS);
             }
 
@@ -718,36 +734,41 @@ public class VRPConsentRequestValidator {
      * @param periodicAlignment The JSONObject representing the VRP request.
      * @return A JSONObject containing the validation response.
      */
+
     public static boolean validatePeriodicAlignment(Object periodicAlignment) {
 
-        JSONObject alignmentObject = (JSONObject) periodicAlignment;
+        JSONObject validationResponse = new JSONObject();
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
 
-        if (alignmentObject.containsKey(ConsentExtensionConstants.PERIOD_ALIGNMENT)) {
-            Object alignmentType = alignmentObject.get(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+        JSONObject periodAlignmentObject = (JSONObject) periodicAlignment;
 
-            if (alignmentType != null && alignmentType instanceof String &&
-                    !((String) alignmentType).isEmpty()) {
-                String alignments = (String) alignmentType;
+        if (periodAlignmentObject.containsKey(ConsentExtensionConstants.PERIODIC_LIMITS)) {
+            Object alignment = periodAlignmentObject.get(ConsentExtensionConstants.PERIOD_ALIGNMENT);
 
-                List<String> validAlignments = Arrays.asList(
+            if (alignment != null && alignment instanceof String && !((String) alignment).isEmpty()) {
+                String periodType = (String) alignment;
+
+                List<String> validAlignmentTypes = Arrays.asList(
                         ConsentExtensionConstants.CONSENT,
                         ConsentExtensionConstants.CALENDER
                 );
-                return validAlignments.contains(alignments);
+                return validAlignmentTypes.contains(periodType);
             }
         }
         return false;
     }
-
-    /**
+/**
      * Validates the  periodic type in the VRP request payload.
      *
-     * @param periodicLimit The JSONObject representing the VRP request.
+     * @param periodicType The JSONObject representing the VRP request.
      * @return A JSONObject containing the validation response.
      */
-    public static boolean validatePeriodicType(Object periodicLimit) {
+    public static boolean validatePeriodicType(Object periodicType) {
 
-        JSONObject limitObject = (JSONObject) periodicLimit;
+        JSONObject validationResponse = new JSONObject();
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+
+        JSONObject limitObject = (JSONObject) periodicType;
 
         if (limitObject.containsKey(ConsentExtensionConstants.PERIOD_TYPE)) {
             Object periodTypeObject = limitObject.get(ConsentExtensionConstants.PERIOD_TYPE);

@@ -15,8 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-
 package com.wso2.openbanking.accelerator.consent.extensions.manage.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
@@ -86,13 +84,13 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                     ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR);
         }
     }
+
     /**
      * This method is responsible for handling the GET request for retrieving consent initiation details.
      * It validates the consent ID, checks if the consent exists,verifies if the consent belongs to the
      * client making the request.
      *
      * @param consentManageData Object
-     *
      */
     @Override
     public void handleConsentManageGet(ConsentManageData consentManageData) {
@@ -135,7 +133,8 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
 
     /**
      * Handles the DELETE request for revoking or deleting a consent.
-     * @param consentManageData   Object containing request details
+     *
+     * @param consentManageData Object containing request details
      */
     @Override
     public void handleConsentManageDelete(ConsentManageData consentManageData) {
@@ -157,56 +156,63 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     public void handlePaymentPost(ConsentManageData consentManageData, Object request)
             throws ConsentManagementException {
 
-        JSONObject requestObject = (JSONObject) request;
+        if (request instanceof JSONObject) {
+            JSONObject requestObject = (JSONObject) request;
 
-        // Create a ConsentResource representing the requested consent
-        ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
-                requestObject.toJSONString(), ConsentExtensionConstants.VRP,
-                ConsentExtensionConstants.AWAITING_AUTH_STATUS);
+            // Create a ConsentResource representing the requested consent
+            ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
+                    requestObject.toJSONString(), ConsentExtensionConstants.VRP,
+                    ConsentExtensionConstants.AWAITING_AUTH_STATUS);
 
-        // Create the consent
-        DetailedConsentResource createdConsent = ConsentServiceUtil.getConsentService()
-                .createAuthorizableConsent(requestedConsent, null,
-                        CREATED_STATUS, AUTH_TYPE_AUTHORIZATION, true);
+            // Create the consent
+            DetailedConsentResource createdConsent = ConsentServiceUtil.getConsentService()
+                    .createAuthorizableConsent(requestedConsent, null,
+                            CREATED_STATUS, AUTH_TYPE_AUTHORIZATION, true);
 
-        //Set consent attributes for storing
-        Map<String, String> consentAttributes = new HashMap<>();
-        consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
-                .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
+            //Set consent attributes for storing
+            Map<String, String> consentAttributes = new HashMap<>();
+            consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
+                    .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
 
 
-        JSONObject response = (JSONObject) request;
-        consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(response, createdConsent,
-                consentManageData, ConsentExtensionConstants.VRP));
+            JSONObject response = (JSONObject) request;
+            consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(response, createdConsent,
+                    consentManageData, ConsentExtensionConstants.VRP));
 
-        //Set Control Parameters as consent attributes to store
-        JSONObject controlParameters = (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
-                .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
+            //Set Control Parameters as consent attributes to store
+            JSONObject controlParameters = (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
+                    .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
 
-        consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT,
-                ((JSONObject) (controlParameters)
-                .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)).get(ConsentExtensionConstants.AMOUNT)
-                .toString());
-        consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
-                (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
-                //TODO: Improve the logic of storing the PERIODIC_LIMITS
-                .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
-        consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE, ((JSONObject) ((JSONArray) (controlParameters)
-                .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
-                .toString());
-        consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)
-                ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
-                .get(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).toString());
+            consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT,
+                    ((JSONObject) (controlParameters)
+                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)).
+                            get(ConsentExtensionConstants.AMOUNT).toString());
+            consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
+                    (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+                    //TODO: Improve the logic of storing the PERIODIC_LIMITS
+                    .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
+            consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE, ((JSONObject) ((JSONArray) (controlParameters)
+                    .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
+                    .toString());
+            consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)
+                    ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+                    .get(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).toString());
 
-        //Store consent attributes
-        ConsentServiceUtil.getConsentService().storeConsentAttributes(createdConsent.getConsentID(),
-                consentAttributes);
+            //Store consent attributes
+            ConsentServiceUtil.getConsentService().storeConsentAttributes(createdConsent.getConsentID(),
+                    consentAttributes);
 
-        // Get request headers
-        Map<String, String> headers = consentManageData.getHeaders();
+            // Get request headers
+            Map<String, String> headers = consentManageData.getHeaders();
 
-        consentManageData.setResponseHeader(ConsentExtensionConstants.X_IDEMPOTENCY_KEY,
-                headers.get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
-        consentManageData.setResponseStatus(ResponseStatus.CREATED);
+            consentManageData.setResponseHeader(ConsentExtensionConstants.X_IDEMPOTENCY_KEY,
+                    headers.get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
+            consentManageData.setResponseStatus(ResponseStatus.CREATED);
+
+        } else {
+            log.error("Invalid request type. Expected JSONObject.");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    ErrorConstants.PAYLOAD_FORMAT_ERROR);
+        }
     }
 }

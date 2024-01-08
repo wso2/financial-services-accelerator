@@ -298,5 +298,9 @@ public class ErrorConstants {
     public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodLimits.PeriodAlignment";
     public static final String PERIODIC_LIMIT_CURRENCY_IS_MISSING =  "Mandatory parameter Currency in Periodic limits" +
             " is missing in the payload";
+    public static final String MISSING_PERIOD_ALIGNMENT = "Missing periodic alignment";
+
+    public static final String INVALID_PARAMETER_MESSAGE = "Parameter '%s' passed in is null, empty, or not a %s";
+
 }
 
