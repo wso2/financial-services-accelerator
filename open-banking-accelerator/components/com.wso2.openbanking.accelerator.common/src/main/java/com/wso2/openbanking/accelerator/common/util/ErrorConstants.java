@@ -262,24 +262,21 @@ public class ErrorConstants {
     public static final String INVALID_DATE_TIME_FORMAT = "Date and Time is not in correct JSON " +
             "ISO-8601 date-time format";
     public static final String MISSING_DATE_TIME_FORMAT = "The value is empty or the value is not a string";
-    public static final String MISSING_DATE_TIME = "Missing parameter";
+    public static final String MISSING_VALID_TO_DATE_TIME = "Missing parameter ValidToDateTime";
+    public static final String MISSING_VALID_FROM_DATE_TIME = "Missing parameter ValidFromDateTime";
     public static final String INVALID_PARAMETER_PERIODIC_LIMITS = "Parameter passed in is null , " +
             "empty or not a JSONArray";
     public static final String MISSING_PERIOD_LIMITS = "Mandatory parameter " +
             "periodic limits is missing in the payload";
-
     public static final String PATH_VALID_TO_DATE = "Data.ControlParameters.ValidToDateTime";
     public static final String PATH_VALID_FROM_DATE = "Data.ControlParameters.ValidFromDateTime";
     public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT = "Data.ControlParameters.MaximumIndividualAmount";
-
     public static final String PATH_PERIOD_LIMIT = "Data.ControlParameters.PeriodicLimits";
     public static final String PATH_PERIOD_LIMIT_AMOUNT = "Data.ControlParameters.PeriodicLimits.Amount";
     public static final String PATH_PERIOD_LIMIT_CURRENCY = "Data.ControlParameters.PeriodicLimits.Currency";
     public static final String PATH_PERIOD_TYPE = "Data.ControlParameters.PeriodicLimits.PeriodType";
     public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodicLimits.PeriodAlignment";
-
     public static final String MISSING_PERIOD_ALIGNMENT = "Missing periodic alignment in periodic limits";
-
     public static final String INVALID_PARAMETER_MESSAGE = "Parameter '%s' passed in is null, empty, or not a %s";
 
 }

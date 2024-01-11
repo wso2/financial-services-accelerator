@@ -66,7 +66,6 @@ public class VRPConsentRequestValidator {
         JSONObject dataValidationResult = ConsentManageUtil.validateInitiationDataBody(requestBody);
 
         if (!(Boolean.parseBoolean(dataValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            // log.error(dataValidationResult.get(ConsentExtensionConstants.ERRORS));
             return dataValidationResult;
         }
 
@@ -74,7 +73,6 @@ public class VRPConsentRequestValidator {
         JSONObject initiationValidationResult = VRPConsentRequestValidator.validateConsentInitiation(requestBody);
 
         if (!(Boolean.parseBoolean(initiationValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            //log.error(initiationValidationResult.get(ConsentExtensionConstants.ERRORS));
             return initiationValidationResult;
         }
 
@@ -83,14 +81,12 @@ public class VRPConsentRequestValidator {
 
         if (!(Boolean.parseBoolean(controlParameterValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            // log.error(controlParameterValidationResult.get(ConsentExtensionConstants.ERRORS));
             return controlParameterValidationResult;
         }
 
         JSONObject riskValidationResult = VRPConsentRequestValidator.validateConsentRisk(requestBody);
 
         if (!(Boolean.parseBoolean(riskValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            //log.error(riskValidationResult.get(ConsentExtensionConstants.ERRORS));
             return riskValidationResult;
         }
 
@@ -128,12 +124,6 @@ public class VRPConsentRequestValidator {
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
             return parameterDateTimeValidationResponse;
         }
-
-//        JSONObject parameterDateTimeValidationResponses = validateParameterDateTimes(controlParameters);
-//        if (!(Boolean.parseBoolean(parameterDateTimeValidationResponses.
-//                getAsString(ConsentExtensionConstants.IS_VALID)))) {
-//            return parameterDateTimeValidationResponses;
-//        }
 
         // Validate Periodic Limits
         JSONObject periodicLimitsValidationResult = validatePeriodicLimits(controlParameters);
@@ -187,7 +177,6 @@ public class VRPConsentRequestValidator {
                     ConsentExtensionConstants.AMOUNT);
             if (!(Boolean.parseBoolean(maximumIndividualAmountResult.
                     getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                // log.error(maximumIndividualAmountResult.get(ConsentExtensionConstants.ERRORS));
                 return maximumIndividualAmountResult;
             }
         } else {
@@ -216,13 +205,11 @@ public class VRPConsentRequestValidator {
         JSONObject maximumIndividualAmountResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
                 ConsentExtensionConstants.CURRENCY);
         if (!(Boolean.parseBoolean(maximumIndividualAmountResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            // log.error(maximumIndividualAmountResult.get(ConsentExtensionConstants.ERRORS));
             return maximumIndividualAmountResult;
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
 
     /**
      * Method to validate variable recurring payment periodic limits.
@@ -346,14 +333,11 @@ public class VRPConsentRequestValidator {
      * @return A JSON object containing the validation response. If the date-time parameters are valid,
      * it sets the "IS_VALID" field to true; otherwise, it contains an error response.
      */
-
     public static JSONObject validateParameterDateTime(JSONObject controlParameters) {
         JSONObject validationResponse = new JSONObject();
 
-        // Check if ValidToDateTime and ValidFromDateTime keys are present
-        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_TO_DATE_TIME)
-                && controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
-
+        // Check if ValidToDateTime key is present
+        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_TO_DATE_TIME)) {
             // Get and validate ValidToDateTime
             Object validateToDateTime = controlParameters.get(ConsentExtensionConstants.VALID_TO_DATE_TIME);
             JSONObject toDateTimeValidation = isValidDateTimeObject(validateToDateTime);
@@ -361,240 +345,45 @@ public class VRPConsentRequestValidator {
                 return toDateTimeValidation;
             }
 
-            // Get and validate ValidFromDateTime
-            Object validateFromDateTime = controlParameters.get(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-            JSONObject fromDateTimeValidation = isValidDateTimeObject(validateFromDateTime);
-            if (!(Boolean.parseBoolean(fromDateTimeValidation.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                return fromDateTimeValidation;
-            }
-
             String validTo = controlParameters.getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-            String validFrom = controlParameters.getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-
             OffsetDateTime validToDateTime = OffsetDateTime.parse(validTo);
-            OffsetDateTime validFromDateTime = OffsetDateTime.parse(validFrom);
-            OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
 
-            // If ValidToDateTime is older than current date OR ValidToDateTime is
-            // older than ValidFromDateTime, return error
-            if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-                log.error(String.format("Invalid date-time range, " +
-                                "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s",
-                        validToDateTime, validFromDateTime, currentDateTime));
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-                        ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_TO_DATE);
+            // Check if ValidFromDateTime key is present
+            if (controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
+                // Get and validate ValidFromDateTime
+                Object validateFromDateTime = controlParameters.get(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
+                JSONObject fromDateTimeValidation = isValidDateTimeObject(validateFromDateTime);
+                if (!(Boolean.parseBoolean(fromDateTimeValidation.getAsString(ConsentExtensionConstants.IS_VALID)))) {
+                    return fromDateTimeValidation;
+                }
+
+                String validFrom = controlParameters.getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
+                OffsetDateTime validFromDateTime = OffsetDateTime.parse(validFrom);
+                OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
+
+                // If ValidToDateTime is older than current date OR ValidToDateTime is older than ValidFromDateTime,
+                // return error
+                if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
+                    log.error(String.format("Invalid date-time range, " +
+                                    "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s",
+                            validToDateTime, validFromDateTime, currentDateTime));
+                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
+                            ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_TO_DATE);
+                }
+            } else {
+                // If ValidFromDateTime key is not present, return error
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
+                        ErrorConstants.MISSING_VALID_FROM_DATE_TIME, ErrorConstants.PATH_VALID_FROM_DATE);
             }
         } else {
-            // If ValidToDateTime or ValidFromDateTime keys are not present, return error
+            // If ValidToDateTime key is not present, return error
             return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-                    ErrorConstants.MISSING_DATE_TIME, ErrorConstants.PATH_VALID_TO_DATE);
+                    ErrorConstants.MISSING_VALID_TO_DATE_TIME, ErrorConstants.PATH_VALID_TO_DATE);
         }
 
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
-//    public static JSONObject validateParameterDateTime(JSONObject controlParameters) {
-//        JSONObject validationResponse = new JSONObject();
-//
-//        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_TO_DATE_TIME)) {
-//
-//            Object validateToDateTime = controlParameters.get(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-//            JSONObject date = isValidDateTimeObject(validateToDateTime);
-//            if (!(Boolean.parseBoolean(date.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-//                // log.error(currency.get(ConsentExtensionConstants.ERRORS));
-//                return date;
-//            }
-//
-//            String validTo = controlParameters.getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-//            String validFrom = controlParameters.getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-//
-//            OffsetDateTime validToDateTime = OffsetDateTime.parse(validTo);
-//            OffsetDateTime validFromDateTime = OffsetDateTime.parse(validFrom);
-//            OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
-//
-//            //If the ValidToDAte is older than current date OR ValidToDAte is older than ValidFromDAte, return error
-//            if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-//                 log.error(String.format("Invalid date-time range, " +
-//                    "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s",
-//                 validToDateTime, validFromDateTime, currentDateTime));
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                        ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_TO_DATE);
-//            }
-//        } else {
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-//                    ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_TO_DATE);
-//        }
-//
-//        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-//        return validationResponse;
-//    }
-
-//    public static JSONObject validateParameterDateTimes(JSONObject controlParameters) {
-//        JSONObject validationResponse = new JSONObject();
-//
-//        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
-//
-//            Object validateFromDateTime = controlParameters.get(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-//            JSONObject date = isValidDateTimeObject(validateFromDateTime);
-//            if (!(Boolean.parseBoolean(date.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-//                return date;
-//            }
-//
-//            String validTo = controlParameters.getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-//            String validFrom = controlParameters.getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-//
-//            OffsetDateTime validToDateTime = OffsetDateTime.parse(validTo);
-//            OffsetDateTime validFromDateTime = OffsetDateTime.parse(validFrom);
-//            OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
-//
-//            //If the ValidToDAte is older than current date OR ValidToDAte is older than ValidFromDAte, return error
-//            if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-//                 log.error(String.format("Invalid date-time range, " +
-//                    "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s",
-//                 validToDateTime, validFromDateTime, currentDateTime));
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                        ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_FROM_DATE);
-//            }
-//        } else {
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-//                    ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_FROM_DATE);
-//        }
-//
-//        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-//        return validationResponse;
-//    }
-
-
-//    public static JSONObject validateParameterDateTime(JSONObject controlParameters) {
-//        JSONObject validationResponse = new JSONObject();
-//
-//        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_TO_DATE_TIME)) {
-//            Object validateToDateTime = controlParameters.get(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-//
-////            JSONObject dateValidation = isValidDateTimeObject(validateToDateTime);
-////
-////            if (!(Boolean.parseBoolean(dateValidation.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-////                return dateValidation;
-////            }
-//
-//            OffsetDateTime validToDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME));
-//            OffsetDateTime validFromDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME));
-//            OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
-//
-//
-//            if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-//                log.error(String.format("Invalid date-time range, " +
-//                                "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s",
-//                        validToDateTime, validFromDateTime, currentDateTime));
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                        ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_TO_DATE);
-//            }
-//        } else {
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                    ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_TO_DATE);
-//        }
-//
-//        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
-//            Object validateFromDateTime = controlParameters.get(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-//            JSONObject dateValidation = isValidDateTimeObject(validateFromDateTime);
-//
-//            if (!(Boolean.parseBoolean(dateValidation.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-//                return dateValidation;
-//            }
-//
-//            OffsetDateTime validToDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME));
-//            OffsetDateTime validFromDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME));
-//            OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
-//
-//            if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-//                log.debug("Invalid date-time range.");
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                        ErrorConstants.INVALID_PARAMETER, ErrorConstants.PATH_VALID_FROM_DATE);
-//            }
-//        } else {
-//            return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                    ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_TO_DATE);
-//        }
-//
-//        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-//        return validationResponse;
-//    }
-
-
-//    public static JSONObject validateParameterDateTime(JSONObject controlParameters) {
-//        JSONObject validationResponse = new JSONObject();
-//
-//        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_TO_DATE_TIME)) {
-//
-//            // Retrieve the validDateTime from the control parameters
-//            Object validateToDateTime = controlParameters.get(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-//
-////            if (!isValidDateTimeObject(validateToDateTime)) {
-////                return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_VALID_TO_DATE,
-////                        ErrorConstants.INVALID_DATE_TIME_FORMAT,
-////                        ErrorConstants.PATH_VALID_TO_DATE);
-////            }
-//
-//            JSONObject date = isValidDateTimeObject(validateToDateTime);
-//            if (!(Boolean.parseBoolean(date.
-//                    getAsString(ConsentExtensionConstants.IS_VALID)))) {
-//                // log.error(currency.get(ConsentExtensionConstants.ERRORS));
-//                return date;
-//            }
-//
-//            OffsetDateTime validToDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME));
-//            OffsetDateTime validFromDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME));
-//            OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
-//
-//            //If the ValidToDAte is older than current date OR currentDate is older than ValidFromDAte, return error
-//            if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-//                log.error(String.format("Invalid date-time range, validToDateTime : %s , validFromDateTime : %s " +
-//                        "and currentDateTime : %s ", validToDateTime, validFromDateTime, currentDateTime));
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                        ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_TO_DATE);
-//            }
-//        }
-//
-//        if (controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
-//
-//            // Retrieve the validDateTime from the control parameters
-//            Object validateFromDateTime = controlParameters.get(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-//
-////            if (!isValidDateTimeObject(validateFromDateTime)) {
-////                return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_VALID_FROM_DATE,
-////                        ErrorConstants.INVALID_DATE_TIME_FORMAT,
-////                        ErrorConstants.PATH_VALID_TO_DATE);
-////            }
-//            JSONObject date = isValidDateTimeObject(validateFromDateTime);
-//            if (!(Boolean.parseBoolean(date.
-//                    getAsString(ConsentExtensionConstants.IS_VALID)))) {
-//                // log.error(currency.get(ConsentExtensionConstants.ERRORS));
-//                return date;
-//            }
-//
-//            OffsetDateTime validToDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME));
-//            OffsetDateTime validFromDateTime = OffsetDateTime.parse(controlParameters.
-//                    getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME));
-//            OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
-//
-//            //If the ValidToDAte is older than current date OR currentDate is older than ValidFromDAte, return error
-//            if (!validFromDateTime.isBefore(currentDateTime) || !currentDateTime.isBefore(validToDateTime)) {
-//                log.debug("Invalid date-time range.");
-//                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-//                        ErrorConstants.INVALID_VALID_TO_DATE, ErrorConstants.PATH_VALID_FROM_DATE);
-//            }
-//        }
-//        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-//        return validationResponse;
-//    }
 
     /**
      * Validator class to validate the payload of a variable recurring payment initiation.
@@ -795,7 +584,6 @@ public class VRPConsentRequestValidator {
                     .validateVRPInitiationPayload((JSONObject) initiation);
 
             if (!(Boolean.parseBoolean(initiationValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                // log.error(initiationValidationResult.get(ConsentExtensionConstants.ERRORS));
                 return initiationValidationResult;
             }
         } else {
@@ -842,7 +630,6 @@ public class VRPConsentRequestValidator {
 
             if (!(Boolean.parseBoolean(controlParameterValidationResult.
                     getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                //log.error(controlParameterValidationResult.get(ConsentExtensionConstants.ERRORS));
                 return controlParameterValidationResult;
             }
         } else {
