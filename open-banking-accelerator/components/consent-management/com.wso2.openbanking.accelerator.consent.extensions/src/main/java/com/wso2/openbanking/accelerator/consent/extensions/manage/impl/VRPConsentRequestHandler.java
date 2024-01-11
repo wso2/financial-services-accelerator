@@ -53,6 +53,8 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     /**
      * This method is responsible for processing a Variable Recurring Payment Consent Manage POST request.
      * It validates the payment  request, checks for the existence of an idempotency key.
+     *
+     * @param consentManageData Object
      */
     @Override
     public void handleConsentManagePost(ConsentManageData consentManageData) {
@@ -152,6 +154,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
      * - Sets the response status to Created.
      *
      * @param consentManageData Object containing request details, including client ID, request payload, headers.
+     * @param request Object
      */
     public void handlePaymentPost(ConsentManageData consentManageData, Object request)
             throws ConsentManagementException {
@@ -189,9 +192,10 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                             get(ConsentExtensionConstants.AMOUNT).toString());
             consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
                     (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
-                    //TODO: Improve the logic of storing the PERIODIC_LIMITS
                     .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
-            consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE, ((JSONObject) ((JSONArray) (controlParameters)
+            //TODO: Improve the logic of storing the PERIODIC_LIMITS
+            consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE,
+                    ((JSONObject) ((JSONArray) (controlParameters)
                     .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
                     .toString());
             consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)

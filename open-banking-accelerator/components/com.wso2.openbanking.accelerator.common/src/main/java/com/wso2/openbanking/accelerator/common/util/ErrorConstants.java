@@ -62,8 +62,13 @@ public class ErrorConstants {
     public static final String PAYLOAD_FORMAT_ERROR_VALID_FROM_DATE = "Request Payload is not in correct JSON format" +
             " for valid from date";
     public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS = "Invalid periodic limits";
+    public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_ALIGNMENT = "Value is empty or the value passed " +
+            "in is not a string";
+    public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_PERIOD_TYPE = "Value of period type is empty or " +
+            "the value passed in is not a string";
     public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT = "Invalid maximum individual amount";
 
+    public static final String MISSING_MAXIMUM_INDIVIDUAL_AMOUNT = "Missing parameter maximum individual amount";
     public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_CURRENCY = "Invalid maximum individual amount" +
             "currency";
     public static final String PAYLOAD_FORMAT_ERROR_INITIATION = "Request Payload is not in correct JSON format" +
@@ -248,37 +253,16 @@ public class ErrorConstants {
     public static final String FIELD_INVALID_DATE = "OB.Field.InvalidDate";
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
     // VRP error constants
-    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_IS_MISSING = "Mandatory parameter MaximumIndividualAmount" +
-            " Amount is missing in the payload.";
-    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY_IS_MISSING = "Mandatory parameter" +
-            "Currency in MaximumIndividualAmount is missing in the payload";
-    public static final String INVALID_AMOUNT = "Missing required parameter Amount";
-    public static final String INVALID_CURRENCY = "Missing required parameter Currency";
     public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
+    public static final String INVALID_PERIOD_TYPE = "Invalid value for period type in PeriodicLimits";
     public static final String MISSING_PERIOD_TYPE = "Missing required parameter Period type";
-    public static final String INVALID_VALID_TO_DATE = "Valid to Date specified in the request is invalid";
-
-    // new error constants
-
-    public static final String INVALID_INITIATION_PAYLOAD = "Consent validation failed due to invalid" +
-            " initiation payload";
     public static final String INVALID_PARAMETER = "Parameter passed in is null , " +
             "empty or not a JSONObject";
     public static final String INVALID_CLIENT_ID_MATCH = "Consent validation failed due to client ID mismatch";
-    public static final String INVALID_PARAMETER_DEBTOR_ACC = "Parameter passed in is null , " +
-            "empty or not a JSONObject in debtor account";
-    public static final String INVALID_PARAMETER_CREDITOR_ACC = "Parameter passed in is null , " +
-            "empty or not a JSONObject in debtor account";
-    public static final String INVALID_PARAMETER_AMOUNT = "Parameter passed in is null , " +
-            "empty or not a JSONObject in amount";
-    public static final String INVALID_PARAMETER_INITIATION = "Parameter passed in is null , " +
-            "empty or not a JSONObject in initiation";
-    public static final String INVALID_PARAMETER_CONTROL_PARAMETERS = "Parameter passed in is null , " +
-            "empty or not a JSONObject in control parameter";
-    public static final String INVALID_PARAMETER_MAXIMUM_INDIVIDUAL_AMOUNT = "Parameter passed in is null , " +
-            "empty or not a JSONObject in maximum individual amount";
     public static final String INVALID_DATE_TIME_FORMAT = "Date and Time is not in correct JSON " +
             "ISO-8601 date-time format";
+    public static final String MISSING_DATE_TIME_FORMAT = "The value is empty or the value is not a string";
+    public static final String MISSING_DATE_TIME = "Missing parameter";
     public static final String INVALID_PARAMETER_PERIODIC_LIMITS = "Parameter passed in is null , " +
             "empty or not a JSONArray";
     public static final String MISSING_PERIOD_LIMITS = "Mandatory parameter " +
@@ -287,18 +271,14 @@ public class ErrorConstants {
     public static final String PATH_VALID_TO_DATE = "Data.ControlParameters.ValidToDateTime";
     public static final String PATH_VALID_FROM_DATE = "Data.ControlParameters.ValidFromDateTime";
     public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT = "Data.ControlParameters.MaximumIndividualAmount";
-    public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT_AMOUNT = "Data.ControlParameters." +
-            "MaximumIndividualAmount.Amount";
-    public static final String PATH_MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY = "Data.ControlParameters." +
-            "MaximumIndividualAmount.Currency";
+
     public static final String PATH_PERIOD_LIMIT = "Data.ControlParameters.PeriodicLimits";
     public static final String PATH_PERIOD_LIMIT_AMOUNT = "Data.ControlParameters.PeriodicLimits.Amount";
     public static final String PATH_PERIOD_LIMIT_CURRENCY = "Data.ControlParameters.PeriodicLimits.Currency";
     public static final String PATH_PERIOD_TYPE = "Data.ControlParameters.PeriodicLimits.PeriodType";
-    public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodLimits.PeriodAlignment";
-    public static final String PERIODIC_LIMIT_CURRENCY_IS_MISSING =  "Mandatory parameter Currency in Periodic limits" +
-            " is missing in the payload";
-    public static final String MISSING_PERIOD_ALIGNMENT = "Missing periodic alignment";
+    public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodicLimits.PeriodAlignment";
+
+    public static final String MISSING_PERIOD_ALIGNMENT = "Missing periodic alignment in periodic limits";
 
     public static final String INVALID_PARAMETER_MESSAGE = "Parameter '%s' passed in is null, empty, or not a %s";
 
