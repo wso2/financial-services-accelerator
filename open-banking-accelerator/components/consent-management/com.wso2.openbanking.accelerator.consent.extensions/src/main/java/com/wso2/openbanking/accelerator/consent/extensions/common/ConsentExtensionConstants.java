@@ -165,6 +165,8 @@ public class ConsentExtensionConstants {
     public static final String OB_AUTHORIZED_STATUS = "Authorised";
     public static final String OB_AWAITING_AUTH_STATUS = "AwaitingAuthorisation";
     public static final String OB_AWAITING_UPLOAD_STATUS = "AwaitingUpload";
+
+    //VRP Constants
     public static final String VRP_CONSENT_PATH = "domestic-vrp-consents";
     public static final String VRP_PAYMENT = "vrp-payment";
     public static final String PAID_AMOUNT = "paid-amount";
