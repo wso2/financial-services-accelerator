@@ -172,12 +172,20 @@ public class ConsentExtensionConstants {
     public static final String AUTH_TYPE_AUTHORIZATION = "authorization";
     public static final String CONTROL_PARAMETERS = "ControlParameters";
     public static final String MAXIMUM_INDIVIDUAL_AMOUNT = "MaximumIndividualAmount";
-    public static final String PERIOD_ALIGNMENT = "PeriodAlignment";
     public static final String PERIODIC_LIMITS = "PeriodicLimits";
-    public static final String PERIOD_TYPE = "PeriodType";
     public static final String PERIOD_AMOUNT_LIMIT = "Amount";
+
+    //vrp period alignment
+    public static final String PERIOD_ALIGNMENT = "PeriodAlignment";
+
+    // vrp periodic alignment types
     public static final String CONSENT = "Consent";
     public static final String CALENDAR = "Calendar";
+
+    //vrp periodicLimits
+    public static final String PERIOD_TYPE = "PeriodType";
+
+    //vrp periodic types
     public static final String DAY = "Day";
     public static final String WEEK = "Week";
     public static final String FORTNIGHT = "Fortnight";

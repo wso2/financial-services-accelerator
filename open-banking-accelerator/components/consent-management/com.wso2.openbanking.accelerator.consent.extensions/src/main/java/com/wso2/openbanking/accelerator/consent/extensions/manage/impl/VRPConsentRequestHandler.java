@@ -104,16 +104,15 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                         false);
                 // Check whether the client id is matching
                 if (!consent.getClientID().equals(consentManageData.getClientId())) {
-                    // Throwing same error as null scenario since client will not be able to identify if consent
-                    // exists if consent does not belong to them
+                    // Throws the error if the client Ids mismatch
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("ClientIds missmatch. " +
-                                        "consent client id: %s, consent manage data client id: %s",
+                                        "Retrieved client id: %s, ConsentmanageData client id: %s",
                                 consent.getClientID(), consentManageData.getClientId()));
                     }
-                    //throw new RuntimeException()
+
                     throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            new String("test"));
+                            new String("Invalid client id passed"));
                 }
 
                 JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).
@@ -177,9 +176,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
             consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
                     .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
 
-
-            JSONObject response = (JSONObject) request;
-            consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(response, createdConsent,
+            consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(requestObject, createdConsent,
                     consentManageData, ConsentExtensionConstants.VRP));
 
             //Set Control Parameters as consent attributes to store
@@ -190,10 +187,12 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                     ((JSONObject) (controlParameters)
                             .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)).
                             get(ConsentExtensionConstants.AMOUNT).toString());
+
+            //Todo: can we store the currency as an attribute
             consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
                     (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
                     .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
-            //TODO: Improve the logic of storing the PERIODIC_LIMITS
+            //TODO: Improve the logic of storing the PERIODIC_LIMITS and rest of VRP parameters
             consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE,
                     ((JSONObject) ((JSONArray) (controlParameters)
                     .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
