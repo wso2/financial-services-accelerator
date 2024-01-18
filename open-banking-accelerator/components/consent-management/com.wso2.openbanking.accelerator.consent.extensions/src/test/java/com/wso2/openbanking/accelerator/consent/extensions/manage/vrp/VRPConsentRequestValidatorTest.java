@@ -98,6 +98,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
     @Test
     public void testVrpEmptyPayload() {
+
         JSONObject response = VRPConsentRequestValidator.validateVRPPayload("");
         Assert.assertFalse((boolean) response.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals(ErrorConstants.PAYLOAD_FORMAT_ERROR, response.get(ConsentExtensionConstants.ERRORS));

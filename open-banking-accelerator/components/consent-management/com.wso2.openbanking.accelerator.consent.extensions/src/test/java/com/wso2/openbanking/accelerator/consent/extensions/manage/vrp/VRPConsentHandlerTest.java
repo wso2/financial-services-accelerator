@@ -146,25 +146,4 @@ public class VRPConsentHandlerTest extends PowerMockTestCase {
 
         handler.handleConsentManageDelete(consentManageData);
     }
-
-
-//    @Test
-//    public void testHandleConsentManagePost_ValidPayload() {
-//
-//        ConsentManageData mockConsentManageData = mock(ConsentManageData.class);
-//
-//        Object mockPayload = mock(JSONObject.class);
-//        when(mockConsentManageData.getPayload()).thenReturn(mockPayload);
-//
-//        JSONObject mockValidationResponse = new JSONObject();
-//        mockValidationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-//        when(VRPConsentRequestValidator.validateVRPPayload(mockPayload)).thenReturn(mockValidationResponse);
-//
-//        when(mockConsentManageData.getHeaders()).thenReturn(new HashMap<>());
-//
-//        VRPConsentRequestHandler handler = new VRPConsentRequestHandler();
-//
-//        handler.handleConsentManagePost(mockConsentManageData);
-//    }
-
 }
