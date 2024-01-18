@@ -64,207 +64,12 @@ public class VRPTestConstants {
             "   }\n" +
             "}";
 
-
-    public static final String VRP_PAYLOAD_WITHOUT_DATE = "{\n" +
-            "   \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": {\n" +
-            "               \"Amount\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-    public static final String VRP_PAYLOAD_WITHOUT_DATE_TIME = "{\n" +
-            "   \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": {\n" +
-            "               \"Amount\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-
-
-
-
-
-    public static String vrpInitiationPayloadWithoutMaximumIndividualAmount = "{\n" +
+    public static String vrpInitiationPayloadWithoutDate = "{\n" +
             "   \"\": {\n" +
             "       \"ReadRefundAccount\": \"true\",\n" +
             "       \"ControlParameters\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"\": {\n" +
-            "               \"Amount\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-
-    public static String vrpInitiationPayloadWithInvalidMaximumIndividualAmount = "{\n" +
-            "   \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": \"\",\n" +  // Empty string for MaximumIndividualAmount
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-
-
-    public static String vrpInitiationPayloadNotInstanceOfJsonObject = "{\n" +
-            "   \"\"" + " " +
-            ",\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-    public static String vrpInitiationPayloadIsEmpty = "{\n" +
-            "   \"\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
+            "           \"ValidFromDateTime\": \"\",\n" +
+            "           \"ValidToDateTime\": null, // Set to null instead of an empty string\n" +
             "           \"MaximumIndividualAmount\": {\n" +
             "               \"Amount\": \"9\",\n" +
             "               \"Currency\": \"GBP\"\n" +
@@ -367,216 +172,6 @@ public class VRPTestConstants {
             "   }\n" +
             "}";
 
-
-    public static String vrpInitiationPayloadWithoutInitiation = "{\n" +
-            "    \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": {\n" +
-            "               \"Amount\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-
-    public static String vrpInitiationPayloadWithoutDebtAcc = "{\n" +
-            "    \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": {\n" +
-            "               \"Amount\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-
-    public static String vrpInitiationPayloadWithoutCreditorAcc = "{\n" +
-            "    \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": {\n" +
-            "               \"Amount\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-
-    public static String vrpInitiationPayloadWithoutControlParameterKey = "{\n" +
-            "    \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": {\n" +
-            "               \"Amount\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-    public static String vrpInitiationPayloadWithoutAmount = "{\n" +
-            "    \"Data\": {\n" +
-            "       \"ReadRefundAccount\": \"true\",\n" +
-            "       \"ControlParameters\": {\n" +
-            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-            "           \"MaximumIndividualAmount\": {\n" +
-            "               \"\": \"9\",\n" +
-            "               \"Currency\": \"GBP\"\n" +
-            "           },\n" +
-            "           \"PeriodicLimits\": [\n" +
-            "               {\n" +
-            "                   \"Amount\": \"1000\",\n" +
-            "                   \"Currency\": \"GBP\",\n" +
-            "                   \"PeriodAlignment\": \"Consent\",\n" +
-            "                   \"PeriodType\": \"Half-year\"\n" +
-            "               }\n" +
-            "           ]\n" +
-            "       },\n" +
-            "       \"Initiation\": {\n" +
-            "           \"DebtorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30080012343456\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"CreditorAccount\": {\n" +
-            "               \"SchemeName\": \"OB.IBAN\",\n" +
-            "               \"Identification\": \"30949330000010\",\n" +
-            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "               \"Name\": \"Marcus Sweepimus\"\n" +
-            "           },\n" +
-            "           \"RemittanceInformation\": {\n" +
-            "               \"Reference\": \"Sweepco\"\n" +
-            "           }\n" +
-            "       }\n" +
-            "   },\n" +
-            "   \"Risk\": {\n" +
-            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "   }\n" +
-            "}";
-
-
         public static final String METADATA_VRP_CREDITOR_ACCOUNT = "{\n" +
                 "    \"Data\": {\n" +
                 "       \"ReadRefundAccount\": \"true\",\n" +
@@ -619,47 +214,47 @@ public class VRPTestConstants {
                 "}";
 
 
-//        public static final String METADATA_VRP_CREDITO_ACCOUNT = "{\n" +
-//                "    \"Data\": {\n" +
-//                "       \"ReadRefundAccount\": \"true\",\n" +
-//                "       \"ControlParameters\": {\n" +
-//                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-//                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-//                "           \"MaximumIndividualAmount\": {\n" +
-//                "               \"Amount\": \"9\",\n" +
-//                "               \"Currency\": \"GBP\"\n" +
-//                "           },\n" +
-//                "           \"PeriodicLimits\": [\n" +
-//                "               {\n" +
-//                "                   \"Amount\": \"1000\",\n" +
-//                "                   \"Currency\": \"GBP\",\n" +
-//                "                   \"PeriodAlignment\": \"Consent\",\n" +
-//                "                   \"PeriodType\": \"Half-year\"\n" +
-//                "               }\n" +
-//                "           ]\n" +
-//                "       },\n" +
-//                "       \"Initiation\": {\n" +
-//                "           \"DebtorAccount\": {\n" +
-//                "               \"SchemeName\": \"OB.IBAN\",\n" +
-//                "               \"Identification\": \"30080012343456\",\n" +
-//                "               \"Name\": \"Marcus Sweepimus\"\n" +
-//                "           },\n" +
-//                "           \"\": {\n" +
-//                "               \"SchemeName\": \"OB.IBAN\",\n" +
-//                "               \"Identification\": \"30949330000010\",\n" +
-//                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-//                "               \"Name\": \"Marcus Sweepimus\"\n" +
-//                "           },\n" +
-//                "           \"RemittanceInformation\": {\n" +
-//                "               \"Reference\": \"Sweepco\"\n" +
-//                "           }\n" +
-//                "       }\n" +
-//                "   },\n" +
-//                "   \"Risk\": {\n" +
-//                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-//                "   }\n" +
-//                "}";
-//        ;
+        public static final String METADATA_VRP_DEBTOR_ACCOUNT = "{\n" +
+                "    \"Data\": {\n" +
+                "       \"ReadRefundAccount\": \"true\",\n" +
+                "       \"ControlParameters\": {\n" +
+                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
+                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
+                "           \"MaximumIndividualAmount\": {\n" +
+                "               \"Amount\": \"9\",\n" +
+                "               \"Currency\": \"GBP\"\n" +
+                "           },\n" +
+                "           \"PeriodicLimits\": [\n" +
+                "               {\n" +
+                "                   \"Amount\": \"1000\",\n" +
+                "                   \"Currency\": \"GBP\",\n" +
+                "                   \"PeriodAlignment\": \"Consent\",\n" +
+                "                   \"PeriodType\": \"Half-year\"\n" +
+                "               }\n" +
+                "           ]\n" +
+                "       },\n" +
+                "       \"Initiation\": {\n" +
+                "           \"\": {\n" +
+                "               \"SchemeName\": \"OB.IBAN\",\n" +
+                "               \"Identification\": \"30080012343456\",\n" +
+                "               \"Name\": \"Marcus Sweepimus\"\n" +
+                "           },\n" +
+                "           \"CreditorAccount\": {\n" +
+                "               \"SchemeName\": \"OB.IBAN\",\n" +
+                "               \"Identification\": \"30949330000010\",\n" +
+                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
+                "               \"Name\": \"Marcus Sweepimus\"\n" +
+                "           },\n" +
+                "           \"RemittanceInformation\": {\n" +
+                "               \"Reference\": \"Sweepco\"\n" +
+                "           }\n" +
+                "       }\n" +
+                "   },\n" +
+                "   \"Risk\": {\n" +
+                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
+                "   }\n" +
+                "}";
+        ;
 
 
         public static final String METADATA_VRP_DEBTOR_ACCOUNT_SCHEME_NAME = "{\n" +
@@ -814,48 +409,6 @@ public class VRPTestConstants {
                 "           \"CreditorAccount\": {\n" +
                 "               \"SchemeName\": \"OB.IBAN\",\n" +
                 "               \"\": \"30949330000010\",\n" +
-                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"RemittanceInformation\": {\n" +
-                "               \"Reference\": \"Sweepco\"\n" +
-                "           }\n" +
-                "       }\n" +
-                "   },\n" +
-                "   \"Risk\": {\n" +
-                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-                "   }\n" +
-                "}";
-
-
-        public static final String METADATA_VRP_PERIODIC_ALIGNMENT = "{\n" +
-                "    \"Data\": {\n" +
-                "       \"ReadRefundAccount\": \"true\",\n" +
-                "       \"ControlParameters\": {\n" +
-                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"MaximumIndividualAmount\": {\n" +
-                "               \"Amount\": \"9\",\n" +
-                "               \"Currency\": \"GBP\"\n" +
-                "           },\n" +
-                "           \"PeriodicLimits\": [\n" +
-                "               {\n" +
-                "                   \"Amount\": \"1000\",\n" +
-                "                   \"Currency\": \"GBP\",\n" +
-                "                   \"PeriodAlignment\": \"invalid\",\n" +
-                "                   \"PeriodType\": \"Half-year\"\n" +
-                "               }\n" +
-                "           ]\n" +
-                "       },\n" +
-                "       \"Initiation\": {\n" +
-                "           \"DebtorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30080012343456\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"CreditorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30949330000010\",\n" +
                 "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
                 "               \"Name\": \"Marcus Sweepimus\"\n" +
                 "           },\n" +
@@ -1078,50 +631,6 @@ public class VRPTestConstants {
                 "}";
 
 
-
-
-        public static final String METADATA_VRP_WITH_ALL_PARAMETERS = "{\n" +
-                "    \"Data\": {\n" +
-                "       \"ReadRefundAccount\": \"true\",\n" +
-                "       \"ControlParameters\": {\n" +
-                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"MaximumIndividualAmount\": {\n" +
-                "               \"Amount\": \"9\",\n" +
-                "               \"\": \"GBP\"\n" +
-                "           },\n" +
-                "           \"PeriodicLimits\": [\n" +
-                "               {\n" +
-                "                   \"Amount\": \"1000\",\n" +
-                "                   \"Currency\": \"GBP\",\n" +
-                "                   \"PeriodAlignment\": \"Consent\",\n" +
-                "                   \"PeriodType\": \"Half-year\"\n" +
-                "               }\n" +
-                "           ]\n" +
-                "       },\n" +
-                "       \"Initiation\": {\n" +
-                "           \"DebtorAccount\": {\n" +
-                "               \"SchemeName\": \"\",\n" +
-                "               \"Identification\": \"30080012343456\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"CreditorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30949330000010\",\n" +
-                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"RemittanceInformation\": {\n" +
-                "               \"Reference\": \"Sweepco\"\n" +
-                "           }\n" +
-                "       }\n" +
-                "   },\n" +
-                "   \"Risk\": {\n" +
-                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-                "   }\n" +
-                "}";
-
-
         public static final String METADATA_VRP_WITHOUT_PERIODIC_TYPE = "{\n" +
                 "    \"Data\": {\n" +
                 "       \"ReadRefundAccount\": \"true\",\n" +
@@ -1163,7 +672,8 @@ public class VRPTestConstants {
                 "   }\n" +
                 "}";
 
-        public static final String METADATA_VRP_WITHOUT_PERIODIC_TYPE_CURRENCY = "{\n" +
+
+    public static final String METADATA_VRP_WITHOUT_PERIODIC_TYPE_CURRENCY = "{\n" +
                 "    \"Data\": {\n" +
                 "       \"ReadRefundAccount\": \"true\",\n" +
                 "       \"ControlParameters\": {\n" +
@@ -1211,47 +721,6 @@ public class VRPTestConstants {
                 "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
                 "           \"\": \"2024-05-12T12:43:07.956Z\",\n" +
                 "           \"MaximumIndividualAmount\": {\n" +
-                "               \"Amount\": \"9\",\n" +
-                "               \"Currency\": \"GBP\"\n" +
-                "           },\n" +
-                "           \"PeriodicLimits\": [\n" +
-                "               {\n" +
-                "                   \"Amount\": \"1000\",\n" +
-                "                   \"Currency\": \"GBP\",\n" +
-                "                   \"PeriodAlignment\": \"Consent\",\n" +
-                "                   \"PeriodType\": \"Half-year\"\n" +
-                "               }\n" +
-                "           ]\n" +
-                "       },\n" +
-                "       \"Initiation\": {\n" +
-                "           \"DebtorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30080012343456\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"CreditorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30949330000010\",\n" +
-                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"RemittanceInformation\": {\n" +
-                "               \"Reference\": \"Sweepco\"\n" +
-                "           }\n" +
-                "       }\n" +
-                "   },\n" +
-                "   \"Risk\": {\n" +
-                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-                "   }\n" +
-                "}";
-
-        public static final String METADATA_VRP_WITHOUT_MAXIMUM_INDIVIDUAL_AMOUNT = "{\n" +
-                "    \"Data\": {\n" +
-                "       \"ReadRefundAccount\": \"true\",\n" +
-                "       \"ControlParameters\": {\n" +
-                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"\": {\n" +
                 "               \"Amount\": \"9\",\n" +
                 "               \"Currency\": \"GBP\"\n" +
                 "           },\n" +
@@ -1434,46 +903,6 @@ public class VRPTestConstants {
                 "}";
 
 
-
-        public static final String METADATA_VRP_WITH_EMPTY_RISK = "{\n" +
-                "    \"Data\": {\n" +
-                "       \"ReadRefundAccount\": \"true\",\n" +
-                "       \"ControlParameters\": {\n" +
-                "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
-                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"MaximumIndividualAmount\": {\n" +
-                "               \"Amount\": \"9\",\n" +
-                "               \"Currency\": \"GBP\"\n" +
-                "           },\n" +
-                "           \"PeriodicLimits\": [\n" +
-                "               {\n" +
-                "                   \"Amount\": \"1000\",\n" +
-                "                   \"Currency\": \"GBP\",\n" +
-                "                   \"PeriodAlignment\": \"Consent\",\n" +
-                "                   \"PeriodType\": \"Half-year\"\n" +
-                "               }\n" +
-                "           ]\n" +
-                "       },\n" +
-                "       \"Initiation\": {\n" +
-                "           \"DebtorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30080012343456\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"CreditorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30949330000010\",\n" +
-                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"RemittanceInformation\": {\n" +
-                "               \"Reference\": \"Sweepco\"\n" +
-                "           }\n" +
-                "       }\n" +
-                "   },\n" +
-                "   \"Risk\": \"\"\n" +  // Empty string for Risk
-                "}";
-
         public static final String METADATA_VRP_EMPTY_INITIATION = "{\n" +
                 "    \"Data\": {\n" +
                 "       \"ReadRefundAccount\": \"true\",\n" +
@@ -1616,47 +1045,43 @@ public class VRPTestConstants {
                 "   }\n" +
                 "}";
 
+    public static final String METADATA_VRP_WITHOUT_DEBTOR_ACC = "{\n" +
+            "    \"Data\": {\n" +
+            "       \"ReadRefundAccount\": \"true\",\n" +
+            "       \"ControlParameters\": {\n" +
+            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
+            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
+            "           \"MaximumIndividualAmount\": {\n" +
+            "               \"Amount\": \"9\",\n" +
+            "               \"Currency\": \"GBP\"\n" +
+            "           },\n" +
+            "           \"PeriodicLimits\": [\n" +
+            "               {\n" +
+            "                   \"Amount\": \"1000\",\n" +
+            "                   \"Currency\": \"GBP\",\n" +
+            "                   \"PeriodAlignment\": \"Consent\",\n" +
+            "                   \"PeriodType\": \"Half-year\"\n" +
+            "               }\n" +
+            "           ]\n" +
+            "       },\n" +
+            "       \"Initiation\": {\n" +
+            "           \"\": \"\",\n" +  // Change DebtorAccount to an empty string
+            "           \"CreditorAccount\": {\n" +
+            "               \"SchemeName\": \"OB.IBAN\",\n" +
+            "               \"Identification\": \"30949330000010\",\n" +
+            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
+            "               \"Name\": \"Marcus Sweepimus\"\n" +
+            "           },\n" +
+            "           \"RemittanceInformation\": {\n" +
+            "               \"Reference\": \"Sweepco\"\n" +
+            "           }\n" +
+            "       }\n" +
+            "   },\n" +
+            "   \"Risk\": {\n" +
+            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
+            "   }\n" +
+            "}";
 
-        public static final String METADATA_VRP_WITH_INVALID_VALIDFROM_DATE = "{\n" +
-                "    \"Data\": {\n" +
-                "       \"ReadRefundAccount\": \"true\",\n" +
-                "       \"ControlParameters\": {\n" +
-                "           \"ValidFromDateTime\": \"\",\n" +  // Empty string for ValidFromDateTime
-                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"MaximumIndividualAmount\": {\n" +
-                "               \"Amount\": \"9\",\n" +
-                "               \"Currency\": \"GBP\"\n" +
-                "           },\n" +
-                "           \"PeriodicLimits\": [\n" +
-                "               {\n" +
-                "                   \"Amount\": \"1000\",\n" +
-                "                   \"Currency\": \"GBP\",\n" +
-                "                   \"PeriodAlignment\": \"Consent\",\n" +
-                "                   \"PeriodType\": \"Half-year\"\n" +
-                "               }\n" +
-                "           ]\n" +
-                "       },\n" +
-                "       \"Initiation\": {\n" +
-                "           \"DebtorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30080012343456\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"CreditorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30949330000010\",\n" +
-                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"RemittanceInformation\": {\n" +
-                "               \"Reference\": \"Sweepco\"\n" +
-                "           }\n" +
-                "       }\n" +
-                "   },\n" +
-                "   \"Risk\": {\n" +
-                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-                "   }\n" +
-                "}";
 
         public static final String METADATA_VRP_WITHOUT_CREDITOR_ACC = "{\n" +
                 "    \"Data\": {\n" +
@@ -1693,48 +1118,4 @@ public class VRPTestConstants {
                 "       \"PaymentContextCode\": \"PartyToParty\"\n" +
                 "   }\n" +
                 "}";
-
-
-        public static final String METADATA_VRP_WITH_DATE_NOT_STRING = "{\n" +
-                "    \"Data\": {\n" +
-                "       \"ReadRefundAccount\": \"true\",\n" +
-                "       \"ControlParameters\": {\n" +
-                "           \"\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
-                "           \"MaximumIndividualAmount\": {\n" +
-                "               \"Amount\": \"9\",\n" +
-                "               \"Currency\": \"GBP\"\n" +
-                "           },\n" +
-                "           \"PeriodicLimits\": [\n" +
-                "               {\n" +
-                "                   \"Amount\": \"1000\",\n" +
-                "                   \"Currency\": \"GBP\",\n" +
-                "                   \"PeriodAlignment\": \"Consent\",\n" +
-                "                   \"PeriodType\": \"Half-year\"\n" +
-                "               }\n" +
-                "           ]\n" +
-                "       },\n" +
-                "       \"Initiation\": {\n" +
-                "           \"DebtorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30080012343456\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"CreditorAccount\": {\n" +
-                "               \"SchemeName\": \"OB.IBAN\",\n" +
-                "               \"Identification\": \"30949330000010\",\n" +
-                "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
-                "               \"Name\": \"Marcus Sweepimus\"\n" +
-                "           },\n" +
-                "           \"RemittanceInformation\": {\n" +
-                "               \"Reference\": \"Sweepco\"\n" +
-                "           }\n" +
-                "       }\n" +
-                "   },\n" +
-                "   \"Risk\": {\n" +
-                "       \"PaymentContextCode\": \"PartyToParty\"\n" +
-                "   }\n" +
-                "}";
     }
-
-
