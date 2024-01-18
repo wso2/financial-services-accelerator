@@ -57,8 +57,7 @@ public class VRPConsentRequestValidator {
         //Get the request payload from the ConsentManageData
         if (!(request instanceof JSONObject)) {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR, ErrorConstants.PATH_REQUEST_BODY);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR);
         }
 
         JSONObject requestBody = (JSONObject) request;
@@ -167,10 +166,7 @@ public class VRPConsentRequestValidator {
 
             // Check if the control parameter is valid
             if (!isValidJSONObject(maximumIndividualAmount)) {
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.
-                                PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT,
-                        errorMessage,
-                        ErrorConstants.PATH_MAXIMUM_INDIVIDUAL_AMOUNT);
+                return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
             JSONObject maximumIndividualAmountResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
@@ -181,8 +177,7 @@ public class VRPConsentRequestValidator {
             }
         } else {
             log.error(ErrorConstants.MISSING_MAXIMUM_INDIVIDUAL_AMOUNT);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-                    ErrorConstants.MISSING_MAXIMUM_INDIVIDUAL_AMOUNT, ErrorConstants.PATH_REQUEST_BODY);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_MAXIMUM_INDIVIDUAL_AMOUNT);
 
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -235,9 +230,7 @@ public class VRPConsentRequestValidator {
 
             // Check if the control parameter is a valid JSON array
             if (!isValidJSONArray(periodicLimit)) {
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
-                        ErrorConstants.INVALID_PARAMETER_PERIODIC_LIMITS,
-                        ErrorConstants.PATH_PERIOD_LIMIT);
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_PARAMETER_PERIODIC_LIMITS);
             }
 
             JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
@@ -273,9 +266,7 @@ public class VRPConsentRequestValidator {
         } else {
             // If periodic limits key is missing, return an error
             log.error(ErrorConstants.MISSING_PERIOD_LIMITS);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-                    ErrorConstants.MISSING_PERIOD_LIMITS,
-                    ErrorConstants.PATH_PERIOD_TYPE);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_PERIOD_LIMITS);
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
@@ -367,18 +358,19 @@ public class VRPConsentRequestValidator {
                     log.error(String.format("Invalid date-time range, " +
                                     "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s",
                             validToDateTime, validFromDateTime, currentDateTime));
-                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-                            ErrorConstants.INVALID_REQ_PAYLOAD, ErrorConstants.PATH_VALID_TO_DATE);
+
+                    String errorMessage = String.format(ErrorConstants.DATE_INVALID_PARAMETER_MESSAGE,
+                            validateToDateTime, validateFromDateTime, currentDateTime);
+
+                    return ConsentManageUtil.getValidationResponse(errorMessage);
                 }
             } else {
                 // If ValidFromDateTime key is not present, return error
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-                        ErrorConstants.MISSING_VALID_FROM_DATE_TIME, ErrorConstants.PATH_VALID_FROM_DATE);
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_VALID_FROM_DATE_TIME);
             }
         } else {
             // If ValidToDateTime key is not present, return error
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-                    ErrorConstants.MISSING_VALID_TO_DATE_TIME, ErrorConstants.PATH_VALID_TO_DATE);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_VALID_TO_DATE_TIME);
         }
 
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -408,9 +400,7 @@ public class VRPConsentRequestValidator {
                     "debtor account", "JSONObject");
 
             if (!isValidJSONObject(debtorAccount)) {
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_DEBTOR_ACC,
-                        errorMessage,
-                        ErrorConstants.PATH_DEBTOR_ACCOUNT);
+                return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
             JSONObject validationResult = ConsentManageUtil.validateDebtorAccount((JSONObject) debtorAccount);
@@ -422,8 +412,7 @@ public class VRPConsentRequestValidator {
 
         } else {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_DEBTOR_ACC);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR_DEBTOR_ACC, ErrorConstants.PATH_REQUEST_BODY);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_DEBTOR_ACC);
         }
 
         //Validate CreditorAccount
@@ -435,9 +424,7 @@ public class VRPConsentRequestValidator {
                     "creditor account", "JSONObject");
 
             if (!isValidJSONObject(creditorAccount)) {
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_CREDITOR_ACC,
-                        errorMessage,
-                        ErrorConstants.PATH_CREDIT_ACCOUNT);
+                return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
             JSONObject validationResult = ConsentManageUtil.validateCreditorAccount((JSONObject) creditorAccount);
@@ -449,8 +436,7 @@ public class VRPConsentRequestValidator {
 
         } else {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_CREDITOR_ACC);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR, ErrorConstants.PATH_REQUEST_BODY);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR);
         }
 
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -479,31 +465,19 @@ public class VRPConsentRequestValidator {
                     validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
                     return validationResponse; // Valid: The key is present, and the value is a non-empty String
                 } else {
-                    String errorMessage = "The value associated is not a string or the value is empty'" + key + "'";
-                    return ConsentManageUtil.getValidationResponse(
-                            ErrorConstants.INVALID_PARAMETER,
-                            errorMessage,
-                            ErrorConstants.PATH_REQUEST_BODY
-                    );
+                    String errorMessage = "The value of '" + key + "'is not a string or the value is empty";
+                    return ConsentManageUtil.getValidationResponse(errorMessage);
                     // Invalid: The value associated with the key is not a non-empty String
                 }
             } else {
                 String errorMessage = "Mandatory parameter '" + key + "' is not present in payload";
-                return ConsentManageUtil.getValidationResponse(
-                        ErrorConstants.INVALID_PARAMETER,
-                        errorMessage,
-                        ErrorConstants.PATH_REQUEST_BODY
-                );
+                return ConsentManageUtil.getValidationResponse(errorMessage);
                 // Invalid: The specified key is not present in parentObj
             }
         }
 
         String errorMessage = "parameter passed in  is null";
-        return ConsentManageUtil.getValidationResponse(
-                ErrorConstants.INVALID_PARAMETER,
-                errorMessage,
-                ErrorConstants.PATH_REQUEST_BODY
-        );
+        return ConsentManageUtil.getValidationResponse(errorMessage);
     }
 
     /**
@@ -534,11 +508,7 @@ public class VRPConsentRequestValidator {
                         } else {
                             String errorMessage = "Mandatory parameter '" + key + "' is not present in periodic" +
                                     " limits or the value is not a string";
-                            return ConsentManageUtil.getValidationResponse(
-                                    ErrorConstants.RESOURCE_INVALID_FORMAT,
-                                    errorMessage,
-                                    ErrorConstants.PATH_REQUEST_BODY
-                            );
+                            return ConsentManageUtil.getValidationResponse(errorMessage);
                             // Invalid: The value associated with the key is not a non-empty String
                         }
                     }
@@ -546,11 +516,7 @@ public class VRPConsentRequestValidator {
             }
         }
         String errorMessage = "Mandatory parameter '" + key + "' of periodic limits is not present in payload";
-        return ConsentManageUtil.getValidationResponse(
-                ErrorConstants.RESOURCE_INVALID_FORMAT,
-                errorMessage,
-                ErrorConstants.PATH_REQUEST_BODY
-        );
+        return ConsentManageUtil.getValidationResponse(errorMessage);
 
     }
 
@@ -576,8 +542,7 @@ public class VRPConsentRequestValidator {
                     "initiation", "JSONObject");
 
             if (!isValidJSONObject(initiation)) {
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD_INITIATION,
-                        errorMessage, ErrorConstants.PATH_INITIATION);
+                return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
             JSONObject initiationValidationResult = VRPConsentRequestValidator
@@ -588,8 +553,7 @@ public class VRPConsentRequestValidator {
             }
         } else {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_INITIATION);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR_INITIATION, ErrorConstants.PATH_REQUEST_BODY);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_INITIATION);
         }
 
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -619,9 +583,7 @@ public class VRPConsentRequestValidator {
                     "control parameters", "JSONObject");
 
             if (!isValidJSONObject(controlParameters)) {
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD_CONTROL_PARAMETERS,
-                        errorMessage,
-                        ErrorConstants.PATH_CONTROL_PARAMETERS);
+                return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
             JSONObject controlParameterValidationResult =
@@ -634,8 +596,7 @@ public class VRPConsentRequestValidator {
             }
         } else {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER, ErrorConstants.PATH_REQUEST_BODY);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER);
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
@@ -660,8 +621,7 @@ public class VRPConsentRequestValidator {
                 !(requestBody.get(ConsentExtensionConstants.RISK) instanceof JSONObject
                         || ((JSONObject) requestBody.get(ConsentExtensionConstants.DATA)).isEmpty())) {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR_RISK);
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR_RISK, ErrorConstants.PATH_RISK);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.PAYLOAD_FORMAT_ERROR_RISK);
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
@@ -688,25 +648,14 @@ public class VRPConsentRequestValidator {
                     validationResponse.put("isValid", true);
                     validationResponse.put("periodAlignment", periodAlignment);
                 } else {
-                    return ConsentManageUtil.getValidationResponse(
-                            ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
-                            ErrorConstants.INVALID_PERIOD_ALIGNMENT,
-                            ErrorConstants.PATH_PERIOD_TYPE
-                    );
+                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_PERIOD_ALIGNMENT);
                 }
             } else {
-                return ConsentManageUtil.getValidationResponse(
-                        ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
-                        ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_ALIGNMENT,
-                        ErrorConstants.PATH_PERIOD_TYPE
-                );
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.
+                        PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_ALIGNMENT);
             }
         } else {
-            return ConsentManageUtil.getValidationResponse(
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
-                    ErrorConstants.MISSING_PERIOD_ALIGNMENT,
-                    ErrorConstants.PATH_PERIOD_TYPE
-            );
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_PERIOD_ALIGNMENT);
         }
         return validationResponse;
     }
@@ -736,25 +685,14 @@ public class VRPConsentRequestValidator {
                     validationResponse.put("isValid", true);
                     validationResponse.put("periodAlignment", periodType);
                 } else {
-                    return ConsentManageUtil.getValidationResponse(
-                            ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
-                            ErrorConstants.INVALID_PERIOD_TYPE,
-                            ErrorConstants.PATH_PERIOD_TYPE
-                    );
+                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_PERIOD_TYPE);
                 }
             } else {
-                return ConsentManageUtil.getValidationResponse(
-                        ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
-                        ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_PERIOD_TYPE,
-                        ErrorConstants.PATH_PERIOD_TYPE
-                );
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.
+                        PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_PERIOD_TYPE);
             }
         } else {
-            return ConsentManageUtil.getValidationResponse(
-                    ErrorConstants.PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS,
-                    ErrorConstants.MISSING_PERIOD_TYPE,
-                    ErrorConstants.PATH_PERIOD_TYPE
-            );
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_PERIOD_TYPE);
         }
         return validationResponse;
     }
@@ -785,12 +723,10 @@ public class VRPConsentRequestValidator {
                 String dateTimeString = (String) value;
                 dateTimeFormat.parse(dateTimeString);
             } catch (DateTimeParseException e) {
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-                        ErrorConstants.INVALID_DATE_TIME_FORMAT, ErrorConstants.PATH_VALID_TO_DATE);
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_DATE_TIME_FORMAT);
             }
         } else {
-            return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_REQ_PAYLOAD,
-                    ErrorConstants.MISSING_DATE_TIME_FORMAT, ErrorConstants.PATH_VALID_TO_DATE);
+            return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_DATE_TIME_FORMAT);
         }
 
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);

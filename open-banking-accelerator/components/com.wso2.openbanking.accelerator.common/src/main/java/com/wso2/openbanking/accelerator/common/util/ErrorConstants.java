@@ -55,10 +55,9 @@ public class ErrorConstants {
     public static final String PAYLOAD_FORMAT_ERROR = "Request Payload is not in correct JSON format";
     public static final String PAYLOAD_FORMAT_ERROR_VALID_TO_DATE = "Invalid valid_to_date parameter in the payload" +
             "for valid to date";
-    public static final String PAYLOAD_FORMAT_ERROR_DEBTOR_ACC = "Request Payload is not in correct JSON " +
-            "format for debtor account";
-    public static final String PAYLOAD_FORMAT_ERROR_CREDITOR_ACC = "Request Payload is not in correct JSON " +
-            "format for creditor account";
+    public static final String PAYLOAD_FORMAT_ERROR_DEBTOR_ACC = "Parameter Debtor Account does not exists ";
+    public static final String PAYLOAD_FORMAT_ERROR_CREDITOR_ACC = "Parameter Creditor Account " +
+            "does not exists ";
     public static final String INVALID_REQ_PAYLOAD = "Invalid request payload";
     public static final String INVALID_REQ_PAYLOAD_INITIATION = "Invalid request payload in initiation key";
     public static final String INVALID_REQ_PAYLOAD_CONTROL_PARAMETERS = "Invalid request payload in " +
@@ -240,13 +239,14 @@ public class ErrorConstants {
     public static final String PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER = "Request Payload is not in correct JSON " +
             "format for control parameter key";
     public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT = "Invalid maximum individual amount";
-    public static final String MISSING_MAXIMUM_INDIVIDUAL_AMOUNT = "Missing parameter maximum individual amount";
+    public static final String MISSING_MAXIMUM_INDIVIDUAL_AMOUNT = "Missing mandatory parameter Maximum Individual" +
+            " Amount";
     public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_CURRENCY = "Invalid maximum individual amount" +
             "currency";
-    public static final String PAYLOAD_FORMAT_ERROR_INITIATION = "Request Payload is not in correct JSON format" +
-            " for initiation key";
-    public static final String PAYLOAD_FORMAT_ERROR_RISK = "Request Payload is not in correct JSON format" +
-            " for Risk key";
+    public static final String PAYLOAD_FORMAT_ERROR_INITIATION = "Missing mandatory parameter Initiation" +
+            " in the payload";
+    public static final String PAYLOAD_FORMAT_ERROR_RISK = "Mandatory parameter Risk does not exists" +
+            " in the payload";
     public static final String INVALID_PERIOD_TYPE = "Invalid value for period type in PeriodicLimits";
     public static final String INVALID_PARAMETER = "Parameter passed in is null , " +
             "empty or not a JSONObject";
@@ -263,12 +263,16 @@ public class ErrorConstants {
     public static final String MISSING_PERIOD_TYPE = "Missing required parameter Period type";
     public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_PERIOD_TYPE = "Value of period type is empty or " +
             "the value passed in is not a string";
-    public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS = "Invalid periodic limits";
     public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_ALIGNMENT = "Value is empty or the value passed " +
             "in is not a string";
     public static final String MISSING_PERIOD_ALIGNMENT = "Missing periodic alignment in periodic limits";
-    public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
+    public static final String INVALID_PERIOD_ALIGNMENT = "Value is empty or the value passed " +
+            "in for periodic alignment is not a string";
     public static final String INVALID_PARAMETER_MESSAGE = "Parameter '%s' passed in is null, empty, or not a %s";
+    public static final String DATE_INVALID_PARAMETER_MESSAGE = "Invalid date-time range, " +
+            "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s";
+
+
 
     // vrp path parameters
     public static final String PATH_VALID_TO_DATE = "Data.ControlParameters.ValidToDateTime";

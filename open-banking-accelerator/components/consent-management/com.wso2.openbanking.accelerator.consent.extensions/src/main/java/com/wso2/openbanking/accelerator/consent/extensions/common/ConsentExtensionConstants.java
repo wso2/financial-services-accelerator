@@ -96,7 +96,6 @@ public class ConsentExtensionConstants {
     public static final String DATA_SIMPLE = "data";
     public static final String DEBTOR_ACCOUNT_ID = "AccountId";
     public static final String ACCOUNT_ID = "account_id";
-
     public static final String DATA_REQUESTED = "data_requested";
     public static final String PAYMENT_ACCOUNT = "paymentAccount";
     public static final String COF_ACCOUNT = "cofAccount";
@@ -174,8 +173,10 @@ public class ConsentExtensionConstants {
     public static final String AUTH_TYPE_AUTHORIZATION = "authorization";
     public static final String CONTROL_PARAMETERS = "ControlParameters";
     public static final String MAXIMUM_INDIVIDUAL_AMOUNT = "MaximumIndividualAmount";
+    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY = "MaximumIndividualAmount.Amount.Currency";
     public static final String PERIODIC_LIMITS = "PeriodicLimits";
     public static final String PERIOD_AMOUNT_LIMIT = "Amount";
+    public static final String PERIOD_LIMIT_CURRENCY = "PeriodicLimits.Currency";
 
     //vrp period alignment
     public static final String PERIOD_ALIGNMENT = "PeriodAlignment";

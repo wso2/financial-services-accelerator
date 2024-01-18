@@ -185,21 +185,32 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
 
             consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT,
                     ((JSONObject) (controlParameters)
-                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)).
-                            get(ConsentExtensionConstants.AMOUNT).toString());
+                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT))
+                            .get(ConsentExtensionConstants.AMOUNT).toString());
+
+            consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY,
+                    ((JSONObject) (controlParameters)
+                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT))
+                            .get(ConsentExtensionConstants.CURRENCY).toString());
 
             //Todo: can we store the currency as an attribute
             consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
                     (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
                     .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
             //TODO: Improve the logic of storing the PERIODIC_LIMITS and rest of VRP parameters
+
             consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE,
                     ((JSONObject) ((JSONArray) (controlParameters)
                     .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
                     .toString());
+
             consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)
                     ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
                     .get(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).toString());
+
+            consentAttributes.put(ConsentExtensionConstants.PERIOD_LIMIT_CURRENCY, ((JSONObject)
+                    ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+                    .get(ConsentExtensionConstants.CURRENCY).toString());
 
             //Store consent attributes
             ConsentServiceUtil.getConsentService().storeConsentAttributes(createdConsent.getConsentID(),

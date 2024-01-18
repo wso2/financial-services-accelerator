@@ -91,6 +91,22 @@ public class ConsentManageUtil {
     }
 
     /**
+     * Method to construct the consent manage validation response for vrp.
+     *
+     * @param errorMessage Error Message
+     *
+     * @return
+     */
+    public static JSONObject getValidationResponse(String errorMessage) {
+        JSONObject validationResponse = new JSONObject();
+
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+        validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+        validationResponse.put(ConsentExtensionConstants.ERRORS, errorMessage);
+        return validationResponse;
+    }
+
+    /**
      * Method to validate debtor account.
      *
      * @param debtorAccount Debtor Account object
