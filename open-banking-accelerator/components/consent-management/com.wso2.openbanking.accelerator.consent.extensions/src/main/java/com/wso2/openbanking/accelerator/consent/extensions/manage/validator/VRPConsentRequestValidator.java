@@ -112,16 +112,17 @@ public class VRPConsentRequestValidator {
             return maximumIndividualAmountResult;
         }
 
-        JSONObject maximumIndividualAmountCurrencyResult = validateMaximumIndividualAmountCurrency(controlParameters);
-        if (!(Boolean.parseBoolean(maximumIndividualAmountCurrencyResult.
+        JSONObject maximumIndividualAmountCurrencyValidationResult = validateMaximumIndividualAmountCurrency
+                (controlParameters);
+        if (!(Boolean.parseBoolean(maximumIndividualAmountCurrencyValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            return maximumIndividualAmountCurrencyResult;
+            return maximumIndividualAmountCurrencyValidationResult;
         }
 
-        JSONObject parameterDateTimeValidationResponse = validateParameterDateTime(controlParameters);
-        if (!(Boolean.parseBoolean(parameterDateTimeValidationResponse.
+        JSONObject parameterDateTimeValidationResult= validateParameterDateTime(controlParameters);
+        if (!(Boolean.parseBoolean(parameterDateTimeValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            return parameterDateTimeValidationResponse;
+            return parameterDateTimeValidationResult;
         }
 
         // Validate Periodic Limits
@@ -195,10 +196,10 @@ public class VRPConsentRequestValidator {
         Object maximumIndividualAmount = controlParameters.
                 get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
 
-        JSONObject maximumIndividualAmountResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
+        JSONObject maximumIndividualAmountValidationResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
                 ConsentExtensionConstants.CURRENCY);
-        if (!(Boolean.parseBoolean(maximumIndividualAmountResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            return maximumIndividualAmountResult;
+        if (!(Boolean.parseBoolean(maximumIndividualAmountValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
+            return maximumIndividualAmountValidationResult;
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
@@ -281,11 +282,11 @@ public class VRPConsentRequestValidator {
         JSONObject validationResponse = new JSONObject();
 
         JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
-        JSONObject currency = validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
+        JSONObject currencyValidationResponse = validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
                 ConsentExtensionConstants.CURRENCY);
-        if (!(Boolean.parseBoolean(currency.
+        if (!(Boolean.parseBoolean(currencyValidationResponse.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            return currency;
+            return currencyValidationResponse;
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
@@ -304,11 +305,11 @@ public class VRPConsentRequestValidator {
 
         JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
 
-        JSONObject amount = validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
+        JSONObject amountValidationResponse = validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
                 ConsentExtensionConstants.AMOUNT);
-        if (!(Boolean.parseBoolean(amount.
+        if (!(Boolean.parseBoolean(amountValidationResponse.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
-            return amount;
+            return amountValidationResponse;
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
