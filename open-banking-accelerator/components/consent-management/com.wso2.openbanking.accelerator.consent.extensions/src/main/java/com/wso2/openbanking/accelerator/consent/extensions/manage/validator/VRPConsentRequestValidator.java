@@ -143,6 +143,8 @@ public class VRPConsentRequestValidator {
      * @param value The object to be checked for being a valid JSONArray.
      */
     public static boolean isValidJSONArray(Object value) {
+        String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE, "periodic limit",
+                "JSONObject");
         return value instanceof JSONArray;
     }
 
@@ -223,9 +225,6 @@ public class VRPConsentRequestValidator {
 
             // Retrieve the periodic limits from the control parameters
             Object periodicLimit = controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
-
-            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE, "periodic limit",
-                    "JSONObject");
 
             // Check if the control parameter is a valid JSON array
             if (!isValidJSONArray(periodicLimit)) {
@@ -410,10 +409,10 @@ public class VRPConsentRequestValidator {
 
             Object debtorAccount = initiation.get(ConsentExtensionConstants.DEBTOR_ACC);
 
-            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
-                    "debtor account", "JSONObject");
-
             if (!isValidJSONObject(debtorAccount)) {
+                String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                        "debtor account", "JSONObject");
+
                 return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
@@ -434,10 +433,10 @@ public class VRPConsentRequestValidator {
 
             Object creditorAccount = initiation.get(ConsentExtensionConstants.CREDITOR_ACC);
 
-            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
-                    "creditor account", "JSONObject");
-
             if (!isValidJSONObject(creditorAccount)) {
+                String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                        "creditor account", "JSONObject");
+
                 return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
@@ -579,10 +578,10 @@ public class VRPConsentRequestValidator {
 
             Object initiation = data.get(ConsentExtensionConstants.INITIATION);
 
-            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
-                    "initiation", "JSONObject");
-
             if (!isValidJSONObject(initiation)) {
+                String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                        "initiation", "JSONObject");
+
                 return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
@@ -620,10 +619,10 @@ public class VRPConsentRequestValidator {
 
             Object controlParameters = data.get(ConsentExtensionConstants.CONTROL_PARAMETERS);
 
-            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
-                    "control parameters", "JSONObject");
-
             if (!isValidJSONObject(controlParameters)) {
+                String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                        "control parameters", "JSONObject");
+
                 return ConsentManageUtil.getValidationResponse(errorMessage);
             }
 
