@@ -55,15 +55,16 @@ public class ConsentManageUtil {
     /**
      * Check whether valid Data object is provided.
      *
-     * @param requestbody Data object in initiation payload
+     * @param initiationRequestbody Data object in initiation payload
      * @return whether the Data object is valid
      */
-    public static JSONObject validateInitiationDataBody(JSONObject requestbody) {
+    public static JSONObject validateInitiationDataBody(JSONObject initiationRequestbody) {
         JSONObject validationResponse = new JSONObject();
 
-        if (!requestbody.containsKey(ConsentExtensionConstants.DATA) || !(requestbody.
+        if (!initiationRequestbody.containsKey(ConsentExtensionConstants.DATA) || !(initiationRequestbody.
                 get(ConsentExtensionConstants.DATA)
-                instanceof JSONObject) || ((JSONObject) requestbody.get(ConsentExtensionConstants.DATA)).isEmpty()) {
+                instanceof JSONObject) || ((JSONObject) initiationRequestbody.get(ConsentExtensionConstants.DATA))
+                .isEmpty()) {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
             return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
                     ErrorConstants.PAYLOAD_FORMAT_ERROR, ErrorConstants.PATH_REQUEST_BODY);
@@ -639,64 +640,19 @@ public class ConsentManageUtil {
             return false;
         }
     }
-
     /**
-     * validate the periodiclimits in the payload  in VRP.
-     *
-     * @param limit
+     * Validate whether the date is a valid ISO 8601 format.
+     * @param dateValue
      * @return
      */
-//    public static boolean validatePeriodicAlignment(Object limit) {
-//        Object periodAlignment =limit.equals(ConsentExtensionConstants.PERIOD_ALIGNMENT);
-//
-//        return (ConsentExtensionConstants.CONSENT.equals(periodAlignment) ||
-//                ConsentExtensionConstants.CALENDER.equals(periodAlignment));
-//    }
-//    public static boolean validatePeriodicAlignment(Object limit) {
-//        Object periodAlignment = limit.equals(ConsentExtensionConstants.PERIOD_ALIGNMENT);
-//
-//        if (!VRPConsentRequestValidator.isValidString(periodAlignment)) {
-//            return false;
-//        } else {
-//            String periodAlignment1 = (String) periodAlignment;
-//
-//            // Check if periodType is empty
-//            if (periodAlignment1.isEmpty()) {
-//                return false;
-//            }
-//
-//            List<String> periodAlignments = Arrays.asList(
-//                    ConsentExtensionConstants.CONSENT,
-//                    ConsentExtensionConstants.CALENDER
-//            );
-//
-//            return periodAlignments.contains(periodAlignment1);
-//        }
-//
-//    }
+    public static boolean isValid8601(String dateValue) {
+        try {
+            OffsetDateTime.parse(dateValue);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
 
 
-    /**
-     * method to validate periodic type in VRP.
-     *
-     * @param periodiclimit periodic type
-     * @return
-     */
-//    public static boolean validatePeriodicType(Object periodicLimit) {
-//        if (periodicLimit instanceof String && !((String) periodicLimit).isEmpty()) {
-//            String periodType = (String) periodicLimit;
-//
-//            List<String> validPeriodTypes = Arrays.asList(
-//                    ConsentExtensionConstants.DAY,
-//                    ConsentExtensionConstants.WEEK,
-//                    ConsentExtensionConstants.FORTNIGHT,
-//                    ConsentExtensionConstants.MONTH,
-//                    ConsentExtensionConstants.HALF_YEAR,
-//                    ConsentExtensionConstants.YEAR
-//            );
-//
-//            return validPeriodTypes.contains(periodType);
-//        }
-//        return false;
-//    }
 }

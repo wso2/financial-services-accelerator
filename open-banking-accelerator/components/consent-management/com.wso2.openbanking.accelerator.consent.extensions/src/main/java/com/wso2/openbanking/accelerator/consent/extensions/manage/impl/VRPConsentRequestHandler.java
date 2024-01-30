@@ -83,7 +83,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         } catch (ConsentManagementException e) {
             log.error("Error occurred while handling the initiation request", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR);
+                    ErrorConstants.VRP_INITIATION_HANDLE_ERROR);
         }
     }
 
@@ -112,7 +112,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                     }
 
                     throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            new String("Invalid client id passed"));
+                            "Invalid client id passed");
                 }
 
                 JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).
@@ -124,7 +124,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
             } catch (ConsentManagementException | ParseException e) {
                 log.error(ErrorConstants.INVALID_CLIENT_ID_MATCH, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        ErrorConstants.ACC_INITIATION_RETRIEVAL_ERROR);
+                        ErrorConstants.VRP_INITIATION_RETRIEVAL_ERROR);
             }
         } else {
             log.error(ErrorConstants.INVALID_CONSENT_ID);
@@ -193,7 +193,6 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
                             .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT))
                             .get(ConsentExtensionConstants.CURRENCY).toString());
 
-            //Todo: can we store the currency as an attribute
             consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
                     (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
                     .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());

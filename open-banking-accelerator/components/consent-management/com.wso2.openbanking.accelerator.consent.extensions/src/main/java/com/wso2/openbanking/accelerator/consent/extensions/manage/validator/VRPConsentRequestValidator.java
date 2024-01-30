@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -161,8 +161,8 @@ public class VRPConsentRequestValidator {
             Object maximumIndividualAmount = controlParameters.
                     get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
 
-            String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
-                    "maximum individual amount", "JSONObject");
+           String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE,
+                  "maximum individual amount", "JSONObject");
 
             // Check if the control parameter is valid
             if (!isValidJSONObject(maximumIndividualAmount)) {
@@ -192,10 +192,8 @@ public class VRPConsentRequestValidator {
      */
     public static JSONObject validateMaximumIndividualAmountCurrency(JSONObject controlParameters) {
         JSONObject validationResponse = new JSONObject();
-
         Object maximumIndividualAmount = controlParameters.
                 get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
-
 
         JSONObject maximumIndividualAmountResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
                 ConsentExtensionConstants.CURRENCY);
@@ -234,33 +232,33 @@ public class VRPConsentRequestValidator {
             }
 
             JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
-            Iterator it = periodicLimits.iterator();
+            Iterator parameters = periodicLimits.iterator();
 
-            while (it.hasNext()) {
-                JSONObject limit = (JSONObject) it.next();
+            while (parameters.hasNext()) {
+                JSONObject limit = (JSONObject) parameters.next();
 
-                JSONObject amount = validateAmountPeriodicLimit(controlParameters);
-                if (!(Boolean.parseBoolean(amount.
+                JSONObject amountValidationResult = validateAmountPeriodicLimit(controlParameters);
+                if (!(Boolean.parseBoolean(amountValidationResult.
                         getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                    return amount;
+                    return amountValidationResult;
                 }
 
-                JSONObject currency = validateCurrencyPeriodicLimit(controlParameters);
-                if (!(Boolean.parseBoolean(currency.
+                JSONObject currencyValidationResult = validateCurrencyPeriodicLimit(controlParameters);
+                if (!(Boolean.parseBoolean(currencyValidationResult.
                         getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                    return currency;
+                    return currencyValidationResult;
                 }
 
-                JSONObject validationResults = validatePeriodAlignment(limit);
-                if (!(Boolean.parseBoolean(validationResults.
+                JSONObject periodAlignmentValidationResult = validatePeriodAlignment(limit);
+                if (!(Boolean.parseBoolean(periodAlignmentValidationResult.
                         getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                    return validationResults;
+                    return periodAlignmentValidationResult;
                 }
 
-                JSONObject periodType = validatePeriodType(limit);
-                if (!(Boolean.parseBoolean(periodType.
+                JSONObject periodTypeValidationResult = validatePeriodType(limit);
+                if (!(Boolean.parseBoolean(periodTypeValidationResult.
                         getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                    return periodType;
+                    return periodTypeValidationResult;
                 }
             }
         } else {
@@ -327,29 +325,45 @@ public class VRPConsentRequestValidator {
     public static JSONObject validateParameterDateTime(JSONObject controlParameters) {
         JSONObject validationResponse = new JSONObject();
 
-        // Check if ValidToDateTime key is present
         if (controlParameters.containsKey(ConsentExtensionConstants.VALID_TO_DATE_TIME)) {
-            // Get and validate ValidToDateTime
-            Object validateToDateTime = controlParameters.get(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-            JSONObject toDateTimeValidation = isValidDateTimeObject(validateToDateTime);
-            if (!(Boolean.parseBoolean(toDateTimeValidation.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                return toDateTimeValidation;
+
+            if (!ConsentManageUtil.isValid8601(controlParameters
+                    .getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME))) {
+                log.error(" Date and Time is not in  valid ISO 8601 format");
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID_DATE);
             }
 
-            String validTo = controlParameters.getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME);
-            OffsetDateTime validToDateTime = OffsetDateTime.parse(validTo);
+            Object validToDateTimeRetrieval = controlParameters.get(ConsentExtensionConstants.VALID_TO_DATE_TIME);
+            JSONObject validToDateTimeValidationResponse = isValidDateTimeObject(validToDateTimeRetrieval);
+            if (!(Boolean.parseBoolean(validToDateTimeValidationResponse.
+                    getAsString(ConsentExtensionConstants.IS_VALID)))) {
+                return validToDateTimeValidationResponse;
+            }
 
-            // Check if ValidFromDateTime key is present
+            String validToDateTimeString = controlParameters.getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME);
+            OffsetDateTime validToDateTime = OffsetDateTime.parse(validToDateTimeString);
+
             if (controlParameters.containsKey(ConsentExtensionConstants.VALID_FROM_DATE_TIME)) {
-                // Get and validate ValidFromDateTime
-                Object validateFromDateTime = controlParameters.get(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-                JSONObject fromDateTimeValidation = isValidDateTimeObject(validateFromDateTime);
-                if (!(Boolean.parseBoolean(fromDateTimeValidation.getAsString(ConsentExtensionConstants.IS_VALID)))) {
-                    return fromDateTimeValidation;
+
+                if (!ConsentManageUtil.isValid8601(controlParameters
+                        .getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME))) {
+                    log.error("Date and Time is not in  valid ISO 8601 format");
+                    return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID_DATE);
                 }
 
-                String validFrom = controlParameters.getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME);
-                OffsetDateTime validFromDateTime = OffsetDateTime.parse(validFrom);
+
+                Object validFromDateTimeRetrieval = controlParameters.get
+                        (ConsentExtensionConstants.VALID_FROM_DATE_TIME);
+                JSONObject validFromDateTimeValidationResponse = isValidDateTimeObject(validFromDateTimeRetrieval);
+                if (!(Boolean.parseBoolean(validFromDateTimeValidationResponse.
+                        getAsString(ConsentExtensionConstants.IS_VALID)))) {
+                    return  validFromDateTimeValidationResponse;
+                }
+
+                String validFromoDateTimeString = controlParameters.getAsString
+                        (ConsentExtensionConstants.VALID_FROM_DATE_TIME);
+
+                OffsetDateTime validFromDateTime = OffsetDateTime.parse(validFromoDateTimeString);
                 OffsetDateTime currentDateTime = OffsetDateTime.now(validToDateTime.getOffset());
 
                 // If ValidToDateTime is older than current date OR ValidToDateTime is older than ValidFromDateTime,
@@ -359,17 +373,16 @@ public class VRPConsentRequestValidator {
                                     "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s",
                             validToDateTime, validFromDateTime, currentDateTime));
 
-                    String errorMessage = String.format(ErrorConstants.DATE_INVALID_PARAMETER_MESSAGE,
-                            validateToDateTime, validateFromDateTime, currentDateTime);
+                    String errorMessage = String.format(ErrorConstants.DATE_INVALID_PARAMETER_MESSAGE);
 
                     return ConsentManageUtil.getValidationResponse(errorMessage);
                 }
             } else {
-                // If ValidFromDateTime key is not present, return error
+                log.error("validFromDateTime parameter is missing in the payload");
                 return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_VALID_FROM_DATE_TIME);
             }
         } else {
-            // If ValidToDateTime key is not present, return error
+            log.error("Missing validToDateTime parameter is missing in the payload");
             return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_VALID_TO_DATE_TIME);
         }
 
@@ -462,10 +475,22 @@ public class VRPConsentRequestValidator {
 
                 // Check if the value associated with the key is a non-empty string
                 if (value instanceof String && !((String) value).isEmpty()) {
-                    validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-                    return validationResponse; // Valid: The key is present, and the value is a non-empty String
+                    if ("Amount".equals(key)) {
+                        // For the "amount" key, try parsing as Double allowing letters
+                        if (isDouble((String) value)) {
+                            validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+                            return validationResponse; // Valid: The key is present, and the value is a valid Double
+                        } else {
+                            String errorMessage = "The value of '" + key + "' is not a valid number";
+                            return ConsentManageUtil.getValidationResponse(errorMessage);
+                            // Invalid: The value associated with the key is not a valid Double
+                        }
+                    } else {
+                        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+                        return validationResponse; // Valid: The key is present, and the value is a non-empty String
+                    }
                 } else {
-                    String errorMessage = "The value of '" + key + "'is not a string or the value is empty";
+                    String errorMessage = "The value of '" + key + "' is not a string or the value is empty";
                     return ConsentManageUtil.getValidationResponse(errorMessage);
                     // Invalid: The value associated with the key is not a non-empty String
                 }
@@ -474,11 +499,12 @@ public class VRPConsentRequestValidator {
                 return ConsentManageUtil.getValidationResponse(errorMessage);
                 // Invalid: The specified key is not present in parentObj
             }
+        } else {
+            String errorMessage = "parameter passed in is null";
+            return ConsentManageUtil.getValidationResponse(errorMessage);
         }
-
-        String errorMessage = "parameter passed in  is null";
-        return ConsentManageUtil.getValidationResponse(errorMessage);
     }
+
 
     /**
      * Validates the presence of a specified key in a JSONArray (either the amount or the currency)
@@ -502,14 +528,18 @@ public class VRPConsentRequestValidator {
 
                         // Check if the value associated with the key is a non-empty string
                         if (value instanceof String && !((String) value).isEmpty()) {
-                            JSONObject validationResponse = new JSONObject();
-                            validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-                            return validationResponse; // Valid: The key is present, and the value is a non-empty String
-                        } else {
-                            String errorMessage = "Mandatory parameter '" + key + "' is not present in periodic" +
-                                    " limits or the value is not a string";
-                            return ConsentManageUtil.getValidationResponse(errorMessage);
-                            // Invalid: The value associated with the key is not a non-empty String
+                            // Check if the key is "amount" and the value is a valid double
+                            if ("Amount".equals(key) && isDouble((String) value)) {
+                                JSONObject validationResponse = new JSONObject();
+                                validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+                                return validationResponse;
+                                // Valid: The key is "amount", and the value is a valid double
+                            } else {
+                                String errorMessage = "Mandatory parameter '" + key + "' is not present in periodic" +
+                                        " limits or the value is not a valid double";
+                                return ConsentManageUtil.getValidationResponse(errorMessage);
+                                // Invalid: The value associated with the key is not a valid double
+                            }
                         }
                     }
                 }
@@ -517,8 +547,18 @@ public class VRPConsentRequestValidator {
         }
         String errorMessage = "Mandatory parameter '" + key + "' of periodic limits is not present in payload";
         return ConsentManageUtil.getValidationResponse(errorMessage);
-
     }
+
+    // Helper method to check if a string contains a valid double
+    private static boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 
     /**
      * Validates the consent initiation payload in the VRP request.

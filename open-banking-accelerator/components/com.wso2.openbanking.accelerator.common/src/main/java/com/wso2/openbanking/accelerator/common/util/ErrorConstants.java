@@ -234,6 +234,12 @@ public class ErrorConstants {
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
 
     // VRP error constants
+
+    public static final String VRP_INITIATION_HANDLE_ERROR = "Error occurred while handling the VRP " +
+            "initiation request";
+
+    public static final String VRP_INITIATION_RETRIEVAL_ERROR = "Error occurred while handling the VRP initiation" +
+            " retrieval request";
     public static final String PAYLOAD_FORMAT_ERROR_VALID_FROM_DATE = "Request Payload is not in correct JSON format" +
             " for valid from date";
     public static final String PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER = "Request Payload is not in correct JSON " +
@@ -266,11 +272,9 @@ public class ErrorConstants {
     public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_ALIGNMENT = "Value is empty or the value passed " +
             "in is not a string";
     public static final String MISSING_PERIOD_ALIGNMENT = "Missing periodic alignment in periodic limits";
-    public static final String INVALID_PERIOD_ALIGNMENT = "Value is empty or the value passed " +
-            "in for periodic alignment is not a string";
+    public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
     public static final String INVALID_PARAMETER_MESSAGE = "Parameter '%s' passed in is null, empty, or not a %s";
-    public static final String DATE_INVALID_PARAMETER_MESSAGE = "Invalid date-time range, " +
-            "validToDateTime: %s, validFromDateTime: %s, currentDateTime: %s";
+    public static final String DATE_INVALID_PARAMETER_MESSAGE = "Invalid date-time range for ValidToDateTime ";
 
 
 
