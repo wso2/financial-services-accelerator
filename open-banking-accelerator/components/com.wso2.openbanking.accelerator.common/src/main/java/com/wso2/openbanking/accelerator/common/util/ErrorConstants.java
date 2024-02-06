@@ -242,6 +242,8 @@ public class ErrorConstants {
             " retrieval request";
     public static final String PAYLOAD_FORMAT_ERROR_VALID_FROM_DATE = "Request Payload is not in correct JSON format" +
             " for valid from date";
+    public static final String INVALID_VALID_TO_DATE_TIME = "Invalid date time format in validToDateTime";
+    public static final String INVALID_VALID_FROM_DATE_TIME = "Invalid date time format in validFromDateTime";
     public static final String PAYLOAD_FORMAT_ERROR_CONTROL_PARAMETER = "Request Payload is not in correct JSON " +
             "format for control parameter key";
     public static final String PAYLOAD_FORMAT_ERROR_MAXIMUM_INDIVIDUAL_AMOUNT = "Invalid maximum individual amount";
@@ -269,8 +271,8 @@ public class ErrorConstants {
     public static final String MISSING_PERIOD_TYPE = "Missing required parameter Period type";
     public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_PERIOD_TYPE = "Value of period type is empty or " +
             "the value passed in is not a string";
-    public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_ALIGNMENT = "Value is empty or the value passed " +
-            "in is not a string";
+    public static final String PAYLOAD_FORMAT_ERROR_PERIODIC_LIMITS_ALIGNMENT = "Value of periodic alignment is empty" +
+            " or the value passed in is not a string";
     public static final String MISSING_PERIOD_ALIGNMENT = "Missing periodic alignment in periodic limits";
     public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
     public static final String INVALID_PARAMETER_MESSAGE = "Parameter '%s' passed in is null, empty, or not a %s";

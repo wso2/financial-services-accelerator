@@ -93,7 +93,6 @@ public class VRPConsentRequestValidator {
         return validationResponse;
     }
 
-
     /**
      * Method to validate control parameters for variable recurring payments.
      * This method performs  validation on the control parameters for variable recurring payments.
@@ -119,7 +118,7 @@ public class VRPConsentRequestValidator {
             return maximumIndividualAmountCurrencyValidationResult;
         }
 
-        JSONObject parameterDateTimeValidationResult= validateParameterDateTime(controlParameters);
+        JSONObject parameterDateTimeValidationResult = validateParameterDateTime(controlParameters);
         if (!(Boolean.parseBoolean(parameterDateTimeValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
             return parameterDateTimeValidationResult;
@@ -173,7 +172,7 @@ public class VRPConsentRequestValidator {
             }
 
             JSONObject maximumIndividualAmountResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
-                    ConsentExtensionConstants.AMOUNT);
+                    ConsentExtensionConstants.AMOUNT, String.class);
             if (!(Boolean.parseBoolean(maximumIndividualAmountResult.
                     getAsString(ConsentExtensionConstants.IS_VALID)))) {
                 return maximumIndividualAmountResult;
@@ -199,8 +198,9 @@ public class VRPConsentRequestValidator {
                 get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
 
         JSONObject maximumIndividualAmountValidationResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
-                ConsentExtensionConstants.CURRENCY);
-        if (!(Boolean.parseBoolean(maximumIndividualAmountValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
+                ConsentExtensionConstants.CURRENCY, String.class);
+        if (!(Boolean.parseBoolean(maximumIndividualAmountValidationResult.
+                getAsString(ConsentExtensionConstants.IS_VALID)))) {
             return maximumIndividualAmountValidationResult;
         }
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
@@ -282,7 +282,7 @@ public class VRPConsentRequestValidator {
 
         JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
         JSONObject currencyValidationResponse = validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
-                ConsentExtensionConstants.CURRENCY);
+                ConsentExtensionConstants.CURRENCY, String.class);
         if (!(Boolean.parseBoolean(currencyValidationResponse.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
             return currencyValidationResponse;
@@ -290,7 +290,6 @@ public class VRPConsentRequestValidator {
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
 
     /**
      * Validates the Amount in periodic limits in the control parameters of a consent request.
@@ -305,7 +304,7 @@ public class VRPConsentRequestValidator {
         JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
 
         JSONObject amountValidationResponse = validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
-                ConsentExtensionConstants.AMOUNT);
+                ConsentExtensionConstants.AMOUNT, String.class);
         if (!(Boolean.parseBoolean(amountValidationResponse.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {
             return amountValidationResponse;
@@ -313,7 +312,6 @@ public class VRPConsentRequestValidator {
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
 
     /**
      * Validates the date-time parameters in the control parameters of a consent request.
@@ -330,7 +328,7 @@ public class VRPConsentRequestValidator {
             if (!ConsentManageUtil.isValid8601(controlParameters
                     .getAsString(ConsentExtensionConstants.VALID_TO_DATE_TIME))) {
                 log.error(" Date and Time is not in  valid ISO 8601 format");
-                return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID_DATE);
+                return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_VALID_TO_DATE_TIME);
             }
 
             Object validToDateTimeRetrieval = controlParameters.get(ConsentExtensionConstants.VALID_TO_DATE_TIME);
@@ -348,7 +346,7 @@ public class VRPConsentRequestValidator {
                 if (!ConsentManageUtil.isValid8601(controlParameters
                         .getAsString(ConsentExtensionConstants.VALID_FROM_DATE_TIME))) {
                     log.error("Date and Time is not in  valid ISO 8601 format");
-                    return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID_DATE);
+                    return ConsentManageUtil.getValidationResponse(ErrorConstants.INVALID_VALID_FROM_DATE_TIME);
                 }
 
 
@@ -456,48 +454,51 @@ public class VRPConsentRequestValidator {
         return validationResponse;
     }
 
+
     /**
      * Validates the presence of a specified key in a JSONObject (either the amount or the currency)
      * and checks if the associated value is a non-empty string.
      *
      * @param parentObj The JSONObject to be validated.
      * @param key       The key to be checked for presence in the parentObj.
+     * @param expectedType The expected type of the value associated with the key.
      * @return true if the specified key is present in the parentObj and the associated value is a
      * non-empty string.
      */
-    public static JSONObject validateJsonObjectKey(JSONObject parentObj, String key) {
+    public static <T> JSONObject validateJsonObjectKey(JSONObject parentObj, String key, Class<T> expectedType) {
         JSONObject validationResponse = new JSONObject();
 
         if (parentObj != null) {
-            // Check if the specified key is present in the parentObj
             if (parentObj.containsKey(key)) {
                 Object value = parentObj.get(key);
 
-                // Check if the value associated with the key is a non-empty string
-                if (value instanceof String && !((String) value).isEmpty()) {
-                    if ("Amount".equals(key)) {
-                        // For the "amount" key, try parsing as Double allowing letters
-                        if (isDouble((String) value)) {
-                            validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-                            return validationResponse; // Valid: The key is present, and the value is a valid Double
+                if (expectedType.isInstance(value)) {
+                    if (value instanceof String && !((String) value).isEmpty()) {
+                        if ("Amount".equals(key)) {
+                            // For the "amount" key, try parsing as Double allowing letters
+                            if (isDouble((String) value)) {
+                                validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+                                return validationResponse;
+                            } else {
+                                String errorMessage = "The value of '" + key + "' is not a valid number";
+                                return ConsentManageUtil.getValidationResponse(errorMessage);
+                            }
                         } else {
-                            String errorMessage = "The value of '" + key + "' is not a valid number";
-                            return ConsentManageUtil.getValidationResponse(errorMessage);
-                            // Invalid: The value associated with the key is not a valid Double
+                            validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+                            return validationResponse;
                         }
                     } else {
-                        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-                        return validationResponse; // Valid: The key is present, and the value is a non-empty String
+                        String errorMessage = "The value of '" + key + "' is not a " + expectedType.getSimpleName()
+                                + " or the value is empty";
+                        return ConsentManageUtil.getValidationResponse(errorMessage);
                     }
                 } else {
-                    String errorMessage = "The value of '" + key + "' is not a string or the value is empty";
+                    String errorMessage = "The value of '" + key + "' is not of type " + expectedType.getSimpleName();
                     return ConsentManageUtil.getValidationResponse(errorMessage);
-                    // Invalid: The value associated with the key is not a non-empty String
                 }
             } else {
                 String errorMessage = "Mandatory parameter '" + key + "' is not present in payload";
                 return ConsentManageUtil.getValidationResponse(errorMessage);
-                // Invalid: The specified key is not present in parentObj
             }
         } else {
             String errorMessage = "parameter passed in is null";
@@ -505,51 +506,46 @@ public class VRPConsentRequestValidator {
         }
     }
 
-
     /**
      * Validates the presence of a specified key in a JSONArray (either the amount or the currency)
      * in periodiclimits and checks if the associated value is a non-empty string.
      *
      * @param parentArray The JSONObject to be validated.
      * @param key         The key to be checked for presence in the parentObj.
-     * @return true if the specified key is present in the parentObj and the associated value is a
-     * non-empty string.
+     * @param expectedType The expected type of the value associated with the key.
+     * @return  A JSONObject containing validation results for the entire array.
      */
+    public static <T> JSONObject validateAmountCurrencyPeriodicLimits(JSONArray parentArray, String key,
+                                                                      Class<T> expectedType) {
+        JSONObject validationResponse = new JSONObject();
 
-    public static JSONObject validateAmountCurrencyPeriodicLimits(JSONArray parentArray, String key) {
-        if (parentArray != null && key != null) {
-            // Check if the specified key is present in the parentArray
+        if (parentArray != null) {
             for (Object obj : parentArray) {
                 if (obj instanceof JSONObject) {
+
                     JSONObject jsonObject = (JSONObject) obj;
+                    JSONObject elementValidationResult = validateJsonObjectKey(jsonObject, key, expectedType);
 
-                    if (jsonObject.containsKey(key)) {
-                        Object value = jsonObject.get(key);
-
-                        // Check if the value associated with the key is a non-empty string
-                        if (value instanceof String && !((String) value).isEmpty()) {
-                            // Check if the key is "amount" and the value is a valid double
-                            if ("Amount".equals(key) && isDouble((String) value)) {
-                                JSONObject validationResponse = new JSONObject();
-                                validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
-                                return validationResponse;
-                                // Valid: The key is "amount", and the value is a valid double
-                            } else {
-                                String errorMessage = "Mandatory parameter '" + key + "' is not present in periodic" +
-                                        " limits or the value is not a valid double";
-                                return ConsentManageUtil.getValidationResponse(errorMessage);
-                                // Invalid: The value associated with the key is not a valid double
-                            }
-                        }
+                    if (!(Boolean.parseBoolean(elementValidationResult.getAsString
+                            (ConsentExtensionConstants.IS_VALID)))) {
+                        return elementValidationResult;
                     }
                 }
             }
+        } else {
+            String errorMessage = "parameter passed in is null";
+            return ConsentManageUtil.getValidationResponse(errorMessage);
         }
-        String errorMessage = "Mandatory parameter '" + key + "' of periodic limits is not present in payload";
-        return ConsentManageUtil.getValidationResponse(errorMessage);
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
+        return validationResponse;
     }
 
-    // Helper method to check if a string contains a valid double
+
+    /**
+     Checks if a given string can be parsed into a double value.
+     @param str The string to be checked.
+     @return True if the string can be parsed into a double value, false otherwise.
+     */
     private static boolean isDouble(String str) {
         try {
             Double.parseDouble(str);
@@ -558,7 +554,6 @@ public class VRPConsentRequestValidator {
             return false;
         }
     }
-
 
     /**
      * Validates the consent initiation payload in the VRP request.
@@ -600,7 +595,6 @@ public class VRPConsentRequestValidator {
         return validationResponse;
     }
 
-
     /**
      * Validates the consent control parameters in the VRP request payload.
      *
@@ -641,7 +635,6 @@ public class VRPConsentRequestValidator {
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
 
     /**
      * Validates the  risk information in the VRP request payload.
@@ -768,9 +761,7 @@ public class VRPConsentRequestValidator {
         } else {
             return ConsentManageUtil.getValidationResponse(ErrorConstants.MISSING_DATE_TIME_FORMAT);
         }
-
         validationResponse.put(ConsentExtensionConstants.IS_VALID, true);
         return validationResponse;
     }
-
 }
