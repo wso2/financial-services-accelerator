@@ -198,4 +198,14 @@ public class ConsentExtensionConstants {
     public static final String VALID_TO_DATE_TIME = "ValidToDateTime";
     public static final String VALID_FROM_DATE_TIME = "ValidFromDateTime";
     public static final String VRP_RESPONSE_PROCESS_PATH = "vrp-response-process";
+
+    // vrp authorization flow constants
+    public static final String DOMESTIC_VRP = "Domestic VRP";
+    public static final String CONTROL_PARAMETER_MAX_INDIVIDUAL_AMOUNT_TITLE = "Maximum amount per payment";
+    public static final String CONTROL_PARAMETER_VALID_TO_DATE_TITLE = "Valid to date and time";
+    public static final String CONTROL_PARAMETER_PERIOD_ALIGNMENT_TITLE = "Period Alignment";
+    public static final String CONTROL_PARAMETER_PERIOD_TYPE_TITLE = "Period Type";
+    public static final Object CONTROL_PARAMETER_AMOUNT_TITLE = "Maximum payment amount per ";
+    public static final String VRP_ACCOUNT = "vrpAccount";
+    public static final Object CONTROL_PARAMETER_VALID_FROM_DATE_TITLE = "Valid from date and time";
 }

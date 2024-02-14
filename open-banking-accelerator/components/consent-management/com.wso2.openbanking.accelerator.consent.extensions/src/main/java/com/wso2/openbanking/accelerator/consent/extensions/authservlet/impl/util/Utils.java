@@ -250,4 +250,47 @@ public class Utils {
         return accountData;
     }
 
+    /**
+     * Method to populate vrp data to be sent to consent page.
+     *
+     * @param request
+     * @param dataSet
+     * @return
+     */
+    public static Map<String, Object> populateVRPDataRetrieval(HttpServletRequest request, JSONObject dataSet) {
+
+        String selectedAccount = null;
+        Map<String, Object> returnMaps = new HashMap<>();
+
+        //Sets "data_requested" that contains the human-readable scope-requested information
+        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
+        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
+
+        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
+            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
+            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
+            JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+
+            ArrayList<String> listData = new ArrayList<>();
+            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
+                listData.add(dataArray.getString(dataIndex));
+            }
+            dataRequested.put(title, listData);
+        }
+        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+
+        //Assigning value of the "Debtor Account" key in the map to the variable "selectedAccount".
+        if (dataRequested.containsKey("Debtor Account")) {
+            selectedAccount = getDebtorAccFromConsentData(dataRequestedJsonArray);
+        } else {
+            // add accounts list
+            request.setAttribute(ConsentExtensionConstants.ACCOUNT_DATA, addAccList(dataSet));
+        }
+
+        request.setAttribute(ConsentExtensionConstants.SELECTED_ACCOUNT, selectedAccount);
+        request.setAttribute(ConsentExtensionConstants.CONSENT_TYPE, ConsentExtensionConstants.VRP);
+
+        return returnMaps;
+
+    }
 }

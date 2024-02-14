@@ -20,7 +20,6 @@
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.retrieval.ConsentRetrievalHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.utils.ConsentRetrievalUtil;
@@ -28,13 +27,13 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.accelerator.consent.extensions.common.factory.AcceleratorConsentExtensionFactory;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
 public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(DefaultConsentRetrievalStep.class);
-    ConsentRetrievalHandler consentRetrievalHandler;
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
@@ -66,7 +64,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                             "executed successfully before default consent persist step");
                 }
                 String requestObject = ConsentRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
-                consentId =  ConsentRetrievalUtil.extractConsentId(requestObject);
+                consentId = ConsentRetrievalUtil.extractConsentId(requestObject);
                 consentData.setConsentId(consentId);
             }
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
@@ -101,30 +99,30 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             JSONArray accountsJSON = ConsentRetrievalUtil.appendDummyAccountID();
             jsonObject.appendField(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
 
-
         } catch (ConsentException e) {
             JSONObject errorObj = (JSONObject) e.getPayload();
             JSONArray errorList = (JSONArray) errorObj.get("Errors");
             jsonObject.put(ConsentExtensionConstants.IS_ERROR,
                     ((JSONObject) errorList.get(0)).getAsString("Message"));
             return;
-        } catch (ConsentManagementException e) {
+        } catch (ParseException | ConsentManagementException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while getting consent data");
         }
     }
+
     /**
      * Method to retrieve consent related data from the initiation payload.
      * @param consentResource
-     * @return
+     * @return  consent
      * @throws ConsentException
      */
     public JSONArray getConsentDataSet(ConsentResource consentResource)
-            throws ConsentException {
+            throws ConsentException, ConsentManagementException, ParseException {
 
-        String type = consentResource.getConsentType();
-        consentRetrievalHandler = AcceleratorConsentExtensionFactory.getConsentRetrievalHandler(type);
-        return consentRetrievalHandler.getConsentDataSet(consentResource);
+        JSONArray consent;
+        consent = ConsentRetrievalUtil.getConsentData(consentResource);
+        return consent;
     }
 
 }
