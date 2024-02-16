@@ -232,9 +232,8 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
         Optional<String> validityTime = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.VALIDITY_TIME)
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
-        Optional<String> recurringIndicator = Arrays.stream(
-                resultSet.getString(ConsentMgtDAOConstants.RECURRING_INDICATOR)
-                        .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<Boolean> recurringIndicator =
+                Optional.of(resultSet.getBoolean(ConsentMgtDAOConstants.RECURRING_INDICATOR));
 
         if (consentId.isPresent() && clientId.isPresent()) {
             detailedConsentResource.setConsentID(consentId.get());
@@ -249,7 +248,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         consentUpdatedTime.ifPresent(e -> detailedConsentResource.setUpdatedTime(Long.parseLong(e)));
         frequency.ifPresent(e -> detailedConsentResource.setConsentFrequency(Integer.parseInt(e)));
         validityTime.ifPresent(e -> detailedConsentResource.setValidityPeriod(Long.parseLong(e)));
-        recurringIndicator.ifPresent(e -> detailedConsentResource.setRecurringIndicator(Boolean.parseBoolean(e)));
+        recurringIndicator.ifPresent(detailedConsentResource::setRecurringIndicator);
     }
 
     protected void setAuthorizationDataInResponseForGroupedQuery(ArrayList<AuthorizationResource>
