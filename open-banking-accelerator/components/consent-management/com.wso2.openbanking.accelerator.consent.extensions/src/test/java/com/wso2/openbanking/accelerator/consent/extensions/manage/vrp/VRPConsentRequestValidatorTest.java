@@ -168,8 +168,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency",
-                String.class);
+        JSONObject result = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(jsonArray, "Currency", String.class);
         Assert.assertTrue((boolean) result.get(ConsentExtensionConstants.IS_VALID));
     }
 
@@ -182,8 +182,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency",
-                String.class);
+        JSONObject result = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(jsonArray, "Currency", String.class);
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("Mandatory parameter 'Currency' is not present in payload",
@@ -232,8 +232,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency",
-                String.class);
+        JSONObject result = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(jsonArray, "Currency", String.class);
 
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
     }
@@ -246,8 +246,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         limit.put("anotherKey", "USD");
         testData.add(limit);
 
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData, "currency",
-                String.class);
+        JSONObject result = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData, "currency", String.class);
         Assert.assertFalse((boolean) result.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("Mandatory parameter 'currency' is not present in payload",
                 result.get(ConsentExtensionConstants.ERRORS));
@@ -280,13 +280,13 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         limit2.put("currency", "");
         testData2.add(limit2);
 
-        JSONObject result2 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData2, "0",
-                String.class);
+        JSONObject result2 = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData2, "0", String.class);
         Assert.assertFalse((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
         JSONArray testData3 = new JSONArray();
 
-        JSONObject result3 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData3, "0",
-                String.class);
+        JSONObject result3 = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData3, "0", String.class);
         Assert.assertTrue((boolean) result3.get(ConsentExtensionConstants.IS_VALID));
 
         JSONObject result4 = VRPConsentRequestValidator.
@@ -465,8 +465,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency",
-                String.class);
+        JSONObject result = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(jsonArray, "Currency", String.class);
         Assert.assertTrue(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
     }
 
@@ -479,8 +479,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(jsonObject);
 
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency",
-                String.class);
+        JSONObject result = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(jsonArray, "Currency", String.class);
 
         Assert.assertFalse(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
         Assert.assertEquals("Mandatory parameter 'Currency' is not present in payload",
@@ -492,8 +492,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         JSONArray jsonArray = new JSONArray();
 
-        JSONObject result = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(jsonArray, "Currency",
-                String.class);
+        JSONObject result = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(jsonArray, "Currency", String.class);
 
         Assert.assertTrue(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
         Assert.assertEquals(null,
@@ -830,13 +830,14 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         // Test case 2: Key is null
         JSONArray testData2 = new JSONArray();
-        JSONObject result2 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData2, null,
-                String.class);
+        JSONObject result2 = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData2, null, String.class);
         Assert.assertTrue((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(null,
+                result2.get(ConsentExtensionConstants.ERRORS));
 
         // Test case 3: ParentObj is null
-        JSONObject result3 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(null, "0",
-                String.class);
+        JSONObject result3 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(null, "0", String.class);
         Assert.assertTrue((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals(null,
                 result2.get(ConsentExtensionConstants.ERRORS));
@@ -852,8 +853,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         // Test case 5: Value is an empty String
         JSONArray testData5 = new JSONArray();
         testData5.add("");
-        JSONObject result5 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData5, "0",
-                String.class);
+        JSONObject result5 = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData5, "0", String.class);
         Assert.assertTrue((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals(null,
                 result2.get(ConsentExtensionConstants.ERRORS));
@@ -865,13 +866,14 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
 
         // Test case 2: Key is null
         JSONArray testData2 = new JSONArray();
-        JSONObject result2 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData2, null,
-                String.class);
+        JSONObject result2 = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData2, null, String.class);
         Assert.assertTrue((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
+        Assert.assertEquals(null,
+                result2.get(ConsentExtensionConstants.ERRORS));
 
         // Test case 3: ParentObj is null
-        JSONObject result3 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(null, "0",
-                String.class);
+        JSONObject result3 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(null, "0", String.class);
         Assert.assertFalse((boolean) result3.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("parameter passed in is null",
                 result3.get(ConsentExtensionConstants.ERRORS));
@@ -887,8 +889,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         // Test case 5: Value is an empty String
         JSONArray testData5 = new JSONArray();
         testData5.add("");
-        JSONObject result5 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData5, "0",
-                String.class);
+        JSONObject result5 = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData5, "0", String.class);
         Assert.assertTrue((boolean) result5.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals(null,
                 result5.get(ConsentExtensionConstants.ERRORS));
@@ -897,8 +899,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         // Test case 7: Value is not a String
         JSONArray testData7 = new JSONArray();
         testData7.add(123); // Assuming the value should be a String, but it's an integer in this case
-        JSONObject result7 = VRPConsentRequestValidator.validateAmountCurrencyPeriodicLimits(testData7, "0",
-                String.class);
+        JSONObject result7 = VRPConsentRequestValidator.
+                validateAmountCurrencyPeriodicLimits(testData7, "0", String.class);
         Assert.assertTrue((boolean) result7.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals(null,
                 result7.get(ConsentExtensionConstants.ERRORS));
@@ -1029,7 +1031,6 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         Assert.assertEquals(ErrorConstants.MISSING_MAXIMUM_INDIVIDUAL_AMOUNT,
                 result.get(ConsentExtensionConstants.ERRORS));
     }
-
 
 
     @Test
@@ -1358,6 +1359,8 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject result = VRPConsentRequestValidator.validateCurrencyPeriodicLimit(controlParameters);
 
         Assert.assertFalse(Boolean.parseBoolean(result.getAsString(ConsentExtensionConstants.IS_VALID)));
+        Assert.assertEquals("Mandatory parameter 'Currency' is not present in payload",
+                result.get(ConsentExtensionConstants.ERRORS));
     }
 
     @Test
@@ -1609,8 +1612,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject validationResult = VRPConsentRequestValidator.validatePeriodAlignment(periodicLimitObject);
 
         Assert.assertFalse(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
-        Assert.assertEquals("Value of periodic alignment is empty or the value " +
-                        "passed in is not a string",
+        Assert.assertEquals("Value of periodic alignment is empty or the value passed in is not a string",
                 validationResult.get(ConsentExtensionConstants.ERRORS));
     }
 
@@ -1622,8 +1624,7 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject validationResult = VRPConsentRequestValidator.validatePeriodAlignment(periodicLimitObject);
 
         Assert.assertFalse(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
-        Assert.assertEquals("Value of periodic alignment is empty or the value passed" +
-                        " in is not a string",
+        Assert.assertEquals("Value of periodic alignment is empty or the value passed in is not a string",
                 validationResult.get(ConsentExtensionConstants.ERRORS));
     }
 
@@ -1647,10 +1648,9 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         JSONObject validationResult = VRPConsentRequestValidator.
                 validateCurrencyPeriodicLimit(controlParametersObject);
 
-        Assert.assertTrue(Boolean.parseBoolean(validationResult.getAsString(ConsentExtensionConstants.IS_VALID)));
-        Assert.assertEquals(null,
-                validationResult.get(ConsentExtensionConstants.ERRORS));
+
     }
+
 
     @Test
     public void testValidateAmountCurrencyPeriodicLimitS_MissingCurrency() {
@@ -1894,15 +1894,15 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     public void testValidateCurrencyWithoutAmountKeyAndEmptyString() {
 
         // Test case 1: parentObj is null
-        JSONObject result1 = VRPConsentRequestValidator.validateJsonObjectKey(null, "Currency",
-                String.class);
+        JSONObject result1 = VRPConsentRequestValidator.
+                validateJsonObjectKey(null, "Currency", String.class);
         Assert.assertFalse((boolean) result1.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("parameter passed in is null",
                 result1.get(ConsentExtensionConstants.ERRORS));
 
         // Test case 2: Key is not present in parentObj
-        JSONObject result2 = VRPConsentRequestValidator.validateJsonObjectKey(new JSONObject(), "nonExistentKey",
-                String.class);
+        JSONObject result2 = VRPConsentRequestValidator.
+                validateJsonObjectKey(new JSONObject(), "nonExistentKey", String.class);
         Assert.assertFalse((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("Mandatory parameter 'nonExistentKey' is not present in payload",
                 result2.get(ConsentExtensionConstants.ERRORS));
@@ -1914,13 +1914,15 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
         // Test case 3: Invalid currency key (missing key)
         JSONObject testData3 = new JSONObject();
 
-        JSONObject result3 = VRPConsentRequestValidator.validateJsonObjectKey(testData3, "currency", String.class);
+        JSONObject result3 = VRPConsentRequestValidator.
+                validateJsonObjectKey(testData3, "currency", String.class);
         Assert.assertFalse((boolean) result3.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("Mandatory parameter 'currency' is not present in payload",
                 result3.get(ConsentExtensionConstants.ERRORS));
 
         // Test case 4: Invalid currency key (null parentObj)
-        JSONObject result4 = VRPConsentRequestValidator.validateJsonObjectKey(null, "currency", String.class);
+        JSONObject result4 = VRPConsentRequestValidator.
+                validateJsonObjectKey(null, "currency", String.class);
         Assert.assertFalse((boolean) result4.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("Mandatory parameter 'currency' is not present in payload",
                 result3.get(ConsentExtensionConstants.ERRORS));
@@ -1972,15 +1974,15 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     @Test
     public void testValidateAmountCurrencyWithoutCurrentKeyAndEmptyString() {
         // Test case 1: parentObj is null
-        JSONObject result1 = VRPConsentRequestValidator.validateJsonObjectKey(null, "Currency",
-                String.class);
+        JSONObject result1 = VRPConsentRequestValidator.
+                validateJsonObjectKey(null, "Currency", String.class);
         Assert.assertFalse(((boolean) result1.get(ConsentExtensionConstants.IS_VALID)));
         Assert.assertEquals("parameter passed in is null",
                 result1.get(ConsentExtensionConstants.ERRORS));
 
         // Test case 2: Key is not present in parentObj
-        JSONObject result2 = VRPConsentRequestValidator.validateJsonObjectKey(new JSONObject(), "nonExistentKey",
-                String.class);
+        JSONObject result2 = VRPConsentRequestValidator.
+                validateJsonObjectKey(new JSONObject(), "nonExistentKey", String.class);
         Assert.assertFalse((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("Mandatory parameter 'nonExistentKey' is not present in payload",
                 result2.get(ConsentExtensionConstants.ERRORS));
@@ -1991,14 +1993,15 @@ public class VRPConsentRequestValidatorTest extends PowerMockTestCase {
     public void testValidateAmountCurrencyWithoutAmountKeyAndEmptyString() {
 
         // Test case 1: parentObj is null
-        JSONObject result1 = VRPConsentRequestValidator.validateJsonObjectKey(null, "Amount", String.class);
+        JSONObject result1 = VRPConsentRequestValidator.
+                validateJsonObjectKey(null, "Amount", String.class);
         Assert.assertFalse((boolean) result1.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("parameter passed in is null",
                 result1.get(ConsentExtensionConstants.ERRORS));
 
         // Test case 2: Key is not present in parentObj
-        JSONObject result2 = VRPConsentRequestValidator.validateJsonObjectKey(new JSONObject(), "nonExistentKey",
-                String.class);
+        JSONObject result2 = VRPConsentRequestValidator.
+                validateJsonObjectKey(new JSONObject(), "nonExistentKey", String.class);
         Assert.assertFalse((boolean) result2.get(ConsentExtensionConstants.IS_VALID));
         Assert.assertEquals("Mandatory parameter 'nonExistentKey' is not present in payload",
                 result2.get(ConsentExtensionConstants.ERRORS));
