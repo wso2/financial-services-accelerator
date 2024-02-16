@@ -52,11 +52,10 @@ import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.authenticator.stub.AuthenticationAdminStub;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
-import org.wso2.carbon.identity.application.common.model.xsd.ServiceProvider;
-import org.wso2.carbon.identity.application.common.model.xsd.ServiceProviderProperty;
+import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
+import org.wso2.carbon.identity.application.common.model.ServiceProvider;
+import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementServiceImpl;
-import org.wso2.carbon.identity.application.mgt.stub.IdentityApplicationManagementServiceIdentityApplicationManagementException;
-import org.wso2.carbon.identity.application.mgt.stub.IdentityApplicationManagementServiceStub;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceIdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
@@ -86,9 +85,6 @@ public class KeyManagerTest extends PowerMockTestCase {
 
     @Mock
     private OAuthAdminServiceStub oAuthAdminServiceStub;
-
-    @Mock
-    private IdentityApplicationManagementServiceStub identityApplicationManagementServiceStub;
 
     @Mock
     private AuthenticationAdminStub authenticationAdminStub;
@@ -174,9 +170,9 @@ public class KeyManagerTest extends PowerMockTestCase {
     @Test
     public void testGetNewApplicationAccessToken() throws APIManagementException, RemoteException,
             OAuthAdminServiceIdentityOAuthAdminException,
-            IdentityApplicationManagementServiceIdentityApplicationManagementException,
-            LoginAuthenticationExceptionException {
+            LoginAuthenticationExceptionException, IdentityApplicationManagementException {
 
+        OBKeyManagerImpl obKeyManager = spy(new OBKeyManagerImplMock());
         OAuthConsumerAppDTO oAuthConsumerAppDTO = new OAuthConsumerAppDTO();
         oAuthConsumerAppDTO.setApplicationName("AppName");
 
@@ -204,8 +200,6 @@ public class KeyManagerTest extends PowerMockTestCase {
         KeyManagerDataHolder.getInstance().setApiManagerConfiguration(apiManagerConfigurationService);
         KeyManagerDataHolder.getInstance().setAuthenticationAdminStub(authenticationAdminStub);
         KeyManagerDataHolder.getInstance().setOauthAdminServiceStub(oAuthAdminServiceStub);
-        KeyManagerDataHolder.getInstance()
-                .setIdentityApplicationManagementServiceStub(identityApplicationManagementServiceStub);
 
         AccessTokenRequest accessTokenRequest = new AccessTokenRequest();
 
@@ -227,16 +221,10 @@ public class KeyManagerTest extends PowerMockTestCase {
         Mockito.when(oAuthAdminServiceStub.getOAuthApplicationData(anyString()))
                 .thenReturn(oAuthConsumerAppDTO);
 
-        Mockito.when(keyManagerDataHolder.getIdentityApplicationManagementServiceStub())
-                .thenReturn(identityApplicationManagementServiceStub);
-
-        Mockito.when(identityApplicationManagementServiceStub._getServiceClient()).thenReturn(serviceClient);
-        Mockito.when(identityApplicationManagementServiceStub
-        .getApplication(oAuthConsumerAppDTO.getApplicationName()))
-                .thenReturn(serviceProvider);
-
+        Mockito.when(obKeyManager.getApplicationMgmtServiceImpl()).thenReturn(applicationManagementServiceImpl);
+        Mockito.when(applicationManagementServiceImpl.getServiceProviderByClientId(
+                anyString(), anyString(), anyString())).thenReturn(serviceProvider);
         AccessTokenInfo accessTokenInfo = obKeyManager.getNewApplicationAccessToken(accessTokenRequest);
-
         Assert.assertTrue(accessTokenInfo == null);
 
     }
@@ -249,7 +237,7 @@ public class KeyManagerTest extends PowerMockTestCase {
         keyManagerAdditionalProperties.put(dummyPropertyName2, property);
 
         when(openBankingConfigParser.getKeyManagerAdditionalProperties()).thenReturn(keyManagerAdditionalProperties);
-        spy(org.wso2.carbon.identity.application.common.model.ServiceProvider.class);
+        spy(ServiceProvider.class);
 
         List<org.wso2.carbon.identity.application.common.model.ServiceProviderProperty> spProperties =
                 new ArrayList<>();
@@ -305,8 +293,7 @@ public class KeyManagerTest extends PowerMockTestCase {
         spProperties[0] = (spProperty1);
         spProperties[1] = (spProperty2);
 
-        org.wso2.carbon.identity.application.common.model.ServiceProvider serviceProvider =
-                spy(org.wso2.carbon.identity.application.common.model.ServiceProvider.class);
+        ServiceProvider serviceProvider = spy(ServiceProvider.class);
         doNothing().when(applicationManagementServiceImpl).updateApplication(Mockito.anyObject(), Mockito.anyString(),
                 Mockito.anyString());
 
@@ -344,8 +331,7 @@ public class KeyManagerTest extends PowerMockTestCase {
 
         org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO oAuthConsumerAppDTOdummy =
                 new org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO();
-        org.wso2.carbon.identity.application.common.model.ServiceProvider serviceProviderDummy =
-                new org.wso2.carbon.identity.application.common.model.ServiceProvider();
+        ServiceProvider serviceProviderDummy = new ServiceProvider();
         HashMap<String, String> dummyMap = new HashMap<>();
 
         doNothing().when(obKeyManager).doPreUpdateSpApp(oAuthConsumerAppDTOdummy, serviceProviderDummy, dummyMap,
@@ -460,7 +446,7 @@ public class KeyManagerTest extends PowerMockTestCase {
     @Test(dataProvider = "validateOAuthAppCreationPropertiesDataProvider",
             description = "Validate user inputs for application creation")
     public void testValidateOAuthAppCreationProperties(Map<String, Map<String, String>>
-    keyManagerAdditionalProperties,
+                                                               keyManagerAdditionalProperties,
                                                        List<ConfigurationDto> applicationConfigurationsList,
                                                        String valuesForProperties,
                                                        Class<? extends Exception> exceptionType) {

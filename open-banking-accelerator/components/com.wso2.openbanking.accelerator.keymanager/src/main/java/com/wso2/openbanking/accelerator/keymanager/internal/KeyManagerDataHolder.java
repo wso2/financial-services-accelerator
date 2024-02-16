@@ -22,7 +22,6 @@ import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.authenticator.stub.AuthenticationAdminStub;
-import org.wso2.carbon.identity.application.mgt.stub.IdentityApplicationManagementServiceStub;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.mgt.stub.UserAdminStub;
@@ -41,7 +40,6 @@ public class KeyManagerDataHolder {
     public static final String AUTHENTICATION_ADMIN_SERVICE = "AuthenticationAdmin";
     public static final String USER_ADMIN_SERVICE = "UserAdmin";
     public static final String OAUTH_ADMIN_SERVICE = "OAuthAdminService";
-    private IdentityApplicationManagementServiceStub identityApplicationManagementServiceStub;
     private AuthenticationAdminStub authenticationAdminStub;
     private OAuthAdminServiceStub oAuthAdminServiceStub;
     private UserAdminStub userAdminStub;
@@ -73,23 +71,6 @@ public class KeyManagerDataHolder {
     public void setUserAdminStub(UserAdminStub userAdminStub) {
 
         this.userAdminStub = userAdminStub;
-    }
-
-    public IdentityApplicationManagementServiceStub getIdentityApplicationManagementServiceStub()
-            throws AxisFault {
-
-        if (identityApplicationManagementServiceStub == null) {
-            String appMgtServiceURL = backendServerURL + IDENTITY_APPLICATION_MGT_SERVICE;
-            identityApplicationManagementServiceStub = new IdentityApplicationManagementServiceStub(
-                    appMgtServiceURL);
-        }
-        return identityApplicationManagementServiceStub;
-    }
-
-    public void setIdentityApplicationManagementServiceStub(IdentityApplicationManagementServiceStub
-                                                                    identityApplicationManagementServiceStub) {
-
-        this.identityApplicationManagementServiceStub = identityApplicationManagementServiceStub;
     }
 
     public AuthenticationAdminStub getAuthenticationAdminStub() throws AxisFault {

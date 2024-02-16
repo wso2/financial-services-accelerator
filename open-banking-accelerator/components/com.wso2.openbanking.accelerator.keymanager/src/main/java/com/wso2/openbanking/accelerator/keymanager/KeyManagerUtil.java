@@ -59,7 +59,10 @@ public class KeyManagerUtil {
      *
      * @return Session cookie as a String
      * @throws APIManagementException When failed to obtain the session cookie
+     * @deprecated ApplicationManagementService is used instead of SOAP API calls.
      */
+    @Deprecated
+    @Generated(message = "Excluding from unit test coverage")
     public static String getSessionCookie() throws APIManagementException {
 
         String sessionCookie = "";
@@ -90,7 +93,10 @@ public class KeyManagerUtil {
      *
      * @param serviceClient Admin service client
      * @param sessionCookie session cookie as a string
+     * @deprecated ApplicationManagementService is used instead of SOAP API calls.
      */
+    @Deprecated
+    @Generated(message = "Excluding from unit test coverage")
     public static void setAdminServiceSession(ServiceClient serviceClient, String sessionCookie) {
 
         Options userAdminOption = serviceClient.getOptions();
