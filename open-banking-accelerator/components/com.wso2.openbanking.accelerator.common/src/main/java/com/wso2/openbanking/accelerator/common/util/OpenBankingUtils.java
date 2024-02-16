@@ -57,7 +57,7 @@ public class OpenBankingUtils {
     }
 
     /**
-     * Extract software_environment (SANDBOX or PRODUCTION) from SSA
+     * Extract software_environment (SANDBOX or PRODUCTION) from SSA.
      *
      * @param softwareStatement software statement (jwt) extracted from request payload
      * @return software_environment
@@ -103,7 +103,7 @@ public class OpenBankingUtils {
     }
 
     /**
-     * Method to reduce string length
+     * Method to reduce string length.
      *
      * @param input and maxLength for dispute data
      * @return String

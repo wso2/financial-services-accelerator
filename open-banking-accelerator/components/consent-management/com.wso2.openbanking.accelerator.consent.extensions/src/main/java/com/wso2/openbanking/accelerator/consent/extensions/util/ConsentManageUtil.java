@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionUtils;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
@@ -54,14 +55,16 @@ public class ConsentManageUtil {
     /**
      * Check whether valid Data object is provided.
      *
-     * @param initiation Data object in initiation payload
+     * @param initiationRequestbody Data object in initiation payload
      * @return whether the Data object is valid
      */
-    public static JSONObject validateInitiationDataBody(JSONObject initiation) {
+    public static JSONObject validateInitiationDataBody(JSONObject initiationRequestbody) {
         JSONObject validationResponse = new JSONObject();
 
-        if (!initiation.containsKey(ConsentExtensionConstants.DATA) || !(initiation.get(ConsentExtensionConstants.DATA)
-                instanceof JSONObject)) {
+        if (!initiationRequestbody.containsKey(ConsentExtensionConstants.DATA) || !(initiationRequestbody.
+                get(ConsentExtensionConstants.DATA)
+                instanceof JSONObject) || ((JSONObject) initiationRequestbody.get(ConsentExtensionConstants.DATA))
+                .isEmpty()) {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
             return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
                     ErrorConstants.PAYLOAD_FORMAT_ERROR, ErrorConstants.PATH_REQUEST_BODY);
@@ -80,6 +83,22 @@ public class ConsentManageUtil {
      * @return
      */
     public static JSONObject getValidationResponse(String errorCode, String errorMessage, String errorPath) {
+        JSONObject validationResponse = new JSONObject();
+
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+        validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+        validationResponse.put(ConsentExtensionConstants.ERRORS, errorMessage);
+        return validationResponse;
+    }
+
+    /**
+     * Method to construct the consent manage validation response for vrp.
+     *
+     * @param errorMessage Error Message
+     *
+     * @return
+     */
+    public static JSONObject getValidationResponse(String errorMessage) {
         JSONObject validationResponse = new JSONObject();
 
         validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
@@ -320,8 +339,7 @@ public class ConsentManageUtil {
         Boolean shouldRevokeTokens;
         if (ConsentManageUtil.isConsentIdValid(consentId)) {
             try {
-
-                ConsentResource consentResource = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
+                ConsentResource consentResource = ConsentServiceUtil.getConsentService()
                         .getConsent(consentId, false);
 
                 if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
@@ -497,7 +515,6 @@ public class ConsentManageUtil {
      */
     public static JSONObject getInitiationResponse(JSONObject response, DetailedConsentResource createdConsent,
                                                    ConsentManageData consentManageData, String type) {
-
         JSONObject dataObject = (JSONObject) response.get(ConsentExtensionConstants.DATA);
         dataObject.appendField(ConsentExtensionConstants.CONSENT_ID, createdConsent.getConsentID());
         dataObject.appendField("CreationDateTime", convertEpochDateTime(createdConsent.getCreatedTime()));
@@ -585,6 +602,9 @@ public class ConsentManageUtil {
         } else if (ConsentExtensionConstants.FUNDSCONFIRMATIONS.equals(type)) {
             baseUrl = (String) parser.getConfiguration().get(
                     ConsentExtensionConstants.COF_SELF_LINK);
+        } else if (ConsentExtensionConstants.VRP.equals(type)) {
+            baseUrl = (String) parser.getConfiguration().get(
+                    ConsentExtensionConstants.VRP_SELF_LINK);
         }
 
         String requestPath = consentManageData.getRequestPath();
@@ -620,5 +640,19 @@ public class ConsentManageUtil {
             return false;
         }
     }
+    /**
+     * Validate whether the date is a valid ISO 8601 format.
+     * @param dateValue
+     * @return
+     */
+    public static boolean isValid8601(String dateValue) {
+        try {
+            OffsetDateTime.parse(dateValue);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
 
 }

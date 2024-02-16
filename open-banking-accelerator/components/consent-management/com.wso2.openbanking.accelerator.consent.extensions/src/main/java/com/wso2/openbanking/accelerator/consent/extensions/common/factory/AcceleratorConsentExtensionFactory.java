@@ -30,6 +30,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.AccountCo
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.CofConsentRequestHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.ConsentManageRequestHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.PaymentConsentRequestHandler;
+import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.VRPConsentRequestHandler;
 
 /**
  * Factory class to get the class based in request type.
@@ -54,6 +55,9 @@ public class AcceleratorConsentExtensionFactory {
                 break;
             case ConsentExtensionConstants.PAYMENT_CONSENT_PATH:
                 consentManageRequestHandler = new PaymentConsentRequestHandler();
+                break;
+            case ConsentExtensionConstants.VRP_CONSENT_PATH:
+                consentManageRequestHandler = new VRPConsentRequestHandler();
                 break;
             default:
                 return null;
