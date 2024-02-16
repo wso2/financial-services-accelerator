@@ -26,6 +26,7 @@
             <class name="com.wso2.openbanking.accelerator.consent.extensions.event.executors.ConsentAmendmentHistoryEventExecutorTests"/>
             <class name="com.wso2.openbanking.accelerator.consent.extensions.manage.vrp.VRPConsentRequestValidatorTest"/>
             <class name="com.wso2.openbanking.accelerator.consent.extensions.manage.vrp.VRPConsentHandlerTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow.VRPConsentRetrievalStepTest"/>
         </classes>
     </test>
 </suite>
