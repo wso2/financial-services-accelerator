@@ -91,9 +91,8 @@ public class OBDefaultAuthServletImpl implements OBAuthServletInterface {
     @Override
     public String getJSPPath() {
 
-        if (jspPath.equalsIgnoreCase(ConsentExtensionConstants.ACCOUNTS)) {
-            return "/ob_default.jsp";
-        } else if (jspPath.equalsIgnoreCase(ConsentExtensionConstants.VRP)) {
+        if (jspPath.equalsIgnoreCase(ConsentExtensionConstants.ACCOUNTS) ||
+                jspPath.equalsIgnoreCase(ConsentExtensionConstants.VRP)) {
             return "/ob_default.jsp";
         } else {
             return "/default_displayconsent.jsp";

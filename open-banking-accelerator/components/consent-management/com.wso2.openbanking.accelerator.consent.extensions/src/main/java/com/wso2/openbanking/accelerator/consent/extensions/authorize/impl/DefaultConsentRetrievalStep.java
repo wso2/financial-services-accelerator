@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
@@ -120,9 +119,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
     public JSONArray getConsentDataSet(ConsentResource consentResource)
             throws ConsentException, ConsentManagementException, ParseException {
 
-        JSONArray consent;
-        consent = ConsentRetrievalUtil.getConsentData(consentResource);
-        return consent;
+        return ConsentRetrievalUtil.getConsentData(consentResource);
     }
 
 }
