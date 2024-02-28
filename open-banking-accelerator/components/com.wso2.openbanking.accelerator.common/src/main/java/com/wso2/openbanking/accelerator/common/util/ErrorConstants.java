@@ -291,6 +291,6 @@ public class ErrorConstants {
     public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodicLimits.PeriodAlignment";
 
     public static final String CONTROL_PARAMETERS_MISSING_ERROR = "Missing mandatory parameter the ControlParameters";
-    public static final String DATA_OBJECT_MISSING_ERROR = "Missing mandatory parameter the Data ";
+    public static final String DATA_OBJECT_MISSING_ERROR = "Missing mandatory parameter the Data";
 }
 

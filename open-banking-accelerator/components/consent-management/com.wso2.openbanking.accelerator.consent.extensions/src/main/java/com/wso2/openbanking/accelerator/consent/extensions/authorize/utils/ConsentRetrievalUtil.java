@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -152,43 +152,44 @@ public class ConsentRetrievalUtil {
      * @param consentDataJSON Consent information object
      */
     public static void populateDebtorAccount(JSONObject initiation, JSONArray consentDataJSON) {
+        if (initiation.get(ConsentExtensionConstants.DEBTOR_ACC) != null) {
+            JSONObject debtorAccount = (JSONObject) initiation.get(ConsentExtensionConstants.DEBTOR_ACC);
+            JSONArray debtorAccountArray = new JSONArray();
 
-            if (initiation.get(ConsentExtensionConstants.DEBTOR_ACC) != null) {
-                JSONObject debtorAccount = (JSONObject) initiation.get(ConsentExtensionConstants.DEBTOR_ACC);
-                JSONArray debtorAccountArray = new JSONArray();
-
-                //Adding Debtor Account Scheme Name
-                if (debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME) != null) {
-                    debtorAccountArray.add(ConsentExtensionConstants.SCHEME_NAME_TITLE + " : " +
-                            debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME));
-                }
-
-                //Adding Debtor Account Identification
-                if (debtorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION) != null) {
-                    debtorAccountArray.add(ConsentExtensionConstants.IDENTIFICATION_TITLE + " : " +
-                            debtorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION));
-                }
-
-                //Adding Debtor Account Name
-                if (debtorAccount.getAsString(ConsentExtensionConstants.NAME) != null) {
-                    debtorAccountArray.add(ConsentExtensionConstants.NAME_TITLE + " : " +
-                            debtorAccount.getAsString(ConsentExtensionConstants.NAME));
-                }
-
-                //Adding Debtor Account Secondary Identification
-                if (debtorAccount.getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) != null) {
-                    debtorAccountArray.add(ConsentExtensionConstants.SECONDARY_IDENTIFICATION_TITLE + " : " +
-                            debtorAccount.getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
-                }
-
-
-                JSONObject jsonElementDebtor = new JSONObject();
-                jsonElementDebtor.appendField(ConsentExtensionConstants.TITLE,
-                        ConsentExtensionConstants.DEBTOR_ACC_TITLE);
-                jsonElementDebtor.appendField(ConsentExtensionConstants.DATA_SIMPLE, debtorAccountArray);
-                consentDataJSON.add(jsonElementDebtor);
+            //Adding Debtor Account Scheme Name
+            if (debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME) != null) {
+                debtorAccountArray.add(ConsentExtensionConstants.SCHEME_NAME_TITLE + " : " +
+                        debtorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME));
             }
+
+            //Adding Debtor Account Identification
+            if (debtorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION) != null) {
+                debtorAccountArray.add(ConsentExtensionConstants.IDENTIFICATION_TITLE + " : " +
+                        debtorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION));
+            }
+
+            //Adding Debtor Account Name
+            if (debtorAccount.getAsString(ConsentExtensionConstants.NAME) != null) {
+                debtorAccountArray.add(ConsentExtensionConstants.NAME_TITLE + " : " +
+                        debtorAccount.getAsString(ConsentExtensionConstants.NAME));
+            }
+
+            //Adding Debtor Account Secondary Identification
+            if (debtorAccount.getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) != null) {
+                debtorAccountArray.add(ConsentExtensionConstants.SECONDARY_IDENTIFICATION_TITLE + " : " +
+                        debtorAccount.getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
+            }
+
+
+            JSONObject jsonElementDebtor = new JSONObject();
+            jsonElementDebtor.appendField(ConsentExtensionConstants.TITLE,
+                    ConsentExtensionConstants.DEBTOR_ACC_TITLE);
+            jsonElementDebtor.appendField(ConsentExtensionConstants.DATA_SIMPLE, debtorAccountArray);
+            consentDataJSON.add(jsonElementDebtor);
         }
+
+
+    }
 
 
     /**
@@ -198,7 +199,6 @@ public class ConsentRetrievalUtil {
      * @param consentDataJSON
      */
     public static void populateCreditorAccount(JSONObject initiation, JSONArray consentDataJSON) {
-
         if (initiation.get(ConsentExtensionConstants.CREDITOR_ACC) != null) {
             JSONObject creditorAccount = (JSONObject) initiation.get(ConsentExtensionConstants.CREDITOR_ACC);
             JSONArray creditorAccountArray = new JSONArray();
@@ -326,6 +326,7 @@ public class ConsentRetrievalUtil {
             }
 
         } catch (ParseException e) {
+            log.error(ErrorConstants.CONSENT_RETRIEVAL_ERROR);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, ErrorConstants.CONSENT_RETRIEVAL_ERROR);
         }
 
