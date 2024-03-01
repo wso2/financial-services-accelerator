@@ -49,7 +49,6 @@
                             <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
                             <excludes>
                                 <exclude>**/jjwt-0.9.1.jar</exclude>
-                                <exclude>**/mysql-connector-j-8.3.0.jar</exclude>
                             </excludes>
                         </fileset>
                         <fileset>
