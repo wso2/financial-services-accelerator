@@ -390,6 +390,19 @@
                 {% endif %}
             </Params>
         </Portal>
+        <Idempotency>
+            {% if open_banking.gateway.idempotency.enabled is defined %}
+                <IsEnabled>{{open_banking.gateway.idempotency.enabled}}</IsEnabled>
+            {% else %}
+                <IsEnabled>false</IsEnabled>
+            {% endif %}
+
+            {% if open_banking.gateway.idempotency.allowed_time_duration is defined %}
+                <AllowedTimeDuration>{{open_banking.gateway.idempotency.allowed_time_duration}}</AllowedTimeDuration>
+            {% else %}
+                <AllowedTimeDuration>1440</AllowedTimeDuration>
+            {% endif %}
+        </Idempotency>
     </Consent>
     <DCR>
         {% if open_banking.dcr.validator is defined %}

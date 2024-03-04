@@ -66,13 +66,6 @@
                     <CacheModifiedExpiry>{{open_banking.gateway.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
                 {% endif %}
             </GatewayCache>
-            <IdempotencyValidationCache>
-                {% if open_banking.gateway.cache.idempotency_validation_cache.cache_time_to_live is defined %}
-                    <CacheTimeToLive>{{open_banking.gateway.cache.idempotency_validation_cache.cache_time_to_live}}</CacheTimeToLive>
-                {% else %}
-                    <CacheTimeToLive>1440</CacheTimeToLive>
-                {% endif %}
-            </IdempotencyValidationCache>
         </Cache>
 
         <CertificateManagement>
@@ -210,26 +203,6 @@
             	</AllowedScopes>
 
             </TPPManagement>
-
-        <Idempotency>
-            {% if open_banking.gateway.idempotency.enabled is defined %}
-                <IsEnabled>{{open_banking.gateway.idempotency.enabled}}</IsEnabled>
-            {% else %}
-                <IsEnabled>false</IsEnabled>
-            {% endif %}
-
-            {% if open_banking.gateway.idempotency.allowed_time_duration is defined %}
-                <AllowedTimeDuration>{{open_banking.gateway.idempotency.allowed_time_duration}}</AllowedTimeDuration>
-            {% else %}
-                <AllowedTimeDuration>1440</AllowedTimeDuration>
-            {% endif %}
-
-            {% if open_banking.gateway.idempotency.idempotency_key_header is defined %}
-                <IdempotencyKeyHeader>{{open_banking.gateway.idempotency.idempotency_key_header}}</IdempotencyKeyHeader>
-            {% else %}
-                <IdempotencyKeyHeader>x-idempotency-key</IdempotencyKeyHeader>
-            {% endif %}
-        </Idempotency>
     </Gateway>
     <DCR>
         <APIMRESTEndPoints>
