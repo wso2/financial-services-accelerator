@@ -80,11 +80,6 @@
             <artifactId>powermock-module-testng</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.wso2.openbanking.accelerator</groupId>
-            <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
