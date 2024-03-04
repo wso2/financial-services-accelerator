@@ -26,7 +26,6 @@ import com.wso2.openbanking.accelerator.keymanager.internal.KeyManagerDataHolder
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.axis2.client.ServiceClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,16 +41,13 @@ import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.carbon.apimgt.impl.AMDefaultKeyManagerImpl;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
-import org.wso2.carbon.identity.application.common.model.xsd.ServiceProvider;
-import org.wso2.carbon.identity.application.common.model.xsd.ServiceProviderProperty;
+import org.wso2.carbon.identity.application.common.model.ServiceProvider;
+import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
+import org.wso2.carbon.identity.application.common.util.IdentityApplicationConstants;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementServiceImpl;
-import org.wso2.carbon.identity.application.mgt.stub.IdentityApplicationManagementServiceIdentityApplicationManagementException;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
-import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceIdentityOAuthAdminException;
-import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,45 +61,24 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
 
     private static final Log log = LogFactory.getLog(OBKeyManagerImpl.class);
 
+    public static final String OAUTH2 = "oauth2";
+
     @Override
     public AccessTokenInfo getNewApplicationAccessToken(AccessTokenRequest tokenRequest) throws APIManagementException {
 
         try {
-            String applicationName = "";
-            String sessionCookie = KeyManagerUtil.getSessionCookie();
-            ServiceClient userAdminClient = KeyManagerDataHolder.getInstance()
-                    .getUserAdminStub()._getServiceClient();
-            KeyManagerUtil.setAdminServiceSession(userAdminClient, sessionCookie);
-
-            ServiceClient oauthAppClient = KeyManagerDataHolder.getInstance().getOauthAdminServiceStub()
-                    ._getServiceClient();
-            KeyManagerUtil.setAdminServiceSession(oauthAppClient, sessionCookie);
-
-            OAuthConsumerAppDTO oAuthConsumerAppDTO = KeyManagerDataHolder.getInstance().getOauthAdminServiceStub()
-                    .getOAuthApplicationData(tokenRequest.getClientId());
-
-            if (oAuthConsumerAppDTO != null) {
-                applicationName = oAuthConsumerAppDTO.getApplicationName();
+            ApplicationManagementServiceImpl applicationManagementService = getApplicationMgmtServiceImpl();
+            ServiceProvider serviceProvider = applicationManagementService.getServiceProviderByClientId(
+                    tokenRequest.getClientId(), IdentityApplicationConstants.OAuth2.NAME, tenantDomain);
+            if (serviceProvider != null) {
+                ServiceProviderProperty regulatoryProperty = Arrays.stream(serviceProvider.getSpProperties())
+                        .filter(serviceProviderProperty -> serviceProviderProperty.getName()
+                                .equalsIgnoreCase(OpenBankingConstants.REGULATORY)).findAny().orElse(null);
+                if (regulatoryProperty != null && "true".equalsIgnoreCase(regulatoryProperty.getValue())) {
+                    return null;
+                }
             }
-
-            ServiceClient appMgtClient = KeyManagerDataHolder.getInstance()
-                    .getIdentityApplicationManagementServiceStub()._getServiceClient();
-            KeyManagerUtil.setAdminServiceSession(appMgtClient, sessionCookie);
-
-            ServiceProvider serviceProvider = KeyManagerDataHolder.getInstance()
-                    .getIdentityApplicationManagementServiceStub().getApplication(applicationName);
-            ServiceProviderProperty[] serviceProviderProperties = serviceProvider.getSpProperties();
-            List<ServiceProviderProperty> spProperties = new ArrayList<>(Arrays.asList(serviceProviderProperties));
-
-            ServiceProviderProperty regulatoryProperty = spProperties.stream()
-                    .filter(serviceProviderProperty -> serviceProviderProperty.getName()
-                            .equalsIgnoreCase(OpenBankingConstants.REGULATORY)).findAny().orElse(null);
-
-            if (regulatoryProperty != null && "true".equalsIgnoreCase(regulatoryProperty.getValue())) {
-                return null;
-            }
-        } catch (RemoteException | IdentityApplicationManagementServiceIdentityApplicationManagementException |
-                OAuthAdminServiceIdentityOAuthAdminException e) {
+        } catch (IdentityApplicationManagementException e) {
             log.error("Error while generating keys. ", e);
         }
         return super.getNewApplicationAccessToken(tokenRequest);
@@ -239,16 +214,16 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
             String tenantDomain = ServiceProviderUtils.getSpTenantDomain(oAuthApplicationInfo.getClientId());
             updateSpProperties(appName, tenantDomain, username, additionalProperties, true);
 
-            org.wso2.carbon.identity.application.common.model.ServiceProvider appServiceProvider =
-                    getApplicationMgmtServiceImpl().getServiceProvider(appName, tenantDomain);
-            org.wso2.carbon.identity.application.common.model.ServiceProviderProperty regulatoryProperty =
-                    getSpPropertyFromSPMetaData(OpenBankingConstants.REGULATORY, appServiceProvider.getSpProperties());
+            ServiceProvider appServiceProvider = getApplicationMgmtServiceImpl()
+                    .getServiceProvider(appName, tenantDomain);
+            ServiceProviderProperty regulatoryProperty = getSpPropertyFromSPMetaData(
+                    OpenBankingConstants.REGULATORY, appServiceProvider.getSpProperties());
 
             if (regulatoryProperty != null) {
                 if (Boolean.parseBoolean(regulatoryProperty.getValue())) {
                     OAuthAppRequest updatedOauthAppRequest = oauthAppRequest;
-                    org.wso2.carbon.identity.application.common.model.ServiceProviderProperty appNameProperty =
-                            getSpPropertyFromSPMetaData("DisplayName", appServiceProvider.getSpProperties());
+                    ServiceProviderProperty appNameProperty = getSpPropertyFromSPMetaData("DisplayName",
+                            appServiceProvider.getSpProperties());
                     if (appNameProperty != null) {
                         updatedOauthAppRequest.getOAuthApplicationInfo().setClientName(appNameProperty.getValue());
                     }
@@ -280,16 +255,16 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
         String clientId = oAuthApplicationInfo.getClientId();
         // There is no way to identify the client type in here. So we have to hardcode "oauth2" as the client type
         try {
-            org.wso2.carbon.identity.application.common.model.ServiceProvider serviceProvider =
-                    getApplicationMgmtServiceImpl().getServiceProviderByClientId(clientId, "oauth2", tenantDomain);
+            ServiceProvider serviceProvider = getApplicationMgmtServiceImpl()
+                    .getServiceProviderByClientId(clientId, OAUTH2, tenantDomain);
             doPreUpdateApplication(oAuthAppRequest, additionalProperties, serviceProvider);
             String appName = serviceProvider.getApplicationName();
             String username = (String) oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_USERNAME);
             updateSpProperties(appName, tenantDomain, username, additionalProperties, false);
         } catch (IdentityApplicationManagementException e) {
             String errMsg = "Cannot find Service provider application for client Id " + clientId;
-                log.error(errMsg);
-                throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED);
+            log.error(errMsg);
+            throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED);
         }
 
         oAuthApplicationInfo = super.updateApplication(oAuthAppRequest);
@@ -308,7 +283,7 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
                     getApplicationMgmtServiceImpl().getServiceProvider(name, tenantDomain);
             // Iterate OB specific additional properties to check whether they override the value of any predefined
             // sp properties in application management listeners
-            List<org.wso2.carbon.identity.application.common.model.ServiceProviderProperty> spProperties =
+            List<ServiceProviderProperty> spProperties =
                     new ArrayList<>(Arrays.asList(appServiceProvider.getSpProperties()));
             return updateAdditionalProperties(oAuthApplicationInfo, spProperties);
         } catch (IdentityApplicationManagementException | OpenBankingException e) {
@@ -332,33 +307,30 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
         try {
             org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO oAuthConsumerAppDTO = getOAuthAdminService().
                     getOAuthApplicationDataByAppName(spAppName);
-            org.wso2.carbon.identity.application.common.model.ServiceProvider serviceProvider =
-                    getApplicationMgmtServiceImpl().getServiceProvider(spAppName, tenantDomain);
-
+            ServiceProvider serviceProvider = getApplicationMgmtServiceImpl()
+                    .getServiceProvider(spAppName, tenantDomain);
             doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties, isCreateApp);
             // Iterate OB specific additional properties to check whether they override the value of any predefined
             // sp properties in application management listeners
-            List<org.wso2.carbon.identity.application.common.model.ServiceProviderProperty> spProperties =
+            List<ServiceProviderProperty> spProperties =
                     new ArrayList<>(Arrays.asList(serviceProvider.getSpProperties()));
             for (Map.Entry<String, String> propertyElement : additionalProperties.entrySet()) {
-                org.wso2.carbon.identity.application.common.model.ServiceProviderProperty overridenSPproperty
-                        = spProperties.stream().filter(serviceProviderProperty -> serviceProviderProperty.getName()
-                        .equalsIgnoreCase(propertyElement.getKey())).findAny().orElse(null);
+                ServiceProviderProperty overridenSPproperty = spProperties.stream().filter(
+                        serviceProviderProperty -> serviceProviderProperty.getName()
+                                .equalsIgnoreCase(propertyElement.getKey())).findAny().orElse(null);
                 // If SP property is overridden, remove old SP property and add the new one
                 if (overridenSPproperty != null) {
                     spProperties.remove(overridenSPproperty);
                     overridenSPproperty.setValue(propertyElement.getValue());
                     spProperties.add(overridenSPproperty);
                 } else {
-                    org.wso2.carbon.identity.application.common.model.ServiceProviderProperty additionalProperty =
-                            new org.wso2.carbon.identity.application.common.model.ServiceProviderProperty();
+                    ServiceProviderProperty additionalProperty = new ServiceProviderProperty();
                     additionalProperty.setName(propertyElement.getKey());
                     additionalProperty.setValue(propertyElement.getValue());
                     spProperties.add(additionalProperty);
                 }
             }
-            serviceProvider.setSpProperties(spProperties.toArray(
-                    new org.wso2.carbon.identity.application.common.model.ServiceProviderProperty[0]));
+            serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
             try {
                 getApplicationMgmtServiceImpl().updateApplication(serviceProvider, tenantDomain, username);
                 if (log.isDebugEnabled()) {
@@ -395,13 +367,12 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
      * @return oAuth application Info
      */
     protected OAuthApplicationInfo updateAdditionalProperties(OAuthApplicationInfo oAuthApplicationInfo,
-                                                              List<org.wso2.carbon.identity.application.common.model
-                                                                      .ServiceProviderProperty> spProperties) {
+                                                              List<ServiceProviderProperty> spProperties) {
 
         Map<String, Map<String, String>> keyManagerAdditionalProperties = OpenBankingConfigParser.getInstance()
                 .getKeyManagerAdditionalProperties();
         for (String key : keyManagerAdditionalProperties.keySet()) {
-            for (org.wso2.carbon.identity.application.common.model.ServiceProviderProperty spProperty : spProperties) {
+            for (ServiceProviderProperty spProperty : spProperties) {
                 if (spProperty.getName().equalsIgnoreCase(key)) {
                     ((HashMap<String, String>) oAuthApplicationInfo.getParameter(
                             APIConstants.JSON_ADDITIONAL_PROPERTIES)).put(key, spProperty.getValue());
@@ -421,8 +392,7 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
     public void validateAdditionalProperties(Map<String, ConfigurationDto> obAdditionalProperties)
             throws APIManagementException {
 
-        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil
-                .getOBKeyManagerExtensionImpl();
+        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil.getOBKeyManagerExtensionImpl();
         if (obKeyManagerExtensionImpl != null) {
             obKeyManagerExtensionImpl.validateAdditionalProperties(obAdditionalProperties);
         }
@@ -437,8 +407,7 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
     public void doPreCreateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties)
             throws APIManagementException {
-        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil
-                .getOBKeyManagerExtensionImpl();
+        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil.getOBKeyManagerExtensionImpl();
         if (obKeyManagerExtensionImpl != null) {
             obKeyManagerExtensionImpl.doPreCreateApplication(oAuthAppRequest, additionalProperties);
         }
@@ -452,11 +421,8 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
      */
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
     public void doPreUpdateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties,
-                                       org.wso2.carbon.identity.application.common.model.ServiceProvider
-                                               serviceProvider)
-            throws APIManagementException {
-        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil
-                .getOBKeyManagerExtensionImpl();
+                                       ServiceProvider serviceProvider) throws APIManagementException {
+        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil.getOBKeyManagerExtensionImpl();
         if (obKeyManagerExtensionImpl != null) {
             obKeyManagerExtensionImpl.doPreUpdateApplication(oAuthAppRequest, additionalProperties, serviceProvider);
         }
@@ -472,12 +438,11 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
      */
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
     public void doPreUpdateSpApp(org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO oAuthConsumerAppDTO,
-                                 org.wso2.carbon.identity.application.common.model.ServiceProvider serviceProvider,
+                                 ServiceProvider serviceProvider,
                                  HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException {
 
-        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil
-                .getOBKeyManagerExtensionImpl();
+        OBKeyManagerExtensionInterface obKeyManagerExtensionImpl = KeyManagerUtil.getOBKeyManagerExtensionImpl();
         if (obKeyManagerExtensionImpl != null) {
             obKeyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties,
                     isCreateApp);
@@ -495,9 +460,8 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
         return new OAuthAdminService();
     }
 
-    protected org.wso2.carbon.identity.application.common.model.ServiceProviderProperty getSpPropertyFromSPMetaData(
-            String propertyName,
-            org.wso2.carbon.identity.application.common.model.ServiceProviderProperty[] spProperties) {
+    protected ServiceProviderProperty getSpPropertyFromSPMetaData(String propertyName,
+                                                                  ServiceProviderProperty[] spProperties) {
 
         return Arrays.asList(spProperties).stream().filter(serviceProviderProperty -> serviceProviderProperty.getName()
                 .equalsIgnoreCase(propertyName)).findAny().orElse(null);

@@ -27,10 +27,10 @@ import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.accelerator.common.identity.IdentityConstants;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
+import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.gateway.cache.GatewayCacheKey;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.exception.OpenBankingExecutorException;
@@ -236,7 +236,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                 //map keys to am application
                 JsonObject keyMapPayload = getKeyMapPayload(createdDCRAppDetails.get(clientIdParam).getAsString(),
                         createdSpDetails.getAsJsonObject().get(clientSecret).getAsString(),
-                        getSoftwareEnvironmentFromSSA(softwareStatement), keyManagerName);
+                        OpenBankingUtils.getSoftwareEnvironmentFromSSA(softwareStatement), keyManagerName);
 
                 JsonElement amKeyMapResponse = callPost(keyMapURL, keyMapPayload.toString(),
                         GatewayConstants.BEARER_TAG.concat(token));
@@ -867,27 +867,6 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
             softwareRoleList = Arrays.asList(softwareRolesStr.toString().split(" "));
         }
         return softwareRoleList;
-    }
-
-    /**
-     * Extract software_environment (SANDBOX or PRODUCTION) from SSA.
-     *
-     * @param softwareStatement software statement extracted from request payload
-     * @return software_environment
-     * @throws ParseException
-     */
-    public String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
-
-        String softwareEnvironment = IdentityConstants.PRODUCTION;
-        // decode software statement and get softwareEnvironment
-        JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement, "body");
-        Object softwareEnvironmentValue =
-                softwareStatementBody.get(OpenBankingConstants.SOFTWARE_ENVIRONMENT);
-        if (softwareEnvironmentValue != null &&
-                softwareEnvironmentValue.toString().equalsIgnoreCase(IdentityConstants.SANDBOX)) {
-            softwareEnvironment = IdentityConstants.SANDBOX;
-        }
-        return softwareEnvironment;
     }
 
     protected String getApplicationName(String responsePayload, Map<String, Object> configurations)

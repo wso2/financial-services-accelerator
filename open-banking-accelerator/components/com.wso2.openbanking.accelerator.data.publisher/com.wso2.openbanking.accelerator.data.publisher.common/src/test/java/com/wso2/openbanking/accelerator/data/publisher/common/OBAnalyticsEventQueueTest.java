@@ -18,12 +18,22 @@
 
 package com.wso2.openbanking.accelerator.data.publisher.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.data.publisher.common.internal.OBAnalyticsDataHolder;
 import com.wso2.openbanking.accelerator.data.publisher.common.util.OBDataPublisherUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -36,7 +46,12 @@ import java.util.Map;
 /**
  * Open Banking analytics event queue test.
  */
-public class OBAnalyticsEventQueueTest {
+@PowerMockIgnore({"jdk.internal.reflect.*"})
+@PrepareForTest({OpenBankingConfigParser.class})
+public class OBAnalyticsEventQueueTest extends PowerMockTestCase {
+
+    @Mock
+    OpenBankingConfigParser openBankingConfigParser;
 
     private static ByteArrayOutputStream outContent;
     private static Logger logger = null;
@@ -45,6 +60,7 @@ public class OBAnalyticsEventQueueTest {
     @BeforeClass
     public void beforeTests() {
 
+        MockitoAnnotations.initMocks(this);
         outContent = new ByteArrayOutputStream();
         printStream = new PrintStream(outContent);
         System.setOut(printStream);
@@ -59,6 +75,12 @@ public class OBAnalyticsEventQueueTest {
         configs.put("DataPublishing.WorkerThreadCount", "3");
         configs.put("DataPublishing.QueueSize", "10");
         configs.put("DataPublishing.Enabled", "true");
+        configs.put("ELKAnalytics.Enabled", "true");
+
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        Mockito.when(OpenBankingConfigParser.getInstance())
+                .thenReturn(openBankingConfigParser);
+        Mockito.when(openBankingConfigParser.getConfiguration()).thenReturn(configs);
 
         OpenBankingConfigurationService openBankingConfigurationService =
                 Mockito.mock(OpenBankingConfigurationService.class);
@@ -67,7 +89,14 @@ public class OBAnalyticsEventQueueTest {
         OBAnalyticsDataHolder.getInstance().setOpenBankingConfigurationService(openBankingConfigurationService);
 
         OBDataPublisherUtil.publishData("testStream", "1.0", configs);
-        Assert.assertTrue(outContent.toString().isEmpty());
+        try {
+            Assert.assertTrue(outContent.toString().contains("Data Stream : testStream , Data Stream Version : 1.0 , " +
+                    "Data : {\"payload\":" + new ObjectMapper().writeValueAsString(configs) + "}"));
+            Assert.assertFalse(outContent.toString().contains("Data publishing is disabled. " +
+                    "Failed to obtain a data publisher instance."));
+        } catch (JsonProcessingException e) {
+            throw new OpenBankingRuntimeException("Error in processing JSON payload", e);
+        }
     }
 
     @Test
@@ -78,6 +107,12 @@ public class OBAnalyticsEventQueueTest {
         configs.put("DataPublishing.WorkerThreadCount", "3");
         configs.put("DataPublishing.QueueSize", "10");
         configs.put("DataPublishing.Enabled", "false");
+        configs.put("ELKAnalytics.Enabled", "true");
+
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        Mockito.when(OpenBankingConfigParser.getInstance())
+                .thenReturn(openBankingConfigParser);
+        Mockito.when(openBankingConfigParser.getConfiguration()).thenReturn(configs);
 
         OpenBankingConfigurationService openBankingConfigurationService =
                 Mockito.mock(OpenBankingConfigurationService.class);
