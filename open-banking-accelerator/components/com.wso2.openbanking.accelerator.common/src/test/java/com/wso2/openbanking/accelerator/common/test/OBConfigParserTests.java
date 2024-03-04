@@ -425,6 +425,8 @@ public class OBConfigParserTests {
 
         Assert.assertTrue(isEnabled);
     }
+
+    @Test (priority = 33)
     public void testRealtimeEventNotificationConfigs() {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
         OpenBankingConfigParser openBankingConfigParser = OpenBankingConfigParser.getInstance(dummyConfigFile);
@@ -446,4 +448,23 @@ public class OBConfigParserTests {
 
     }
 
+    @Test (priority = 34)
+    public void testIsConsentAmendmentHistoryEnabled() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
+        boolean isEnabled = OpenBankingConfigParser.getInstance(dummyConfigFile)
+                .isConsentAmendmentHistoryEnabled();
+
+        Assert.assertTrue(isEnabled);
+    }
+
+    @Test (priority = 35)
+    public void testGetOBKeyManagerExtensionImpl() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
+        String className = OpenBankingConfigParser.getInstance(dummyConfigFile)
+                .getOBKeyManagerExtensionImpl();
+
+        Assert.assertEquals(className, "com.wso2.openbanking.accelerator.keymanager.OBKeyManagerImpl");
+    }
 }

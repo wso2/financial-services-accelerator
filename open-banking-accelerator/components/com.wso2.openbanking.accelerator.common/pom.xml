@@ -179,6 +179,7 @@
                         <exclude>**/JDBCPersistenceManager.class</exclude>
                         <exclude>**/CertValidationErrors.class</exclude>
                         <exclude>**/JDBCRetentionDataPersistenceManager.class</exclude>
+                        <exclude>**/*Type*/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
