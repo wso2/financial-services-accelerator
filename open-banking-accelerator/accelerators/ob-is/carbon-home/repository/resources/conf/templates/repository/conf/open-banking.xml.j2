@@ -396,14 +396,14 @@
             </Params>
         </Portal>
         <Idempotency>
-            {% if open_banking.gateway.idempotency.enabled is defined %}
-                <IsEnabled>{{open_banking.gateway.idempotency.enabled}}</IsEnabled>
+            {% if open_banking.consent.idempotency.enabled is defined %}
+                <Enabled>{{open_banking.consent.idempotency.enabled}}</Enabled>
             {% else %}
                 <IsEnabled>false</IsEnabled>
             {% endif %}
 
-            {% if open_banking.gateway.idempotency.allowed_time_duration is defined %}
-                <AllowedTimeDuration>{{open_banking.gateway.idempotency.allowed_time_duration}}</AllowedTimeDuration>
+            {% if open_banking.consent.idempotency.allowed_time_duration is defined %}
+                <AllowedTimeDuration>{{open_banking.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
             {% else %}
                 <AllowedTimeDuration>1440</AllowedTimeDuration>
             {% endif %}
