@@ -22,6 +22,8 @@ import com.wso2.openbanking.accelerator.common.util.SecurityUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -38,24 +40,22 @@ public class SecurityUtilsTest {
 
     @Test
     public void testSanitizeStringList() {
-        List<String> sanitizedList = SecurityUtils.sanitize(List.of(
-                        "tests\nsanitizing",
-                        "tests\nsanitizing",
-                        "tests\nsanitizing"
-                )
-        );
-        Assert.assertFalse(sanitizedList.stream().anyMatch(s -> s.contains("\n")));
+        List<String> sanitizedList = new ArrayList<>();
+        sanitizedList.add("tests\nsanitizing");
+        sanitizedList.add("tests\nsan\nitizing");
+        sanitizedList.add("tests\nsanitizing\n");
+
+        Assert.assertFalse(SecurityUtils.sanitize(sanitizedList).stream().anyMatch(s -> s.contains("\n")));
     }
 
     @Test
     public void testSanitizeStringSet() {
-        Set<String> sanitizedList = SecurityUtils.sanitize(Set.of(
-                        "tests\nsanitizing",
-                        "tests\nsanitizingtext",
-                        "tests\nsanitizingwords"
-                )
-        );
-        Assert.assertFalse(sanitizedList.stream().anyMatch(s -> s.contains("\n")));
+        Set<String> sanitizedList = new HashSet<>();
+        sanitizedList.add("tests\nsanitizing");
+        sanitizedList.add("tests\nsanitizingtext");
+        sanitizedList.add("tests\nsanitizingwords");
+
+        Assert.assertFalse(SecurityUtils.sanitize(sanitizedList).stream().anyMatch(s -> s.contains("\n")));
     }
 
     @Test

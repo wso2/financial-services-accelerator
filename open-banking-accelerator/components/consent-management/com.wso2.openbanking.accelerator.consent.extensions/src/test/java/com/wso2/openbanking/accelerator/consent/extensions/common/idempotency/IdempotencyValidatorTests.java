@@ -48,7 +48,7 @@ public class IdempotencyValidatorTests {
     private ArrayList<String> consentIdList;
     private String consentId;
     private Map<String, Object> configs;
-    private static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.IsEnabled";
+    private static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
     private static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
 
     private static final String PAYLOAD = "{\n" +
