@@ -30,6 +30,9 @@ public class IdempotencyValidationResult {
     private DetailedConsentResource consent;
     private String consentId;
 
+    public IdempotencyValidationResult() {
+    }
+
     public IdempotencyValidationResult(boolean isIdempotent, boolean isValid, DetailedConsentResource consent,
                                        String consentId) {
         this.isIdempotent = isIdempotent;

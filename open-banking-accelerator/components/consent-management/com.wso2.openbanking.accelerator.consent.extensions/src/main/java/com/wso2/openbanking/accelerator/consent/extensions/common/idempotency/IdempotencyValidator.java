@@ -46,11 +46,9 @@ public class IdempotencyValidator {
     private static final OpenBankingConfigParser parser = OpenBankingConfigParser.getInstance();
     private static final ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance()
             .getConsentCoreService();
-    public static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.IsEnabled";
+    private static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.IsEnabled";
     private static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
 
-    public IdempotencyValidator() {
-    }
 
     /**
      * Method to check whether the request is idempotent.
