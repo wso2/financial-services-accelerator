@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 public class MTLSCertificateValidator implements OBIdentityFilterValidator {
 
     private static final Log log = LogFactory.getLog(MTLSCertificateValidator.class);
+    private static final String CERT_EXPIRED_ERROR = "Certificate with the serial number %s issued by the CA %s is " +
+            "expired";
 
     @Override
     public void validate(ServletRequest request, String clientId) throws TokenFilterException, ServletException {
@@ -43,13 +45,12 @@ public class MTLSCertificateValidator implements OBIdentityFilterValidator {
                 X509Certificate x509Certificate = CertificateUtils.parseCertificate(mtlsCertificate);
 
                 if (CertificateUtils.isExpired(x509Certificate)) {
-                    log.error("Certificate with the serial number " +
-                            x509Certificate.getSerialNumber() + " issued by the CA " +
-                            x509Certificate.getIssuerDN().toString() + " is expired");
+                    log.error(String.format(CERT_EXPIRED_ERROR, x509Certificate.getSerialNumber(),
+                            x509Certificate.getIssuerDN().toString()));
                     throw new TokenFilterException(HttpServletResponse.SC_UNAUTHORIZED,
                             "Invalid mutual TLS request. Client certificate is expired",
-                            "Certificate with the serial number " + x509Certificate.getSerialNumber() +
-                                    " issued by the CA " + x509Certificate.getIssuerDN().toString() + " is expired");
+                            String.format(CERT_EXPIRED_ERROR, x509Certificate.getSerialNumber(),
+                                    x509Certificate.getIssuerDN().toString()));
                 }
                 log.debug("Client certificate expiry validation completed successfully");
             } catch (OpenBankingException e) {
