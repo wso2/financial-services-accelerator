@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validat
 
 import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
+import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.gateway.cache.CertificateRevocationCache;
 import com.wso2.openbanking.accelerator.gateway.cache.GatewayCacheKey;
@@ -78,7 +79,7 @@ public class CertRevocationValidationExecutor implements OpenBankingGatewayExecu
                     CertificateValidationUtils.handleExecutorErrors(error, obapiRequestContext);
                 } else {
                     X509Certificate transportCertificate = transportCert.get();
-                    if (CertificateValidationUtils.isExpired(transportCertificate)) {
+                    if (CertificateUtils.isExpired(transportCertificate)) {
                         LOG.error("Certificate with the serial number " +
                                 transportCertificate.getSerialNumber() + " issued by the CA " +
                                 transportCertificate.getIssuerDN().toString() + " is expired");
