@@ -113,9 +113,10 @@ public class IdempotencyValidatorTests {
         configs.put(IDEMPOTENCY_ALLOWED_TIME, "1");
 
         consentCoreServiceImpl = Mockito.mock(ConsentCoreServiceImpl.class);
-        OpenBankingConfigParser openBankingConfigParserMock = Mockito.mock(OpenBankingConfigParser.class);
+        OpenBankingConfigParser openBankingConfigParserMock = PowerMockito.mock(OpenBankingConfigParser.class);
         Mockito.doReturn(configs).when(openBankingConfigParserMock).getConfiguration();
-        ConsentExtensionsDataHolder consentExtensionsDataHolderMock = Mockito.mock(ConsentExtensionsDataHolder.class);
+        ConsentExtensionsDataHolder consentExtensionsDataHolderMock = PowerMockito
+                .mock(ConsentExtensionsDataHolder.class);
 
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
