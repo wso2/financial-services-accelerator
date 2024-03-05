@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Class to handle idempotency related operations.
@@ -42,7 +43,7 @@ import java.util.Date;
 public class IdempotencyValidator {
 
     private static final Log log = LogFactory.getLog(IdempotencyValidator.class);
-    private static final OpenBankingConfigParser parser = OpenBankingConfigParser.getInstance();
+    private static final Map<String, Object> configs = OpenBankingConfigParser.getInstance().getConfiguration();
     private static final ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance()
             .getConsentCoreService();
     private static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
@@ -60,8 +61,8 @@ public class IdempotencyValidator {
      * @return  IdempotencyValidationResult
      */
     public static IdempotencyValidationResult validateIdempotency(String idempotencyKeyName, String idempotencyKeyValue,
-                                                           String request) {
-        if (Boolean.parseBoolean((String) parser.getConfiguration().get(IDEMPOTENCY_IS_ENABLED))) {
+                                                           String request, String clientId) {
+        if (Boolean.parseBoolean((String) configs.get(IDEMPOTENCY_IS_ENABLED))) {
             if (idempotencyKeyValue == null || request.isEmpty()) {
                 log.debug("Idempotency Key Value or Request is empty. Hence cannot proceed with " +
                         "idempotency validation");
@@ -70,25 +71,32 @@ public class IdempotencyValidator {
             try {
                 ArrayList<String> consentIds = getConsentIdsFromIdempotencyKey(idempotencyKeyName,
                         idempotencyKeyValue);
-                if (isIdempotencyKeyExists(consentIds)) {
-                    log.debug("Idempotency Key exists in the database. Hence this is an idempotent request");
+                if (isListNotEmpty(consentIds)) {
+                    log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an idempotent" +
+                            " request", idempotencyKeyValue));
                     for (String consentId : consentIds) {
                         DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
                         if (consentRequest != null) {
-                            if (isJSONPayloadSimilar(consentRequest.getReceipt(), request)) {
-                                if (isRequestReceivedWithinAllowedTime(consentRequest.getCreatedTime())) {
-                                    log.debug("Payloads are similar and request received within allowed time." +
-                                            " Hence this is a valid idempotent request");
-                                    return new IdempotencyValidationResult(true, true,
-                                            consentRequest, consentId);
+                            if (isClientIdsMatching(clientId, consentRequest.getClientID())) {
+                                if (isJSONPayloadSimilar(consentRequest.getReceipt(), request)) {
+                                    if (isRequestReceivedWithinAllowedTime(consentRequest.getCreatedTime())) {
+                                        log.debug("Payloads are similar and request received within allowed time." +
+                                                " Hence this is a valid idempotent request");
+                                        return new IdempotencyValidationResult(true, true,
+                                                consentRequest, consentId);
+                                    } else {
+                                        log.debug("Payloads are similar and request is not within allowed time." +
+                                                " Hence this is not a valid idempotent request");
+                                        return new IdempotencyValidationResult(true, false, null, null);
+                                    }
                                 } else {
-                                    log.debug("Payloads are similar and request is not within allowed time." +
-                                            " Hence this is not a valid idempotent request");
+                                    log.debug("Payloads are not similar, Hence this is not a valid idempotent " +
+                                            "request");
                                     return new IdempotencyValidationResult(true, false, null, null);
                                 }
                             } else {
-                                log.debug("Payloads are not similar, Hence this is not a valid idempotent " +
-                                        "request");
+                                log.debug("Client ID sent in the request does not match with the client ID in the" +
+                                        " retrieved consent. Hence this is not a valid idempotent request");
                                 return new IdempotencyValidationResult(true, false, null, null);
                             }
                         } else {
@@ -124,13 +132,26 @@ public class IdempotencyValidator {
     }
 
     /**
-     * Method to check whether the idempotency key exists in the database.
+     * Method to check whether the consent ID list is not empty. If idempotency key exists in the database then
+     * the consent Id list will be not empty.
      *
      * @param consentIds   List of consentIds
-     * @return    Whether the idempotency key exists
+     * @return    Whether the list is not empty
      */
-    private static boolean isIdempotencyKeyExists(ArrayList<String> consentIds) {
+    private static boolean isListNotEmpty(ArrayList<String> consentIds) {
         return consentIds.size() > 0;
+    }
+
+    /**
+     * Method to compare the client ID sent in the request and client id retrieved from the database.
+     *
+     * @param requestClientID     Client ID sent in the request
+     * @param dbClientId          client ID retrieved from the database
+     * @return   Whether JSON client Ids are equal
+     */
+    private static boolean isClientIdsMatching(String requestClientID, String dbClientId) {
+
+        return requestClientID.equals(dbClientId);
     }
 
     /**
@@ -159,8 +180,7 @@ public class IdempotencyValidator {
         if (createdTime == 0L) {
             return false;
         }
-        String allowedTimeDuration = (String) parser.getConfiguration()
-                .get(IDEMPOTENCY_ALLOWED_TIME);
+        String allowedTimeDuration = (String) configs.get(IDEMPOTENCY_ALLOWED_TIME);
         if (allowedTimeDuration != null) {
             OffsetDateTime createdDate = OffsetDateTime.parse(convertToISO8601(createdTime));
             OffsetDateTime currDate = OffsetDateTime.now(createdDate.getOffset());
