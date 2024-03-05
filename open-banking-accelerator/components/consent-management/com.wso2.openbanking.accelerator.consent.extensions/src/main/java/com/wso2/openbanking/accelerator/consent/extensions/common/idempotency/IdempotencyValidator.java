@@ -69,16 +69,22 @@ public class IdempotencyValidator {
                 return new IdempotencyValidationResult(false, false, null, null);
             }
             try {
+                // Retrieve consent ids that have the idempotency key name and value as attribute
                 ArrayList<String> consentIds = getConsentIdsFromIdempotencyKey(idempotencyKeyName,
                         idempotencyKeyValue);
+                // Check whether the consent id list is not empty
                 if (isListNotEmpty(consentIds)) {
                     log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an idempotent" +
                             " request", idempotencyKeyValue));
                     for (String consentId : consentIds) {
                         DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
                         if (consentRequest != null) {
+                            // Compare the client ID sent in the request and client id retrieved from the database
+                            // to validate whether the request is received from the same client
                             if (isClientIdsMatching(clientId, consentRequest.getClientID())) {
+                                // Compare whether JSON payloads are equal
                                 if (isJSONPayloadSimilar(consentRequest.getReceipt(), request)) {
+                                    // Check whether difference between two dates is less than the configured time
                                     if (isRequestReceivedWithinAllowedTime(consentRequest.getCreatedTime())) {
                                         log.debug("Payloads are similar and request received within allowed time." +
                                                 " Hence this is a valid idempotent request");
