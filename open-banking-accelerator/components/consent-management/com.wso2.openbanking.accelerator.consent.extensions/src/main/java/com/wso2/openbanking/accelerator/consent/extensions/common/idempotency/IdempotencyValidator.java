@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -104,21 +105,6 @@ public class IdempotencyValidator {
             }
         }
         return new IdempotencyValidationResult(false, false, null, null);
-    }
-
-    /**
-     * Method to store the idempotency key in the database.
-     *
-     * @param consentId            Consent ID
-     * @param idempotencyKeyName    Idempotency Key Name
-     * @param idempotencyKeyValue   Idempotency Key Value
-     * @return  Whether the idempotency key is stored in the database
-     * @throws ConsentManagementException If an error occurs while storing the idempotency key
-     */
-    public static boolean storeIdempotencyKeyInAttributes(String consentId, String idempotencyKeyName,
-                                                      String idempotencyKeyValue) throws ConsentManagementException {
-
-        return consentCoreService.storeConsentAttributes(consentId, Map.of(idempotencyKeyName, idempotencyKeyValue));
     }
 
     /**
