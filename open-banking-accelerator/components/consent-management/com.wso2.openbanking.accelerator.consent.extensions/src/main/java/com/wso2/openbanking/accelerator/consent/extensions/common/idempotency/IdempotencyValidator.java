@@ -145,7 +145,7 @@ public class IdempotencyValidator {
      * @return    Whether the list is not empty
      */
     private static boolean isListNotEmpty(ArrayList<String> consentIds) {
-        return consentIds.size() > 0;
+        return !consentIds.isEmpty();
     }
 
     /**
