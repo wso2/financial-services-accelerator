@@ -149,7 +149,7 @@ public class IdempotencyValidatorTests {
     }
 
     @Test
-    public void testValidateIdempotencyWithoutIdempotencyKeyName() {
+    public void testValidateIdempotencyWithoutIdempotencyKeyName() throws ConsentManagementException {
         IdempotencyValidationResult result = IdempotencyValidator
                 .validateIdempotency(null, "", "", CLIENT_ID);
 
@@ -157,7 +157,7 @@ public class IdempotencyValidatorTests {
     }
 
     @Test
-    public void testValidateIdempotencyWithoutIdempotencyKeyValue() {
+    public void testValidateIdempotencyWithoutIdempotencyKeyValue() throws ConsentManagementException {
         IdempotencyValidationResult result = IdempotencyValidator
                 .validateIdempotency("IdempotencyKey", null, "", CLIENT_ID);
 
@@ -165,7 +165,7 @@ public class IdempotencyValidatorTests {
     }
 
     @Test
-    public void testValidateIdempotencyWithoutRequest() {
+    public void testValidateIdempotencyWithoutRequest() throws ConsentManagementException {
         IdempotencyValidationResult result = IdempotencyValidator
                 .validateIdempotency("IdempotencyKey", "123456", "", CLIENT_ID);
 
@@ -194,47 +194,27 @@ public class IdempotencyValidatorTests {
         Assert.assertFalse(result.isIdempotent());
     }
 
-    @Test
+    @Test(expectedExceptions = ConsentManagementException.class)
     public void testValidateIdempotencyWithNullConsentRequest() throws ConsentManagementException {
 
         Mockito.doReturn(consentIdList).when(consentCoreServiceImpl)
                 .getConsentIdByConsentAttributeNameAndValue(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(null).when(consentCoreServiceImpl).getDetailedConsent(Mockito.anyString());
-        IdempotencyValidationResult result = IdempotencyValidator.validateIdempotency("IdempotencyKey",
+        IdempotencyValidator.validateIdempotency("IdempotencyKey",
                 "123456", "test", CLIENT_ID);
-
-        Assert.assertTrue(result.isIdempotent());
-        Assert.assertFalse(result.isValid());
     }
 
-    @Test
+    @Test(expectedExceptions = ConsentManagementException.class)
     public void testValidateIdempotencyWithNonMatchingClientId() throws ConsentManagementException {
 
         Mockito.doReturn(consentIdList).when(consentCoreServiceImpl)
                 .getConsentIdByConsentAttributeNameAndValue(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(null).when(consentCoreServiceImpl).getDetailedConsent(Mockito.anyString());
-        IdempotencyValidationResult result = IdempotencyValidator.validateIdempotency("IdempotencyKey",
+        IdempotencyValidator.validateIdempotency("IdempotencyKey",
                 "123456", "test", "sampleClientID");
-
-        Assert.assertTrue(result.isIdempotent());
-        Assert.assertFalse(result.isValid());
     }
 
-    @Test
-    public void testValidateIdempotencyWithNonMatchingPayload() throws ConsentManagementException {
-
-        Mockito.doReturn(consentIdList).when(consentCoreServiceImpl)
-                .getConsentIdByConsentAttributeNameAndValue(Mockito.anyString(), Mockito.anyString());
-        Mockito.doReturn(getConsent(System.currentTimeMillis())).when(consentCoreServiceImpl)
-                .getDetailedConsent(Mockito.anyString());
-        IdempotencyValidationResult result = IdempotencyValidator.validateIdempotency("IdempotencyKey",
-                "123456", DIFFERENT_PAYLOAD, CLIENT_ID);
-
-        Assert.assertTrue(result.isIdempotent());
-        Assert.assertFalse(result.isValid());
-    }
-
-    @Test
+    @Test(expectedExceptions = ConsentManagementException.class)
     public void testValidateIdempotencyAfterAllowedTime() throws ConsentManagementException {
 
         OffsetDateTime offsetDateTime = OffsetDateTime.now().minusHours(2);
@@ -243,11 +223,22 @@ public class IdempotencyValidatorTests {
                 .getConsentIdByConsentAttributeNameAndValue(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(getConsent(offsetDateTime.toEpochSecond())).when(consentCoreServiceImpl)
                 .getDetailedConsent(Mockito.anyString());
-        IdempotencyValidationResult result = IdempotencyValidator.validateIdempotency("IdempotencyKey",
-                "123456", DIFFERENT_PAYLOAD, CLIENT_ID);
+        IdempotencyValidator.validateIdempotency("IdempotencyKey",
+                "123456", PAYLOAD, CLIENT_ID);
+    }
 
-        Assert.assertTrue(result.isIdempotent());
-        Assert.assertFalse(result.isValid());
+    @Test(expectedExceptions = ConsentManagementException.class)
+    public void testValidateIdempotencyWithNonMatchingPayload() throws ConsentManagementException {
+
+        OffsetDateTime offsetDateTime = OffsetDateTime.now();
+
+        Mockito.doReturn(consentIdList).when(consentCoreServiceImpl)
+                .getConsentIdByConsentAttributeNameAndValue(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(getConsent(offsetDateTime.toEpochSecond())).when(consentCoreServiceImpl)
+                .getDetailedConsent(Mockito.anyString());
+        IdempotencyValidator.validateIdempotency("IdempotencyKey", "123456",
+                DIFFERENT_PAYLOAD, CLIENT_ID);
+
     }
 
     private DetailedConsentResource getConsent(long createdTime) {
