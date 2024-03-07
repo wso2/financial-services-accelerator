@@ -72,8 +72,9 @@ public class IdempotencyValidator {
                 // Retrieve consent ids that have the idempotency key name and value as attribute
                 ArrayList<String> consentIds = getConsentIdsFromIdempotencyKey(idempotencyKeyName,
                         idempotencyKeyValue);
-                // Check whether the consent id list is not empty
-                if (isListNotEmpty(consentIds)) {
+                // Check whether the consent id list is not empty. If idempotency key exists in the database then
+                // the consent Id list will be not empty.
+                if (!consentIds.isEmpty()) {
                     log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an idempotent" +
                             " request", idempotencyKeyValue));
                     for (String consentId : consentIds) {
@@ -134,17 +135,6 @@ public class IdempotencyValidator {
             log.debug("No consent ids found for the idempotency key value");
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * Method to check whether the consent ID list is not empty. If idempotency key exists in the database then
-     * the consent Id list will be not empty.
-     *
-     * @param consentIds   List of consentIds
-     * @return    Whether the list is not empty
-     */
-    private static boolean isListNotEmpty(ArrayList<String> consentIds) {
-        return !consentIds.isEmpty();
     }
 
     /**
