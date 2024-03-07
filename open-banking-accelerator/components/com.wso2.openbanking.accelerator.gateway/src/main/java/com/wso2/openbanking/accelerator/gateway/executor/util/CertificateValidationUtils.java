@@ -72,6 +72,22 @@ public class CertificateValidationUtils {
     }
 
     /**
+     * @deprecated use com.wso2.openbanking.accelerator.common.util.CertificateUtils.isExpired() instead
+     */
+    @Deprecated
+    public static boolean isExpired(X509Certificate peerCertificate) {
+        try {
+            peerCertificate.checkValidity();
+        } catch (CertificateException e) {
+            LOG.error("Certificate with the serial number " +
+                    peerCertificate.getSerialNumber() + " issued by the CA " +
+                    peerCertificate.getIssuerDN().toString() + " is expired. Caused by, " + e.getMessage());
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Get issuer certificate from the truststore.
      *
      * @param peerCertificate peer certificate
