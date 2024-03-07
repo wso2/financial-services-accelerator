@@ -16,118 +16,121 @@
  * under the License.
  */
 
-import {lang, specConfigurations} from "../specConfigs/specConfigurations";
-import {keyDateTypes} from "../specConfigs/common";
-import React from "react";
-import moment from "moment";
-import {getValueFromConsent} from "../services";
-import {getExpireTimeFromConsent} from "../services/utils";
+import { lang, specConfigurations } from '../specConfigs/specConfigurations';
+import { keyDateTypes } from '../specConfigs/common';
+import React from 'react';
+import moment from 'moment';
+import { getValueFromConsent } from '../services';
+import { getExpireTimeFromConsent } from '../services/utils';
 
-export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
+export const KeyDatesInfo = ({ consent, infoLabels, consentType }) => {
+  let keyDatesConfig = infoLabels;
+  const consentStatus = consent.currentStatus;
+  const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
+  const expirationDateTime = getExpireTimeFromConsent(consent, 'YYYY-MM-DDTHH:mm:ss[Z]');
+  let isExpired =
+    expirationDateTime !== '' ? moment(currentDate).isAfter(moment(expirationDateTime)) : false;
 
-    let keyDatesConfig = infoLabels;
-    const consentStatus = consent.currentStatus;
-    const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
-    const expirationDateTime = getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]")
-    let isExpired = (expirationDateTime !== "") ? moment(currentDate).isAfter(moment(expirationDateTime)) : false;
+  if (consentStatus === specConfigurations.status.authorised && isExpired) {
+    keyDatesConfig = lang[consentType].filter((lbl) =>
+      lbl.id.toLowerCase().includes(specConfigurations.status.expired.toLowerCase())
+    )[0];
+  }
 
-    if (consentStatus === specConfigurations.status.authorised && isExpired) {
-        keyDatesConfig = lang[consentType].filter((lbl) =>
-            lbl.id.toLowerCase().includes(specConfigurations.status.expired.toLowerCase()))[0];
-    }
+  let keyDatesMap = keyDatesConfig.keyDates.map((keyDate) => {
+    if (keyDate.type == keyDateTypes.date) {
+      try {
+        let timestamp = getValueFromConsent(keyDate.dateParameterKey, consent);
+        // Get timestamp in millis
+        timestamp = getLongTimestampInMillis(timestamp);
+        return (
+          <>
+            <h6>{keyDate.title}</h6>
+            <p className="infoItem">{moment(timestamp).format(keyDate.dateFormat)}</p>
+          </>
+        );
+      } catch (e) {
+        return (
+          <>
+            <h6>{keyDate.title}</h6>
+            <p className="infoItem"></p>
+          </>
+        );
+      }
+    } else if (keyDate.type == keyDateTypes.dateRange) {
+      try {
+        let timeRanges = keyDate.dateParameterKey.split(',');
+        let fromTime = getValueFromConsent(timeRanges[0], consent);
+        let toTime = getValueFromConsent(timeRanges[1], consent);
 
-    let keyDatesMap = keyDatesConfig.keyDates.map((keyDate) => {
-        if (keyDate.type == keyDateTypes.date) {
-            try {
-                let timestamp = getValueFromConsent(keyDate.dateParameterKey, consent);
-                // Get timestamp in millis
-                timestamp = getLongTimestampInMillis(timestamp);
-                return (
-                    <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{moment(timestamp).format(keyDate.dateFormat)}</p>
-                    </>
-                )
-            } catch (e) {
-                return (
-                    <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
-                    </>
-                )
-            }
-        } else if (keyDate.type == keyDateTypes.dateRange) {
-            try {
-                let timeRanges = keyDate.dateParameterKey.split(",")
-                let fromTime = getValueFromConsent(timeRanges[0], consent);
-                let toTime = getValueFromConsent(timeRanges[1], consent);
+        // Get timestamp in millis
+        fromTime = getLongTimestampInMillis(fromTime);
+        toTime = getLongTimestampInMillis(toTime);
 
-                // Get timestamp in millis
-                fromTime = getLongTimestampInMillis(fromTime);
-                toTime = getLongTimestampInMillis(toTime);
+        return (
+          <>
+            <h6>{keyDate.title}</h6>
+            <p className="infoItem">
+              {moment(fromTime).format(keyDate.dateFormat)} -
+              {moment(toTime).format(keyDate.dateFormat)}
+            </p>
+          </>
+        );
+      } catch (e) {
+        return (
+          <>
+            <h6>{keyDate.title}</h6>
+            <p className="infoItem"></p>
+          </>
+        );
+      }
+    } else if (keyDate.type == keyDateTypes.value) {
+      try {
+        let valueParameterKey = keyDate.valueParameterKey;
+        let valueFromConsent = getValueFromConsent(valueParameterKey, consent);
 
-                return (
-                    <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{moment(fromTime).format(keyDate.dateFormat)} -
-                            {moment(toTime).format(keyDate.dateFormat)}</p>
-                    </>
-                )
-            } catch (e) {
-                return (
-                    <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
-                    </>
-                )
-            }
-        } else if (keyDate.type == keyDateTypes.value) {
-            try {
-                let valueParameterKey = keyDate.valueParameterKey;
-                let valueFromConsent = getValueFromConsent(valueParameterKey, consent);
-
-                if (!valueFromConsent || Object.keys(valueFromConsent).length === 0) {
-                    valueFromConsent = "N/A";
-                } else if (valueParameterKey === "receipt.Data.Initiation.InstructedAmount") {
-                    valueFromConsent = `${valueFromConsent.Amount} ${valueFromConsent.Currency}`;
-                }
-
-                return (
-                    <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{valueFromConsent}</p>
-                    </>
-                )
-            } catch (e) {
-                return (
-                    <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
-                    </>
-                )
-            }
-        } else {
-            return (
-                <>
-                    <h6>{keyDate.title}</h6>
-                    <p className="infoItem">{keyDate.text}</p>
-                </>
-            )
+        if (!valueFromConsent || Object.keys(valueFromConsent).length === 0) {
+          valueFromConsent = 'N/A';
+        } else if (valueParameterKey === 'receipt.Data.Initiation.InstructedAmount') {
+          valueFromConsent = `${valueFromConsent.Amount} ${valueFromConsent.Currency}`;
         }
-    });
 
-    // Method to convert epoch second timestamps to epoch millis
-    function getLongTimestampInMillis(timestamp) {
-        if (timestamp.toString().length === 10) {
-            timestamp = timestamp * 1000;
-        }
-        return timestamp;
+        return (
+          <>
+            <h6>{keyDate.title}</h6>
+            <p className="infoItem">{valueFromConsent}</p>
+          </>
+        );
+      } catch (e) {
+        return (
+          <>
+            <h6>{keyDate.title}</h6>
+            <p className="infoItem"></p>
+          </>
+        );
+      }
+    } else {
+      return (
+        <>
+          <h6>{keyDate.title}</h6>
+          <p className="infoItem">{keyDate.text}</p>
+        </>
+      );
     }
+  });
 
-    return (
-        <div className="keyDatesBody">
-            <h5>{keyDatesConfig.keyDatesInfoLabel}</h5>
-            {keyDatesMap}
-        </div>
-    );
+  // Method to convert epoch second timestamps to epoch millis
+  function getLongTimestampInMillis(timestamp) {
+    if (timestamp.toString().length === 10) {
+      timestamp = timestamp * 1000;
+    }
+    return timestamp;
+  }
+
+  return (
+    <div className="keyDatesBody">
+      <h5>{keyDatesConfig.keyDatesInfoLabel}</h5>
+      <div className="two-columns">{keyDatesMap}</div>
+    </div>
+  );
 };

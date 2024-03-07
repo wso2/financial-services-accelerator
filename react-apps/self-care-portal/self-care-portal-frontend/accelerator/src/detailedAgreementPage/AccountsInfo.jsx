@@ -17,37 +17,30 @@
  */
 
 //AccountsInfo for Default Application
-import React from "react";
-import {lang, specConfigurations} from "../specConfigs/specConfigurations.js";
-import {permissionBindTypes} from "../specConfigs/common";
+import React from 'react';
+import { lang, specConfigurations } from '../specConfigs/specConfigurations.js';
+import { permissionBindTypes } from '../specConfigs/common';
 
-let id = 0;
-
-export const AccountsInfo = ({consent, consentType}) => {
-
-    const consentStatus = consent.currentStatus;
-    const debtorAccounts = consent.consentMappingResources;
-    let keyDatesConfig = lang[consentType].filter((lbl) =>
-        lbl.id.toLowerCase().includes(consent.currentStatus.toLowerCase()))[0];
-    return (
-        <div className="accountsInfoBody">
-            {specConfigurations.consent.permissionsView.permissionBindType ===
-            permissionBindTypes.samePermissionSetForAllAccounts ? (
-                <>
-                    <h5>{keyDatesConfig.accountsInfoLabel}</h5>
-                    {debtorAccounts.map((account) => (
-                        account.mappingStatus === "active" ?
-                            <li key={id = id + 1}>{account.accountId}</li>
-                            :
-                            <> </>
-                    ))}
-                    <h5> {""}</h5>
-                </>
-            ) : (
-                <></>
-            )
-            }
-
-        </div>
-    );
+export const AccountsInfo = ({ consent, consentType }) => {
+  const consentStatus = consent.currentStatus;
+  const debtorAccounts = consent.consentMappingResources;
+  let keyDatesConfig = lang[consentType].filter((lbl) =>
+    lbl.id.toLowerCase().includes(consent.currentStatus.toLowerCase())
+  )[0];
+  return (
+    <div className="accountsInfoBody">
+      {specConfigurations.consent.permissionsView.permissionBindType ===
+      permissionBindTypes.samePermissionSetForAllAccounts ? (
+        <>
+          <h5>{keyDatesConfig.accountsInfoLabel}</h5>
+          {debtorAccounts.map((account, index) =>
+            account.mappingStatus === 'active' ? <p key={index}>{account.accountId}</p> : <> </>
+          )}
+          <h5> {''}</h5>
+        </>
+      ) : (
+        <></>
+      )}
+    </div>
+  );
 };

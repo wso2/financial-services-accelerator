@@ -17,61 +17,58 @@
  */
 
 export const common = {
-    footerContent: "WSO2 Open Banking | 2021",
-    complaintHandleLinkText: "Complaint handling and resolution",
+  footerContent: 'WSO2 Open Banking | 2024',
+  complaintHandleLinkText: 'Complaint handling and resolution',
 };
 
 export const keyDateTypes = {
-    date: "Date",
-    dateRange: "Date Range",
-    text: "Text",
-    value: "Value",
-}
+  date: 'Date',
+  dateRange: 'Date Range',
+  text: 'Text',
+  value: 'Value',
+};
 
 export const permissionBindTypes = {
-    // Each account is bind to different different permissions
-    samePermissionSetForAllAccounts: "SamePermissionSetForAllAccounts",
-    // All the accounts in the consent bind to same set of permissions
-    differentPermissionsForEachAccount: "DifferentPermissionsForEachAccount"
-}
+  // Each account is bind to different different permissions
+  samePermissionSetForAllAccounts: 'SamePermissionSetForAllAccounts',
+  // All the accounts in the consent bind to same set of permissions
+  differentPermissionsForEachAccount: 'DifferentPermissionsForEachAccount',
+};
 
 export const dataOrigins = {
-    // To fetch data from consent
-    consent: "CONSENT",
-    // To fetch data from application information
-    applicationInfo: "APPLICATION_INFO",
-    // For table action button
-    action: "ACTION",
-    // For table status
-    status: "STATUS",
-}
+  // To fetch data from consent
+  consent: 'CONSENT',
+  // To fetch data from application information
+  applicationInfo: 'APPLICATION_INFO',
+  // For table action button
+  action: 'ACTION',
+  // For table status
+  status: 'STATUS',
+};
 
 export const dataTypes = {
-    // To indicate the dataType is a ISO 8601 date
-    date: "DATE_ISO_8601",
-    // To indicate the dataType is a raw text
-    rawData: "APPLICATION_INFO",
-    // To indicate the dataType is a ISO 8601 date
-    timestamp: "DATE_TIMESTAMP",
-}
+  // To indicate the dataType is a ISO 8601 date
+  date: 'DATE_ISO_8601',
+  // To indicate the dataType is a raw text
+  rawData: 'APPLICATION_INFO',
+  // To indicate the dataType is a ISO 8601 date
+  timestamp: 'DATE_TIMESTAMP',
+};
 
 export const consentTypes = [
-    {
-        id: "accounts",
-        label: "Account Information",
-        image:require("../images/accounts.png")
-
-    },
-    {
-        id: "payments",
-        label: "Payments",
-        image:require("../images/payments.png")
-
-    },
-    {
-        id: "fundsconfirmations",
-        label: "Confirmation of Funds",
-        image: require("../images/cof.png")
-
-    }
-]
+  {
+    id: 'accounts',
+    label: 'Account Information',
+    image: require('../images/accounts.png'),
+  },
+  {
+    id: 'payments',
+    label: 'Payments',
+    image: require('../images/payments.png'),
+  },
+  {
+    id: 'fundsconfirmations',
+    label: 'Confirmation of Funds',
+    image: require('../images/cof.png'),
+  },
+];
