@@ -208,4 +208,5 @@ public class ConsentExtensionConstants {
     public static final Object CONTROL_PARAMETER_AMOUNT_TITLE = "Maximum payment amount per ";
     public static final String VRP_ACCOUNT = "vrpAccount";
     public static final Object CONTROL_PARAMETER_VALID_FROM_DATE_TITLE = "Valid from date and time";
+    public static final String ACCOUNT_IDS = "accountIds";
 }

@@ -28,6 +28,8 @@
             <class name="com.wso2.openbanking.accelerator.consent.extensions.manage.vrp.VRPConsentHandlerTest"/>
             <class name="com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow.VRPConsentRetrievalStepTest"/>
             <class name="com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow.VRPConsentRetrievalUtilTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.authservlet.impl.AuthServletTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.persistence.flow.ConsentPersistStepTests"/>
         </classes>
     </test>
 </suite>
