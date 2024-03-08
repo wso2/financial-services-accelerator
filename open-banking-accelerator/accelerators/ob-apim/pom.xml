@@ -53,9 +53,6 @@
                         </fileset>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
-                            <excludes>
-                                <exclude>**/hazelcast-5.0.2.jar</exclude>
-                            </excludes>
                         </fileset>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/deployment/server/webapps</directory>

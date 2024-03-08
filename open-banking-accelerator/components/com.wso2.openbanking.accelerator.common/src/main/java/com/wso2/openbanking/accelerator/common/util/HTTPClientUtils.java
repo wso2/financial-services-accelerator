@@ -66,6 +66,7 @@ public class HTTPClientUtils {
      * @return Closeable https client
      * @throws OpenBankingException OpenBankingException exception
      */
+    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
     public static CloseableHttpClient getHttpsClient() throws OpenBankingException {
 
         SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();

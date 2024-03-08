@@ -395,6 +395,19 @@
                 {% endif %}
             </Params>
         </Portal>
+        <Idempotency>
+            {% if open_banking.consent.idempotency.enabled is defined %}
+                <Enabled>{{open_banking.consent.idempotency.enabled}}</Enabled>
+            {% else %}
+                <IsEnabled>false</IsEnabled>
+            {% endif %}
+
+            {% if open_banking.consent.idempotency.allowed_time_duration is defined %}
+                <AllowedTimeDuration>{{open_banking.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
+            {% else %}
+                <AllowedTimeDuration>1440</AllowedTimeDuration>
+            {% endif %}
+        </Idempotency>
     </Consent>
     <DCR>
         {% if open_banking.dcr.validator is defined %}
@@ -1021,84 +1034,6 @@
             {% endif %}
             </PollingResponseParams>
     </OBEventNotifications>
-
-    <DistributedCache>
-        {% if open_banking.distributed_cache.enabled is defined %}
-            <Enabled>{{open_banking.distributed_cache.enabled}}</Enabled>
-        {% else %}
-            <Enabled>false</Enabled>
-        {% endif %}
-        {% if open_banking.distributed_cache.host_name is defined %}
-            <HostName>{{open_banking.distributed_cache.host_name}}</HostName>
-        {% else %}
-            <HostName>localhost</HostName>
-        {% endif %}
-        {% if open_banking.distributed_cache.port is defined %}
-            <Port>{{open_banking.distributed_cache.port}}</Port>
-        {% else %}
-            <Port>5701</Port>
-        {% endif %}
-        {% if ( (open_banking.distributed_cache.discovery_mechanism is defined) and (open_banking.distributed_cache.discovery_mechanism == "TCP") ) %}
-            <DiscoveryMechanism>{{open_banking.distributed_cache.discovery_mechanism}}</DiscoveryMechanism>
-            {% if open_banking.distributed_cache.members is defined %}
-                <Members>
-                    {% for member in open_banking.distributed_cache.members %}
-                        <Member>{{member}}</Member>
-                    {% endfor %}
-                </Members>
-            {% else %}
-                <Members></Members>
-            {% endif %}
-        {% else %}
-            <DiscoveryMechanism>Multicast</DiscoveryMechanism>
-            {% if open_banking.distributed_cache.multicast_group is defined %}
-                <MulticastGroup>{{open_banking.distributed_cache.multicast_group}}</MulticastGroup>
-            {% else %}
-                <MulticastGroup>224.2.2.3</MulticastGroup>
-            {% endif %}
-            {% if open_banking.distributed_cache.multicast_port is defined %}
-                <MulticastPort>{{open_banking.distributed_cache.multicast_port}}</MulticastPort>
-            {% else %}
-                <MulticastPort>54321</MulticastPort>
-            {% endif %}
-            {% if open_banking.distributed_cache.trusted_interfaces is defined %}
-                <TrustedInterfaces>
-                    {% for trusted_interface in open_banking.distributed_cache.trusted_interfaces %}
-                        <TrustedInterface>{{trusted_interface}}</TrustedInterface>
-                    {% endfor %}
-                </TrustedInterfaces>
-            {% else %}
-                <TrustedInterfaces></TrustedInterfaces>
-            {% endif %}
-        {% endif %}
-        <Properties>
-            {% if open_banking.distributed_cache.properties.max_heartbeat is defined %}
-                <MaxHeartbeat>{{open_banking.distributed_cache.properties.max_heartbeat}}</MaxHeartbeat>
-            {% else %}
-                <MaxHeartbeat>600</MaxHeartbeat>
-            {% endif %}
-            {% if open_banking.distributed_cache.properties.max_master_confirmation is defined %}
-                <MaxMasterConfirmation>{{open_banking.distributed_cache.properties.max_master_confirmation}}</MaxMasterConfirmation>
-            {% else %}
-                <MaxMasterConfirmation>900</MaxMasterConfirmation>
-            {% endif %}
-            {% if open_banking.distributed_cache.properties.merge_first_run_delay is defined %}
-                <MergeFirstRunDelay>{{open_banking.distributed_cache.properties.merge_first_run_delay}}</MergeFirstRunDelay>
-            {% else %}
-                <MergeFirstRunDelay>60</MergeFirstRunDelay>
-            {% endif %}
-            {% if open_banking.distributed_cache.properties.merge_next_run_delay is defined %}
-                <MergeNextRunDelay>{{open_banking.distributed_cache.properties.merge_next_run_delay}}</MergeNextRunDelay>
-            {% else %}
-                <MergeNextRunDelay>30</MergeNextRunDelay>
-            {% endif %}
-            {% if open_banking.distributed_cache.properties.logging_type is defined %}
-                <LoggingType>{{open_banking.distributed_cache.properties.logging_type}}</LoggingType>
-            {% else %}
-                <LoggingType>none</LoggingType>
-            {% endif %}
-        </Properties>
-    </DistributedCache>
     <AuthenticationWorkers>
         {% for worker in open_banking.identity.authentication.worker %}
              <AuthenticationWorker
