@@ -35,7 +35,7 @@ export const AccountsInfo = ({consent, consentType}) => {
                     <h5>{keyDatesConfig.accountsInfoLabel}</h5>
                     {debtorAccounts.map((account, index) => (
                         account.mappingStatus === "active" ?
-                            <li key= {index}>{account.accountId}</li>
+                            <p key= {index}>{account.accountId}</p>
                             :
                             <> </>
                     ))}
