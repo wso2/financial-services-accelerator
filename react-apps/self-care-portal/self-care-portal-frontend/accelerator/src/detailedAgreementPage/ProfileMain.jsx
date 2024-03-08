@@ -16,73 +16,72 @@
  * under the License.
  */
 
-import React from 'react';
-import moment from 'moment';
-import { Container } from 'react-bootstrap';
+import React, {useState} from "react";
+import {Container} from "react-bootstrap";
+import {Link} from "react-router-dom";
+import {withdrawLang, lang} from "../specConfigs";
+import ADRLogo from "../images/ADRLogo.png";
+import moment from "moment";
 import { Download } from 'react-bootstrap-icons';
-import { Link } from 'react-router-dom';
+import {specConfigurations} from "../specConfigs/specConfigurations";
+import {generatePDF, getExpireTimeFromConsent} from "../services/utils";
 
-import { generatePDF, getExpireTimeFromConsent } from '../services/utils';
-import ADRLogo from '../images/ADRLogo.png';
-import { specConfigurations } from '../specConfigs/specConfigurations';
-import { withdrawLang } from '../specConfigs';
 
-export const ProfileMain = ({ consent, infoLabel, appicationName, logoURL }) => {
-  const consentConsentId = consent.consentId;
-  const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
+export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
 
-  if (logoURL === undefined || logoURL === '') {
-    logoURL = ADRLogo;
-  }
+    const consentConsentId = consent.consentId;
+    const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
 
-  function isNotExpired() {
-    try {
-      let expireTimeFromConsent = getExpireTimeFromConsent(consent, 'YYYY-MM-DDTHH:mm:ss[Z]');
-      if (!expireTimeFromConsent) {
-        return true;
-      }
-      return moment(currentDate).isBefore(expireTimeFromConsent);
-    } catch (e) {
-      return true;
+    if (logoURL === undefined || logoURL === '') {
+        logoURL = ADRLogo
     }
-  }
 
-  const consentStatusLabel =
-    consent.currentStatus.toLowerCase() === specConfigurations.status.authorised.toLowerCase() &&
-    !isNotExpired()
-      ? specConfigurations.status.expired
-      : infoLabel.label;
-  return (
-    <Container className="profileMain">
-      <img id="profileLogo" src={logoURL} width="50" height="50" alt="new" />
-      <h4 className="mt-3">{appicationName}</h4>
-      <>
-        <div className="confirmLink">
-          <a
-            id="confirmationReportLink"
-            href="javascript:void(0);"
-            onClick={() => generatePDF(consent, appicationName, consentStatusLabel)}
-          >
-            {`${infoLabel.profile.confirmation} `}
-            <Download />
-          </a>
-        </div>
-        {consent.currentStatus.toLowerCase() ===
-          specConfigurations.status.authorised.toLowerCase() && isNotExpired() ? (
-          <div className="actionButtons">
-            <div className="actionBtnDiv">
-              <Link
-                to={`/consentmgr/${consentConsentId}/withdrawal-step-1`}
-                className="withdrawBtn"
-              >
-                {withdrawLang.detailedConsentPageStopSharingBtn}
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <div className="actionButtons"></div>
-        )}
-      </>
-    </Container>
-  );
+    function isNotExpired() {
+        try {
+            let expireTimeFromConsent = getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]");
+            if (!expireTimeFromConsent) {
+                return true;
+            }
+            return moment(currentDate)
+                .isBefore(expireTimeFromConsent);
+        } catch (e) {
+            return true;
+        }
+    }
+
+    const consentStatusLabel = (consent.currentStatus.toLowerCase() ===
+        specConfigurations.status.authorised.toLowerCase() && !isNotExpired())
+        ? specConfigurations.status.expired : infoLabel.label;
+    return (
+        <Container className="profileMain">
+            <img id="profileLogo" src={logoURL} width="50" height="50" alt="new"/>
+            <h4 className="mt-3">{appicationName}</h4>
+            <>
+                <div className="confirmLink">
+                    <a id="confirmationReportLink" href="javascript:void(0);"
+                       onClick={() => generatePDF(consent, appicationName, consentStatusLabel)}>
+                        {`${infoLabel.profile.confirmation} `}
+                        <Download />
+                    </a>
+                </div>
+                {consent.currentStatus.toLowerCase() ===
+                specConfigurations.status.authorised.toLowerCase() && isNotExpired() ? (
+                    <div className="actionButtons">
+                        <div className="actionBtnDiv">
+                            <Link
+                                to={`/consentmgr/${consentConsentId}/withdrawal-step-1`}
+                                className="withdrawBtn"
+                            >
+                                {withdrawLang.detailedConsentPageStopSharingBtn}
+                            </Link>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="actionButtons">
+                    </div>
+                )
+                }
+            </>
+        </Container>
+    );
 };
