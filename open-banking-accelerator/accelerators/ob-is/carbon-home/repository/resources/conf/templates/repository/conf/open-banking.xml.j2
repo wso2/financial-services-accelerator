@@ -93,6 +93,7 @@
                 {% endfor %}
             {% else %}
                 <Validator>com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator</Validator>
+                <Validator>com.wso2.openbanking.accelerator.identity.token.validators.MTLSCertificateValidator</Validator>
                 <Validator>com.wso2.openbanking.accelerator.identity.token.validators.SignatureAlgorithmEnforcementValidator</Validator>
                 <Validator>com.wso2.openbanking.accelerator.identity.token.validators.ClientAuthenticatorValidator</Validator>
             {% endif %}
