@@ -103,7 +103,7 @@ public class Utils {
         for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
             JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
 
             ArrayList<String> listData = new ArrayList<>();
             for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
@@ -140,7 +140,7 @@ public class Utils {
         for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
             JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
 
             ArrayList<String> listData = new ArrayList<>();
             for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
@@ -182,7 +182,7 @@ public class Utils {
         for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
             JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
 
             ArrayList<String> listData = new ArrayList<>();
             for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
@@ -217,7 +217,7 @@ public class Utils {
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
 
             if (ConsentExtensionConstants.DEBTOR_ACC_TITLE.equals(title)) {
-                JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+                JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
 
                 for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
                     String data = (String) dataArray.get(dataIndex);
@@ -269,7 +269,7 @@ public class Utils {
         for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
             JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
 
             ArrayList<String> listData = new ArrayList<>();
             for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {

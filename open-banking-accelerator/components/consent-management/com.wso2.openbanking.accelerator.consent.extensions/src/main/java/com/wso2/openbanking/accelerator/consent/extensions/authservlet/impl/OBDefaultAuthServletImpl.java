@@ -74,11 +74,6 @@ public class OBDefaultAuthServletImpl implements OBAuthServletInterface {
 
         String[] accounts = request.getParameter("accounts[]").split(":");
         returnMaps.put("accountIds", new JSONArray(accounts));
-        returnMaps.put(ConsentExtensionConstants.PAYMENT_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.PAYMENT_ACCOUNT));
-        returnMaps.put(ConsentExtensionConstants.COF_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.COF_ACCOUNT));
-
         return returnMaps;
     }
 

@@ -290,7 +290,14 @@ public class ErrorConstants {
     public static final String PATH_PERIOD_TYPE = "Data.ControlParameters.PeriodicLimits.PeriodType";
     public static final String PATH_PERIOD_ALIGNMENT = "Data.ControlParameters.PeriodicLimits.PeriodAlignment";
 
+    // VRP Authorization flow
     public static final String CONTROL_PARAMETERS_MISSING_ERROR = "Missing mandatory parameter the ControlParameters";
     public static final String DATA_OBJECT_MISSING_ERROR = "Missing mandatory parameter the Data";
+    public static final String MAX_AMOUNT_NOT_JSON_OBJECT_ERROR = "Parameter Maximum Individual Amount is" +
+            "not of type JSONObject";
+    public static final String NOT_JSON_ARRAY_ERROR = "Parameter PeriodicLimits is not a JSON Array";
+    public static final String PERIOD_ALIGNMENT_NOT_STRING_ERROR = "Parameter Period Alignment is not a String";
+    public static final String PERIOD_TYPE_NOT_STRING_ERROR = "Parameter Period Type is not a String";
+    public static final String NOT_STRING_ERROR = "Parameter amount or currency is not a String";
 }
 

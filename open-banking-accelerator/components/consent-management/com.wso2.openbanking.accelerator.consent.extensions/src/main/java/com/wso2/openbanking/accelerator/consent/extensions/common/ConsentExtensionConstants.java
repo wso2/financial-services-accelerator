@@ -93,7 +93,6 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS = "accounts";
     public static final String CONSENT_DATA = "consentData";
     public static final String TITLE = "title";
-    public static final String DATA_SIMPLE = "data";
     public static final String DEBTOR_ACCOUNT_ID = "AccountId";
     public static final String ACCOUNT_ID = "account_id";
     public static final String DATA_REQUESTED = "data_requested";
