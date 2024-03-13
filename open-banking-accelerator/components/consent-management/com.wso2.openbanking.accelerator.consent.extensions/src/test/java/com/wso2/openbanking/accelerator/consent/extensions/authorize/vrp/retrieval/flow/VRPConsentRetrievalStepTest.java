@@ -273,19 +273,19 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
         Assert.assertNotNull(cofConsentData);
     }
 
-//    @Test
-//    public void testGetConsentDataSetForVRP()  {
-//
-//        Mockito.doReturn(ConsentExtensionConstants.VRP).when(consentResourceMock).getConsentType();
-//        Mockito.doReturn(ConsentAuthorizeTestConstants.VRP_INITIATION).when(consentResourceMock)
-//                .getReceipt();
-//        Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
-//                .getCurrentStatus();
-//
-//        JSONArray cofConsentData = defaultConsentRetrievalStep.getConsentDataSet(consentResourceMock);
-//
-//        Assert.assertNotNull(cofConsentData);
-//    }
+    @Test
+    public void testGetConsentDataSetForVRP()  {
+
+        Mockito.doReturn(ConsentExtensionConstants.VRP).when(consentResourceMock).getConsentType();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.VRP_INITIATION).when(consentResourceMock)
+                .getReceipt();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
+                .getCurrentStatus();
+
+        JSONArray cofConsentData = defaultConsentRetrievalStep.getConsentDataSet(consentResourceMock);
+
+        Assert.assertNotNull(cofConsentData);
+    }
 
 
 }
