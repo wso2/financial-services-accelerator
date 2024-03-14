@@ -58,7 +58,7 @@ public class ConsentRetrievalUtil {
             for (String param : spQueries) {
                 if (param.contains("request=")) {
                     requestObject = (param.substring("request=".length())).replaceAll(
-                            "\\r\\n|\\r|\\n|%20", "");
+                            "\\r\\n|\\r|\\n|\\%20", "");
                 }
             }
             if (requestObject != null) {
@@ -261,10 +261,10 @@ public class ConsentRetrievalUtil {
          * this method also invokes the relevant methods to populate data for each flow.
          *
          * @param consentResource Consent Resource parameter containing consent related information retrieved
-         *                        from database
+         *                        from database.
          * @return ConsentDataJson array
          */
-        public static JSONArray getConsentData(ConsentResource consentResource)  throws ConsentException {
+        public static JSONArray getConsentData(ConsentResource consentResource) throws ConsentException {
 
             JSONArray consentDataJSON = new JSONArray();
             try {
@@ -314,16 +314,13 @@ public class ConsentRetrievalUtil {
                     log.error(ErrorConstants.DATA_OBJECT_MISSING_ERROR);
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.DATA_OBJECT_MISSING_ERROR);
                 }
-
             } catch (ParseException e) {
                 log.error(ErrorConstants.CONSENT_RETRIEVAL_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         ErrorConstants.CONSENT_RETRIEVAL_ERROR);
             }
-
             return consentDataJSON;
         }
-
 
         /**
          * Populate Domestic and international Payment Details.
@@ -544,7 +541,11 @@ public class ConsentRetrievalUtil {
          */
         private static void populateVRPData(JSONObject data, JSONArray consentDataJSON) {
 
-            if (data.containsKey(ConsentExtensionConstants.CONTROL_PARAMETERS)) {
+            if (!data.containsKey(ConsentExtensionConstants.CONTROL_PARAMETERS)) {
+                    log.error(ErrorConstants.CONTROL_PARAMETERS_MISSING_ERROR);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                            ErrorConstants.CONTROL_PARAMETERS_MISSING_ERROR);
+            } else {
 
                 JSONObject controlParameters = (JSONObject) data.
                         get(ConsentExtensionConstants.CONTROL_PARAMETERS);
@@ -591,27 +592,27 @@ public class ConsentRetrievalUtil {
 
                 Object maxAmount = controlParameters.get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
 
-                if (maxAmount instanceof JSONObject) {
-                        JSONObject jsonElementControlParameter = new JSONObject();
-                        jsonElementControlParameter.appendField(ConsentExtensionConstants.TITLE,
-                                ConsentExtensionConstants.CONTROL_PARAMETER_MAX_INDIVIDUAL_AMOUNT_TITLE);
-                        JSONArray controlParameterArray = new JSONArray();
+            if (maxAmount instanceof JSONObject) {
+                    JSONObject jsonElementControlParameter = new JSONObject();
+                    jsonElementControlParameter.appendField(ConsentExtensionConstants.TITLE,
+                            ConsentExtensionConstants.CONTROL_PARAMETER_MAX_INDIVIDUAL_AMOUNT_TITLE);
+                    JSONArray controlParameterArray = new JSONArray();
 
-                        JSONObject maximumIndividualAmount = (JSONObject) maxAmount;
+                    JSONObject maximumIndividualAmount = (JSONObject) maxAmount;
 
-                        String formattedAmount = String.format("%s %s",
-                                maximumIndividualAmount.getAsString(ConsentExtensionConstants.CURRENCY),
-                                maximumIndividualAmount.getAsString(ConsentExtensionConstants.AMOUNT));
-                        controlParameterArray.add(formattedAmount);
-                        jsonElementControlParameter.appendField(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
-                                controlParameterArray);
+                    String formattedAmount = String.format("%s %s",
+                            maximumIndividualAmount.getAsString(ConsentExtensionConstants.CURRENCY),
+                            maximumIndividualAmount.getAsString(ConsentExtensionConstants.AMOUNT));
+                    controlParameterArray.add(formattedAmount);
+                    jsonElementControlParameter.appendField(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
+                            controlParameterArray);
 
-                        consentDataJSON.add(jsonElementControlParameter);
-                } else {
-                    log.error(ErrorConstants.MAX_AMOUNT_NOT_JSON_OBJECT_ERROR);
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            ErrorConstants.MAX_AMOUNT_NOT_JSON_OBJECT_ERROR);
-                }
+                    consentDataJSON.add(jsonElementControlParameter);
+            } else {
+                log.error(ErrorConstants.MAX_AMOUNT_NOT_JSON_OBJECT_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                        ErrorConstants.MAX_AMOUNT_NOT_JSON_OBJECT_ERROR);
+            }
 
                 Object periodicLimit = controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
 
@@ -698,11 +699,6 @@ public class ConsentRetrievalUtil {
                 log.error(ErrorConstants.NOT_JSON_ARRAY_ERROR);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.NOT_JSON_ARRAY_ERROR);
             }
-        } else {
-                log.error(ErrorConstants.CONTROL_PARAMETERS_MISSING_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.CONTROL_PARAMETERS_MISSING_ERROR);
         }
     }
 }
-
-
