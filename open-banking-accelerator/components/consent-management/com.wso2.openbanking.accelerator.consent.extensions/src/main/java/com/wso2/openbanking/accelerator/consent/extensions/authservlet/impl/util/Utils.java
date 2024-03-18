@@ -262,12 +262,12 @@ public class Utils {
         String selectedAccount = null;
         Map<String, Object> returnMaps = new HashMap<>();
 
-        //Sets "data_requested" that contains the human-readable scope-requested information
-        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
+        // Populates "consentDataArray" with the scope information in a readable format
+        JSONArray consentDataArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
         Map<String, List<String>> dataRequested = new LinkedHashMap<>();
 
-        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
-            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
+        for (int requestedDataIndex = 0; requestedDataIndex < consentDataArray.length(); requestedDataIndex++) {
+            JSONObject dataObj = consentDataArray.getJSONObject(requestedDataIndex);
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
             JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
 
@@ -281,7 +281,7 @@ public class Utils {
 
         //Assigning value of the "Debtor Account" key in the map to the variable "selectedAccount".
         if (dataRequested.containsKey("Debtor Account")) {
-            selectedAccount = getDebtorAccFromConsentData(dataRequestedJsonArray);
+            selectedAccount = getDebtorAccFromConsentData(consentDataArray);
         } else {
             // add accounts list
             request.setAttribute(ConsentExtensionConstants.ACCOUNT_DATA, addAccList(dataSet));

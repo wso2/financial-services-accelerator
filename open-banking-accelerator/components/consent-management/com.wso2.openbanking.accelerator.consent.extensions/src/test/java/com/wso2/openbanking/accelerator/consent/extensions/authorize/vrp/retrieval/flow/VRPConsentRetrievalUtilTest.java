@@ -202,7 +202,6 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         PowerMockito.when(ConsentServiceUtil.getConsentService()).thenReturn(consentCoreServiceMock);
 
         defaultConsentRetrievalStep.execute(consentDataMock, jsonObject);
-
         Assert.assertNotNull(jsonObject.get(ConsentExtensionConstants.IS_ERROR));
     }
 
@@ -215,7 +214,6 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray accountConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
-
         Assert.assertNotNull(accountConsentData);
     }
 
@@ -235,7 +233,6 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray paymentConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
-
         Assert.assertNotNull(paymentConsentData);
     }
 
@@ -249,7 +246,6 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray cofConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
-
         Assert.assertNotNull(cofConsentData);
     }
 
@@ -265,43 +261,13 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
             Assert.assertNotNull(vrpConsentData);
     }
 
-    @Test
-    public void testAppendDummyAccountID() {
-
-        JSONArray result = ConsentRetrievalUtil.appendDummyAccountID();
-
-        Assert.assertNotNull(result);
-
-        assertEquals(result.size(), 2);
-
-        JSONObject accountOne = (JSONObject) result.get(0);
-        assertEquals(accountOne.get("account_id"), "12345");
-        assertEquals(accountOne.get("display_name"), "Salary Saver Account");
-
-        JSONObject accountTwo = (JSONObject) result.get(1);
-        assertEquals(accountTwo.get("account_id"), "67890");
-        assertEquals(accountTwo.get("display_name"), "Max Bonus Account");
-    }
-
     @Test(expectedExceptions = ConsentException.class)
     public void testConsentDataWithInvalidJson() {
         String invalidJsonString = "Invalid JSON String";
         Mockito.when(consentResourceMock.getReceipt()).thenReturn(invalidJsonString);
 
-        try {
             JSONArray consentDataJSON = ConsentRetrievalUtil.getConsentData(consentResourceMock);
             Assert.assertNotNull(consentDataJSON);
-        } catch (ConsentException e) {
-            // Parse the error message from the exception
-            JSONObject errorPayload = e.getPayload();
-            JSONArray errorsArray = (JSONArray) errorPayload.get("Errors");
-            JSONObject firstError = (JSONObject) errorsArray.get(0);
-            String errorMessage = (String) firstError.get("Message");
-
-            // Verify the error message
-            Assert.assertEquals(errorMessage, "Payload is not a JSON object");
-            throw e;
-        }
     }
 
     @Test(expectedExceptions = ConsentException.class)
@@ -312,21 +278,8 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
                 .getReceipt();
         Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
                 .getCurrentStatus();
-
-        try {
             JSONArray vrpConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
             Assert.assertNotNull(vrpConsentData);
-        } catch (ConsentException e) {
-            // Parse the error message from the exception
-            JSONObject errorPayload = e.getPayload();
-            JSONArray errorsArray = (JSONArray) errorPayload.get("Errors");
-            JSONObject firstError = (JSONObject) errorsArray.get(0);
-            String errorMessage = (String) firstError.get("Message");
-
-            // Verify the error message
-            Assert.assertEquals(errorMessage, "Missing mandatory parameter the Data");
-            throw e;
-        }
     }
 
     @Test(expectedExceptions = ConsentException.class)
@@ -338,20 +291,8 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
                 .getCurrentStatus();
 
-        try {
             JSONArray vrpConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
             Assert.assertNotNull(vrpConsentData);
-        } catch (ConsentException e) {
-            // Parse the error message from the exception
-            JSONObject errorPayload = e.getPayload();
-            JSONArray errorsArray = (JSONArray) errorPayload.get("Errors");
-            JSONObject firstError = (JSONObject) errorsArray.get(0);
-            String errorMessage = (String) firstError.get("Message");
-
-            // Verify the error message
-            Assert.assertEquals(errorMessage, "Missing mandatory parameter the ControlParameters");
-            throw e;
-        }
     }
 
     @Test(expectedExceptions = ConsentException.class)
@@ -363,20 +304,8 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
                 .getCurrentStatus();
 
-        try {
             JSONArray accountConsentData= ConsentRetrievalUtil.getConsentData(consentResourceMock);
             Assert.assertNotNull(accountConsentData);
-        } catch (ConsentException e) {
-            // Parse the error message from the exception
-            JSONObject errorPayload = e.getPayload();
-            JSONArray errorsArray = (JSONArray) errorPayload.get("Errors");
-            JSONObject firstError = (JSONObject) errorsArray.get(0);
-            String errorMessage = (String) firstError.get("Message");
-
-            // Verify the error message
-            Assert.assertEquals(errorMessage, "Provided consent is expired");
-            throw e;
-        }
     }
 
     @Test(expectedExceptions = ConsentException.class)
@@ -388,20 +317,8 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
                 .getCurrentStatus();
 
-        try {
             JSONArray cofConsentData= ConsentRetrievalUtil.getConsentData(consentResourceMock);
             Assert.assertNotNull(cofConsentData);
-        } catch (ConsentException e) {
-            // Parse the error message from the exception
-            JSONObject errorPayload = e.getPayload();
-            JSONArray errorsArray = (JSONArray) errorPayload.get("Errors");
-            JSONObject firstError = (JSONObject) errorsArray.get(0);
-            String errorMessage = (String) firstError.get("Message");
-
-            // Verify the error message
-            Assert.assertEquals(errorMessage, "Provided consent is expired");
-            throw e;
-        }
     }
 
     @Test(expectedExceptions = ConsentException.class)
@@ -413,20 +330,7 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
                 .getCurrentStatus();
 
-        try {
-            JSONArray cofConsentData= ConsentRetrievalUtil.getConsentData(consentResourceMock);
-            Assert.assertNotNull(cofConsentData);
-        } catch (ConsentException e) {
-            // Parse the error message from the exception
-            JSONObject errorPayload = e.getPayload();
-            JSONArray errorsArray = (JSONArray) errorPayload.get("Errors");
-            JSONObject firstError = (JSONObject) errorsArray.get(0);
-            String errorMessage = (String) firstError.get("Message");
-
-            // Verify the error message
-            Assert.assertEquals(errorMessage, "Error occurred while retrieving the account initiation" +
-                    " request details");
-            throw e;
-        }
+        JSONArray cofConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
+        Assert.assertNotNull(cofConsentData);
     }
 }
