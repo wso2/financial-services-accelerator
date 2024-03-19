@@ -279,7 +279,7 @@ public class ConsentRetrievalUtil {
                             ErrorConstants.NOT_JSON_OBJECT_ERROR);
                 }
 
-                if (!consentResource.getCurrentStatus().equals(ConsentExtensionConstants.AWAITING_AUTH_STATUS)) {
+                if (!ConsentExtensionConstants.AWAITING_AUTH_STATUS.equals(consentResource.getCurrentStatus())) {
                     log.error(ErrorConstants.STATE_INVALID_ERROR);
                     // Currently throwing an error as a 400 response.
                     // Developers have the option of appending a field IS_ERROR to the jsonObject
@@ -395,7 +395,6 @@ public class ConsentRetrievalUtil {
                 JSONObject instructedAmount = (JSONObject) initiation.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT);
                 JSONArray instructedAmountArray = new JSONArray();
 
-
                 if (instructedAmount.getAsString(ConsentExtensionConstants.AMOUNT_TITLE) != null) {
                     instructedAmountArray.add(ConsentExtensionConstants.AMOUNT_TITLE + " : " +
                             instructedAmount.getAsString(ConsentExtensionConstants.AMOUNT));
@@ -419,7 +418,6 @@ public class ConsentRetrievalUtil {
                 populateCreditorAccount(initiation, consentDataJSON);
 
             }
-
         }
 
         /**
@@ -486,7 +484,6 @@ public class ConsentRetrievalUtil {
                         toDateTimeArray);
                 consentDataJSON.add(jsonElementToDateTime);
             }
-
         }
 
         /**
@@ -531,7 +528,6 @@ public class ConsentRetrievalUtil {
                 populateDebtorAccount(initiation, consentDataJSON);
             }
         }
-
 
         /**
          * Populate VRP Details.
