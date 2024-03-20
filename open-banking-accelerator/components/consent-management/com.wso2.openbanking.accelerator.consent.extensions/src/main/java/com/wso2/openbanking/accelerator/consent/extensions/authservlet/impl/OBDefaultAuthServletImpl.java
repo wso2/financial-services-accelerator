@@ -92,6 +92,5 @@ public class OBDefaultAuthServletImpl implements OBAuthServletInterface {
         } else {
             return "/default_displayconsent.jsp";
         }
-
     }
 }
