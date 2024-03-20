@@ -49,14 +49,10 @@
                             <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
                             <excludes>
                                 <exclude>**/jjwt-0.9.1.jar</exclude>
-                                <exclude>**/mysql-connector-java-5.1.44.jar</exclude>
                             </excludes>
                         </fileset>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
-                            <excludes>
-                                <exclude>**/hazelcast-5.0.2.jar</exclude>
-                            </excludes>
                         </fileset>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/deployment/server/webapps</directory>

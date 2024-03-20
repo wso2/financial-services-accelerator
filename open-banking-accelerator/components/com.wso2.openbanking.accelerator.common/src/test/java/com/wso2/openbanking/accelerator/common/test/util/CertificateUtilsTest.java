@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.common.test.util;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.security.cert.X509Certificate;
@@ -29,6 +30,13 @@ import java.security.cert.X509Certificate;
  * Certificate Util test class.
  */
 public class CertificateUtilsTest {
+
+    private X509Certificate expiredX509Cert;
+
+    @BeforeClass
+    public void init() throws OpenBankingException {
+        this.expiredX509Cert = CommonTestUtil.getExpiredSelfCertificate();
+    }
 
     @Test(description = "when valid transport cert, return x509 certificate")
     public void testParseCertificate() throws OpenBankingException {
@@ -69,4 +77,10 @@ public class CertificateUtilsTest {
         Assert.assertNotNull(testCert);
         Assert.assertFalse(CommonTestUtil.hasExpired(testCert));
     }
+
+    @Test
+    public void testIsCertValidWithExpiredCert() {
+        Assert.assertTrue(CertificateUtils.isExpired(expiredX509Cert));
+    }
+
 }
