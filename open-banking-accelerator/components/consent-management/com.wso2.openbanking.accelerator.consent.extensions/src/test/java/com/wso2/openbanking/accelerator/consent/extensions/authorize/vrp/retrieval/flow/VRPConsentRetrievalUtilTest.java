@@ -28,15 +28,12 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.utils.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.validator.VRPConsentRequestValidator;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.vrp.VRPTestConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentExtensionTestUtils;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -52,7 +49,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +57,6 @@ import static com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -304,7 +299,7 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
                 .getCurrentStatus();
 
-        JSONArray accountConsentData= ConsentRetrievalUtil.getConsentData(consentResourceMock);
+        JSONArray accountConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
         Assert.assertNotNull(accountConsentData);
     }
 
@@ -317,7 +312,7 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         Mockito.doReturn(ConsentAuthorizeTestConstants.AWAITING_AUTH_STATUS).when(consentResourceMock)
                 .getCurrentStatus();
 
-        JSONArray cofConsentData= ConsentRetrievalUtil.getConsentData(consentResourceMock);
+        JSONArray cofConsentData = ConsentRetrievalUtil.getConsentData(consentResourceMock);
         Assert.assertNotNull(cofConsentData);
     }
 

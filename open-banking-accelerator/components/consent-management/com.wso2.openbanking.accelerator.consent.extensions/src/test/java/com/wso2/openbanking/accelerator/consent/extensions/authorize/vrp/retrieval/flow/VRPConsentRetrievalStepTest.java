@@ -254,7 +254,7 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
 
 
     @Test
-    public void testGetConsentDataSetForCOF(){
+    public void testGetConsentDataSetForCOF() {
 
         Mockito.doReturn(ConsentExtensionConstants.FUNDSCONFIRMATIONS).when(consentResourceMock).getConsentType();
         Mockito.doReturn(ConsentAuthorizeTestConstants.COF_RECEIPT).when(consentResourceMock)
