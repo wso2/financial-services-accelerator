@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validat
 
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
 import com.wso2.openbanking.accelerator.gateway.cache.CertificateRevocationCache;
 import com.wso2.openbanking.accelerator.gateway.cache.GatewayCacheKey;
 import com.wso2.openbanking.accelerator.gateway.executor.service.CertValidationService;
@@ -81,7 +82,7 @@ public class CertRevocationValidationExecutorTest {
 
     @Test(description = "When expired certificate is provided, then should return true")
     public void testIsCertValidWithExpiredCert() {
-        Assert.assertTrue(CertificateValidationUtils.isExpired(expiredPeerCertificate));
+        Assert.assertTrue(CertificateUtils.isExpired(expiredPeerCertificate));
     }
 
     @Test(description = "When certificate validation success, then should return false")

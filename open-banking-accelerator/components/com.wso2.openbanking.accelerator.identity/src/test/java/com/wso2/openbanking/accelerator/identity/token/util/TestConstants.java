@@ -24,7 +24,7 @@ package com.wso2.openbanking.accelerator.identity.token.util;
 public class TestConstants {
     public static final String TARGET_STREAM = "targetStream";
     public static final String CERTIFICATE_HEADER = "x-wso2-mutual-auth-cert";
-    public static final String CERTIFICATE_CONTENT = "-----BEGIN CERTIFICATE-----" +
+    public static final String EXPIRED_CERTIFICATE_CONTENT = "-----BEGIN CERTIFICATE-----" +
             "MIIFODCCBCCgAwIBAgIEWcWGxDANBgkqhkiG9w0BAQsFADBTMQswCQYDVQQGEwJH" +
             "QjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxLjAsBgNVBAMTJU9wZW5CYW5raW5nIFBy" +
             "ZS1Qcm9kdWN0aW9uIElzc3VpbmcgQ0EwHhcNMTkwNTE2MDg0NDQ2WhcNMjAwNjE2" +
@@ -53,6 +53,37 @@ public class TestConstants {
             "sTANKfF8qK5kRsy6z9OGPUE+Oi3DUt+E9p5LCq6n5Bkp9YRGmyYRPs8JMkJmq3sf" +
             "wtXOy27LE4exJRuZsF1CA78ObaRytuE3DJcnIRdhOcjWieS/MxZD7bzuuAPu5ySX" +
             "i2/qxT3AlWtHtxrz0mKSC3rlgYAHCzCAHoASWKpf5tnB3TodPVZ6DYOu7oI=" +
+            "-----END CERTIFICATE-----";
+
+    public static final String CERTIFICATE_CONTENT = "-----BEGIN CERTIFICATE-----" +
+            "MIIFODCCBCCgAwIBAgIEWca5LzANBgkqhkiG9w0BAQsFADBTMQswCQYDVQQGEwJH" +
+            "QjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxLjAsBgNVBAMTJU9wZW5CYW5raW5nIFBy" +
+            "ZS1Qcm9kdWN0aW9uIElzc3VpbmcgQ0EwHhcNMjMwNDE3MDQ1ODE2WhcNMjQwNTE3" +
+            "MDUyODE2WjBhMQswCQYDVQQGEwJHQjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxGzAZ" +
+            "BgNVBAsTEjAwMTU4MDAwMDFIUVFyWkFBWDEfMB0GA1UEAxMWb1E0S29hYXZwT3Vv" +
+            "RTdydlFzWkVPVjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJeMaWpz" +
+            "mwYZ25cDHLSEWhcwaa/JJXgwupZJifByhaao8m/Hhx8PZpXOXz7GcfiNVmz3w1cA" +
+            "FXvfrNh4A7rc2vjp9shNQ6bQnbOKVjoN+rNxskYjxpvLOllCUaii5kjdRF5r0YE9" +
+            "7t3hH7GdATT56Js9aomykbeYodG1vN4eDcgArn1fO7q+6+0Ew2Mla5X+T/fsfu+1" +
+            "4tXMLx7AAQSCzGfsYnJp6fCJQ4uk1d5mlYWd+cM2gWf1eQ5sHeL1K9B+czos57NF" +
+            "hsVUBvPCPLmratanj78tN8O6zOxAs1UEckf+z1rLK3D2NCqv9FnfB7saLKhp58vQ" +
+            "qoRnOiW+lr1Z4bsCAwEAAaOCAgQwggIAMA4GA1UdDwEB/wQEAwIHgDAgBgNVHSUB" +
+            "Af8EFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwgeAGA1UdIASB2DCB1TCB0gYLKwYB" +
+            "BAGodYEGAWQwgcIwKgYIKwYBBQUHAgEWHmh0dHA6Ly9vYi50cnVzdGlzLmNvbS9w" +
+            "b2xpY2llczCBkwYIKwYBBQUHAgIwgYYMgYNVc2Ugb2YgdGhpcyBDZXJ0aWZpY2F0" +
+            "ZSBjb25zdGl0dXRlcyBhY2NlcHRhbmNlIG9mIHRoZSBPcGVuQmFua2luZyBSb290" +
+            "IENBIENlcnRpZmljYXRpb24gUG9saWNpZXMgYW5kIENlcnRpZmljYXRlIFByYWN0" +
+            "aWNlIFN0YXRlbWVudDBtBggrBgEFBQcBAQRhMF8wJgYIKwYBBQUHMAGGGmh0dHA6" +
+            "Ly9vYi50cnVzdGlzLmNvbS9vY3NwMDUGCCsGAQUFBzAChilodHRwOi8vb2IudHJ1" +
+            "c3Rpcy5jb20vb2JfcHBfaXNzdWluZ2NhLmNydDA6BgNVHR8EMzAxMC+gLaArhilo" +
+            "dHRwOi8vb2IudHJ1c3Rpcy5jb20vb2JfcHBfaXNzdWluZ2NhLmNybDAfBgNVHSME" +
+            "GDAWgBRQc5HGIXLTd/T+ABIGgVx5eW4/UDAdBgNVHQ4EFgQUSoZfmnXGAPddPqfH" +
+            "WVOvkxD89MgwDQYJKoZIhvcNAQELBQADggEBABHzHOJzn4DPHay8xGzlWJIxxe+X" +
+            "sNtupR5V/ouEGCzJMUPmegYeK2Kiv+Z9nJKnbspgqLil52yauKWRmiXif4FWoOPR" +
+            "wspR9ijnynCgIp6z3EAOawbe28HkaGEfAi8PMqdNAYLKpXg35TUnbP+p2Q55Grq9" +
+            "EpSR2APQfJ4TjgLgKjqLRf/RjJAY9hJbQJIUl07esYf8hH7mX6uHDCywzic+UEQ3" +
+            "tUfo7PgWmnmtyUdFcW1qAl4P80a5fb8Wq0gNu6gN5tK2bg5TfSo3Gp2It8NVu/dY" +
+            "7q3ur7CAYTXrThjg4GXUQgVqYgV3pHbr1LTAiRtac7RBhMNPCklZA78RpTM=" +
             "-----END CERTIFICATE-----";
     public static final String CLIENT_ASSERTION = "eyJraWQiOiJqeVJVY3l0MWtWQ2xjSXZsVWxjRHVrVlozdFUiLCJhbGciOiJQUzI1" +
             "NiJ9.eyJzdWIiOiJpWXBSbTY0YjJ2bXZtS0RoZEw2S1pEOXo2ZmNhIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6OTQ0My9vYXV0a" +

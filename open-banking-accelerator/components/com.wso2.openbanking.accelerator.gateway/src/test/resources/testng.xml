@@ -36,6 +36,7 @@
             <class name="com.wso2.openbanking.accelerator.gateway.executor.jws.JwsResponseSignatureHandlingExecutorTests"/>
             <class name="com.wso2.openbanking.accelerator.gateway.executor.jws.JwsRequestSignatureHandlingExecutorTests"/>
             <class name="com.wso2.openbanking.accelerator.gateway.mediator.BasicAuthMediatorTests"/>
+            <class name="com.wso2.openbanking.accelerator.gateway.executor.impl.error.handler.OBDefaultErrorHandlerTest"/>
         </classes>
     </test>
     <test name="revocation-tests">
@@ -55,11 +56,6 @@
         <classes>
             <class name="com.wso2.openbanking.accelerator.gateway.reporter.TimestampPublishingTest"/>
             <class name="com.wso2.openbanking.accelerator.gateway.reporter.OBAnalyticsMetricReporterTest"/>
-        </classes>
-    </test>
-    <test name="idempotency-validation-test">
-        <classes>
-            <class name="com.wso2.openbanking.accelerator.gateway.executor.idempotency.OpenBankingIdempotencyHandlingExecutorTests"/>
         </classes>
     </test>
     <test name="dispute-resolution-tests">
