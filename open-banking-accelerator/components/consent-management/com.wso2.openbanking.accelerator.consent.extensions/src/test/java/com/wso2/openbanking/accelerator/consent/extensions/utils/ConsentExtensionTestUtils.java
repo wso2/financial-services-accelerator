@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
- * comment.
+ * Utils class for consent executor tests.
  */
 public class ConsentExtensionTestUtils {
 

@@ -53,6 +53,8 @@ public class OBDefaultAuthServletImpl implements OBAuthServletInterface {
                 return Utils.populatePaymentsData(request, dataSet);
             case ConsentExtensionConstants.FUNDSCONFIRMATIONS:
                 return Utils.populateCoFData(request, dataSet);
+            case ConsentExtensionConstants.VRP:
+                return Utils.populateVRPDataRetrieval(request, dataSet);
             default:
                 return new HashMap<>();
         }
@@ -72,11 +74,6 @@ public class OBDefaultAuthServletImpl implements OBAuthServletInterface {
 
         String[] accounts = request.getParameter("accounts[]").split(":");
         returnMaps.put("accountIds", new JSONArray(accounts));
-        returnMaps.put(ConsentExtensionConstants.PAYMENT_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.PAYMENT_ACCOUNT));
-        returnMaps.put(ConsentExtensionConstants.COF_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.COF_ACCOUNT));
-
         return returnMaps;
     }
 
@@ -89,7 +86,8 @@ public class OBDefaultAuthServletImpl implements OBAuthServletInterface {
     @Override
     public String getJSPPath() {
 
-        if (jspPath.equalsIgnoreCase(ConsentExtensionConstants.ACCOUNTS)) {
+        if (jspPath.equalsIgnoreCase(ConsentExtensionConstants.ACCOUNTS) ||
+                jspPath.equalsIgnoreCase(ConsentExtensionConstants.VRP)) {
             return "/ob_default.jsp";
         } else {
             return "/default_displayconsent.jsp";
