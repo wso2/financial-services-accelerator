@@ -158,8 +158,8 @@ public class AuthServletTest {
         Map<String, Object> consentData = obAuthServlet.updateConsentData(httpServletRequestMock);
         Assert.assertFalse(consentData.isEmpty());
         Assert.assertTrue(consentData.containsKey(ConsentExtensionConstants.ACCOUNT_IDS));
-        Assert.assertTrue(consentData.containsKey(ConsentExtensionConstants.PAYMENT_ACCOUNT));
-        Assert.assertTrue(consentData.containsKey(ConsentExtensionConstants.COF_ACCOUNT));
+        Assert.assertFalse(consentData.containsKey(ConsentExtensionConstants.PAYMENT_ACCOUNT));
+        Assert.assertFalse(consentData.containsKey(ConsentExtensionConstants.COF_ACCOUNT));
     }
 
     @Test

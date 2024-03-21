@@ -20,6 +20,7 @@
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
@@ -92,36 +93,34 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         JSONObject payload = consentPersistData.getPayload();
 
-        if (payload.get("accountIds") == null || !(payload.get("accountIds") instanceof JSONArray)) {
-            log.error("Account IDs not available in persist request");
+        if (payload.get(ConsentExtensionConstants.ACCOUNT_IDS) == null ||
+                !(payload.get(ConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
+            log.error(ErrorConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
             throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                    "Account IDs not available in persist request");
+                    ErrorConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
         }
 
-        JSONArray accountIds = (JSONArray) payload.get("accountIds");
+        JSONArray accountIds = (JSONArray) payload.get(ConsentExtensionConstants.ACCOUNT_IDS);
         ArrayList<String> accountIdsString = new ArrayList<>();
         for (Object account : accountIds) {
             if (!(account instanceof String)) {
-                log.error("Account IDs format error in persist request");
+                log.error(ErrorConstants.ACCOUNT_ID_FORMAT_ERROR);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        "Account IDs format error in persist request");
+                        ErrorConstants.ACCOUNT_ID_FORMAT_ERROR);
             }
             accountIdsString.add((String) account);
         }
         String consentStatus;
-        String authStatus;
 
         if (consentPersistData.getApproval()) {
             consentStatus = ConsentExtensionConstants.AUTHORIZED_STATUS;
-            authStatus = ConsentExtensionConstants.AUTHORIZED_STATUS;
         } else {
             consentStatus = ConsentExtensionConstants.REJECTED_STATUS;
-            authStatus = ConsentExtensionConstants.REJECTED_STATUS;
         }
 
         ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
                 .bindUserAccountsToConsent(consentResource, consentData.getUserId(),
-                        consentData.getAuthResource().getAuthorizationID(), accountIdsString, authStatus,
+                        consentData.getAuthResource().getAuthorizationID(), accountIdsString, consentStatus,
                         consentStatus);
     }
 }
