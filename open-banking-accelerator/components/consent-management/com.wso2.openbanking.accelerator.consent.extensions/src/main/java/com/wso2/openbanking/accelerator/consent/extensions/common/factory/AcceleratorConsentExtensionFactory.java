@@ -17,10 +17,6 @@
  */
 package com.wso2.openbanking.accelerator.consent.extensions.common.factory;
 
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.AccountConsentPersistenceHandler;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.CofConsentPersistenceHandler;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.ConsentPersistenceHandler;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.PaymentConsentPersistenceHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.AccountConsentManageRequestHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.CofConsentRequestHandler;
