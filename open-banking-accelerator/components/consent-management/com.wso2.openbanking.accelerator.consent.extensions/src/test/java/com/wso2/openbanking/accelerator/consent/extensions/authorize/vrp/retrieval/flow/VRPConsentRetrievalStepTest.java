@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
- * <p>
+ *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -90,8 +90,6 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
 
         configMap = new HashMap<>();
         openBankingConfigParserMock = Mockito.mock(OpenBankingConfigParser.class);
-
-
         authResources = new ArrayList<AuthorizationResource>();
     }
 
@@ -195,12 +193,11 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
         PowerMockito.when(ConsentServiceUtil.getConsentService()).thenReturn(consentCoreServiceMock);
 
         defaultConsentRetrievalStep.execute(consentDataMock, jsonObject);
-
         Assert.assertNotNull(jsonObject.get(ConsentExtensionConstants.IS_ERROR));
     }
 
     @Test
-    public void testGetConsentDataSetForAccounts() throws ConsentManagementException, ParseException {
+    public void testGetConsentDataSetForAccounts() {
 
         Mockito.doReturn(ConsentExtensionConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
         Mockito.doReturn(ConsentAuthorizeTestConstants.VALID_INITIATION_OBJECT).when(consentResourceMock)
@@ -209,7 +206,6 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray accountConsentData = defaultConsentRetrievalStep.getConsentDataSet(consentResourceMock);
-
         Assert.assertNotNull(accountConsentData);
     }
 
@@ -232,12 +228,11 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray paymentConsentData = defaultConsentRetrievalStep.getConsentDataSet(consentResourceMock);
-
         Assert.assertNotNull(paymentConsentData);
     }
 
     @Test
-    public void testGetConsentDataSetForFilePayments() throws ConsentManagementException, ParseException {
+    public void testGetConsentDataSetForFilePayments() {
 
         Mockito.doReturn(configMap).when(openBankingConfigParserMock).getConfiguration();
 
@@ -254,13 +249,12 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray paymentConsentData = defaultConsentRetrievalStep.getConsentDataSet(consentResourceMock);
-
         Assert.assertNotNull(paymentConsentData);
     }
 
 
     @Test
-    public void testGetConsentDataSetForCOF() throws ConsentManagementException, ParseException {
+    public void testGetConsentDataSetForCOF() {
 
         Mockito.doReturn(ConsentExtensionConstants.FUNDSCONFIRMATIONS).when(consentResourceMock).getConsentType();
         Mockito.doReturn(ConsentAuthorizeTestConstants.COF_RECEIPT).when(consentResourceMock)
@@ -269,12 +263,11 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray cofConsentData = defaultConsentRetrievalStep.getConsentDataSet(consentResourceMock);
-
         Assert.assertNotNull(cofConsentData);
     }
 
     @Test
-    public void testGetConsentDataSetForVRP() throws ConsentManagementException, ParseException {
+    public void testGetConsentDataSetForVRP()  {
 
         Mockito.doReturn(ConsentExtensionConstants.VRP).when(consentResourceMock).getConsentType();
         Mockito.doReturn(ConsentAuthorizeTestConstants.VRP_INITIATION).when(consentResourceMock)
@@ -283,9 +276,6 @@ public class VRPConsentRetrievalStepTest extends PowerMockTestCase {
                 .getCurrentStatus();
 
         JSONArray cofConsentData = defaultConsentRetrievalStep.getConsentDataSet(consentResourceMock);
-
         Assert.assertNotNull(cofConsentData);
     }
-
-
 }

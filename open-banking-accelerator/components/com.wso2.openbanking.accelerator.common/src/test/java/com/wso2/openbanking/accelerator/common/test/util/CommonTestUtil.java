@@ -18,6 +18,9 @@
 
 package com.wso2.openbanking.accelerator.common.test.util;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
+
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
 import java.security.cert.CertificateException;
@@ -35,6 +38,7 @@ public class CommonTestUtil {
     public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     public static final String END_CERT = "-----END CERTIFICATE-----";
     public static final String X509_CERT_INSTANCE_NAME = "X.509";
+    private static X509Certificate expiredSelfCertificate = null;
     public static final String EIDAS_CERT = "-----BEGIN CERTIFICATE-----" +
             "MIIEjDCCA3SgAwIBAgILAKTSmx6PZuerUKkwDQYJKoZIhvcNAQELBQAwSDELMAkG" +
             "A1UEBhMCREUxDDAKBgNVBAoMA0JEUjERMA8GA1UECwwISVQgLSBEZXYxGDAWBgNV" +
@@ -167,6 +171,14 @@ public class CommonTestUtil {
         Field field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);
         return field;
+    }
+
+    public static synchronized X509Certificate getExpiredSelfCertificate()
+            throws OpenBankingException {
+        if (expiredSelfCertificate == null) {
+            expiredSelfCertificate = CertificateUtils.parseCertificate(EXPIRED_SELF_CERT);
+        }
+        return expiredSelfCertificate;
     }
 
     private static void injectIntoUnmodifiableMap(String key, String value, Object map)

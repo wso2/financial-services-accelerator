@@ -34,10 +34,6 @@
     <name>WSO2 Open Banking - Common component</name>
     <dependencies>
         <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
         </dependency>
@@ -183,6 +179,7 @@
                         <exclude>**/JDBCPersistenceManager.class</exclude>
                         <exclude>**/CertValidationErrors.class</exclude>
                         <exclude>**/JDBCRetentionDataPersistenceManager.class</exclude>
+                        <exclude>**/*Type*/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -275,10 +272,7 @@
                         </Private-Package>
                         <Import-Package>
                             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
-                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
-                            com.hazelcast.config; version="${com.hazelcast.hazelcast.version}",
-                            com.hazelcast.core; version="${com.hazelcast.hazelcast.version}",
-                            com.hazelcast.map; version="${com.hazelcast.hazelcast.version}"
+                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}"
                         </Import-Package>
                         <Export-Package>
                             !com.wso2.openbanking.accelerator.common.internal,

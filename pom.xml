@@ -487,11 +487,6 @@
                 <artifactId>javax.servlet</artifactId>
                 <version>${equinox.javax.servlet.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast</artifactId>
-                <version>${com.hazelcast.hazelcast.version}</version>
-            </dependency>
             <!-- Dependencies for testing -->
             <dependency>
                 <groupId>org.jacoco</groupId>
@@ -792,7 +787,6 @@
         <findsecbugs-plugin.version>1.10.1</findsecbugs-plugin.version>
         <spotbugs.annotations.version>4.7.3</spotbugs.annotations.version>
         <maven.checkstyleplugin.version>3.1.0</maven.checkstyleplugin.version>
-        <com.hazelcast.hazelcast.version>5.0.2</com.hazelcast.hazelcast.version>
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <com.h3xstream.findsecbugs.version>1.12.0</com.h3xstream.findsecbugs.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>

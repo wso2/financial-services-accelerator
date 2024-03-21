@@ -32,7 +32,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -104,7 +103,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             jsonObject.put(ConsentExtensionConstants.IS_ERROR,
                     ((JSONObject) errorList.get(0)).getAsString("Message"));
             return;
-        } catch (ParseException | ConsentManagementException e) {
+        } catch (ConsentManagementException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while getting consent data");
         }
@@ -116,8 +115,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
      * @return  consent
      * @throws ConsentException
      */
-    public JSONArray getConsentDataSet(ConsentResource consentResource)
-            throws ConsentException, ConsentManagementException, ParseException {
+    public JSONArray getConsentDataSet(ConsentResource consentResource) {
 
         return ConsentRetrievalUtil.getConsentData(consentResource);
     }
