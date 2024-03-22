@@ -54,12 +54,13 @@ public class IdempotencyValidator {
      * @param consentManageData            Consent Manage Data
      * @return  IdempotencyValidationResult
      */
-    public static IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData)
+    public IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData)
             throws IdempotencyValidationException {
 
         if (IdempotencyValidationUtils.isIdempotencyEnabledFromConfig()) {
             // If idempotency key value, client id or request is empty then cannot proceed with idempotency validation
-            if (!IdempotencyValidationUtils.isMandatoryParamsPresent(consentManageData, getIdempotencyHeaderName())) {
+            if (!IdempotencyValidationUtils.isMandatoryParamsPresent(consentManageData,
+                    getIdempotencyHeaderName())) {
                 log.error("Idempotency Key Value, Client ID or Request is empty. Hence cannot proceed with " +
                         "idempotency validation");
                 return new IdempotencyValidationResult(false, false, null, null);
@@ -107,8 +108,8 @@ public class IdempotencyValidator {
      * @param consentRequest           Detailed Consent Resource
      * @return  IdempotencyValidationResult
      */
-    private static IdempotencyValidationResult validateIdempotencyConditions(ConsentManageData consentManageData,
-                                                                             DetailedConsentResource consentRequest)
+    private IdempotencyValidationResult validateIdempotencyConditions(ConsentManageData consentManageData,
+                                                                      DetailedConsentResource consentRequest)
             throws IdempotencyValidationException, IOException {
         // Compare the client ID sent in the request and client id retrieved from the database
         // to validate whether the request is received from the same client
@@ -146,7 +147,7 @@ public class IdempotencyValidator {
      * @param resourcePath     Resource Path
      * @return idempotency Attribute Name.
      */
-    public static String getIdempotencyAttributeName(String resourcePath) {
+    public String getIdempotencyAttributeName(String resourcePath) {
         return "IdempotencyKey";
     }
 
@@ -155,7 +156,7 @@ public class IdempotencyValidator {
      *
      * @return idempotency Header Name.
      */
-    public static String getIdempotencyHeaderName() {
+    public String getIdempotencyHeaderName() {
         return "x-idempotency-key";
     }
 
@@ -166,7 +167,7 @@ public class IdempotencyValidator {
      * @param consentId             ConsentId
      * @return Created Time.
      */
-    public static long getCreatedTimeOfPreviousRequest(String resourcePath, String consentId) {
+    public long getCreatedTimeOfPreviousRequest(String resourcePath, String consentId) {
         DetailedConsentResource consentRequest = null;
         try {
             consentRequest = consentCoreService.getDetailedConsent(consentId);
@@ -185,7 +186,7 @@ public class IdempotencyValidator {
      * @param consentId             ConsentId
      * @return Map containing the payload.
      */
-    public static String getPayloadOfPreviousRequest(String resourcePath, String consentId) {
+    public String getPayloadOfPreviousRequest(String resourcePath, String consentId) {
         DetailedConsentResource consentRequest = null;
         try {
             consentRequest = consentCoreService.getDetailedConsent(consentId);
@@ -203,7 +204,7 @@ public class IdempotencyValidator {
      * @param consentReceipt      Payload received from database
      * @return   Whether payloads are equal
      */
-    public static boolean isPayloadSimilar(ConsentManageData consentManageData, String consentReceipt) {
+    public boolean isPayloadSimilar(ConsentManageData consentManageData, String consentReceipt) {
 
         if (consentManageData.getPayload() == null || consentReceipt == null) {
             return false;
