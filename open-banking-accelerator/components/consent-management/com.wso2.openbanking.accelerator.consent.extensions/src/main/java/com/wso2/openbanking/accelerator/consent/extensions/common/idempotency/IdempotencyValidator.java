@@ -18,24 +18,19 @@
 
 package com.wso2.openbanking.accelerator.consent.extensions.common.idempotency;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
+import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * Class to handle idempotency related operations.
@@ -43,35 +38,38 @@ import java.util.Map;
 public class IdempotencyValidator {
 
     private static final Log log = LogFactory.getLog(IdempotencyValidator.class);
-    private static final Map<String, Object> configs = OpenBankingConfigParser.getInstance().getConfiguration();
     private static final ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance()
             .getConsentCoreService();
 
     /**
      * Method to check whether the request is idempotent.
-     * This method will first check whether idempotency validation is enabled. Then it will check whether the
-     * idempotency key exists in the database and whether the request is received within the allowed time.
+     * This method will first check whether idempotency validation is enabled. After that it will validate whether
+     * required parameters for validation is present.
+     * For validation, need to check whether the idempotency key values is present as a consent attribute, if present
+     * the consent will be retrieved. Finally following conditions will be validated.
+     *  - Whether the client id sent in the request and client id retrieved from the database are equal
+     *  - Whether the difference between two dates is less than the configured time
+     *  - Whether payloads are equal
      *
-     * @param idempotencyKeyName    Idempotency Key Name
-     * @param idempotencyKeyValue    Idempotency Key Value
-     * @param request                Request Payload
+     * @param consentManageData            Consent Manage Data
      * @return  IdempotencyValidationResult
      */
-    public static IdempotencyValidationResult validateIdempotency(String idempotencyKeyName, String idempotencyKeyValue,
-                                                                  String request, String clientId)
-            throws ConsentManagementException {
+    public static IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData)
+            throws IdempotencyValidationException {
 
-        if (Boolean.parseBoolean((configs.get(IdempotencyConstants.IDEMPOTENCY_IS_ENABLED)).toString())) {
-            // If idempotency key name, value or request is empty then cannot proceed with idempotency validation
-            if (idempotencyKeyName == null || idempotencyKeyValue == null || request.isEmpty() || clientId == null) {
-                log.debug("Idempotency Key , NameValue, Client ID or Request is empty. Hence cannot proceed with " +
+        if (IdempotencyValidationUtils.isIdempotencyEnabledFromConfig()) {
+            // If idempotency key value, client id or request is empty then cannot proceed with idempotency validation
+            if (!IdempotencyValidationUtils.isMandatoryParamsPresent(consentManageData, getIdempotencyHeaderName())) {
+                log.error("Idempotency Key Value, Client ID or Request is empty. Hence cannot proceed with " +
                         "idempotency validation");
                 return new IdempotencyValidationResult(false, false, null, null);
             }
             try {
+                String idempotencyKeyName = getIdempotencyAttributeName(consentManageData.getRequestPath());
+                String idempotencyKeyValue = consentManageData.getHeaders().get(getIdempotencyHeaderName());
                 // Retrieve consent ids that have the idempotency key name and value as attribute
-                ArrayList<String> consentIds = getConsentIdsFromIdempotencyKey(idempotencyKeyName,
-                        idempotencyKeyValue);
+                ArrayList<String> consentIds = IdempotencyValidationUtils
+                        .getConsentIdsFromIdempotencyKey(idempotencyKeyName, idempotencyKeyValue);
                 // Check whether the consent id list is not empty. If idempotency key exists in the database then
                 // the consent Id list will be not empty.
                 if (!consentIds.isEmpty()) {
@@ -80,123 +78,146 @@ public class IdempotencyValidator {
                     for (String consentId : consentIds) {
                         DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
                         if (consentRequest != null) {
-                            // Compare the client ID sent in the request and client id retrieved from the database
-                            // to validate whether the request is received from the same client
-                            if (isClientIdsMatching(clientId, consentRequest.getClientID())) {
-                                // Check whether difference between two dates is less than the configured time
-                                if (isRequestReceivedWithinAllowedTime(consentRequest.getCreatedTime())) {
-                                    // Compare whether JSON payloads are equal
-                                    if (isJSONPayloadSimilar(consentRequest.getReceipt(), request)) {
-                                        log.debug("Payloads are similar and request received within allowed time." +
-                                                " Hence this is a valid idempotent request");
-                                        return new IdempotencyValidationResult(true, true,
-                                                consentRequest, consentId);
-                                    } else {
-                                        log.debug(IdempotencyConstants.ERROR_PAYLOAD_NOT_SIMILAR);
-                                        throw new ConsentManagementException(IdempotencyConstants
-                                                .ERROR_PAYLOAD_NOT_SIMILAR);
-                                    }
-                                } else {
-                                    log.debug(IdempotencyConstants.ERROR_AFTER_ALLOWED_TIME);
-                                    throw new ConsentManagementException(IdempotencyConstants
-                                            .ERROR_AFTER_ALLOWED_TIME);
-                                }
-                            } else {
-                                log.debug(IdempotencyConstants.ERROR_MISMATCHING_CLIENT_ID);
-                                throw new ConsentManagementException(IdempotencyConstants.ERROR_MISMATCHING_CLIENT_ID);
-                            }
+                            return validateIdempotencyConditions(consentManageData, consentRequest);
                         } else {
-                            log.debug(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS);
-                            throw new ConsentManagementException(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS);
+                            log.error(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS);
+                            throw new IdempotencyValidationException(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS);
                         }
                     }
                 }
             } catch (IOException e) {
                 log.error(IdempotencyConstants.JSON_COMPARING_ERROR, e);
-                throw new ConsentManagementException(IdempotencyConstants.JSON_COMPARING_ERROR);
+                throw new IdempotencyValidationException(IdempotencyConstants.JSON_COMPARING_ERROR);
+            } catch (ConsentManagementException e) {
+                log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
+                return new IdempotencyValidationResult(true, false, null, null);
             }
         }
         return new IdempotencyValidationResult(false, false, null, null);
     }
 
     /**
-     * Method to retrieve the consent ids that have the idempotency key name and value as attribute.
+     * Method to check whether the idempotency conditions are met.
+     * This method will validate the following conditions.
+     *  - Whether the client id sent in the request and client id retrieved from the database are equal
+     *  - Whether the difference between two dates is less than the configured time
+     *  - Whether payloads are equal
      *
-     * @param idempotencyKeyName     Idempotency Key Name
-     * @param idempotencyKeyValue    Idempotency Key Value
-     * @return   List of consent ids
+     * @param consentManageData        Consent Manage Data
+     * @param consentRequest           Detailed Consent Resource
+     * @return  IdempotencyValidationResult
      */
-    private static ArrayList<String> getConsentIdsFromIdempotencyKey(String idempotencyKeyName,
-                                                                     String idempotencyKeyValue) {
-        try {
-            return consentCoreService.getConsentIdByConsentAttributeNameAndValue(
-                    idempotencyKeyName, idempotencyKeyValue);
-        } catch (ConsentManagementException e) {
-            log.debug("No consent ids found for the idempotency key value");
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * Method to compare the client ID sent in the request and client id retrieved from the database.
-     *
-     * @param requestClientID     Client ID sent in the request
-     * @param dbClientId          client ID retrieved from the database
-     * @return   Whether JSON client Ids are equal
-     */
-    private static boolean isClientIdsMatching(String requestClientID, String dbClientId) {
-
-        return requestClientID.equals(dbClientId);
-    }
-
-    /**
-     * Method to compare whether JSON payloads are equal.
-     *
-     * @param jsonString1     JSON payload retrieved from database
-     * @param jsonString2     JSON payload received from current request
-     * @return   Whether JSON payloads are equal
-     * @throws IOException If an error occurs while comparing JSON payloads
-     */
-    private static boolean isJSONPayloadSimilar(String jsonString1, String jsonString2) throws IOException {
-
-        JsonNode expectedNode = new ObjectMapper().readTree(jsonString1);
-        JsonNode actualNode = new ObjectMapper().readTree(jsonString2);
-        return expectedNode.equals(actualNode);
-    }
-
-    /**
-     * Method to check whether difference between two dates is less than the configured time.
-     *
-     * @param createdTime Created Time of the request
-     * @return  Whether the request is received within allowed time
-     */
-    protected static boolean isRequestReceivedWithinAllowedTime(long createdTime) {
-
-        if (createdTime == 0L) {
-            return false;
-        }
-        String allowedTimeDuration = (String) configs.get(IdempotencyConstants.IDEMPOTENCY_ALLOWED_TIME);
-        if (allowedTimeDuration != null) {
-            OffsetDateTime createdDate = OffsetDateTime.parse(convertToISO8601(createdTime));
-            OffsetDateTime currDate = OffsetDateTime.now(createdDate.getOffset());
-
-            long diffInHours = Duration.between(createdDate, currDate).toMinutes();
-            return diffInHours <= Long.parseLong(allowedTimeDuration);
+    private static IdempotencyValidationResult validateIdempotencyConditions(ConsentManageData consentManageData,
+                                                                             DetailedConsentResource consentRequest)
+            throws IdempotencyValidationException, IOException {
+        // Compare the client ID sent in the request and client id retrieved from the database
+        // to validate whether the request is received from the same client
+        if (IdempotencyValidationUtils.isClientIdsMatching(consentManageData.getClientId(),
+                consentRequest.getClientID())) {
+            // Check whether difference between two dates is less than the configured time
+            if (IdempotencyValidationUtils.isRequestReceivedWithinAllowedTime(getCreatedTimeOfPreviousRequest(
+                    consentManageData.getRequestPath(), consentRequest.getConsentID()))) {
+                // Compare whether JSON payloads are equal
+                if (isPayloadSimilar(consentManageData, getPayloadOfPreviousRequest(
+                        consentManageData.getRequestPath(), consentRequest.getConsentID()))) {
+                    log.debug("Payloads are similar and request received within allowed" +
+                            " time. Hence this is a valid idempotent request");
+                    return new IdempotencyValidationResult(true, true,
+                            consentRequest, consentRequest.getConsentID());
+                } else {
+                    log.error(IdempotencyConstants.ERROR_PAYLOAD_NOT_SIMILAR);
+                    throw new IdempotencyValidationException(IdempotencyConstants
+                            .ERROR_PAYLOAD_NOT_SIMILAR);
+                }
+            } else {
+                log.error(IdempotencyConstants.ERROR_AFTER_ALLOWED_TIME);
+                throw new IdempotencyValidationException(IdempotencyConstants
+                        .ERROR_AFTER_ALLOWED_TIME);
+            }
         } else {
-            log.error("Idempotency Allowed duration is null");
-            return false;
+            log.error(IdempotencyConstants.ERROR_MISMATCHING_CLIENT_ID);
+            throw new IdempotencyValidationException(IdempotencyConstants.ERROR_MISMATCHING_CLIENT_ID);
         }
     }
 
     /**
-     * Convert long date values to ISO 8601 format.
-     * @param dateValue     Date value
-     * @return ISO 8601 formatted date
+     * Method to get the Idempotency Attribute Name store in consent Attributes.
+     *
+     * @param resourcePath     Resource Path
+     * @return idempotency Attribute Name.
      */
-    public static String convertToISO8601(long dateValue) {
+    public static String getIdempotencyAttributeName(String resourcePath) {
+        return "IdempotencyKey";
+    }
 
-        DateFormat simple = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        Date simpleDateVal = new Date(dateValue * 1000);
-        return simple.format(simpleDateVal);
+    /**
+     * Method to get the Idempotency Header Name according to the request.
+     *
+     * @return idempotency Header Name.
+     */
+    public static String getIdempotencyHeaderName() {
+        return "x-idempotency-key";
+    }
+
+    /**
+     * Method to get created time from the Detailed Consent Resource.
+     *
+     * @param resourcePath     Resource Path
+     * @param consentId             ConsentId
+     * @return Created Time.
+     */
+    public static long getCreatedTimeOfPreviousRequest(String resourcePath, String consentId) {
+        DetailedConsentResource consentRequest = null;
+        try {
+            consentRequest = consentCoreService.getDetailedConsent(consentId);
+        } catch (ConsentManagementException e) {
+            log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
+            return 0L;
+        }
+
+        return consentRequest.getCreatedTime();
+    }
+
+    /**
+     * Method to get payload from previous request.
+     *
+     * @param resourcePath     Resource Path
+     * @param consentId             ConsentId
+     * @return Map containing the payload.
+     */
+    public static String getPayloadOfPreviousRequest(String resourcePath, String consentId) {
+        DetailedConsentResource consentRequest = null;
+        try {
+            consentRequest = consentCoreService.getDetailedConsent(consentId);
+        } catch (ConsentManagementException e) {
+            log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
+            return null;
+        }
+        return consentRequest.getReceipt();
+    }
+
+    /**
+     * Method to compare whether payloads are equal.
+     *
+     * @param consentManageData   Consent Manage Data Object
+     * @param consentReceipt      Payload received from database
+     * @return   Whether payloads are equal
+     */
+    public static boolean isPayloadSimilar(ConsentManageData consentManageData, String consentReceipt) {
+
+        if (consentManageData.getPayload() == null || consentReceipt == null) {
+            return false;
+        }
+
+        JsonNode expectedNode = null;
+        JsonNode actualNode = null;
+        try {
+            expectedNode = new ObjectMapper().readTree(consentManageData.getPayload().toString());
+            actualNode = new ObjectMapper().readTree(consentReceipt);
+        } catch (JsonProcessingException e) {
+            log.error(IdempotencyConstants.JSON_COMPARING_ERROR, e);
+            return false;
+        }
+        return expectedNode.equals(actualNode);
     }
 }
