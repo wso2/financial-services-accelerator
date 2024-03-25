@@ -104,7 +104,7 @@ public class IdempotencyValidationUtils {
             long diffInMinutes = Duration.between(createdDate, currDate).toMinutes();
             return diffInMinutes <= Long.parseLong(allowedTimeDuration);
         } else {
-            log.error("Idempotency Allowed duration is configured in the system. Hence returning false");
+            log.error("Idempotency allowed duration is not configured in the system. Hence returning false");
             return false;
         }
     }
