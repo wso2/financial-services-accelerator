@@ -39,18 +39,8 @@ import java.util.Date;
 public class IdempotencyValidationUtils {
 
     private static final Log log = LogFactory.getLog(IdempotencyValidationUtils.class);
-    private static final OpenBankingConfigParser parser = OpenBankingConfigParser.getInstance();
     private static final ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance()
             .getConsentCoreService();
-
-    /**
-     * Method to check whether Idempotency handling is required.
-     *
-     * @return True if idempotency is required, else False.
-     */
-    static boolean isIdempotencyEnabledFromConfig() {
-        return parser.isIdempotencyValidationEnabled();
-    }
 
     /**
      * Method to retrieve the consent ids that have the idempotency key name and value as attribute.
@@ -96,7 +86,7 @@ public class IdempotencyValidationUtils {
             log.debug("Created time is of the previous request is not correctly set. Hence returning false");
             return false;
         }
-        String allowedTimeDuration = parser.getIdempotencyAllowedTime();
+        String allowedTimeDuration = OpenBankingConfigParser.getInstance().getIdempotencyAllowedTime();
         if (StringUtils.isNotBlank(allowedTimeDuration)) {
             OffsetDateTime createdDate = OffsetDateTime.parse(toISO8601DateTime(createdTime));
             OffsetDateTime currDate = OffsetDateTime.now(createdDate.getOffset());
@@ -116,7 +106,7 @@ public class IdempotencyValidationUtils {
      */
     private static String toISO8601DateTime(long epochDate) {
 
-        DateFormat simple = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        DateFormat simple = new SimpleDateFormat(IdempotencyConstants.ISO_FORMAT);
         Date simpleDateVal = new Date(epochDate * 1000);
         return simple.format(simpleDateVal);
     }

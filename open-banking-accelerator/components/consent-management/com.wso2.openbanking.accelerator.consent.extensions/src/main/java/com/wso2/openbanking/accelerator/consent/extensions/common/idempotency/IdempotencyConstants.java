@@ -25,6 +25,7 @@ public class IdempotencyConstants {
     public static final String CONTENT_TYPE_TAG = "content-type";
     public static final String X_IDEMPOTENCY_KEY = "x-idempotency-key";
     public static final String IDEMPOTENCY_KEY_NAME = "IdempotencyKey";
+    public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final String ERROR_PAYLOAD_NOT_SIMILAR = "Payloads are not similar. Hence this is not a valid" +
             " idempotent request";
     public static final String ERROR_AFTER_ALLOWED_TIME = "Request received after the allowed time., Hence this is" +

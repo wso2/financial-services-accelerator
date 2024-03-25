@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.consent.extensions.common.idempotency;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
@@ -58,7 +59,7 @@ public class IdempotencyValidator {
     public IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData)
             throws IdempotencyValidationException {
 
-        if (!IdempotencyValidationUtils.isIdempotencyEnabledFromConfig()) {
+        if (!OpenBankingConfigParser.getInstance().isIdempotencyValidationEnabled()) {
             return new IdempotencyValidationResult(false, false);
         }
         // If request is empty then cannot proceed with idempotency validation
