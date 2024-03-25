@@ -40,7 +40,7 @@ import java.util.Map;
 public class IdempotencyValidationUtils {
 
     private static final Log log = LogFactory.getLog(IdempotencyValidationUtils.class);
-    private static final Map<String, Object> configs = OpenBankingConfigParser.getInstance().getConfiguration();
+    private static final OpenBankingConfigParser parser = OpenBankingConfigParser.getInstance();
     private static final ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance()
             .getConsentCoreService();
 
@@ -62,9 +62,7 @@ public class IdempotencyValidationUtils {
      * @return True if idempotency is required, else False.
      */
     static boolean isIdempotencyEnabledFromConfig() {
-
-        String isIdempotencyEnabled = (String) configs.get(IdempotencyConstants.IDEMPOTENCY_IS_ENABLED);
-        return Boolean.parseBoolean(isIdempotencyEnabled);
+        return parser.isIdempotencyValidationEnabled();
     }
 
     /**
@@ -107,7 +105,7 @@ public class IdempotencyValidationUtils {
         if (createdTime == 0L) {
             return false;
         }
-        String allowedTimeDuration = (String) configs.get(IdempotencyConstants.IDEMPOTENCY_ALLOWED_TIME);
+        String allowedTimeDuration = parser.getIdempotencyAllowedTime();
         if (allowedTimeDuration != null) {
             OffsetDateTime createdDate = OffsetDateTime.parse(convertToISO8601DateTimeFormat(createdTime));
             OffsetDateTime currDate = OffsetDateTime.now(createdDate.getOffset());

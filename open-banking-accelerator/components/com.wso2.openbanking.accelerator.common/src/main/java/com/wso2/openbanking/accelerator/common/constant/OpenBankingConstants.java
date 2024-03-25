@@ -255,4 +255,6 @@ public class OpenBankingConstants {
     public static final String QUERY = "query";
     public static final String IS_PSU_FEDERATED = "PSUFederatedAuthentication.Enabled";
     public static final String PSU_FEDERATED_IDP_NAME = "PSUFederatedAuthentication.IDPName";
+    public static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
+    public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
 }

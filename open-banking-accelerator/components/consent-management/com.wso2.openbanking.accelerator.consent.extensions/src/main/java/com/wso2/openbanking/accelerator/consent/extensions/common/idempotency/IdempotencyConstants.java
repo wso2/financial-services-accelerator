@@ -24,8 +24,6 @@ public class IdempotencyConstants {
 
     public static final String CONTENT_TYPE_TAG = "content-type";
     public static final String X_IDEMPOTENCY_KEY = "x-idempotency-key";
-    public static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
-    public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
     public static final String ERROR_PAYLOAD_NOT_SIMILAR = "Payloads are not similar. Hence this is not a valid" +
             " idempotent request";
     public static final String ERROR_AFTER_ALLOWED_TIME = "Request received after the allowed time., Hence this is" +
