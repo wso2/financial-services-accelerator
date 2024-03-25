@@ -24,13 +24,14 @@ public class IdempotencyConstants {
 
     public static final String CONTENT_TYPE_TAG = "content-type";
     public static final String X_IDEMPOTENCY_KEY = "x-idempotency-key";
+    public static final String IDEMPOTENCY_KEY_NAME = "IdempotencyKey";
     public static final String ERROR_PAYLOAD_NOT_SIMILAR = "Payloads are not similar. Hence this is not a valid" +
             " idempotent request";
     public static final String ERROR_AFTER_ALLOWED_TIME = "Request received after the allowed time., Hence this is" +
             " not a valid idempotent request";
     public static final String ERROR_MISMATCHING_CLIENT_ID = "Client ID sent in the request does not match with the" +
             " client ID in the retrieved consent. Hence this is not a valid idempotent request";
-    public static final String ERROR_NO_CONSENT_DETAILS = "No consent details found for the consent ID, Hence this" +
+    public static final String ERROR_NO_CONSENT_DETAILS = "No consent details found for the consent ID %s, Hence this" +
             " is not a valid idempotent request";
     public static final String JSON_COMPARING_ERROR = "Error occurred while comparing JSON payloads";
     public static final String CONSENT_RETRIEVAL_ERROR = "Error while retrieving detailed consent data";

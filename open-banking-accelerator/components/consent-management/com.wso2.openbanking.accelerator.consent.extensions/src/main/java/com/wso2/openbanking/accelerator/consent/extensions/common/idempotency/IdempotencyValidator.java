@@ -26,6 +26,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExten
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,42 +58,54 @@ public class IdempotencyValidator {
     public IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData)
             throws IdempotencyValidationException {
 
-        if (IdempotencyValidationUtils.isIdempotencyEnabledFromConfig()) {
-            // If idempotency key value, client id or request is empty then cannot proceed with idempotency validation
-            if (!IdempotencyValidationUtils.isMandatoryParamsPresent(consentManageData,
-                    getIdempotencyHeaderName())) {
-                log.error("Idempotency Key Value, Client ID or Request is empty. Hence cannot proceed with " +
-                        "idempotency validation");
-                return new IdempotencyValidationResult(false, false, null, null);
-            }
-            try {
-                String idempotencyKeyName = getIdempotencyAttributeName(consentManageData.getRequestPath());
-                String idempotencyKeyValue = consentManageData.getHeaders().get(getIdempotencyHeaderName());
-                // Retrieve consent ids that have the idempotency key name and value as attribute
-                ArrayList<String> consentIds = IdempotencyValidationUtils
-                        .getConsentIdsFromIdempotencyKey(idempotencyKeyName, idempotencyKeyValue);
-                // Check whether the consent id list is not empty. If idempotency key exists in the database then
-                // the consent Id list will be not empty.
-                if (!consentIds.isEmpty()) {
-                    log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an idempotent" +
-                            " request", idempotencyKeyValue));
-                    for (String consentId : consentIds) {
-                        DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
-                        if (consentRequest != null) {
-                            return validateIdempotencyConditions(consentManageData, consentRequest);
-                        } else {
-                            log.error(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS);
-                            throw new IdempotencyValidationException(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS);
-                        }
+        if (!IdempotencyValidationUtils.isIdempotencyEnabledFromConfig()) {
+            return new IdempotencyValidationResult(false, false, null, null);
+        }
+        // If request is empty then cannot proceed with idempotency validation
+        if (consentManageData.getPayload() == null) {
+            log.error("Request payload is empty. Hence cannot proceed with idempotency validation");
+            return new IdempotencyValidationResult(false, false, null, null);
+        }
+        // If client id is empty then cannot proceed with idempotency validation
+        if (StringUtils.isBlank(consentManageData.getClientId())) {
+            log.error("Client ID is empty. Hence cannot proceed with idempotency validation");
+            return new IdempotencyValidationResult(false, false, null, null);
+        }
+        String idempotencyKeyValue = consentManageData.getHeaders().get(getIdempotencyHeaderName());
+        // If idempotency key value is empty then cannot proceed with idempotency validation
+        if (StringUtils.isBlank(idempotencyKeyValue)) {
+            log.error("Idempotency Key Valueis empty. Hence cannot proceed with idempotency validation");
+            return new IdempotencyValidationResult(false, false, null, null);
+        }
+        try {
+            String idempotencyKeyName = getIdempotencyAttributeName(consentManageData.getRequestPath());
+            // Retrieve consent ids that have the idempotency key name and value as attribute
+            ArrayList<String> consentIds = IdempotencyValidationUtils
+                    .getConsentIdsFromIdempotencyKey(idempotencyKeyName, idempotencyKeyValue);
+            // Check whether the consent id list is not empty. If idempotency key exists in the database then
+            // the consent Id list will be not empty.
+            if (!consentIds.isEmpty()) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an" +
+                            " idempotent request", idempotencyKeyValue));
+                }
+                for (String consentId : consentIds) {
+                    DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
+                    if (consentRequest != null) {
+                        return validateIdempotencyConditions(consentManageData, consentRequest);
+                    } else {
+                        String errorMsg = String.format(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS, consentId);
+                        log.error(errorMsg);
+                        throw new IdempotencyValidationException(errorMsg);
                     }
                 }
-            } catch (IOException e) {
-                log.error(IdempotencyConstants.JSON_COMPARING_ERROR, e);
-                throw new IdempotencyValidationException(IdempotencyConstants.JSON_COMPARING_ERROR);
-            } catch (ConsentManagementException e) {
-                log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
-                return new IdempotencyValidationResult(true, false, null, null);
             }
+        } catch (IOException e) {
+            log.error(IdempotencyConstants.JSON_COMPARING_ERROR, e);
+            throw new IdempotencyValidationException(IdempotencyConstants.JSON_COMPARING_ERROR);
+        } catch (ConsentManagementException e) {
+            log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
+            return new IdempotencyValidationResult(true, false, null, null);
         }
         return new IdempotencyValidationResult(false, false, null, null);
     }
@@ -113,8 +126,7 @@ public class IdempotencyValidator {
             throws IdempotencyValidationException, IOException {
         // Compare the client ID sent in the request and client id retrieved from the database
         // to validate whether the request is received from the same client
-        if (IdempotencyValidationUtils.isClientIdsMatching(consentManageData.getClientId(),
-                consentRequest.getClientID())) {
+        if (IdempotencyValidationUtils.isClientIDEqual(consentRequest.getClientID(), consentManageData.getClientId())) {
             // Check whether difference between two dates is less than the configured time
             if (IdempotencyValidationUtils.isRequestReceivedWithinAllowedTime(getCreatedTimeOfPreviousRequest(
                     consentManageData.getRequestPath(), consentRequest.getConsentID()))) {
@@ -148,7 +160,7 @@ public class IdempotencyValidator {
      * @return idempotency Attribute Name.
      */
     public String getIdempotencyAttributeName(String resourcePath) {
-        return "IdempotencyKey";
+        return IdempotencyConstants.IDEMPOTENCY_KEY_NAME;
     }
 
     /**
@@ -157,7 +169,7 @@ public class IdempotencyValidator {
      * @return idempotency Header Name.
      */
     public String getIdempotencyHeaderName() {
-        return "x-idempotency-key";
+        return IdempotencyConstants.X_IDEMPOTENCY_KEY;
     }
 
     /**
@@ -175,7 +187,9 @@ public class IdempotencyValidator {
             log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
             return 0L;
         }
-
+        if (consentRequest == null) {
+            return 0L;
+        }
         return consentRequest.getCreatedTime();
     }
 
@@ -192,6 +206,9 @@ public class IdempotencyValidator {
             consentRequest = consentCoreService.getDetailedConsent(consentId);
         } catch (ConsentManagementException e) {
             log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
+            return null;
+        }
+        if (consentRequest == null) {
             return null;
         }
         return consentRequest.getReceipt();
@@ -213,8 +230,13 @@ public class IdempotencyValidator {
         JsonNode expectedNode = null;
         JsonNode actualNode = null;
         try {
-            expectedNode = new ObjectMapper().readTree(consentManageData.getPayload().toString());
-            actualNode = new ObjectMapper().readTree(consentReceipt);
+            ObjectMapper mapper = new ObjectMapper();
+            expectedNode = mapper.readTree(consentManageData.getPayload().toString());
+            actualNode = mapper.readTree(consentReceipt);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Expected payload for idempotent request is: %s. But actual payload " +
+                        "received is %s", expectedNode.toString(), actualNode.toString()));
+            }
         } catch (JsonProcessingException e) {
             log.error(IdempotencyConstants.JSON_COMPARING_ERROR, e);
             return false;

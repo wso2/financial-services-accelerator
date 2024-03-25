@@ -115,8 +115,6 @@ public class IdempotencyValidatorTests {
     @BeforeClass
     public void beforeTest() {
         configs = new HashMap<>();
-        configs.put(IDEMPOTENCY_IS_ENABLED, "true");
-        configs.put(IDEMPOTENCY_ALLOWED_TIME, "1");
 
         headers = new HashMap<>();
         headers.put(IdempotencyConstants.X_IDEMPOTENCY_KEY, "123456");
@@ -126,6 +124,8 @@ public class IdempotencyValidatorTests {
         consentCoreServiceImpl = Mockito.mock(ConsentCoreServiceImpl.class);
         OpenBankingConfigParser openBankingConfigParserMock = PowerMockito.mock(OpenBankingConfigParser.class);
         Mockito.doReturn(configs).when(openBankingConfigParserMock).getConfiguration();
+        Mockito.doReturn(true).when(openBankingConfigParserMock).isIdempotencyValidationEnabled();
+        Mockito.doReturn("1").when(openBankingConfigParserMock).getIdempotencyAllowedTime();
         ConsentExtensionsDataHolder consentExtensionsDataHolderMock = PowerMockito
                 .mock(ConsentExtensionsDataHolder.class);
 
