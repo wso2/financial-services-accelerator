@@ -59,23 +59,23 @@ public class IdempotencyValidator {
             throws IdempotencyValidationException {
 
         if (!IdempotencyValidationUtils.isIdempotencyEnabledFromConfig()) {
-            return new IdempotencyValidationResult(false, false, null, null);
+            return new IdempotencyValidationResult(false, false);
         }
         // If request is empty then cannot proceed with idempotency validation
         if (consentManageData.getPayload() == null) {
             log.error("Request payload is empty. Hence cannot proceed with idempotency validation");
-            return new IdempotencyValidationResult(false, false, null, null);
+            return new IdempotencyValidationResult(false, false);
         }
         // If client id is empty then cannot proceed with idempotency validation
         if (StringUtils.isBlank(consentManageData.getClientId())) {
             log.error("Client ID is empty. Hence cannot proceed with idempotency validation");
-            return new IdempotencyValidationResult(false, false, null, null);
+            return new IdempotencyValidationResult(false, false);
         }
         String idempotencyKeyValue = consentManageData.getHeaders().get(getIdempotencyHeaderName());
         // If idempotency key value is empty then cannot proceed with idempotency validation
         if (StringUtils.isBlank(idempotencyKeyValue)) {
             log.error("Idempotency Key Valueis empty. Hence cannot proceed with idempotency validation");
-            return new IdempotencyValidationResult(false, false, null, null);
+            return new IdempotencyValidationResult(false, false);
         }
         try {
             String idempotencyKeyName = getIdempotencyAttributeName(consentManageData.getRequestPath());
@@ -105,9 +105,9 @@ public class IdempotencyValidator {
             throw new IdempotencyValidationException(IdempotencyConstants.JSON_COMPARING_ERROR);
         } catch (ConsentManagementException e) {
             log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
-            return new IdempotencyValidationResult(true, false, null, null);
+            return new IdempotencyValidationResult(true, false);
         }
-        return new IdempotencyValidationResult(false, false, null, null);
+        return new IdempotencyValidationResult(false, false);
     }
 
     /**
