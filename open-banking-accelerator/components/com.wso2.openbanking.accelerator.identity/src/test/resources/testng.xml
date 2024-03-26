@@ -29,6 +29,11 @@
             <class name="com.wso2.openbanking.accelerator.identity.token.validators.ClientAuthenticatorValidatorTest"/>
         </classes>
     </test>
+    <test name="mtls-certificate-validator">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.token.validators.MTLSCertificateValidatorTest"/>
+        </classes>
+    </test>
     <test name="client-mutual-tls-enforcement-validator">
         <classes>
             <class name="com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidatorTest"/>
