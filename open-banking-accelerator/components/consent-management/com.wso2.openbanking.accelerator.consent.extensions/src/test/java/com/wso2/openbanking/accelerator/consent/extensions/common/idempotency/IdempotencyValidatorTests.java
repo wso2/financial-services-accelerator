@@ -20,7 +20,6 @@ package com.wso2.openbanking.accelerator.consent.extensions.common.idempotency;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
-import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -30,12 +29,12 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ import java.util.UUID;
  */
 @PrepareForTest({OpenBankingConfigParser.class, ConsentExtensionsDataHolder.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
-public class IdempotencyValidatorTests {
+public class IdempotencyValidatorTests extends PowerMockTestCase {
 
     @Mock
     private ConsentManageData consentManageData;
@@ -114,14 +113,8 @@ public class IdempotencyValidatorTests {
 
 
     @BeforeClass
-    public void beforeTest() throws ReflectiveOperationException {
+    public void beforeTest() {
         configs = new HashMap<>();
-
-        //to execute util class initialization
-        new CarbonUtils();
-        System.setProperty("some.property", "property.value");
-        System.setProperty("carbon.home", ".");
-        injectEnvironmentVariable("CARBON_HOME", ".");
 
         headers = new HashMap<>();
         headers.put(IdempotencyConstants.X_IDEMPOTENCY_KEY, "123456");
@@ -286,36 +279,5 @@ public class IdempotencyValidatorTests {
         consent.setClientID(CLIENT_ID);
         consent.setCreatedTime(createdTime);
         return consent;
-    }
-
-    public static void injectEnvironmentVariable(String key, String value)
-            throws ReflectiveOperationException {
-
-        Class<?> processEnvironment = Class.forName("java.lang.ProcessEnvironment");
-
-        Field unmodifiableMapField = getAccessibleField(processEnvironment, "theUnmodifiableEnvironment");
-        Object unmodifiableMap = unmodifiableMapField.get(null);
-        injectIntoUnmodifiableMap(key, value, unmodifiableMap);
-
-        Field mapField = getAccessibleField(processEnvironment, "theEnvironment");
-        Map<String, String> map = (Map<String, String>) mapField.get(null);
-        map.put(key, value);
-    }
-
-    private static Field getAccessibleField(Class<?> clazz, String fieldName)
-            throws NoSuchFieldException {
-
-        Field field = clazz.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field;
-    }
-
-    private static void injectIntoUnmodifiableMap(String key, String value, Object map)
-            throws ReflectiveOperationException {
-
-        Class unmodifiableMap = Class.forName("java.util.Collections$UnmodifiableMap");
-        Field field = getAccessibleField(unmodifiableMap, "m");
-        Object obj = field.get(map);
-        ((Map<String, String>) obj).put(key, value);
     }
 }
