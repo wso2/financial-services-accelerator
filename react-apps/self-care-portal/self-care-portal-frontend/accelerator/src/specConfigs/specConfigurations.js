@@ -173,7 +173,7 @@ export const account_lang = [
             },
         ],
         profile: {
-            confirmation: "'Download confirmation of consent'"
+            confirmation: "Download confirmation of consent"
         },
         keyDatesInfoLabel: "Key Dates",
         keyDates: [

@@ -156,6 +156,9 @@
                 <Step class="com.wso2.openbanking.accelerator.common.test.CustomStep4" priority="4"/>
             </Persist>
         </AuthorizeSteps>
+        <AmendmentHistory>
+            <Enabled>true</Enabled>
+        </AmendmentHistory>
     </Consent>
     <DataPublishing>
         <Thrift>
@@ -207,7 +210,7 @@
     </ServiceActivator>
 
     <KeyManager>
-        <KeyManagerExtensionImpl></KeyManagerExtensionImpl>
+        <KeyManagerExtensionImpl>com.wso2.openbanking.accelerator.keymanager.OBKeyManagerImpl</KeyManagerExtensionImpl>
         <KeyManagerAdditionalProperties>
             <Property name="name" label="label" type="text" tooltip="tooltip" default="" values="" required="false" mask="false" multiple="false" priority="1" />
         </KeyManagerAdditionalProperties>

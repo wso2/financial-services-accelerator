@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,20 +16,20 @@
  * under the License.
  */
 
-package com.wso2.openbanking.accelerator.common.test.distributed.caching;
+package com.wso2.openbanking.accelerator.consent.extensions.common.idempotency;
 
-import com.wso2.openbanking.accelerator.common.distributed.caching.OpenBankingDistributedCacheKey;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 
 /**
- * TestOpenBankingDistributedCacheKey.
+ * Used for handling exceptions in Idempotency Validation.
  */
-public class TestOpenBankingDistributedCacheKey extends OpenBankingDistributedCacheKey {
+public class IdempotencyValidationException extends OpenBankingException {
 
-    public TestOpenBankingDistributedCacheKey(String cacheKey) {
-        super(cacheKey);
+    public IdempotencyValidationException(String message) {
+        super(message);
     }
 
-    public static OpenBankingDistributedCacheKey of(String cacheKey) {
-        return new TestOpenBankingDistributedCacheKey(cacheKey);
+    public IdempotencyValidationException(String message, Throwable e) {
+        super(message, e);
     }
 }

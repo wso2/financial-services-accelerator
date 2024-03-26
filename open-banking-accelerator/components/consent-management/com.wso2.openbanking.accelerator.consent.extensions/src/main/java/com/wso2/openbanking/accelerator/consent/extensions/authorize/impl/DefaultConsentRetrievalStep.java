@@ -16,11 +16,9 @@
  * under the License.
  */
 
-
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.retrieval.ConsentRetrievalHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.utils.ConsentRetrievalUtil;
@@ -28,7 +26,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.accelerator.consent.extensions.common.factory.AcceleratorConsentExtensionFactory;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -44,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(DefaultConsentRetrievalStep.class);
-    ConsentRetrievalHandler consentRetrievalHandler;
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
@@ -66,7 +62,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                             "executed successfully before default consent persist step");
                 }
                 String requestObject = ConsentRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
-                consentId =  ConsentRetrievalUtil.extractConsentId(requestObject);
+                consentId = ConsentRetrievalUtil.extractConsentId(requestObject);
                 consentData.setConsentId(consentId);
             }
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
@@ -101,7 +97,6 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             JSONArray accountsJSON = ConsentRetrievalUtil.appendDummyAccountID();
             jsonObject.appendField(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
 
-
         } catch (ConsentException e) {
             JSONObject errorObj = (JSONObject) e.getPayload();
             JSONArray errorList = (JSONArray) errorObj.get("Errors");
@@ -113,18 +108,16 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                     "Exception occurred while getting consent data");
         }
     }
+
     /**
      * Method to retrieve consent related data from the initiation payload.
      * @param consentResource
-     * @return
+     * @return  consent
      * @throws ConsentException
      */
-    public JSONArray getConsentDataSet(ConsentResource consentResource)
-            throws ConsentException {
+    public JSONArray getConsentDataSet(ConsentResource consentResource) {
 
-        String type = consentResource.getConsentType();
-        consentRetrievalHandler = AcceleratorConsentExtensionFactory.getConsentRetrievalHandler(type);
-        return consentRetrievalHandler.getConsentDataSet(consentResource);
+        return ConsentRetrievalUtil.getConsentData(consentResource);
     }
 
 }

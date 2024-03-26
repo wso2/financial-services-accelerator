@@ -1457,4 +1457,23 @@ public class OpenBankingConfigParser {
                 ((String) getConfigElementFromKey(OpenBankingConstants.PSU_FEDERATED_IDP_NAME)).trim();
     }
 
+    /**
+     * Method to get the value Idempotency enable configuration.
+     * @return
+     */
+    public boolean isIdempotencyValidationEnabled() {
+        return getConfigElementFromKey(OpenBankingConstants.IDEMPOTENCY_IS_ENABLED) != null &&
+                Boolean.parseBoolean(((String)
+                        getConfigElementFromKey(OpenBankingConstants.IDEMPOTENCY_IS_ENABLED)).trim());
+    }
+
+    /**
+     * Method to get the value Idempotency allowed time configuration.
+     * @return
+     */
+    public String getIdempotencyAllowedTime() {
+        return getConfigElementFromKey(OpenBankingConstants.IDEMPOTENCY_ALLOWED_TIME) == null ? "1440" :
+                (String) getConfigElementFromKey(OpenBankingConstants.IDEMPOTENCY_ALLOWED_TIME);
+    }
+
 }
