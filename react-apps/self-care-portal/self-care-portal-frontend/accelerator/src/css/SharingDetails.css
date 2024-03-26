@@ -72,32 +72,5 @@
   margin-bottom: 0;
 }
 
-.two-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr; 
-  gap: 10px; 
-}
-
-@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-  .two-columns {
-    display: block;
-  }
-
-  .three-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr; 
-      gap: 10px; 
-  }
-}
-
-@media only screen and (min-device-width: 320px) and (max-device-width: 767px) {
-  .two-columns {
-    display: block;
-  }
-
-  .three-columns {
-      display: block;
-    }
-}
 
 
