@@ -51,7 +51,7 @@ public class EventCreationService {
      * notifications for event polling request.
      * @param notificationCreationDTO Notification Creation DTO
      * @return Event Response
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException Exception when persisting event notification data
      */
     public String publishOBEventNotification(NotificationCreationDTO notificationCreationDTO)
             throws OBEventNotificationException {

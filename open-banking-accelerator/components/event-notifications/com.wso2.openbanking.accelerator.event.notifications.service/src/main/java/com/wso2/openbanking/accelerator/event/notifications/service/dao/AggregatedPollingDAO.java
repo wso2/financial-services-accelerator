@@ -38,7 +38,7 @@ public interface AggregatedPollingDAO {
      * @param notificationId     Notification ID to update
      * @param notificationStatus Notification status to update
      * @return Update is success or not
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when updating notification status by ID
      */
     Boolean updateNotificationStatusById(String notificationId, String notificationStatus)
             throws OBEventNotificationException;
@@ -48,7 +48,7 @@ public interface AggregatedPollingDAO {
      *
      * @param notificationError  Notification error details
      * @return Stored event notifications error details
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when storing event notifications error details
      */
     Map<String, NotificationError> storeErrorNotification(NotificationError notificationError)
             throws OBEventNotificationException;
@@ -60,7 +60,7 @@ public interface AggregatedPollingDAO {
      * @param status    Notification status to retrieve
      * @param max       Maximum number of notifications to retrieve
      * @return List of notifications by client and status
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when retrieving notifications by client ID and status
      */
     List<NotificationDTO> getNotificationsByClientIdAndStatus(String clientId, String
             status, int max) throws OBEventNotificationException;
@@ -70,7 +70,7 @@ public interface AggregatedPollingDAO {
      *
      * @param notificationId  Notification ID to retrieve
      * @return List of notifications by notification ID
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when retrieving notifications by notification ID
      */
     List<NotificationEvent> getEventsByNotificationID(String notificationId) throws OBEventNotificationException;
 
@@ -79,7 +79,7 @@ public interface AggregatedPollingDAO {
      *
      * @param status  Notification status to retrieve
      * @return List of notifications by status
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when retrieving notifications by status
      */
     List<NotificationDTO> getNotificationsByStatus(String status) throws OBEventNotificationException;
 
@@ -89,7 +89,7 @@ public interface AggregatedPollingDAO {
      * @param clientId    Client ID to retrieve notifications
      * @param eventStatus Notification status to retrieve
      * @return List of notifications by status and client id
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when retrieving notification count by client ID and status
      */
     int getNotificationCountByClientIdAndStatus(String clientId, String eventStatus)
             throws OBEventNotificationException;
@@ -99,7 +99,7 @@ public interface AggregatedPollingDAO {
      *
      * @param notificationId  Notification ID to retrieve
      * @return Notification status by notification ID
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when retrieving notification status
      */
     boolean getNotificationStatus(String notificationId) throws OBEventNotificationException;
 }

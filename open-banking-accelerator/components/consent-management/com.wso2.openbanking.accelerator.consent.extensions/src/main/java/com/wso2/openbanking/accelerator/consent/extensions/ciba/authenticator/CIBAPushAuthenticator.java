@@ -127,7 +127,7 @@ public class CIBAPushAuthenticator extends PushAuthenticator {
      *
      * @param consentData Consent Data
      * @param jsonObject Json object to store consent data
-     * @throws ConsentException
+     * @throws ConsentException when an error occurs while executing retrieval steps
      */
     protected void executeRetrieval(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
@@ -146,7 +146,7 @@ public class CIBAPushAuthenticator extends PushAuthenticator {
      * @param response HTTP response
      * @param sessionDataKey Session data key
      * @return Consent data
-     * @throws ConsentException
+     * @throws ConsentException when an error occurs while retrieving consent
      */
     protected JSONObject retrieveConsent(HttpServletRequest request, HttpServletResponse response,
                                   String sessionDataKey) throws ConsentException {
@@ -256,9 +256,9 @@ public class CIBAPushAuthenticator extends PushAuthenticator {
 
     /**
      * OB specific implementation to retrieve consent data.
-     * @param sessionDataKey
+     * @param sessionDataKey Session data key
      * @return consent data
-     * @throws AuthenticationFailedException
+     * @throws AuthenticationFailedException  Authentication failed exception
      */
     @Override
     protected Optional<String> getAdditionalInfo(HttpServletRequest request, HttpServletResponse response,
@@ -324,6 +324,7 @@ public class CIBAPushAuthenticator extends PushAuthenticator {
      * Returns a map of query parameters from the given query param string.
      * @param queryParamsString HTTP request query parameters
      * @return Query parameter map
+     * @throws UnsupportedEncodingException  Unsupported encoding exception
      */
     protected Map<String, String> splitQuery(String queryParamsString) throws UnsupportedEncodingException {
         final Map<String, String> queryParams = new HashMap<>();
@@ -345,6 +346,7 @@ public class CIBAPushAuthenticator extends PushAuthenticator {
      * @param httpStatusCode   Http status code
      * @param errorCode        Error code
      * @param errorDescription Error description
+     * @return CIBAAuthenticationEndpointErrorResponse  CIBA Authentication Endpoint Error Response
      */
     public static CIBAAuthenticationEndpointErrorResponse createErrorResponse(int httpStatusCode, String errorCode,
                                                                               String errorDescription) {

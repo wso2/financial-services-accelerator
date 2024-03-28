@@ -56,8 +56,8 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     /**
      * Method used to enforce periodic statues update of consents.
      *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
+     * @param jobExecutionContext  Job Execution Context
+     * @throws JobExecutionException  if an error occurs while executing the job
      */
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
@@ -70,6 +70,7 @@ public class ExpiredConsentStatusUpdateJob implements Job {
 
     /**
      * Method to update statues of consents.
+     * @throws ConsentManagementException if an error occurs while updating the consent status
      */
     public static void updateExpiredStatues() throws ConsentManagementException {
 
