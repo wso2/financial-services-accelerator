@@ -212,8 +212,8 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for delete consent mapping by auth id.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables  flag to execute on retention tables
+     * @return  SQL query for delete consent mapping by auth id
      */
     public String getDeleteConsentMappingByAuthIdPreparedStatement(boolean executeOnRetentionTables) {
 

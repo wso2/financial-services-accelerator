@@ -53,6 +53,7 @@ public class JWTUtils {
      * @param jwtToken jwt sent by the tpp
      * @param jwtPart  expected jwt part (header, body)
      * @return json object containing requested jwt part
+     * @throws ParseException if an error occurs while parsing the jwt
      */
     public static JSONObject decodeRequestJWT(String jwtToken, String jwtPart) throws ParseException {
 
@@ -77,6 +78,10 @@ public class JWTUtils {
      * @param jwksUri   endpoint displaying the key set for the signing certificates
      * @param algorithm the signing algorithm for jwt
      * @return true if signature is valid
+     * @throws ParseException    if an error occurs while parsing the jwt
+     * @throws BadJOSEException  if the jwt is invalid
+     * @throws JOSEException     if an error occurs while processing the jwt
+     * @throws MalformedURLException if an error occurs while creating the URL object
      */
     @Generated(message = "Excluding from code coverage since can not call this method due to external https call")
     public static boolean validateJWTSignature(String jwtString, String jwksUri, String algorithm)

@@ -77,9 +77,9 @@ public class JWKRetriever {
     /**
      * Get JWK Set from remote resource retriever.
      *
-     * @param jwksURL
-     * @return
-     * @throws IOException
+     * @param jwksURL   jwksURL in URL format
+     * @return  JWKSet
+     * @throws OpenBankingException  if an error occurs while retrieving resource
      */
     public JWKSet updateJWKSetFromURL(URL jwksURL) throws OpenBankingException {
 
@@ -105,7 +105,7 @@ public class JWKRetriever {
      * @param jwksURL jwksURL in URL format
      * @param applicationName application name as a string
      * @return jwkSet
-     * @throws OpenBankingException
+     * @throws OpenBankingException  if an error occurs while getting JWK set
      */
     public JWKSet getJWKSet(URL jwksURL , String applicationName) throws OpenBankingException {
 
