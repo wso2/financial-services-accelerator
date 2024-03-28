@@ -32,6 +32,8 @@ public interface RealtimeEventNotificationRequestGenerator {
      * This method is to generate realtime event notification payload. To generate custom values
      * for the body this method should be extended.
      *
+     * @param notificationDTO Notification details DTO
+     * @param eventSET        Event set
      * @return String payload
      */
     String getRealtimeEventNotificationPayload(NotificationDTO notificationDTO, String eventSET);
@@ -40,7 +42,7 @@ public interface RealtimeEventNotificationRequestGenerator {
      * This method is to generate realtime event notification request headers. To generate custom values
      * for the body this method should be extended.
      *
-     * @return Map<String, String> headers
+     * @return Map of headers
      */
     Map<String, String> getAdditionalHeaders();
 }

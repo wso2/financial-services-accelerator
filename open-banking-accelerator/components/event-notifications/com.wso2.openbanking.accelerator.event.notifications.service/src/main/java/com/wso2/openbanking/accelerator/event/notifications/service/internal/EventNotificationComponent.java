@@ -63,6 +63,7 @@ public class EventNotificationComponent {
     /**
      * Setters for the descendent OSGI services of the EventNotificationComponent.
      * This is added to run the EventNotification OSGI component after the Common module
+     * @param openBankingConfigurationService OpenBankingConfigurationService
      */
     @Reference(
             service = OpenBankingConfigurationService.class,
@@ -89,6 +90,10 @@ public class EventNotificationComponent {
             unbind = "unsetOAuth2Service"
     )
 
+    /**
+     * Setters for the descendent OSGI services of the EventNotificationComponent.
+     * @param oAuth2Service OAuth2Service
+     */
     public void setOAuth2Service(OAuth2Service oAuth2Service) {
     }
 

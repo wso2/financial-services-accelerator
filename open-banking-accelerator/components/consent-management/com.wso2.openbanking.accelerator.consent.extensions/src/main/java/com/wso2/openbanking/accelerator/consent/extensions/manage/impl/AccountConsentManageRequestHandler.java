@@ -302,7 +302,7 @@ public class AccountConsentManageRequestHandler implements ConsentManageRequestH
 
     /**
      * Method to append the consent expiration time (UTC) as a consent attribute.
-     *
+     * @param requestedConsent  Consent Resource
      */
     public static void appendConsentExpirationTimestampAttribute(ConsentResource requestedConsent) {
 

@@ -140,6 +140,7 @@ public class VRPConsentRequestValidator {
      * It is commonly used to validate whether a given object represents a valid JSON array.
      *
      * @param value The object to be checked for being a valid JSONArray.
+     * @return true if the object is a valid JSONArray, false otherwise.
      */
     public static boolean isValidJSONArray(Object value) {
         String errorMessage = String.format(ErrorConstants.INVALID_PARAMETER_MESSAGE, "periodic limit",
@@ -462,6 +463,7 @@ public class VRPConsentRequestValidator {
      * @param parentObj The JSONObject to be validated.
      * @param key       The key to be checked for presence in the parentObj.
      * @param expectedType The expected type of the value associated with the key.
+     * @param <T>      The expected type of the value associated with the key.
      * @return true if the specified key is present in the parentObj and the associated value is a
      * non-empty string.
      */
@@ -513,7 +515,8 @@ public class VRPConsentRequestValidator {
      * @param parentArray The JSONObject to be validated.
      * @param key         The key to be checked for presence in the parentObj.
      * @param expectedType The expected type of the value associated with the key.
-     * @return  A JSONObject containing validation results for the entire array.
+     * @param <T>        The expected type of the value associated with the key.
+     * @return A JSONObject containing validation results for the entire array.
      */
     public static <T> JSONObject validateAmountCurrencyPeriodicLimits(JSONArray parentArray, String key,
                                                                       Class<T> expectedType) {

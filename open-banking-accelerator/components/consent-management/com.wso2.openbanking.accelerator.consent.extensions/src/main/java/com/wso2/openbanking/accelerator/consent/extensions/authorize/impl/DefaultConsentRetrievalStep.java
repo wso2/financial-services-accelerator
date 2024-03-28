@@ -111,9 +111,8 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
     /**
      * Method to retrieve consent related data from the initiation payload.
-     * @param consentResource
+     * @param consentResource  Consent Resource
      * @return  consent
-     * @throws ConsentException
      */
     public JSONArray getConsentDataSet(ConsentResource consentResource) {
 
