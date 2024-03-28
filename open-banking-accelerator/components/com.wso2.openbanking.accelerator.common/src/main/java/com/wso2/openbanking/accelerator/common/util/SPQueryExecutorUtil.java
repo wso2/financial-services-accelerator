@@ -48,11 +48,15 @@ public class SPQueryExecutorUtil {
         /**
          * Executes the given query in SP.
          *
-         * @param appName Name of the siddhi app.
-         * @param query   Name of the query
+         * @param appName           Name of the siddhi app.
+         * @param query             Name of the query
+         * @param spUserName        Username for SP
+         * @param spPassword        Password for SP
+         * @param spApiHost         Hostname of the SP
          * @return JSON object with result
-         * @throws IOException    IO Exception.
-         * @throws ParseException Parse Exception.
+         * @throws IOException           IO Exception.
+         * @throws ParseException        Parse Exception.
+         * @throws OpenBankingException  OpenBanking Exception.
          */
         public static JSONObject executeQueryOnStreamProcessor(String appName, String query, String spUserName,
                                                                String spPassword, String spApiHost)

@@ -160,8 +160,8 @@ public class ConsentDAOUtils {
 
     /**
      * Method to construct where clause for consent status audit search condition.
-     * @param consentIDs
-     * @return
+     * @param consentIDs   List of consent IDs
+     * @return  Filter condition for consent status audit
      */
     public static String constructConsentAuditRecordSearchPreparedStatement(ArrayList<String> consentIDs) {
 
@@ -232,8 +232,8 @@ public class ConsentDAOUtils {
     /**
      * Method to construct excluded statuses search condition.
      *
-     * @param statusesEligibleForExpiration
-     * @return
+     * @param statusesEligibleForExpiration  List of statuses eligible for expiration
+     * @return  Filter condition for excluded statuses
      */
     public static String constructStatusesEligibleForExpirationCondition(List<String> statusesEligibleForExpiration) {
 

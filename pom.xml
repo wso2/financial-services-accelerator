@@ -150,7 +150,7 @@
         <url>https://github.com/wso2/financial-open-banking.git</url>
         <developerConnection>scm:git:https://github.com/wso2/financial-open-banking.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/financial-open-banking.git</connection>
-        <tag>HEAD</tag>
+        <tag>v3.2.0</tag>
     </scm>
 
     <build>
