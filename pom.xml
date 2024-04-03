@@ -49,6 +49,12 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <sourcepath>src/main/java</sourcepath>
+                            <sourceFileIncludes>
+                                <include>**/RegistrationErrorDTO.java</include>
+                            </sourceFileIncludes>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
