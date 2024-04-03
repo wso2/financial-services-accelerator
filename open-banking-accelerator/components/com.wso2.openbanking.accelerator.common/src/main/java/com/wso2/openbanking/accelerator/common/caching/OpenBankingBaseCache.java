@@ -33,8 +33,8 @@ import javax.cache.Caching;
 /**
  * Abstract cache manager for Open Banking.
  *
- * @param <K>
- * @param <V>
+ * @param <K>   Extended Cache Key
+ * @param <V>   Cache Value
  */
 public abstract class OpenBankingBaseCache<K extends OpenBankingBaseCacheKey, V> {
 
@@ -54,7 +54,7 @@ public abstract class OpenBankingBaseCache<K extends OpenBankingBaseCacheKey, V>
     /**
      * Initialize With unique cache name.
      *
-     * @param cacheName
+     * @param cacheName   unique cache name.
      */
     public OpenBankingBaseCache(String cacheName) {
 
@@ -68,10 +68,10 @@ public abstract class OpenBankingBaseCache<K extends OpenBankingBaseCacheKey, V>
     /**
      * Get from cache or invoke ondemand retriever and store.
      *
-     * @param key
-     * @param onDemandRetriever
-     * @return
-     * @throws OpenBankingException
+     * @param key                  cache key.
+     * @param onDemandRetriever    on demand retriever.
+     * @return                   cached object.
+     * @throws OpenBankingException  if an error occurs while retrieving the object
      */
     public V getFromCacheOrRetrieve(K key, OnDemandRetriever onDemandRetriever) throws OpenBankingException {
 
@@ -132,8 +132,8 @@ public abstract class OpenBankingBaseCache<K extends OpenBankingBaseCacheKey, V>
     /**
      * Add Object to cache.
      *
-     * @param key
-     * @param value
+     * @param key    cache key.
+     * @param value  cache value.
      */
     public void addToCache(K key, V value) {
 
@@ -149,7 +149,7 @@ public abstract class OpenBankingBaseCache<K extends OpenBankingBaseCacheKey, V>
     /**
      * Remove Object from Cache.
      *
-     * @param key
+     * @param key  cache key.
      */
     public void removeFromCache(K key) {
 

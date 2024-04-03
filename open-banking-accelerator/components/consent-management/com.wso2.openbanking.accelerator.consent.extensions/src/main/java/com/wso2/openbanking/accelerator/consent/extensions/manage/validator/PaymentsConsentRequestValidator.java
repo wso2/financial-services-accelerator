@@ -32,7 +32,7 @@ public class PaymentsConsentRequestValidator {
      *
      * @param requestPath     Request Path of the request
      * @param initiation      Initiation Object
-     * @return
+     * @return JSONObject     Validation Response
      */
     public static JSONObject validatePaymentInitiation(String requestPath, JSONObject initiation) {
 

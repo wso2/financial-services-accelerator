@@ -55,6 +55,7 @@ public class IdempotencyValidator {
      *
      * @param consentManageData            Consent Manage Data
      * @return  IdempotencyValidationResult
+     * @throws IdempotencyValidationException    If an error occurs while validating idempotency
      */
     public IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData)
             throws IdempotencyValidationException {

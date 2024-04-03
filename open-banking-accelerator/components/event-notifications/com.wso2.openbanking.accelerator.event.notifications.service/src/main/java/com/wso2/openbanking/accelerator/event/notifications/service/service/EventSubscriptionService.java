@@ -44,7 +44,7 @@ public class EventSubscriptionService {
      *
      * @param eventSubscription event subscription object that needs to be persisted
      * @return event subscription object that is persisted
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException if an error occurred while persisting the event subscription
      */
     public EventSubscription createEventSubscription(EventSubscription eventSubscription)
             throws OBEventNotificationException {
@@ -80,7 +80,7 @@ public class EventSubscriptionService {
      *
      * @param subscriptionId subscription id of the event subscription
      * @return event subscription object that is retrieved
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException if an error occurred while retrieving the event subscription
      */
     public EventSubscription getEventSubscriptionBySubscriptionId(String subscriptionId)
             throws OBEventNotificationException {
@@ -104,7 +104,7 @@ public class EventSubscriptionService {
      *
      * @param clientId client id of the event subscription
      * @return list of event subscriptions that are retrieved
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException if an error occurred while retrieving the event subscriptions
      */
     public List<EventSubscription> getEventSubscriptionsByClientId(String clientId)
             throws OBEventNotificationException {
@@ -126,7 +126,7 @@ public class EventSubscriptionService {
      *
      * @param eventType event type that needs to be subscribed by the retrieving event subscriptions.
      * @return list of event subscriptions that are retrieved
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException if an error occurred while retrieving the event subscriptions
      */
     public List<EventSubscription> getEventSubscriptionsByClientIdAndEventType(String eventType)
             throws OBEventNotificationException {
@@ -149,7 +149,7 @@ public class EventSubscriptionService {
      *
      * @param eventSubscription event subscription object that needs to be updated
      * @return true if the event subscription is updated successfully
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException if an error occurred while updating the event subscription
      */
     public Boolean updateEventSubscription(EventSubscription eventSubscription)
             throws OBEventNotificationException {
@@ -212,7 +212,7 @@ public class EventSubscriptionService {
      *
      * @param subscriptionId subscription id of the event subscription
      * @return true if the event subscription is deleted successfully
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException if an error occurred while deleting the event subscription
      */
     public Boolean deleteEventSubscription(String subscriptionId) throws OBEventNotificationException {
 

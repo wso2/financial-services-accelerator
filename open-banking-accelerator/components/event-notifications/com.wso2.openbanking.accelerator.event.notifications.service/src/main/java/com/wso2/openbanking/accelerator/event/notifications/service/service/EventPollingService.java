@@ -52,7 +52,7 @@ public class EventPollingService {
      * event polling request.
      * @param eventPollingDTO Event polling request DTO
      * @return AggregatedPollingResponse Aggregated Polling Response
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException Exception when polling events
      */
     public AggregatedPollingResponse pollEvents(EventPollingDTO eventPollingDTO)
             throws OBEventNotificationException {

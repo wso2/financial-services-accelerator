@@ -43,8 +43,9 @@ public class CertificateUtils {
     /**
      * Parse the certificate content.
      *
-     * @param content the content to be pased
-     * @throws OpenBankingException
+     * @param content the content to be passed
+     * @return the parsed certificate
+     * @throws OpenBankingException  if an error occurs while parsing the certificate
      */
     public static X509Certificate parseCertificate(String content) throws OpenBankingException {
 

@@ -35,7 +35,7 @@ public class PaymentPayloadValidator {
      *
      * @param requestPath Request Path of the request
      * @param initiation  Initiation Object of the request
-     * @return
+     * @return JSONObject Validation Response
      */
     public static JSONObject validatePaymentInitiationPayload(String requestPath, JSONObject initiation) {
 

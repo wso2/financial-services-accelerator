@@ -42,6 +42,7 @@ public class AnalyticsLogsUtils {
      * @param dataStream    Name of the data stream to which the data belongs
      * @param dataVersion   Version of the data stream to which the data belongs
      * @param analyticsData Data which belongs to the given data stream that needs to be logged via the given logger
+     * @throws OpenBankingException if an error occurs while processing the analytics data
      */
     public static void addAnalyticsLogs(String logFile, String dataStream, String dataVersion, Map<String,
             Object> analyticsData) throws OpenBankingException {

@@ -36,10 +36,11 @@ public class ApplicationIdentityService {
      * Get JWKSet for application.
      * First checks to get from cache, else retrieve the JWKSet from the URL by calling
      * a method in JWKRetriever
-     * @param applicationName
-     * @param jwksUrl
-     * @param useCache
+     * @param applicationName   Application Name
+     * @param jwksUrl           URL of the JWKSet
+     * @param useCache          Use cache or not
      * @return JWKSet
+     * @throws OpenBankingException if an error occurs while retrieving the JWKSet
      */
     public JWKSet getPublicJWKSet(String applicationName, URL jwksUrl,
                                   boolean useCache) throws OpenBankingException {

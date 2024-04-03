@@ -57,6 +57,9 @@ public class OpenBankingValidator {
     /**
      * Check for violations on request object. Stop at the first violation and return error.
      * Validations are executed based on annotation in model of the class.
+     *
+     * @param object Object to be validated
+     * @return Error message if there is a violation, null otherwise
      */
     public String getFirstViolation(Object object) {
 
