@@ -48,7 +48,7 @@ public class CofConsentPersistenceHandler implements ConsentPersistenceHandler {
      *
      * @param consentPersistData    Consent Persist Data Object
      * @param consentResource       Consent Resource Object
-     * @throws ConsentManagementException
+     * @throws ConsentManagementException if an error occurs while persisting the consent data
      */
     @Override
     public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)

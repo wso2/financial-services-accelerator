@@ -112,7 +112,7 @@ public class OpenBankingConfigParser {
      *
      * @param filePath Custom file path
      * @return OpenBankingConfigParser object
-     * @Deprecated use OpenBankingConfigParser.getInstance()
+     * &#064;Deprecated  use OpenBankingConfigParser.getInstance()
      */
     @Deprecated
     public static OpenBankingConfigParser getInstance(String filePath) {
@@ -785,7 +785,7 @@ public class OpenBankingConfigParser {
 
     /**
      * Returns the retention datasource name configured in open-banking.xml.
-     * @return
+     * @return  retention datasource name or empty string if nothing is configured
      */
     public String getRetentionDataSourceName() {
 
@@ -1142,7 +1142,7 @@ public class OpenBankingConfigParser {
     /**
      * JWKS Retriever Size Limit for JWS Signature Handling.
      *
-     * @return
+     * @return  JWKS Retriever Size Limit
      */
     public String getJwksRetrieverSizeLimit() {
 
@@ -1153,7 +1153,7 @@ public class OpenBankingConfigParser {
     /**
      * JWKS Retriever Connection Timeout for JWS Signature Handling.
      *
-     * @return
+     * @return  JWKS Retriever Connection Timeout
      */
     public String getJwksRetrieverConnectionTimeout() {
 
@@ -1164,7 +1164,7 @@ public class OpenBankingConfigParser {
     /**
      * JWKS Retriever Read Timeout for JWS Signature Handling.
      *
-     * @return
+     * @return  JWKS Retriever Read Timeout
      */
     public String getJwksRetrieverReadTimeout() {
 
@@ -1199,7 +1199,7 @@ public class OpenBankingConfigParser {
     /**
      * Jws Request Signing allowed algorithms.
      *
-     * @return
+     * @return  Jws Request Signing allowed algorithms
      */
     public List<String> getJwsRequestSigningAlgorithms() {
 
@@ -1218,7 +1218,7 @@ public class OpenBankingConfigParser {
     /**
      * Jws Response Signing allowed algorithm.
      *
-     * @return
+     * @return   Jws Response Signing allowed algorithm
      */
     public String getJwsResponseSigningAlgorithm() {
 
@@ -1459,7 +1459,7 @@ public class OpenBankingConfigParser {
 
     /**
      * Method to get the value Idempotency enable configuration.
-     * @return
+     * @return  Whether Idempotency is enabled or not
      */
     public boolean isIdempotencyValidationEnabled() {
         return getConfigElementFromKey(OpenBankingConstants.IDEMPOTENCY_IS_ENABLED) != null &&
@@ -1469,7 +1469,7 @@ public class OpenBankingConfigParser {
 
     /**
      * Method to get the value Idempotency allowed time configuration.
-     * @return
+     * @return  Idempotency allowed time
      */
     public String getIdempotencyAllowedTime() {
         return getConfigElementFromKey(OpenBankingConstants.IDEMPOTENCY_ALLOWED_TIME) == null ? "1440" :

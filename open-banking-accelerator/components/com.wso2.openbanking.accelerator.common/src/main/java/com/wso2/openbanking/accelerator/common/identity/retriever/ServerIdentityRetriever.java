@@ -118,7 +118,7 @@ public class ServerIdentityRetriever {
      * Returns Signing certificate alias at Production environment.
      * @param certificateType Signing
      * @return String Certificate alias
-     * @throws OpenBankingException
+     * @throws OpenBankingException when there is an exception while retrieving the alias
      */
     public static Optional<String> getCertAlias(IdentityConstants.CertificateType certificateType)
             throws OpenBankingException {

@@ -226,9 +226,9 @@ public class ConsentExtensionUtils {
 
     /**
      * @param consentDetails json object of consent data
-     * @param sessionDataKey
-     * @return
-     * @throws URISyntaxException
+     * @param sessionDataKey  session data key
+     * @return  ConsentData object
+     * @throws URISyntaxException  if the URI is invalid
      */
     public static ConsentData getConsentDataFromAttributes(JsonObject consentDetails, String sessionDataKey)
             throws URISyntaxException {
@@ -312,6 +312,8 @@ public class ConsentExtensionUtils {
     /**
      * Returns the DateTime by adding given number of days and the with the given Time.
      *
+     * @param daysToAdd Number of days to add
+     * @param time      Time to add
      * @return DateTime value for the day
      */
     public static String constructDateTime(long daysToAdd, String time) {
@@ -330,6 +332,7 @@ public class ConsentExtensionUtils {
      * Validates whether Cutoffdatetime is enabled, if the request is arriving past the cut off date and if it
      * should be rejected by policy.
      *
+     * @param timeStamp Initiation timestamp
      * @return if the request should be rejected, or not.
      */
     public static boolean shouldSubmissionRequestBeRejected(String timeStamp) {
@@ -377,8 +380,8 @@ public class ConsentExtensionUtils {
     }
     /**
      * Convert long date values to ISO 8601 format.
-     * @param dateValue
-     * @return
+     * @param dateValue  Date value in long
+     * @return ISO 8601 formatted date
      */
     public static String convertToISO8601(long dateValue) {
 
