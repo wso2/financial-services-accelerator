@@ -23,16 +23,13 @@ import "../css/Buttons.css";
 import "../css/DetailedAgreement.css";
 import "../css/withdrawal.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheckCircle, faExclamationCircle, faExclamationTriangle,} from "@fortawesome/free-solid-svg-icons";
+import {faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
 import {withdrawLang, specConfigurations} from "../specConfigs";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import {FourOhFourError} from "../errorPage";
 import {PermissionItem} from "../detailedAgreementPage";
-import Axios from "axios";
+import { withdrawConsent } from '../api';
 import {Modal} from "react-bootstrap";
-import {CONFIG} from "../config";
-import Cookies from "js-cookie";
-import User from "../data/User";
 import {getDisplayName, getValueFromConsent} from "../services";
 import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
@@ -47,86 +44,27 @@ export const WithdrawStep2 = ({ match }) => {
   const [message, setMessage] = useState("");
   const [withdrawMessageIcon, setWithdrawMessageIcon] = useState({});
   const [withdrawIconId, setWithdrawIconId] = useState("");
+
   const handleClose = () => setShow(false);
 
-  const consents = allContextConsents.consents;
-  const appInfo = contextAppInfo.appInfo;
-  const user = currentContextUser.user;
-
   const consentId = match.params.id;
+  const user = currentContextUser.user;
+  const appInfo = contextAppInfo.appInfo;
+  const consents = allContextConsents.consents;
 
-  var consent;
-  var clientId;
-  var consentStatus;
-  var consentConsentId;
+  const matchedConsent = consents.data.find((consent) => consent.consentId === consentId);
 
-  var matchedConsent;
+  const clientId = matchedConsent?.clientId;
+  const consentStatus = matchedConsent?.currentStatus;
+  const consentConsentId = matchedConsent?.consentId;
 
-  matchedConsent = consents.data.filter(
-    (consent) => consent.consentId === consentId
-  );
+  const applicationName = getDisplayName(appInfo, clientId);
 
-  consent = matchedConsent[0];
-  clientId = consent.clientId;
-  consentStatus= consent.currentStatus;
-  consentConsentId = consent.consentId;
+  const consentAccountResponseDataPermissions = getValueFromConsent(
+    specConfigurations.consent.permissionsView.permissionsAttribute,
+    matchedConsent
+  ) || [];
 
-  const applicationName = getDisplayName(appInfo, clientId)
-
-  const adminUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentConsentId}`
-  const defaultUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentConsentId}&userID=${user.email}`
-
-  var revokeUrl
-  if(user.role === "customerCareOfficer"){
-    revokeUrl = adminUrl;
-  }else{
-    revokeUrl = defaultUrl
-  }
-
-  const withdrawConsent = () => {
-    const requestConfig = {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
-        "x-fapi-financial-id": "open-bank",
-        "x-wso2-client-id": clientId,
-      },
-      method: "DELETE",
-      url: revokeUrl,
-    };
-
-    Axios.request(requestConfig)
-      .then((response) => {
-        if ((response.status = "204")) {
-          setMessage(
-            withdrawLang.withdrawModalSuccessMsg +
-              applicationName
-          );
-          setWithdrawMessageIcon(faCheckCircle);
-          setWithdrawIconId("withdrawSuccess");
-          setShow(true);
-        } else {
-          setMessage(
-            withdrawLang.withdrawModalFailMsg
-          );
-          setWithdrawMessageIcon(faExclamationCircle);
-          setWithdrawIconId("withdrawFail");
-        }
-      })
-      .catch((error) => {
-        setMessage(
-          withdrawLang.withdrawModalFailMsg + ': ' + error);
-        setWithdrawMessageIcon(faExclamationCircle);
-        setShow(true);
-        console.log(error); //Logs a string: Error: Request failed with status code 404
-      });
-  };
-
-  var consentAccountResponseDataPermissions = getValueFromConsent(
-    specConfigurations.consent.permissionsView.permissionsAttribute, consent)
-  if (consentAccountResponseDataPermissions === "" || consentAccountResponseDataPermissions === undefined) {
-    consentAccountResponseDataPermissions = [];
-  }
   return (
     <>
     {consentStatus.toLowerCase() === specConfigurations.status.authorised.toLowerCase() ? (
@@ -198,9 +136,17 @@ export const WithdrawStep2 = ({ match }) => {
             </div>
             <div className="actionBtnDiv">
               <button
-                onClick={withdrawConsent}
+              onClick={() => withdrawConsent(
+                clientId,
+                consentId,
+                user,
+                applicationName, 
+                setMessage, 
+                setWithdrawMessageIcon, 
+                setWithdrawIconId, 
+                setShow)}
                 className="withdrawBtn"
-                id="withdrawBtn2"
+                id="withdrawBtn2" 
               >
                 {withdrawLang.nextBtnStep2}
               </button>

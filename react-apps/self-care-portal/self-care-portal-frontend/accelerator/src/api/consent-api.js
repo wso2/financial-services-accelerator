@@ -17,11 +17,13 @@
  */
 
 import axios from "axios";
-import {CONFIG} from "../config";
+import { CONFIG } from "../config";
 import moment from "moment";
 import User from "../data/User";
 import Cookies from "js-cookie";
-import {specConfigurations} from "../specConfigs/specConfigurations";
+import { specConfigurations, withdrawLang } from "../specConfigs/specConfigurations";
+import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+
 
 /**
  * Get the list of consents from the API.
@@ -170,3 +172,45 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
         });
 };
 
+export const withdrawConsent = async (
+    clientId,
+    consentId,
+    user,
+    applicationName,
+    setMessage,
+    setWithdrawMessageIcon,
+    setWithdrawIconId,
+    setShow
+) => {
+    try {
+        const getRevokeUrl = (consentId, user) => {
+            const adminUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentId}`;
+            const defaultUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentId}&userID=${user.email}`;
+
+            return user.role === 'customerCareOfficer' ? adminUrl : defaultUrl;
+        };
+
+        const response = await axios.delete(getRevokeUrl(consentId, user), {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)}`,
+                'x-wso2-client-id': clientId,
+                'x-fapi-financial-id': 'open-bank'
+            },
+        });
+        if (response.status === 204) {
+            setMessage(withdrawLang.withdrawModalSuccessMsg + applicationName);
+            setWithdrawMessageIcon(faCheckCircle);
+            setWithdrawIconId('withdrawSuccess');
+        } else {
+            setMessage(withdrawLang.withdrawModalFailMsg);
+            setWithdrawMessageIcon(faExclamationCircle);
+            setWithdrawIconId('withdrawFail');
+        }
+    } catch (error) {
+        setMessage(withdrawLang.withdrawModalFailMsg + ': ' + error);
+        setWithdrawMessageIcon(faExclamationCircle);
+        setWithdrawIconId('withdrawFail');
+    }
+    setShow(true);
+};
