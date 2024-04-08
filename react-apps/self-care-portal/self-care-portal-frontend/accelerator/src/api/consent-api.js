@@ -21,7 +21,7 @@ import { CONFIG } from "../config";
 import moment from "moment";
 import User from "../data/User";
 import Cookies from "js-cookie";
-import { specConfigurations, withdrawLang } from "../specConfigs/specConfigurations";
+import { specConfigurations, withdrawLang } from "../specConfigs";
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 
