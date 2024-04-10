@@ -24,11 +24,12 @@ import "../css/DetailedAgreement.css";
 import "../css/withdrawal.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import {withdrawLang, specConfigurations} from "../specConfigs";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import {FourOhFourError} from "../errorPage";
 import {PermissionItem} from "../detailedAgreementPage";
-import { withdrawConsent } from '../api';
+import { revokeConsent } from '../api';
 import {Modal} from "react-bootstrap";
 import {getDisplayName, getValueFromConsent} from "../services";
 import { UserContext } from "../context/UserContext";
@@ -64,6 +65,28 @@ export const WithdrawStep2 = ({ match }) => {
     specConfigurations.consent.permissionsView.permissionsAttribute,
     matchedConsent
   ) || [];
+
+  const handleRevokeConsent = () => {
+    revokeConsent(clientId, consentId, user)
+        .then(response => {
+            if (response.status === 204) {
+                setMessage(withdrawLang.withdrawModalSuccessMsg + applicationName);
+                setWithdrawMessageIcon(faCheckCircle);
+                setWithdrawIconId('withdrawSuccess');
+            } else {
+                setMessage(withdrawLang.withdrawModalFailMsg);
+                setWithdrawMessageIcon(faExclamationCircle);
+                setWithdrawIconId('withdrawFail');
+            }
+            setShow(true);
+        })
+        .catch(error => {
+            setMessage(withdrawLang.withdrawModalFailMsg + ': ' + error);
+            setWithdrawMessageIcon(faExclamationCircle);
+            setWithdrawIconId('withdrawFail');
+            setShow(true);
+        });
+};
 
   return (
     <>
@@ -136,15 +159,7 @@ export const WithdrawStep2 = ({ match }) => {
             </div>
             <div className="actionBtnDiv">
               <button
-              onClick={() => withdrawConsent(
-                clientId,
-                consentId,
-                user,
-                applicationName, 
-                setMessage, 
-                setWithdrawMessageIcon, 
-                setWithdrawIconId, 
-                setShow)}
+              onClick={handleRevokeConsent}
                 className="withdrawBtn"
                 id="withdrawBtn2" 
               >
