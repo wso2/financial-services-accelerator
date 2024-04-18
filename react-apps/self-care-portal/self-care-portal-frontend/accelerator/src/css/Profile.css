@@ -114,6 +114,10 @@
   margin-top: 2rem;
 }
 
+#downloadIcon {
+  color: #527aff;
+}
+
 @media (max-width: 1024px) {
   .profileMain {
     margin-top: 0.5rem;
