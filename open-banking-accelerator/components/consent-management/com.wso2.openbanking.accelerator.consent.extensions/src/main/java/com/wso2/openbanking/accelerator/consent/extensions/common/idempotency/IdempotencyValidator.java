@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Class to handle idempotency related operations.
@@ -81,26 +82,30 @@ public class IdempotencyValidator {
         }
         try {
             String idempotencyKeyName = getIdempotencyAttributeName(consentManageData.getRequestPath());
-            // Retrieve consent ids that have the idempotency key name and value as attribute
-            ArrayList<String> consentIds = IdempotencyValidationUtils
-                    .getConsentIdsFromIdempotencyKey(idempotencyKeyName, idempotencyKeyValue);
-            // Check whether the consent id list is not empty. If idempotency key exists in the database then
-            // the consent Id list will be not empty.
-            if (!consentIds.isEmpty()) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an" +
-                            " idempotent request", idempotencyKeyValue));
-                }
-                for (String consentId : consentIds) {
-                    DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
-                    if (consentRequest != null) {
-                        return validateIdempotencyConditions(consentManageData, consentRequest);
-                    } else {
-                        String errorMsg = String.format(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS, consentId);
-                        log.error(errorMsg);
-                        throw new IdempotencyValidationException(errorMsg);
+            if (!IdempotencyConstants.EMPTY_OBJECT.equals(consentManageData.getPayload().toString())) {
+                // Retrieve consent ids that have the idempotency key name and value as attribute
+                ArrayList<String> consentIds = IdempotencyValidationUtils
+                        .getConsentIdsFromIdempotencyKey(idempotencyKeyName, idempotencyKeyValue);
+                // Check whether the consent id list is not empty. If idempotency key exists in the database then
+                // the consent Id list will be not empty.
+                if (!consentIds.isEmpty()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an" +
+                                " idempotent request", idempotencyKeyValue));
+                    }
+                    for (String consentId : consentIds) {
+                        DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
+                        if (consentRequest != null) {
+                            return validateIdempotencyConditions(consentManageData, consentRequest);
+                        } else {
+                            String errorMsg = String.format(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS, consentId);
+                            log.error(errorMsg);
+                            throw new IdempotencyValidationException(errorMsg);
+                        }
                     }
                 }
+            } else {
+                return validateIdempotencyWithoutPayload(consentManageData, idempotencyKeyName, idempotencyKeyValue);
             }
         } catch (IOException e) {
             log.error(IdempotencyConstants.JSON_COMPARING_ERROR, e);
@@ -108,6 +113,53 @@ public class IdempotencyValidator {
         } catch (ConsentManagementException e) {
             log.error(IdempotencyConstants.CONSENT_RETRIEVAL_ERROR, e);
             return new IdempotencyValidationResult(true, false);
+        }
+        return new IdempotencyValidationResult(false, false);
+    }
+
+    /**
+     * Method to check whether the idempotency conditions are met for requests without payload.
+     * This method will validate the following conditions.
+     *  - Whether the idempotency key value is different for the same consent id
+     *  - Whether the client id sent in the request and client id retrieved from the database are equal
+     *  - Whether the difference between two dates is less than the configured time
+     *  - Whether payloads are equal
+     *
+     * @param consentManageData        Consent Manage Data
+     * @param idempotencyKeyName       Idempotency Key Name
+     * @param idempotencyKeyValue      Idempotency Key value
+     * @return  IdempotencyValidationResult
+     */
+    private IdempotencyValidationResult validateIdempotencyWithoutPayload(ConsentManageData consentManageData,
+                                                                          String idempotencyKeyName,
+                                                                          String idempotencyKeyValue)
+            throws IdempotencyValidationException, IOException, ConsentManagementException {
+
+        // Retrieve consent ids and idempotency key values that have the idempotency key name
+        Map<String, String> attributes = IdempotencyValidationUtils.getAttributesFromIdempotencyKey(idempotencyKeyName);
+        // Check whether the attributes map is not empty. If idempotency key exists in the database then
+        // the consent Id list will be not empty.
+        if (!attributes.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Idempotency Key  %s exists in the database. Hence this is an" +
+                        " idempotent request", idempotencyKeyValue));
+            }
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                // If the idempotency key value is different for the same consent id then it is not a valid idempotent
+                if (consentManageData.getRequestPath().contains(entry.getKey()) &&
+                        !idempotencyKeyValue.equals(entry.getValue())) {
+                    throw new IdempotencyValidationException(IdempotencyConstants.SAME_CONSENT_ID_ERROR);
+                }
+                DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(entry.getKey());
+                if (consentRequest != null) {
+                    return validateIdempotencyConditions(consentManageData, consentRequest);
+                } else {
+                    String errorMsg = String.format(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS, entry.getKey());
+                    log.error(errorMsg);
+                    throw new IdempotencyValidationException(errorMsg);
+                }
+            }
+
         }
         return new IdempotencyValidationResult(false, false);
     }
