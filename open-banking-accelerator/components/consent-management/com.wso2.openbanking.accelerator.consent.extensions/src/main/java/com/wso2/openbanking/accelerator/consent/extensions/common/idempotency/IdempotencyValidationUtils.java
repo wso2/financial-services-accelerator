@@ -33,6 +33,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,8 +52,8 @@ public class IdempotencyValidationUtils {
      * @param idempotencyKeyValue    Idempotency Key Value
      * @return   List of consent ids if available, else an empty list will be returned
      */
-    static ArrayList<String> getConsentIdsFromIdempotencyKey(String idempotencyKeyName,
-                                                             String idempotencyKeyValue) {
+    static List<String> getConsentIdsFromIdempotencyKey(String idempotencyKeyName,
+                                                        String idempotencyKeyValue) {
         try {
             return consentCoreService.getConsentIdByConsentAttributeNameAndValue(
                     idempotencyKeyName, idempotencyKeyValue);

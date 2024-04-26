@@ -32,7 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -84,7 +84,7 @@ public class IdempotencyValidator {
             String idempotencyKeyName = getIdempotencyAttributeName(consentManageData.getRequestPath());
             if (!IdempotencyConstants.EMPTY_OBJECT.equals(consentManageData.getPayload().toString())) {
                 // Retrieve consent ids that have the idempotency key name and value as attribute
-                ArrayList<String> consentIds = IdempotencyValidationUtils
+                List<String> consentIds = IdempotencyValidationUtils
                         .getConsentIdsFromIdempotencyKey(idempotencyKeyName, idempotencyKeyValue);
                 // Check whether the consent id list is not empty. If idempotency key exists in the database then
                 // the consent Id list will be not empty.
@@ -94,9 +94,9 @@ public class IdempotencyValidator {
                                 " idempotent request", idempotencyKeyValue));
                     }
                     for (String consentId : consentIds) {
-                        DetailedConsentResource consentRequest = consentCoreService.getDetailedConsent(consentId);
-                        if (consentRequest != null) {
-                            return validateIdempotencyConditions(consentManageData, consentRequest);
+                        DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
+                        if (consentResource != null) {
+                            return validateIdempotencyConditions(consentManageData, consentResource);
                         } else {
                             String errorMsg = String.format(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS, consentId);
                             log.error(errorMsg);
@@ -172,25 +172,26 @@ public class IdempotencyValidator {
      *  - Whether payloads are equal
      *
      * @param consentManageData        Consent Manage Data
-     * @param consentRequest           Detailed Consent Resource
+     * @param consentResource          Detailed Consent Resource
      * @return  IdempotencyValidationResult
      */
     private IdempotencyValidationResult validateIdempotencyConditions(ConsentManageData consentManageData,
-                                                                      DetailedConsentResource consentRequest)
+                                                                      DetailedConsentResource consentResource)
             throws IdempotencyValidationException, IOException {
         // Compare the client ID sent in the request and client id retrieved from the database
         // to validate whether the request is received from the same client
-        if (IdempotencyValidationUtils.isClientIDEqual(consentRequest.getClientID(), consentManageData.getClientId())) {
+        if (IdempotencyValidationUtils.isClientIDEqual(consentResource.getClientID(),
+                consentManageData.getClientId())) {
             // Check whether difference between two dates is less than the configured time
             if (IdempotencyValidationUtils.isRequestReceivedWithinAllowedTime(getCreatedTimeOfPreviousRequest(
-                    consentManageData.getRequestPath(), consentRequest.getConsentID()))) {
+                    consentManageData.getRequestPath(), consentResource.getConsentID()))) {
                 // Compare whether JSON payloads are equal
                 if (isPayloadSimilar(consentManageData, getPayloadOfPreviousRequest(
-                        consentManageData.getRequestPath(), consentRequest.getConsentID()))) {
+                        consentManageData.getRequestPath(), consentResource.getConsentID()))) {
                     log.debug("Payloads are similar and request received within allowed" +
                             " time. Hence this is a valid idempotent request");
                     return new IdempotencyValidationResult(true, true,
-                            consentRequest, consentRequest.getConsentID());
+                            consentResource, consentResource.getConsentID());
                 } else {
                     log.error(IdempotencyConstants.ERROR_PAYLOAD_NOT_SIMILAR);
                     throw new IdempotencyValidationException(IdempotencyConstants
