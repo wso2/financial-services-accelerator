@@ -159,7 +159,7 @@ export const WithdrawStep2 = ({ match }) => {
             </div>
             <div className="actionBtnDiv">
               <button
-              onClick={handleRevokeConsent}
+                onClick={handleRevokeConsent}
                 className="withdrawBtn"
                 id="withdrawBtn2" 
               >
