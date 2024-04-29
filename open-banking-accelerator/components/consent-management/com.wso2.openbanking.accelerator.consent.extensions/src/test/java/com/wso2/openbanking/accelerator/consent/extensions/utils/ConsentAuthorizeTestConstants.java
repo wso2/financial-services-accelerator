@@ -379,7 +379,6 @@ public class ConsentAuthorizeTestConstants {
             "   \"paymentAccount\":\"\"" +
             "}";
 
-
     public static AuthorizationResource getAuthResource() {
 
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -390,29 +389,4 @@ public class ConsentAuthorizeTestConstants {
 
         return authorizationResource;
     }
-
-    public static final String PAYMENT_PERSIST_PAYLOAD =
-            "   {" +
-                    "       \"metadata\":{" +
-                    "           \"commonAuthId\":\"4b3f5911-85b7-4489-86e8-3916f953f484\"" +
-                    "       }," +
-                    "       \"cofAccount\":\"\"," +
-                    "       \"approval\":\"true\"," +
-                    "       \"accountIds\":[\"\"]," +
-                    "       \"isReauthorization\":\"\"," +
-                    "       \"type\":\"payments\"," +
-                    "       \"paymentAccount\":\"30080012343456\"," +
-                    "       \"MultiAuthType\":\"Any\"," +
-                    "       \"MultiAuthExpiry\":\"1626755005019\"" +
-                    "   }";
-
-
-
-
-
-
-
-
-
-
 }
