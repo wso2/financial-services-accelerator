@@ -117,6 +117,9 @@ public class DefaultConsentValidator implements ConsentValidator {
             case ConsentExtensionConstants.FUNDSCONFIRMATIONS:
                 validateFundsConfirmationSubmission(consentValidateData, receiptJSON, consentValidationResult);
                 break;
+            case ConsentExtensionConstants.VRP:
+                validateVRPSubmission(consentValidateData, receiptJSON, consentValidationResult);
+                break;
             default:
                 log.error(ErrorConstants.INVALID_CONSENT_TYPE);
                 consentValidationResult.setErrorMessage(ErrorConstants.INVALID_CONSENT_TYPE);
@@ -133,7 +136,7 @@ public class DefaultConsentValidator implements ConsentValidator {
      * @param consentValidationResult Validation result object to return
      */
     private void validateAccountSubmission(ConsentValidateData consentValidateData, JSONObject receiptJSON,
-                                                  ConsentValidationResult consentValidationResult) {
+                                           ConsentValidationResult consentValidationResult) {
 
         JSONArray permissions = (JSONArray) ((JSONObject) receiptJSON.get("Data")).get("Permissions");
 
@@ -153,7 +156,6 @@ public class DefaultConsentValidator implements ConsentValidator {
             consentValidationResult.setHttpCode(401);
             return;
         }
-
 
         //Consent Status Validation
         if (!ConsentExtensionConstants.AUTHORIZED_STATUS
@@ -181,7 +183,7 @@ public class DefaultConsentValidator implements ConsentValidator {
      * @param consentValidationResult Validation result object to return
      */
     private void validatePaymentSubmission(ConsentValidateData consentValidateData, JSONObject initiationJson,
-                                                  ConsentValidationResult consentValidationResult) {
+                                           ConsentValidationResult consentValidationResult) {
 
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
 
@@ -380,5 +382,145 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         consentValidationResult.setValid(true);
 
+    }
+
+    /**
+     * Validate VRP Submission Request.
+     *
+     * @param consentValidateData     Object with request data
+     * @param consentValidationResult Validation result object to return
+     */
+    private void validateVRPSubmission(ConsentValidateData consentValidateData, JSONObject initiationJson,
+                                       ConsentValidationResult consentValidationResult)  {
+
+        DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
+
+        if (!ConsentExtensionConstants.AUTHORIZED_STATUS
+                .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
+            log.error(ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
+            consentValidationResult.setErrorMessage(ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
+            consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_CONSENT_STATUS);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Check if requested consent ID matches to initiation consent ID.
+        if (consentValidateData.getConsentId() == null || detailedConsentResource.getConsentID() == null ||
+                !consentValidateData.getConsentId().equals(detailedConsentResource.getConsentID())) {
+            log.error(ErrorConstants.MSG_INVALID_CONSENT_ID);
+            consentValidationResult.setErrorMessage(ErrorConstants.MSG_INVALID_CONSENT_ID);
+            consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_CONSENT_MISMATCH);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        JSONObject submissionJson = consentValidateData.getPayload();
+        JSONObject submissionData;
+        JSONObject submissionInitiation;
+        JSONObject submissionRisk;
+        JSONObject submissionInstruction;
+        JSONObject initiationRisk;
+
+        if (submissionJson.containsKey(ConsentExtensionConstants.DATA) &&
+                submissionJson.get(ConsentExtensionConstants.DATA) instanceof JSONObject) {
+            submissionData = (JSONObject) submissionJson.get(ConsentExtensionConstants.DATA);
+        } else {
+            log.error(ErrorConstants.DATA_NOT_FOUND);
+            consentValidationResult.setErrorMessage(ErrorConstants.DATA_NOT_FOUND);
+            consentValidationResult.setErrorCode(ErrorConstants.FIELD_MISSING);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        if (submissionData.containsKey(ConsentExtensionConstants.INITIATION) &&
+                submissionData.get(ConsentExtensionConstants.INITIATION) instanceof JSONObject) {
+            submissionInitiation = (JSONObject) submissionData.get(ConsentExtensionConstants.INITIATION);
+        } else {
+            log.error(ErrorConstants.INITIATION_NOT_FOUND);
+            consentValidationResult.setErrorMessage(ErrorConstants.INITIATION_NOT_FOUND);
+            consentValidationResult.setErrorCode(ErrorConstants.FIELD_MISSING);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        if (submissionData.containsKey(ConsentExtensionConstants.INSTRUCTION) &&
+                submissionData.get(ConsentExtensionConstants.INSTRUCTION) instanceof JSONObject) {
+            submissionInstruction = (JSONObject) submissionData.get(ConsentExtensionConstants.INSTRUCTION);
+        } else {
+            log.error(ErrorConstants.INSTRUCTION_NOT_FOUND);
+            consentValidationResult.setErrorMessage(ErrorConstants.INSTRUCTION_NOT_FOUND);
+            consentValidationResult.setErrorCode(ErrorConstants.FIELD_MISSING);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Check if requested consent ID in the body to initiation consent ID.
+        if (!submissionData.containsKey(ConsentExtensionConstants.CONSENT_ID) ||
+                submissionData.get(ConsentExtensionConstants.CONSENT_ID) == null ||
+                submissionData.get(ConsentExtensionConstants.INSTRUCTION) instanceof String ||
+                !submissionData.get(ConsentExtensionConstants.CONSENT_ID)
+                        .equals(detailedConsentResource.getConsentID())) {
+            log.error(ErrorConstants.INVALID_REQUEST_CONSENT_ID);
+            consentValidationResult.setErrorMessage(ErrorConstants.MSG_INVALID_CONSENT_ID);
+            consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_CONSENT_MISMATCH);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        JSONObject dataObject = (JSONObject) initiationJson.get(ConsentExtensionConstants.DATA);
+        JSONObject requestInitiation = (JSONObject) dataObject.get(ConsentExtensionConstants.INITIATION);
+
+        JSONObject initiationValidationResult = VRPSubmissionPayloadValidator
+                .validateInitiation(submissionInitiation, requestInitiation);
+
+        if (!(boolean) initiationValidationResult.get(ConsentExtensionConstants.IS_VALID_PAYLOAD)) {
+            log.error(initiationValidationResult.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
+            consentValidationResult.setErrorMessage(initiationValidationResult
+                    .getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
+            consentValidationResult.setErrorCode(initiationValidationResult
+                    .getAsString(ConsentExtensionConstants.ERROR_CODE));
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        JSONObject instructionValidationResult = VRPSubmissionPayloadValidator.
+                validateInstruction(submissionInstruction, requestInitiation);
+
+        if (!(boolean) instructionValidationResult.get(ConsentExtensionConstants.IS_VALID_PAYLOAD)) {
+           log.error(instructionValidationResult.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
+            consentValidationResult.setErrorMessage(instructionValidationResult
+                    .getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
+            consentValidationResult.setErrorCode(instructionValidationResult
+                    .getAsString(ConsentExtensionConstants.ERROR_CODE));
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        if (submissionJson.containsKey(ConsentExtensionConstants.RISK) &&
+                submissionJson.get(ConsentExtensionConstants.RISK) instanceof JSONObject) {
+            submissionRisk = (JSONObject) submissionJson.get(ConsentExtensionConstants.RISK);
+        } else {
+            log.error(ErrorConstants.RISK_NOT_FOUND);
+            consentValidationResult.setErrorMessage(ErrorConstants.RISK_NOT_FOUND);
+            consentValidationResult.setErrorCode(ErrorConstants.FIELD_MISSING);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        initiationRisk = (JSONObject) initiationJson.get(ConsentExtensionConstants.RISK);
+        JSONObject riskValidationResult = VRPSubmissionPayloadValidator.validateRisk(submissionRisk,
+                initiationRisk);
+
+        if (!(boolean) riskValidationResult.get(ConsentExtensionConstants.IS_VALID_PAYLOAD)) {
+            log.error(riskValidationResult.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
+            consentValidationResult.setErrorMessage(riskValidationResult
+                    .getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
+            consentValidationResult.setErrorCode(riskValidationResult
+                    .getAsString(ConsentExtensionConstants.ERROR_CODE));
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+
+        consentValidationResult.setValid(true);
     }
 }

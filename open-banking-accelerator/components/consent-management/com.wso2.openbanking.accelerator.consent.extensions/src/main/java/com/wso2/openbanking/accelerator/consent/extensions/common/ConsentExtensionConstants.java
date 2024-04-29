@@ -207,5 +207,15 @@ public class ConsentExtensionConstants {
     public static final Object CONTROL_PARAMETER_AMOUNT_TITLE = "Maximum payment amount per ";
     public static final String VRP_ACCOUNT = "vrpAccount";
     public static final Object CONTROL_PARAMETER_VALID_FROM_DATE_TITLE = "Valid from date and time";
+
+    // VRP submission flow
     public static final String ACCOUNT_IDS = "accountIds";
+    public static final String INSTRUCTION = "Instruction";
+    public static final String REMITTANCE_INFO = "RemittanceInformation";
+    public static final String REFERENCE = "Reference";
+    public static final String UNSTRUCTURED = "Unstructured";
+    public static final String CONTEXT_CODE = "PaymentContextCode";
+    public static final String PAYMENT_TYPE = "PaymentType";
+    public static final String PREVIOUS_PAID_AMOUNT = "prevPaidAmount";
+    public static final String PREVIOUS_LAST_PAYMENT_DATE = "prevLastPaymentDate";
 }
