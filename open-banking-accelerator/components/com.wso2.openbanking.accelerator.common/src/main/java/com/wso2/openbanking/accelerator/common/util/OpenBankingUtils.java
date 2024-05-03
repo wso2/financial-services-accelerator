@@ -61,7 +61,7 @@ public class OpenBankingUtils {
      *
      * @param softwareStatement software statement (jwt) extracted from request payload
      * @return software_environment
-     * @throws ParseException
+     * @throws ParseException  if an error occurs while parsing the software statement
      */
     public static String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
 
@@ -105,8 +105,9 @@ public class OpenBankingUtils {
     /**
      * Method to reduce string length.
      *
-     * @param input and maxLength for dispute data
-     * @return String
+     * @param input        Input for dispute data
+     * @param maxLength    Max length for dispute data
+     * @return String with reduced length
      */
     public static String reduceStringLength(String input, int maxLength) {
         if (StringUtils.isEmpty(input) || input.length() <= maxLength) {

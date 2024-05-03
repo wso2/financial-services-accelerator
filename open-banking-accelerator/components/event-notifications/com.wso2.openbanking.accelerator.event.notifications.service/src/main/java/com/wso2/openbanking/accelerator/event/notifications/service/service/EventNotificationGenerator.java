@@ -39,7 +39,7 @@ public interface EventNotificationGenerator {
      * @param notificationEventList List of notification events
      *
      * @return Event Notification Body
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when generating event notification body
      */
     Notification generateEventNotificationBody(NotificationDTO notificationDTO, List<NotificationEvent>
             notificationEventList) throws OBEventNotificationException;

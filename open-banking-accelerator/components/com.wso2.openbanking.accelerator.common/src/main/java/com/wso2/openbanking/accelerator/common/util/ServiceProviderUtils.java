@@ -32,7 +32,7 @@ public class ServiceProviderUtils {
      * Get Tenant Domain String for the client id.
      * @param clientId the client id of the application
      * @return tenant domain of the client
-     * @throws OpenBankingException
+     * @throws OpenBankingException  if an error occurs while retrieving the tenant domain
      */
     @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
     public static String getSpTenantDomain(String clientId) throws OpenBankingException {

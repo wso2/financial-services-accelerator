@@ -42,21 +42,21 @@ public interface ConsentAdminHandler {
     /**
      * Method to handle the temporary retention data syncing with the retention database.
      * @param consentAdminData consentAdminData
-     * @throws ConsentException
+     * @throws ConsentException if any error occurs while syncing the retention database
      */
     public void handleTemporaryRetentionDataSyncing(ConsentAdminData consentAdminData) throws ConsentException;
 
     /**
      * Method to handle the consent status audit search.
      * @param consentAdminData consentAdminData
-     * @throws ConsentException
+     * @throws ConsentException if any error occurs while searching the consent status audit
      */
     public void handleConsentStatusAuditSearch(ConsentAdminData consentAdminData) throws ConsentException;
 
     /**
      * Method to handle the consent file search.
      * @param consentAdminData consentAdminData
-     * @throws ConsentException
+     * @throws ConsentException if any error occurs while searching the consent file
      */
     public void handleConsentFileSearch(ConsentAdminData consentAdminData) throws ConsentException;
 

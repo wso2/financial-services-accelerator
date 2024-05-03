@@ -154,6 +154,7 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
      *
      * @param consentManageData Object containing request details, including client ID, request payload, headers.
      * @param request Object
+     * @throws ConsentManagementException if an error occurs while creating the consent or storing consent attributes.
      */
     public void handlePaymentPost(ConsentManageData consentManageData, Object request)
             throws ConsentManagementException {

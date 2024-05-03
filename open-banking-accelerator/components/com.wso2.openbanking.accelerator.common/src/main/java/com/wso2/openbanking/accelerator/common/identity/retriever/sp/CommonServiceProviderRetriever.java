@@ -47,7 +47,7 @@ public class CommonServiceProviderRetriever {
      * @param clientId ClientId of the application
      * @param property Property of the application
      * @return the property value from SP metadata
-     * @throws OpenBankingException
+     * @throws OpenBankingException  if an error occurs while retrieving the property
      */
     @Generated(message = "Excluding from code coverage since it requires a service call")
     public String getAppPropertyFromSPMetaData(String clientId, String property) throws OpenBankingException {

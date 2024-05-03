@@ -92,7 +92,7 @@ public class EventNotificationServiceUtil {
      * Method to get event JSON from eventInformation payload string.
      * @param eventInformation String event Information
      * @return JSONObject converted event json
-     * @throws ParseException
+     * @throws ParseException  Exception when parsing event information
      */
     public static JSONObject getEventJSONFromString(String eventInformation) throws ParseException {
 
@@ -103,7 +103,7 @@ public class EventNotificationServiceUtil {
     /**
      * Validate if the client ID is existing.
      * @param clientId  client ID of the TPP
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when validating client ID
      */
     @Generated(message = "Excluded since this needs OAuth2Util service provider")
     public static void validateClientId(String clientId) throws OBEventNotificationException {

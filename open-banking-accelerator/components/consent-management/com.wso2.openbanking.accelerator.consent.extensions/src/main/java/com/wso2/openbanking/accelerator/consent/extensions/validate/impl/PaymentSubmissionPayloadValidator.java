@@ -34,7 +34,7 @@ public class PaymentSubmissionPayloadValidator {
      *
      * @param submission Submission Request
      * @param initiation Initiation Request
-     * @return
+     * @return JSONObject Validation Response
      */
     public JSONObject validateInitiation(JSONObject submission, JSONObject initiation) {
 

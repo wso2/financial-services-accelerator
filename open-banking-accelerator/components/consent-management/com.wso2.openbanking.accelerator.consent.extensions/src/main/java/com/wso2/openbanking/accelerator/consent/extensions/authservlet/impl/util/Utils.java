@@ -47,9 +47,9 @@ public class Utils {
      * To get the property value for the given key from the ResourceBundle.
      * Retrieve the value of property entry for key, return key if a value is not found for key
      *
-     * @param resourceBundle
-     * @param key
-     * @return
+     * @param resourceBundle  ResourceBundle
+     * @param key  Key
+     * @return  Value of the property entry for key
      */
     public static String i18n(ResourceBundle resourceBundle, String key) {
 
@@ -66,8 +66,8 @@ public class Utils {
     /**
      * Split claims based on a deliminator and create map of claimID and displayName.
      *
-     * @param requestedClaimList
-     * @return
+     * @param requestedClaimList   Requested claim list
+     * @return  List of claims
      */
     public static List<Map<String, String>> splitClaims(String[] requestedClaimList) {
 
@@ -88,9 +88,9 @@ public class Utils {
     /**
      * Method to populate accounts data to be sent to consent page.
      *
-     * @param request
-     * @param dataSet
-     * @return
+     * @param request  HttpServletRequest
+     * @param dataSet  Request payload JSONObject
+     * @return  Map of Accounts data
      */
     public static Map<String, Object> populateAccountsData(HttpServletRequest request, JSONObject dataSet) {
 
@@ -124,9 +124,9 @@ public class Utils {
     /**
      * Method to populate payments data to be sent to consent page.
      *
-     * @param request
-     * @param dataSet
-     * @return
+     * @param request  HttpServletRequest
+     * @param dataSet  Request payload JSONObject
+     * @return Map of Payments data
      */
     public static Map<String, Object> populatePaymentsData(HttpServletRequest request, JSONObject dataSet) {
 
@@ -167,9 +167,9 @@ public class Utils {
     /**
      * Method to populate Confirmation of Funds data to be sent to consent page.
      *
-     * @param httpServletRequest
-     * @param dataSet
-     * @return
+     * @param httpServletRequest  HttpServletRequest
+     * @param dataSet  Request payload JSONObject
+     * @return  Map of Confirmation of Funds data
      */
     public static Map<String, Object> populateCoFData(HttpServletRequest httpServletRequest, JSONObject dataSet) {
 
@@ -208,7 +208,7 @@ public class Utils {
      * Method to retrieve debtor account from consent data object.
      *
      * @param consentDataObject Object containing consent related data
-     * @return
+     * @return Debtor account
      */
     public static String getDebtorAccFromConsentData(JSONArray consentDataObject) {
 
@@ -253,9 +253,9 @@ public class Utils {
     /**
      * Method to populate vrp data to be sent to consent page.
      *
-     * @param request
-     * @param dataSet
-     * @return
+     * @param request  HttpServletRequest
+     * @param dataSet  Request payload JSONObject
+     * @return  Map of VRP data
      */
     public static Map<String, Object> populateVRPDataRetrieval(HttpServletRequest request, JSONObject dataSet) {
 
