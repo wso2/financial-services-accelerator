@@ -18,7 +18,6 @@
 
 package com.wso2.openbanking.accelerator.identity.token.wrapper;
 
-import net.sf.ehcache.constructs.web.filter.FilterServletOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -51,7 +50,7 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 
     public ServletOutputStream getOutputStream() {
 
-        return new FilterServletOutputStream(output);
+        return null;
     }
 
     public PrintWriter getWriter() {

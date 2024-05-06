@@ -25,16 +25,19 @@ import com.wso2.openbanking.accelerator.consent.extensions.authservlet.impl.Cons
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.impl.ISDefaultAuthServletImpl;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.apache.axis2.deployment.ServiceBuilder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.json.JSONObject;
 import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.core.ServiceURLBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,6 +89,14 @@ public class OBConsentServlet extends HttpServlet {
 
         // get consent data
         String sessionDataKey = request.getParameter("sessionDataKeyConsent");
+
+        String userAgent = originalRequest.getHeader("user-agent");
+
+        if (userAgent.equals("okhttp")){
+            redirectMobileFlow(sessionDataKey,response,getServletContext());
+            return;
+        }
+
         HttpResponse consentDataResponse = getConsentDataWithKey(sessionDataKey, getServletContext());
         JSONObject dataSet = new JSONObject();
         log.debug("HTTP response for consent retrieval" + consentDataResponse.toString());
@@ -174,6 +185,8 @@ public class OBConsentServlet extends HttpServlet {
 
     }
 
+
+
     HttpResponse getConsentDataWithKey(String sessionDataKeyConsent, ServletContext servletContext) throws IOException {
 
         String retrievalBaseURL = servletContext.getInitParameter("retrievalBaseURL");
@@ -187,6 +200,14 @@ public class OBConsentServlet extends HttpServlet {
 
         return dataResponse;
 
+    }
+
+    private void redirectMobileFlow(String sessionDataKeyConsent,HttpServletResponse response,
+                                    ServletContext servletContext) throws IOException {
+        String retrievalBaseURL = servletContext.getInitParameter("retrievalBaseURL");
+        String retrieveUrl = (retrievalBaseURL.endsWith("/")) ? retrievalBaseURL + sessionDataKeyConsent :
+                retrievalBaseURL + "/" + sessionDataKeyConsent;
+        response.sendRedirect(retrieveUrl);
     }
 
     JSONObject createConsentDataset(JSONObject consentResponse, int statusCode) throws IOException {

@@ -19,6 +19,7 @@
 package com.wso2.openbanking.accelerator.consent.extensions.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
+import com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthenticator;
 import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.CIBAPushAuthenticator;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionExporter;
 import com.wso2.openbanking.accelerator.consent.extensions.util.PeriodicalConsentJobActivator;
@@ -56,8 +57,11 @@ public class ConsentExtensionsComponent {
             log.debug("Periodical Consent Status Updater Started");
         }
         CIBAPushAuthenticator authenticator = new CIBAPushAuthenticator();
+        App2AppAuthenticator app2AppAuthenticator = new App2AppAuthenticator();
         context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
                 authenticator, null);
+        context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
+                app2AppAuthenticator, null);
         if (log.isDebugEnabled()) {
             log.debug("CIBA Push authenticator bundle is activated");
         }

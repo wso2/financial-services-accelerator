@@ -28,12 +28,17 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jose.proc.SimpleSecurityContext;
 import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,6 +50,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Util class for jwt related functions.
  */
 public class JWTUtils {
+    private static final String DOT_SEPARATOR = ".";
+    private static final long DEFAULT_TIME_SKEW_IN_SECONDS = 300L;
+    private static final Log log = LogFactory.getLog(JWTUtils.class);
 
 
     /**
@@ -120,4 +128,46 @@ public class JWTUtils {
         return true;
     }
 
+    public static SignedJWT getSignedJWT(String jwtString) throws ParseException {
+        if (isJWT(jwtString)){
+            return SignedJWT.parse(jwtString);
+        }else{
+            throw new IllegalArgumentException("Provided token identifier is not a parsable JWT.");
+        }
+    }
+
+    /**
+     * Validate legitimacy of JWT.
+     *
+     * @param jwtString JWT string
+     */
+    public static boolean isJWT(String jwtString) {
+        if (jwtString == null){
+            return false;
+        }
+        if (StringUtils.isBlank(jwtString)) {
+            return false;
+        }
+        if (StringUtils.countMatches(jwtString, DOT_SEPARATOR) != 2) {
+            return false;
+        }
+        try {
+            JWTParser.parse(jwtString);
+            return true;
+        } catch (ParseException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("Provided token identifier is not a parsable JWT.", e);
+            }
+            return false;
+        }
+    }
+
+    public static JWTClaimsSet getJWTClaimsSet(SignedJWT signedJWT) throws ParseException{
+        return signedJWT.getJWTClaimsSet();
+    }
+
+    public static <T> T getClaim(JWTClaimsSet jwtClaimsSet ,String claim){
+        Object claimObj = jwtClaimsSet.getClaim(claim);
+        return (T) claimObj;
+    }
 }

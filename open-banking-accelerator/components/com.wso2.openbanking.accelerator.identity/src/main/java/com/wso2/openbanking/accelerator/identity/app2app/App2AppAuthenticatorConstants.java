@@ -1,4 +1,4 @@
-package com.wso2.openbanking.accelerator.consent.extensions.app2app;
+package com.wso2.openbanking.accelerator.identity.app2app;
 
 public class App2AppAuthenticatorConstants {
 
@@ -16,7 +16,10 @@ public class App2AppAuthenticatorConstants {
     public static final String CONSENT_PROMPTED = "consentPrompted";
     public static final String AUTH_REQ_ID = "auth_req_id";
     public static final String NONCE = "nonce";
-    public static final String LOGIN_HINT = "login_hint";
+    public static final String LOGIN_HINT = "loginHint";
+    public static final String DEVICE_IDENTIFIER = "did";
+    public static final String SIGNING_ALGORITHM = "RSA";
+    public static final String SECRET  = "secret";
     public static final String SP_QUERY_PARAMS = "spQueryParams";
 
     // error constants
@@ -25,4 +28,6 @@ public class App2AppAuthenticatorConstants {
     public static final String ERROR_NO_TYPE_AND_APP_DATA = "Type and application data is unavailable";
     public static final String ERROR_DESCRIPTION = "error_description";
     public static final String ERROR = "error";
+    public static final String JTI = "jti";
+    public static final String SESSION_DATA_KEY = "sessionDataKey";
 }
