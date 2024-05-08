@@ -59,7 +59,8 @@ public class VRPSubmissionPayloadValidator {
                     Object consentInitiationCreditorAccounts = initiationParameterOfConsentInitiation.
                             get(ConsentExtensionConstants.CREDITOR_ACC);
 
-                    if (areJSONObjects(submissionCreditorAccounts, consentInitiationCreditorAccounts)) {
+                    if (submissionCreditorAccounts instanceof JSONObject &&
+                            consentInitiationCreditorAccounts instanceof JSONObject) {
                         JSONObject submissionCreditorAccount = (JSONObject) initiationOfSubmission.
                                 get(ConsentExtensionConstants.CREDITOR_ACC);
                         JSONObject consentInitiationCreditorAccount = (JSONObject)
@@ -96,7 +97,8 @@ public class VRPSubmissionPayloadValidator {
                     Object consentInitiationDebtorAccounts = initiationParameterOfConsentInitiation
                             .get(ConsentExtensionConstants.DEBTOR_ACC);
 
-                    if (areJSONObjects(submissionDebtorAccounts, consentInitiationDebtorAccounts)) {
+                    if (submissionDebtorAccounts instanceof JSONObject &&
+                            consentInitiationDebtorAccounts instanceof JSONObject) {
                         JSONObject submissionDebtorAccount = (JSONObject) initiationOfSubmission
                                 .get(ConsentExtensionConstants.DEBTOR_ACC);
                         JSONObject consentInitiationDebtorAccount = (JSONObject) initiationParameterOfConsentInitiation
@@ -122,7 +124,8 @@ public class VRPSubmissionPayloadValidator {
                     Object remittanceInformationInitiation = initiationParameterOfConsentInitiation
                             .get(ConsentExtensionConstants.REMITTANCE_INFO);
 
-                    if (areJSONObjects(remittanceInformationSubmission, remittanceInformationInitiation)) {
+                    if (remittanceInformationSubmission instanceof JSONObject &&
+                            remittanceInformationInitiation instanceof JSONObject) {
                         JSONObject remittanceInformationSub = (JSONObject) initiationOfSubmission
                                 .get(ConsentExtensionConstants.REMITTANCE_INFO);
                         JSONObject remittanceInformationInit = (JSONObject) initiationParameterOfConsentInitiation
@@ -172,7 +175,6 @@ public class VRPSubmissionPayloadValidator {
                             ErrorConstants.INVALID_SUBMISSION_TYPE);
                 }
             } else {
-                //log.error(ErrorConstants.INSTRUCTION_IDENTIFICATION_NOT_FOUND);
                 return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                         ErrorConstants.INSTRUCTION_IDENTIFICATION_NOT_FOUND);
             }
@@ -180,7 +182,6 @@ public class VRPSubmissionPayloadValidator {
             if (submission.containsKey(ConsentExtensionConstants.END_TO_END_IDENTIFICATION)) {
                 Object value = submission.get(ConsentExtensionConstants.END_TO_END_IDENTIFICATION);
                 if (!(value instanceof String)) {
-                   // log.error(ErrorConstants.INVALID_TYPE);
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                             ErrorConstants.INVALID_TYPE);
                 }
@@ -196,7 +197,8 @@ public class VRPSubmissionPayloadValidator {
                 Object submissionCreditorAccounts = submission.get(ConsentExtensionConstants.CREDITOR_ACC);
                 Object consentInitiationCreditorAccounts = initiation.get(ConsentExtensionConstants.CREDITOR_ACC);
 
-                if (areJSONObjects(submissionCreditorAccounts, consentInitiationCreditorAccounts)) {
+                if (submissionCreditorAccounts instanceof JSONObject &&
+                        consentInitiationCreditorAccounts instanceof JSONObject) {
                     JSONObject submissionCreditorAccount = (JSONObject) submission.
                             get(ConsentExtensionConstants.CREDITOR_ACC);
                     JSONObject consentInitiationCreditorAccount = (JSONObject) initiation.
@@ -228,7 +230,8 @@ public class VRPSubmissionPayloadValidator {
                 Object remittanceInformationSubmission = submission.get(ConsentExtensionConstants.REMITTANCE_INFO);
                 Object remittanceInformationInitiation = initiation.get(ConsentExtensionConstants.REMITTANCE_INFO);
 
-                if (areJSONObjects(remittanceInformationSubmission, remittanceInformationInitiation)) {
+                if (remittanceInformationSubmission instanceof JSONObject &&
+                        remittanceInformationInitiation instanceof JSONObject) {
                     JSONObject remittanceInformationSub = (JSONObject) submission
                             .get(ConsentExtensionConstants.REMITTANCE_INFO);
                     JSONObject remittanceInformationInit = (JSONObject) initiation
@@ -319,7 +322,7 @@ public class VRPSubmissionPayloadValidator {
      @param obj2 The second object to compare.
      @return true if both objects are instances of JSONObject, false otherwise.
      */
-    public static boolean areJSONObjects(Object obj1, Object obj2) {
+    public static boolean areJSONObjects(Object obj1 , Object obj2) {
         return (obj1 instanceof JSONObject) && (obj2 instanceof JSONObject);
     }
 

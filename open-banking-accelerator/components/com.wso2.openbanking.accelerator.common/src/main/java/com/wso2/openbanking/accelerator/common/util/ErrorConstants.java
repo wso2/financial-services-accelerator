@@ -289,10 +289,7 @@ public class ErrorConstants {
     public static final String NOT_STRING_ERROR = "Parameter amount or currency is not a String";
 
     // VRP Submission flow
-    public static final String PAYLOAD_FORMAT_ERROR_SUBMISSION = "Missing mandatory parameter Initiation" +
-            " in the payload";
-    public static final String REMITTANCE_INFO_NOT_FOUND = "Remittance ifo isn't present in the request.";
-    public static final String PATH_REMITTANCE_INFO = "Data.Initiation.RemittanceInformation";
+    public static final String REMITTANCE_INFO_NOT_FOUND = "Remittance info is not present in the request.";
     public static final String INSTRUCTION_IDENTIFICATION_NOT_FOUND =  "Instruction Identification isn't present" +
             " in the request";
     public static final String END_TO_END_IDENTIFICATION_PARAMETER_NOT_FOUND = "End to End Identification isn't" +
@@ -321,9 +318,9 @@ public class ErrorConstants {
             " isn't present in the correct JSON format in the request.";
     public static final String DEBTOR_ACC_NOT_JSON_ERROR = "Debtor Account isn't present in the correct JSON format " +
             "in the request.";
-    public static final String INITIATION_REMITTANCE_INFO_NOT_JSON_ERROR = "Remittance info of initiation isn't " +
+    public static final String INITIATION_REMITTANCE_INFO_NOT_JSON_ERROR = "Remittance info of initiation is not " +
             "present in the correct JSON format in the request.";
-    public static final String INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR = "Remittance info of instruction isn't" +
+    public static final String INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR = "Remittance info of instruction is not" +
             " present in the correct JSON format in the request.";
 }
 
