@@ -23,9 +23,9 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import java.util.Map;
 
 /**
- * Account Metadata Service
+ * Account Metadata Service.
  * <p>
- * Handles the calls for persisting and retrieving metadata related to accounts
+ * Handles the calls for persisting and retrieving metadata related to accounts.
  */
 public interface AccountMetadataService {
 

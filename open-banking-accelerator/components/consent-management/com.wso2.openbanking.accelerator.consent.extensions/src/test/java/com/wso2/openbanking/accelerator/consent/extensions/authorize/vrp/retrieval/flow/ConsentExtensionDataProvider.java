@@ -17,6 +17,7 @@
  */
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow;
 
+import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentAuthorizeTestConstants;
 import org.testng.annotations.DataProvider;
 
 /**

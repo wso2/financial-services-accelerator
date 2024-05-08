@@ -17,10 +17,6 @@
  */
 package com.wso2.openbanking.accelerator.consent.extensions.common.factory;
 
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.AccountConsentPersistenceHandler;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.CofConsentPersistenceHandler;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.ConsentPersistenceHandler;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.PaymentConsentPersistenceHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.AccountConsentManageRequestHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.impl.CofConsentRequestHandler;
@@ -59,26 +55,5 @@ public class AcceleratorConsentExtensionFactory {
                 return null;
         }
         return consentManageRequestHandler;
-
-    }
-
-    /**
-     * Method to get the Consent Persistence Handler.
-     *
-     * @param type  Type of the request
-     * @return ConsentPersistenceHandler
-     */
-    public static ConsentPersistenceHandler getConsentPersistenceHandler(String type) {
-        ConsentPersistenceHandler consentPersistenceHandler = null;
-
-        if (ConsentExtensionConstants.ACCOUNTS.equalsIgnoreCase(type)) {
-            consentPersistenceHandler = new AccountConsentPersistenceHandler();
-        } else if (ConsentExtensionConstants.PAYMENTS.equalsIgnoreCase(type)) {
-            consentPersistenceHandler = new PaymentConsentPersistenceHandler();
-        } else if (ConsentExtensionConstants.FUNDSCONFIRMATIONS.equalsIgnoreCase(type)) {
-            consentPersistenceHandler = new CofConsentPersistenceHandler();
-        }
-        return consentPersistenceHandler;
-
     }
 }
