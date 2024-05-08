@@ -19,23 +19,28 @@
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.persistence.flow;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.DefaultConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
+import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentAuthorizeTestConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentExtensionTestUtils;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockObjectFactory;
 import org.testng.IObjectFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -45,8 +50,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -68,6 +72,9 @@ public class ConsentPersistStepTests {
     @Mock
     private static ConsentResource consentResourceMock;
     @Mock
+    private ConsentExtensionsDataHolder consentExtensionsDataHolderMock;
+
+    @Mock
     ConsentCoreServiceImpl consentCoreServiceMock;
     private static Map<String, String> configMap;
     JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
@@ -83,6 +90,8 @@ public class ConsentPersistStepTests {
         consentResourceMock = mock(ConsentResource.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
 
+        consentExtensionsDataHolderMock = mock(ConsentExtensionsDataHolder.class);
+
         configMap = new HashMap<>();
         configMap.put("ErrorURL", "https://localhost:8243/error");
 
@@ -96,7 +105,7 @@ public class ConsentPersistStepTests {
     @ObjectFactory
     public IObjectFactory getObjectFactory() {
 
-        return new org.powermock.modules.testng.PowerMockObjectFactory();
+        return new PowerMockObjectFactory();
     }
 
     @BeforeMethod
@@ -224,6 +233,35 @@ public class ConsentPersistStepTests {
         doReturn(payload).when(consentPersistDataMock).getPayload();
 
         consentPersistStep.execute(consentPersistDataMock);
-    }
-
 }
+
+    @Test
+    public void testAccountConsentPersistSuccessScenarioWithApprovalTrue()
+            throws ParseException, ConsentManagementException {
+
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
+        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
+        Mockito.doReturn(true).when(consentPersistDataMock).getApproval();
+
+        Mockito.doReturn(true).when(consentCoreServiceMock).bindUserAccountsToConsent(
+                Mockito.<ConsentResource>anyObject(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(),
+                Mockito.anyString(), Mockito.anyString());
+
+        PowerMockito.mockStatic(ConsentServiceUtil.class);
+        PowerMockito.when(ConsentServiceUtil.getConsentService()).thenReturn(consentCoreServiceMock);
+
+        JSONObject payload = (JSONObject) parser.parse(ConsentAuthorizeTestConstants.ACCOUNT_PERSIST_PAYLOAD);
+        Mockito.doReturn(payload).when(consentPersistDataMock).getPayload();
+
+        consentPersistStep.execute(consentPersistDataMock);
+    }
+}
+
+
+
+
