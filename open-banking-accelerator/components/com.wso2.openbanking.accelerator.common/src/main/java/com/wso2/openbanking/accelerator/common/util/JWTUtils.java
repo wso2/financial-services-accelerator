@@ -20,6 +20,8 @@ package com.wso2.openbanking.accelerator.common.util;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jose.proc.JWSKeySelector;
@@ -42,7 +44,14 @@ import org.apache.commons.logging.LogFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
+import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -128,12 +137,27 @@ public class JWTUtils {
         return true;
     }
 
-    public static SignedJWT getSignedJWT(String jwtString) throws ParseException {
-        if (isJWT(jwtString)){
-            return SignedJWT.parse(jwtString);
-        }else{
-            throw new IllegalArgumentException("Provided token identifier is not a parsable JWT.");
-        }
+    /**
+     *Validates the signature of a given JWT against a given public key.
+     *
+     * @param signedJWT the signed JWT to be validated
+     * @param publicKey the public key that ois used for validation
+     * @param algorithm the algorithm expected to have signed the jwt
+     * @return true if signature is valid else false
+     * @throws NoSuchAlgorithmException if the given algorithm doesn't exist
+     * @throws InvalidKeySpecException if the provided key is invalid
+     * @throws JOSEException if an error occurs during the signature validation process
+     */
+    public static boolean validateJWTSignature(SignedJWT signedJWT, String publicKey, String algorithm) throws
+            NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
+
+        byte[] publicKeyData = Base64.getDecoder().decode(publicKey);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(publicKeyData);
+        KeyFactory kf = KeyFactory.getInstance(algorithm);
+        RSAPublicKey rsapublicKey = (RSAPublicKey) kf.generatePublic(spec);
+        JWSVerifier verifier = new RSASSAVerifier(rsapublicKey);
+        return signedJWT.verify(verifier);
+
     }
 
     /**
@@ -142,7 +166,8 @@ public class JWTUtils {
      * @param jwtString JWT string
      */
     public static boolean isJWT(String jwtString) {
-        if (jwtString == null){
+
+        if (jwtString == null) {
             return false;
         }
         if (StringUtils.isBlank(jwtString)) {
@@ -152,6 +177,7 @@ public class JWTUtils {
             return false;
         }
         try {
+            //Checking whether the jwtString is jwt parsable.
             JWTParser.parse(jwtString);
             return true;
         } catch (ParseException e) {
@@ -160,14 +186,97 @@ public class JWTUtils {
             }
             return false;
         }
+
     }
 
-    public static JWTClaimsSet getJWTClaimsSet(SignedJWT signedJWT) throws ParseException{
+    /**
+     * Parses the provided JWT string into a SignedJWT object.
+     *
+     * @param jwtString the JWT string to parse
+     * @return the parsed SignedJWT object
+     * @throws IllegalArgumentException if the provided token identifier is not a parsable JWT
+     * Will not throw ParseException as it is already validated by isJWT
+     */
+    public static SignedJWT getSignedJWT(String jwtString) throws ParseException {
+
+        if (isJWT(jwtString)) {
+            return SignedJWT.parse(jwtString);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Provided token identifier is not a parsable JWT.");
+            }
+            throw new IllegalArgumentException("Provided token identifier is not a parsable JWT.");
+        }
+
+    }
+
+    /**
+     * Extracts the JWT claims set from the provided SignedJWT object.
+     *
+     * @param signedJWT the signedJWT object from which the claims are extracted
+     * @return extracted jwt claims set in JWTClaimsSet object
+     * @throws ParseException if the signedJWT is corrupted
+     */
+    public static JWTClaimsSet getJWTClaimsSet(SignedJWT signedJWT) throws ParseException {
+
         return signedJWT.getJWTClaimsSet();
+
     }
 
-    public static <T> T getClaim(JWTClaimsSet jwtClaimsSet ,String claim){
+    /**
+     * Retrieves the value of the specified claim from the provided JWTClaimsSet.
+     *
+     * @param jwtClaimsSet the JWTClaimsSet from which to retrieve the claim value
+     * @param claim the name of the claim to retrieve
+     * @param <T> the type of the claim value
+     * @return the value of the specified claim, or null if the claim is not present
+     */
+    public static <T> T getClaim(JWTClaimsSet jwtClaimsSet , String claim) {
+
         Object claimObj = jwtClaimsSet.getClaim(claim);
         return (T) claimObj;
+
+    }
+
+    /**
+     * Validates whether a given JWT is not expired.
+     *
+     * @param jwtClaimsSet jwt claims set of the jwt that needs to validated
+     * @return true if the jwt is not expired
+     */
+    public static boolean validateExpiryTime(JWTClaimsSet jwtClaimsSet) {
+
+        Date expirationTime = jwtClaimsSet.getExpirationTime();
+        if (expirationTime != null) {
+            long timeStampSkewMillis = DEFAULT_TIME_SKEW_IN_SECONDS * 1000;
+            long expirationTimeInMillis = expirationTime.getTime();
+            long currentTimeInMillis = System.currentTimeMillis();
+            return (currentTimeInMillis + timeStampSkewMillis) <= expirationTimeInMillis;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * Validates whether a given JWT is active.
+     *
+     * @param jwtClaimsSet jwt claims set of the jwt that needs to validated
+     * @return true if the jwt is active
+     */
+    public static boolean validateNotValidBefore(JWTClaimsSet jwtClaimsSet) {
+
+        Date notBeforeTime = jwtClaimsSet.getNotBeforeTime();
+        if (notBeforeTime != null) {
+            long timeStampSkewMillis = DEFAULT_TIME_SKEW_IN_SECONDS * 1000;
+            long notBeforeTimeMillis = notBeforeTime.getTime();
+            long currentTimeInMillis = System.currentTimeMillis();
+            return currentTimeInMillis + timeStampSkewMillis >= notBeforeTimeMillis;
+
+        } else {
+            return false;
+        }
+
     }
 }
+

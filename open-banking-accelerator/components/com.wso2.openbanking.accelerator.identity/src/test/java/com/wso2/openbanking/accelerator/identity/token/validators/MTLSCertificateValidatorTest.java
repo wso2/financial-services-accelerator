@@ -40,7 +40,7 @@ import javax.servlet.ServletException;
 import static org.testng.Assert.assertEquals;
 
 /**
- *
+ *class for MTLSCertificateValidator Test.
  */
 @PrepareForTest({IdentityCommonUtil.class})
 @PowerMockIgnore({"jdk.internal.reflect.*"})

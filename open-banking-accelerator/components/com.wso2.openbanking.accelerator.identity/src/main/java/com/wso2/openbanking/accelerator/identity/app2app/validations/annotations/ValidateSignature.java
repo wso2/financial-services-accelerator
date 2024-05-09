@@ -1,5 +1,6 @@
 package com.wso2.openbanking.accelerator.identity.app2app.validations.annotations;
 
+import com.wso2.openbanking.accelerator.identity.app2app.validations.SignatureValidator;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.AlgorithmValidator;
 
 import javax.validation.Constraint;
@@ -14,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {AlgorithmValidator.class})
+@Constraint(validatedBy = {SignatureValidator.class})
 public @interface ValidateSignature {
     String message() default "Signature validation Failed.";
 

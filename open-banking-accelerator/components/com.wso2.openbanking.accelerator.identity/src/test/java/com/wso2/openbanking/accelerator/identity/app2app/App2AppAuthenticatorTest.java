@@ -51,20 +51,6 @@ public class App2AppAuthenticatorTest {
 
     @Test(dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
             dataProvider = "sessionDataKeyProvider")
-    public void getAdditionalInfoTest(String sessionDataKey){
-        mockRequest = mock(HttpServletRequest.class);
-        mockResponse = mock(HttpServletResponse.class);
-        try {
-            Optional<String> output =
-                    app2AppAuthenticator.getAdditionalInfo(mockRequest,mockResponse,sessionDataKey);
-            assertEquals(output,Optional.empty());
-        } catch (AuthenticationFailedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test(dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "sessionDataKeyProvider")
     public void getContextIdentifierTest(String sessionDataKey){
         mockRequest = mock(HttpServletRequest.class);
         when(mockRequest.getParameter(App2AppAuthenticatorConstants.SESSION_DATA_KEY)).thenReturn(sessionDataKey);

@@ -3,7 +3,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.exception;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 
 /**
- * Secret Object Validation Exception
+ * Secret Object Validation Exception.
  */
 public class SecretValidationException extends OpenBankingException {
 
