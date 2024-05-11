@@ -17,7 +17,7 @@
  */
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
-import com.wso2.openbanking.accelerator.identity.app2app.model.Secret;
+import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateJTI;
 import com.wso2.openbanking.accelerator.identity.cache.IdentityCache;
 import com.wso2.openbanking.accelerator.identity.cache.IdentityCacheKey;
@@ -28,13 +28,13 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Validator class for validating the JWT ID.
  */
-public class JTIValidator implements ConstraintValidator<ValidateJTI, Secret> {
+public class JTIValidator implements ConstraintValidator<ValidateJTI, AppAuthValidationJWT> {
     private static IdentityCache identityCache;
 
     @Override
-    public boolean isValid(Secret secret, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
 
-        String jti = secret.getJti();
+        String jti = appAuthValidationJWT.getJti();
         return validateJTI(jti);
 
     }

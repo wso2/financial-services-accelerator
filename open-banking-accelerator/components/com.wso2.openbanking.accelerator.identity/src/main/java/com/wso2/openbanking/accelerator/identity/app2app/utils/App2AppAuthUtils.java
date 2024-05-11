@@ -19,7 +19,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.utils;
 
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.SecretValidationException;
-import com.wso2.openbanking.accelerator.identity.app2app.model.Secret;
+import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.ValidationOrder;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.lang.StringUtils;
@@ -152,14 +152,14 @@ public class App2AppAuthUtils {
     }
 
     /**
-     * Validator util to validate Secret model for given validationOrder.
+     * Validator util to validate AppAuthValidationJWT model for given validationOrder.
      *
-     * @param secret Secret object that needs to be validated
+     * @param appAuthValidationJWT AppAuthValidationJWT object that needs to be validated
      * @throws SecretValidationException if validation f
      */
-    public static void validateSecret(Secret secret) throws SecretValidationException {
+    public static void validateSecret(AppAuthValidationJWT appAuthValidationJWT) throws SecretValidationException {
 
-        String error = OpenBankingValidator.getInstance().getFirstViolation(secret, ValidationOrder.class);
+        String error = OpenBankingValidator.getInstance().getFirstViolation(appAuthValidationJWT, ValidationOrder.class);
 
         //if there is a validation violation convert it to secretValidationException
         if (error != null) {

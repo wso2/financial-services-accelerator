@@ -36,12 +36,12 @@ import java.util.Date;
 
 
 /**
- * Model class for App2App Auth Secret.
+ * Model class for App2App Auth AppAuthValidationJWT.
  */
 @ValidateJTI(groups = ValidityChecks.class)
 @ValidateSignature(algorithm = App2AppAuthenticatorConstants.SIGNING_ALGORITHM, groups = ValidityChecks.class)
 @ValidateTimeliness(groups = ValidityChecks.class)
-public class Secret {
+public class AppAuthValidationJWT {
     @SerializedName("did")
     private String deviceId;
     @SerializedName("loginHint")
@@ -58,7 +58,7 @@ public class Secret {
     private JWTClaimsSet jwtClaimsSet;
     private AuthenticatedUser authenticatedUser;
 
-    public Secret(SignedJWT signedJWT) throws SecretValidationException {
+    public AppAuthValidationJWT(SignedJWT signedJWT) throws SecretValidationException {
 
         try {
             this.signedJWT = signedJWT;

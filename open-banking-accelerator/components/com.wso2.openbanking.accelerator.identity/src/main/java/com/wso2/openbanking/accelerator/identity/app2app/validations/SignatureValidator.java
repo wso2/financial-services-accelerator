@@ -20,7 +20,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.validations;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
-import com.wso2.openbanking.accelerator.identity.app2app.model.Secret;
+import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
 import org.apache.commons.logging.Log;
@@ -40,7 +40,7 @@ import javax.validation.ConstraintValidatorContext;
  * Validator class for validating the signature of a JWT.
  */
 // TODO: change the name of this implementation
-public class SignatureValidator implements ConstraintValidator<ValidateSignature, Secret> {
+public class SignatureValidator implements ConstraintValidator<ValidateSignature, AppAuthValidationJWT> {
     private static final Log log = LogFactory.getLog(SignatureValidator.class);
     private String algorithm;
     @Override
@@ -51,13 +51,13 @@ public class SignatureValidator implements ConstraintValidator<ValidateSignature
     }
 
     @Override
-    public boolean isValid(Secret secret, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
 
         try {
 
-            SignedJWT signedJWT = secret.getSignedJWT();
-            String deviceID = secret.getDeviceId();
-            AuthenticatedUser authenticatedUser = secret.getAuthenticatedUser();
+            SignedJWT signedJWT = appAuthValidationJWT.getSignedJWT();
+            String deviceID = appAuthValidationJWT.getDeviceId();
+            AuthenticatedUser authenticatedUser = appAuthValidationJWT.getAuthenticatedUser();
             UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
             String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
             String publicKey = App2AppAuthUtils.getPublicKey(deviceID, userID);

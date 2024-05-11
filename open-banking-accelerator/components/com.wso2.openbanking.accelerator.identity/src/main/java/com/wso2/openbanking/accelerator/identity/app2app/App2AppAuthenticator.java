@@ -21,7 +21,7 @@ package com.wso2.openbanking.accelerator.identity.app2app;
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.SecretValidationException;
-import com.wso2.openbanking.accelerator.identity.app2app.model.Secret;
+import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -70,12 +70,12 @@ public class App2AppAuthenticator extends PushAuthenticator {
         String jwtString = httpServletRequest.getParameter(App2AppAuthenticatorConstants.SECRET);
         try {
             SignedJWT signedJWT = JWTUtils.getSignedJWT(jwtString);
-            Secret secret = new Secret(signedJWT);
-            String loginHint = secret.getLoginHint();
+            AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
+            String loginHint = appAuthValidationJWT.getLoginHint();
             AuthenticatedUser authenticatedUser = App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
-            secret.setAuthenticatedUser(authenticatedUser);
-            App2AppAuthUtils.validateSecret(secret);
-            AuthenticatedUser user = secret.getAuthenticatedUser();
+            appAuthValidationJWT.setAuthenticatedUser(authenticatedUser);
+            App2AppAuthUtils.validateSecret(appAuthValidationJWT);
+            AuthenticatedUser user = appAuthValidationJWT.getAuthenticatedUser();
             authenticationContext.setSubject(user);
         } catch (SecretValidationException e) {
             throw new AuthenticationFailedException(e.getMessage());

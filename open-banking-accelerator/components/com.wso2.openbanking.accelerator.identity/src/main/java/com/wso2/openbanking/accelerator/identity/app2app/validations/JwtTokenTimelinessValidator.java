@@ -19,7 +19,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
-import com.wso2.openbanking.accelerator.identity.app2app.model.Secret;
+import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateTimeliness;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,12 +32,12 @@ import javax.validation.ConstraintValidatorContext;
  * Validates the expiry.
  * Validates the nbf.
  */
-public class JwtTokenTimelinessValidator implements ConstraintValidator<ValidateTimeliness, Secret> {
+public class JwtTokenTimelinessValidator implements ConstraintValidator<ValidateTimeliness, AppAuthValidationJWT> {
     private static final Log log = LogFactory.getLog(JwtTokenTimelinessValidator.class);
     @Override
-    public boolean isValid(Secret secret, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
 
-        JWTClaimsSet jwtClaimsSet = secret.getJwtClaimsSet();
+        JWTClaimsSet jwtClaimsSet = appAuthValidationJWT.getJwtClaimsSet();
 
         //Validating the exp of the JWT
         if (!JWTUtils.validateExpiryTime(jwtClaimsSet)) {
