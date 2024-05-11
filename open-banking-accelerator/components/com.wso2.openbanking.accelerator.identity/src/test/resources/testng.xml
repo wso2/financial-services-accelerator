@@ -130,4 +130,9 @@
             <class name="com.wso2.openbanking.accelerator.identity.dispute.resolution.DisputeResolutionFilterTest"/>
         </classes>
     </test>
+    <test name="app2app-auth-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthenticatorTest"/>
+        </classes>
+    </test>
 </suite>

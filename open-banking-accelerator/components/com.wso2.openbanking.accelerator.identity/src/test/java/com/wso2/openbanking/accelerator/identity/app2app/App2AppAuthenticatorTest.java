@@ -1,5 +1,6 @@
 package com.wso2.openbanking.accelerator.identity.app2app;
 
+import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;
@@ -7,7 +8,6 @@ import org.wso2.carbon.identity.application.authentication.framework.exception.A
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -22,6 +22,22 @@ public class App2AppAuthenticatorTest {
     @BeforeTest
     public void setup(){
         app2AppAuthenticator = new App2AppAuthenticator();
+    }
+
+    @Test
+    public void testGetName() {
+        App2AppAuthenticator authenticator = new App2AppAuthenticator();
+        String expectedName = App2AppAuthenticatorConstants.AUTHENTICATOR_NAME;
+        String actualName = authenticator.getName();
+        assertEquals(actualName, expectedName, "Expected and actual names should match");
+    }
+
+    @Test
+    public void testGetFriendlyName() {
+        App2AppAuthenticator authenticator = new App2AppAuthenticator();
+        String expectedFriendlyName = App2AppAuthenticatorConstants.AUTHENTICATOR_FRIENDLY_NAME;
+        String actualFriendlyName = authenticator.getFriendlyName();
+        assertEquals(actualFriendlyName, expectedFriendlyName, "Expected and actual friendly names should match");
     }
     @Test(dataProviderClass =App2AppAuthenticatorTestDataProvider.class ,
             dataProvider = "UsernameAndPasswordProvider")
@@ -56,5 +72,25 @@ public class App2AppAuthenticatorTest {
         when(mockRequest.getParameter(App2AppAuthenticatorConstants.SESSION_DATA_KEY)).thenReturn(sessionDataKey);
         String output = app2AppAuthenticator.getContextIdentifier(mockRequest);
         assertEquals(sessionDataKey,output);
+    }
+
+    @Test(expectedExceptions = AuthenticationFailedException.class)
+    public void testProcessAuthenticationResponse_InvalidJWT(String jwtString) throws AuthenticationFailedException {
+        // Mock HttpServletRequest, HttpServletResponse, and AuthenticationContext
+        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        HttpServletResponse responseMock = mock(HttpServletResponse.class);
+        AuthenticationContext authContextMock = mock(AuthenticationContext.class);
+
+        // Set up mock behavior for HttpServletRequest
+        when(requestMock.getParameter(App2AppAuthenticatorConstants.SECRET)).thenReturn(jwtString);
+        // Call the method under test, expecting an exception
+        try {
+            App2AppAuthenticator authenticator = new App2AppAuthenticator();
+            authenticator.processAuthenticationResponse(requestMock, responseMock, authContextMock);
+        }catch (AuthenticationFailedException e) {
+            throw e;
+        }catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

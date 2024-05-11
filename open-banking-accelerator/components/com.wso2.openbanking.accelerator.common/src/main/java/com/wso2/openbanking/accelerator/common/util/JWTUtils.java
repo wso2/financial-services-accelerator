@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -207,34 +207,6 @@ public class JWTUtils {
             }
             throw new IllegalArgumentException("Provided token identifier is not a parsable JWT.");
         }
-
-    }
-
-    /**
-     * Extracts the JWT claims set from the provided SignedJWT object.
-     *
-     * @param signedJWT the signedJWT object from which the claims are extracted
-     * @return extracted jwt claims set in JWTClaimsSet object
-     * @throws ParseException if the signedJWT is corrupted
-     */
-    public static JWTClaimsSet getJWTClaimsSet(SignedJWT signedJWT) throws ParseException {
-
-        return signedJWT.getJWTClaimsSet();
-
-    }
-
-    /**
-     * Retrieves the value of the specified claim from the provided JWTClaimsSet.
-     *
-     * @param jwtClaimsSet the JWTClaimsSet from which to retrieve the claim value
-     * @param claim the name of the claim to retrieve
-     * @param <T> the type of the claim value
-     * @return the value of the specified claim, or null if the claim is not present
-     */
-    public static <T> T getClaim(JWTClaimsSet jwtClaimsSet , String claim) {
-
-        Object claimObj = jwtClaimsSet.getClaim(claim);
-        return (T) claimObj;
 
     }
 

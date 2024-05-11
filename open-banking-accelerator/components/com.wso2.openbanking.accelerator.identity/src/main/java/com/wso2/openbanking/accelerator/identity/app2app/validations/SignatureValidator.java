@@ -1,3 +1,20 @@
+/**
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.nimbusds.jose.JOSEException;
@@ -14,56 +31,62 @@ import org.wso2.carbon.identity.application.authenticator.push.device.handler.ex
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+/**
+ * Validator class for validating the signature of a JWT.
+ */
 // TODO: change the name of this implementation
 public class SignatureValidator implements ConstraintValidator<ValidateSignature, Secret> {
     private static final Log log = LogFactory.getLog(SignatureValidator.class);
     private String algorithm;
     @Override
     public void initialize(ValidateSignature validateSignature) {
+
         this.algorithm = validateSignature.algorithm();
 
     }
 
     @Override
     public boolean isValid(Secret secret, ConstraintValidatorContext constraintValidatorContext) {
+
         try {
+
             SignedJWT signedJWT = secret.getSignedJWT();
-            String loginHint = secret.getLoginHint();
             String deviceID = secret.getDeviceId();
-            AuthenticatedUser authenticatedUser =
-                    App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
-            secret.setAuthenticatedUser(authenticatedUser);
+            AuthenticatedUser authenticatedUser = secret.getAuthenticatedUser();
             UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
-            String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(),userRealm);
-            String publicKey = App2AppAuthUtils.getPublicKey(deviceID,userID);
-            boolean isSignatureValid = JWTUtils.validateJWTSignature(signedJWT,publicKey,algorithm);
-            if (!isSignatureValid){
+            String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
+            String publicKey = App2AppAuthUtils.getPublicKey(deviceID, userID);
+
+            if (!JWTUtils.validateJWTSignature(signedJWT, publicKey, algorithm)) {
                 log.error("Signature can't be verified with registered public key.");
                 return false;
             }
         } catch (UserStoreException e) {
-            log.error("Error while creating authenticated user.",e);
+            log.error("Error while creating authenticated user.", e);
             return false;
         } catch (PushDeviceHandlerServerException e) {
-            log.error("Error occurred push device handler service.",e);
+            log.error("Error occurred push device handler service.", e);
             return false;
         } catch (PushDeviceHandlerClientException e) {
-            log.error("Push Device handler client.",e);
+            log.error("Push Device handler client.", e);
             return false;
         } catch (NoSuchAlgorithmException e) {
-            log.error("No such algorithm found -"+algorithm+".",e);
+            log.error("No such algorithm found -" + algorithm + ".", e);
             return false;
         } catch (InvalidKeySpecException e) {
-            log.error("Invalid key spec.",e);
+            log.error("Invalid key spec.", e);
             return false;
         } catch (JOSEException e) {
-            log.error("JOSE exception",e);
+            log.error("JOSE exception", e);
             return false;
         }
         return true;
+
     }
 }
+
