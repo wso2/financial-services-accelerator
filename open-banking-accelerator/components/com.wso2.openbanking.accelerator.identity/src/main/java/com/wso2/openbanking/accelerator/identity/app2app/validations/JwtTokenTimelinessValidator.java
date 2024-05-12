@@ -17,7 +17,6 @@
  */
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
