@@ -18,6 +18,7 @@
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateTimeliness;
@@ -26,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.text.ParseException;
 
 /**
  * Validator class for validating the timeliness of a JWT.
@@ -37,17 +39,25 @@ public class JwtTokenTimelinessValidator implements ConstraintValidator<Validate
     @Override
     public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
 
-        JWTClaimsSet jwtClaimsSet = appAuthValidationJWT.getJwtClaimsSet();
+        SignedJWT signedJWT = appAuthValidationJWT.getSignedJWT();
 
-        //Validating the exp of the JWT
-        if (!JWTUtils.validateExpiryTime(jwtClaimsSet)) {
-            log.error("JWT Expired.");
-            return false;
-        }
 
-        //Validating the nbf of the JWT
-        if (!JWTUtils.validateNotValidBefore(jwtClaimsSet)) {
-            log.error("JWT is not active.");
+        try {
+            //Validating the exp of the JWT
+            if (!JWTUtils.validateExpiryTime(signedJWT)) {
+                log.error("JWT Expired.");
+                return false;
+            }
+
+            //Validating the nbf of the JWT
+            if (!JWTUtils.validateNotValidBefore(signedJWT)) {
+                log.error("JWT is not active.");
+                return false;
+            }
+
+        //Unreachable catch block
+        } catch (ParseException e) {
+            log.error("Provided JWT for AppValidationJWT is not parsable: " + e.getMessage());
             return false;
         }
 

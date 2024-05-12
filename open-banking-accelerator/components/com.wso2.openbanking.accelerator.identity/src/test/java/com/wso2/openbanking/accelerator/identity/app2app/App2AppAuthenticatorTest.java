@@ -1,6 +1,5 @@
 package com.wso2.openbanking.accelerator.identity.app2app;
 
-import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;
@@ -44,7 +43,7 @@ public class App2AppAuthenticatorTest {
     public void canHandleTestCase(String secret, String expected) {
 
         mockRequest = mock(HttpServletRequest.class);
-        when(mockRequest.getParameter(App2AppAuthenticatorConstants.SECRET)).thenReturn(secret);
+        when(mockRequest.getParameter(App2AppAuthenticatorConstants.AppAuthValidationJWTIdentifier)).thenReturn(secret);
         assertEquals(Boolean.valueOf(expected).booleanValue(), app2AppAuthenticator.canHandle(mockRequest),
                 "Invalid can handle response for the request.");
     }
@@ -82,7 +81,7 @@ public class App2AppAuthenticatorTest {
         AuthenticationContext authContextMock = mock(AuthenticationContext.class);
 
         // Set up mock behavior for HttpServletRequest
-        when(requestMock.getParameter(App2AppAuthenticatorConstants.SECRET)).thenReturn(jwtString);
+        when(requestMock.getParameter(App2AppAuthenticatorConstants.AppAuthValidationJWTIdentifier)).thenReturn(jwtString);
         // Call the method under test, expecting an exception
         try {
             App2AppAuthenticator authenticator = new App2AppAuthenticator();

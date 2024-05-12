@@ -20,7 +20,7 @@ package com.wso2.openbanking.accelerator.identity.app2app;
 
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
-import com.wso2.openbanking.accelerator.identity.app2app.exception.SecretValidationException;
+import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +30,11 @@ import org.wso2.carbon.identity.application.authentication.framework.context.Aut
 import org.wso2.carbon.identity.application.authentication.framework.exception.AuthenticationFailedException;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.application.authenticator.push.PushAuthenticator;
+import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerClientException;
+import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerServerException;
 import org.wso2.carbon.identity.application.common.model.Property;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -67,24 +71,37 @@ public class App2AppAuthenticator extends PushAuthenticator {
                                                  AuthenticationContext authenticationContext)
             throws AuthenticationFailedException {
 
-        String jwtString = httpServletRequest.getParameter(App2AppAuthenticatorConstants.SECRET);
+        String jwtString = httpServletRequest.getParameter(App2AppAuthenticatorConstants.AppAuthValidationJWTIdentifier);
         try {
             SignedJWT signedJWT = JWTUtils.getSignedJWT(jwtString);
             AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
             String loginHint = appAuthValidationJWT.getLoginHint();
-            AuthenticatedUser authenticatedUser = App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
-            appAuthValidationJWT.setAuthenticatedUser(authenticatedUser);
+            String deviceID = appAuthValidationJWT.getDeviceId();
+            AuthenticatedUser userToBeAuthenticated = App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
+            String publicKey = getPublicKeyByDeviceID(deviceID,userToBeAuthenticated);
+            appAuthValidationJWT.setPublicKey(publicKey);
+            appAuthValidationJWT.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+            /*
+                if validations are failed it will throw a JWTValidationException and flow will be interrupted.
+                Hence, user Authentication will fail.
+             */
             App2AppAuthUtils.validateSecret(appAuthValidationJWT);
-            AuthenticatedUser user = appAuthValidationJWT.getAuthenticatedUser();
-            authenticationContext.setSubject(user);
-        } catch (SecretValidationException e) {
-            throw new AuthenticationFailedException(e.getMessage());
+            //If the flow is not interrupted user will be authenticated.
+            authenticationContext.setSubject(userToBeAuthenticated);
+        } catch (JWTValidationException e) {
+            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE + e.getMessage());
         } catch (IllegalArgumentException e) {
-            throw new AuthenticationFailedException("Illegal Argument exception: " + e.getMessage(), e);
+            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE + e.getMessage(), e);
         } catch (RuntimeException e) {
-            throw new AuthenticationFailedException("Run Time exception: " + e.getMessage(), e);
+            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.RUNTIME_EXCEPTION_MESSAGE + e.getMessage(), e);
         } catch (ParseException e) {
-            throw new AuthenticationFailedException("Provided JWT for AppValidationJWT is not parsable: " + e.getMessage(), e);
+            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.PARSE_EXCEPTION_MESSAGE + e.getMessage(), e);
+        } catch (PushDeviceHandlerServerException e) {
+            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE, e);
+        } catch (UserStoreException e) {
+            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.USER_STORE_EXCEPTION_MESSAGE, e);
+        } catch (PushDeviceHandlerClientException e) {
+            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE, e);
         }
 
     }
@@ -92,7 +109,7 @@ public class App2AppAuthenticator extends PushAuthenticator {
     @Override
     public boolean canHandle(HttpServletRequest httpServletRequest) {
 
-        return !StringUtils.isBlank(httpServletRequest.getParameter(App2AppAuthenticatorConstants.SECRET));
+        return !StringUtils.isBlank(httpServletRequest.getParameter(App2AppAuthenticatorConstants.AppAuthValidationJWTIdentifier));
 
     }
 
@@ -106,8 +123,8 @@ public class App2AppAuthenticator extends PushAuthenticator {
     @Override
     protected void initiateAuthenticationRequest(HttpServletRequest request, HttpServletResponse response,
                                                  AuthenticationContext context) throws AuthenticationFailedException {
-        log.error("Initializing App2App authenticator is not supported.");
-        throw new AuthenticationFailedException("Mandatory parameter secret null or empty in request.");
+        log.error(App2AppAuthenticatorConstants.INITIALIZATION_ERROR_MESSAGE);
+        throw new AuthenticationFailedException(App2AppAuthenticatorConstants.MANDATORY_PARAMETER_ERROR_MESSAGE);
 
     }
 
@@ -125,6 +142,25 @@ public class App2AppAuthenticator extends PushAuthenticator {
         serverKeyProperty.setRequired(true);
         configProperties.add(serverKeyProperty);
         return configProperties;
+
+    }
+
+    /**
+     * Retrieves the public key associated with a device and user.
+     *
+     * @param deviceID    The identifier of the device for which the public key is requested.
+     * @param authenticatedUser  the authenticated user for this request
+     * @return            The public key associated with the specified device and user.
+     * @throws UserStoreException                If an error occurs while accessing user store.
+     * @throws PushDeviceHandlerServerException  If an error occurs on the server side of the push device handler.
+     * @throws PushDeviceHandlerClientException  If an error occurs on the client side of the push device handler.
+     */
+    private String getPublicKeyByDeviceID(String deviceID, AuthenticatedUser authenticatedUser) throws UserStoreException,
+            PushDeviceHandlerServerException, PushDeviceHandlerClientException {
+
+        UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
+        String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
+        return App2AppAuthUtils.getPublicKey(deviceID, userID);
 
     }
 }

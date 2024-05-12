@@ -182,7 +182,7 @@ public class JWTUtils {
             return true;
         } catch (ParseException e) {
             if (log.isDebugEnabled()) {
-                log.debug("Provided token identifier is not a parsable JWT.", e);
+                log.debug("Provided JWT is not a parsable.", e);
             }
             return false;
         }
@@ -213,11 +213,12 @@ public class JWTUtils {
     /**
      * Validates whether a given JWT is not expired.
      *
-     * @param jwtClaimsSet jwt claims set of the jwt that needs to validated
+     * @param signedJWT  the signed jwt that needs to validated
      * @return true if the jwt is not expired
      */
-    public static boolean validateExpiryTime(JWTClaimsSet jwtClaimsSet) {
+    public static boolean validateExpiryTime(SignedJWT signedJWT) throws ParseException {
 
+        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
         Date expirationTime = jwtClaimsSet.getExpirationTime();
         if (expirationTime != null) {
             long timeStampSkewMillis = DEFAULT_TIME_SKEW_IN_SECONDS * 1000;
@@ -233,11 +234,12 @@ public class JWTUtils {
     /**
      * Validates whether a given JWT is active.
      *
-     * @param jwtClaimsSet jwt claims set of the jwt that needs to validated
+     * @param signedJWT the signed jwt that needs to validated
      * @return true if the jwt is active
      */
-    public static boolean validateNotValidBefore(JWTClaimsSet jwtClaimsSet) {
+    public static boolean validateNotValidBefore(SignedJWT signedJWT) throws ParseException {
 
+        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
         Date notBeforeTime = jwtClaimsSet.getNotBeforeTime();
         if (notBeforeTime != null) {
             long timeStampSkewMillis = DEFAULT_TIME_SKEW_IN_SECONDS * 1000;

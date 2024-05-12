@@ -18,9 +18,9 @@
 package com.wso2.openbanking.accelerator.identity.app2app.utils;
 
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
-import com.wso2.openbanking.accelerator.identity.app2app.exception.SecretValidationException;
+import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
-import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.ValidationOrder;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.App2AppValidationOrder;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
@@ -155,15 +155,19 @@ public class App2AppAuthUtils {
      * Validator util to validate AppAuthValidationJWT model for given validationOrder.
      *
      * @param appAuthValidationJWT AppAuthValidationJWT object that needs to be validated
-     * @throws SecretValidationException if validation f
+     * @throws JWTValidationException if validation f
      */
-    public static void validateSecret(AppAuthValidationJWT appAuthValidationJWT) throws SecretValidationException {
+    public static void validateSecret(AppAuthValidationJWT appAuthValidationJWT) throws JWTValidationException {
+        /*
+            App2AppValidationOrder validation order
+                1.Required Params validation
+                2.Validity Validations - Signature, JTI, Timeliness will be validated.
+         */
+        String error = OpenBankingValidator.getInstance().getFirstViolation(appAuthValidationJWT, App2AppValidationOrder.class);
 
-        String error = OpenBankingValidator.getInstance().getFirstViolation(appAuthValidationJWT, ValidationOrder.class);
-
-        //if there is a validation violation convert it to secretValidationException
+        //if there is a validation violation convert it to JWTValidationException
         if (error != null) {
-            throw new SecretValidationException(error);
+            throw new JWTValidationException(error);
         }
 
     }

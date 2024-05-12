@@ -15,23 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.wso2.openbanking.accelerator.identity.app2app.exception;
+package com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups;
 
-import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import javax.validation.GroupSequence;
 
 /**
- * AppAuthValidationJWT Object Validation Exception.
+ * Class to define the order of execution for the hibernate validation groups.
  */
-public class SecretValidationException extends OpenBankingException {
-
-
-    private static final long serialVersionUID = -2572459527308720228L;
-
-    public SecretValidationException(String message) {
-        super(message);
-    }
-
-    public SecretValidationException(String message, Throwable e) {
-        super(message, e);
-    }
+@GroupSequence({RequiredParamChecks.class, ValidityChecks.class})
+public interface App2AppValidationOrder {
 }

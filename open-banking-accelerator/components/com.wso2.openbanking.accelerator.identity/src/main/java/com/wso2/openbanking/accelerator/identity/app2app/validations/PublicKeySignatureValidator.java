@@ -21,15 +21,9 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
-import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
-import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerClientException;
-import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerServerException;
-import org.wso2.carbon.user.api.UserRealm;
-import org.wso2.carbon.user.api.UserStoreException;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -39,16 +33,8 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Validator class for validating the signature of a JWT.
  */
-// TODO: change the name of this implementation
-public class SignatureValidator implements ConstraintValidator<ValidateSignature, AppAuthValidationJWT> {
-    private static final Log log = LogFactory.getLog(SignatureValidator.class);
-    private String algorithm;
-    @Override
-    public void initialize(ValidateSignature validateSignature) {
-
-        this.algorithm = validateSignature.algorithm();
-
-    }
+public class PublicKeySignatureValidator implements ConstraintValidator<ValidateSignature, AppAuthValidationJWT> {
+    private static final Log log = LogFactory.getLog(PublicKeySignatureValidator.class);
 
     @Override
     public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
@@ -56,27 +42,15 @@ public class SignatureValidator implements ConstraintValidator<ValidateSignature
         try {
 
             SignedJWT signedJWT = appAuthValidationJWT.getSignedJWT();
-            String deviceID = appAuthValidationJWT.getDeviceId();
-            AuthenticatedUser authenticatedUser = appAuthValidationJWT.getAuthenticatedUser();
-            UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
-            String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
-            String publicKey = App2AppAuthUtils.getPublicKey(deviceID, userID);
-
+            String publicKey = appAuthValidationJWT.getPublicKey();
+            String algorithm = appAuthValidationJWT.getSigningAlgorithm();
             if (!JWTUtils.validateJWTSignature(signedJWT, publicKey, algorithm)) {
                 log.error("Signature can't be verified with registered public key.");
                 return false;
             }
-        } catch (UserStoreException e) {
-            log.error("Error while creating authenticated user.", e);
-            return false;
-        } catch (PushDeviceHandlerServerException e) {
-            log.error("Error occurred push device handler service.", e);
-            return false;
-        } catch (PushDeviceHandlerClientException e) {
-            log.error("Push Device handler client.", e);
-            return false;
+
         } catch (NoSuchAlgorithmException e) {
-            log.error("No such algorithm found -" + algorithm + ".", e);
+            log.error("No such algorithm found.", e);
             return false;
         } catch (InvalidKeySpecException e) {
             log.error("Invalid key spec.", e);

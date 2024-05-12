@@ -17,7 +17,7 @@
  */
 package com.wso2.openbanking.accelerator.identity.app2app.validations.annotations;
 
-import com.wso2.openbanking.accelerator.identity.app2app.validations.SignatureValidator;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.PublicKeySignatureValidator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -35,12 +35,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {SignatureValidator.class})
+@Constraint(validatedBy = {PublicKeySignatureValidator.class})
 public @interface ValidateSignature {
     String message() default "Signature validation Failed.";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
-    String algorithm();
+
 }
