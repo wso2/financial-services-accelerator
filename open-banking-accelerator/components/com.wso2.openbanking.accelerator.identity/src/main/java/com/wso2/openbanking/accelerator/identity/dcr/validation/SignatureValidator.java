@@ -58,32 +58,34 @@ public class SignatureValidator implements ConstraintValidator<ValidateSignature
                            ConstraintValidatorContext constraintValidatorContext) {
 
         try {
+            String softwareStatement = BeanUtils.getProperty(registrationRequest, softwareStatementPath);
+            if (softwareStatement != null ) {
+                SignedJWT signedJWT = SignedJWT.parse(softwareStatement);
+                String jwtString = signedJWT.getParsedString();
+                String alg = signedJWT.getHeader().getAlgorithm().getName();
+                String softwareEnvironmentFromSSA = OpenBankingUtils.getSoftwareEnvironmentFromSSA(jwtString);
+                String jwksURL;
 
-            boolean isValidSignature = false;
-            SignedJWT signedJWT = SignedJWT.parse(BeanUtils.getProperty(registrationRequest, softwareStatementPath));
-            String jwtString = signedJWT.getParsedString();
-            String alg = signedJWT.getHeader().getAlgorithm().getName();
-            String softwareEnvironmentFromSSA = OpenBankingUtils.getSoftwareEnvironmentFromSSA(jwtString);
-            String jwksURL;
-
-            if (IdentityConstants.PRODUCTION.equals(softwareEnvironmentFromSSA)) {
-                // validate the signature against production jwks
-                jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
-                        .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_PRODUCTION).toString();
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Validating the signature from Production JwksUrl %s",
-                            jwksURL.replaceAll("[\r\n]", "")));
+                if (IdentityConstants.PRODUCTION.equals(softwareEnvironmentFromSSA)) {
+                    // validate the signature against production jwks
+                    jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
+                            .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_PRODUCTION).toString();
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Validating the signature from Production JwksUrl %s",
+                                jwksURL.replaceAll("[\r\n]", "")));
+                    }
+                } else {
+                    // else validate the signature against sandbox jwks
+                    jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
+                            .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_SANDBOX).toString();
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Validating the signature from Sandbox JwksUrl %s",
+                                jwksURL.replaceAll("[\r\n]", "")));
+                    }
                 }
-            } else {
-                // else validate the signature against sandbox jwks
-                jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
-                        .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_SANDBOX).toString();
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Validating the signature from Sandbox JwksUrl %s",
-                            jwksURL.replaceAll("[\r\n]", "")));
-                }
+                return isValidateJWTSignature(jwksURL, jwtString, alg);
             }
-            return isValidateJWTSignature(jwksURL, jwtString, alg);
+            return true;
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             log.error("Error while resolving validation fields", e);
         } catch (ParseException e) {

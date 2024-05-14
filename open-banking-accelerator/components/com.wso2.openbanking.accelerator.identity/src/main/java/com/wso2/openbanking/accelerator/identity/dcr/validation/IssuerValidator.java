@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.identity.dcr.validation;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateIssuer;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,13 +53,14 @@ public class IssuerValidator implements ConstraintValidator<ValidateIssuer, Obje
 
         try {
             String issuer = BeanUtils.getProperty(registrationRequest, issuerPath);
-            if (issuer != null) {
-                String softwareStatement = BeanUtils.getProperty(registrationRequest, ssaPath);
+            String softwareStatement = BeanUtils.getProperty(registrationRequest, ssaPath);
+            if (issuer != null && softwareStatement != null) {
                 String softwareId = JWTUtils.decodeRequestJWT(softwareStatement, "body")
                         .getAsString(DCRCommonConstants.SOFTWARE_ID);
                 if (softwareId != null && softwareId.equals(issuer)) {
                     return true;
                 }
+
             } else {
                 return true;
             }

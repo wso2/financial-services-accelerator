@@ -173,19 +173,14 @@ public class ClientRegistrationApiImpl {
             Map<String, Object> requestAttributes = (Map<String, Object>)
                     gson.fromJson(registrationRequestDetails, Map.class);
 
-            //decode SSA
-            if (registrationRequest.getSoftwareStatement() == null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                                .getErrorDTO(DCRCommonConstants.INVALID_META_DATA,
-                                        "Required parameter software statement cannot be null"))
-                        .build();
-            }
-            String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
-                    .toString();
-            Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
-            //RegistrationRequest registrationRequest = RegistrationUtils.getRegistrationRequest(requestAttributeMap);
             registrationRequest.setRequestParameters(requestAttributes);
-            registrationRequest.setSsaParameters(ssaAttributesMap);
+
+            if (registrationRequest.getSoftwareStatement() != null) {
+                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
+                        .toString();
+                Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
+                registrationRequest.setSsaParameters(ssaAttributesMap);
+            }
 
             String clientId = uriInfo.getPathParameters().getFirst("s");
             RegistrationUtils.validateRegistrationCreation(registrationRequest);
@@ -265,19 +260,17 @@ public class ClientRegistrationApiImpl {
                 log.error("Certificate not valid", e);
             }
 
-            //decode SSA
-            if (StringUtils.isBlank(registrationRequest.getSoftwareStatement())) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                                .getErrorDTO(DCRCommonConstants.INVALID_META_DATA,
-                                        "Required parameter software statement cannot be null"))
-                        .build();
-            }
-            String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
-                    .toString();
-            Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
-
             registrationRequest.setRequestParameters(requestAttributes);
-            registrationRequest.setSsaParameters(ssaAttributesMap);
+
+            //decode SSA if provided in the registration request
+            if (registrationRequest.getSoftwareStatement() != null) {
+                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
+                        .toString();
+                Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
+                registrationRequest.setSsaParameters(ssaAttributesMap);
+
+            }
+
             RegistrationUtils.validateRegistrationCreation(registrationRequest);
             //do specific validations
             registrationValidator.validatePost(registrationRequest);

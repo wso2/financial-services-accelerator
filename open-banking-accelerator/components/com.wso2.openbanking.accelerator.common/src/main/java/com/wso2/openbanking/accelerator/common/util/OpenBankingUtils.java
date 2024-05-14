@@ -72,15 +72,17 @@ public class OpenBankingUtils {
         String prodEnvIdentificationValue = OpenBankingConfigParser.getInstance()
                 .getSoftwareEnvIdentificationSSAPropertyValueForProduction();
         String softwareEnvironment = IdentityConstants.PRODUCTION;
-        // decode software statement and get softwareEnvironment
-        JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement, "body");
-        Object softwareEnvironmentValue = softwareStatementBody.get(sandboxEnvIdentificationPropertyName);
-        if (softwareEnvironmentValue != null &&
-                softwareEnvironmentValue.toString().equalsIgnoreCase(sandboxEnvIdentificationValue)) {
-            softwareEnvironment = IdentityConstants.SANDBOX;
-        } else if (softwareEnvironmentValue != null &&
-                softwareEnvironmentValue.toString().equalsIgnoreCase(prodEnvIdentificationValue)) {
-            softwareEnvironment = IdentityConstants.PRODUCTION;
+        if (softwareStatement != null) {
+            // decode software statement and get softwareEnvironment
+            JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement, "body");
+            Object softwareEnvironmentValue = softwareStatementBody.get(sandboxEnvIdentificationPropertyName);
+            if (softwareEnvironmentValue != null &&
+                    softwareEnvironmentValue.toString().equalsIgnoreCase(sandboxEnvIdentificationValue)) {
+                softwareEnvironment = IdentityConstants.SANDBOX;
+            } else if (softwareEnvironmentValue != null &&
+                    softwareEnvironmentValue.toString().equalsIgnoreCase(prodEnvIdentificationValue)) {
+                softwareEnvironment = IdentityConstants.PRODUCTION;
+            }
         }
         return softwareEnvironment;
     }

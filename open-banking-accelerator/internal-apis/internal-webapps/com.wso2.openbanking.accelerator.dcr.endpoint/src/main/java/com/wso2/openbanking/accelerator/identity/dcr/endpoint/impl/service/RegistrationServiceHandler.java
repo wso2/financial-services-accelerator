@@ -84,10 +84,15 @@ public class RegistrationServiceHandler {
         ServiceProvider serviceProvider = applicationManagementService
                 .getServiceProvider(application.getClientName(), tenantDomain);
 
-        if (StringUtils.isNotEmpty(jwksEndpointName)) {
-            serviceProvider.setJwksUri(registrationRequest.getSsaParameters().get(jwksEndpointName).toString());
-        } else {
-            serviceProvider.setJwksUri(registrationRequest.getSoftwareStatementBody().getJwksURI());
+        if (registrationRequest.getSoftwareStatement() == null) {
+                serviceProvider.setJwksUri(registrationRequest.getJwksURI());
+        }
+        else {
+            if (StringUtils.isNotEmpty(jwksEndpointName)) {
+                serviceProvider.setJwksUri(registrationRequest.getSsaParameters().get(jwksEndpointName).toString());
+            } else {
+                serviceProvider.setJwksUri(registrationRequest.getSoftwareStatementBody().getJwksURI());
+            }
         }
 
         Long clientIdIssuedTime = Instant.now().getEpochSecond();
@@ -108,7 +113,9 @@ public class RegistrationServiceHandler {
         Map<String, Object> registrationData = registrationRequest.getRequestParameters();
         registrationData.put(RegistrationConstants.CLIENT_ID, application.getClientId());
         registrationData.put(RegistrationConstants.CLIENT_ID_ISSUED_AT, clientIdIssuedTime.toString());
-        registrationData.putAll(registrationRequest.getSsaParameters());
+        if(registrationRequest.getSsaParameters() != null) {
+            registrationData.putAll(registrationRequest.getSsaParameters());
+        }
         registrationData.putAll(additionalAttributes);
         String registrationResponse = registrationValidator.getRegistrationResponse(registrationData);
         return Response.status(Response.Status.CREATED).entity(registrationResponse).build();
@@ -166,7 +173,9 @@ public class RegistrationServiceHandler {
         Application applicationToUpdate = dcrmService.getApplication(clientId);
         String applicationNameInRequest = "";
         if (useSoftwareIdAsAppName) {
-            applicationNameInRequest = request.getSoftwareStatementBody().getSoftwareId();
+            applicationNameInRequest = (request.getSoftwareStatement() != null) ?
+                    request.getSoftwareStatementBody().getSoftwareId():
+                    request.getSoftwareId();
         } else {
             applicationNameInRequest = request.getSoftwareStatementBody().getClientName();
         }
@@ -186,11 +195,13 @@ public class RegistrationServiceHandler {
         ServiceProvider serviceProvider = applicationManagementService
                 .getServiceProvider(application.getClientName(), tenantDomain);
 
-        if (StringUtils.isNotEmpty(jwksEndpointName)) {
-            serviceProvider.setJwksUri(request.getSsaParameters().get(jwksEndpointName).toString());
-        } else {
-            serviceProvider.setJwksUri(request.getSoftwareStatementBody().getJwksURI());
-        }
+        //get JWKS URI from the request
+        String jwksUri = request.getSoftwareStatement() == null ?
+                request.getJwksURI() : StringUtils.isNotEmpty(jwksEndpointName) ?
+                request.getSsaParameters().get(jwksEndpointName).toString() : request.getSoftwareStatementBody().getJwksURI();
+
+        serviceProvider.setJwksUri(jwksUri);
+
         ServiceProviderProperty[] serviceProviderProperties = serviceProvider.getSpProperties();
         if (log.isDebugEnabled()) {
             log.debug("Retrieved client meta data for application " + application.getClientName());
@@ -206,7 +217,9 @@ public class RegistrationServiceHandler {
         //update Service provider with new client data
         Map<String, String> updateRequestData = RegistrationUtils.getAlteredApplicationAttributes(request);
         Map<String, Object> updateRegistrationData = request.getRequestParameters();
-        updateRegistrationData.putAll(request.getSsaParameters());
+        if(request.getSsaParameters() != null) {
+            updateRegistrationData.putAll(request.getSsaParameters());
+        }
         updateRequestData.put(RegistrationConstants.CLIENT_ID_ISSUED_AT, clientIdIssuedAt);
         // Adding SP property to identify update request. Will be removed when updating authenticators.
         updateRequestData.put("AppCreateRequest", "false");

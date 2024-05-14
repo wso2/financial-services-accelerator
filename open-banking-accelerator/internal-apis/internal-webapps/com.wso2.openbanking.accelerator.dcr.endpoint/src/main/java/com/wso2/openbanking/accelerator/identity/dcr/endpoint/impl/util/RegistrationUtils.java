@@ -18,9 +18,10 @@
 package com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.util;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.dto.RegistrationErrorDTO;
 import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationException;
@@ -108,15 +109,26 @@ public class RegistrationUtils {
             RegistrationRequest registrationRequest, boolean useSoftwareIdAsAppName) {
 
         String applicationName = "";
-        if (useSoftwareIdAsAppName) {
-            applicationName = registrationRequest.getSoftwareStatementBody().getSoftwareId();
+        if (StringUtils.isBlank(registrationRequest.getSoftwareStatement())) {
+                applicationName = registrationRequest.getSoftwareId();
         } else {
-            applicationName = RegistrationUtils.getSafeApplicationName(
-                    registrationRequest.getSoftwareStatementBody().getClientName());
+            if (useSoftwareIdAsAppName) {
+                applicationName = registrationRequest.getSoftwareStatementBody().getSoftwareId();
+            } else {
+                applicationName = RegistrationUtils.getSafeApplicationName(
+                        registrationRequest.getSoftwareStatementBody().getClientName());
+            }
         }
+
         ApplicationRegistrationRequest appRegistrationRequest = new ApplicationRegistrationRequest();
         appRegistrationRequest.setClientName(applicationName);
-        appRegistrationRequest.setRedirectUris(registrationRequest.getSoftwareStatementBody().getCallbackUris());
+
+        // Set the redirect URIs based on the presence of software statement
+        appRegistrationRequest.setRedirectUris(
+                StringUtils.isBlank(registrationRequest.getSoftwareStatement()) ?
+                        registrationRequest.getCallbackUris() :
+                        registrationRequest.getSoftwareStatementBody().getCallbackUris());
+
         appRegistrationRequest.setGrantTypes(registrationRequest.getGrantTypes());
 
         return appRegistrationRequest;
@@ -125,17 +137,25 @@ public class RegistrationUtils {
 
     public static ApplicationUpdateRequest getApplicationUpdateRequest(RegistrationRequest registrationRequest,
                                                                        boolean useSoftwareIdAsAppName) {
-
-        String applicationName = "";
+        String applicationName;
         if (useSoftwareIdAsAppName) {
-            applicationName = registrationRequest.getSoftwareStatementBody().getSoftwareId();
+            applicationName = (registrationRequest.getSoftwareStatement() != null) ?
+                    registrationRequest.getSoftwareStatementBody().getSoftwareId():
+                    registrationRequest.getSoftwareId();
         } else {
             applicationName = RegistrationUtils.getSafeApplicationName(
                     registrationRequest.getSoftwareStatementBody().getClientName());
         }
+
         ApplicationUpdateRequest applicationUpdateRequest = new ApplicationUpdateRequest();
         applicationUpdateRequest.setClientName(applicationName);
-        applicationUpdateRequest.setRedirectUris(registrationRequest.getSoftwareStatementBody().getCallbackUris());
+
+        // Set the redirect URIs based on the presence of the software statement
+        applicationUpdateRequest.setRedirectUris(
+                StringUtils.isBlank(registrationRequest.getSoftwareStatement()) ?
+                        registrationRequest.getCallbackUris() :
+                        registrationRequest.getSoftwareStatementBody().getCallbackUris());
+
         applicationUpdateRequest.setGrantTypes(registrationRequest.getGrantTypes());
 
         return applicationUpdateRequest;
@@ -200,19 +220,14 @@ public class RegistrationUtils {
             throws ParseException {
 
         Map<String, String> alteredAppAttributeMap = new HashMap<>();
-        JsonElement registrationRequestDetails = gson.toJsonTree(registrationRequest);
-        Map<String, Object> appAttributeMap = (Map<String, Object>)
-                gson.fromJson(registrationRequestDetails, Map.class);
-        appAttributeMap.remove("softwareStatementBody");
-        appAttributeMap.remove("requestParameters");
-        appAttributeMap.remove("ssaParameters");
-        addAttributes(appAttributeMap, alteredAppAttributeMap);
-        //add ssa attributes
+        addAttributes(registrationRequest.getRequestParameters(), alteredAppAttributeMap);
 
-        addAttributes(registrationRequest.getSsaParameters(), alteredAppAttributeMap);
-
-        //add ssa issuer
-        alteredAppAttributeMap.put("ssaIssuer", registrationRequest.getSsaParameters().get("iss").toString());
+        if (registrationRequest.getSoftwareStatement() != null){
+            //add ssa attributes
+            addAttributes(registrationRequest.getSsaParameters(), alteredAppAttributeMap);
+            //add ssa issuer
+            alteredAppAttributeMap.put("ssaIssuer", registrationRequest.getSsaParameters().get("iss").toString());
+        }
 
         return alteredAppAttributeMap;
     }

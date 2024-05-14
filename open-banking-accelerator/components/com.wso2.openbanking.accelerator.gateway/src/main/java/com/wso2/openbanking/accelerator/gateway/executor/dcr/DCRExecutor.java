@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.gateway.executor.dcr;
 
 import com.google.gson.JsonArray;
@@ -27,6 +28,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.identity.IdentityConstants;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
@@ -70,6 +72,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -157,8 +160,10 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                 JsonParser jsonParser = new JsonParser();
                 JsonObject createdDCRAppDetails = ((JsonObject) jsonParser
                         .parse(obapiResponseContext.getResponsePayload()));
-                String softwareStatement = createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT)
-                        .getAsString();
+
+                JsonElement softwareStatementJson = createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT);
+                String softwareStatement = (softwareStatementJson != null) ? softwareStatementJson.toString() : null;
+
                 //call IS DCR endpoint to create application for obtaining a token to invoke devportal REST APIs
                 JsonElement registrationResponse = createServiceProvider(basicAuthHeader,
                         createdDCRAppDetails.get("software_id").getAsString());
@@ -275,9 +280,14 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                 }
 
                 List<String> apiIDList = new ArrayList<>();
-                if (regulatoryAPIs != null) {
-                    apiIDList = filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
-                            .get("list").getAsJsonArray(), getRolesFromSSA(softwareStatement));
+                if (regulatoryAPIs != null ) {
+                    if (softwareStatement != null) {
+                        apiIDList = filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                                .get("list").getAsJsonArray(), getRolesFromSSA(softwareStatement));
+                    } else {
+                        apiIDList = filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                                .get("list").getAsJsonArray());
+                    }
                 } else {
                     log.warn("No regulatory APIs configured. Application will be subscribed to all published APIs");
                     //subscribe to all APIs if there are no configured regulatory APIs
@@ -387,29 +397,32 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                     handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
                     return;
                 }
-                List<String> allowedRoles = getRolesFromSSA(createdDCRAppDetails
-                        .get(OpenBankingConstants.SOFTWARE_STATEMENT).getAsString());
                 List<String> subscribedAPIIdList = new ArrayList<>();
                 for (JsonElement subscribedAPI : subscribedAPIsResponse.getAsJsonObject().get("list")
                         .getAsJsonArray()) {
                     String apiId = subscribedAPI.getAsJsonObject().get("apiId").getAsString();
                     subscribedAPIIdList.add(apiId);
                 }
-                //check whether the ssa still contains the roles related to the subscribed APIs
-                List<String> unsubscribedAPIs = getUnAuthorizedAPIs(subscribedAPIsResponse.getAsJsonObject()
-                        .get("list").getAsJsonArray(), regulatoryAPIs, allowedRoles);
-                if (!unsubscribedAPIs.isEmpty()) {
-                    //unsubscribe from the apis
-                    for (String subscriptionId : unsubscribedAPIs) {
-                        if (!callDelete(urlMap.get(GatewayConstants.API_GET_SUBSCRIBED).toString()
-                                .concat("/").concat(subscriptionId), GatewayConstants.BEARER_TAG.concat(token))) {
-                            log.error("Error while unsubscribing from APIs");
-                            //delete SP created to call dev portal REST APIs
-                            callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                                    .concat(clientId), basicAuthHeader);
-                            handleInternalServerError(obapiResponseContext,
-                                    OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                            return;
+
+                JsonElement softwareStatementJson = createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT);
+                if (softwareStatementJson != null) {
+                    String softwareStatement = softwareStatementJson.getAsString();
+                    List<String> allowedRoles = getRolesFromSSA(softwareStatement);
+                    List<String> unsubscribedAPIs = getUnAuthorizedAPIs(subscribedAPIsResponse.getAsJsonObject()
+                            .get("list").getAsJsonArray(), regulatoryAPIs, allowedRoles);
+                    if (!unsubscribedAPIs.isEmpty()) {
+                        //unsubscribe from the apis
+                        for (String subscriptionId : unsubscribedAPIs) {
+                            if (!callDelete(urlMap.get(GatewayConstants.API_GET_SUBSCRIBED).toString()
+                                    .concat("/").concat(subscriptionId), GatewayConstants.BEARER_TAG.concat(token))) {
+                                log.error("Error while unsubscribing from APIs");
+                                //delete SP created to call dev portal REST APIs
+                                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                                        .concat(clientId), basicAuthHeader);
+                                handleInternalServerError(obapiResponseContext,
+                                        OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                                return;
+                            }
                         }
                     }
                 }
@@ -425,8 +438,12 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                     handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
                     return;
                 }
-                List<String> apiIDList = filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
-                        .get("list").getAsJsonArray(), allowedRoles);
+                List<String> apiIDList = (softwareStatementJson == null) ?
+                        filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                                .get("list").getAsJsonArray()) :
+                        filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                                .get("list").getAsJsonArray(), getRolesFromSSA(softwareStatementJson.toString()));
+
                 List<String> newApisListToSubscribe = getNewAPIsToSubscribe(apiIDList, subscribedAPIIdList);
                 if (!newApisListToSubscribe.isEmpty()) {
                     JsonArray subscribeAPIsPayload = getAPISubscriptionPayload(applicationId, newApisListToSubscribe);
@@ -736,6 +753,17 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         return filteredAPIs;
     }
 
+    protected List<String> filterRegulatorAPIs(Map<String, List<String>> regulatoryAPINames, JsonArray publishedAPIs) {
+
+        List<String> filteredAPIs = new ArrayList<>();
+        for (JsonElement apiInfo : publishedAPIs) {
+            if(regulatoryAPINames.containsKey(apiInfo.getAsJsonObject().get("name").getAsString())) {
+                filteredAPIs.add(apiInfo.getAsJsonObject().get("id").getAsString());
+            }
+        }
+        return filteredAPIs;
+    }
+
     @Generated(message = "Excluding from test coverage since it is an HTTP call")
     protected JsonElement callGet(String endpoint, String authHeader, String queryParamKey, String paramValue)
             throws IOException, OpenBankingException, URISyntaxException {
@@ -876,26 +904,25 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                 .get(OpenBankingConstants.DCR_USE_SOFTWAREID_AS_APPNAME).toString());
         String applicationNameKey = configurations
                 .get(OpenBankingConstants.DCR_APPLICATION_NAME_KEY).toString();
-        String applicationName = "";
         JsonParser jsonParser = new JsonParser();
         JsonObject createdDCRAppDetails = ((JsonObject) jsonParser.parse(responsePayload));
-        String softwareStatement = createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT)
-                .getAsString();
+        JsonElement softwareStatementJson = createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT);
+
+        if(softwareStatementJson == null) {
+            return createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_ID).getAsString();
+        }
+        String softwareStatement =  softwareStatementJson.getAsString();
         JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement, "body");
         //get application Name
         if (isSoftwareIdAppName) {
-            if (softwareStatementBody.containsKey("software_id")) {
-                applicationName = softwareStatementBody.get("software_id").toString();
+            if (softwareStatementBody.containsKey(OpenBankingConstants.SOFTWARE_ID)) {
+                return softwareStatementBody.get(OpenBankingConstants.SOFTWARE_ID).toString();
             }
-        } else {
-            if (softwareStatementBody.containsKey(applicationNameKey)) {
-                applicationName = softwareStatementBody.get(applicationNameKey).toString();
-            } else {
-                applicationName = createdDCRAppDetails.get(applicationNameKey).toString();
-            }
+            return null;
         }
-
-        return applicationName;
+         return softwareStatementBody.containsKey(applicationNameKey) ?
+                    softwareStatementBody.get(applicationNameKey).toString() :
+                    createdDCRAppDetails.get(applicationNameKey).getAsString();
     }
 
     protected List<String> getUnAuthorizedAPIs(JsonArray subscribedAPIs, Map<String, List<String>> configuredAPIs,
