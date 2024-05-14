@@ -26,6 +26,7 @@ public class IdempotencyConstants {
     public static final String X_IDEMPOTENCY_KEY = "x-idempotency-key";
     public static final String IDEMPOTENCY_KEY_NAME = "IdempotencyKey";
     public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    public static final String EMPTY_OBJECT = "{}";
     public static final String ERROR_PAYLOAD_NOT_SIMILAR = "Payloads are not similar. Hence this is not a valid" +
             " idempotent request";
     public static final String ERROR_AFTER_ALLOWED_TIME = "Request received after the allowed time., Hence this is" +
@@ -36,4 +37,6 @@ public class IdempotencyConstants {
             " is not a valid idempotent request";
     public static final String JSON_COMPARING_ERROR = "Error occurred while comparing JSON payloads";
     public static final String CONSENT_RETRIEVAL_ERROR = "Error while retrieving detailed consent data";
+    public static final String SAME_CONSENT_ID_ERROR = "Cannot use different unique identifier for the same" +
+            " consent ID when the request does not contain a payload.";
 }

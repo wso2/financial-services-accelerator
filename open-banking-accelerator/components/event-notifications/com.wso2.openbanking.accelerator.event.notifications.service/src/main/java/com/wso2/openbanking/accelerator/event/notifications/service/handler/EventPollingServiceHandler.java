@@ -38,7 +38,7 @@ public interface EventPollingServiceHandler {
     EventPollingResponse pollEvents(JSONObject eventPollingRequest);
 
     /**
-     * This method is used to map the eventPollingRequest to EventPollingDTO
+     * This method is used to map the eventPollingRequest to EventPollingDTO.
      * @param eventPollingRequest JSON request for event polling
      * @return eventPollingDTO with the request parameters.
      */

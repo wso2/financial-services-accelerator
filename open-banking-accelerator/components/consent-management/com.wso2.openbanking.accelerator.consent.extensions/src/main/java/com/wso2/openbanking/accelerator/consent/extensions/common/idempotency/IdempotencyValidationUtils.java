@@ -32,6 +32,9 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class to hold idempotency validation utils.
@@ -49,14 +52,29 @@ public class IdempotencyValidationUtils {
      * @param idempotencyKeyValue    Idempotency Key Value
      * @return   List of consent ids if available, else an empty list will be returned
      */
-    static ArrayList<String> getConsentIdsFromIdempotencyKey(String idempotencyKeyName,
-                                                             String idempotencyKeyValue) {
+    static List<String> getConsentIdsFromIdempotencyKey(String idempotencyKeyName,
+                                                        String idempotencyKeyValue) {
         try {
             return consentCoreService.getConsentIdByConsentAttributeNameAndValue(
                     idempotencyKeyName, idempotencyKeyValue);
         } catch (ConsentManagementException e) {
             log.debug("No consent ids found for the idempotency key value");
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Method to retrieve the consent ids and idempotency key value using the idempotency key.
+     *
+     * @param idempotencyKeyName     Idempotency Key Name
+     * @return   Map of consent ids and idempotency key vallue if available, else an empty map will be returned
+     */
+    static Map<String, String> getAttributesFromIdempotencyKey(String idempotencyKeyName) {
+        try {
+            return consentCoreService.getConsentAttributesByName(idempotencyKeyName);
+        } catch (ConsentManagementException e) {
+            log.debug("No consent ids found for the idempotency key value");
+            return new HashMap<>();
         }
     }
 

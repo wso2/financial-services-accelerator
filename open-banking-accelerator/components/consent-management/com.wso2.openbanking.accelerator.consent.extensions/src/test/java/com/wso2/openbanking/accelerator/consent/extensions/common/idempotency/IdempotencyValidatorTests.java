@@ -52,6 +52,7 @@ public class IdempotencyValidatorTests extends PowerMockTestCase {
     private ConsentManageData consentManageData;
     private ConsentCoreServiceImpl consentCoreServiceImpl;
     private ArrayList<String> consentIdList;
+    private Map<String, String> attributeList;
     private String consentId;
     private Map<String, Object> configs;
     private Map<String, String> headers;
@@ -126,6 +127,9 @@ public class IdempotencyValidatorTests extends PowerMockTestCase {
         consentId = UUID.randomUUID().toString();
         consentIdList = new ArrayList<>();
         consentIdList.add(consentId);
+
+        attributeList = new HashMap<>();
+        attributeList.put(consentId, "123456");
     }
 
     @BeforeMethod
@@ -162,6 +166,22 @@ public class IdempotencyValidatorTests extends PowerMockTestCase {
         Assert.assertTrue(result.isValid());
         Assert.assertNotNull(result.getConsent());
         Assert.assertEquals(consentId, result.getConsentId());
+    }
+
+    @Test(expectedExceptions = IdempotencyValidationException.class)
+    public void testValidateIdempotencyForRequestsWithoutPayload() throws ConsentManagementException,
+            IdempotencyValidationException {
+        OffsetDateTime offsetDateTime = OffsetDateTime.now();
+
+        Mockito.doReturn(attributeList).when(consentCoreServiceImpl).getConsentAttributesByName(Mockito.anyString());
+        Mockito.doReturn(getConsent(offsetDateTime.toEpochSecond())).when(consentCoreServiceImpl)
+                .getDetailedConsent(Mockito.anyString());
+        Mockito.doReturn(headers).when(consentManageData).getHeaders();
+        Mockito.doReturn(CLIENT_ID).when(consentManageData).getClientId();
+        Mockito.doReturn("{}").when(consentManageData).getPayload();
+        Mockito.doReturn("{}").when(consentManageData).getPayload();
+        Mockito.doReturn("/payments/".concat(consentId)).when(consentManageData).getRequestPath();
+        new IdempotencyValidator().validateIdempotency(consentManageData);
     }
 
     @Test

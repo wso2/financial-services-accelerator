@@ -25,6 +25,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.Defaul
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
+import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentAuthorizeTestConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentExtensionTestUtils;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentFile;
