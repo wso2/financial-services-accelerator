@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
- *
+ * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -142,7 +142,7 @@ public class ErrorConstants {
             + ErrorConstants.PATH_ACCESS_TOKEN;
     public static final String PATH_ACCESS_TOKEN = "Header.AccessToken";
     public static final String MSG_INVALID_CLIENT_ID = "The client Id related the consent does not match with the " +
-            "client id bound to token:" +  ErrorConstants.PATH_CLIENT_ID;
+            "client id bound to token:" + ErrorConstants.PATH_CLIENT_ID;
     public static final String PATH_CLIENT_ID = "Header.Client-id";
     public static final String UNEXPECTED_ERROR = "OB.UnexpectedError";
     public static final String INVALID_CONSENT_TYPE = "Invalid Consent Type found in the request";
@@ -162,40 +162,38 @@ public class ErrorConstants {
             "initiated amount:" + ErrorConstants.PATH_INSTRUCTED_AMOUNT_AMOUNT;
     public static final String PATH_INSTRUCTED_AMOUNT_AMOUNT = "Data.Initiation.InstructedAmount.Amount";
     public static final String INSTRUCTED_AMOUNT_AMOUNT_NOT_FOUND = "Instructed Amount  Amount isn't present in the " +
-            "payload:" + ErrorConstants.PATH_INSTRUCTED_AMOUNT;
+            "payload:";
     public static final String INSTRUCTED_AMOUNT_CURRENCY_MISMATCH = "Instructed Amount currency does not match the " +
             "initiated amount or currency:" + ErrorConstants.PATH_INSTRUCTED_AMOUNT_CURRENCY;
     public static final String PATH_INSTRUCTED_AMOUNT_CURRENCY = "Data.Initiation.InstructedAmount.Currency";
     public static final String INSTRUCTED_AMOUNT_CURRENCY_NOT_FOUND = "Instructed Amount Currency isn't present in " +
-            "the payload:" + ErrorConstants.PATH_INSTRUCTED_AMOUNT;
-    public static final String INSTRUCTED_AMOUNT_NOT_FOUND = "Instructed Amount isn't present in the payload:" +
-            ErrorConstants.PATH_INSTRUCTED_AMOUNT;
+            "the payload:";
+    public static final String INSTRUCTED_AMOUNT_NOT_FOUND = "Instructed Amount isn't present in the payload";
     public static final String CREDITOR_ACC_SCHEME_NAME_MISMATCH = "Creditor Accounts Scheme does not match";
     public static final String CREDITOR_ACC_SCHEME_NAME_NOT_FOUND = "Creditor Accounts Scheme isn't present in the" +
             " request or in the consent.";
     public static final String CREDITOR_ACC_IDENTIFICATION_MISMATCH = "Creditor Account Identification does not match";
     public static final String CREDITOR_ACC_IDENTIFICATION_NOT_FOUND = "Creditor Account Identification isn't " +
             "present in the request or in the consent.";
-    public static final String CREDITOR_ACC_NAME_MISMATCH = "Creditor Account Name does not match:";
+    public static final String CREDITOR_ACC_NAME_MISMATCH = "Creditor Account Name does not match";
     public static final String CREDITOR_ACC_SEC_IDENTIFICATION_MISMATCH = "Creditor Account Secondary Identification" +
-            " does not match:";
+            " does not match";
 
     public static final String DEBTOR_ACC_SCHEME_NAME_MISMATCH = "Debtor Account Scheme name does not ";
     public static final String DEBTOR_ACC_SCHEME_NAME_NOT_FOUND = "Debtor Account Scheme name isn't present in the " +
-            "request or in the consent:";
+            "request or in the consent";
     public static final String DEBTOR_ACC_IDENTIFICATION_MISMATCH = "Debtor Account Identification does " +
             "not match:";
     public static final String DEBTOR_ACC_IDENTIFICATION_NOT_FOUND = "Debtor Account Identification isn't present " +
-            "in the request or in the consent:";
+            "in the request or in the consent";
     public static final String DEBTOR_ACC_NAME_MISMATCH = "Debtor Account Name does not match";
     public static final String DEBTOR_ACC_SEC_IDENTIFICATION_MISMATCH = "Debtor Account Secondary Identification" +
-            " does not match:";
+            " does not match";
     public static final String PATH_DEBTOR_ACCOUNT_SECOND_IDENTIFICATION =
             "Data.Initiation.DebtorAccount.SecondaryIdentification";
     public static final String CREDITOR_ACC_NOT_FOUND = "Creditor Account isn't present in the request.";
-    public static final String DEBTOR_ACC_MISMATCH = "Debtor Account isn't present in the request " +
-            "or in the consent:";
-    public static final String LOCAL_INSTRUMENT_MISMATCH = "Local Instrument Does Not Match:" +
+    public static final String DEBTOR_ACC_MISMATCH = "Debtor Account mismatch";
+    public static final String LOCAL_INSTRUMENT_MISMATCH = "Local Instrument Does Not Match" +
             ErrorConstants.PATH_LOCAL_INSTRUMENT;
     public static final String TOKEN_REVOKE_ERROR = "Token revocation unsuccessful. :" +
             ErrorConstants.PATH_CUTOFF_DATE;
@@ -267,7 +265,6 @@ public class ErrorConstants {
     public static final String DATE_INVALID_PARAMETER_MESSAGE = "Invalid date-time range for ValidToDateTime ";
 
 
-
     // vrp path parameters
     public static final String PATH_VALID_TO_DATE = "Data.ControlParameters.ValidToDateTime";
     public static final String PATH_VALID_FROM_DATE = "Data.ControlParameters.ValidFromDateTime";
@@ -290,7 +287,7 @@ public class ErrorConstants {
 
     // VRP Submission flow
     public static final String REMITTANCE_INFO_NOT_FOUND = "Remittance info is not present in the request.";
-    public static final String INSTRUCTION_IDENTIFICATION_NOT_FOUND =  "Instruction Identification isn't present" +
+    public static final String INSTRUCTION_IDENTIFICATION_NOT_FOUND = "Instruction Identification isn't present" +
             " in the request";
     public static final String END_TO_END_IDENTIFICATION_PARAMETER_NOT_FOUND = "End to End Identification isn't" +
             " present in the request";
@@ -307,11 +304,11 @@ public class ErrorConstants {
             "not a String instance";
     public static final String INVALID_TYPE = "Value associated with END_TO_END_IDENTIFICATION key is " +
             "not a String instance";
-    public static final String RISK_NOT_FOUND = "Risk is not found or empty in the request or it is not in the" +
-            " correct JSON format.";
+    public static final String RISK_NOT_FOUND = "Risk is not found or empty in the request.";
+    public static final String RISK_NOT_JSON_ERROR = "Risk parameter is not in the correct JSON format";
     public static final String INSTRUCTION_NOT_FOUND = "Instruction is not found or empty in the request.";
-    public static final String INVALID_REQUEST_CONSENT_ID = "The requested consent-Id is not present in the request" +
-            "or it is not in the correct JSON format";
+    public static final String INVALID_REQUEST_CONSENT_ID = "The consent-Id is not present in the request" +
+            " or it is not a String instance or there is a consentId mismatch";
     public static final String INSTRUCTION_CREDITOR_ACC_NOT_JSON_ERROR = "Creditor Account present under instruction" +
             " isn't present in the correct JSON format in the request.";
     public static final String INITIATION_CREDITOR_ACC_NOT_JSON_ERROR = "Creditor Account present under initiation" +
@@ -322,5 +319,16 @@ public class ErrorConstants {
             "present in the correct JSON format in the request.";
     public static final String INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR = "Remittance info of instruction is not" +
             " present in the correct JSON format in the request.";
+    public static final String DEBTOR_ACC_NOT_FOUND = "Debtor Account isn't present in the request.";
+    public static final String DATA_NOT_JSON_ERROR = "Data parameter is not in the correct JSON format in the request";
+    public static final String INSTRUCTED_AMOUNT_NOT_STRING = "Value associated with Amount key is " +
+            "not a String instance";
+    public static final String INSTRUCTED_AMOUNT_CURRENCY_NOT_STRING = "Value associated with Currency key is " +
+            "not a String instance";
+    public static final String INSTRUCTED_AMOUNT_NOT_JSON_ERROR = "Instructed Amount is not in the correct JSON " +
+            "format in the request";
+    public static final String INITIATION_NOT_JSON = "Initiation is not in the correct JSON " +
+            "format in the request";
+    public static final String INSTRUCTION_NOT_JSON = "Instruction is not in the correct JSON format in the request";
 }
 
