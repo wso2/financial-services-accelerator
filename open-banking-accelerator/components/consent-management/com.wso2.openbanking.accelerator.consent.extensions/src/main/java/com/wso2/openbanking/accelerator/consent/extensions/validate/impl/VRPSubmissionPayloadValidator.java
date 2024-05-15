@@ -58,7 +58,7 @@ public class VRPSubmissionPayloadValidator {
                             !initiationParameterOfConsentInitiation.
                                     containsKey(ConsentExtensionConstants.CREDITOR_ACC))) {
 
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                         ErrorConstants.CREDITOR_ACC_NOT_FOUND);
             } else if (initiationOfSubmission.containsKey(ConsentExtensionConstants.CREDITOR_ACC) &&
                     initiationParameterOfConsentInitiation.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
@@ -94,7 +94,7 @@ public class VRPSubmissionPayloadValidator {
                             !initiationParameterOfConsentInitiation.
                                     containsKey(ConsentExtensionConstants.DEBTOR_ACC))) {
 
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                         ErrorConstants.DEBTOR_ACC_NOT_FOUND);
             } else if (initiationOfSubmission.containsKey(ConsentExtensionConstants.DEBTOR_ACC) &&
                     initiationParameterOfConsentInitiation.containsKey(ConsentExtensionConstants.DEBTOR_ACC)) {
@@ -118,7 +118,7 @@ public class VRPSubmissionPayloadValidator {
                         return debtorAccValidationResult;
                     }
                 } else {
-                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.DEBTOR_ACC_NOT_JSON_ERROR);
                 }
             } else {
@@ -132,7 +132,7 @@ public class VRPSubmissionPayloadValidator {
                     (initiationOfSubmission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
                             && !initiationParameterOfConsentInitiation.
                             containsKey(ConsentExtensionConstants.REMITTANCE_INFO))) {
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                         ErrorConstants.REMITTANCE_INFO_NOT_FOUND);
             } else if (initiationOfSubmission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
                     && initiationParameterOfConsentInitiation.
@@ -157,7 +157,7 @@ public class VRPSubmissionPayloadValidator {
                         return validationResult;
                     }
                 } else {
-                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INITIATION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
 
@@ -194,7 +194,7 @@ public class VRPSubmissionPayloadValidator {
 
                 // Check if the instruction_identification is an instance of a string
                 if (!isValidString(value)) {
-                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INVALID_SUBMISSION_TYPE);
                 }
             } else {
@@ -206,7 +206,7 @@ public class VRPSubmissionPayloadValidator {
                 Object endToEndIdentificationValue = submission.
                         get(ConsentExtensionConstants.END_TO_END_IDENTIFICATION);
                 if (!isValidString(endToEndIdentificationValue)) {
-                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INVALID_TYPE);
                 }
             } else {
@@ -238,7 +238,7 @@ public class VRPSubmissionPayloadValidator {
                             return creditorAccValidationResult;
                         }
                     } else {
-                        return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                        return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                                 ErrorConstants.INSTRUCTION_CREDITOR_ACC_NOT_JSON_ERROR);
                     }
                 }
@@ -288,7 +288,7 @@ public class VRPSubmissionPayloadValidator {
                     (submission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
                             && !initiation.
                             containsKey(ConsentExtensionConstants.REMITTANCE_INFO))) {
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                         ErrorConstants.REMITTANCE_INFO_NOT_FOUND);
             } else if (submission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
                     && initiation.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)) {
@@ -311,7 +311,7 @@ public class VRPSubmissionPayloadValidator {
                         return validationResult;
                     }
                 } else {
-                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
             } else {
