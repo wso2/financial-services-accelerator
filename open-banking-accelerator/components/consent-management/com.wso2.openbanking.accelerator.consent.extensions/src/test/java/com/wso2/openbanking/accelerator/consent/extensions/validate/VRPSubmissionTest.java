@@ -478,8 +478,8 @@ public class VRPSubmissionTest {
         consentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.DEBTOR_ACC_MISMATCH);
-        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.RESOURCE_CONSENT_MISMATCH);
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.DEBTOR_ACC_NOT_FOUND);
+        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_MISSING);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
     @Test
@@ -521,7 +521,7 @@ public class VRPSubmissionTest {
 
         Assert.assertFalse(consentValidationResult.isValid());
         Assert.assertEquals(consentValidationResult.getErrorMessage(),
-                ErrorConstants.INITIATION_REMITTANCE_INFO_PARAMETER_NOT_FOUND);
+                ErrorConstants.REMITTANCE_INFO_NOT_FOUND);
         Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_MISSING);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
@@ -598,7 +598,7 @@ public class VRPSubmissionTest {
 
         Assert.assertFalse(consentValidationResult.isValid());
     }
-
+//
     @Test(dataProvider = "VRPInvalidInitiationSubmissionPayloadsDataProvider",
             dataProviderClass = ConsentExtensionDataProvider.class)
     public void testValidateVRPSubmissionForInvalidInitiation(String payload) throws ParseException {
@@ -667,7 +667,7 @@ public class VRPSubmissionTest {
 
         Assert.assertFalse(consentValidationResult.isValid());
         Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.INVALID_SUBMISSION_TYPE);
-        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_MISSING);
+        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_INVALID);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
 
@@ -710,7 +710,7 @@ public class VRPSubmissionTest {
 
         Assert.assertFalse(consentValidationResult.isValid());
         Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.INVALID_TYPE);
-        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_MISSING);
+        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_INVALID);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
 
