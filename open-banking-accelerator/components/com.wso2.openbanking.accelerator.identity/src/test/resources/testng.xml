@@ -135,4 +135,14 @@
             <class name="com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthenticatorTest"/>
         </classes>
     </test>
+    <test name="app2app-auth-utils-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthUtilsTest"/>
+        </classes>
+    </test>
+    <test name="app2app-auth-validation-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthValidationTest"/>
+        </classes>
+    </test>
 </suite>

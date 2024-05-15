@@ -17,6 +17,7 @@
  */
 package com.wso2.openbanking.accelerator.identity.app2app.utils;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
@@ -24,6 +25,7 @@ import com.wso2.openbanking.accelerator.identity.app2app.validations.validationg
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
+import org.wso2.carbon.identity.application.authenticator.push.device.handler.DeviceHandler;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerClientException;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerServerException;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.impl.DeviceHandlerImpl;
@@ -79,14 +81,19 @@ public class App2AppAuthUtils {
      * Retrieves the user ID associated with the provided username from the specified user realm.
      *
      * @param username the username for which to retrieve the user ID
-     * @param realm the user realm from which to retrieve the user ID
+     * @param userRealm the user realm from which to retrieve the user ID
      * @return the user ID associated with the username
      * @throws UserStoreException if an error occurs while retrieving the user ID
      */
-    public static String getUserIdFromUsername(String username, UserRealm realm) throws UserStoreException  {
+    public static String getUserIdFromUsername(String username, UserRealm userRealm) throws UserStoreException,
+            OpenBankingException  {
 
-        AbstractUserStoreManager userStoreManager = (AbstractUserStoreManager) realm.getUserStoreManager();
-        return userStoreManager.getUserIDFromUserName(username);
+        if (userRealm != null) {
+            AbstractUserStoreManager userStoreManager = (AbstractUserStoreManager) userRealm.getUserStoreManager();
+            return userStoreManager.getUserIDFromUserName(username);
+        } else {
+            throw new OpenBankingException("UserRealm service can not be null.");
+        }
 
     }
 
@@ -100,10 +107,11 @@ public class App2AppAuthUtils {
      * @throws IllegalArgumentException if the provided device identifier does not exist
      * @throws PushDeviceHandlerClientException if an error occurs on the client side while handling the device
      */
-    public static Device getRegisteredDevice(String deviceID, String userID) throws PushDeviceHandlerServerException,
-            IllegalArgumentException, PushDeviceHandlerClientException {
+    public static Device getRegisteredDevice(String deviceID, String userID, DeviceHandler deviceHandler)
+            throws PushDeviceHandlerServerException, IllegalArgumentException,
+            PushDeviceHandlerClientException, OpenBankingException {
 
-        DeviceHandlerImpl deviceHandler = new DeviceHandlerImpl();
+
         //Retrieving all the devices registered under userID
         List<Device> deviceList = deviceHandler.listDevices(userID);
 
@@ -118,7 +126,7 @@ public class App2AppAuthUtils {
         }
 
         //If no device registered for user matches specified deviceID throw exception
-        throw new IllegalArgumentException("Provided device Identifier does not exist.");
+        throw new OpenBankingException("Provided Device ID doesn't match any device registered under user.");
 
     }
 
@@ -144,10 +152,11 @@ public class App2AppAuthUtils {
      * @throws IllegalArgumentException if the provided device identifier does not exist
      * @throws PushDeviceHandlerClientException if an error occurs on the client side while handling the device
      */
-    public static String getPublicKey(String deviceID, String userID) throws PushDeviceHandlerServerException,
-            IllegalArgumentException, PushDeviceHandlerClientException {
+    public static String getPublicKey(String deviceID, String userID, DeviceHandler deviceHandler)
+            throws PushDeviceHandlerServerException, IllegalArgumentException, PushDeviceHandlerClientException,
+            OpenBankingException {
 
-        return getPublicKeyFromDevice(getRegisteredDevice(deviceID, userID));
+        return getPublicKeyFromDevice(getRegisteredDevice(deviceID, userID, deviceHandler));
 
     }
 
@@ -155,7 +164,7 @@ public class App2AppAuthUtils {
      * Validator util to validate AppAuthValidationJWT model for given validationOrder.
      *
      * @param appAuthValidationJWT AppAuthValidationJWT object that needs to be validated
-     * @throws JWTValidationException if validation f
+     * @throws JWTValidationException if validation failed
      */
     public static void validateSecret(AppAuthValidationJWT appAuthValidationJWT) throws JWTValidationException {
         /*
@@ -163,7 +172,8 @@ public class App2AppAuthUtils {
                 1.Required Params validation
                 2.Validity Validations - Signature, JTI, Timeliness will be validated.
          */
-        String error = OpenBankingValidator.getInstance().getFirstViolation(appAuthValidationJWT, App2AppValidationOrder.class);
+        String error = OpenBankingValidator.getInstance()
+                .getFirstViolation(appAuthValidationJWT, App2AppValidationOrder.class);
 
         //if there is a validation violation convert it to JWTValidationException
         if (error != null) {
@@ -171,5 +181,6 @@ public class App2AppAuthUtils {
         }
 
     }
+
 }
 

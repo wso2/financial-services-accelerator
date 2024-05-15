@@ -15,31 +15,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.validations.annotations;
 
-import com.wso2.openbanking.accelerator.identity.app2app.validations.PublicKeySignatureValidator;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.ExpiryValidator;
 
+import javax.validation.Constraint;
+import javax.validation.Payload;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import javax.validation.Constraint;
-import javax.validation.Payload;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * Annotation class for validating JWT Signature.
- */
 @Target(TYPE)
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {PublicKeySignatureValidator.class})
-public @interface ValidateSignature {
-    String message() default "Signature validation Failed.";
+@Constraint(validatedBy = {ExpiryValidator.class})
+public @interface ValidateExpiry {
+
+    String message() default "JWT token is expired.";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
-
 }

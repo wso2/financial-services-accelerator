@@ -20,10 +20,10 @@ package com.wso2.openbanking.accelerator.identity.app2app.model;
 import com.google.gson.annotations.SerializedName;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateExpiry;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateJTI;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateNBF;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
-import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateTimeliness;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.RequiredParamChecks;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.ValidityChecks;
 
@@ -38,7 +38,8 @@ import java.util.Date;
  */
 @ValidateJTI(groups = ValidityChecks.class)
 @ValidateSignature(groups = ValidityChecks.class)
-@ValidateTimeliness(groups = ValidityChecks.class)
+@ValidateExpiry(groups = ValidityChecks.class)
+@ValidateNBF(groups = ValidityChecks.class)
 public class AppAuthValidationJWT {
     @SerializedName(AppAuthValidationJWTConstants.DEVICE_IDENTIFIER)
     private String deviceId;
@@ -57,7 +58,7 @@ public class AppAuthValidationJWT {
     private String signingAlgorithm;
 
     public AppAuthValidationJWT(SignedJWT signedJWT)
-            throws JWTValidationException, ParseException {
+            throws ParseException {
 
         this.signedJWT = signedJWT;
         JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
@@ -150,13 +151,12 @@ public class AppAuthValidationJWT {
      *
      * @param jwtClaimsSet the JWTClaimsSet from which to retrieve the claim value
      * @param claim the name of the claim to retrieve
-     * @param <T> the type of the claim value
      * @return the value of the specified claim, or null if the claim is not present
      */
-    private <T> T getClaim(JWTClaimsSet jwtClaimsSet , String claim) {
+    private String getClaim(JWTClaimsSet jwtClaimsSet , String claim) {
 
         Object claimObj = jwtClaimsSet.getClaim(claim);
-        return (T) claimObj;
+        return (String) claimObj;
 
     }
 }

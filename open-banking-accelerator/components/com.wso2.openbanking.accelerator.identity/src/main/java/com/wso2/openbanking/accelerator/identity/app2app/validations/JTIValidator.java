@@ -17,10 +17,9 @@
  */
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
+import com.wso2.openbanking.accelerator.identity.app2app.cache.JTICache;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateJTI;
-import com.wso2.openbanking.accelerator.identity.cache.IdentityCache;
-import com.wso2.openbanking.accelerator.identity.cache.IdentityCacheKey;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -29,7 +28,6 @@ import javax.validation.ConstraintValidatorContext;
  * Validator class for validating the JWT ID.
  */
 public class JTIValidator implements ConstraintValidator<ValidateJTI, AppAuthValidationJWT> {
-    private static IdentityCache identityCache;
 
     @Override
     public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
@@ -41,33 +39,25 @@ public class JTIValidator implements ConstraintValidator<ValidateJTI, AppAuthVal
 
     private boolean validateJTI(String jti) {
 
-        IdentityCacheKey jtiCacheKey = new IdentityCacheKey(jti);
 
-        if (getFromCache(jtiCacheKey) != null) {
+
+        if (getFromCache(jti) != null) {
             return false;
         }
 
         //adding to cache to prevent the value from being replayed again
-        addToCache(jtiCacheKey, jti);
+        addToCache(jti);
         return true;
 
     }
 
-    private Object getFromCache(IdentityCacheKey identityCacheKey) {
-        //Lazy initialization
-        if (identityCache == null) {
-            identityCache = new IdentityCache();
-        }
+    private Object getFromCache(String jti) {
 
-        return identityCache.getFromCache(identityCacheKey);
+        return JTICache.getJtiDataFromCache(jti);
     }
 
-    private void addToCache(IdentityCacheKey identityCacheKey, Object value) {
-        //Lazy initialization
-        if (identityCache == null) {
-            identityCache = new IdentityCache();
-        }
+    private void addToCache(String jti) {
 
-        identityCache.addToCache(identityCacheKey, value);
+        JTICache.addJtiDataToCache(jti);
     }
 }

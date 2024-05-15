@@ -34,6 +34,7 @@ import javax.validation.ConstraintValidatorContext;
  * Validator class for validating the signature of a JWT.
  */
 public class PublicKeySignatureValidator implements ConstraintValidator<ValidateSignature, AppAuthValidationJWT> {
+
     private static final Log log = LogFactory.getLog(PublicKeySignatureValidator.class);
 
     @Override

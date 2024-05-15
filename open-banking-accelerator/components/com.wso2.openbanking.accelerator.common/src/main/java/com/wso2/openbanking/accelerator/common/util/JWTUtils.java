@@ -60,7 +60,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class JWTUtils {
     private static final String DOT_SEPARATOR = ".";
-    private static final long DEFAULT_TIME_SKEW_IN_SECONDS = 300L;
     private static final Log log = LogFactory.getLog(JWTUtils.class);
 
 
@@ -141,7 +140,7 @@ public class JWTUtils {
      *Validates the signature of a given JWT against a given public key.
      *
      * @param signedJWT the signed JWT to be validated
-     * @param publicKey the public key that ois used for validation
+     * @param publicKey the public key that is used for validation
      * @param algorithm the algorithm expected to have signed the jwt
      * @return true if signature is valid else false
      * @throws NoSuchAlgorithmException if the given algorithm doesn't exist
@@ -213,15 +212,13 @@ public class JWTUtils {
     /**
      * Validates whether a given JWT is not expired.
      *
-     * @param signedJWT  the signed jwt that needs to validated
+     * @param expirationTime  the exp of the jwt that should be validated.
      * @return true if the jwt is not expired
      */
-    public static boolean validateExpiryTime(SignedJWT signedJWT) throws ParseException {
+    public static boolean validateExpiryTime(Date expirationTime, long defaultTimeSkew) {
 
-        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
-        Date expirationTime = jwtClaimsSet.getExpirationTime();
         if (expirationTime != null) {
-            long timeStampSkewMillis = DEFAULT_TIME_SKEW_IN_SECONDS * 1000;
+            long timeStampSkewMillis = defaultTimeSkew * 1000;
             long expirationTimeInMillis = expirationTime.getTime();
             long currentTimeInMillis = System.currentTimeMillis();
             return (currentTimeInMillis + timeStampSkewMillis) <= expirationTimeInMillis;
@@ -234,15 +231,13 @@ public class JWTUtils {
     /**
      * Validates whether a given JWT is active.
      *
-     * @param signedJWT the signed jwt that needs to validated
+     * @param notBeforeTime nbf of the jwt that should be validated
      * @return true if the jwt is active
      */
-    public static boolean validateNotValidBefore(SignedJWT signedJWT) throws ParseException {
+    public static boolean validateNotValidBefore(Date notBeforeTime, long defaultTimeSkew)  {
 
-        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
-        Date notBeforeTime = jwtClaimsSet.getNotBeforeTime();
         if (notBeforeTime != null) {
-            long timeStampSkewMillis = DEFAULT_TIME_SKEW_IN_SECONDS * 1000;
+            long timeStampSkewMillis = defaultTimeSkew * 1000;
             long notBeforeTimeMillis = notBeforeTime.getTime();
             long currentTimeInMillis = System.currentTimeMillis();
             return currentTimeInMillis + timeStampSkewMillis >= notBeforeTimeMillis;

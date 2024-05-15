@@ -23,4 +23,11 @@ public class App2AppAuthenticatorTestDataProvider {
                 {"aaaaaaa-bbbb-Cccc-dddd-eeeeeeeeeeeee"}
         };
     }
+
+    @DataProvider(name = "JWTProvider")
+    public Object[][] getJWT() {
+        return new String[][]{
+                {"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaWQiOiI1NTBmNDQ1My05NTQ3LTRlNGYtYmUwNi04ZGIyZWVkNTYzYjMiLCJsb2dpbkhpbnQiOiJhZG1pbkB3c28yLmNvbSIsImlhdCI6MTcxNDkyOTk2MCwianRpIjoiNmU0MWM4N2UtYWJmNi00ZjU1LTliNjQtNjYwMWFlODg2NjZjIiwiZXhwIjoxNzE0OTMxNzYwLCJuYmYiOjE3MTQ5Mjk5NjB9.WB7qvq3w6htUop600H5C4HwL-r0wb8GekJE6X4-zrFn2IofEcwV0yisSE5fH8uyrzdmVmOiBgFXY9Y9cUVlS6t9HMbhlzs2qY0bVzDYVNG7GjgnYIcyh3lx9obqL9O3DJKNre5GS3b-ATPN6VvYC9F2KnwwuoNky-3Wlcw3G9-E"},
+        };
+    }
 }

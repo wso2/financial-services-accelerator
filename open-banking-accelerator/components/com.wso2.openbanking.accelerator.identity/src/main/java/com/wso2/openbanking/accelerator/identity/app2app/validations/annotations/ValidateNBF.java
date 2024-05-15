@@ -15,31 +15,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.validations.annotations;
 
-import com.wso2.openbanking.accelerator.identity.app2app.validations.JwtTokenTimelinessValidator;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.NBFValidator;
 
+import javax.validation.Constraint;
+import javax.validation.Payload;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import javax.validation.Constraint;
-import javax.validation.Payload;
-
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * Annotation class for validating JWT Timeliness of JWT.
- * Validates whether a JWT is expired.
- * Validated whether a JWT is active.
- */
 @Target(TYPE)
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {JwtTokenTimelinessValidator.class})
-public @interface ValidateTimeliness {
-    String message() default "JWT token contains invalid time claims.";
+@Constraint(validatedBy = {NBFValidator.class})
+public @interface ValidateNBF {
+
+    String message() default "JWT token is not active.";
 
     Class<?>[] groups() default {};
 

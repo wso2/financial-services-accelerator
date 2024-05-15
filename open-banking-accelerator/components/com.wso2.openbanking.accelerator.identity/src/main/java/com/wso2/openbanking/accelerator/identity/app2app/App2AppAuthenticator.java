@@ -19,6 +19,7 @@ package com.wso2.openbanking.accelerator.identity.app2app;
 
 
 import com.nimbusds.jwt.SignedJWT;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
@@ -26,31 +27,34 @@ import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.application.authentication.framework.AbstractApplicationAuthenticator;
+import org.wso2.carbon.identity.application.authentication.framework.FederatedApplicationAuthenticator;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;
 import org.wso2.carbon.identity.application.authentication.framework.exception.AuthenticationFailedException;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
-import org.wso2.carbon.identity.application.authenticator.push.PushAuthenticator;
+import org.wso2.carbon.identity.application.authenticator.push.device.handler.DeviceHandler;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerClientException;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerServerException;
-import org.wso2.carbon.identity.application.common.model.Property;
+import org.wso2.carbon.identity.application.authenticator.push.device.handler.impl.DeviceHandlerImpl;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 
 
 
 /**
  * App2App authenticator for authenticating users from native auth attempt.
  */
-public class App2AppAuthenticator extends PushAuthenticator {
+public class App2AppAuthenticator extends AbstractApplicationAuthenticator
+        implements FederatedApplicationAuthenticator {
 
     private static final Log log = LogFactory.getLog(App2AppAuthenticator.class);
     private static final long serialVersionUID = -5439464372188473141L;
+
+    private static DeviceHandler deviceHandler;
 
     @Override
     public String getName() {
@@ -71,14 +75,17 @@ public class App2AppAuthenticator extends PushAuthenticator {
                                                  AuthenticationContext authenticationContext)
             throws AuthenticationFailedException {
 
-        String jwtString = httpServletRequest.getParameter(App2AppAuthenticatorConstants.AppAuthValidationJWTIdentifier);
+        authenticationContext.setCurrentAuthenticator(App2AppAuthenticatorConstants.AUTHENTICATOR_FRIENDLY_NAME);
+        String jwtString =
+                httpServletRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER);
         try {
             SignedJWT signedJWT = JWTUtils.getSignedJWT(jwtString);
             AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
             String loginHint = appAuthValidationJWT.getLoginHint();
             String deviceID = appAuthValidationJWT.getDeviceId();
-            AuthenticatedUser userToBeAuthenticated = App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
-            String publicKey = getPublicKeyByDeviceID(deviceID,userToBeAuthenticated);
+            AuthenticatedUser userToBeAuthenticated =
+                    App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
+            String publicKey = getPublicKeyByDeviceID(deviceID, userToBeAuthenticated);
             appAuthValidationJWT.setPublicKey(publicKey);
             appAuthValidationJWT.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
             /*
@@ -88,28 +95,39 @@ public class App2AppAuthenticator extends PushAuthenticator {
             App2AppAuthUtils.validateSecret(appAuthValidationJWT);
             //If the flow is not interrupted user will be authenticated.
             authenticationContext.setSubject(userToBeAuthenticated);
+            log.info(String.format(App2AppAuthenticatorConstants.USER_AUTHENTICATED_MSG,
+                    userToBeAuthenticated.getUserName()));
         } catch (JWTValidationException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE + e.getMessage());
+            throw new AuthenticationFailedException(
+                    App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE + e.getMessage());
         } catch (IllegalArgumentException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE + e.getMessage(), e);
-        } catch (RuntimeException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.RUNTIME_EXCEPTION_MESSAGE + e.getMessage(), e);
+            throw new AuthenticationFailedException(
+                    App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE + e.getMessage(), e);
         } catch (ParseException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.PARSE_EXCEPTION_MESSAGE + e.getMessage(), e);
+            throw new AuthenticationFailedException(
+                    App2AppAuthenticatorConstants.PARSE_EXCEPTION_MESSAGE + e.getMessage(), e);
         } catch (PushDeviceHandlerServerException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE, e);
+            throw new AuthenticationFailedException(
+                    App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE, e);
         } catch (UserStoreException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.USER_STORE_EXCEPTION_MESSAGE, e);
+            throw new AuthenticationFailedException(
+                    App2AppAuthenticatorConstants.USER_STORE_EXCEPTION_MESSAGE, e);
         } catch (PushDeviceHandlerClientException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE, e);
+            throw new AuthenticationFailedException(
+                    App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE, e);
+        } catch (OpenBankingException e) {
+            throw new AuthenticationFailedException(
+                    App2AppAuthenticatorConstants.OPEN_BANKING_EXCEPTION_MESSAGE, e);
         }
 
     }
 
+    //TODO : Add a comment explaining the logic
     @Override
     public boolean canHandle(HttpServletRequest httpServletRequest) {
 
-        return !StringUtils.isBlank(httpServletRequest.getParameter(App2AppAuthenticatorConstants.AppAuthValidationJWTIdentifier));
+        return !StringUtils.isBlank(httpServletRequest.getParameter(
+                App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER));
 
     }
 
@@ -128,22 +146,22 @@ public class App2AppAuthenticator extends PushAuthenticator {
 
     }
 
-    //TODO : remove this configuration properties.
-    @Override
-    public List<Property> getConfigurationProperties() {
-
-        List<Property> configProperties = new ArrayList<>();
-        String firebaseServerKey = "Firebase Server Key";
-        Property serverKeyProperty = new Property();
-        serverKeyProperty.setName("ServerKey");
-        serverKeyProperty.setDisplayName(firebaseServerKey);
-        serverKeyProperty.setDescription("Enter the firebase server key ");
-        serverKeyProperty.setDisplayOrder(0);
-        serverKeyProperty.setRequired(true);
-        configProperties.add(serverKeyProperty);
-        return configProperties;
-
-    }
+//    //TODO : remove this configuration properties.
+//    @Override
+//    public List<Property> getConfigurationProperties() {
+//
+//        List<Property> configProperties = new ArrayList<>();
+//        String firebaseServerKey = "Firebase Server Key";
+//        Property serverKeyProperty = new Property();
+//        serverKeyProperty.setName("ServerKey");
+//        serverKeyProperty.setDisplayName(firebaseServerKey);
+//        serverKeyProperty.setDescription("Enter the firebase server key ");
+//        serverKeyProperty.setDisplayOrder(0);
+//        serverKeyProperty.setRequired(true);
+//        configProperties.add(serverKeyProperty);
+//        return configProperties;
+//
+//    }
 
     /**
      * Retrieves the public key associated with a device and user.
@@ -155,13 +173,23 @@ public class App2AppAuthenticator extends PushAuthenticator {
      * @throws PushDeviceHandlerServerException  If an error occurs on the server side of the push device handler.
      * @throws PushDeviceHandlerClientException  If an error occurs on the client side of the push device handler.
      */
-    private String getPublicKeyByDeviceID(String deviceID, AuthenticatedUser authenticatedUser) throws UserStoreException,
-            PushDeviceHandlerServerException, PushDeviceHandlerClientException {
+    private String getPublicKeyByDeviceID(String deviceID, AuthenticatedUser authenticatedUser)
+            throws UserStoreException, PushDeviceHandlerServerException, PushDeviceHandlerClientException,
+            OpenBankingException {
 
+        DeviceHandler deviceHandler = getDeviceHandler();
         UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
         String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
-        return App2AppAuthUtils.getPublicKey(deviceID, userID);
+        return App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandler );
 
+    }
+
+    private DeviceHandler getDeviceHandler(){
+
+        if (deviceHandler == null){
+            deviceHandler = new DeviceHandlerImpl();
+        }
+        return deviceHandler;
     }
 }
 
