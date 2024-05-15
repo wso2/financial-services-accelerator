@@ -111,8 +111,6 @@ public class RegistrationRequest {
     @SerializedName("backchannel_user_code_parameter_supported")
     private boolean backchannelUserCodeParameterSupported;
 
-
-
     private SoftwareStatementBody softwareStatementBody;
 
     private Map<String, Object> requestParameters;

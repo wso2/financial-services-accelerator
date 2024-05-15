@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.api;
 
 import com.google.gson.Gson;
@@ -30,7 +31,6 @@ import com.wso2.openbanking.accelerator.identity.dcr.validation.RegistrationVali
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;

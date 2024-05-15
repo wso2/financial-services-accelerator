@@ -20,7 +20,6 @@ package com.wso2.openbanking.accelerator.identity.dcr.validation;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateIssuer;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -60,7 +59,6 @@ public class IssuerValidator implements ConstraintValidator<ValidateIssuer, Obje
                 if (softwareId != null && softwareId.equals(issuer)) {
                     return true;
                 }
-
             } else {
                 return true;
             }

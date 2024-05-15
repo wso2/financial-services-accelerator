@@ -20,8 +20,6 @@ package com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.dto.RegistrationErrorDTO;
 import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationException;
@@ -78,7 +76,7 @@ public class RegistrationUtils {
         RegistrationValidator dcrRequestValidator;
         dcrRequestValidator = RegistrationValidator.getRegistrationValidator();
         // set the ssa payload according to the specification format
-        if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+        if (registrationRequest.getSoftwareStatement() != null) {
             String decodedSSA = JWTUtils
                     .decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body").toJSONString();
             dcrRequestValidator.setSoftwareStatementPayload(registrationRequest, decodedSSA);
@@ -108,16 +106,14 @@ public class RegistrationUtils {
     public static ApplicationRegistrationRequest getApplicationRegistrationRequest(
             RegistrationRequest registrationRequest, boolean useSoftwareIdAsAppName) {
 
-        String applicationName = "";
-        if (StringUtils.isBlank(registrationRequest.getSoftwareStatement())) {
-                applicationName = registrationRequest.getSoftwareId();
+        String applicationName;
+        if (useSoftwareIdAsAppName) {
+            applicationName = (registrationRequest.getSoftwareStatement() != null) ?
+                    registrationRequest.getSoftwareStatementBody().getSoftwareId() :
+                    registrationRequest.getSoftwareId();
         } else {
-            if (useSoftwareIdAsAppName) {
-                applicationName = registrationRequest.getSoftwareStatementBody().getSoftwareId();
-            } else {
-                applicationName = RegistrationUtils.getSafeApplicationName(
-                        registrationRequest.getSoftwareStatementBody().getClientName());
-            }
+            applicationName = RegistrationUtils.getSafeApplicationName(registrationRequest.getSoftwareStatementBody()
+                            .getClientName());
         }
 
         ApplicationRegistrationRequest appRegistrationRequest = new ApplicationRegistrationRequest();
@@ -140,11 +136,11 @@ public class RegistrationUtils {
         String applicationName;
         if (useSoftwareIdAsAppName) {
             applicationName = (registrationRequest.getSoftwareStatement() != null) ?
-                    registrationRequest.getSoftwareStatementBody().getSoftwareId():
+                    registrationRequest.getSoftwareStatementBody().getSoftwareId() :
                     registrationRequest.getSoftwareId();
         } else {
-            applicationName = RegistrationUtils.getSafeApplicationName(
-                    registrationRequest.getSoftwareStatementBody().getClientName());
+            applicationName = RegistrationUtils.getSafeApplicationName(registrationRequest.getSoftwareStatementBody()
+                            .getClientName());
         }
 
         ApplicationUpdateRequest applicationUpdateRequest = new ApplicationUpdateRequest();
@@ -222,7 +218,7 @@ public class RegistrationUtils {
         Map<String, String> alteredAppAttributeMap = new HashMap<>();
         addAttributes(registrationRequest.getRequestParameters(), alteredAppAttributeMap);
 
-        if (registrationRequest.getSoftwareStatement() != null){
+        if (registrationRequest.getSoftwareStatement() != null) {
             //add ssa attributes
             addAttributes(registrationRequest.getSsaParameters(), alteredAppAttributeMap);
             //add ssa issuer

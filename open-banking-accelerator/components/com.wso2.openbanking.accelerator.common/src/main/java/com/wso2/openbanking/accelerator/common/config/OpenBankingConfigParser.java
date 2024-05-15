@@ -50,7 +50,6 @@ import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-
 import static java.util.Map.Entry.comparingByKey;
 
 /**
@@ -583,8 +582,7 @@ public class OpenBankingConfigParser {
                                 .map(String::trim)
                                 .collect(Collectors.toList());
                         allowedAPIs.put(scopeName, rolesList);
-                    }
-                    else if(StringUtils.isEmpty(rolesStr))  {
+                    } else if (StringUtils.isEmpty(rolesStr))  {
                         allowedAPIs.put(scopeName, Collections.emptyList());
                     }
                 }

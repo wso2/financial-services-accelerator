@@ -59,7 +59,7 @@ public class SignatureValidator implements ConstraintValidator<ValidateSignature
 
         try {
             String softwareStatement = BeanUtils.getProperty(registrationRequest, softwareStatementPath);
-            if (softwareStatement != null ) {
+            if (softwareStatement != null) {
                 SignedJWT signedJWT = SignedJWT.parse(softwareStatement);
                 String jwtString = signedJWT.getParsedString();
                 String alg = signedJWT.getHeader().getAlgorithm().getName();

@@ -86,8 +86,7 @@ public class RegistrationServiceHandler {
 
         if (registrationRequest.getSoftwareStatement() == null) {
                 serviceProvider.setJwksUri(registrationRequest.getJwksURI());
-        }
-        else {
+        } else {
             if (StringUtils.isNotEmpty(jwksEndpointName)) {
                 serviceProvider.setJwksUri(registrationRequest.getSsaParameters().get(jwksEndpointName).toString());
             } else {
@@ -113,13 +112,12 @@ public class RegistrationServiceHandler {
         Map<String, Object> registrationData = registrationRequest.getRequestParameters();
         registrationData.put(RegistrationConstants.CLIENT_ID, application.getClientId());
         registrationData.put(RegistrationConstants.CLIENT_ID_ISSUED_AT, clientIdIssuedTime.toString());
-        if(registrationRequest.getSsaParameters() != null) {
+        if (registrationRequest.getSsaParameters() != null) {
             registrationData.putAll(registrationRequest.getSsaParameters());
         }
         registrationData.putAll(additionalAttributes);
         String registrationResponse = registrationValidator.getRegistrationResponse(registrationData);
         return Response.status(Response.Status.CREATED).entity(registrationResponse).build();
-
     }
 
     public Response retrieveRegistration(Map<String, Object> additionalAttributes, String clientId, String accessToken)
@@ -171,10 +169,10 @@ public class RegistrationServiceHandler {
             }
         }
         Application applicationToUpdate = dcrmService.getApplication(clientId);
-        String applicationNameInRequest = "";
+        String applicationNameInRequest;
         if (useSoftwareIdAsAppName) {
             applicationNameInRequest = (request.getSoftwareStatement() != null) ?
-                    request.getSoftwareStatementBody().getSoftwareId():
+                    request.getSoftwareStatementBody().getSoftwareId() :
                     request.getSoftwareId();
         } else {
             applicationNameInRequest = request.getSoftwareStatementBody().getClientName();
@@ -198,7 +196,8 @@ public class RegistrationServiceHandler {
         //get JWKS URI from the request
         String jwksUri = request.getSoftwareStatement() == null ?
                 request.getJwksURI() : StringUtils.isNotEmpty(jwksEndpointName) ?
-                request.getSsaParameters().get(jwksEndpointName).toString() : request.getSoftwareStatementBody().getJwksURI();
+                request.getSsaParameters().get(jwksEndpointName).toString() :
+                request.getSoftwareStatementBody().getJwksURI();
 
         serviceProvider.setJwksUri(jwksUri);
 
@@ -217,7 +216,7 @@ public class RegistrationServiceHandler {
         //update Service provider with new client data
         Map<String, String> updateRequestData = RegistrationUtils.getAlteredApplicationAttributes(request);
         Map<String, Object> updateRegistrationData = request.getRequestParameters();
-        if(request.getSsaParameters() != null) {
+        if (request.getSsaParameters() != null) {
             updateRegistrationData.putAll(request.getSsaParameters());
         }
         updateRequestData.put(RegistrationConstants.CLIENT_ID_ISSUED_AT, clientIdIssuedAt);
