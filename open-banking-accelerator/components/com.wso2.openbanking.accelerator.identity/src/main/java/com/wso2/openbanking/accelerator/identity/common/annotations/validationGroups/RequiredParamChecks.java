@@ -15,11 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups;
+
+package com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups;
 
 /**
  * Interface for grouping the validation annotations.
- * Groups the validations for the validity of a JWT
+ * Groups the validations for required parameters
  */
-public interface ValidityChecks {
+public interface RequiredParamChecks {
+
 }

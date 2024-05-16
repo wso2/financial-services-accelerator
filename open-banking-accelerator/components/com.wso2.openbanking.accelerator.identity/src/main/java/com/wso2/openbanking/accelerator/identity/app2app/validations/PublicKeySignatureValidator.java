@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.nimbusds.jose.JOSEException;
@@ -38,18 +39,18 @@ public class PublicKeySignatureValidator implements ConstraintValidator<Validate
     private static final Log log = LogFactory.getLog(PublicKeySignatureValidator.class);
 
     @Override
-    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT,
+                           ConstraintValidatorContext constraintValidatorContext) {
+
+        SignedJWT signedJWT = appAuthValidationJWT.getSignedJWT();
+        String publicKey = appAuthValidationJWT.getPublicKey();
+        String algorithm = appAuthValidationJWT.getSigningAlgorithm();
 
         try {
-
-            SignedJWT signedJWT = appAuthValidationJWT.getSignedJWT();
-            String publicKey = appAuthValidationJWT.getPublicKey();
-            String algorithm = appAuthValidationJWT.getSigningAlgorithm();
             if (!JWTUtils.validateJWTSignature(signedJWT, publicKey, algorithm)) {
                 log.error("Signature can't be verified with registered public key.");
                 return false;
             }
-
         } catch (NoSuchAlgorithmException e) {
             log.error("No such algorithm found.", e);
             return false;

@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app;
 
 /**
@@ -39,7 +40,6 @@ public class App2AppAuthenticatorConstants {
     public static final String SESSION_DATA_KEY = "sessionDataKey";
     public static final String JWT_VALIDATION_EXCEPTION_MESSAGE = "JWT validation exception: ";
     public static final String ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE = "Illegal argument exception: ";
-    public static final String RUNTIME_EXCEPTION_MESSAGE = "Runtime exception: ";
     public static final String PARSE_EXCEPTION_MESSAGE = "Provided JWT for AppValidationJWT is not parsable: ";
     public static final String PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE
             = "Error occurred in push device handler service.";
@@ -52,5 +52,5 @@ public class App2AppAuthenticatorConstants {
     public static final String USER_AUTHENTICATED_MSG
             = "User {%s} authenticated by app2app authenticator successfully.";
     public static final String OPEN_BANKING_EXCEPTION_MESSAGE
-            ="Open Banking exception ocuured.";
+            = "Open Banking exception occurred.";
 }

@@ -1,9 +1,28 @@
+/**
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package com.wso2.openbanking.accelerator.identity.app2app;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
@@ -24,16 +43,17 @@ import org.wso2.carbon.user.core.service.RealmService;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.spy;
-
+/**
+ * Test class for Testing App2AppAuthUtils
+ */
 @PrepareForTest({AuthenticatedUser.class, IdentityTenantUtil.class, IdentityExtensionsDataHolder.class})
 @PowerMockIgnore({"javax.net.ssl.*", "jdk.internal.reflect.*"})
 public class App2AppAuthUtilsTest {
 
     @Test
     public void testGetAuthenticatedUserFromSubjectIdentifier() {
-        mockStatic(AuthenticatedUser.class);
+
+        PowerMockito.mockStatic(AuthenticatedUser.class);
         // Prepare test data
         String subjectIdentifier = "admin@wso2.com";
 
@@ -55,12 +75,13 @@ public class App2AppAuthUtilsTest {
 
     @Test
     public void testGetUserRealm() throws UserStoreException {
+
         // Mock the AuthenticatedUser
         AuthenticatedUser authenticatedUserMock = Mockito.mock(AuthenticatedUser.class);
         Mockito.when(authenticatedUserMock.getTenantDomain()).thenReturn("testTenantDomain");
 
         // Mock IdentityTenantUtil
-        mockStatic(IdentityTenantUtil.class);
+        PowerMockito.mockStatic(IdentityTenantUtil.class);
         Mockito.when(IdentityTenantUtil.getTenantId(Mockito.anyString())).thenReturn(1234);
 
         // Mock RealmService and UserRealm
@@ -71,7 +92,7 @@ public class App2AppAuthUtilsTest {
         // Mock IdentityExtensionsDataHolder
         IdentityExtensionsDataHolder dataHolderMock = Mockito.mock(IdentityExtensionsDataHolder.class);
         Mockito.when(dataHolderMock.getRealmService()).thenReturn(realmServiceMock);
-        mockStatic(IdentityExtensionsDataHolder.class);
+        PowerMockito.mockStatic(IdentityExtensionsDataHolder.class);
         Mockito.when(IdentityExtensionsDataHolder.getInstance()).thenReturn(dataHolderMock);
 
         // Call the method under test
@@ -89,10 +110,12 @@ public class App2AppAuthUtilsTest {
 
         // Verify the result
         Assert.assertNull(userRealm, "UserRealm should be null when the input is null.");
+
     }
 
     @Test
     public void testGetUserIdFromUsername() throws UserStoreException, OpenBankingException {
+
         // Prepare test data
         String username = "admin@wso2.com";
         String userIDMock = "354cd9f4-ae85-4ce9-8c42-dc1111ac8acf";
@@ -117,6 +140,7 @@ public class App2AppAuthUtilsTest {
 
     @Test(expectedExceptions = OpenBankingException.class)
     public void testGetUserIdFromUsernameWhenRealmNull() throws UserStoreException, OpenBankingException {
+
         // Prepare test data
         String username = "admin@wso2.com";
         // Mock the UserRealm
@@ -128,7 +152,6 @@ public class App2AppAuthUtilsTest {
 
     @Test
     public void testGetPublicKey() throws PushDeviceHandlerServerException, PushDeviceHandlerClientException, OpenBankingException {
-
 
         // Prepare test data
         String deviceID = "testDeviceID";
@@ -165,8 +188,6 @@ public class App2AppAuthUtilsTest {
     @Test(expectedExceptions = OpenBankingException.class)
     public void testGetPublicKeyInvalidDeviceID() throws PushDeviceHandlerServerException, PushDeviceHandlerClientException, OpenBankingException {
 
-        spy(App2AppAuthUtils.class);
-
         // Prepare test data
         String deviceID = "testDeviceID";
         String invalidDeviceId ="invalidDeviceID";
@@ -192,8 +213,6 @@ public class App2AppAuthUtilsTest {
         String result = App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandlerMock);
 
     }
-
-
 
     @ObjectFactory
     public IObjectFactory getObjectFactory() {

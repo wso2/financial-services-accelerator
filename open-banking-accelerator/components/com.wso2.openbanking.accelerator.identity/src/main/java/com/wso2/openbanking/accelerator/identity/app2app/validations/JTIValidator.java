@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.wso2.openbanking.accelerator.identity.app2app.cache.JTICache;
@@ -30,7 +31,8 @@ import javax.validation.ConstraintValidatorContext;
 public class JTIValidator implements ConstraintValidator<ValidateJTI, AppAuthValidationJWT> {
 
     @Override
-    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT,
+                           ConstraintValidatorContext constraintValidatorContext) {
 
         String jti = appAuthValidationJWT.getJti();
         return validateJTI(jti);

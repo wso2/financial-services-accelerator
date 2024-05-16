@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.validations.annotations;
 
 import com.wso2.openbanking.accelerator.identity.app2app.validations.JTIValidator;

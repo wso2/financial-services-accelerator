@@ -15,20 +15,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
 import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
-import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.App2AppValidationOrder;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.validationorder.App2AppValidationOrder;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.DeviceHandler;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerClientException;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.exception.PushDeviceHandlerServerException;
-import org.wso2.carbon.identity.application.authenticator.push.device.handler.impl.DeviceHandlerImpl;
 import org.wso2.carbon.identity.application.authenticator.push.device.handler.model.Device;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.user.api.UserRealm;
@@ -37,6 +37,7 @@ import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Utils class for Authentication related logic implementations.
@@ -99,35 +100,35 @@ public class App2AppAuthUtils {
 
     /**
      * Retrieves the registered device associated with the specified device ID and user ID.
+     * TODO: Optimise this code to retrieve device by did and validate userID.
+     * Github issue :{<a href="https://github.com/wso2-extensions/identity-outbound-auth-push/issues/144">...</a>}
      *
-     * @param deviceID the ID of the device to retrieve
-     * @param userID the ID of the user who owns the device
+     * @param deviceId the ID of the device to retrieve
+     * @param userId the ID of the user who owns the device
      * @return the registered device associated with the specified IDs
      * @throws PushDeviceHandlerServerException if an error occurs on the server side while handling the device
      * @throws IllegalArgumentException if the provided device identifier does not exist
      * @throws PushDeviceHandlerClientException if an error occurs on the client side while handling the device
      */
-    public static Device getRegisteredDevice(String deviceID, String userID, DeviceHandler deviceHandler)
+    public static Device getRegisteredDevice(String deviceId, String userId, DeviceHandler deviceHandler)
             throws PushDeviceHandlerServerException, IllegalArgumentException,
             PushDeviceHandlerClientException, OpenBankingException {
 
-
-        //Retrieving all the devices registered under userID
-        List<Device> deviceList = deviceHandler.listDevices(userID);
-
-        //Iterating and matching the deviceID with specified deviceID
-        for (Device device : deviceList) {
-            //If matches return the device
-            if (StringUtils.equals(device.getDeviceId(), deviceID)) {
-                String publicKey = deviceHandler.getPublicKey(deviceID);
-                device.setPublicKey(publicKey);
-                return device;
-            }
-        }
-
-        //If no device registered for user matches specified deviceID throw exception
-        throw new OpenBankingException("Provided Device ID doesn't match any device registered under user.");
-
+        /*
+         It is important to verify the device is registered under the given user
+         as public key is associated with device not the user.
+         */
+        List<Device> deviceList = deviceHandler.listDevices(userId);
+        //If a device registered under the given user matches the specified deviceId return the device
+        Optional<Device> optionalDevice = deviceList.stream()
+                .filter(device -> StringUtils.equals(device.getDeviceId(), deviceId))
+                .findFirst();
+        //If no device found throw exception
+        Device device =  optionalDevice.orElseThrow(() ->
+                new OpenBankingException("Provided Device ID doesn't match any device registered under user."));
+        //If a device is found set the public key
+        device.setPublicKey(deviceHandler.getPublicKey(deviceId));
+        return device;
     }
 
     /**
@@ -179,7 +180,6 @@ public class App2AppAuthUtils {
         if (error != null) {
             throw new JWTValidationException(error);
         }
-
     }
 
 }

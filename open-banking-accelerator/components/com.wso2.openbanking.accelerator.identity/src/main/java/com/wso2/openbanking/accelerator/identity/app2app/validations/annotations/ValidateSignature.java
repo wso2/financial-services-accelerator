@@ -36,6 +36,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Constraint(validatedBy = {PublicKeySignatureValidator.class})
 public @interface ValidateSignature {
+
     String message() default "Signature validation Failed.";
 
     Class<?>[] groups() default {};

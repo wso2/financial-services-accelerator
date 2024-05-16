@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app;
 
 
@@ -39,11 +40,10 @@ import org.wso2.carbon.identity.application.authenticator.push.device.handler.im
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * App2App authenticator for authenticating users from native auth attempt.
@@ -56,6 +56,9 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
 
     private static DeviceHandler deviceHandler;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
 
@@ -63,12 +66,19 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getFriendlyName() {
 
         return App2AppAuthenticatorConstants.AUTHENTICATOR_FRIENDLY_NAME;
 
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void processAuthenticationResponse(HttpServletRequest httpServletRequest,
                                                  HttpServletResponse httpServletResponse,
@@ -99,7 +109,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
                     userToBeAuthenticated.getUserName()));
         } catch (JWTValidationException e) {
             throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE + e.getMessage());
+                    App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
             throw new AuthenticationFailedException(
                     App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE + e.getMessage(), e);
@@ -122,15 +132,23 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
 
     }
 
-    //TODO : Add a comment explaining the logic
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean canHandle(HttpServletRequest httpServletRequest) {
-
+        /*
+        App2App authenticates the user in one step depending on the app_auth_key,
+        Hence it's mandatory to have the required parameter app_auth_key.
+         */
         return !StringUtils.isBlank(httpServletRequest.getParameter(
                 App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER));
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getContextIdentifier(HttpServletRequest request) {
 
@@ -138,30 +156,22 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void initiateAuthenticationRequest(HttpServletRequest request, HttpServletResponse response,
-                                                 AuthenticationContext context) throws AuthenticationFailedException {
+    protected void initiateAuthenticationRequest(HttpServletRequest request,
+                                                 HttpServletResponse response,
+                                                 AuthenticationContext context)
+            throws AuthenticationFailedException {
+        /*
+            App2App authenticator does not support initiating authentication request,
+            Hence authentication process will be terminated.
+         */
         log.error(App2AppAuthenticatorConstants.INITIALIZATION_ERROR_MESSAGE);
         throw new AuthenticationFailedException(App2AppAuthenticatorConstants.MANDATORY_PARAMETER_ERROR_MESSAGE);
 
     }
-
-//    //TODO : remove this configuration properties.
-//    @Override
-//    public List<Property> getConfigurationProperties() {
-//
-//        List<Property> configProperties = new ArrayList<>();
-//        String firebaseServerKey = "Firebase Server Key";
-//        Property serverKeyProperty = new Property();
-//        serverKeyProperty.setName("ServerKey");
-//        serverKeyProperty.setDisplayName(firebaseServerKey);
-//        serverKeyProperty.setDescription("Enter the firebase server key ");
-//        serverKeyProperty.setDisplayOrder(0);
-//        serverKeyProperty.setRequired(true);
-//        configProperties.add(serverKeyProperty);
-//        return configProperties;
-//
-//    }
 
     /**
      * Retrieves the public key associated with a device and user.
@@ -180,13 +190,18 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
         DeviceHandler deviceHandler = getDeviceHandler();
         UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
         String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
-        return App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandler );
+        return App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandler);
 
     }
 
-    private DeviceHandler getDeviceHandler(){
+    /**
+     * Method to get a DeviceHandler implementation.
+     *
+     * @return a implementation of DeviceHandler
+     */
+    private DeviceHandler getDeviceHandler() {
 
-        if (deviceHandler == null){
+        if (deviceHandler == null) {
             deviceHandler = new DeviceHandlerImpl();
         }
         return deviceHandler;

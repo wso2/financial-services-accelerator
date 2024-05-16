@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.exception;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
@@ -23,7 +24,6 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
  * AppAuthValidationJWT Object Validation Exception.
  */
 public class JWTValidationException extends OpenBankingException {
-
 
     private static final long serialVersionUID = -2572459527308720228L;
 
@@ -34,4 +34,5 @@ public class JWTValidationException extends OpenBankingException {
     public JWTValidationException(String message, Throwable e) {
         super(message, e);
     }
+
 }

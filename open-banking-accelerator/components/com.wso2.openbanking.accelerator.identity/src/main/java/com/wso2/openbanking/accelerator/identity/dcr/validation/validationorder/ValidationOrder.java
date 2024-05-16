@@ -15,7 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups;
+package com.wso2.openbanking.accelerator.identity.dcr.validation.validationorder;
+
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.AttributeChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.MandatoryChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.SignatureCheck;
 
 import javax.validation.GroupSequence;
 

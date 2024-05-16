@@ -23,9 +23,9 @@ import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.Valid
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateIssuer;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateRequiredParams;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateSignature;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.AttributeChecks;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.MandatoryChecks;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.SignatureCheck;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.AttributeChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.MandatoryChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.SignatureCheck;
 
 import java.util.List;
 import java.util.Map;

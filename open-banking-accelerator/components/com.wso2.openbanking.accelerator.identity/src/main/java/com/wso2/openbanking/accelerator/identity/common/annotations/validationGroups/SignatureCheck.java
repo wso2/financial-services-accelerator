@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,13 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups;
-
-import javax.validation.GroupSequence;
+package com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups;
 
 /**
- * Class to define the order of execution for the hibernate validation groups.
+ * Interface for grouping the validation annotations.
+ * Groups the validation for signature
  */
-@GroupSequence({RequiredParamChecks.class, ValidityChecks.class})
-public interface App2AppValidationOrder {
+public interface SignatureCheck {
+
 }

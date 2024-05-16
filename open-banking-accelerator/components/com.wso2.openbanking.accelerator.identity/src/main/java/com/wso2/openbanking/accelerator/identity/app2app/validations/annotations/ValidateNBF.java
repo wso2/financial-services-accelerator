@@ -20,15 +20,20 @@ package com.wso2.openbanking.accelerator.identity.app2app.validations.annotation
 
 import com.wso2.openbanking.accelerator.identity.app2app.validations.NBFValidator;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.validation.Constraint;
+import javax.validation.Payload;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * Annotation class for validating NBF of a JWT.
+ */
 @Target(TYPE)
 @Retention(RUNTIME)
 @Documented

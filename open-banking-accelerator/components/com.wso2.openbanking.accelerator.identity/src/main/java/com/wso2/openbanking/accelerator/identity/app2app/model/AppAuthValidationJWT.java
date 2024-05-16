@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.app2app.model;
 
 import com.google.gson.annotations.SerializedName;
@@ -24,14 +25,14 @@ import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateJTI;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateNBF;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
-import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.RequiredParamChecks;
-import com.wso2.openbanking.accelerator.identity.app2app.validations.validationgroups.ValidityChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.RequiredParamChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.ValidityChecks;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * Model class for App2App Auth AppAuthValidationJWT.
@@ -41,6 +42,7 @@ import java.util.Date;
 @ValidateExpiry(groups = ValidityChecks.class)
 @ValidateNBF(groups = ValidityChecks.class)
 public class AppAuthValidationJWT {
+
     @SerializedName(AppAuthValidationJWTConstants.DEVICE_IDENTIFIER)
     private String deviceId;
     @SerializedName(AppAuthValidationJWTConstants.LOGIN_HINT)

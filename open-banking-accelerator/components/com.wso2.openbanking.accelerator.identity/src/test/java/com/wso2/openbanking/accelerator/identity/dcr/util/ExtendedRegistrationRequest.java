@@ -20,7 +20,7 @@ package com.wso2.openbanking.accelerator.identity.dcr.util;
 import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
 import com.wso2.openbanking.accelerator.identity.dcr.model.SoftwareStatementBody;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.MandatoryChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.MandatoryChecks;
 
 import java.util.List;
 
