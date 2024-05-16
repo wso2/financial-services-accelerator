@@ -71,7 +71,7 @@ public class DisputeResolutionFilterTest  extends PowerMockTestCase {
 
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         openBankingConfigParser = PowerMockito.mock(OpenBankingConfigParser.class);
-        when(OpenBankingConfigParser.getInstance())
+        PowerMockito.when(OpenBankingConfigParser.getInstance())
                 .thenReturn(openBankingConfigParser);
     }
 
