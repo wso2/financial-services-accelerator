@@ -19,7 +19,7 @@
 package com.wso2.openbanking.accelerator.identity.app2app.model;
 
 /**
- * Constants for AppAuthValidationJWT.
+ * Constants for DeviceVerificationToken.
  */
 public class AppAuthValidationJWTConstants {
 

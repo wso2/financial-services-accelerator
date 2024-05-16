@@ -25,7 +25,8 @@ import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateJTI;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateNBF;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.RequiredParamChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.SignatureCheck;
 import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.ValidityChecks;
 
 import java.text.ParseException;
@@ -34,14 +35,15 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+
 /**
- * Model class for App2App Auth AppAuthValidationJWT.
+ * Model class for App2App Auth DeviceVerificationToken.
  */
 @ValidateJTI(groups = ValidityChecks.class)
-@ValidateSignature(groups = ValidityChecks.class)
+@ValidateSignature(groups = SignatureCheck.class)
 @ValidateExpiry(groups = ValidityChecks.class)
 @ValidateNBF(groups = ValidityChecks.class)
-public class AppAuthValidationJWT {
+public class DeviceVerificationToken {
 
     @SerializedName(AppAuthValidationJWTConstants.DEVICE_IDENTIFIER)
     private String deviceId;
@@ -59,7 +61,7 @@ public class AppAuthValidationJWT {
     private String publicKey;
     private String signingAlgorithm;
 
-    public AppAuthValidationJWT(SignedJWT signedJWT)
+    public DeviceVerificationToken(SignedJWT signedJWT)
             throws ParseException {
 
         this.signedJWT = signedJWT;
@@ -73,7 +75,7 @@ public class AppAuthValidationJWT {
 
     }
 
-    @NotBlank(message = "Required parameter did cannot be null or empty.", groups = RequiredParamChecks.class)
+    @NotBlank(message = "Required parameter did cannot be null or empty.", groups = MandatoryChecks.class)
     public String getDeviceId() {
         return deviceId;
     }
@@ -81,14 +83,14 @@ public class AppAuthValidationJWT {
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
-    @NotBlank(message = "Required parameter loginHint cannot be null or empty.", groups = RequiredParamChecks.class)
+    @NotBlank(message = "Required parameter loginHint cannot be null or empty.", groups = MandatoryChecks.class)
     public String getLoginHint() {
         return loginHint;
     }
     public void setLoginHint(String loginHint) {
         this.loginHint = loginHint;
     }
-    @NotNull(message = "Required parameter exp cannot be null.", groups = RequiredParamChecks.class)
+    @NotNull(message = "Required parameter exp cannot be null.", groups = MandatoryChecks.class)
     public Date getExpirationTime() {
         return expirationTime;
     }
@@ -96,7 +98,7 @@ public class AppAuthValidationJWT {
     public void setExpirationTime(Date expirationTime) {
         this.expirationTime = expirationTime;
     }
-    @NotNull(message = "Required parameter nbf cannot be null.", groups = RequiredParamChecks.class)
+    @NotNull(message = "Required parameter nbf cannot be null.", groups = MandatoryChecks.class)
     public Date getNotValidBefore() {
         return notValidBefore;
     }
@@ -104,7 +106,7 @@ public class AppAuthValidationJWT {
     public void setNotValidBefore(Date notValidBefore) {
         this.notValidBefore = notValidBefore;
     }
-    @NotBlank(message = "Required parameter jti cannot be null or empty.", groups = RequiredParamChecks.class)
+    @NotBlank(message = "Required parameter jti cannot be null or empty.", groups = MandatoryChecks.class)
     public String getJti() {
         return jti;
     }
@@ -112,7 +114,7 @@ public class AppAuthValidationJWT {
     public void setJti(String jti) {
         this.jti = jti;
     }
-    @NotNull(message = "Required parameter iat cannot be null.", groups = RequiredParamChecks.class)
+    @NotNull(message = "Required parameter iat cannot be null.", groups = MandatoryChecks.class)
     public Date getIssuedTime() {
         return issuedTime;
     }
@@ -120,7 +122,7 @@ public class AppAuthValidationJWT {
     public void setIssuedTime(Date issuedAt) {
         this.issuedTime = issuedAt;
     }
-    @NotNull(message = "Required parameter signedJWT cannot be null.", groups = RequiredParamChecks.class)
+    @NotNull(message = "Required parameter signedJWT cannot be null.", groups = MandatoryChecks.class)
     public SignedJWT getSignedJWT() {
         return signedJWT;
     }
@@ -129,7 +131,7 @@ public class AppAuthValidationJWT {
         this.signedJWT = signedJWT;
     }
 
-    @NotBlank(message = "Required parameter public key cannot be null or empty.", groups = RequiredParamChecks.class)
+    @NotBlank(message = "Required parameter public key cannot be null or empty.", groups = MandatoryChecks.class)
     public String getPublicKey() {
         return publicKey;
     }
@@ -139,7 +141,7 @@ public class AppAuthValidationJWT {
     }
 
     @NotBlank(message = "Required parameter signing algorithm cannot be null or empty.",
-            groups = RequiredParamChecks.class)
+            groups = MandatoryChecks.class)
     public String getSigningAlgorithm() {
         return signingAlgorithm;
     }
@@ -162,4 +164,3 @@ public class AppAuthValidationJWT {
 
     }
 }
-

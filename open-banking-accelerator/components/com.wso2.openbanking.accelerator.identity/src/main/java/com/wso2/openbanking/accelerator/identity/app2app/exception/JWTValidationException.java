@@ -21,7 +21,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.exception;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 
 /**
- * AppAuthValidationJWT Object Validation Exception.
+ * DeviceVerificationToken Object Validation Exception.
  */
 public class JWTValidationException extends OpenBankingException {
 

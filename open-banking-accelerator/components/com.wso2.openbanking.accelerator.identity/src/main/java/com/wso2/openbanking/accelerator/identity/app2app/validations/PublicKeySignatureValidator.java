@@ -21,7 +21,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.validations;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
-import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
+import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,17 +35,17 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Validator class for validating the signature of a JWT.
  */
-public class PublicKeySignatureValidator implements ConstraintValidator<ValidateSignature, AppAuthValidationJWT> {
+public class PublicKeySignatureValidator implements ConstraintValidator<ValidateSignature, DeviceVerificationToken> {
 
     private static final Log log = LogFactory.getLog(PublicKeySignatureValidator.class);
 
     @Override
-    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT,
+    public boolean isValid(DeviceVerificationToken deviceVerificationToken,
                            ConstraintValidatorContext constraintValidatorContext) {
 
-        SignedJWT signedJWT = appAuthValidationJWT.getSignedJWT();
-        String publicKey = appAuthValidationJWT.getPublicKey();
-        String algorithm = appAuthValidationJWT.getSigningAlgorithm();
+        SignedJWT signedJWT = deviceVerificationToken.getSignedJWT();
+        String publicKey = deviceVerificationToken.getPublicKey();
+        String algorithm = deviceVerificationToken.getSigningAlgorithm();
 
         try {
             if (!JWTUtils.validateJWTSignature(signedJWT, publicKey, algorithm)) {
@@ -66,4 +66,3 @@ public class PublicKeySignatureValidator implements ConstraintValidator<Validate
 
     }
 }
-

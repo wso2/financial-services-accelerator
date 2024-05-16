@@ -25,18 +25,8 @@ public class App2AppAuthenticatorConstants {
 
     public static final String AUTHENTICATOR_NAME = "app2app";
     public static final String AUTHENTICATOR_FRIENDLY_NAME = "App2App Authenticator";
-
-    public static final String REQUEST = "request";
-
-    public static final String SCOPE = "scope";
-
-    public static final String APPLICATION = "application";
     public static final String SIGNING_ALGORITHM = "RSA";
     public static final String APP_AUTH_VALIDATION_JWT_IDENTIFIER = "secret";
-
-    public static final String IS_ERROR = "isError";
-
-    public static final String ERROR = "error";
     public static final String SESSION_DATA_KEY = "sessionDataKey";
     public static final String JWT_VALIDATION_EXCEPTION_MESSAGE = "JWT validation exception: ";
     public static final String ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE = "Illegal argument exception: ";

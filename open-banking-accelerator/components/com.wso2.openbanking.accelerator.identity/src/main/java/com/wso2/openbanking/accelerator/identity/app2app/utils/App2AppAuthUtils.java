@@ -21,7 +21,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.utils;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
-import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
+import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.validationorder.App2AppValidationOrder;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.lang.StringUtils;
@@ -162,19 +162,19 @@ public class App2AppAuthUtils {
     }
 
     /**
-     * Validator util to validate AppAuthValidationJWT model for given validationOrder.
+     * Validator util to validate DeviceVerificationToken model for given validationOrder.
      *
-     * @param appAuthValidationJWT AppAuthValidationJWT object that needs to be validated
+     * @param deviceVerificationToken DeviceVerificationToken object that needs to be validated
      * @throws JWTValidationException if validation failed
      */
-    public static void validateSecret(AppAuthValidationJWT appAuthValidationJWT) throws JWTValidationException {
+    public static void validateToken(DeviceVerificationToken deviceVerificationToken) throws JWTValidationException {
         /*
             App2AppValidationOrder validation order
                 1.Required Params validation
                 2.Validity Validations - Signature, JTI, Timeliness will be validated.
          */
         String error = OpenBankingValidator.getInstance()
-                .getFirstViolation(appAuthValidationJWT, App2AppValidationOrder.class);
+                .getFirstViolation(deviceVerificationToken, App2AppValidationOrder.class);
 
         //if there is a validation violation convert it to JWTValidationException
         if (error != null) {
@@ -183,4 +183,3 @@ public class App2AppAuthUtils {
     }
 
 }
-

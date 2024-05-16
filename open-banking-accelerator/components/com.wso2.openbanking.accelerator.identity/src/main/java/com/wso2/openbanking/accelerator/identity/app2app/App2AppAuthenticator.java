@@ -23,7 +23,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
-import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
+import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -90,19 +90,19 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
                 httpServletRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER);
         try {
             SignedJWT signedJWT = JWTUtils.getSignedJWT(jwtString);
-            AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
-            String loginHint = appAuthValidationJWT.getLoginHint();
-            String deviceID = appAuthValidationJWT.getDeviceId();
+            DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
+            String loginHint = deviceVerificationToken.getLoginHint();
+            String deviceID = deviceVerificationToken.getDeviceId();
             AuthenticatedUser userToBeAuthenticated =
                     App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
             String publicKey = getPublicKeyByDeviceID(deviceID, userToBeAuthenticated);
-            appAuthValidationJWT.setPublicKey(publicKey);
-            appAuthValidationJWT.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+            deviceVerificationToken.setPublicKey(publicKey);
+            deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
             /*
                 if validations are failed it will throw a JWTValidationException and flow will be interrupted.
                 Hence, user Authentication will fail.
              */
-            App2AppAuthUtils.validateSecret(appAuthValidationJWT);
+            App2AppAuthUtils.validateToken(deviceVerificationToken);
             //If the flow is not interrupted user will be authenticated.
             authenticationContext.setSubject(userToBeAuthenticated);
             log.info(String.format(App2AppAuthenticatorConstants.USER_AUTHENTICATED_MSG,
@@ -207,4 +207,3 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
         return deviceHandler;
     }
 }
-

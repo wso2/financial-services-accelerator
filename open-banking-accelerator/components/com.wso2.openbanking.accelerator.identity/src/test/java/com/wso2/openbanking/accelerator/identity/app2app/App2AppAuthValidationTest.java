@@ -23,7 +23,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.cache.JTICache;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
-import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
+import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -60,10 +60,10 @@ public class App2AppAuthValidationTest {
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
-        AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
-        appAuthValidationJWT.setPublicKey(publicKey);
-        appAuthValidationJWT.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
-        App2AppAuthUtils.validateSecret(appAuthValidationJWT);
+        DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
+        deviceVerificationToken.setPublicKey(publicKey);
+        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }
 
@@ -83,10 +83,10 @@ public class App2AppAuthValidationTest {
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
-        AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
-        appAuthValidationJWT.setPublicKey(publicKey);
-        appAuthValidationJWT.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
-        App2AppAuthUtils.validateSecret(appAuthValidationJWT);
+        DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
+        deviceVerificationToken.setPublicKey(publicKey);
+        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }
 
@@ -106,10 +106,10 @@ public class App2AppAuthValidationTest {
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
-        AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
-        appAuthValidationJWT.setPublicKey(publicKey);
-        appAuthValidationJWT.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
-        App2AppAuthUtils.validateSecret(appAuthValidationJWT);
+        DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
+        deviceVerificationToken.setPublicKey(publicKey);
+        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }
 
@@ -129,10 +129,10 @@ public class App2AppAuthValidationTest {
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(false);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
-        AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
-        appAuthValidationJWT.setPublicKey(publicKey);
-        appAuthValidationJWT.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
-        App2AppAuthUtils.validateSecret(appAuthValidationJWT);
+        DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
+        deviceVerificationToken.setPublicKey(publicKey);
+        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }
 

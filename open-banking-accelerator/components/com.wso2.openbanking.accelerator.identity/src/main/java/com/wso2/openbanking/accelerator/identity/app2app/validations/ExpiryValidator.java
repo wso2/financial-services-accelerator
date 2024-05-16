@@ -19,7 +19,7 @@
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
-import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
+import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateExpiry;
 
 import java.util.Date;
@@ -30,15 +30,15 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Validator class for validating expiry of a JWT.
  */
-public class ExpiryValidator implements ConstraintValidator<ValidateExpiry, AppAuthValidationJWT> {
+public class ExpiryValidator implements ConstraintValidator<ValidateExpiry, DeviceVerificationToken> {
 
     private static final long DEFAULT_TIME_SKEW_IN_SECONDS = 300L;
 
     @Override
-    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT,
+    public boolean isValid(DeviceVerificationToken deviceVerificationToken,
                            ConstraintValidatorContext constraintValidatorContext) {
 
-        Date expiryTime = appAuthValidationJWT.getExpirationTime();
+        Date expiryTime = deviceVerificationToken.getExpirationTime();
         return JWTUtils.validateExpiryTime(expiryTime, DEFAULT_TIME_SKEW_IN_SECONDS);
 
     }

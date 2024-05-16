@@ -19,7 +19,7 @@
 package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
-import com.wso2.openbanking.accelerator.identity.app2app.model.AppAuthValidationJWT;
+import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateNBF;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,16 +32,16 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Validation class for validating NBF of a JWT.
  */
-public class NBFValidator implements ConstraintValidator<ValidateNBF, AppAuthValidationJWT> {
+public class NBFValidator implements ConstraintValidator<ValidateNBF, DeviceVerificationToken> {
 
     private static final long DEFAULT_TIME_SKEW_IN_SECONDS = 300L;
     private static final Log log = LogFactory.getLog(NBFValidator.class);
 
     @Override
-    public boolean isValid(AppAuthValidationJWT appAuthValidationJWT,
+    public boolean isValid(DeviceVerificationToken deviceVerificationToken,
                            ConstraintValidatorContext constraintValidatorContext) {
 
-        Date notValidBefore = appAuthValidationJWT.getNotValidBefore();
+        Date notValidBefore = deviceVerificationToken.getNotValidBefore();
         return JWTUtils.validateNotValidBefore(notValidBefore, DEFAULT_TIME_SKEW_IN_SECONDS);
 
     }
