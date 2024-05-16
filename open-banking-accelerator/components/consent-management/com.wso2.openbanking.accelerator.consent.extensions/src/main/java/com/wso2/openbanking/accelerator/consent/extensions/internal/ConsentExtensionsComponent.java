@@ -19,7 +19,6 @@
 package com.wso2.openbanking.accelerator.consent.extensions.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
-import com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthenticator;
 import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.CIBAPushAuthenticator;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionExporter;
 import com.wso2.openbanking.accelerator.consent.extensions.util.PeriodicalConsentJobActivator;
@@ -27,12 +26,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.*;
 import org.wso2.carbon.identity.application.authentication.framework.ApplicationAuthenticator;
 
 /**
@@ -57,11 +51,8 @@ public class ConsentExtensionsComponent {
             log.debug("Periodical Consent Status Updater Started");
         }
         CIBAPushAuthenticator authenticator = new CIBAPushAuthenticator();
-        App2AppAuthenticator app2AppAuthenticator = new App2AppAuthenticator();
         context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
                 authenticator, null);
-        context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
-                app2AppAuthenticator, null);
         if (log.isDebugEnabled()) {
             log.debug("CIBA Push authenticator bundle is activated");
         }

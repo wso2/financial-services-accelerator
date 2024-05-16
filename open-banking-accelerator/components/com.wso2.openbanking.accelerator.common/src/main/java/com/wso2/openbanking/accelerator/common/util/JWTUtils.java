@@ -57,6 +57,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Util class for jwt related functions.
  */
 public class JWTUtils {
+
     private static final String DOT_SEPARATOR = ".";
     private static final Log log = LogFactory.getLog(JWTUtils.class);
 
