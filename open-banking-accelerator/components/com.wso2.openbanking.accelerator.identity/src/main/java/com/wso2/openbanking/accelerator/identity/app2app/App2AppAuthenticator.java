@@ -83,7 +83,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
 
         authenticationContext.setCurrentAuthenticator(App2AppAuthenticatorConstants.AUTHENTICATOR_NAME);
         String jwtString =
-                httpServletRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER);
+                httpServletRequest.getParameter(App2AppAuthenticatorConstants.DEVICE_VERIFICATION_TOKEN_IDENTIFIER);
         try {
             SignedJWT signedJWT = JWTUtils.getSignedJWT(jwtString);
             DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
@@ -141,7 +141,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
         Hence it's mandatory to have the required parameter app_auth_key.
          */
         return !StringUtils.isBlank(httpServletRequest.getParameter(
-                App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER));
+                App2AppAuthenticatorConstants.DEVICE_VERIFICATION_TOKEN_IDENTIFIER));
     }
 
     /**
