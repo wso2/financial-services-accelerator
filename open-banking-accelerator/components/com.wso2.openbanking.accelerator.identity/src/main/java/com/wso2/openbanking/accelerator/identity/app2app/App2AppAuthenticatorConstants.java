@@ -28,19 +28,20 @@ public class App2AppAuthenticatorConstants {
     public static final String SIGNING_ALGORITHM = "RSA";
     public static final String APP_AUTH_VALIDATION_JWT_IDENTIFIER = "secret";
     public static final String SESSION_DATA_KEY = "sessionDataKey";
-    public static final String JWT_VALIDATION_EXCEPTION_MESSAGE = "JWT validation exception: ";
-    public static final String ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE = "Illegal argument exception: ";
-    public static final String PARSE_EXCEPTION_MESSAGE = "Provided JWT for AppValidationJWT is not parsable: ";
+    public static final String JWT_VALIDATION_EXCEPTION_MESSAGE = "Error while validating JWT: ";
+    public static final String ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE
+            = "Error while creating user for provided loginHint: ";
+    public static final String PARSE_EXCEPTION_MESSAGE = "Error while parsing the provided JWT: ";
     public static final String PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE
-            = "Error occurred in push device handler service.";
-    public static final String USER_STORE_EXCEPTION_MESSAGE = "Error while creating authenticated user.";
+            = "Error occurred in push device handler service: ";
+    public static final String USER_STORE_EXCEPTION_MESSAGE = "Error while creating authenticated user: ";
     public static final String PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE
-            = "Error occurred in Push Device handler client.";
+            = "Error occurred in Push Device handler client: ";
     public static final String INITIALIZATION_ERROR_MESSAGE = "Initializing App2App authenticator is not supported.";
     public static final String MANDATORY_PARAMETER_ERROR_MESSAGE
             = "Mandatory parameter secret null or empty in request.";
     public static final String USER_AUTHENTICATED_MSG
             = "User {%s} authenticated by app2app authenticator successfully.";
     public static final String OPEN_BANKING_EXCEPTION_MESSAGE
-            = "Open Banking exception occurred.";
+            = "Error while retrieving user: ";
 }

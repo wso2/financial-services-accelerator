@@ -80,48 +80,31 @@ public class DeviceVerificationToken {
         return deviceId;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
     @NotBlank(message = "Required parameter loginHint cannot be null or empty.", groups = MandatoryChecks.class)
     public String getLoginHint() {
         return loginHint;
     }
-    public void setLoginHint(String loginHint) {
-        this.loginHint = loginHint;
-    }
+
     @NotNull(message = "Required parameter exp cannot be null.", groups = MandatoryChecks.class)
     public Date getExpirationTime() {
         return expirationTime;
     }
 
-    public void setExpirationTime(Date expirationTime) {
-        this.expirationTime = expirationTime;
-    }
     @NotNull(message = "Required parameter nbf cannot be null.", groups = MandatoryChecks.class)
     public Date getNotValidBefore() {
         return notValidBefore;
     }
 
-    public void setNotValidBefore(Date notValidBefore) {
-        this.notValidBefore = notValidBefore;
-    }
     @NotBlank(message = "Required parameter jti cannot be null or empty.", groups = MandatoryChecks.class)
     public String getJti() {
         return jti;
     }
 
-    public void setJti(String jti) {
-        this.jti = jti;
-    }
     @NotNull(message = "Required parameter iat cannot be null.", groups = MandatoryChecks.class)
     public Date getIssuedTime() {
         return issuedTime;
     }
 
-    public void setIssuedTime(Date issuedAt) {
-        this.issuedTime = issuedAt;
-    }
     @NotNull(message = "Required parameter signedJWT cannot be null.", groups = MandatoryChecks.class)
     public SignedJWT getSignedJWT() {
         return signedJWT;

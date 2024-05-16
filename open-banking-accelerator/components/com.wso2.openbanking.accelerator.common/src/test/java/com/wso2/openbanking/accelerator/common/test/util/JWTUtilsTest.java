@@ -15,6 +15,7 @@ public class JWTUtilsTest {
 
     @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "jwtStrings")
     public void testIsJWT(String jwtString, boolean expected) {
+
         Assert.assertEquals(JWTUtils.isJWT(jwtString), expected);
     }
 
@@ -39,12 +40,14 @@ public class JWTUtilsTest {
     }
 
     @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "expiryTimeProvider")
-    public void testValidExpirationTime(Date time, long skew, boolean expected) {
-        Assert.assertEquals(JWTUtils.validateExpiryTime(time, skew), expected);
+    public void testValidExpirationTime(Date time, long timeSkew, boolean expected) {
+
+        Assert.assertEquals(JWTUtils.validateExpiryTime(time, timeSkew), expected);
     }
 
     @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "nbfProvider")
-    public void testValidNotValidBefore(Date time, long skew, boolean expected) {
-        Assert.assertEquals(JWTUtils.validateNotValidBefore(time, skew), expected);
+    public void testValidNotValidBefore(Date time, long timeSkew, boolean expected) {
+
+        Assert.assertEquals(JWTUtils.validateNotValidBefore(time, timeSkew), expected);
     }
 }

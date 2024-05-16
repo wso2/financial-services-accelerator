@@ -34,9 +34,12 @@ public class JTICache {
      * @return IdentityCache instance as JTICache
      */
     public static IdentityCache getInstance() {
-        if (jtiCacheInstance == null) {
 
+        //Outer null check avoids entering synchronized block when jtiCache is not null.
+        if (jtiCacheInstance == null) {
+            // Synchronize access to ensure thread safety
             synchronized (JTICache.class) {
+                // Avoids race condition withing threads
                 if (jtiCacheInstance == null) {
                     jtiCacheInstance = new IdentityCache();
                 }

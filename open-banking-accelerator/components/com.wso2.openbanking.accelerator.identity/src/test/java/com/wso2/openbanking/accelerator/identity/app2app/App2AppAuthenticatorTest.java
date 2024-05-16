@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.identity.app2app;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
+import com.wso2.openbanking.accelerator.identity.app2app.testutils.App2AppAuthenticatorTestDataProvider;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -60,7 +61,9 @@ public class App2AppAuthenticatorTest {
     @BeforeTest
     public void setup() {
 
+        // setting the authenticator for testing
         app2AppAuthenticator = new App2AppAuthenticator();
+        //Mocking the behaviour of request, response and authenticationContext
         mockRequest = Mockito.mock(HttpServletRequest.class);
         mockResponse = Mockito.mock(HttpServletResponse.class);
         mockAuthenticationContext = Mockito.mock(AuthenticationContext.class);
@@ -71,6 +74,7 @@ public class App2AppAuthenticatorTest {
 
         String expectedName = App2AppAuthenticatorConstants.AUTHENTICATOR_NAME;
         String actualName = app2AppAuthenticator.getName();
+        // Invoke the method under test
         assertEquals(actualName, expectedName, "Expected and actual names should match.");
 
     }
@@ -80,6 +84,7 @@ public class App2AppAuthenticatorTest {
 
         String expectedFriendlyName = App2AppAuthenticatorConstants.AUTHENTICATOR_FRIENDLY_NAME;
         String actualFriendlyName = app2AppAuthenticator.getFriendlyName();
+        // Invoke the method under test
         assertEquals(actualFriendlyName, expectedFriendlyName,
                 "Expected and actual friendly names should match");
 
@@ -89,8 +94,10 @@ public class App2AppAuthenticatorTest {
             dataProvider = "app_auth_identifier_provider")
     public void canHandleTestCase(String secret, String expected) {
 
+        // Set up mock behavior for HttpServletRequest
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER))
                 .thenReturn(secret);
+        // Invoke the method under test
         assertEquals(Boolean.valueOf(expected).booleanValue(), app2AppAuthenticator.canHandle(mockRequest),
                 "Invalid can handle response for the request.");
     }
@@ -98,6 +105,7 @@ public class App2AppAuthenticatorTest {
     @Test(expectedExceptions = AuthenticationFailedException.class)
     public void initiateAuthenticationRequest() throws AuthenticationFailedException {
 
+        // Invoke the method under test
         app2AppAuthenticator.initiateAuthenticationRequest(mockRequest, mockResponse, mockAuthenticationContext);
 
     }
@@ -106,8 +114,11 @@ public class App2AppAuthenticatorTest {
             dataProvider = "sessionDataKeyProvider")
     public void getContextIdentifierTest(String sessionDataKey) {
 
+        // Set up mock behavior for HttpServletRequest
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.SESSION_DATA_KEY))
                 .thenReturn(sessionDataKey);
+
+        // Invoke the method under test
         String output = app2AppAuthenticator.getContextIdentifier(mockRequest);
         assertEquals(sessionDataKey, output);
 
@@ -151,16 +162,13 @@ public class App2AppAuthenticatorTest {
             throws AuthenticationFailedException {
 
         PowerMockito.mockStatic(App2AppAuthUtils.class);
-
         // Mock the behavior of HttpServletRequest to return a value for login hint
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER))
                 .thenReturn(jwtString);
-
         // Mock App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier to throw IllegalArgumentException
         Mockito.when(App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(Mockito.anyString()))
                 .thenThrow(new IllegalArgumentException("Failed to create Local Authenticated User from the given " +
                         "subject identifier. Invalid argument. authenticatedSubjectIdentifier : "));
-
         // Invoke the method under test
         app2AppAuthenticator.processAuthenticationResponse(mockRequest, mockResponse, mockAuthenticationContext);
     }
@@ -173,15 +181,12 @@ public class App2AppAuthenticatorTest {
             throws AuthenticationFailedException, ParseException {
 
         PowerMockito.mockStatic(JWTUtils.class);
-
         // Mock the behavior of HttpServletRequest to return a value for login hint
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER))
                 .thenReturn(jwtString);
-
         // Mock App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier to throw IllegalArgumentException
         Mockito.when(JWTUtils.getSignedJWT(Mockito.anyString()))
                 .thenThrow(new ParseException("JWT Not parsable.", 1));
-
         // Invoke the method under test
         app2AppAuthenticator.processAuthenticationResponse(mockRequest, mockResponse, mockAuthenticationContext);
     }
@@ -194,20 +199,16 @@ public class App2AppAuthenticatorTest {
             throws AuthenticationFailedException, UserStoreException {
 
         PowerMockito.mockStatic(App2AppAuthUtils.class);
-
         // Mock the behavior of HttpServletRequest to return a value for login hint
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER))
                 .thenReturn(jwtString);
-
         // Mock the behavior of App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier() to return a mock user
         AuthenticatedUser authenticatedUserMock = Mockito.mock(AuthenticatedUser.class);
         Mockito.when(App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(Mockito.anyString()))
                 .thenReturn(authenticatedUserMock);
-
         // Mock the behavior of getPublicKeyByDeviceID() to throw UserStoreException
         Mockito.when(App2AppAuthUtils.getUserRealm(Mockito.any(AuthenticatedUser.class)))
                 .thenThrow(new UserStoreException(App2AppAuthenticatorConstants.USER_STORE_EXCEPTION_MESSAGE));
-
         // Invoke the method under test
         app2AppAuthenticator.processAuthenticationResponse(mockRequest, mockResponse, mockAuthenticationContext);
     }
@@ -221,21 +222,17 @@ public class App2AppAuthenticatorTest {
             PushDeviceHandlerClientException {
 
         PowerMockito.mockStatic(App2AppAuthUtils.class);
-
         // Mock the behavior of HttpServletRequest to return a value for login hint
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER))
                 .thenReturn(jwtString);
-
         // Mock the behavior of App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier() to return a mock user
         AuthenticatedUser authenticatedUserMock = Mockito.mock(AuthenticatedUser.class);
         Mockito.when(App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(Mockito.anyString()))
                 .thenReturn(authenticatedUserMock);
-
         // Mock the behavior of getPublicKeyByDeviceID() to throw UserStoreException
         Mockito.when(App2AppAuthUtils.getPublicKey(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenThrow(new PushDeviceHandlerServerException(
                         App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE));
-
         // Invoke the method under test
         app2AppAuthenticator.processAuthenticationResponse(mockRequest, mockResponse, mockAuthenticationContext);
     }
@@ -249,21 +246,17 @@ public class App2AppAuthenticatorTest {
             PushDeviceHandlerClientException {
 
         PowerMockito.mockStatic(App2AppAuthUtils.class);
-
         // Mock the behavior of HttpServletRequest to return a value for login hint
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER))
                 .thenReturn(jwtString);
-
         // Mock the behavior of App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier() to return a mock user
         AuthenticatedUser authenticatedUserMock = Mockito.mock(AuthenticatedUser.class);
         Mockito.when(App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(Mockito.anyString()))
                 .thenReturn(authenticatedUserMock);
-
         // Mock the behavior of getPublicKeyByDeviceID() to throw UserStoreException
         Mockito.when(App2AppAuthUtils.getPublicKey(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenThrow(new PushDeviceHandlerClientException(
                         App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE));
-
         // Invoke the method under test
         app2AppAuthenticator.processAuthenticationResponse(mockRequest, mockResponse, mockAuthenticationContext);
     }
@@ -277,21 +270,17 @@ public class App2AppAuthenticatorTest {
             PushDeviceHandlerClientException {
 
         PowerMockito.mockStatic(App2AppAuthUtils.class);
-
         // Mock the behavior of HttpServletRequest to return a value for login hint
         Mockito.when(mockRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER))
                 .thenReturn(jwtString);
-
         // Mock the behavior of App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier() to return a mock user
         AuthenticatedUser authenticatedUserMock = Mockito.mock(AuthenticatedUser.class);
         Mockito.when(App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(Mockito.anyString()))
                 .thenReturn(authenticatedUserMock);
-
         // Mock the behavior of getPublicKeyByDeviceID() to throw UserStoreException
         Mockito.when(App2AppAuthUtils.getPublicKey(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenThrow(new OpenBankingException(
                         App2AppAuthenticatorConstants.OPEN_BANKING_EXCEPTION_MESSAGE));
-
         // Invoke the method under test
         app2AppAuthenticator.processAuthenticationResponse(mockRequest, mockResponse, mockAuthenticationContext);
     }

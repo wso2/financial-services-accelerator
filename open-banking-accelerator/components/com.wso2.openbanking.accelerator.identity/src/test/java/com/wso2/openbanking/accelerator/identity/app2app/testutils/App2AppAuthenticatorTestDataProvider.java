@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package com.wso2.openbanking.accelerator.identity.app2app;
+package com.wso2.openbanking.accelerator.identity.app2app.testutils;
 
 import org.testng.annotations.DataProvider;
 

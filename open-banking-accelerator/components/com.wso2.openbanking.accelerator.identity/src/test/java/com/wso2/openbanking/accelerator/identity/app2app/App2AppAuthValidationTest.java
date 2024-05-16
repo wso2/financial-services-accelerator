@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.cache.JTICache;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
 import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
+import com.wso2.openbanking.accelerator.identity.app2app.testutils.JWTDataProvider;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -50,6 +51,7 @@ public class App2AppAuthValidationTest {
     public void validationTest(String jwtString, String publicKey) throws ParseException,
             JWTValidationException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
 
+        //Mocking JTICache and JWTUtils
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
@@ -59,10 +61,12 @@ public class App2AppAuthValidationTest {
                 .thenReturn(true);
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
+        //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }
@@ -73,6 +77,7 @@ public class App2AppAuthValidationTest {
     public void validationTestJTIReplayed(String jwtString, String publicKey) throws ParseException,
             JWTValidationException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
 
+        //Mocking JTICache and JWTUtils
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn("NotNullJTI");
@@ -82,10 +87,12 @@ public class App2AppAuthValidationTest {
                 .thenReturn(true);
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
+        //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }
@@ -96,6 +103,7 @@ public class App2AppAuthValidationTest {
     public void validationTestJWTExpired(String jwtString, String publicKey) throws ParseException,
             JWTValidationException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
 
+        //Mocking JTICache and JWTUtils
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
@@ -105,10 +113,12 @@ public class App2AppAuthValidationTest {
                 .thenReturn(false);
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
+        //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }
@@ -119,6 +129,7 @@ public class App2AppAuthValidationTest {
     public void validationTestJWTNotActive(String jwtString, String publicKey) throws ParseException,
             JWTValidationException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
 
+        //Mocking JTICache and JWTUtils
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
@@ -128,10 +139,12 @@ public class App2AppAuthValidationTest {
                 .thenReturn(true);
         Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(false);
+        //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+        // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
 
     }

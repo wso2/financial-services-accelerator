@@ -29,5 +29,4 @@ public class AppAuthValidationJWTConstants {
     public static final String ISSUED_TIME = "ist";
     public static final String DEVICE_IDENTIFIER = "did";
     public static final String JWT_ID = "jti";
-
 }

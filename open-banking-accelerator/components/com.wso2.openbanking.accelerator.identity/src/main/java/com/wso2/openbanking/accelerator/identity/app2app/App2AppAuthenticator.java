@@ -53,7 +53,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
 
     private static final Log log = LogFactory.getLog(App2AppAuthenticator.class);
     private static final long serialVersionUID = -5439464372188473141L;
-
     private static DeviceHandler deviceHandler;
 
     /**
@@ -85,12 +84,13 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
                                                  AuthenticationContext authenticationContext)
             throws AuthenticationFailedException {
 
-        authenticationContext.setCurrentAuthenticator(App2AppAuthenticatorConstants.AUTHENTICATOR_FRIENDLY_NAME);
+        authenticationContext.setCurrentAuthenticator(App2AppAuthenticatorConstants.AUTHENTICATOR_NAME);
         String jwtString =
                 httpServletRequest.getParameter(App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER);
         try {
             SignedJWT signedJWT = JWTUtils.getSignedJWT(jwtString);
             DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
+            //Extracting deviceId and loginHint is necessary to retrieve the public key
             String loginHint = deviceVerificationToken.getLoginHint();
             String deviceID = deviceVerificationToken.getDeviceId();
             AuthenticatedUser userToBeAuthenticated =
@@ -98,36 +98,38 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
             String publicKey = getPublicKeyByDeviceID(deviceID, userToBeAuthenticated);
             deviceVerificationToken.setPublicKey(publicKey);
             deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
+            // setting the user is mandatory for data publishing purposes
+            //If exception is thrown before setting a user data publishing will encounter exceptions
+            authenticationContext.setSubject(userToBeAuthenticated);
             /*
                 if validations are failed it will throw a JWTValidationException and flow will be interrupted.
                 Hence, user Authentication will fail.
              */
             App2AppAuthUtils.validateToken(deviceVerificationToken);
             //If the flow is not interrupted user will be authenticated.
-            authenticationContext.setSubject(userToBeAuthenticated);
             log.info(String.format(App2AppAuthenticatorConstants.USER_AUTHENTICATED_MSG,
                     userToBeAuthenticated.getUserName()));
-        } catch (JWTValidationException e) {
-            throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE + e.getMessage(), e);
-        } catch (IllegalArgumentException e) {
-            throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE + e.getMessage(), e);
         } catch (ParseException e) {
-            throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.PARSE_EXCEPTION_MESSAGE + e.getMessage(), e);
-        } catch (PushDeviceHandlerServerException e) {
-            throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE, e);
-        } catch (UserStoreException e) {
-            throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.USER_STORE_EXCEPTION_MESSAGE, e);
-        } catch (PushDeviceHandlerClientException e) {
-            throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE, e);
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.PARSE_EXCEPTION_MESSAGE + e.getMessage(), e);
+        } catch (JWTValidationException e) {
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE + e.getMessage(), e);
         } catch (OpenBankingException e) {
-            throw new AuthenticationFailedException(
-                    App2AppAuthenticatorConstants.OPEN_BANKING_EXCEPTION_MESSAGE, e);
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.OPEN_BANKING_EXCEPTION_MESSAGE + e.getMessage(), e);
+        } catch (PushDeviceHandlerServerException e) {
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE + e.getMessage(), e);
+        } catch (UserStoreException e) {
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.USER_STORE_EXCEPTION_MESSAGE + e.getMessage(), e);
+        } catch (PushDeviceHandlerClientException e) {
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE + e.getMessage(), e);
         }
 
     }
@@ -137,6 +139,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
      */
     @Override
     public boolean canHandle(HttpServletRequest httpServletRequest) {
+
         /*
         App2App authenticates the user in one step depending on the app_auth_key,
         Hence it's mandatory to have the required parameter app_auth_key.
@@ -164,6 +167,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
                                                  HttpServletResponse response,
                                                  AuthenticationContext context)
             throws AuthenticationFailedException {
+
         /*
             App2App authenticator does not support initiating authentication request,
             Hence authentication process will be terminated.
@@ -197,7 +201,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     /**
      * Method to get a DeviceHandler implementation.
      *
-     * @return a implementation of DeviceHandler
+     * @return an implementation of DeviceHandler
      */
     private DeviceHandler getDeviceHandler() {
 
