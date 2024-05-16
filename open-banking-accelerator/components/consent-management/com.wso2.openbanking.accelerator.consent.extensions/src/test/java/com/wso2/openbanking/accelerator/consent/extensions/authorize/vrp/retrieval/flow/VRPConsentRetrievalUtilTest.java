@@ -28,6 +28,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.utils.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
+import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentAuthorizeTestConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentExtensionTestUtils;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -53,7 +54,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow.ConsentAuthorizeTestConstants.VRP_WITHOUT_DATA;
+
+import static com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentAuthorizeTestConstants.VRP_WITHOUT_DATA;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.when;

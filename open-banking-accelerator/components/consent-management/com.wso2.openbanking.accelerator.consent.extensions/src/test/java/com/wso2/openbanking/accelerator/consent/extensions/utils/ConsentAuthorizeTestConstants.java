@@ -16,13 +16,15 @@
  * under the License.
  */
 
-package com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow;
+package com.wso2.openbanking.accelerator.consent.extensions.utils;
+
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
 
 /**
- * Constant class for  consent authorize tests.
+ * Constant class for consent authorize tests.
  */
 public class ConsentAuthorizeTestConstants {
     public static final String INVALID_REQUEST_OBJECT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aWF0.TIygRaBn7MUFR9Zzy3" +
@@ -63,8 +65,15 @@ public class ConsentAuthorizeTestConstants {
 
 
     public static final String AWAITING_AUTH_STATUS = "awaitingAuthorisation";
-
     public static final long CREATED_TIME = Instant.now().toEpochMilli();
+    public static final String ACCOUNTS = "accounts";
+    public static final String PAYMENTS = "payments";
+    public static final String FUNDS_CONFIRMATIONS = "fundsconfirmations";
+    public static final String VRP = "vrp";
+    public static final String PAYLOAD_WITH_NON_STRING_ACCOUNTID = "{\"accountIds\": [1234, 2345]}";
+    public static final String CONSENT_ID = "4ae1e012-eaa7-4994-a055-c6454f0aeeb4";
+    public static final String USER_ID = "admin@wso2.com";
+    public static final String CLIENT_ID = "9vblw2uUr7FOfQzI0_XGzM7IRxAa";
     public static final String COF_RECEIPT = "{" +
             "   \"Data\": {" +
             "       \"DebtorAccount\": {" +
@@ -184,7 +193,6 @@ public class ConsentAuthorizeTestConstants {
             "  }\n" +
             "}";
 
-
     public static final String VRP_WITHOUT_DATA = "{\n" +
             "  \"\": {\n" +
             "    \"ReadRefundAccount\": \"Yes\",\n" +
@@ -243,10 +251,10 @@ public class ConsentAuthorizeTestConstants {
             "        \"Currency\": \"GBP\"\n" +
             "      },\n" +
             "       \"DebtorAccount\": {\n" +
-                    "\"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-                    "\"Identification\": \"30080012343456\",\n" +
-                    "\"Name\": \"Andrea Smith\",\n" +
-                    "\"SecondaryIdentification\": \"30080012343456\"\n" +
+            "\"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
+            "\"Identification\": \"30080012343456\",\n" +
+            "\"Name\": \"Andrea Smith\",\n" +
+            "\"SecondaryIdentification\": \"30080012343456\"\n" +
             "      },\n" +
             "      \"CreditorAccount\": {\n" +
             "        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
@@ -319,4 +327,79 @@ public class ConsentAuthorizeTestConstants {
             "    \"PaymentContextCode\": \"TransferToThirdParty\"\n" +
             "  }\n" +
             "}";
+
+    public static final String ACCOUNT_PERSIST_PAYLOAD_WITHOUT_ACCOUNT_ID = " " +
+            "{" +
+            "   \"metadata\": {" +
+            "       \"commonAuthId\":\"b37b9c9b-b5ce-4889-966e-9cb30f70cc78\"" +
+            "   }," +
+            "   \"cofAccount\":\"\"," +
+            "   \"approval\":\"true\"," +
+            "   \"accountIds\": \"\"," +
+            "   \"isReauthorization\":\"false\"," +
+            "   \"type\":\"accounts\"," +
+            "   \"paymentAccount\":\"\"" +
+            "}";
+
+    public static final String COF_PERSIST_PAYLOAD = " " +
+            "{" +
+            "   \"metadata\": {" +
+            "       \"commonAuthId\":\"b37b9c9b-b5ce-4889-966e-9cb30f70cc78\"" +
+            "   }," +
+            "   \"approval\":\"true\"," +
+            "   \"cofAccount\":\"1234\"," +
+            "   \"accountIds\": \"\"," +
+            "   \"type\":\"accounts\"," +
+            "}";
+
+    public static final String COF_PERSIST_PAYLOAD_WITHOUT_COF_ACC = " " +
+            "{" +
+            "   \"metadata\": {" +
+            "       \"commonAuthId\":\"b37b9c9b-b5ce-4889-966e-9cb30f70cc78\"" +
+            "   }," +
+            "   \"approval\":\"true\"," +
+            "   \"accountIds\": \"\"," +
+            "   \"isReauthorization\":\"false\"," +
+            "   \"type\":\"accounts\"," +
+            "   \"paymentAccount\":\"\"" +
+            "}";
+
+    public static final String COF_PERSIST_PAYLOAD_WITH_NON_STRING_COF_ACC = " " +
+            "{" +
+            "   \"metadata\": {" +
+            "       \"commonAuthId\":\"b37b9c9b-b5ce-4889-966e-9cb30f70cc78\"" +
+            "   }," +
+            "   \"cofAccount\":1234," +
+            "   \"approval\":\"true\"," +
+            "   \"accountIds\": \"\"," +
+            "   \"isReauthorization\":\"false\"," +
+            "   \"type\":\"accounts\"," +
+            "   \"paymentAccount\":\"\"" +
+            "}";
+
+    public static AuthorizationResource getAuthResource() {
+
+        AuthorizationResource authorizationResource = new AuthorizationResource();
+        authorizationResource.setAuthorizationID("1234");
+        authorizationResource.setConsentID(ConsentAuthorizeTestConstants.CONSENT_ID);
+        authorizationResource.setAuthorizationStatus("created");
+        authorizationResource.setAuthorizationType("authorization");
+
+        return authorizationResource;
+    }
+
+    public static final String ACCOUNT_PERSIST_PAYLOAD = " " +
+            "{" +
+            "   \"metadata\": {" +
+            "       \"commonAuthId\":\"b37b9c9b-b5ce-4889-966e-9cb30f70cc78\"" +
+            "   }," +
+            "   \"cofAccount\":\"\"," +
+            "   \"approval\":\"true\"," +
+            "   \"accountIds\":[" +
+            "       \"30080012343456\"" +
+            "   ]," +
+            "   \"type\":\"accounts\"," +
+            "   \"paymentAccount\":\"\"" +
+            "}";
+
 }
