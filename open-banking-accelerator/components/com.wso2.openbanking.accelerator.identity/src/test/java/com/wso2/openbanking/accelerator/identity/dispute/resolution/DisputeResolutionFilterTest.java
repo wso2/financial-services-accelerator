@@ -30,12 +30,19 @@ import org.powermock.modules.testng.PowerMockTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * Test for dispute resolution filter.
@@ -64,7 +71,7 @@ public class DisputeResolutionFilterTest  extends PowerMockTestCase {
 
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         openBankingConfigParser = PowerMockito.mock(OpenBankingConfigParser.class);
-        PowerMockito.when(OpenBankingConfigParser.getInstance())
+        when(OpenBankingConfigParser.getInstance())
                 .thenReturn(openBankingConfigParser);
     }
 
@@ -80,30 +87,30 @@ public class DisputeResolutionFilterTest  extends PowerMockTestCase {
                 "AwJDEiMCAGA1UEAxMZcG9ydGFsLXByb2R1Y3Rpb24tc2lnbmVy");
     }
 
-//    @Test
-//    public void capturingRequestResponseDataTest() throws Exception {
-//
-//        when(openBankingConfigParser.isDisputeResolutionEnabled()).thenReturn(true);
-//        when(openBankingConfigParser.isNonErrorDisputeDataPublishingEnabled()).thenReturn(true);
-//
-//        DisputeResolutionFilter filter = Mockito.spy(DisputeResolutionFilter.class);
-//
-//        request.setMethod("GET");
-//        request.setRequestURI("/register");
-//        request.setCharacterEncoding("UTF-8");
-//        request.setParameters(sampleRequestParams);
-//        response.setStatus(200);
-//        response.setCharacterEncoding("UTF-8");
-//
-//        Enumeration<String> enumeration = Collections.enumeration(sampleHeaderMap.keySet());
-//
-//        PowerMockito.mockStatic(OBDataPublisherUtil.class);
-//        PowerMockito.doNothing().when(OBDataPublisherUtil.class, "publishData", Mockito.anyString(),
-//                Mockito.anyString(), Mockito.anyObject());
-//
-//        filter.doFilter(request, response, filterChain);
-//        verify(filter, times(1));
-//
-//    }
+    @Test
+    public void capturingRequestResponseDataTest() throws Exception {
+
+        when(openBankingConfigParser.isDisputeResolutionEnabled()).thenReturn(true);
+        when(openBankingConfigParser.isNonErrorDisputeDataPublishingEnabled()).thenReturn(true);
+
+        DisputeResolutionFilter filter = Mockito.spy(DisputeResolutionFilter.class);
+
+        request.setMethod("GET");
+        request.setRequestURI("/register");
+        request.setCharacterEncoding("UTF-8");
+        request.setParameters(sampleRequestParams);
+        response.setStatus(200);
+        response.setCharacterEncoding("UTF-8");
+
+        Enumeration<String> enumeration = Collections.enumeration(sampleHeaderMap.keySet());
+
+        PowerMockito.mockStatic(OBDataPublisherUtil.class);
+        PowerMockito.doNothing().when(OBDataPublisherUtil.class, "publishData", Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyObject());
+
+        filter.doFilter(request, response, filterChain);
+        verify(filter, times(1));
+
+    }
 }
 
