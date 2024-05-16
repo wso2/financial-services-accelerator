@@ -155,7 +155,6 @@ public class DeviceVerificationToken {
 
         Object claimObj = jwtClaimsSet.getClaim(claim);
         return (String) claimObj;
-
     }
 }
 

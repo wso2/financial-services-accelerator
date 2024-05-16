@@ -28,7 +28,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating expiry of a JWT.
+ * Validator class for validating expiry of a device verification token..
  */
 public class ExpiryValidator implements ConstraintValidator<ValidateExpiry, DeviceVerificationToken> {
 
@@ -40,7 +40,6 @@ public class ExpiryValidator implements ConstraintValidator<ValidateExpiry, Devi
 
         Date expiryTime = deviceVerificationToken.getExpirationTime();
         return JWTUtils.validateExpiryTime(expiryTime, DEFAULT_TIME_SKEW_IN_SECONDS);
-
     }
 }
 

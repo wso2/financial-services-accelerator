@@ -33,7 +33,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the signature of a JWT.
+ * Validator class for validating the signature of a device verification token.
  */
 public class PublicKeySignatureValidator implements ConstraintValidator<ValidateSignature, DeviceVerificationToken> {
 
@@ -63,7 +63,6 @@ public class PublicKeySignatureValidator implements ConstraintValidator<Validate
             return false;
         }
         return true;
-
     }
 }
 

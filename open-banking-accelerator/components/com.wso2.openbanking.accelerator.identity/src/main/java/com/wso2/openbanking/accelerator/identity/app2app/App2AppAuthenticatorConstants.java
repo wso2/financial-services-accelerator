@@ -26,7 +26,7 @@ public class App2AppAuthenticatorConstants {
     public static final String AUTHENTICATOR_NAME = "app2app";
     public static final String AUTHENTICATOR_FRIENDLY_NAME = "App2App Authenticator";
     public static final String SIGNING_ALGORITHM = "RSA";
-    public static final String APP_AUTH_VALIDATION_JWT_IDENTIFIER = "secret";
+    public static final String DEVICE_VERIFICATION_TOKEN_IDENTIFIER = "deviceVerificationToken";
     public static final String SESSION_DATA_KEY = "sessionDataKey";
     public static final String JWT_VALIDATION_EXCEPTION_MESSAGE = "Error while validating JWT: ";
     public static final String ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE
@@ -45,3 +45,4 @@ public class App2AppAuthenticatorConstants {
     public static final String OPEN_BANKING_EXCEPTION_MESSAGE
             = "Error while retrieving user: ";
 }
+

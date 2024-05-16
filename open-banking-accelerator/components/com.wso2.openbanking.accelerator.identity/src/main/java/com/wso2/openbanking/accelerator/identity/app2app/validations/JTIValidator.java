@@ -26,7 +26,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the JWT ID.
+ * Validator class for validating the JWT ID of a device verification token..
  */
 public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVerificationToken> {
 
@@ -36,7 +36,6 @@ public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVeri
 
         String jti = deviceVerificationToken.getJti();
         return validateJTI(jti);
-
     }
 
     private boolean validateJTI(String jti) {
@@ -50,7 +49,6 @@ public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVeri
         //adding to cache to prevent the value from being replayed again
         addToCache(jti);
         return true;
-
     }
 
     private Object getFromCache(String jti) {

@@ -68,7 +68,6 @@ public class App2AppAuthValidationTest {
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
-
     }
 
     @Test(expectedExceptions = JWTValidationException.class,
@@ -94,7 +93,6 @@ public class App2AppAuthValidationTest {
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
-
     }
 
     @Test(expectedExceptions = JWTValidationException.class,
@@ -120,7 +118,6 @@ public class App2AppAuthValidationTest {
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
-
     }
 
     @Test(expectedExceptions = JWTValidationException.class,
@@ -146,7 +143,6 @@ public class App2AppAuthValidationTest {
         deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
-
     }
 
     @ObjectFactory

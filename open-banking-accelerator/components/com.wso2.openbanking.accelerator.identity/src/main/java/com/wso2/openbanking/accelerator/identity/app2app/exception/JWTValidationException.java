@@ -34,6 +34,5 @@ public class JWTValidationException extends OpenBankingException {
     public JWTValidationException(String message, Throwable e) {
         super(message, e);
     }
-
 }
 

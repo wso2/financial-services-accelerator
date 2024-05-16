@@ -53,7 +53,6 @@ public class App2AppAuthUtils {
     public static AuthenticatedUser getAuthenticatedUserFromSubjectIdentifier(String subjectIdentifier) {
 
             return AuthenticatedUser.createLocalAuthenticatedUserFromSubjectIdentifier(subjectIdentifier);
-
     }
 
     /**
@@ -75,7 +74,6 @@ public class App2AppAuthUtils {
         }
 
         return userRealm;
-
     }
 
     /**
@@ -95,7 +93,6 @@ public class App2AppAuthUtils {
         } else {
             throw new OpenBankingException("UserRealm service can not be null.");
         }
-
     }
 
     /**
@@ -140,7 +137,6 @@ public class App2AppAuthUtils {
     public static String getPublicKeyFromDevice(Device device) {
 
         return device.getPublicKey();
-
     }
 
     /**
@@ -158,7 +154,6 @@ public class App2AppAuthUtils {
             OpenBankingException {
 
         return getPublicKeyFromDevice(getRegisteredDevice(deviceID, userID, deviceHandler));
-
     }
 
     /**
@@ -181,6 +176,5 @@ public class App2AppAuthUtils {
             throw new JWTValidationException(error);
         }
     }
-
 }
 

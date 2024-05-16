@@ -131,7 +131,6 @@ public class App2AppAuthUtilsTest {
         UserRealm userRealmMock = null;
         // Call the method under test
         String userId = App2AppAuthUtils.getUserIdFromUsername(username, userRealmMock);
-
     }
 
     @Test
@@ -161,7 +160,6 @@ public class App2AppAuthUtilsTest {
         String result = App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandlerMock);
         // Verify the result
         Assert.assertEquals(result, publicKey, "Public key should match");
-
     }
 
     @Test(expectedExceptions = OpenBankingException.class)
@@ -185,7 +183,6 @@ public class App2AppAuthUtilsTest {
         Mockito.when(deviceHandlerMock.getPublicKey(userID)).thenReturn(publicKey);
         // Call the method under test
         String result = App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandlerMock);
-
     }
 
     @ObjectFactory
