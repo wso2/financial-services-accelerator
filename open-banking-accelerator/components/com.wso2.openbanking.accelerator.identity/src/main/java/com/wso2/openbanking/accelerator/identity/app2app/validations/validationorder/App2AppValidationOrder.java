@@ -17,8 +17,8 @@
  */
 package com.wso2.openbanking.accelerator.identity.app2app.validations.validationorder;
 
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.RequiredParamChecks;
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.ValidityChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.RequiredParamChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.ValidityChecks;
 
 import javax.validation.GroupSequence;
 

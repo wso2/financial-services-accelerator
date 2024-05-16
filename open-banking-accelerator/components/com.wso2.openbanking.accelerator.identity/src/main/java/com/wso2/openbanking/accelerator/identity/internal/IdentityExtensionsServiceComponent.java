@@ -87,7 +87,7 @@ public class IdentityExtensionsServiceComponent {
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
         bundleContext.registerService(OAuthEventInterceptor.class, new TokenRevocationListener(), null);
         App2AppAuthenticator app2AppAuthenticator = new App2AppAuthenticator();
-        context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
+        bundleContext.registerService(ApplicationAuthenticator.class.getName(),
                 app2AppAuthenticator, null);
 
         JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();

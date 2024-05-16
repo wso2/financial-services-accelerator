@@ -25,8 +25,8 @@ import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateJTI;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateNBF;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.RequiredParamChecks;
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups.ValidityChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.RequiredParamChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.ValidityChecks;
 
 import java.text.ParseException;
 import java.util.Date;

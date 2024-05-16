@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,12 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.wso2.openbanking.accelerator.identity.common.annotations.validationGroups;
+
+package com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups;
 
 /**
  * Interface for grouping the validation annotations.
- * Groups the validation for signature
+ * Groups the validations for required parameters
  */
-public interface SignatureCheck {
+public interface RequiredParamChecks {
 
 }

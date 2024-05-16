@@ -89,14 +89,6 @@ public class OBConsentServlet extends HttpServlet {
 
         // get consent data
         String sessionDataKey = request.getParameter("sessionDataKeyConsent");
-
-        String userAgent = originalRequest.getHeader("user-agent");
-
-        if (userAgent.equals("okhttp")){
-            redirectMobileFlow(sessionDataKey,response,getServletContext());
-            return;
-        }
-
         HttpResponse consentDataResponse = getConsentDataWithKey(sessionDataKey, getServletContext());
         JSONObject dataSet = new JSONObject();
         log.debug("HTTP response for consent retrieval" + consentDataResponse.toString());
@@ -200,14 +192,6 @@ public class OBConsentServlet extends HttpServlet {
 
         return dataResponse;
 
-    }
-
-    private void redirectMobileFlow(String sessionDataKeyConsent,HttpServletResponse response,
-                                    ServletContext servletContext) throws IOException {
-        String retrievalBaseURL = servletContext.getInitParameter("retrievalBaseURL");
-        String retrieveUrl = (retrievalBaseURL.endsWith("/")) ? retrievalBaseURL + sessionDataKeyConsent :
-                retrievalBaseURL + "/" + sessionDataKeyConsent;
-        response.sendRedirect(retrieveUrl);
     }
 
     JSONObject createConsentDataset(JSONObject consentResponse, int statusCode) throws IOException {

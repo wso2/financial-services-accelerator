@@ -53,11 +53,11 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class),Mockito.anyString(),
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
@@ -71,16 +71,16 @@ public class App2AppAuthValidationTest {
             dataProviderClass = JWTDataProvider.class,
             dataProvider = "JWTProvider")
     public void validationTestJTIReplayed(String jwtString, String publicKey) throws ParseException,
-            JWTValidationException,JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
+            JWTValidationException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
 
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn("NotNullJTI");
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class),Mockito.anyString(),
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
@@ -94,16 +94,16 @@ public class App2AppAuthValidationTest {
             dataProviderClass = JWTDataProvider.class,
             dataProvider = "JWTProvider")
     public void validationTestJWTExpired(String jwtString, String publicKey) throws ParseException,
-            JWTValidationException,JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
+            JWTValidationException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
 
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class),Mockito.anyString(),
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(false);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);
@@ -117,16 +117,16 @@ public class App2AppAuthValidationTest {
             dataProviderClass = JWTDataProvider.class,
             dataProvider = "JWTProvider")
     public void validationTestJWTNotActive(String jwtString, String publicKey) throws ParseException,
-            JWTValidationException,JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
+            JWTValidationException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
 
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class),Mockito.anyString(),
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class),Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(false);
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         AppAuthValidationJWT appAuthValidationJWT = new AppAuthValidationJWT(signedJWT);

@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test class for Testing App2AppAuthUtils
+ * Test class for Unit Testing App2AppAuthUtils.
  */
 @PrepareForTest({AuthenticatedUser.class, IdentityTenantUtil.class, IdentityExtensionsDataHolder.class})
 @PowerMockIgnore({"javax.net.ssl.*", "jdk.internal.reflect.*"})
@@ -151,11 +151,12 @@ public class App2AppAuthUtilsTest {
     }
 
     @Test
-    public void testGetPublicKey() throws PushDeviceHandlerServerException, PushDeviceHandlerClientException, OpenBankingException {
+    public void testGetPublicKey() throws PushDeviceHandlerServerException, PushDeviceHandlerClientException,
+            OpenBankingException {
 
         // Prepare test data
         String deviceID = "testDeviceID";
-        String invalidDeviceId ="invalidDeviceID";
+        String invalidDeviceId = "invalidDeviceID";
         String userID = "testUserID";
         String publicKey = "testPublicKey";
 
@@ -186,11 +187,12 @@ public class App2AppAuthUtilsTest {
     }
 
     @Test(expectedExceptions = OpenBankingException.class)
-    public void testGetPublicKeyInvalidDeviceID() throws PushDeviceHandlerServerException, PushDeviceHandlerClientException, OpenBankingException {
+    public void testGetPublicKeyInvalidDeviceID() throws PushDeviceHandlerServerException,
+            PushDeviceHandlerClientException, OpenBankingException {
 
         // Prepare test data
         String deviceID = "testDeviceID";
-        String invalidDeviceId ="invalidDeviceID";
+        String invalidDeviceId = "invalidDeviceID";
         String userID = "testUserID";
         String publicKey = "testPublicKey";
 

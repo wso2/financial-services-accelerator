@@ -38,7 +38,7 @@ public class JWTDataProvider {
     @DataProvider(name = "JWTProvider")
     public Object[][] getJWT() {
         return new String[][]{
-                {validAppAuthIdentifier,validPublicKey},
+                {validAppAuthIdentifier, validPublicKey},
         };
     }
 }
