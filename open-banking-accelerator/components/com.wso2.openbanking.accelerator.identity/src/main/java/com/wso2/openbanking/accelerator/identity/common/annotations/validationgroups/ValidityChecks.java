@@ -25,3 +25,4 @@ package com.wso2.openbanking.accelerator.identity.common.annotations.validationg
 public interface ValidityChecks {
 
 }
+

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.model;
 /**
  * Constants for DeviceVerificationToken.
  */
-public class AppAuthValidationJWTConstants {
+public class DeviceVerificationTokenConstants {
 
     public static final String EXPIRY_TIME = "exp";
     public static final String NOT_VALID_BEFORE = "nbf";
@@ -30,3 +30,4 @@ public class AppAuthValidationJWTConstants {
     public static final String DEVICE_IDENTIFIER = "did";
     public static final String JWT_ID = "jti";
 }
+

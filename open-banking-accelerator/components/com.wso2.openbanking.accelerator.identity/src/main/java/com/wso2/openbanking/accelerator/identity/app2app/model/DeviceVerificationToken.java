@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -35,7 +35,6 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-
 /**
  * Model class for App2App Auth DeviceVerificationToken.
  */
@@ -45,17 +44,17 @@ import javax.validation.constraints.NotNull;
 @ValidateNBF(groups = ValidityChecks.class)
 public class DeviceVerificationToken {
 
-    @SerializedName(AppAuthValidationJWTConstants.DEVICE_IDENTIFIER)
+    @SerializedName(DeviceVerificationTokenConstants.DEVICE_IDENTIFIER)
     private String deviceId;
-    @SerializedName(AppAuthValidationJWTConstants.LOGIN_HINT)
+    @SerializedName(DeviceVerificationTokenConstants.LOGIN_HINT)
     private String loginHint;
-    @SerializedName(AppAuthValidationJWTConstants.EXPIRY_TIME)
+    @SerializedName(DeviceVerificationTokenConstants.EXPIRY_TIME)
     private Date expirationTime;
-    @SerializedName(AppAuthValidationJWTConstants.NOT_VALID_BEFORE)
+    @SerializedName(DeviceVerificationTokenConstants.NOT_VALID_BEFORE)
     private Date notValidBefore;
-    @SerializedName(AppAuthValidationJWTConstants.JWT_ID)
+    @SerializedName(DeviceVerificationTokenConstants.JWT_ID)
     private String jti;
-    @SerializedName(AppAuthValidationJWTConstants.ISSUED_TIME)
+    @SerializedName(DeviceVerificationTokenConstants.ISSUED_TIME)
     private Date issuedTime;
     private SignedJWT signedJWT;
     private String publicKey;
@@ -70,66 +69,78 @@ public class DeviceVerificationToken {
         this.notValidBefore = jwtClaimsSet.getNotBeforeTime();
         this.issuedTime = jwtClaimsSet.getIssueTime();
         this.jti = jwtClaimsSet.getJWTID();
-        this.deviceId = getClaim(jwtClaimsSet, AppAuthValidationJWTConstants.DEVICE_IDENTIFIER);
-        this.loginHint = getClaim(jwtClaimsSet, AppAuthValidationJWTConstants.LOGIN_HINT);
+        this.deviceId = getClaim(jwtClaimsSet, DeviceVerificationTokenConstants.DEVICE_IDENTIFIER);
+        this.loginHint = getClaim(jwtClaimsSet, DeviceVerificationTokenConstants.LOGIN_HINT);
 
     }
 
     @NotBlank(message = "Required parameter did cannot be null or empty.", groups = MandatoryChecks.class)
     public String getDeviceId() {
+
         return deviceId;
     }
 
     @NotBlank(message = "Required parameter loginHint cannot be null or empty.", groups = MandatoryChecks.class)
     public String getLoginHint() {
+
         return loginHint;
     }
 
     @NotNull(message = "Required parameter exp cannot be null.", groups = MandatoryChecks.class)
     public Date getExpirationTime() {
+
         return expirationTime;
     }
 
     @NotNull(message = "Required parameter nbf cannot be null.", groups = MandatoryChecks.class)
     public Date getNotValidBefore() {
+
         return notValidBefore;
     }
 
     @NotBlank(message = "Required parameter jti cannot be null or empty.", groups = MandatoryChecks.class)
     public String getJti() {
+
         return jti;
     }
 
     @NotNull(message = "Required parameter iat cannot be null.", groups = MandatoryChecks.class)
     public Date getIssuedTime() {
+
         return issuedTime;
     }
 
     @NotNull(message = "Required parameter signedJWT cannot be null.", groups = MandatoryChecks.class)
     public SignedJWT getSignedJWT() {
+
         return signedJWT;
     }
 
     public void setSignedJWT(SignedJWT signedJWT) {
+
         this.signedJWT = signedJWT;
     }
 
     @NotBlank(message = "Required parameter public key cannot be null or empty.", groups = MandatoryChecks.class)
     public String getPublicKey() {
+
         return publicKey;
     }
 
     public void setPublicKey(String publicKey) {
+
         this.publicKey = publicKey;
     }
 
     @NotBlank(message = "Required parameter signing algorithm cannot be null or empty.",
             groups = MandatoryChecks.class)
     public String getSigningAlgorithm() {
+
         return signingAlgorithm;
     }
 
     public void setSigningAlgorithm(String signingAlgorithm) {
+
         this.signingAlgorithm = signingAlgorithm;
     }
 
@@ -147,3 +158,4 @@ public class DeviceVerificationToken {
 
     }
 }
+

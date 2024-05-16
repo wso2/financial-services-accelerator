@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,7 +17,6 @@
  */
 
 package com.wso2.openbanking.accelerator.identity.app2app;
-
 
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
@@ -62,7 +61,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     public String getName() {
 
         return App2AppAuthenticatorConstants.AUTHENTICATOR_NAME;
-
     }
 
     /**
@@ -72,7 +70,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     public String getFriendlyName() {
 
         return App2AppAuthenticatorConstants.AUTHENTICATOR_FRIENDLY_NAME;
-
     }
 
     /**
@@ -131,7 +128,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
             throw new AuthenticationFailedException
                     (App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE + e.getMessage(), e);
         }
-
     }
 
     /**
@@ -146,7 +142,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
          */
         return !StringUtils.isBlank(httpServletRequest.getParameter(
                 App2AppAuthenticatorConstants.APP_AUTH_VALIDATION_JWT_IDENTIFIER));
-
     }
 
     /**
@@ -156,7 +151,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     public String getContextIdentifier(HttpServletRequest request) {
 
         return request.getParameter(App2AppAuthenticatorConstants.SESSION_DATA_KEY);
-
     }
 
     /**
@@ -174,7 +168,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
          */
         log.error(App2AppAuthenticatorConstants.INITIALIZATION_ERROR_MESSAGE);
         throw new AuthenticationFailedException(App2AppAuthenticatorConstants.MANDATORY_PARAMETER_ERROR_MESSAGE);
-
     }
 
     /**
@@ -195,7 +188,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
         UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
         String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
         return App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandler);
-
     }
 
     /**
@@ -211,3 +203,4 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
         return deviceHandler;
     }
 }
+

@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups;
 
 /**
@@ -24,3 +25,4 @@ package com.wso2.openbanking.accelerator.identity.common.annotations.validationg
 public interface AttributeChecks {
 
 }
+
