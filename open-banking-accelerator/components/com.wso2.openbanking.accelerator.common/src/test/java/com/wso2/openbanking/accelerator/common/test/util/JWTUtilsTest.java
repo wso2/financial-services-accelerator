@@ -60,13 +60,13 @@ public class JWTUtilsTest {
     @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "expiryTimeProvider")
     public void testValidExpirationTime(Date time, long timeSkew, boolean expected) {
 
-        Assert.assertEquals(JWTUtils.validateExpiryTime(time, timeSkew), expected);
+        Assert.assertEquals(JWTUtils.isValidExpiryTime(time, timeSkew), expected);
     }
 
     @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "nbfProvider")
     public void testValidNotValidBefore(Date time, long timeSkew, boolean expected) {
 
-        Assert.assertEquals(JWTUtils.validateNotValidBefore(time, timeSkew), expected);
+        Assert.assertEquals(JWTUtils.isvalidNotValidBeforeTime(time, timeSkew), expected);
     }
 }
 

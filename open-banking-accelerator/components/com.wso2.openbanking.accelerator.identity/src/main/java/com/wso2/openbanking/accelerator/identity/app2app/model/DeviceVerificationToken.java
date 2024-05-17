@@ -58,7 +58,6 @@ public class DeviceVerificationToken {
     private Date issuedTime;
     private SignedJWT signedJWT;
     private String publicKey;
-    private String signingAlgorithm;
 
     public DeviceVerificationToken(SignedJWT signedJWT)
             throws ParseException {
@@ -130,18 +129,6 @@ public class DeviceVerificationToken {
     public void setPublicKey(String publicKey) {
 
         this.publicKey = publicKey;
-    }
-
-    @NotBlank(message = "Required parameter signing algorithm cannot be null or empty.",
-            groups = MandatoryChecks.class)
-    public String getSigningAlgorithm() {
-
-        return signingAlgorithm;
-    }
-
-    public void setSigningAlgorithm(String signingAlgorithm) {
-
-        this.signingAlgorithm = signingAlgorithm;
     }
 
     /**

@@ -101,7 +101,6 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
                     App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
             String publicKey = getPublicKeyByDeviceID(deviceID, userToBeAuthenticated);
             deviceVerificationToken.setPublicKey(publicKey);
-            deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
             // setting the user is mandatory for data publishing purposes
             //If exception is thrown before setting a user data publishing will encounter exceptions
             authenticationContext.setSubject(userToBeAuthenticated);

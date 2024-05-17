@@ -55,17 +55,16 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
-                Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
                 .thenReturn(true);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
+                .thenReturn(true);
+        Mockito.when(JWTUtils.isvalidNotValidBeforeTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
-        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
     }
@@ -80,17 +79,16 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn("NotNullJTI");
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
-                Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
                 .thenReturn(true);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
+                .thenReturn(true);
+        Mockito.when(JWTUtils.isvalidNotValidBeforeTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
-        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
     }
@@ -105,17 +103,16 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
-                Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
+                .thenReturn(true);
+        Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(false);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.isvalidNotValidBeforeTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
         //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
-        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
     }
@@ -130,17 +127,16 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString(),
-                Mockito.anyString())).thenReturn(true);
-        Mockito.when(JWTUtils.validateExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString())).
+                thenReturn(true);
+        Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
-        Mockito.when(JWTUtils.validateNotValidBefore(Mockito.any(Date.class), Mockito.any(long.class)))
+        Mockito.when(JWTUtils.isvalidNotValidBeforeTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(false);
         //Creating a new device verification token using signed jwt
         SignedJWT signedJWT = SignedJWT.parse(jwtString);
         DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
         deviceVerificationToken.setPublicKey(publicKey);
-        deviceVerificationToken.setSigningAlgorithm(App2AppAuthenticatorConstants.SIGNING_ALGORITHM);
         // Call the method under test
         App2AppAuthUtils.validateToken(deviceVerificationToken);
     }

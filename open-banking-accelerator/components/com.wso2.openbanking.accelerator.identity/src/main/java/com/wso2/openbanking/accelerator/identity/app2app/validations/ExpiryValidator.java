@@ -39,7 +39,7 @@ public class ExpiryValidator implements ConstraintValidator<ValidateExpiry, Devi
                            ConstraintValidatorContext constraintValidatorContext) {
 
         Date expiryTime = deviceVerificationToken.getExpirationTime();
-        return JWTUtils.validateExpiryTime(expiryTime, DEFAULT_TIME_SKEW_IN_SECONDS);
+        return JWTUtils.isValidExpiryTime(expiryTime, DEFAULT_TIME_SKEW_IN_SECONDS);
     }
 }
 

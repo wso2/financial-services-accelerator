@@ -42,7 +42,7 @@ public class NBFValidator implements ConstraintValidator<ValidateNBF, DeviceVeri
                            ConstraintValidatorContext constraintValidatorContext) {
 
         Date notValidBefore = deviceVerificationToken.getNotValidBefore();
-        return JWTUtils.validateNotValidBefore(notValidBefore, DEFAULT_TIME_SKEW_IN_SECONDS);
+        return JWTUtils.isvalidNotValidBeforeTime(notValidBefore, DEFAULT_TIME_SKEW_IN_SECONDS);
     }
 }
 

@@ -35,6 +35,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -58,7 +59,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class JWTUtils {
 
-    private static final String DOT_SEPARATOR = ".";
     private static final Log log = LogFactory.getLog(JWTUtils.class);
 
 
@@ -140,18 +140,18 @@ public class JWTUtils {
      *
      * @param signedJWT the signed JWT to be validated
      * @param publicKey the public key that is used for validation
-     * @param algorithm the algorithm expected to have signed the jwt
      * @return true if signature is valid else false
      * @throws NoSuchAlgorithmException if the given algorithm doesn't exist
      * @throws InvalidKeySpecException if the provided key is invalid
      * @throws JOSEException if an error occurs during the signature validation process
      */
     @Generated(message = "Excluding from code coverage as KeyFactory does not initialize")
-    public static boolean validateJWTSignature(SignedJWT signedJWT, String publicKey, String algorithm) throws
-            NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
+    public static boolean validateJWTSignature(SignedJWT signedJWT, String publicKey)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
 
         byte[] publicKeyData = Base64.getDecoder().decode(publicKey);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(publicKeyData);
+        String algorithm = signedJWT.getHeader().getAlgorithm().toString();
         KeyFactory kf = KeyFactory.getInstance(algorithm);
         RSAPublicKey rsapublicKey = (RSAPublicKey) kf.generatePublic(spec);
         JWSVerifier verifier = new RSASSAVerifier(rsapublicKey);
@@ -161,19 +161,12 @@ public class JWTUtils {
     /**
      * Validate legitimacy of JWT.
      *
-     * @param jwtString JWT string
+     * @param jwsString JWT string
      */
-    public static boolean isJWT(String jwtString) {
+    public static boolean isJWT(String jwsString) {
 
-        if (jwtString == null) {
-            return false;
-        }
-
-        if (StringUtils.isBlank(jwtString)) {
-            return false;
-        }
-
-        return StringUtils.countMatches(jwtString, DOT_SEPARATOR) == 2;
+        return StringUtils.isBlank(jwsString) ? false :
+                StringUtils.countMatches(jwsString, OpenBankingConstants.DOT_SEPARATOR) == 2;
     }
 
     /**
@@ -190,7 +183,7 @@ public class JWTUtils {
             return SignedJWT.parse(jwtString);
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Provided token identifier is not a parsable JWT.");
+                log.debug(String.format("Provided token identifier is not a parsable JWT: %s", jwtString));
             }
             throw new IllegalArgumentException("Provided token identifier is not a parsable JWT.");
         }
@@ -199,10 +192,11 @@ public class JWTUtils {
     /**
      * Validates whether a given JWT is not expired.
      *
+     * @param defaultTimeSkew defaultTimeSkew to adjust latency issues.
      * @param expirationTime  the exp of the jwt that should be validated.
      * @return true if the jwt is not expired
      */
-    public static boolean validateExpiryTime(Date expirationTime, long defaultTimeSkew) {
+    public static boolean isValidExpiryTime(Date expirationTime, long defaultTimeSkew) {
 
         if (expirationTime != null) {
             long timeStampSkewMillis = defaultTimeSkew * 1000;
@@ -217,10 +211,11 @@ public class JWTUtils {
     /**
      * Validates whether a given JWT is active.
      *
+     * @param defaultTimeSkew defaultTimeSkew to adjust latency issues.
      * @param notBeforeTime nbf of the jwt that should be validated
      * @return true if the jwt is active
      */
-    public static boolean validateNotValidBefore(Date notBeforeTime, long defaultTimeSkew)  {
+    public static boolean isvalidNotValidBeforeTime(Date notBeforeTime, long defaultTimeSkew)  {
 
         if (notBeforeTime != null) {
             long timeStampSkewMillis = defaultTimeSkew * 1000;
