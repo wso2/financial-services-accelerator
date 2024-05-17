@@ -90,6 +90,12 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
             //Extracting deviceId and loginHint is necessary to retrieve the public key
             String loginHint = deviceVerificationToken.getLoginHint();
             String deviceID = deviceVerificationToken.getDeviceId();
+
+            //Checking whether deviceId and loginHint present in passed jwt
+            if (StringUtils.isBlank(loginHint) || StringUtils.isBlank(deviceID)) {
+                throw new AuthenticationFailedException(App2AppAuthenticatorConstants.REQUIRED_PRAMAS_MISSING_MESSAGE);
+            }
+
             AuthenticatedUser userToBeAuthenticated =
                     App2AppAuthUtils.getAuthenticatedUserFromSubjectIdentifier(loginHint);
             String publicKey = getPublicKeyByDeviceID(deviceID, userToBeAuthenticated);

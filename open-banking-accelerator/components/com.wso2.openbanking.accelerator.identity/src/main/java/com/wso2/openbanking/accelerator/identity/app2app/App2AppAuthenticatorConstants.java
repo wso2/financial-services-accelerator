@@ -44,5 +44,7 @@ public class App2AppAuthenticatorConstants {
             = "User {%s} authenticated by app2app authenticator successfully.";
     public static final String OPEN_BANKING_EXCEPTION_MESSAGE
             = "Error while retrieving user: ";
+    public static final String REQUIRED_PRAMAS_MISSING_MESSAGE
+            = "Required Parameters did or loginHint null or empty.";
 }
 
