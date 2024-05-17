@@ -35,8 +35,8 @@ public class CofConsentRequestValidator {
 
     /**
      * Method to validate COF initiation request.
-     * @param initiation
-     * @return
+     * @param initiation Initiation Object
+     * @return JSONObject Validation Response
      */
     public static JSONObject validateCOFInitiation(JSONObject initiation) {
 

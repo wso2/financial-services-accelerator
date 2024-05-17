@@ -1,10 +1,19 @@
 /**
- * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  *
- * This software is the property of WSO2 LLC. and its suppliers, if any.
- * Dissemination of any information or reproduction of any material contained
- * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
- * You may not alter or remove any copyright or other notice from copies of this content.
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.persistence.flow;
@@ -23,10 +32,12 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockObjectFactory;
 import org.testng.IObjectFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -36,8 +47,6 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -69,10 +78,10 @@ public class ConsentPersistStepTests {
         MockitoAnnotations.initMocks(this);
 
         consentPersistStep = new DefaultConsentPersistStep();
-        consentPersistDataMock = mock(ConsentPersistData.class);
-        consentDataMock = mock(ConsentData.class);
-        consentResourceMock = mock(ConsentResource.class);
-        consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
+        consentPersistDataMock =  Mockito.mock(ConsentPersistData.class);
+        consentDataMock =  Mockito.mock(ConsentData.class);
+        consentResourceMock =  Mockito.mock(ConsentResource.class);
+        consentCoreServiceMock =  Mockito.mock(ConsentCoreServiceImpl.class);
 
         configMap = new HashMap<>();
         configMap.put("ErrorURL", "https://localhost:8243/error");
@@ -87,13 +96,13 @@ public class ConsentPersistStepTests {
     @ObjectFactory
     public IObjectFactory getObjectFactory() {
 
-        return new org.powermock.modules.testng.PowerMockObjectFactory();
+        return new PowerMockObjectFactory();
     }
 
     @BeforeMethod
     public void initMethod() {
 
-        openBankingConfigParserMock = mock(OpenBankingConfigParser.class);
+        openBankingConfigParserMock =  Mockito.mock(OpenBankingConfigParser.class);
 
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
@@ -105,16 +114,16 @@ public class ConsentPersistStepTests {
     @Test(priority = 1, expectedExceptions = ConsentException.class)
     public void testConsentPersistWithoutConsentId() {
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
         consentPersistStep.execute(consentPersistDataMock);
     }
 
     @Test(priority = 3, expectedExceptions = ConsentException.class)
     public void testConsentPersistWithoutAuthResource() {
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn("1234").when(consentDataMock).getConsentId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn("1234").when(consentDataMock).getConsentId();
+        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
 
         consentPersistStep.execute(consentPersistDataMock);
     }
@@ -122,18 +131,18 @@ public class ConsentPersistStepTests {
     @Test(priority = 6, expectedExceptions = ConsentException.class)
     public void testAccountConsentPersistWithoutAccountIDs() throws Exception {
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
-        doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
-        doReturn(ConsentAuthorizeTestConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
-        doReturn(true).when(consentPersistDataMock).getApproval();
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
+        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
+        Mockito.doReturn(true).when(consentPersistDataMock).getApproval();
 
         JSONObject payload = (JSONObject) parser
                 .parse(ConsentAuthorizeTestConstants.ACCOUNT_PERSIST_PAYLOAD_WITHOUT_ACCOUNT_ID);
-        doReturn(payload).when(consentPersistDataMock).getPayload();
+        Mockito.doReturn(payload).when(consentPersistDataMock).getPayload();
 
         consentPersistStep.execute(consentPersistDataMock);
     }
@@ -141,18 +150,18 @@ public class ConsentPersistStepTests {
     @Test(priority = 7, expectedExceptions = ConsentException.class)
     public void testAccountConsentPersistWithNonStringAccountIDs() throws Exception {
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
-        doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
-        doReturn(ConsentAuthorizeTestConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
-        doReturn(true).when(consentPersistDataMock).getApproval();
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
+        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
+        Mockito.doReturn(true).when(consentPersistDataMock).getApproval();
 
         JSONObject payload = (JSONObject) parser
                 .parse(ConsentAuthorizeTestConstants.PAYLOAD_WITH_NON_STRING_ACCOUNTID);
-        doReturn(payload).when(consentPersistDataMock).getPayload();
+        Mockito.doReturn(payload).when(consentPersistDataMock).getPayload();
 
         consentPersistStep.execute(consentPersistDataMock);
     }
@@ -160,19 +169,19 @@ public class ConsentPersistStepTests {
     @Test(priority = 9, expectedExceptions = ConsentException.class)
     public void testCOFConsentPersistWithoutCOFAccount() throws Exception {
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
-        doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
-        doReturn(ConsentAuthorizeTestConstants.FUNDS_CONFIRMATIONS).when(consentResourceMock)
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
+        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.FUNDS_CONFIRMATIONS).when(consentResourceMock)
                 .getConsentType();
-        doReturn(true).when(consentPersistDataMock).getApproval();
+        Mockito.doReturn(true).when(consentPersistDataMock).getApproval();
 
         JSONObject payload = (JSONObject) parser
                 .parse(ConsentAuthorizeTestConstants.COF_PERSIST_PAYLOAD_WITHOUT_COF_ACC);
-        doReturn(payload).when(consentPersistDataMock).getPayload();
+        Mockito.doReturn(payload).when(consentPersistDataMock).getPayload();
 
         consentPersistStep.execute(consentPersistDataMock);
     }
@@ -180,19 +189,19 @@ public class ConsentPersistStepTests {
     @Test(priority = 10, expectedExceptions = ConsentException.class)
     public void testCOFConsentPersistWithNonStringCOFAccount() throws Exception {
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
-        doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
-        doReturn(ConsentAuthorizeTestConstants.FUNDS_CONFIRMATIONS).when(consentResourceMock)
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
+        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.FUNDS_CONFIRMATIONS).when(consentResourceMock)
                 .getConsentType();
-        doReturn(true).when(consentPersistDataMock).getApproval();
+        Mockito.doReturn(true).when(consentPersistDataMock).getApproval();
 
         JSONObject payload = (JSONObject) parser
                 .parse(ConsentAuthorizeTestConstants.COF_PERSIST_PAYLOAD_WITH_NON_STRING_COF_ACC);
-        doReturn(payload).when(consentPersistDataMock).getPayload();
+        Mockito.doReturn(payload).when(consentPersistDataMock).getPayload();
 
         consentPersistStep.execute(consentPersistDataMock);
     }
@@ -200,21 +209,50 @@ public class ConsentPersistStepTests {
     @Test(priority = 11, expectedExceptions = ConsentException.class)
     public void testCOFPersistThrowingExceptionWhenConsentBinding() throws Exception {
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
-        doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
-        doReturn(ConsentAuthorizeTestConstants.FUNDS_CONFIRMATIONS).when(consentResourceMock)
+        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
+        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
+        Mockito.doReturn(ConsentAuthorizeTestConstants.FUNDS_CONFIRMATIONS).when(consentResourceMock)
                 .getConsentType();
-        doReturn(false).when(consentPersistDataMock).getApproval();
+        Mockito.doReturn(false).when(consentPersistDataMock).getApproval();
         JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
         JSONObject payload = (JSONObject) parser
                 .parse(ConsentAuthorizeTestConstants.COF_PERSIST_PAYLOAD);
-        doReturn(payload).when(consentPersistDataMock).getPayload();
+        Mockito.doReturn(payload).when(consentPersistDataMock).getPayload();
 
         consentPersistStep.execute(consentPersistDataMock);
-    }
-
 }
+
+//    @Test
+//    public void testAccountConsentPersistSuccessScenarioWithApprovalTrue()
+//            throws ParseException, ConsentManagementException {
+//
+//        Mockito.doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+//        Mockito.doReturn(ConsentAuthorizeTestConstants.CONSENT_ID).when(consentDataMock).getConsentId();
+//        Mockito.doReturn(ConsentAuthorizeTestConstants.USER_ID).when(consentDataMock).getUserId();
+//        Mockito.doReturn(ConsentAuthorizeTestConstants.CLIENT_ID).when(consentDataMock).getClientId();
+//        Mockito.doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+//        Mockito.doReturn(ConsentAuthorizeTestConstants.getAuthResource()).when(consentDataMock).getAuthResource();
+//        Mockito.doReturn(ConsentAuthorizeTestConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
+//        Mockito.doReturn(true).when(consentPersistDataMock).getApproval();
+//
+//        Mockito.doReturn(true).when(consentCoreServiceMock).bindUserAccountsToConsent(
+//                Mockito.<ConsentResource>anyObject(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(),
+//                Mockito.anyString(), Mockito.anyString());
+//
+//        PowerMockito.mockStatic(ConsentServiceUtil.class);
+//        PowerMockito.when(ConsentServiceUtil.getConsentService()).thenReturn(consentCoreServiceMock);
+//
+//        JSONObject payload = (JSONObject) parser.parse(ConsentAuthorizeTestConstants.ACCOUNT_PERSIST_PAYLOAD);
+//        Mockito.doReturn(payload).when(consentPersistDataMock).getPayload();
+//
+//        consentPersistStep.execute(consentPersistDataMock);
+//    }
+}
+
+
+
+

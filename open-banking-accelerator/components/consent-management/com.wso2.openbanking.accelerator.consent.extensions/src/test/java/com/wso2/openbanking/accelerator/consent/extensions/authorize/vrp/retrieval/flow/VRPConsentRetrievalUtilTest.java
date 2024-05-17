@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import static com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentAuthorizeTestConstants.VRP_WITHOUT_DATA;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doReturn;

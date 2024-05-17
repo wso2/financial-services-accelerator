@@ -80,7 +80,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Abstract method defined to handle consent persistence based on the consent type.
+     * This method defined to handle consent persistence based on the consent type.
      *
      * @param consentPersistData    Consent Persist Data Object
      * @param consentResource       Consent Resource Object

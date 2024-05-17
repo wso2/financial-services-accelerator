@@ -46,7 +46,7 @@ public class ConsentValidatorUtil {
      *
      * @param str1   First String to validate
      * @param str2   Second String to validate
-     * @return
+     * @return Whether mandatory parameters are same
      */
     public static  boolean compareMandatoryParameter(String str1, String str2) {
 
@@ -59,7 +59,7 @@ public class ConsentValidatorUtil {
      *
      * @param errorCode       Error Code
      * @param errorMessage    Error Message
-     * @return
+     * @return Validation Result
      */
     public static JSONObject getValidationResult(String errorCode, String errorMessage) {
 
@@ -93,7 +93,7 @@ public class ConsentValidatorUtil {
     /**
      * Method to construct the success validation result.
      *
-     * @return
+     * @return Validation Result
      */
     public static JSONObject getSuccessValidationResult() {
 
@@ -166,7 +166,7 @@ public class ConsentValidatorUtil {
      *
      * @param str1   First String to validate
      * @param str2   Second String to validate
-     * @return
+     * @return Whether optional parameters are same
      */
     public static boolean compareOptionalParameter(String str1, String str2) {
 
@@ -260,7 +260,7 @@ public class ConsentValidatorUtil {
      * Util method to validate the Confirmation of Funds request URI.
      *
      * @param uri  Request URI
-     * @return
+     * @return Whether URI is valid
      */
     public static boolean isCOFURIValid(String uri) {
 
@@ -279,8 +279,8 @@ public class ConsentValidatorUtil {
      * Validate whether consent is expired.
      *
      * @param expDateVal     Expiration Date Time
-     * @return
-     * @throws ConsentException
+     * @return Whether consent is expired
+     * @throws ConsentException if an error occurs while parsing expiration date
      */
     public static boolean isConsentExpired(String expDateVal) throws ConsentException {
 

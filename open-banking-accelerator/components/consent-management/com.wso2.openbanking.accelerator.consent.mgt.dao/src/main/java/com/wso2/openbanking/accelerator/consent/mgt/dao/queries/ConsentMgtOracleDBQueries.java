@@ -148,8 +148,8 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for delete consent mapping by auth id.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables  whether to execute on retention tables
+     * @return  SQL query to delete consent mapping by auth id
      */
     public String getDeleteConsentMappingByAuthIdPreparedStatement(boolean executeOnRetentionTables) {
 
@@ -166,10 +166,10 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
     /**
      * SQL query for get consent status audit records by consentIds.
      * @param whereClause conditions
-     * @param shouldLimit
-     * @param shouldOffset
-     * @param fetchFromRetentionTables
-     * @return
+     * @param shouldLimit  whether limit should be applied
+     * @param shouldOffset  whether offset should be applied
+     * @param fetchFromRetentionTables  whether to fetch from retention tables
+     * @return  SQL query to retrieve consent status audit records by consentIds
      */
     public String getConsentStatusAuditRecordsByConsentIdsPreparedStatement(String whereClause, boolean shouldLimit,
                                                                             boolean shouldOffset,

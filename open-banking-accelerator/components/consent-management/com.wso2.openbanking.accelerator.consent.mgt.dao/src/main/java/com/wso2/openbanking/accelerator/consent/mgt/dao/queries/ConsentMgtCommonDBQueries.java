@@ -325,8 +325,8 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for delete consent attributes.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables  whether to execute on retention tables
+     * @return SQL query for delete consent attributes
      */
     public String getDeleteConsentAttributeByConsentIdPreparedStatement(boolean executeOnRetentionTables) {
 
@@ -340,8 +340,8 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for delete consent file.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables whether to execute on retention tables
+     * @return SQL query for delete consent file
      */
     public String getDeleteConsentFileResourcePreparedStatement(boolean executeOnRetentionTables) {
 
@@ -355,8 +355,8 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for delete consent mapping by auth id.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables  whether to execute on retention tables
+     * @return  SQL query for delete consent mapping by auth id
      */
     public String getDeleteConsentMappingByAuthIdPreparedStatement(boolean executeOnRetentionTables) {
 
@@ -371,8 +371,8 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for delete auth resource.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables  whether to execute on retention tables
+     * @return SQL query for delete auth resource
      */
     public String getDeleteAuthorizationResourcePreparedStatement(boolean executeOnRetentionTables) {
 
@@ -386,8 +386,8 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for consent status audit record.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables  whether to execute on retention tables
+     * @return  SQL query for consent status audit record
      */
     public String getDeleteConsentStatusAuditRecordsPreparedStatement(boolean executeOnRetentionTables) {
 
@@ -401,8 +401,8 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for delete consent.
-     * @param executeOnRetentionTables
-     * @return
+     * @param executeOnRetentionTables  whether to execute on retention tables
+     * @return  SQL query for delete consent
      */
     public String getDeleteConsentPreparedStatement(boolean executeOnRetentionTables) {
 
@@ -416,8 +416,8 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for get list of consent_ids.
-     * @param fetchFromRetentionTables
-     * @return
+     * @param fetchFromRetentionTables  whether to fetch from retention tables
+     * @return  SQL query for get list of consent_ids
      */
     public String getListOfConsentIdsPreparedStatement(boolean fetchFromRetentionTables) {
 
@@ -432,10 +432,10 @@ public class ConsentMgtCommonDBQueries {
     /**
      * SQL query for get consent status audit records by consentIds.
      * @param whereClause conditions
-     * @param shouldLimit
-     * @param shouldOffset
-     * @param fetchFromRetentionTables
-     * @return
+     * @param shouldLimit   whether to consider the Limit parameter
+     * @param shouldOffset  whether to consider the Offset parameter
+     * @param fetchFromRetentionTables whether to fetch from retention tables
+     * @return  SQL query for get consent status audit records by consentIds
      */
     public String getConsentStatusAuditRecordsByConsentIdsPreparedStatement(String whereClause, boolean shouldLimit,
                                                                                boolean shouldOffset,

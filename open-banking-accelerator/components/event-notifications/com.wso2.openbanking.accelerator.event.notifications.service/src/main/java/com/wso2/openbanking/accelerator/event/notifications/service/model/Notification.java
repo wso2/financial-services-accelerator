@@ -111,7 +111,12 @@ public class Notification {
 
     /**
      * This method is to convert the class to a JSONObject.
-     **/
+     * @param notification Notification
+     * @return JSONObject
+     * @throws IOException IOException when converting the class to JSONObject
+     * @throws JOSEException JOSEException when converting the class to JSONObject
+     * @throws IdentityOAuth2Exception IdentityOAuth2Exception when converting the class to JSONObject
+     */
     public static JsonNode getJsonNode(Notification notification)
             throws IOException, JOSEException, IdentityOAuth2Exception {
         ObjectMapper objectMapper = new ObjectMapper();

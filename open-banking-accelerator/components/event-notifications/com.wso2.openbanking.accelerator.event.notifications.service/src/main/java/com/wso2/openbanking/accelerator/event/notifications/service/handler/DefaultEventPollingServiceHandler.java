@@ -52,7 +52,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
     /**
      * This method is used to Poll Events as per request params.
      * @param eventPollingRequest JSON request for event polling
-     * @return
+     * @return  EventPollingResponse
      */
     public EventPollingResponse pollEvents(JSONObject eventPollingRequest) {
 

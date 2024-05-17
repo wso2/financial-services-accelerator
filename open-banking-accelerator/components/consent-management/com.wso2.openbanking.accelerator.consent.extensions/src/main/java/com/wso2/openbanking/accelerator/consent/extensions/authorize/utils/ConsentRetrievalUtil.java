@@ -47,8 +47,8 @@ public class ConsentRetrievalUtil {
     /**
      * Method to extract request object from query params.
      *
-     * @param spQueryParams
-     * @return
+     * @param spQueryParams  Query params
+     * @return  requestObject
      */
     public static String extractRequestObject(String spQueryParams) {
 
@@ -71,8 +71,8 @@ public class ConsentRetrievalUtil {
     /**
      * Method to validate the request object and extract consent ID.
      *
-     * @param requestObject
-     * @return
+     * @param requestObject  Request object
+     * @return consentId
      */
     public static String extractConsentId(String requestObject) {
 
@@ -193,8 +193,8 @@ public class ConsentRetrievalUtil {
     /**
      * Method to add debtor account details to consent data to send it to the consent page.
      *
-     * @param initiation
-     * @param consentDataJSON
+     * @param initiation     Initiation object from the request
+     * @param consentDataJSON  Consent information object
      */
     public static void populateCreditorAccount(JSONObject initiation, JSONArray consentDataJSON) {
         if (initiation.get(ConsentExtensionConstants.CREDITOR_ACC) != null) {

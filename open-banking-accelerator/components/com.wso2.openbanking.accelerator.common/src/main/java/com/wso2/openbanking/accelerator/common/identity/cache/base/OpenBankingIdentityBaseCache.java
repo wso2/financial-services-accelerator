@@ -25,8 +25,8 @@ import com.wso2.openbanking.accelerator.common.internal.OpenBankingCommonDataHol
 
 /**
  * Cache definition to store objects in open banking iam component implementations.
- * @param <K>
- * @param <V>
+ * @param <K>  Extended Cache key
+ * @param <V>  Cache value
  */
 public class OpenBankingIdentityBaseCache<K extends OpenBankingBaseCacheKey, V> extends OpenBankingBaseCache<K, V> {
 
@@ -37,6 +37,7 @@ public class OpenBankingIdentityBaseCache<K extends OpenBankingBaseCacheKey, V> 
 
     /**
      * Initialize with unique cache name.
+     * @param cacheName  Unique cache name
      */
     public OpenBankingIdentityBaseCache(String cacheName) {
 

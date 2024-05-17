@@ -41,6 +41,13 @@ public class IdempotencyValidationResult {
         this.consentId = consentId;
     }
 
+    public IdempotencyValidationResult(boolean isIdempotent, boolean isValid) {
+        this.isIdempotent = isIdempotent;
+        this.isValid = isValid;
+        this.consent = null;
+        this.consentId = null;
+    }
+
     public boolean isIdempotent() {
         return isIdempotent;
     }

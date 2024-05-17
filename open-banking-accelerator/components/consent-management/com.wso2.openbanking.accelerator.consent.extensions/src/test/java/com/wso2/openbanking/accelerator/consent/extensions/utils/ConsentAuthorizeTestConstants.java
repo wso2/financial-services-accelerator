@@ -349,9 +349,7 @@ public class ConsentAuthorizeTestConstants {
             "   \"approval\":\"true\"," +
             "   \"cofAccount\":\"1234\"," +
             "   \"accountIds\": \"\"," +
-            "   \"isReauthorization\":\"false\"," +
             "   \"type\":\"accounts\"," +
-            "   \"paymentAccount\":\"\"" +
             "}";
 
     public static final String COF_PERSIST_PAYLOAD_WITHOUT_COF_ACC = " " +
@@ -379,7 +377,6 @@ public class ConsentAuthorizeTestConstants {
             "   \"paymentAccount\":\"\"" +
             "}";
 
-
     public static AuthorizationResource getAuthResource() {
 
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -391,28 +388,18 @@ public class ConsentAuthorizeTestConstants {
         return authorizationResource;
     }
 
-    public static final String PAYMENT_PERSIST_PAYLOAD =
-            "   {" +
-                    "       \"metadata\":{" +
-                    "           \"commonAuthId\":\"4b3f5911-85b7-4489-86e8-3916f953f484\"" +
-                    "       }," +
-                    "       \"cofAccount\":\"\"," +
-                    "       \"approval\":\"true\"," +
-                    "       \"accountIds\":[\"\"]," +
-                    "       \"isReauthorization\":\"\"," +
-                    "       \"type\":\"payments\"," +
-                    "       \"paymentAccount\":\"30080012343456\"," +
-                    "       \"MultiAuthType\":\"Any\"," +
-                    "       \"MultiAuthExpiry\":\"1626755005019\"" +
-                    "   }";
-
-
-
-
-
-
-
-
-
+    public static final String ACCOUNT_PERSIST_PAYLOAD = " " +
+            "{" +
+            "   \"metadata\": {" +
+            "       \"commonAuthId\":\"b37b9c9b-b5ce-4889-966e-9cb30f70cc78\"" +
+            "   }," +
+            "   \"cofAccount\":\"\"," +
+            "   \"approval\":\"true\"," +
+            "   \"accountIds\":[" +
+            "       \"30080012343456\"" +
+            "   ]," +
+            "   \"type\":\"accounts\"," +
+            "   \"paymentAccount\":\"\"" +
+            "}";
 
 }
