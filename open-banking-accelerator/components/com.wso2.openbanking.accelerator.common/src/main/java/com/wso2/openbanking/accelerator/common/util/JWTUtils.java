@@ -168,14 +168,12 @@ public class JWTUtils {
         if (jwtString == null) {
             return false;
         }
+
         if (StringUtils.isBlank(jwtString)) {
             return false;
         }
-        if (StringUtils.countMatches(jwtString, DOT_SEPARATOR) != 2) {
-            return false;
-        }
 
-        return true;
+        return StringUtils.countMatches(jwtString, DOT_SEPARATOR) == 2;
     }
 
     /**
@@ -229,7 +227,6 @@ public class JWTUtils {
             long notBeforeTimeMillis = notBeforeTime.getTime();
             long currentTimeInMillis = System.currentTimeMillis();
             return currentTimeInMillis + timeStampSkewMillis >= notBeforeTimeMillis;
-
         } else {
             return false;
         }

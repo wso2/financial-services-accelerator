@@ -84,6 +84,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
         authenticationContext.setCurrentAuthenticator(App2AppAuthenticatorConstants.AUTHENTICATOR_NAME);
         String jwtString =
                 httpServletRequest.getParameter(App2AppAuthenticatorConstants.DEVICE_VERIFICATION_TOKEN_IDENTIFIER);
+
         try {
             SignedJWT signedJWT = JWTUtils.getSignedJWT(jwtString);
             DeviceVerificationToken deviceVerificationToken = new DeviceVerificationToken(signedJWT);
@@ -206,6 +207,7 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
         if (deviceHandler == null) {
             deviceHandler = new DeviceHandlerImpl();
         }
+
         return deviceHandler;
     }
 }
