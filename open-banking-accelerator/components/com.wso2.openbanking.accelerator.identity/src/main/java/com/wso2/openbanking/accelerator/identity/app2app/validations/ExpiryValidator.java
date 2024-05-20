@@ -34,6 +34,12 @@ public class ExpiryValidator implements ConstraintValidator<ValidateExpiry, Devi
 
     private static final long DEFAULT_TIME_SKEW_IN_SECONDS = 300L;
 
+    /**
+     * Checks if the given device verification token is valid based on its expiration time.
+     * @param deviceVerificationToken The device verification token to be validated.
+     * @param constraintValidatorContext The context in which the validation is performed.
+     * @return true if the token is valid, false otherwise.
+     */
     @Override
     public boolean isValid(DeviceVerificationToken deviceVerificationToken,
                            ConstraintValidatorContext constraintValidatorContext) {

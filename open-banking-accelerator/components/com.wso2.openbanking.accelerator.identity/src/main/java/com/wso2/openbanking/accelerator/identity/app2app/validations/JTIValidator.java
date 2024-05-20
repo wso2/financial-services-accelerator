@@ -30,6 +30,12 @@ import javax.validation.ConstraintValidatorContext;
  */
 public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVerificationToken> {
 
+    /**
+     * Checks if the given device verification token is valid based on its JTI value.
+     * @param deviceVerificationToken The device verification token to be validated.
+     * @param constraintValidatorContext The context in which the validation is performed.
+     * @return true if the token is valid, false otherwise.
+     */
     @Override
     public boolean isValid(DeviceVerificationToken deviceVerificationToken,
                            ConstraintValidatorContext constraintValidatorContext) {

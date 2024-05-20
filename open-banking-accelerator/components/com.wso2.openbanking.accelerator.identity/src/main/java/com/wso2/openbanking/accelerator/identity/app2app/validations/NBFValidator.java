@@ -37,6 +37,12 @@ public class NBFValidator implements ConstraintValidator<ValidateNBF, DeviceVeri
     private static final long DEFAULT_TIME_SKEW_IN_SECONDS = 300L;
     private static final Log log = LogFactory.getLog(NBFValidator.class);
 
+    /**
+     * Checks if the given device verification token is valid based on its nbf time.
+     * @param deviceVerificationToken The device verification token to be validated.
+     * @param constraintValidatorContext The context in which the validation is performed.
+     * @return true if the token is valid, false otherwise.
+     */
     @Override
     public boolean isValid(DeviceVerificationToken deviceVerificationToken,
                            ConstraintValidatorContext constraintValidatorContext) {
