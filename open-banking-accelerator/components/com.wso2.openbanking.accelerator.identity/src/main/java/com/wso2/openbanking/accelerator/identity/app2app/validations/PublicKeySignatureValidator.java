@@ -41,6 +41,7 @@ public class PublicKeySignatureValidator implements ConstraintValidator<Validate
 
     /**
      * Checks if the given device verification token is valid based on its signature.
+     *
      * @param deviceVerificationToken The device verification token to be validated.
      * @param constraintValidatorContext The context in which the validation is performed.
      * @return true if the token is valid, false otherwise.
