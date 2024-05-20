@@ -32,6 +32,7 @@ public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVeri
 
     /**
      * Checks if the given device verification token is valid based on its JTI value.
+     *
      * @param deviceVerificationToken The device verification token to be validated.
      * @param constraintValidatorContext The context in which the validation is performed.
      * @return true if the token is valid, false otherwise.
@@ -45,8 +46,6 @@ public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVeri
     }
 
     private boolean validateJTI(String jti) {
-
-
 
         if (getFromCache(jti) != null) {
             return false;
