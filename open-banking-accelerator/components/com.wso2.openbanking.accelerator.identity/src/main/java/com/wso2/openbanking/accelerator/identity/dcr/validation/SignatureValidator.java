@@ -26,6 +26,7 @@ import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateSignature;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -59,33 +60,33 @@ public class SignatureValidator implements ConstraintValidator<ValidateSignature
 
         try {
             String softwareStatement = BeanUtils.getProperty(registrationRequest, softwareStatementPath);
-            if (softwareStatement != null) {
-                SignedJWT signedJWT = SignedJWT.parse(softwareStatement);
-                String jwtString = signedJWT.getParsedString();
-                String alg = signedJWT.getHeader().getAlgorithm().getName();
-                String softwareEnvironmentFromSSA = OpenBankingUtils.getSoftwareEnvironmentFromSSA(jwtString);
-                String jwksURL;
-
-                if (IdentityConstants.PRODUCTION.equals(softwareEnvironmentFromSSA)) {
-                    // validate the signature against production jwks
-                    jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
-                            .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_PRODUCTION).toString();
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Validating the signature from Production JwksUrl %s",
-                                jwksURL.replaceAll("[\r\n]", "")));
-                    }
-                } else {
-                    // else validate the signature against sandbox jwks
-                    jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
-                            .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_SANDBOX).toString();
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Validating the signature from Sandbox JwksUrl %s",
-                                jwksURL.replaceAll("[\r\n]", "")));
-                    }
-                }
-                return isValidateJWTSignature(jwksURL, jwtString, alg);
+            if (StringUtils.isEmpty(softwareStatement)) {
+                return true;
             }
-            return true;
+            SignedJWT signedJWT = SignedJWT.parse(softwareStatement);
+            String jwtString = signedJWT.getParsedString();
+            String alg = signedJWT.getHeader().getAlgorithm().getName();
+            String softwareEnvironmentFromSSA = OpenBankingUtils.getSoftwareEnvironmentFromSSA(jwtString);
+            String jwksURL;
+
+            if (IdentityConstants.PRODUCTION.equals(softwareEnvironmentFromSSA)) {
+                // validate the signature against production jwks
+                jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
+                        .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_PRODUCTION).toString();
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Validating the signature from Production JwksUrl %s",
+                            jwksURL.replaceAll("[\r\n]", "")));
+                }
+            } else {
+                // else validate the signature against sandbox jwks
+                jwksURL = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
+                        .get(DCRCommonConstants.DCR_JWKS_ENDPOINT_SANDBOX).toString();
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Validating the signature from Sandbox JwksUrl %s",
+                            jwksURL.replaceAll("[\r\n]", "")));
+                }
+            }
+            return isValidateJWTSignature(jwksURL, jwtString, alg);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             log.error("Error while resolving validation fields", e);
         } catch (ParseException e) {

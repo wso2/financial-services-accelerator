@@ -47,8 +47,7 @@ public class IssuerValidator implements ConstraintValidator<ValidateIssuer, Obje
     }
 
     @Override
-    public boolean isValid(Object registrationRequest,
-                           ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Object registrationRequest, ConstraintValidatorContext constraintValidatorContext) {
 
         try {
             String issuer = BeanUtils.getProperty(registrationRequest, issuerPath);

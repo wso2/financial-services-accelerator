@@ -75,8 +75,9 @@ public class RegistrationUtils {
 
         RegistrationValidator dcrRequestValidator;
         dcrRequestValidator = RegistrationValidator.getRegistrationValidator();
-        // set the ssa payload according to the specification format
-        if (registrationRequest.getSoftwareStatement() != null) {
+
+        if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+            // set the ssa payload according to the specification format
             String decodedSSA = JWTUtils
                     .decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body").toJSONString();
             dcrRequestValidator.setSoftwareStatementPayload(registrationRequest, decodedSSA);
@@ -104,58 +105,71 @@ public class RegistrationUtils {
     }
 
     public static ApplicationRegistrationRequest getApplicationRegistrationRequest(
-            RegistrationRequest registrationRequest, boolean useSoftwareIdAsAppName) {
-
-        String applicationName;
-        if (useSoftwareIdAsAppName) {
-            applicationName = (registrationRequest.getSoftwareStatement() != null) ?
-                    registrationRequest.getSoftwareStatementBody().getSoftwareId() :
-                    registrationRequest.getSoftwareId();
-        } else {
-            applicationName = RegistrationUtils.getSafeApplicationName(registrationRequest.getSoftwareStatementBody()
-                            .getClientName());
-        }
+            RegistrationRequest registrationRequest, String applicationName) {
 
         ApplicationRegistrationRequest appRegistrationRequest = new ApplicationRegistrationRequest();
         appRegistrationRequest.setClientName(applicationName);
-
-        // Set the redirect URIs based on the presence of software statement
-        appRegistrationRequest.setRedirectUris(
-                StringUtils.isBlank(registrationRequest.getSoftwareStatement()) ?
-                        registrationRequest.getCallbackUris() :
-                        registrationRequest.getSoftwareStatementBody().getCallbackUris());
-
         appRegistrationRequest.setGrantTypes(registrationRequest.getGrantTypes());
 
-        return appRegistrationRequest;
+        // Get the redirect URIs based on the presence of software statement
+        List<String> redirectUris = StringUtils.isEmpty(registrationRequest.getSoftwareStatement())
+                ? registrationRequest.getCallbackUris()
+                : registrationRequest.getSoftwareStatementBody().getCallbackUris();
 
+        appRegistrationRequest.setRedirectUris(redirectUris);
+
+        return appRegistrationRequest;
     }
 
     public static ApplicationUpdateRequest getApplicationUpdateRequest(RegistrationRequest registrationRequest,
-                                                                       boolean useSoftwareIdAsAppName) {
-        String applicationName;
-        if (useSoftwareIdAsAppName) {
-            applicationName = (registrationRequest.getSoftwareStatement() != null) ?
-                    registrationRequest.getSoftwareStatementBody().getSoftwareId() :
-                    registrationRequest.getSoftwareId();
-        } else {
-            applicationName = RegistrationUtils.getSafeApplicationName(registrationRequest.getSoftwareStatementBody()
-                            .getClientName());
-        }
+                                                                       String applicationName) {
 
         ApplicationUpdateRequest applicationUpdateRequest = new ApplicationUpdateRequest();
         applicationUpdateRequest.setClientName(applicationName);
-
-        // Set the redirect URIs based on the presence of the software statement
-        applicationUpdateRequest.setRedirectUris(
-                StringUtils.isBlank(registrationRequest.getSoftwareStatement()) ?
-                        registrationRequest.getCallbackUris() :
-                        registrationRequest.getSoftwareStatementBody().getCallbackUris());
-
         applicationUpdateRequest.setGrantTypes(registrationRequest.getGrantTypes());
 
-        return applicationUpdateRequest;
+        // Get the redirect URIs based on the presence of software statement
+        List<String> redirectUris = StringUtils.isEmpty(registrationRequest.getSoftwareStatement())
+                ? registrationRequest.getCallbackUris()
+                : registrationRequest.getSoftwareStatementBody().getCallbackUris();
 
+        applicationUpdateRequest.setRedirectUris(redirectUris);
+
+        return applicationUpdateRequest;
+    }
+    /**
+     * Retrieves the application name from the registration request.
+     *
+     * @param request  registration or update request
+     * @param useSoftwareIdAsAppName  Indicates whether to use the software ID as the application name
+     * @return The application name
+     */
+    public static String getApplicationName(RegistrationRequest request, boolean useSoftwareIdAsAppName) {
+        if (useSoftwareIdAsAppName) {
+            // If the request does not contain a software statement, get the software Id directly from the request
+            if (StringUtils.isEmpty(request.getSoftwareStatement())) {
+                return request.getSoftwareId();
+            }
+            return request.getSoftwareStatementBody().getSoftwareId();
+        }
+        return RegistrationUtils.getSafeApplicationName(request.getSoftwareStatementBody().getClientName());
+    }
+
+    /**
+     * Retrieves the JWKS URI from the registration request based on the presence of the software statement.
+     *
+     * @param registrationRequest  registration or update request
+     * @param jwksEndpointName  name used for the JWKS endpoint in the software statement
+     * @return JWKS URI.
+     */
+    public static String getJwksUriFromRequest(RegistrationRequest registrationRequest, String jwksEndpointName) {
+        if (StringUtils.isEmpty(registrationRequest.getSoftwareStatement())) {
+            return registrationRequest.getJwksURI();
+        }
+        if (StringUtils.isNotEmpty(jwksEndpointName)) {
+            return registrationRequest.getSsaParameters().get(jwksEndpointName).toString();
+        }
+        return registrationRequest.getSoftwareStatementBody().getJwksURI();
     }
 
     public static ArrayList<ServiceProviderProperty> getServiceProviderPropertyList
@@ -183,7 +197,7 @@ public class RegistrationUtils {
         for (ServiceProviderProperty spProperty : spPropertyList) {
             if (spProperty.getValue().contains(DCRCommonConstants.ARRAY_ELEMENT_SEPERATOR)) {
                 List<Object> metaDataList = Stream.of(spProperty.getValue()
-                        .split(DCRCommonConstants.ARRAY_ELEMENT_SEPERATOR))
+                                .split(DCRCommonConstants.ARRAY_ELEMENT_SEPERATOR))
                         .map(String::trim)
                         .collect(Collectors.toList());
                 getJsonElementListFromString(metaDataList);
@@ -212,13 +226,12 @@ public class RegistrationUtils {
 
     }
 
-    public static Map<String, String> getAlteredApplicationAttributes(RegistrationRequest registrationRequest)
-            throws ParseException {
+    public static Map<String, String> getAlteredApplicationAttributes(RegistrationRequest registrationRequest) {
 
         Map<String, String> alteredAppAttributeMap = new HashMap<>();
         addAttributes(registrationRequest.getRequestParameters(), alteredAppAttributeMap);
 
-        if (registrationRequest.getSoftwareStatement() != null) {
+        if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
             //add ssa attributes
             addAttributes(registrationRequest.getSsaParameters(), alteredAppAttributeMap);
             //add ssa issuer

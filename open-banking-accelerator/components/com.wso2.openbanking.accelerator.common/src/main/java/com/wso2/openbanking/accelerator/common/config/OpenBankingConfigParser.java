@@ -564,31 +564,32 @@ public class OpenBankingConfigParser {
                 new QName(OpenBankingConstants.OB_CONFIG_QNAME, OpenBankingConstants.DCR_CONFIG_TAG));
 
         if (dcrElement != null) {
-            OMElement regulatoryAPINames = dcrElement.getFirstChildWithName(
-                    new QName(OpenBankingConstants.OB_CONFIG_QNAME, OpenBankingConstants.REGULATORY_APINAMES));
+            OMElement regulatoryAPIs = dcrElement.getFirstChildWithName(
+                    new QName(OpenBankingConstants.OB_CONFIG_QNAME, OpenBankingConstants.REGULATORY_API_NAMES));
 
-            if (regulatoryAPINames != null) {
+            if (regulatoryAPIs != null) {
 
-                //obtaining each scope under allowed scopes
+                //obtaining each regulatory API under allowed regulatory APIs
                 Iterator environmentIterator =
-                        regulatoryAPINames.getChildrenWithLocalName(OpenBankingConstants.REGULATORY_API);
+                        regulatoryAPIs.getChildrenWithLocalName(OpenBankingConstants.REGULATORY_API);
 
                 while (environmentIterator.hasNext()) {
-                    OMElement scopeElem = (OMElement) environmentIterator.next();
-                    String scopeName = scopeElem.getAttributeValue(new QName("name"));
-                    String rolesStr = scopeElem.getAttributeValue(new QName("roles"));
+                    OMElement regulatoryAPIElem = (OMElement) environmentIterator.next();
+                    String regulatoryAPIName = regulatoryAPIElem.getAttributeValue(new QName(
+                            OpenBankingConstants.API_NAME));
+                    String rolesStr = regulatoryAPIElem.getAttributeValue(new QName(
+                            OpenBankingConstants.API_ROLE));
                     if (StringUtils.isNotEmpty(rolesStr)) {
                         List<String> rolesList = Arrays.stream(rolesStr.split(","))
                                 .map(String::trim)
                                 .collect(Collectors.toList());
-                        allowedAPIs.put(scopeName, rolesList);
-                    } else if (StringUtils.isEmpty(rolesStr))  {
-                        allowedAPIs.put(scopeName, Collections.emptyList());
+                        allowedAPIs.put(regulatoryAPIName, rolesList);
+                    } else {
+                        allowedAPIs.put(regulatoryAPIName, Collections.emptyList());
                     }
                 }
             }
         }
-
     }
 
     private void buildOBEventExecutors() {
@@ -1419,7 +1420,7 @@ public class OpenBankingConfigParser {
     public String getSoftwareEnvIdentificationSSAPropertyValueForSandbox() {
         return getConfigElementFromKey(OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX) == null ?
                 "sandbox" : (String) getConfigElementFromKey(
-                        OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX);
+                OpenBankingConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX);
     }
 
     /**

@@ -305,7 +305,7 @@ public class DCRExecutorTest {
         publishedAPIs.add(dcrApi);
 
         DCRExecutor dcrExecutor = new DCRExecutor();
-        List<String> filteredAPIList = dcrExecutor.filterRegulatorAPIs(configuredAPIList, publishedAPIs, dcrRoles);
+        List<String> filteredAPIList = dcrExecutor.filterRegulatoryAPIs(configuredAPIList, publishedAPIs, dcrRoles);
         Assert.assertEquals(filteredAPIList.get(0), "1");
     }
 

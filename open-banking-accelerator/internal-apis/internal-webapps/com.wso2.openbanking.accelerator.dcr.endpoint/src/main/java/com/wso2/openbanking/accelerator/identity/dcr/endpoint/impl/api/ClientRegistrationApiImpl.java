@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.RegistrationConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.service.RegistrationServiceHandler;
@@ -31,6 +32,7 @@ import com.wso2.openbanking.accelerator.identity.dcr.validation.RegistrationVali
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
@@ -175,8 +177,10 @@ public class ClientRegistrationApiImpl {
 
             registrationRequest.setRequestParameters(requestAttributes);
 
-            if (registrationRequest.getSoftwareStatement() != null) {
-                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
+            if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+                //decode SSA if provided in the registration request
+                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(),
+                                OpenBankingConstants.JWT_BODY)
                         .toString();
                 Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
                 registrationRequest.setSsaParameters(ssaAttributesMap);
@@ -261,14 +265,13 @@ public class ClientRegistrationApiImpl {
             }
 
             registrationRequest.setRequestParameters(requestAttributes);
-
-            //decode SSA if provided in the registration request
-            if (registrationRequest.getSoftwareStatement() != null) {
-                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
+            if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+                //decode SSA if provided in the registration request
+                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(),
+                                OpenBankingConstants.JWT_BODY)
                         .toString();
                 Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
                 registrationRequest.setSsaParameters(ssaAttributesMap);
-
             }
 
             RegistrationUtils.validateRegistrationCreation(registrationRequest);
@@ -281,7 +284,7 @@ public class ClientRegistrationApiImpl {
             log.error("Error occurred while creating the Service provider", e);
             if (DCRCommonConstants.DUPLICATE_APPLICATION_NAME.equalsIgnoreCase(e.getErrorCode())) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                        .getErrorDTO(DCRCommonConstants.INVALID_META_DATA, e.getErrorDescription()))
+                                .getErrorDTO(DCRCommonConstants.INVALID_META_DATA, e.getErrorDescription()))
                         .build();
             }
         } catch (IdentityApplicationManagementException e) {
@@ -289,7 +292,7 @@ public class ClientRegistrationApiImpl {
         } catch (DCRValidationException e) {
             log.error("Error occurred while validating request", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                    .getErrorDTO(e.getErrorCode(), e.getErrorDescription()))
+                            .getErrorDTO(e.getErrorCode(), e.getErrorDescription()))
                     .build();
         } catch (net.minidev.json.parser.ParseException | IOException e) {
             log.error("Error occurred while parsing the request", e);
