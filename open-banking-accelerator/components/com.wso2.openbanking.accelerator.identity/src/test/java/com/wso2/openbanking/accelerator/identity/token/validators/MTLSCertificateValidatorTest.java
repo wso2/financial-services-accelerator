@@ -96,6 +96,7 @@ public class MTLSCertificateValidatorTest extends PowerMockTestCase {
     public void testMTLSCertValidationWithValidCertificate() throws IOException, ServletException {
 
         request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_CONTENT);
+
         filter.doFilter(request, response, filterChain);
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
     }
