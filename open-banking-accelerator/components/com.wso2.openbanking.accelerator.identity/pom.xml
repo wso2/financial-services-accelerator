@@ -164,6 +164,18 @@
             <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.throttler.service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.outbound.auth.push</groupId>
+            <artifactId>org.wso2.carbon.identity.application.authenticator.push.device.handler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.outbound.auth.push</groupId>
+            <artifactId>org.wso2.carbon.identity.application.authenticator.push</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.outbound.auth.push</groupId>
+            <artifactId>org.wso2.carbon.identity.application.authenticator.push.common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -209,6 +221,7 @@
                         <exclude>**/*PushAuthErrorResponse.class</exclude>
                         <exclude>**/*DefaultSPMetadataFilter.class</exclude>
                         <exclude>**/*IdentityServiceExporter.class</exclude>
+                        <exclude>**/*AppAuthValidationJWT.class*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

@@ -95,8 +95,8 @@ public class MTLSCertificateValidatorTest extends PowerMockTestCase {
     @Test(description = "Test whether the expired certificate fails")
     public void testMTLSCertValidationWithValidCertificate() throws IOException, ServletException {
 
-        request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_CONTENT);
-
+        //TODO : Rename back to TestConstants.CERTIFICATE_CONTENT
+        request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_TEMP_CONTENT);
         filter.doFilter(request, response, filterChain);
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
     }
