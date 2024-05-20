@@ -221,7 +221,7 @@
                         <exclude>**/*PushAuthErrorResponse.class</exclude>
                         <exclude>**/*DefaultSPMetadataFilter.class</exclude>
                         <exclude>**/*IdentityServiceExporter.class</exclude>
-                        <exclude>**/*AppAuthValidationJWT.class*</exclude>
+                        <exclude>**/*DeviceVerificationToken.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

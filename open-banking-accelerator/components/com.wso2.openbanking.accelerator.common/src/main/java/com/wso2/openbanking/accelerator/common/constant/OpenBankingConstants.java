@@ -259,3 +259,4 @@ public class OpenBankingConstants {
     public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
     public static final String DOT_SEPARATOR = ".";
 }
+

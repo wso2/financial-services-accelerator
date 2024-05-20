@@ -61,7 +61,6 @@ public class JWTUtils {
 
     private static final Log log = LogFactory.getLog(JWTUtils.class);
 
-
     /**
      * Decode request JWT.
      *

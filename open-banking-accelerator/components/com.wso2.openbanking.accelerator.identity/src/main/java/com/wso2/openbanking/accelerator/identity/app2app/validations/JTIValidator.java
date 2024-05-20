@@ -46,8 +46,6 @@ public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVeri
 
     private boolean validateJTI(String jti) {
 
-
-
         if (getFromCache(jti) != null) {
             return false;
         }
