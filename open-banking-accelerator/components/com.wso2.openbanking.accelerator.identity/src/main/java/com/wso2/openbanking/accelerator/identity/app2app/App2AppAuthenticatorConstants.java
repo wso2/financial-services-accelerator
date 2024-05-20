@@ -25,7 +25,6 @@ public class App2AppAuthenticatorConstants {
 
     public static final String AUTHENTICATOR_NAME = "app2app";
     public static final String AUTHENTICATOR_FRIENDLY_NAME = "App2App Authenticator";
-    public static final String SIGNING_ALGORITHM = "RSA";
     public static final String DEVICE_VERIFICATION_TOKEN_IDENTIFIER = "deviceVerificationToken";
     public static final String SESSION_DATA_KEY = "sessionDataKey";
     public static final String JWT_VALIDATION_EXCEPTION_MESSAGE = "Error while validating JWT: ";
@@ -38,8 +37,8 @@ public class App2AppAuthenticatorConstants {
     public static final String PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE
             = "Error occurred in Push Device handler client: ";
     public static final String INITIALIZATION_ERROR_MESSAGE = "Initializing App2App authenticator is not supported.";
-    public static final String MANDATORY_PARAMETER_ERROR_MESSAGE
-            = "Mandatory parameter secret null or empty in request.";
+    public static final String DEVICE_VERIFICATION_TOKEN_MISSING_ERROR_MESSAGE
+            = "Device verification token null or empty in request.";
     public static final String USER_AUTHENTICATED_MSG
             = "User {%s} authenticated by app2app authenticator successfully.";
     public static final String OPEN_BANKING_EXCEPTION_MESSAGE

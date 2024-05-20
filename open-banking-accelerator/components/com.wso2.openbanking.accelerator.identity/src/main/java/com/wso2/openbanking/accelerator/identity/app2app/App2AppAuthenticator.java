@@ -173,7 +173,8 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
             Hence authentication process will be terminated.
          */
         log.error(App2AppAuthenticatorConstants.INITIALIZATION_ERROR_MESSAGE);
-        throw new AuthenticationFailedException(App2AppAuthenticatorConstants.MANDATORY_PARAMETER_ERROR_MESSAGE);
+        throw new AuthenticationFailedException(
+                App2AppAuthenticatorConstants.DEVICE_VERIFICATION_TOKEN_MISSING_ERROR_MESSAGE);
     }
 
     /**
