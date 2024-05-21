@@ -25,9 +25,10 @@ import java.util.Date;
 /**
  * Data Provider for JWTUtilsTest.
  */
-public class JWTUtilsDataProvider {
+public class JWTUtilsTestDataProvider {
 
     @DataProvider(name = "jwtStrings")
+
     public Object[][] getJwtStrings() {
 
         return new Object[][] {

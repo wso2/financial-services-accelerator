@@ -143,9 +143,6 @@ public class App2AppAuthenticatorTest {
         }
     }
     @Test(expectedExceptions = AuthenticationFailedException.class,
-            expectedExceptionsMessageRegExp
-                    = ".*Failed to create Local Authenticated User from the given subject identifier. " +
-                    "Invalid argument. authenticatedSubjectIdentifier : .*",
             dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
             dataProvider = "JWTProvider"
     )

@@ -25,13 +25,12 @@ import org.testng.annotations.DataProvider;
  */
 public class App2AppAuthenticatorTestDataProvider {
     private static final String validAppAuthIdentifier =
-            "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaWQiOiI1NTBmNDQ1My05NTQ3LT" +
-            "RlNGYtYmUwNi04ZGIyZWVkNTYzYjMiLCJsb2dpbkhpbnQiOiJhZG1pbkB3c28yLmNvb" +
-            "SIsImlhdCI6MTcxNDkyOTk2MCwianRpIjoiNmU0MWM4N2UtYWJmNi00ZjU1LTliNjQt" +
-            "NjYwMWFlODg2NjZjIiwiZXhwIjoxNzE0OTMxNzYwLCJuYmYiOjE3MTQ5Mjk5NjB9.WB" +
-            "7qvq3w6htUop600H5C4HwL-r0wb8GekJE6X4-zrFn2IofEcwV0yisSE5fH8uyrzdmVm" +
-            "OiBgFXY9Y9cUVlS6t9HMbhlzs2qY0bVzDYVNG7GjgnYIcyh3lx9obqL9O3DJKNre5GS" +
-            "3b-ATPN6VvYC9F2KnwwuoNky-3Wlcw3G9-E";
+            "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaWQiOiI1NTBmNDQ1My05NTQ3LTRlNGYtYmUwNi04ZGIyZWVkNTYzYjMiLCJsb" +
+            "2dpbl9oaW50IjoiYWRtaW5Ad3NvMi5jb20iLCJpYXQiOjE3MTYyNjQ5NTUsImp0aSI6IjA1NDU1Zjc1LTkwMmUtNDFhNi04ZDg4LWV" +
+            "jZTUwZDM2OTc2NSIsImRpZ2VzdCI6IlNIQS0yNTY9RWtIOGZQZ1oyVFkyWEduczhjNVZ2Y2U4aDNEQjgzVit3NDd6SGl5WWZpUT0iL" +
+            "CJleHAiOjE3MTYyNjY3NTUsIm5iZiI6MTcxNjI2NDk1NX0.C0OGMkkaosP2FSLFtqmCgRhrCG7nCJCDLsikkbFWwc5NdzxCFyYUQVI" +
+            "Zx4HIRQdabg5K8Ox-WYeqwdhajaKs5Uk63tz5UjlPzX0IKsklXgnWUxdMwfrYsu-znTce0Tc-Ph0h8a8jXF2CKTOfWxwuQvgevSqJe" +
+            "-K6zrbJmO8imu4";
     @DataProvider(name = "app_auth_identifier_provider")
     public Object[][] getAppAuthIdentifier() {
 

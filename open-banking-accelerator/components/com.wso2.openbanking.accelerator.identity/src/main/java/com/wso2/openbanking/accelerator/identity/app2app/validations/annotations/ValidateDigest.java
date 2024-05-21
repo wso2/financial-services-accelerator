@@ -18,7 +18,7 @@
 
 package com.wso2.openbanking.accelerator.identity.app2app.validations.annotations;
 
-import com.wso2.openbanking.accelerator.identity.app2app.validations.JTIValidator;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.DigestValidator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -31,15 +31,15 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for validating JWT ID of a device verification token.
+ * Annotation class for validating digest.
  */
 @Target(TYPE)
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {JTIValidator.class})
-public @interface ValidateJTI {
+@Constraint(validatedBy = {DigestValidator.class})
+public @interface ValidateDigest {
 
-    String message() default "JTI has been replayed";
+    String message() default "Digest validation failed.";
 
     Class<?>[] groups() default {};
 

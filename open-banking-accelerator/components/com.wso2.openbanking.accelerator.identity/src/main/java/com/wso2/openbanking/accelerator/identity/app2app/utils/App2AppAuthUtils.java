@@ -37,7 +37,6 @@ import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Utils class for Authentication related logic implementations.
@@ -96,64 +95,34 @@ public class App2AppAuthUtils {
     }
 
     /**
-     * Retrieves the registered device associated with the specified device ID and user ID.
+     * Retrieve Public key of the device specified if it is registered under specified user.
      * TODO: Optimise this code to retrieve device by did and validate userID.
      * Github issue :{<a href="https://github.com/wso2-extensions/identity-outbound-auth-push/issues/144">...</a>}
      *
-     * @param deviceId the ID of the device to retrieve
-     * @param userId the ID of the user who owns the device
-     * @return the registered device associated with the specified IDs
+     * @param deviceId deviceId of the device where the public key is required
+     * @param userId userId of the user
+     * @return the public key of the intended device.
      * @throws PushDeviceHandlerServerException if an error occurs on the server side while handling the device
      * @throws IllegalArgumentException if the provided device identifier does not exist
      * @throws PushDeviceHandlerClientException if an error occurs on the client side while handling the device
      */
-    public static Device getRegisteredDevice(String deviceId, String userId, DeviceHandler deviceHandler)
-            throws PushDeviceHandlerServerException, IllegalArgumentException,
-            PushDeviceHandlerClientException, OpenBankingException {
+    public static String getPublicKey(String deviceId, String userId, DeviceHandler deviceHandler)
+            throws PushDeviceHandlerServerException, IllegalArgumentException, PushDeviceHandlerClientException,
+            OpenBankingException {
 
         /*
          It is important to verify the device is registered under the given user
          as public key is associated with device not the user.
          */
         List<Device> deviceList = deviceHandler.listDevices(userId);
-        //If a device registered under the given user matches the specified deviceId return the device
-        Optional<Device> optionalDevice = deviceList.stream()
-                .filter(device -> StringUtils.equals(device.getDeviceId(), deviceId))
-                .findFirst();
-        //If no device found throw exception
-        Device device =  optionalDevice.orElseThrow(() ->
-                new OpenBankingException("Provided Device ID doesn't match any device registered under user."));
-        //If a device is found set the public key
-        device.setPublicKey(deviceHandler.getPublicKey(deviceId));
-        return device;
-    }
-
-    /**
-     * Retrieves the public key associated with the specified device.
-     *
-     * @param device the device from which to retrieve the public key
-     * @return the public key associated with the device
-     */
-    public static String getPublicKeyFromDevice(Device device) {
-
-        return device.getPublicKey();
-    }
-
-    /**
-     * Retrieve Public key of the device specified if it is registered under specified user.
-     *
-     * @param deviceID deviceID of the device where the public key is required
-     * @param userID userID of the user
-     * @return the public key
-     * @throws PushDeviceHandlerServerException if an error occurs on the server side while handling the device
-     * @throws IllegalArgumentException if the provided device identifier does not exist
-     * @throws PushDeviceHandlerClientException if an error occurs on the client side while handling the device
-     */
-    public static String getPublicKey(String deviceID, String userID, DeviceHandler deviceHandler)
-            throws PushDeviceHandlerServerException, IllegalArgumentException, PushDeviceHandlerClientException,
-            OpenBankingException {
-
-        return getPublicKeyFromDevice(getRegisteredDevice(deviceID, userID, deviceHandler));
+        //If none of the devices registered under the given user matches the specified deviceId then throw a exception
+        deviceList.stream()
+                .filter(registredDevice -> StringUtils.equals(registredDevice.getDeviceId(), deviceId))
+                .findFirst()
+                .orElseThrow(() ->
+                        new OpenBankingException("Provided Device ID doesn't match any device registered under user."));
+        //If a device is found retrieve and return the public key
+        return deviceHandler.getPublicKey(deviceId);
     }
 
     /**
@@ -166,7 +135,7 @@ public class App2AppAuthUtils {
         /*
             App2AppValidationOrder validation order
                 1.Required Params validation
-                2.Validity Validations - Signature, JTI, Timeliness will be validated.
+                2.Validity Validations - Signature, JTI, Timeliness, Digest will be validated.
          */
         String error = OpenBankingValidator.getInstance()
                 .getFirstViolation(deviceVerificationToken, App2AppValidationOrder.class);

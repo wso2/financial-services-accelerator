@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.validations;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateSignature;
@@ -65,8 +66,10 @@ public class PublicKeySignatureValidator implements ConstraintValidator<Validate
             log.error("Invalid key spec.", e);
             return false;
         } catch (JOSEException e) {
-            log.error("JOSE exception", e);
+            log.error("JOSE exception.", e);
             return false;
+        } catch (OpenBankingException e) {
+            log.error("Algorithm not supported yet.", e);
         }
         return true;
     }

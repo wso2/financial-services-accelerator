@@ -28,7 +28,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating expiry of a device verification token..
+ * Validator class for validating expiry of a device verification token.
  */
 public class ExpiryValidator implements ConstraintValidator<ValidateExpiry, DeviceVerificationToken> {
 

@@ -26,7 +26,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the JWT ID of a device verification token..
+ * Validator class for validating the JWT ID of a device verification token.
  */
 public class JTIValidator implements ConstraintValidator<ValidateJTI, DeviceVerificationToken> {
 

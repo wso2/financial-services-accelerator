@@ -18,7 +18,7 @@
 
 package com.wso2.openbanking.accelerator.common.test.util;
 
-import com.wso2.openbanking.accelerator.common.test.util.testutils.JWTUtilsDataProvider;
+import com.wso2.openbanking.accelerator.common.test.util.testutils.JWTUtilsTestDataProvider;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -31,42 +31,42 @@ import java.util.Date;
  */
 public class JWTUtilsTest {
 
-    @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "jwtStrings")
+    @Test(dataProviderClass = JWTUtilsTestDataProvider.class, dataProvider = "jwtStrings")
     public void testIsJWT(String jwtString, boolean expected) {
 
-        Assert.assertEquals(JWTUtils.isJWT(jwtString), expected);
+        Assert.assertEquals(JWTUtils.isValidJWSFormat(jwtString), expected);
     }
 
-    @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "validParsableJwtStrings")
+    @Test(dataProviderClass = JWTUtilsTestDataProvider.class, dataProvider = "validParsableJwtStrings")
     public void testGetSignedJWT(String jwtString) throws ParseException {
 
         Assert.assertNotNull(JWTUtils.getSignedJWT(jwtString));
     }
 
     @Test(expectedExceptions = ParseException.class,
-            dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "validNotParsableJwtStrings")
+            dataProviderClass = JWTUtilsTestDataProvider.class, dataProvider = "validNotParsableJwtStrings")
     public void testGetSignedJWTWIthNotParsableJWT(String jwtString) throws ParseException {
 
         JWTUtils.getSignedJWT(jwtString);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
-            dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "notValidJwtStrings")
+            dataProviderClass = JWTUtilsTestDataProvider.class, dataProvider = "notValidJwtStrings")
     public void testGetSignedJWTWIthNotValidJWT(String jwtString) throws ParseException {
 
         JWTUtils.getSignedJWT(jwtString);
     }
 
-    @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "expiryTimeProvider")
+    @Test(dataProviderClass = JWTUtilsTestDataProvider.class, dataProvider = "expiryTimeProvider")
     public void testValidExpirationTime(Date time, long timeSkew, boolean expected) {
 
         Assert.assertEquals(JWTUtils.isValidExpiryTime(time, timeSkew), expected);
     }
 
-    @Test(dataProviderClass = JWTUtilsDataProvider.class, dataProvider = "nbfProvider")
+    @Test(dataProviderClass = JWTUtilsTestDataProvider.class, dataProvider = "nbfProvider")
     public void testValidNotValidBefore(Date time, long timeSkew, boolean expected) {
 
-        Assert.assertEquals(JWTUtils.isvalidNotValidBeforeTime(time, timeSkew), expected);
+        Assert.assertEquals(JWTUtils.isValidNotValidBeforeTime(time, timeSkew), expected);
     }
 }
 

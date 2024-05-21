@@ -155,7 +155,7 @@ public class App2AppAuthUtilsTest {
         deviceList.add(deviceMockI);
         deviceList.add(deviceMockII);
         Mockito.when(deviceHandlerMock.listDevices(userID)).thenReturn(deviceList);
-        Mockito.when(deviceHandlerMock.getPublicKey(userID)).thenReturn(publicKey);
+        Mockito.when(deviceHandlerMock.getPublicKey(deviceID)).thenReturn(publicKey);
         // Call the method under test
         String result = App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandlerMock);
         // Verify the result

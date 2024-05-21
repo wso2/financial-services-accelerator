@@ -30,7 +30,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for validating JWT Signature of a device verification token..
+ * Annotation class for validating JWT Signature of a device verification token.
  */
 @Target(TYPE)
 @Retention(RUNTIME)

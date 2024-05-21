@@ -25,6 +25,7 @@ public class App2AppAuthenticatorConstants {
 
     public static final String AUTHENTICATOR_NAME = "app2app";
     public static final String AUTHENTICATOR_FRIENDLY_NAME = "App2App Authenticator";
+    public static final String REQUEST = "request";
     public static final String DEVICE_VERIFICATION_TOKEN_IDENTIFIER = "deviceVerificationToken";
     public static final String SESSION_DATA_KEY = "sessionDataKey";
     public static final String JWT_VALIDATION_EXCEPTION_MESSAGE = "Error while validating JWT: ";

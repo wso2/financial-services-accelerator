@@ -30,7 +30,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validation class for validating NBF of a device verification token..
+ * Validation class for validating NBF of a device verification token.
  */
 public class NBFValidator implements ConstraintValidator<ValidateNBF, DeviceVerificationToken> {
 
@@ -49,7 +49,7 @@ public class NBFValidator implements ConstraintValidator<ValidateNBF, DeviceVeri
                            ConstraintValidatorContext constraintValidatorContext) {
 
         Date notValidBefore = deviceVerificationToken.getNotValidBefore();
-        return JWTUtils.isvalidNotValidBeforeTime(notValidBefore, DEFAULT_TIME_SKEW_IN_SECONDS);
+        return JWTUtils.isValidNotValidBeforeTime(notValidBefore, DEFAULT_TIME_SKEW_IN_SECONDS);
     }
 }
 

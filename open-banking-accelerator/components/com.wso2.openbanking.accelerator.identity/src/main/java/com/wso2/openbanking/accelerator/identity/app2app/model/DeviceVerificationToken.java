@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.identity.app2app.model;
 import com.google.gson.annotations.SerializedName;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateDigest;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateExpiry;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateJTI;
 import com.wso2.openbanking.accelerator.identity.app2app.validations.annotations.ValidateNBF;
@@ -42,6 +43,7 @@ import javax.validation.constraints.NotNull;
 @ValidateSignature(groups = SignatureCheck.class)
 @ValidateExpiry(groups = ValidityChecks.class)
 @ValidateNBF(groups = ValidityChecks.class)
+@ValidateDigest(groups = ValidityChecks.class)
 public class DeviceVerificationToken {
 
     @SerializedName(DeviceVerificationTokenConstants.DEVICE_IDENTIFIER)
@@ -56,8 +58,11 @@ public class DeviceVerificationToken {
     private String jti;
     @SerializedName(DeviceVerificationTokenConstants.ISSUED_TIME)
     private Date issuedTime;
+    @SerializedName(DeviceVerificationTokenConstants.DIGEST)
+    private String digest;
     private SignedJWT signedJWT;
     private String publicKey;
+    private String requestObject;
 
     public DeviceVerificationToken(SignedJWT signedJWT)
             throws ParseException {
@@ -70,7 +75,7 @@ public class DeviceVerificationToken {
         this.jti = jwtClaimsSet.getJWTID();
         this.deviceId = getClaim(jwtClaimsSet, DeviceVerificationTokenConstants.DEVICE_IDENTIFIER);
         this.loginHint = getClaim(jwtClaimsSet, DeviceVerificationTokenConstants.LOGIN_HINT);
-
+        this.digest = getClaim(jwtClaimsSet, DeviceVerificationTokenConstants.DIGEST);
     }
 
     @NotBlank(message = "Required parameter did cannot be null or empty.", groups = MandatoryChecks.class)
@@ -131,6 +136,11 @@ public class DeviceVerificationToken {
         this.publicKey = publicKey;
     }
 
+    public String getDigest() {
+
+        return this.digest;
+    }
+
     /**
      * Retrieves the value of the specified claim from the provided JWTClaimsSet.
      *
@@ -142,6 +152,14 @@ public class DeviceVerificationToken {
 
         Object claimObj = jwtClaimsSet.getClaim(claim);
         return (String) claimObj;
+    }
+
+    public String getRequestObject() {
+        return requestObject;
+    }
+
+    public void setRequestObject(String requestObject) {
+        this.requestObject = requestObject;
     }
 }
 
