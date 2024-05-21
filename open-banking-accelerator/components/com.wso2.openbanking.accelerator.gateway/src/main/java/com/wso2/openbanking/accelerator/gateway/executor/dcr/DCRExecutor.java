@@ -150,25 +150,26 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         }
         String basicAuthHeader = GatewayUtils.getBasicAuthHeader(urlMap.get(userName).toString(),
                 String.valueOf((char[]) urlMap.get(GatewayConstants.PASSWORD)));
-        String fullBackEndURL = urlMap.get(GatewayConstants.IAM_HOSTNAME).toString().concat("/")
-                .concat(obDCREndpoint);
         Map<String, List<String>> regulatoryAPIs = GatewayDataHolder.getInstance()
                 .getOpenBankingConfigurationService().getAllowedAPIs();
 
         switch (obapiResponseContext.getMsgInfo().getHttpMethod().toUpperCase()) {
             case HttpMethod.POST :
                 if (HttpStatus.SC_CREATED == obapiResponseContext.getStatusCode()) {
-                    processPostRequestResponse(obapiResponseContext, basicAuthHeader, fullBackEndURL, regulatoryAPIs);
+                    String fullBackEndURL = urlMap.get(GatewayConstants.IAM_HOSTNAME).toString().concat("/")
+                            .concat(obDCREndpoint);
+                    postProcessResponseForRegister(obapiResponseContext, basicAuthHeader, fullBackEndURL,
+                            regulatoryAPIs);
                 }
                 break;
             case HttpMethod.PUT :
                 if (HttpStatus.SC_OK == obapiResponseContext.getStatusCode()) {
-                    processPutRequestResponse(obapiResponseContext, basicAuthHeader, regulatoryAPIs);
+                    postProcessResponseForUpdate(obapiResponseContext, basicAuthHeader, regulatoryAPIs);
                 }
                 break;
             case HttpMethod.DELETE :
                 if (HttpStatus.SC_NO_CONTENT == obapiResponseContext.getStatusCode()) {
-                    processDeleteRequestResponse(obapiResponseContext, basicAuthHeader);
+                    postProcessResponseForDelete(obapiResponseContext, basicAuthHeader);
                 }
         }
     }
@@ -250,7 +251,15 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         }
     }
 
-    private void processPostRequestResponse(OBAPIResponseContext obapiResponseContext, String basicAuthHeader,
+    /**
+     * Method to handle response of DCR POST requests.
+     *
+     * @param obapiResponseContext OB response context object
+     * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
+     * @param fullBackEndURL URL of the OB DCR Endpoint
+     * @param regulatoryAPIs A map containing regulatory API names and the related authorized roles
+     */
+    private void postProcessResponseForRegister(OBAPIResponseContext obapiResponseContext, String basicAuthHeader,
                                             String fullBackEndURL, Map<String, List<String>> regulatoryAPIs) {
 
         try {
@@ -425,7 +434,14 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         }
     }
 
-    private void processPutRequestResponse(OBAPIResponseContext obapiResponseContext, String basicAuthHeader,
+    /**
+     * Method to handle response of DCR PUT requests.
+     *
+     * @param obapiResponseContext OB response context object
+     * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
+     * @param regulatoryAPIs A map containing regulatory API names and the related authorized roles
+     */
+    private void postProcessResponseForUpdate(OBAPIResponseContext obapiResponseContext, String basicAuthHeader,
                                            Map<String, List<String>> regulatoryAPIs) {
 
         JsonParser jsonParser = new JsonParser();
@@ -511,13 +527,8 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                         .flatMap(unAuthorizedApis -> unAuthorizedApis.stream()
                                 .map(unAuthorizedApi -> String.format("%s/%s",
                                         urlMap.get(GatewayConstants.API_GET_SUBSCRIBED).toString(), unAuthorizedApi))
-                                .filter(endpoint -> {
-                                    try {
-                                        return !callDelete(endpoint, GatewayConstants.BEARER_TAG.concat(token));
-                                    } catch (OpenBankingException | IOException e) {
-                                        return false;
-                                    }
-                                })
+                                .filter(endpoint -> isSubscriptionDeletionFailed(endpoint, GatewayConstants.BEARER_TAG
+                                        .concat(token)))
                                 .findAny())
                         .ifPresent(endpoint -> {
                             log.error("Error while unsubscribing from API: " + endpoint);
@@ -578,7 +589,14 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         }
     }
 
-    private void processDeleteRequestResponse(OBAPIResponseContext obapiResponseContext, String basicAuthHeader) {
+
+    /**
+     * Method to handle response for DCR DELETE requests.
+     *
+     * @param obapiResponseContext OB response context object
+     * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
+     */
+    private void postProcessResponseForDelete(OBAPIResponseContext obapiResponseContext, String basicAuthHeader) {
         try {
             JsonObject dcrPayload = getIAMDCRPayload(obapiResponseContext.getApiRequestInfo().getConsumerKey());
             JsonElement registrationResponse = callPost(urlMap.get(GatewayConstants.IAM_DCR_URL).toString(),
@@ -838,6 +856,22 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
             CloseableHttpResponse appDeletedResponse = httpClient.execute(httpDelete);
             int status = appDeletedResponse.getStatusLine().getStatusCode();
             return (status == 204 || status == 200);
+        }
+    }
+
+    /**
+     * Check if the deletion of subscription at a given endpoint failed.
+     *
+     * @param endpoint   The URL of the endpoint where the subscription deletion is attempted
+     * @param authHeader The authorization header to be used in the HTTP request
+     * @return True if the subscription deletion fails or an exception occurs, false otherwise
+     */
+  protected boolean isSubscriptionDeletionFailed(String endpoint, String authHeader) {
+
+        try {
+            return !callDelete(endpoint, GatewayConstants.BEARER_TAG.concat(authHeader));
+        } catch (OpenBankingException | IOException e) {
+            return true;
         }
     }
 
