@@ -252,7 +252,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle response of DCR POST requests.
+     * Method to handle response for DCR POST requests.
      *
      * @param obapiResponseContext OB response context object
      * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
@@ -435,7 +435,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle response of DCR PUT requests.
+     * Method to handle response for DCR PUT requests.
      *
      * @param obapiResponseContext OB response context object
      * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
@@ -597,6 +597,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
      * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
      */
     private void postProcessResponseForDelete(OBAPIResponseContext obapiResponseContext, String basicAuthHeader) {
+
         try {
             JsonObject dcrPayload = getIAMDCRPayload(obapiResponseContext.getApiRequestInfo().getConsumerKey());
             JsonElement registrationResponse = callPost(urlMap.get(GatewayConstants.IAM_DCR_URL).toString(),
