@@ -120,7 +120,7 @@ public class App2AppAuthenticatorTest {
     }
 
     @Test(dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "JWTProvider")
+            dataProvider = "AppAuthIdentifierProvider")
     public void testProcessAuthenticationResponse_success(String jwtString) {
 
         PowerMockito.mockStatic(App2AppAuthUtils.class);
@@ -144,7 +144,7 @@ public class App2AppAuthenticatorTest {
     }
     @Test(expectedExceptions = AuthenticationFailedException.class,
             dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "JWTProvider"
+            dataProvider = "AppAuthIdentifierProvider"
     )
     public void testProcessAuthenticationResponse_IllegalArgumentException(String jwtString)
             throws AuthenticationFailedException {
@@ -163,7 +163,7 @@ public class App2AppAuthenticatorTest {
 
     @Test(expectedExceptions = AuthenticationFailedException.class,
             dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "JWTProvider"
+            dataProvider = "AppAuthIdentifierProvider"
     )
     public void testProcessAuthenticationResponse_ParseException(String jwtString)
             throws AuthenticationFailedException, ParseException {
@@ -181,7 +181,7 @@ public class App2AppAuthenticatorTest {
 
     @Test(expectedExceptions = AuthenticationFailedException.class,
             dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "JWTProvider"
+            dataProvider = "AppAuthIdentifierProvider"
     )
     public void testProcessAuthenticationResponse_UserStoreException(String jwtString)
             throws AuthenticationFailedException, UserStoreException {
@@ -203,7 +203,7 @@ public class App2AppAuthenticatorTest {
 
     @Test(expectedExceptions = AuthenticationFailedException.class,
             dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "JWTProvider"
+            dataProvider = "AppAuthIdentifierProvider"
     )
     public void testProcessAuthenticationResponse_PushDeviceHandlerServerException(String jwtString)
             throws AuthenticationFailedException, OpenBankingException, PushDeviceHandlerServerException,
@@ -227,7 +227,7 @@ public class App2AppAuthenticatorTest {
 
     @Test(expectedExceptions = AuthenticationFailedException.class,
             dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "JWTProvider"
+            dataProvider = "AppAuthIdentifierProvider"
     )
     public void testProcessAuthenticationResponse_PushDeviceHandlerClientException(String jwtString)
             throws AuthenticationFailedException, OpenBankingException, PushDeviceHandlerServerException,
@@ -251,7 +251,7 @@ public class App2AppAuthenticatorTest {
 
     @Test(expectedExceptions = AuthenticationFailedException.class,
             dataProviderClass = App2AppAuthenticatorTestDataProvider.class,
-            dataProvider = "JWTProvider"
+            dataProvider = "AppAuthIdentifierProvider"
     )
     public void testProcessAuthenticationResponse_OpenBankingException(String jwtString)
             throws AuthenticationFailedException, OpenBankingException, PushDeviceHandlerServerException,

@@ -23,7 +23,7 @@ import org.testng.annotations.DataProvider;
 /**
  * JWT Data provider for App2AppAuthValidation Testing.
  */
-public class JWTDataProvider {
+public class App2AppUtilsTestJWTDataProvider {
 
     private final String validPublicKey =
                     "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDLyl7YvRhy57IbxuhV4n7OZw0mmnnXNsDJmL4YQNXy2bRCs59pJb+TYO" +

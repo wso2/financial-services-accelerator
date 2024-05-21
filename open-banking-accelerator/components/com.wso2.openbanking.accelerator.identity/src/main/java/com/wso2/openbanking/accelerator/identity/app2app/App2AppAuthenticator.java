@@ -55,7 +55,19 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     private static DeviceHandler deviceHandler;
 
     /**
-     * {@inheritDoc}
+     * Constructor for the App2AppAuthenticator.
+     */
+    public App2AppAuthenticator() {
+
+        if (deviceHandler == null) {
+            deviceHandler = new DeviceHandlerImpl();
+        }
+    }
+
+    /**
+     * This method is used to get authenticator name.
+     *
+     * @return String Authenticator name.
      */
     @Override
     public String getName() {
@@ -64,7 +76,9 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     }
 
     /**
-     * {@inheritDoc}
+     * This method is used to get the friendly name of the authenticator.
+     *
+     * @return String Friendly name of the authenticator
      */
     @Override
     public String getFriendlyName() {
@@ -73,7 +87,16 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     }
 
     /**
-     * {@inheritDoc}
+     * This method processes the authentication response received from the client.
+     * It verifies the authenticity of the received JWT token, extracts necessary information,
+     * and performs validations before authenticating the user.
+     *
+     * @param httpServletRequest     The HTTP servlet request object containing the authentication response.
+     * @param httpServletResponse    The HTTP servlet response object for sending responses.
+     * @param authenticationContext  The authentication context containing information related to the authentication
+     *         process.
+     * @throws AuthenticationFailedException If authentication fails due to various reasons such as missing parameters,
+     *         parsing errors, JWT validation errors, or exceptions during authentication process.
      */
     @Override
     protected void processAuthenticationResponse(HttpServletRequest httpServletRequest,
@@ -97,9 +120,9 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
             //Checking whether deviceId and loginHint present in passed jwt
             if (StringUtils.isBlank(loginHint) || StringUtils.isBlank(deviceID)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(App2AppAuthenticatorConstants.REQUIRED_PRAMAS_MISSING_MESSAGE);
+                    log.debug(App2AppAuthenticatorConstants.REQUIRED_PARAMS_MISSING_MESSAGE);
                 }
-                throw new AuthenticationFailedException(App2AppAuthenticatorConstants.REQUIRED_PRAMAS_MISSING_MESSAGE);
+                throw new AuthenticationFailedException(App2AppAuthenticatorConstants.REQUIRED_PARAMS_MISSING_MESSAGE);
             }
 
             AuthenticatedUser userToBeAuthenticated =
@@ -121,27 +144,40 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
                         userToBeAuthenticated.getUserName()));
             }
         } catch (ParseException e) {
+            log.error(e.getMessage());
             throw new AuthenticationFailedException(App2AppAuthenticatorConstants.PARSE_EXCEPTION_MESSAGE, e);
         } catch (JWTValidationException e) {
-            throw new AuthenticationFailedException(App2AppAuthenticatorConstants.JWT_VALIDATION_EXCEPTION_MESSAGE, e);
+            log.error(e.getMessage());
+            throw new AuthenticationFailedException
+                    (App2AppAuthenticatorConstants.APP_AUTH_IDENTIFIER_VALIDATION_EXCEPTION_MESSAGE, e);
         } catch (OpenBankingException e) {
+            log.error(e.getMessage());
             throw new AuthenticationFailedException(App2AppAuthenticatorConstants.OPEN_BANKING_EXCEPTION_MESSAGE, e);
         } catch (PushDeviceHandlerServerException e) {
+            log.error(e.getMessage());
             throw new AuthenticationFailedException
                     (App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_SERVER_EXCEPTION_MESSAGE, e);
         } catch (UserStoreException e) {
+            log.error(e.getMessage());
             throw new AuthenticationFailedException(App2AppAuthenticatorConstants.USER_STORE_EXCEPTION_MESSAGE, e);
         } catch (PushDeviceHandlerClientException e) {
+            log.error(e.getMessage());
             throw new AuthenticationFailedException
                     (App2AppAuthenticatorConstants.PUSH_DEVICE_HANDLER_CLIENT_EXCEPTION_MESSAGE, e);
         } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
             throw new
                     AuthenticationFailedException(App2AppAuthenticatorConstants.ILLEGAL_ARGUMENT_EXCEPTION_MESSAGE, e);
         }
     }
 
     /**
-     * {@inheritDoc}
+     * Determines whether this authenticator can handle the incoming HTTP servlet request.
+     * This method checks if the request contains the necessary parameter for App2App authentication,
+     * which is the device verification token identifier.
+     *
+     * @param httpServletRequest The HTTP servlet request object to be checked for handling.
+     * @return True if this authenticator can handle the request, false otherwise.
      */
     @Override
     public boolean canHandle(HttpServletRequest httpServletRequest) {
@@ -155,7 +191,10 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the context identifier(sessionDataKey in this case) from the HTTP servlet request.
+     *
+     * @param request The HTTP servlet request object from which to retrieve the context identifier.
+     * @return The context identifier extracted from the request, typically representing session data key.
      */
     @Override
     public String getContextIdentifier(HttpServletRequest request) {
@@ -164,7 +203,13 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
     }
 
     /**
-     * {@inheritDoc}
+     * Initiates the authentication request, but App2App authenticator does not support this operation.
+     * Therefore, this method terminates the authentication process and throws an AuthenticationFailedException.
+     *
+     * @param request  The HTTP servlet request object.
+     * @param response The HTTP servlet response object.
+     * @param context  The authentication context.
+     * @throws AuthenticationFailedException if this method is called
      */
     @Override
     protected void initiateAuthenticationRequest(HttpServletRequest request,
@@ -195,24 +240,9 @@ public class App2AppAuthenticator extends AbstractApplicationAuthenticator
             throws UserStoreException, PushDeviceHandlerServerException, PushDeviceHandlerClientException,
             OpenBankingException {
 
-        DeviceHandler deviceHandler = getDeviceHandler();
         UserRealm userRealm = App2AppAuthUtils.getUserRealm(authenticatedUser);
         String userID = App2AppAuthUtils.getUserIdFromUsername(authenticatedUser.getUserName(), userRealm);
         return App2AppAuthUtils.getPublicKey(deviceID, userID, deviceHandler);
-    }
-
-    /**
-     * Method to get a DeviceHandler implementation.
-     *
-     * @return an implementation of DeviceHandler
-     */
-    private DeviceHandler getDeviceHandler() {
-
-        if (deviceHandler == null) {
-            deviceHandler = new DeviceHandlerImpl();
-        }
-
-        return deviceHandler;
     }
 }
 

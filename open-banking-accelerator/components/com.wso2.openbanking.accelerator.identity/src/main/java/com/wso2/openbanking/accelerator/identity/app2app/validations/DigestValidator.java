@@ -97,3 +97,4 @@ public class DigestValidator implements ConstraintValidator<ValidateDigest, Devi
         return false;
     }
 }
+

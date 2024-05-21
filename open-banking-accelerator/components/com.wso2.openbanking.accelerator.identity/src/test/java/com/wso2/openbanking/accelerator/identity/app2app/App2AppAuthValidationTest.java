@@ -25,7 +25,7 @@ import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.app2app.cache.JTICache;
 import com.wso2.openbanking.accelerator.identity.app2app.exception.JWTValidationException;
 import com.wso2.openbanking.accelerator.identity.app2app.model.DeviceVerificationToken;
-import com.wso2.openbanking.accelerator.identity.app2app.testutils.JWTDataProvider;
+import com.wso2.openbanking.accelerator.identity.app2app.testutils.App2AppUtilsTestJWTDataProvider;
 import com.wso2.openbanking.accelerator.identity.app2app.utils.App2AppAuthUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -47,7 +47,7 @@ import java.util.Date;
 @PowerMockIgnore({"javax.net.ssl.*", "jdk.internal.reflect.*"})
 public class App2AppAuthValidationTest {
 
-    @Test(dataProviderClass = JWTDataProvider.class,
+    @Test(dataProviderClass = App2AppUtilsTestJWTDataProvider.class,
             dataProvider = "ValidJWTProvider")
     public void validationTest(String jwtString, String publicKey, String requestObject) throws ParseException,
             OpenBankingException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -72,7 +72,7 @@ public class App2AppAuthValidationTest {
     }
 
     @Test(expectedExceptions = JWTValidationException.class,
-            dataProviderClass = JWTDataProvider.class,
+            dataProviderClass = App2AppUtilsTestJWTDataProvider.class,
             dataProvider = "ValidJWTProvider")
     public void validationTestJTIReplayed(String jwtString, String publicKey, String requestObject) throws
             ParseException, OpenBankingException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -97,7 +97,7 @@ public class App2AppAuthValidationTest {
     }
 
     @Test(expectedExceptions = JWTValidationException.class,
-            dataProviderClass = JWTDataProvider.class,
+            dataProviderClass = App2AppUtilsTestJWTDataProvider.class,
             dataProvider = "ValidJWTProvider")
     public void validationTestJWTExpired(String jwtString, String publicKey, String requestObject) throws
             ParseException, OpenBankingException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -122,7 +122,7 @@ public class App2AppAuthValidationTest {
     }
 
     @Test(expectedExceptions = JWTValidationException.class,
-            dataProviderClass = JWTDataProvider.class,
+            dataProviderClass = App2AppUtilsTestJWTDataProvider.class,
             dataProvider = "ValidJWTProvider")
     public void validationTestJWTNotActive(String jwtString, String publicKey, String requestObject) throws
             ParseException, OpenBankingException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -147,7 +147,7 @@ public class App2AppAuthValidationTest {
     }
 
     @Test(expectedExceptions = JWTValidationException.class,
-            dataProviderClass = JWTDataProvider.class,
+            dataProviderClass = App2AppUtilsTestJWTDataProvider.class,
             dataProvider = "invalidDigestProvider")
     public void validationTestInvalidDigest(String jwtString, String publicKey, String requestObject) throws
             ParseException, OpenBankingException, JOSEException, NoSuchAlgorithmException, InvalidKeySpecException {

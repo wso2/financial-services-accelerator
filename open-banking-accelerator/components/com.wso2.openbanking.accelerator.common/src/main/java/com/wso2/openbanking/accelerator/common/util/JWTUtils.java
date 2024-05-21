@@ -153,12 +153,15 @@ public class JWTUtils {
 
         byte[] publicKeyData = Base64.getDecoder().decode(publicKey);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(publicKeyData);
+        // Example : RS256
         String algorithm = signedJWT.getHeader().getAlgorithm().getName();
         KeyFactory kf;
+        // In here if the algorithm is directly passes (like RS256) it will generate exceptions
+        // hence RSA should be passed
         if (algorithm.indexOf(RS) == 0) {
             kf = KeyFactory.getInstance(ALGORITHM_RSA);
         } else {
-            throw new OpenBankingException("Algorithm " + algorithm + "not yet supported.");
+            throw new OpenBankingException("Algorithm " + algorithm + " not yet supported.");
         }
         RSAPublicKey rsapublicKey = (RSAPublicKey) kf.generatePublic(spec);
         JWSVerifier verifier = new RSASSAVerifier(rsapublicKey);

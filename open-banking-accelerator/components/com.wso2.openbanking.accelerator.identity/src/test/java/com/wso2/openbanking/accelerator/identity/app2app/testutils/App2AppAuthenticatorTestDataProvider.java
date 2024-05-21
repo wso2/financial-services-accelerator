@@ -52,7 +52,7 @@ public class App2AppAuthenticatorTestDataProvider {
         };
     }
 
-    @DataProvider(name = "JWTProvider")
+    @DataProvider(name = "AppAuthIdentifierProvider")
     public Object[][] getJWT() {
         return new String[][]{
                 {validAppAuthIdentifier},
