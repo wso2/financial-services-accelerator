@@ -17,11 +17,11 @@
  */
 
 import axios from "axios";
-import {CONFIG} from "../config";
+import { CONFIG } from "../config";
 import moment from "moment";
 import User from "../data/User";
 import Cookies from "js-cookie";
-import {specConfigurations} from "../specConfigs/specConfigurations";
+import { specConfigurations } from "../specConfigs";
 
 /**
  * Get the list of consents from the API.
@@ -170,3 +170,20 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
         });
 };
 
+export const getRevokeUrl = (consentId, user) => {
+    const adminUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentId}`;
+    const defaultUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentId}&userID=${user.email}`;
+
+    return user.role === 'customerCareOfficer' ? adminUrl : defaultUrl;
+};
+
+export const revokeConsent = (clientId, consentId, user) => {
+    return axios.delete(getRevokeUrl(consentId, user), {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)}`,
+            'x-wso2-client-id': clientId,
+            'x-fapi-financial-id': 'open-bank'
+        },
+    });
+};

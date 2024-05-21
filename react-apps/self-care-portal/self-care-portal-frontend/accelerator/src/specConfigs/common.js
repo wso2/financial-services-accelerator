@@ -17,7 +17,7 @@
  */
 
 export const common = {
-    footerContent: "WSO2 Open Banking | 2021",
+    footerContent: "WSO2 Open Banking | " + new Date().getFullYear(),
     complaintHandleLinkText: "Complaint handling and resolution",
 };
 

@@ -49,9 +49,6 @@
   text-decoration: none;
   display: inline-block;
   cursor: pointer;
-
-  -webkit-box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
-  box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
 }
 
 .actionButtons {
@@ -97,7 +94,6 @@
 
 .accredBox {
   display: flex;
-  border: 2px groove rgba(170, 167, 167, 0.16);
   padding: 0.5em;
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -116,6 +112,10 @@
 
 .note{
   margin-top: 2rem;
+}
+
+#downloadIcon {
+  color: #527aff;
 }
 
 @media (max-width: 1024px) {

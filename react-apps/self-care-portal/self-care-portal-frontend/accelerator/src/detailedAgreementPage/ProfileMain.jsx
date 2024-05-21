@@ -19,6 +19,8 @@
 import React, {useState} from "react";
 import {Container} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import {withdrawLang, lang} from "../specConfigs";
 import ADRLogo from "../images/ADRLogo.png";
 import moment from "moment";
@@ -59,7 +61,8 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
                 <div className="confirmLink">
                     <a id="confirmationReportLink" href="javascript:void(0);"
                        onClick={() => generatePDF(consent, appicationName, consentStatusLabel)}>
-                        {infoLabel.profile.confirmation}
+                        {`${infoLabel.profile.confirmation} `}
+                        <FontAwesomeIcon icon={faDownload} size="2xs" id= "downloadIcon"/>
                     </a>
                 </div>
                 {consent.currentStatus.toLowerCase() ===
