@@ -101,7 +101,7 @@ public class JWTUtils {
      * @throws MalformedURLException if an error occurs while creating the URL object
      */
     @Generated(message = "Excluding from code coverage since can not call this method due to external https call")
-    public static boolean validateJWTSignature(String jwtString, String jwksUri, String algorithm)
+    public static boolean isValidSignature(String jwtString, String jwksUri, String algorithm)
             throws ParseException, BadJOSEException, JOSEException, MalformedURLException {
 
         int defaultConnectionTimeout = 3000;
@@ -147,22 +147,15 @@ public class JWTUtils {
      * @throws InvalidKeySpecException if the provided key is invalid
      * @throws JOSEException if an error occurs during the signature validation process
      */
-    @Generated(message = "Excluding from code coverage as KeyFactory does not initialize")
-    public static boolean validateJWTSignature(SignedJWT signedJWT, String publicKey)
+    @Generated(message = "Excluding from code coverage as KeyFactory does not initialize in testsuite")
+    public static boolean isValidSignature(SignedJWT signedJWT, String publicKey)
             throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException, OpenBankingException {
 
         byte[] publicKeyData = Base64.getDecoder().decode(publicKey);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(publicKeyData);
         // Example : RS256
         String algorithm = signedJWT.getHeader().getAlgorithm().getName();
-        KeyFactory kf;
-        // In here if the algorithm is directly passes (like RS256) it will generate exceptions
-        // hence RSA should be passed
-        if (algorithm.indexOf(RS) == 0) {
-            kf = KeyFactory.getInstance(ALGORITHM_RSA);
-        } else {
-            throw new OpenBankingException("Algorithm " + algorithm + " not yet supported.");
-        }
+        KeyFactory kf = getKeyFactory(algorithm);
         RSAPublicKey rsapublicKey = (RSAPublicKey) kf.generatePublic(spec);
         JWSVerifier verifier = new RSASSAVerifier(rsapublicKey);
         return signedJWT.verify(verifier);
@@ -235,6 +228,26 @@ public class JWTUtils {
             return currentTimeInMillis + timeStampSkewMillis >= notBeforeTimeMillis;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Returns a KeyFactory instance for the specified algorithm.
+     *
+     * @param algorithm the algorithm name, such as "RS256".
+     * @return the KeyFactory instance.
+     * @throws OpenBankingException if the provided algorithm is not supported.
+     * @throws NoSuchAlgorithmException if the specified algorithm is invalid.
+     */
+    @Generated(message = "Excluding from code coverage as KeyFactory does not initialize in testsuite")
+    private static KeyFactory getKeyFactory(String algorithm) throws OpenBankingException, NoSuchAlgorithmException {
+
+        // In here if the algorithm is directly passes (like RS256) it will generate exceptions
+        // hence Base algorithm should be passed (Example: RSA)
+        if (algorithm.indexOf(RS) == 0) {
+            return KeyFactory.getInstance(ALGORITHM_RSA);
+        } else {
+            throw new OpenBankingException("Algorithm " + algorithm + " not yet supported.");
         }
     }
 }

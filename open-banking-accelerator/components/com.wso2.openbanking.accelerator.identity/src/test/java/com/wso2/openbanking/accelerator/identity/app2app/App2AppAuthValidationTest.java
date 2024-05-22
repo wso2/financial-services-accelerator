@@ -56,7 +56,7 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
+        Mockito.when(JWTUtils.isValidSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
                 .thenReturn(true);
         Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
@@ -81,7 +81,7 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn("NotNullJTI");
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
+        Mockito.when(JWTUtils.isValidSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
                 .thenReturn(true);
         Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
@@ -106,7 +106,7 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
+        Mockito.when(JWTUtils.isValidSignature(Mockito.any(SignedJWT.class), Mockito.anyString()))
                 .thenReturn(true);
         Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(false);
@@ -131,7 +131,7 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString())).
+        Mockito.when(JWTUtils.isValidSignature(Mockito.any(SignedJWT.class), Mockito.anyString())).
                 thenReturn(true);
         Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);
@@ -156,7 +156,7 @@ public class App2AppAuthValidationTest {
         PowerMockito.mockStatic(JTICache.class);
         PowerMockito.mockStatic(JWTUtils.class);
         Mockito.when(JTICache.getJtiDataFromCache(Mockito.anyString())).thenReturn(null);
-        Mockito.when(JWTUtils.validateJWTSignature(Mockito.any(SignedJWT.class), Mockito.anyString())).
+        Mockito.when(JWTUtils.isValidSignature(Mockito.any(SignedJWT.class), Mockito.anyString())).
                 thenReturn(true);
         Mockito.when(JWTUtils.isValidExpiryTime(Mockito.any(Date.class), Mockito.any(long.class)))
                 .thenReturn(true);

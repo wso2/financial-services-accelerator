@@ -55,7 +55,7 @@ public class PublicKeySignatureValidator implements ConstraintValidator<Validate
         String publicKey = deviceVerificationToken.getPublicKey();
 
         try {
-            if (!JWTUtils.validateJWTSignature(signedJWT, publicKey)) {
+            if (!JWTUtils.isValidSignature(signedJWT, publicKey)) {
                 log.error("Signature can't be verified with registered public key.");
                 return false;
             }

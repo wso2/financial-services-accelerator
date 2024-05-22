@@ -34,6 +34,7 @@ import javax.validation.ConstraintValidatorContext;
 
 /**
  * Validator class for validating digest of a device verification token.
+ * Digest here is expected to be the hash of the request object if it is present.
  */
 public class DigestValidator implements ConstraintValidator<ValidateDigest, DeviceVerificationToken> {
 
@@ -52,19 +53,20 @@ public class DigestValidator implements ConstraintValidator<ValidateDigest, Devi
 
         String requestObject = deviceVerificationToken.getRequestObject();
         String digest = deviceVerificationToken.getDigest();
-        return validateDigest(digest, requestObject);
+        return isDigestValid(digest, requestObject);
     }
 
     /**
      * Validating the digest of the request.
+     * DigestHeader is expected to be the hash of requestObject if request Object is not null.
      *
      * @param digestHeader digest header sent with the request
-     * @param request the request JWT String
+     * @param requestObject the request JWT String
      * @return return true if the digest validation is a success, false otherwise
      */
-    protected boolean validateDigest(String digestHeader, String request) {
+    protected boolean isDigestValid(String digestHeader, String requestObject) {
 
-        if (StringUtils.isBlank(request)) {
+        if (StringUtils.isBlank(requestObject)) {
             //If the request is null nothing to validate.
             return true;
         } else if (StringUtils.isBlank(digestHeader)) {
@@ -73,15 +75,18 @@ public class DigestValidator implements ConstraintValidator<ValidateDigest, Devi
         }
 
         try {
+            // Example : SHA-256=EkH8fPgZ2TY2XGns8c5Vvce8h3DB83V+w47zHiyYfiQ=
             String[] digestAttribute = digestHeader.split("=", 2);
+
             if (digestAttribute.length != 2) {
                 log.error("Invalid digest header.");
                 return false;
             }
+            // Example : SHA-256
             String digestAlgorithm = digestAttribute[0].trim();
             String digestValue = digestAttribute[1].trim();
             MessageDigest messageDigest = MessageDigest.getInstance(digestAlgorithm);
-            byte[] digestHash = messageDigest.digest(request.getBytes(StandardCharsets.UTF_8));
+            byte[] digestHash = messageDigest.digest(requestObject.getBytes(StandardCharsets.UTF_8));
             String generatedDigest = Base64.getEncoder()
                     .encodeToString(digestHash);
 
