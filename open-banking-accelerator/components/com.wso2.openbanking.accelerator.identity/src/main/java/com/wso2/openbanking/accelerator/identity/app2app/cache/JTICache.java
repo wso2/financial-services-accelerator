@@ -39,7 +39,7 @@ public class JTICache {
         if (jtiCacheInstance == null) {
             // Synchronize access to ensure thread safety
             synchronized (JTICache.class) {
-                // Avoids race condition withing threads
+                // Avoids race condition within threads
                 if (jtiCacheInstance == null) {
                     jtiCacheInstance = new IdentityCache();
                 }
