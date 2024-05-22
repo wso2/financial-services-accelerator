@@ -51,7 +51,7 @@ public class OpenBankingUtils {
             log.error("Class not found: " + classpath.replaceAll("[\r\n]", ""));
             throw new OpenBankingRuntimeException("Cannot find the defined class", e);
         } catch (InstantiationException | InvocationTargetException |
-                 NoSuchMethodException | IllegalAccessException e) {
+                NoSuchMethodException | IllegalAccessException e) {
             //Throwing a runtime exception since we cannot proceed with invalid objects
             throw new OpenBankingRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
