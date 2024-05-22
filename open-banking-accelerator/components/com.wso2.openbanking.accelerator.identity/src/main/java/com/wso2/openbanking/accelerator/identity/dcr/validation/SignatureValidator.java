@@ -26,6 +26,7 @@ import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateSignature;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,9 +59,11 @@ public class SignatureValidator implements ConstraintValidator<ValidateSignature
                            ConstraintValidatorContext constraintValidatorContext) {
 
         try {
-
-            boolean isValidSignature = false;
-            SignedJWT signedJWT = SignedJWT.parse(BeanUtils.getProperty(registrationRequest, softwareStatementPath));
+            String softwareStatement = BeanUtils.getProperty(registrationRequest, softwareStatementPath);
+            if (StringUtils.isEmpty(softwareStatement)) {
+                return true;
+            }
+            SignedJWT signedJWT = SignedJWT.parse(softwareStatement);
             String jwtString = signedJWT.getParsedString();
             String alg = signedJWT.getHeader().getAlgorithm().getName();
             String softwareEnvironmentFromSSA = OpenBankingUtils.getSoftwareEnvironmentFromSSA(jwtString);

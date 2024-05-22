@@ -183,8 +183,8 @@
                             <skipValidateSpec>true</skipValidateSpec>
                             <skip>true</skip>
                             <inputSpec>${project.basedir}/src/main/resources/dynamic.client.registration.yaml</inputSpec>
-                            <language>jaxrs-cxf</language>
                             <configOptions>
+                                <language>jaxrs-cxf</language>
                                 <sourceFolder>src/gen/java</sourceFolder>
                                 <useGenericResponse>true</useGenericResponse>
                             </configOptions>

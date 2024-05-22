@@ -54,6 +54,9 @@ public class RegistrationRequest {
     @SerializedName("token_endpoint_auth_method")
     private String tokenEndPointAuthMethod;
 
+    @SerializedName("jwks_uri")
+    private String jwksURI;
+
     @SerializedName("grant_types")
     private List<String> grantTypes;
 
@@ -353,4 +356,11 @@ public class RegistrationRequest {
         this.jti = jti;
     }
 
+    public String getJwksURI() {
+        return jwksURI;
+    }
+
+    public void setJwksURI(String jwksURI) {
+        this.jwksURI = jwksURI;
+    }
 }

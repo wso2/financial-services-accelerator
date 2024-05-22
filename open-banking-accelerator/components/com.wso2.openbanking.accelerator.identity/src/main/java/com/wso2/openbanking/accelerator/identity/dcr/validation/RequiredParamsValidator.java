@@ -69,7 +69,7 @@ public class RequiredParamsValidator implements ConstraintValidator<ValidateRequ
                             .addConstraintViolation();
                     return false;
                 }
-                //validate string type required parameters
+                //validate list type required parameters
                 if (requestParameterMap.get(camelCaseConfigParam) instanceof List) {
                     List param = (List) requestParameterMap.get(camelCaseConfigParam);
                     if (param.isEmpty()) {

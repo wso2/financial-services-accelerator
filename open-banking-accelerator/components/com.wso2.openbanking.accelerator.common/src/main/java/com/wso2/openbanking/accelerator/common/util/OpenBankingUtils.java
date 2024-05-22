@@ -18,6 +18,7 @@
 package com.wso2.openbanking.accelerator.common.util;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.identity.IdentityConstants;
 import net.minidev.json.JSONObject;
@@ -65,26 +66,23 @@ public class OpenBankingUtils {
      */
     public static String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
 
-        String sandboxEnvIdentificationPropertyName = OpenBankingConfigParser.getInstance()
-                .getSoftwareEnvIdentificationSSAPropertyName();
-        String sandboxEnvIdentificationValue = OpenBankingConfigParser.getInstance()
-                .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
-        String prodEnvIdentificationValue = OpenBankingConfigParser.getInstance()
-                .getSoftwareEnvIdentificationSSAPropertyValueForProduction();
-        String softwareEnvironment = IdentityConstants.PRODUCTION;
-        // decode software statement and get softwareEnvironment
-        JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement, "body");
-        Object softwareEnvironmentValue = softwareStatementBody.get(sandboxEnvIdentificationPropertyName);
-        if (softwareEnvironmentValue != null &&
-                softwareEnvironmentValue.toString().equalsIgnoreCase(sandboxEnvIdentificationValue)) {
-            softwareEnvironment = IdentityConstants.SANDBOX;
-        } else if (softwareEnvironmentValue != null &&
-                softwareEnvironmentValue.toString().equalsIgnoreCase(prodEnvIdentificationValue)) {
-            softwareEnvironment = IdentityConstants.PRODUCTION;
+        if (StringUtils.isEmpty(softwareStatement)) {
+            return IdentityConstants.PRODUCTION;
         }
-        return softwareEnvironment;
-    }
 
+        final JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement,
+                OpenBankingConstants.JWT_BODY);
+        // Retrieve the SSA property name used for software environment identification
+        final String sandboxEnvIdentificationPropertyName = OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyName();
+        // Retrieve the expected value for the sandbox environment
+        final String sandboxEnvIdentificationValue = OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
+        return sandboxEnvIdentificationValue.equalsIgnoreCase(softwareStatementBody
+                .getAsString(sandboxEnvIdentificationPropertyName))
+                ? IdentityConstants.SANDBOX
+                : IdentityConstants.PRODUCTION;
+    }
 
     /**
      * Method to obtain boolean value for check if the Dispute Resolution Data is publishable.
