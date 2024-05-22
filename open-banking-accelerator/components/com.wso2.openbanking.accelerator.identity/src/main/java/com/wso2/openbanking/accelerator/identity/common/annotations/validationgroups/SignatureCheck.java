@@ -15,12 +15,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups;
+
+package com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups;
 
 /**
  * Interface for grouping the validation annotations.
- * Groups the validations for attributes
+ * Groups the validation for signature
  */
-public interface AttributeChecks {
+public interface SignatureCheck {
 
 }
+
