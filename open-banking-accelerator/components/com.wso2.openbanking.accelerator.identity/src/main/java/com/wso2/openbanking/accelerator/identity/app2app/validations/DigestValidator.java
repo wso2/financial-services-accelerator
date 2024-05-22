@@ -57,29 +57,29 @@ public class DigestValidator implements ConstraintValidator<ValidateDigest, Devi
     }
 
     /**
-     * Validating the digest of the request.
-     * DigestHeader is expected to be the hash of requestObject if request Object is not null.
+     * Validating the digest of the requestObject.
+     * Digest is expected to be the hash of requestObject if request Object is not null.
      *
-     * @param digestHeader digest header sent with the request
-     * @param requestObject the request JWT String
+     * @param digest digest sent in the device verification token
+     * @param requestObject JWT String of the request object
      * @return return true if the digest validation is a success, false otherwise
      */
-    protected boolean isDigestValid(String digestHeader, String requestObject) {
+    protected boolean isDigestValid(String digest, String requestObject) {
 
         if (StringUtils.isBlank(requestObject)) {
             //If the request is null nothing to validate.
             return true;
-        } else if (StringUtils.isBlank(digestHeader)) {
+        } else if (StringUtils.isBlank(digest)) {
             //If request is not empty and digest us empty validation fails.
             return false;
         }
 
         try {
             // Example : SHA-256=EkH8fPgZ2TY2XGns8c5Vvce8h3DB83V+w47zHiyYfiQ=
-            String[] digestAttribute = digestHeader.split("=", 2);
+            String[] digestAttribute = digest.split("=", 2);
 
             if (digestAttribute.length != 2) {
-                log.error("Invalid digest header.");
+                log.error("Invalid digest.");
                 return false;
             }
             // Example : SHA-256
