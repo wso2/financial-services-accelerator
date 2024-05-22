@@ -25,7 +25,6 @@ import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationExce
 import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.RegistrationValidator;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -75,8 +74,9 @@ public class RegistrationServiceHandler {
                         .get(OpenBankingConstants.DCR_JWKS_NAME).toString();
             }
         }
+        String applicationName = RegistrationUtils.getApplicationName(registrationRequest, useSoftwareIdAsAppName);
         Application application = dcrmService.registerApplication(RegistrationUtils
-                .getApplicationRegistrationRequest(registrationRequest, useSoftwareIdAsAppName));
+                .getApplicationRegistrationRequest(registrationRequest, applicationName));
         if (log.isDebugEnabled()) {
             log.debug("Created application with name :" + application.getClientName());
         }
@@ -84,11 +84,9 @@ public class RegistrationServiceHandler {
         ServiceProvider serviceProvider = applicationManagementService
                 .getServiceProvider(application.getClientName(), tenantDomain);
 
-        if (StringUtils.isNotEmpty(jwksEndpointName)) {
-            serviceProvider.setJwksUri(registrationRequest.getSsaParameters().get(jwksEndpointName).toString());
-        } else {
-            serviceProvider.setJwksUri(registrationRequest.getSoftwareStatementBody().getJwksURI());
-        }
+        //get JWKS URI from the request
+        String jwksUri = RegistrationUtils.getJwksUriFromRequest(registrationRequest, jwksEndpointName);
+        serviceProvider.setJwksUri(jwksUri);
 
         Long clientIdIssuedTime = Instant.now().getEpochSecond();
         //store the client details as SP meta data
@@ -108,11 +106,12 @@ public class RegistrationServiceHandler {
         Map<String, Object> registrationData = registrationRequest.getRequestParameters();
         registrationData.put(RegistrationConstants.CLIENT_ID, application.getClientId());
         registrationData.put(RegistrationConstants.CLIENT_ID_ISSUED_AT, clientIdIssuedTime.toString());
-        registrationData.putAll(registrationRequest.getSsaParameters());
+        if (registrationRequest.getSsaParameters() != null) {
+            registrationData.putAll(registrationRequest.getSsaParameters());
+        }
         registrationData.putAll(additionalAttributes);
         String registrationResponse = registrationValidator.getRegistrationResponse(registrationData);
         return Response.status(Response.Status.CREATED).entity(registrationResponse).build();
-
     }
 
     public Response retrieveRegistration(Map<String, Object> additionalAttributes, String clientId, String accessToken)
@@ -164,17 +163,20 @@ public class RegistrationServiceHandler {
             }
         }
         Application applicationToUpdate = dcrmService.getApplication(clientId);
-        String applicationNameInRequest = "";
+        String applicationNameInRequest;
         if (useSoftwareIdAsAppName) {
-            applicationNameInRequest = request.getSoftwareStatementBody().getSoftwareId();
+            applicationNameInRequest = (request.getSoftwareStatement() != null) ?
+                    request.getSoftwareStatementBody().getSoftwareId() :
+                    request.getSoftwareId();
         } else {
             applicationNameInRequest = request.getSoftwareStatementBody().getClientName();
         }
         if (!applicationToUpdate.getClientName().equals(applicationNameInRequest)) {
             throw new DCRValidationException(DCRCommonConstants.INVALID_META_DATA, "Invalid application name");
         }
+        String applicationName = RegistrationUtils.getApplicationName(request, useSoftwareIdAsAppName);
         Application application = dcrmService.updateApplication
-                (RegistrationUtils.getApplicationUpdateRequest(request, useSoftwareIdAsAppName), clientId);
+                (RegistrationUtils.getApplicationUpdateRequest(request, applicationName), clientId);
         if (log.isDebugEnabled()) {
             log.debug("Updated Application with name " + application.getClientName());
         }
@@ -186,11 +188,10 @@ public class RegistrationServiceHandler {
         ServiceProvider serviceProvider = applicationManagementService
                 .getServiceProvider(application.getClientName(), tenantDomain);
 
-        if (StringUtils.isNotEmpty(jwksEndpointName)) {
-            serviceProvider.setJwksUri(request.getSsaParameters().get(jwksEndpointName).toString());
-        } else {
-            serviceProvider.setJwksUri(request.getSoftwareStatementBody().getJwksURI());
-        }
+        //get JWKS URI from the request
+        String jwksUri = RegistrationUtils.getJwksUriFromRequest(request, jwksEndpointName);
+        serviceProvider.setJwksUri(jwksUri);
+
         ServiceProviderProperty[] serviceProviderProperties = serviceProvider.getSpProperties();
         if (log.isDebugEnabled()) {
             log.debug("Retrieved client meta data for application " + application.getClientName());
@@ -206,7 +207,9 @@ public class RegistrationServiceHandler {
         //update Service provider with new client data
         Map<String, String> updateRequestData = RegistrationUtils.getAlteredApplicationAttributes(request);
         Map<String, Object> updateRegistrationData = request.getRequestParameters();
-        updateRegistrationData.putAll(request.getSsaParameters());
+        if (request.getSsaParameters() != null) {
+            updateRegistrationData.putAll(request.getSsaParameters());
+        }
         updateRequestData.put(RegistrationConstants.CLIENT_ID_ISSUED_AT, clientIdIssuedAt);
         // Adding SP property to identify update request. Will be removed when updating authenticators.
         updateRequestData.put("AppCreateRequest", "false");

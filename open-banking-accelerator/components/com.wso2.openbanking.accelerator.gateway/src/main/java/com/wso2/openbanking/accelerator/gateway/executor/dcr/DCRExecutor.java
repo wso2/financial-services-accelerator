@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.gateway.executor.dcr;
 
 import com.google.gson.JsonArray;
@@ -72,9 +73,11 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.HttpMethod;
 
@@ -147,390 +150,28 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         }
         String basicAuthHeader = GatewayUtils.getBasicAuthHeader(urlMap.get(userName).toString(),
                 String.valueOf((char[]) urlMap.get(GatewayConstants.PASSWORD)));
-        String fullBackEndURL = urlMap.get(GatewayConstants.IAM_HOSTNAME).toString().concat("/")
-                .concat(obDCREndpoint);
         Map<String, List<String>> regulatoryAPIs = GatewayDataHolder.getInstance()
                 .getOpenBankingConfigurationService().getAllowedAPIs();
-        if (HttpMethod.POST.equalsIgnoreCase(obapiResponseContext.getMsgInfo().getHttpMethod())
-                && HttpStatus.SC_CREATED == obapiResponseContext.getStatusCode()) {
-            try {
-                JsonParser jsonParser = new JsonParser();
-                JsonObject createdDCRAppDetails = ((JsonObject) jsonParser
-                        .parse(obapiResponseContext.getResponsePayload()));
-                String softwareStatement = createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT)
-                        .getAsString();
-                //call IS DCR endpoint to create application for obtaining a token to invoke devportal REST APIs
-                JsonElement registrationResponse = createServiceProvider(basicAuthHeader,
-                        createdDCRAppDetails.get("software_id").getAsString());
-                if (registrationResponse == null) {
-                    log.error("Error while creating AM app for invoking APIM rest apis");
-                    String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
-                    //delete service provider
-                    callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                    return;
+
+        switch (obapiResponseContext.getMsgInfo().getHttpMethod().toUpperCase()) {
+            case HttpMethod.POST :
+                if (HttpStatus.SC_CREATED == obapiResponseContext.getStatusCode()) {
+                    String fullBackEndURL = urlMap.get(GatewayConstants.IAM_HOSTNAME).toString().concat("/")
+                            .concat(obDCREndpoint);
+                    postProcessResponseForRegister(obapiResponseContext, basicAuthHeader, fullBackEndURL,
+                            regulatoryAPIs);
                 }
-                //call token endpoint to retrieve a token for invoking the devportal REST apis
-                String amRestAPIInvokeClientId = registrationResponse.getAsJsonObject()
-                        .get(clientIdParam).getAsString();
-
-                String authHeaderForTokenRequest = GatewayUtils
-                        .getBasicAuthHeader(registrationResponse.getAsJsonObject().get(clientIdParam).getAsString(),
-                                registrationResponse.getAsJsonObject().get(clientSecret).getAsString());
-
-                JsonElement tokenResponse = getToken(authHeaderForTokenRequest,
-                        urlMap.get(GatewayConstants.TOKEN_URL).toString(), amRestAPIInvokeClientId);
-
-                if (tokenResponse == null || tokenResponse.getAsJsonObject().get("access_token") == null) {
-                    log.error("Error while creating tokens");
-                    String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
-                    //delete service provider
-                    callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
-                    //delete SP created for calling dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(amRestAPIInvokeClientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                    return;
+                break;
+            case HttpMethod.PUT :
+                if (HttpStatus.SC_OK == obapiResponseContext.getStatusCode()) {
+                    postProcessResponseForUpdate(obapiResponseContext, basicAuthHeader, regulatoryAPIs);
                 }
-                String token = tokenResponse.getAsJsonObject().get("access_token").getAsString();
-                String getSPDetails = urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                        .concat(createdDCRAppDetails.get(clientIdParam).getAsString());
-                //call IS dcr api to get client secret and client name
-                JsonElement createdSpDetails = callGet(getSPDetails, basicAuthHeader, "", "");
-                if (createdSpDetails == null) {
-                    log.error("Error while retrieving client id and secret");
-                    String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
-                    //delete service provider
-                    callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
-                    //delete SP created for calling dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(amRestAPIInvokeClientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                    return;
+                break;
+            case HttpMethod.DELETE :
+                if (HttpStatus.SC_NO_CONTENT == obapiResponseContext.getStatusCode()) {
+                    postProcessResponseForDelete(obapiResponseContext, basicAuthHeader);
                 }
-
-                //create am application
-                JsonObject amAppCreatePayload = getAppCreatePayload(createdSpDetails.getAsJsonObject()
-                        .get("client_name").getAsString());
-                JsonElement amApplicationCreateResponse =
-                        callPost(urlMap.get(GatewayConstants.APP_CREATE_URL).toString(),
-                                amAppCreatePayload.toString(), GatewayConstants.BEARER_TAG.concat(token));
-
-                if (amApplicationCreateResponse == null) {
-                    log.error("Error while creating AM app");
-                    String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
-                    //delete service provider
-                    callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
-                    //delete SP created for calling dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(amRestAPIInvokeClientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                    return;
-                }
-                String keyMapURL = urlMap.get(GatewayConstants.KEY_MAP_URL).toString()
-                        .replace("application-id", amApplicationCreateResponse.getAsJsonObject()
-                                .get(applicationIdParam).getAsString());
-                String keyManagerName = GatewayDataHolder.getInstance().getOpenBankingConfigurationService()
-                        .getConfigurations().get(OpenBankingConstants.OB_KM_NAME).toString();
-
-                //map keys to am application
-                JsonObject keyMapPayload = getKeyMapPayload(createdDCRAppDetails.get(clientIdParam).getAsString(),
-                        createdSpDetails.getAsJsonObject().get(clientSecret).getAsString(),
-                        OpenBankingUtils.getSoftwareEnvironmentFromSSA(softwareStatement), keyManagerName);
-
-                JsonElement amKeyMapResponse = callPost(keyMapURL, keyMapPayload.toString(),
-                        GatewayConstants.BEARER_TAG.concat(token));
-                if (amKeyMapResponse == null) {
-                    log.error("Error while mapping keys to AM app");
-                    String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
-                    //delete service provider
-                    callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
-                    //delete SP created for calling dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(amRestAPIInvokeClientId), basicAuthHeader);
-                    //delete AM application
-                    callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
-                            .concat("/").concat(amApplicationCreateResponse.getAsJsonObject()
-                                    .get(applicationIdParam).getAsString()), GatewayConstants.BEARER_TAG.concat(token));
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                    return;
-                }
-                //get list of published APIs
-                JsonElement publishedAPIsResponse = callGet(urlMap.get(GatewayConstants.API_RETRIEVE_URL).toString(),
-                        GatewayConstants.BEARER_TAG.concat(token), "", "");
-                if (publishedAPIsResponse == null) {
-                    log.error("Error while retrieving published APIs");
-                    String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
-                    //delete service provider
-                    callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
-                    //delete SP created for calling dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(amRestAPIInvokeClientId), basicAuthHeader);
-                    //delete AM application
-                    callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
-                            .concat("/").concat(amApplicationCreateResponse.getAsJsonObject()
-                                    .get(applicationIdParam).getAsString()), GatewayConstants.BEARER_TAG.concat(token));
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                    return;
-                }
-
-                List<String> apiIDList = new ArrayList<>();
-                if (regulatoryAPIs != null) {
-                    apiIDList = filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
-                            .get("list").getAsJsonArray(), getRolesFromSSA(softwareStatement));
-                } else {
-                    log.warn("No regulatory APIs configured. Application will be subscribed to all published APIs");
-                    //subscribe to all APIs if there are no configured regulatory APIs
-                    for (JsonElement apiInfo : publishedAPIsResponse.getAsJsonObject().get("list").getAsJsonArray()) {
-                        apiIDList.add(apiInfo.getAsJsonObject().get("id").getAsString());
-                    }
-                }
-                //subscribe to apis
-                JsonArray subscribeAPIsPayload = getAPISubscriptionPayload(amApplicationCreateResponse
-                        .getAsJsonObject().get(applicationIdParam).getAsString(), apiIDList);
-                JsonElement subscribeAPIsResponse = callPost(urlMap.get(GatewayConstants.API_SUBSCRIBE_URL).toString(),
-                        subscribeAPIsPayload.toString(), "Bearer ".concat(token));
-                if (subscribeAPIsResponse == null) {
-                    log.error("Error while subscribing to APIs");
-                    String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
-                    //delete service provider
-                    callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
-                    //delete SP created for calling dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(amRestAPIInvokeClientId), basicAuthHeader);
-                    //delete AM application
-                    callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
-                            .concat("/").concat(amApplicationCreateResponse.getAsJsonObject()
-                                    .get(applicationIdParam).getAsString()), GatewayConstants.BEARER_TAG.concat(token));
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                    return;
-                }
-
-                //delete IAM application used to invoke am rest endpoints
-                if (!callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                        .concat(amRestAPIInvokeClientId), basicAuthHeader)) {
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
-                    return;
-                }
-
-            } catch (IOException | OpenBankingException | URISyntaxException | ParseException e) {
-                log.error("Error occurred while creating application", e);
-                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                return;
-            }
         }
-        if (HttpMethod.PUT.equalsIgnoreCase(obapiResponseContext.getMsgInfo().getHttpMethod())
-                && HttpStatus.SC_OK == obapiResponseContext.getStatusCode()) {
-
-            JsonParser jsonParser = new JsonParser();
-            JsonObject createdDCRAppDetails = ((JsonObject) jsonParser.parse(obapiResponseContext
-                    .getResponsePayload()));
-            try {
-                JsonObject dcrPayload = getIAMDCRPayload(createdDCRAppDetails.get("software_id").getAsString());
-                JsonElement registrationResponse = callPost(urlMap.get(GatewayConstants.IAM_DCR_URL).toString(),
-                        dcrPayload.toString(), basicAuthHeader);
-                if (registrationResponse == null) {
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                    return;
-                }
-
-                //call token endpoint to retrieve a token for invoking the devportal REST apis
-                String clientId = registrationResponse.getAsJsonObject().get(clientIdParam).getAsString();
-                String authHeaderForTokenRequest = GatewayUtils.getBasicAuthHeader(clientId,
-                        registrationResponse.getAsJsonObject().get(clientSecret).getAsString());
-
-                JsonElement tokenResponse = getToken(authHeaderForTokenRequest,
-                        urlMap.get(GatewayConstants.TOKEN_URL).toString(), clientId);
-                if (tokenResponse == null || tokenResponse.getAsJsonObject().get("access_token") == null) {
-                    log.error("Error while creating tokens");
-                    //delete SP created to call dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(clientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                    return;
-                }
-                String token = tokenResponse.getAsJsonObject().get("access_token").getAsString();
-
-                String applicationName = getApplicationName(obapiResponseContext.getResponsePayload(),
-                        GatewayDataHolder.getInstance().getOpenBankingConfigurationService().getConfigurations());
-                if (StringUtils.isEmpty(applicationName)) {
-                    log.error("Error while retrieving application name during update");
-                    //delete SP created to call dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(clientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                    return;
-                }
-                //call application get endpoint to retrieve the application id
-                JsonElement applicationSearchResponse =
-                        callGet(urlMap.get(GatewayConstants.APP_CREATE_URL).toString(),
-                                GatewayConstants.BEARER_TAG.concat(token), "query", applicationName);
-                if (applicationSearchResponse == null) {
-                    log.error("Error while searching for created application during update");
-                    //delete SP created to call dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(clientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                    return;
-                }
-                String applicationId = applicationSearchResponse.getAsJsonObject().get("list").getAsJsonArray().get(0)
-                        .getAsJsonObject().get(applicationIdParam).getAsString();
-
-                //get list of subscribed APIs
-                JsonElement subscribedAPIsResponse = callGet(urlMap.get(GatewayConstants.API_GET_SUBSCRIBED).toString(),
-                        GatewayConstants.BEARER_TAG.concat(token), "applicationId", applicationId);
-                if (subscribedAPIsResponse == null) {
-                    log.error("Error while retrieving subscribed APIs");
-                    //delete SP created to call dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(clientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                    return;
-                }
-                List<String> allowedRoles = getRolesFromSSA(createdDCRAppDetails
-                        .get(OpenBankingConstants.SOFTWARE_STATEMENT).getAsString());
-                List<String> subscribedAPIIdList = new ArrayList<>();
-                for (JsonElement subscribedAPI : subscribedAPIsResponse.getAsJsonObject().get("list")
-                        .getAsJsonArray()) {
-                    String apiId = subscribedAPI.getAsJsonObject().get("apiId").getAsString();
-                    subscribedAPIIdList.add(apiId);
-                }
-                //check whether the ssa still contains the roles related to the subscribed APIs
-                List<String> unsubscribedAPIs = getUnAuthorizedAPIs(subscribedAPIsResponse.getAsJsonObject()
-                        .get("list").getAsJsonArray(), regulatoryAPIs, allowedRoles);
-                if (!unsubscribedAPIs.isEmpty()) {
-                    //unsubscribe from the apis
-                    for (String subscriptionId : unsubscribedAPIs) {
-                        if (!callDelete(urlMap.get(GatewayConstants.API_GET_SUBSCRIBED).toString()
-                                .concat("/").concat(subscriptionId), GatewayConstants.BEARER_TAG.concat(token))) {
-                            log.error("Error while unsubscribing from APIs");
-                            //delete SP created to call dev portal REST APIs
-                            callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                                    .concat(clientId), basicAuthHeader);
-                            handleInternalServerError(obapiResponseContext,
-                                    OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
-                            return;
-                        }
-                    }
-                }
-                //subscribe to new APIs if new roles were added to the SSA
-                //get list of published APIs
-                JsonElement publishedAPIsResponse = callGet(urlMap.get(GatewayConstants.API_RETRIEVE_URL).toString(),
-                        GatewayConstants.BEARER_TAG.concat(token), "", "");
-                if (publishedAPIsResponse == null) {
-                    log.error("Error while retrieving published APIs");
-                    //delete SP created to call dev portal REST APIs
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                            .concat(clientId), basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                    return;
-                }
-                List<String> apiIDList = filterRegulatorAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
-                        .get("list").getAsJsonArray(), allowedRoles);
-                List<String> newApisListToSubscribe = getNewAPIsToSubscribe(apiIDList, subscribedAPIIdList);
-                if (!newApisListToSubscribe.isEmpty()) {
-                    JsonArray subscribeAPIsPayload = getAPISubscriptionPayload(applicationId, newApisListToSubscribe);
-                    JsonElement subscribeAPIsResponse = callPost(urlMap.get(GatewayConstants.API_SUBSCRIBE_URL)
-                            .toString(), subscribeAPIsPayload.toString(), "Bearer ".concat(token));
-                    if (subscribeAPIsResponse == null) {
-                        log.error("Error while subscribing to APIs");
-                        //delete SP created to call dev portal REST APIs
-                        callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                                .concat(clientId), basicAuthHeader);
-                        handleInternalServerError(obapiResponseContext,
-                                OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                        return;
-                    }
-                }
-                //delete IAM application used to invoke am rest endpoints
-                if (!callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
-                        .concat(clientId), basicAuthHeader)) {
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                    return;
-                }
-            } catch (ParseException | IOException | URISyntaxException | OpenBankingException e) {
-                log.error("Error occurred while creating application", e);
-                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
-                return;
-            }
-        }
-
-        if (HttpMethod.DELETE.equalsIgnoreCase(obapiResponseContext.getMsgInfo().getHttpMethod()) &&
-                HttpStatus.SC_NO_CONTENT == obapiResponseContext.getStatusCode()) {
-            try {
-                JsonObject dcrPayload = getIAMDCRPayload(obapiResponseContext.getApiRequestInfo().getConsumerKey());
-                JsonElement registrationResponse = callPost(urlMap.get(GatewayConstants.IAM_DCR_URL).toString(),
-                        dcrPayload.toString(), basicAuthHeader);
-                if (registrationResponse == null) {
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
-                    return;
-                }
-
-                //call token endpoint to retrieve a token for invoking the devportal REST apis
-                String clientId = registrationResponse.getAsJsonObject().get(clientIdParam).getAsString();
-                String authHeaderForTokenRequest = GatewayUtils.getBasicAuthHeader(clientId,
-                        registrationResponse.getAsJsonObject().get(clientSecret).getAsString());
-
-                JsonElement tokenResponse = getToken(authHeaderForTokenRequest,
-                        urlMap.get(GatewayConstants.TOKEN_URL).toString(), clientId);
-                if (tokenResponse == null || tokenResponse.getAsJsonObject().get("access_token") == null) {
-                    log.error("Error while creating tokens during delete");
-                    //delete IAM application used to invoke am rest endpoints
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
-                            basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
-                    return;
-                }
-                String token = tokenResponse.getAsJsonObject().get("access_token").getAsString();
-
-                //get application id of the sent request
-                String cacheKey = obapiResponseContext.getApiRequestInfo().getConsumerKey()
-                        .concat(GatewayConstants.AM_APP_NAME_CACHEKEY);
-                String applicationName = GatewayDataHolder.getGatewayCache()
-                        .getFromCache(GatewayCacheKey.of(cacheKey)).toString();
-
-                //Adding applicationName to contextProps for use in next steps
-                Map<String, String> contextProps = obapiResponseContext.getContextProps();
-                contextProps.put("AppName", applicationName);
-                obapiResponseContext.setContextProps(contextProps);
-
-                //call application get endpoint to retrieve the application id
-                JsonElement applicationSearchResponse =
-                        callGet(urlMap.get(GatewayConstants.APP_CREATE_URL).toString(),
-                                GatewayConstants.BEARER_TAG.concat(token), "query", applicationName);
-                if (applicationSearchResponse == null) {
-                    log.error("Error while searching application during delete");
-                    //delete IAM application used to invoke am rest endpoints
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
-                            basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
-                    return;
-                }
-
-                String applicationId = applicationSearchResponse.getAsJsonObject().get("list").getAsJsonArray().get(0)
-                        .getAsJsonObject().get(applicationIdParam).getAsString();
-
-                if (!callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
-                        .concat("/").concat(applicationId), GatewayConstants.BEARER_TAG.concat(token))) {
-                    log.error("Error while deleting AM application");
-                    //delete IAM application used to invoke am rest endpoints
-                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
-                            basicAuthHeader);
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
-                    return;
-                }
-
-                //delete IAM application used to invoke am rest endpoints
-                if (!callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
-                        basicAuthHeader)) {
-                    handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
-                }
-            } catch (IOException | OpenBankingException | URISyntaxException e) {
-                log.error("Error occurred while deleting application", e);
-                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
-            }
-        }
-
     }
 
     /**
@@ -607,6 +248,427 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                 handleRequestInternalServerError(obapiRequestContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
             }
 
+        }
+    }
+
+    /**
+     * Method to handle response for DCR POST requests.
+     *
+     * @param obapiResponseContext OB response context object
+     * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
+     * @param fullBackEndURL URL of the OB DCR Endpoint
+     * @param regulatoryAPIs A map containing regulatory API names and the related authorized roles
+     */
+    private void postProcessResponseForRegister(OBAPIResponseContext obapiResponseContext, String basicAuthHeader,
+                                            String fullBackEndURL, Map<String, List<String>> regulatoryAPIs) {
+
+        try {
+            JsonParser jsonParser = new JsonParser();
+            JsonObject createdDCRAppDetails = ((JsonObject) jsonParser
+                    .parse(obapiResponseContext.getResponsePayload()));
+            //get software statement from dcr app details
+            String softwareStatement = createdDCRAppDetails.has(OpenBankingConstants.SOFTWARE_STATEMENT) ?
+                    createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT).toString() : null;
+
+            //call IS DCR endpoint to create application for obtaining a token to invoke devportal REST APIs
+            JsonElement registrationResponse = createServiceProvider(basicAuthHeader,
+                    createdDCRAppDetails.get("software_id").getAsString());
+            if (registrationResponse == null) {
+                log.error("Error while creating AM app for invoking APIM rest apis");
+                String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
+                //delete service provider
+                callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                return;
+            }
+            //call token endpoint to retrieve a token for invoking the devportal REST apis
+            String amRestAPIInvokeClientId = registrationResponse.getAsJsonObject()
+                    .get(clientIdParam).getAsString();
+
+            String authHeaderForTokenRequest = GatewayUtils
+                    .getBasicAuthHeader(registrationResponse.getAsJsonObject().get(clientIdParam).getAsString(),
+                            registrationResponse.getAsJsonObject().get(clientSecret).getAsString());
+
+            JsonElement tokenResponse = getToken(authHeaderForTokenRequest,
+                    urlMap.get(GatewayConstants.TOKEN_URL).toString(), amRestAPIInvokeClientId);
+
+            if (tokenResponse == null || tokenResponse.getAsJsonObject().get("access_token") == null) {
+                log.error("Error while creating tokens");
+                String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
+                //delete service provider
+                callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
+                //delete SP created for calling dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(amRestAPIInvokeClientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                return;
+            }
+            String token = tokenResponse.getAsJsonObject().get("access_token").getAsString();
+            String getSPDetails = urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                    .concat(createdDCRAppDetails.get(clientIdParam).getAsString());
+            //call IS dcr api to get client secret and client name
+            JsonElement createdSpDetails = callGet(getSPDetails, basicAuthHeader, "", "");
+            if (createdSpDetails == null) {
+                log.error("Error while retrieving client id and secret");
+                String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
+                //delete service provider
+                callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
+                //delete SP created for calling dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(amRestAPIInvokeClientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                return;
+            }
+
+            //create am application
+            JsonObject amAppCreatePayload = getAppCreatePayload(createdSpDetails.getAsJsonObject()
+                    .get("client_name").getAsString());
+            JsonElement amApplicationCreateResponse =
+                    callPost(urlMap.get(GatewayConstants.APP_CREATE_URL).toString(),
+                            amAppCreatePayload.toString(), GatewayConstants.BEARER_TAG.concat(token));
+
+            if (amApplicationCreateResponse == null) {
+                log.error("Error while creating AM app");
+                String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
+                //delete service provider
+                callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
+                //delete SP created for calling dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(amRestAPIInvokeClientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                return;
+            }
+            String keyMapURL = urlMap.get(GatewayConstants.KEY_MAP_URL).toString()
+                    .replace("application-id", amApplicationCreateResponse.getAsJsonObject()
+                            .get(applicationIdParam).getAsString());
+            String keyManagerName = GatewayDataHolder.getInstance().getOpenBankingConfigurationService()
+                    .getConfigurations().get(OpenBankingConstants.OB_KM_NAME).toString();
+
+            //map keys to am application
+            JsonObject keyMapPayload = getKeyMapPayload(createdDCRAppDetails.get(clientIdParam).getAsString(),
+                    createdSpDetails.getAsJsonObject().get(clientSecret).getAsString(),
+                    OpenBankingUtils.getSoftwareEnvironmentFromSSA(softwareStatement), keyManagerName);
+
+            JsonElement amKeyMapResponse = callPost(keyMapURL, keyMapPayload.toString(),
+                    GatewayConstants.BEARER_TAG.concat(token));
+            if (amKeyMapResponse == null) {
+                log.error("Error while mapping keys to AM app");
+                String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
+                //delete service provider
+                callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
+                //delete SP created for calling dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(amRestAPIInvokeClientId), basicAuthHeader);
+                //delete AM application
+                callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
+                        .concat("/").concat(amApplicationCreateResponse.getAsJsonObject()
+                                .get(applicationIdParam).getAsString()), GatewayConstants.BEARER_TAG.concat(token));
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                return;
+            }
+            //get list of published APIs
+            JsonElement publishedAPIsResponse = callGet(urlMap.get(GatewayConstants.API_RETRIEVE_URL).toString(),
+                    GatewayConstants.BEARER_TAG.concat(token), "", "");
+            if (publishedAPIsResponse == null) {
+                log.error("Error while retrieving published APIs");
+                String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
+                //delete service provider
+                callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
+                //delete SP created for calling dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(amRestAPIInvokeClientId), basicAuthHeader);
+                //delete AM application
+                callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
+                        .concat("/").concat(amApplicationCreateResponse.getAsJsonObject()
+                                .get(applicationIdParam).getAsString()), GatewayConstants.BEARER_TAG.concat(token));
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                return;
+            }
+
+            List<String> apiIDList = new ArrayList<>();
+            if (regulatoryAPIs != null) {
+                if (StringUtils.isEmpty(softwareStatement)) {
+                    apiIDList = filterRegulatoryAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                            .get(OpenBankingConstants.API_LIST).getAsJsonArray(), Collections.emptyList());
+                } else {
+                    apiIDList = filterRegulatoryAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                            .get(OpenBankingConstants.API_LIST).getAsJsonArray(), getRolesFromSSA(softwareStatement));
+                }
+            } else {
+                log.warn("No regulatory APIs configured. Application will be subscribed to all published APIs");
+                //subscribe to all APIs if there are no configured regulatory APIs
+                for (JsonElement apiInfo : publishedAPIsResponse.getAsJsonObject().get("list").getAsJsonArray()) {
+                    apiIDList.add(apiInfo.getAsJsonObject().get("id").getAsString());
+                }
+            }
+            //subscribe to apis
+            JsonArray subscribeAPIsPayload = getAPISubscriptionPayload(amApplicationCreateResponse
+                    .getAsJsonObject().get(applicationIdParam).getAsString(), apiIDList);
+            JsonElement subscribeAPIsResponse = callPost(urlMap.get(GatewayConstants.API_SUBSCRIBE_URL).toString(),
+                    subscribeAPIsPayload.toString(), "Bearer ".concat(token));
+            if (subscribeAPIsResponse == null) {
+                log.error("Error while subscribing to APIs");
+                String clientId = createdDCRAppDetails.get(clientIdParam).getAsString();
+                //delete service provider
+                callDelete(fullBackEndURL.concat("/").concat(clientId), basicAuthHeader);
+                //delete SP created for calling dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(amRestAPIInvokeClientId), basicAuthHeader);
+                //delete AM application
+                callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
+                        .concat("/").concat(amApplicationCreateResponse.getAsJsonObject()
+                                .get(applicationIdParam).getAsString()), GatewayConstants.BEARER_TAG.concat(token));
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                return;
+            }
+
+            //delete IAM application used to invoke am rest endpoints
+            if (!callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                    .concat(amRestAPIInvokeClientId), basicAuthHeader)) {
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
+            }
+
+        } catch (IOException | OpenBankingException | URISyntaxException | ParseException e) {
+            log.error("Error occurred while creating application", e);
+            handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+        }
+    }
+
+    /**
+     * Method to handle response for DCR PUT requests.
+     *
+     * @param obapiResponseContext OB response context object
+     * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
+     * @param regulatoryAPIs A map containing regulatory API names and the related authorized roles
+     */
+    private void postProcessResponseForUpdate(OBAPIResponseContext obapiResponseContext, String basicAuthHeader,
+                                           Map<String, List<String>> regulatoryAPIs) {
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject createdDCRAppDetails = ((JsonObject) jsonParser.parse(obapiResponseContext
+                .getResponsePayload()));
+        try {
+            JsonObject dcrPayload = getIAMDCRPayload(createdDCRAppDetails.get("software_id").getAsString());
+            JsonElement registrationResponse = callPost(urlMap.get(GatewayConstants.IAM_DCR_URL).toString(),
+                    dcrPayload.toString(), basicAuthHeader);
+            if (registrationResponse == null) {
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+                return;
+            }
+            //call token endpoint to retrieve a token for invoking the devportal REST apis
+            String clientId = registrationResponse.getAsJsonObject().get(clientIdParam).getAsString();
+            String authHeaderForTokenRequest = GatewayUtils.getBasicAuthHeader(clientId,
+                    registrationResponse.getAsJsonObject().get(clientSecret).getAsString());
+
+            JsonElement tokenResponse = getToken(authHeaderForTokenRequest,
+                    urlMap.get(GatewayConstants.TOKEN_URL).toString(), clientId);
+            if (tokenResponse == null || tokenResponse.getAsJsonObject().get("access_token") == null) {
+                log.error("Error while creating tokens");
+                //delete SP created to call dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(clientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+                return;
+            }
+            String token = tokenResponse.getAsJsonObject().get("access_token").getAsString();
+
+            String applicationName = getApplicationName(obapiResponseContext.getResponsePayload(),
+                    GatewayDataHolder.getInstance().getOpenBankingConfigurationService().getConfigurations());
+            if (StringUtils.isEmpty(applicationName)) {
+                log.error("Error while retrieving application name during update");
+                //delete SP created to call dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(clientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+                return;
+            }
+            //call application get endpoint to retrieve the application id
+            JsonElement applicationSearchResponse =
+                    callGet(urlMap.get(GatewayConstants.APP_CREATE_URL).toString(),
+                            GatewayConstants.BEARER_TAG.concat(token), "query", applicationName);
+            if (applicationSearchResponse == null) {
+                log.error("Error while searching for created application during update");
+                //delete SP created to call dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(clientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+                return;
+            }
+            String applicationId = applicationSearchResponse.getAsJsonObject().get("list").getAsJsonArray().get(0)
+                    .getAsJsonObject().get(applicationIdParam).getAsString();
+
+            //get list of subscribed APIs
+            JsonElement subscribedAPIsResponse = callGet(urlMap.get(GatewayConstants.API_GET_SUBSCRIBED).toString(),
+                    GatewayConstants.BEARER_TAG.concat(token), "applicationId", applicationId);
+            if (subscribedAPIsResponse == null) {
+                log.error("Error while retrieving subscribed APIs");
+                //delete SP created to call dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(clientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+                return;
+            }
+            List<String> subscribedAPIIdList = new ArrayList<>();
+            for (JsonElement subscribedAPI : subscribedAPIsResponse.getAsJsonObject().get("list")
+                    .getAsJsonArray()) {
+                String apiId = subscribedAPI.getAsJsonObject().get("apiId").getAsString();
+                subscribedAPIIdList.add(apiId);
+            }
+
+            //get software statement from dcr app details
+            String softwareStatement = createdDCRAppDetails.has(OpenBankingConstants.SOFTWARE_STATEMENT) ?
+                    createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT).getAsString() : null;
+            if (StringUtils.isNotEmpty(softwareStatement)) {
+                final JsonArray subscribedAPIs = subscribedAPIsResponse.getAsJsonObject()
+                        .get("list").getAsJsonArray();
+                //check whether the ssa still contains the roles related to the subscribed APIs and unsubscribe if not
+                Optional.of(getRolesFromSSA(softwareStatement))
+                        .map(ssaRoles -> getUnAuthorizedAPIs(subscribedAPIs, regulatoryAPIs, ssaRoles))
+                        .flatMap(unAuthorizedApis -> unAuthorizedApis.stream()
+                                .map(unAuthorizedApi -> String.format("%s/%s",
+                                        urlMap.get(GatewayConstants.API_GET_SUBSCRIBED).toString(), unAuthorizedApi))
+                                .filter(endpoint -> isSubscriptionDeletionFailed(endpoint, GatewayConstants.BEARER_TAG
+                                        .concat(token)))
+                                .findAny())
+                        .ifPresent(endpoint -> {
+                            log.error("Error while unsubscribing from API: " + endpoint);
+                            //delete SP created to call dev portal REST APIs
+                            try {
+                                callDelete(String.format("%s/%s", urlMap.get(GatewayConstants.IAM_DCR_URL).toString(),
+                                        clientId), basicAuthHeader);
+                            } catch (OpenBankingException | IOException e) {
+                                handleInternalServerError(obapiResponseContext,
+                                        OpenBankingErrorCodes.REGISTRATION_INTERNAL_ERROR);
+                            }
+                        });
+            }
+            //subscribe to new APIs if new roles were added to the SSA
+            //get list of published APIs
+            JsonElement publishedAPIsResponse = callGet(urlMap.get(GatewayConstants.API_RETRIEVE_URL).toString(),
+                    GatewayConstants.BEARER_TAG.concat(token), "", "");
+            if (publishedAPIsResponse == null) {
+                log.error("Error while retrieving published APIs");
+                //delete SP created to call dev portal REST APIs
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                        .concat(clientId), basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+                return;
+            }
+            List<String> apiIDList = new ArrayList<>();
+            if (StringUtils.isEmpty(softwareStatement)) {
+                filterRegulatoryAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                        .get(OpenBankingConstants.API_LIST).getAsJsonArray(), Collections.emptyList());
+            } else {
+                filterRegulatoryAPIs(regulatoryAPIs, publishedAPIsResponse.getAsJsonObject()
+                        .get(OpenBankingConstants.API_LIST).getAsJsonArray(), getRolesFromSSA(softwareStatement));
+            }
+
+            List<String> newApisListToSubscribe = getNewAPIsToSubscribe(apiIDList, subscribedAPIIdList);
+            if (!newApisListToSubscribe.isEmpty()) {
+                JsonArray subscribeAPIsPayload = getAPISubscriptionPayload(applicationId, newApisListToSubscribe);
+                JsonElement subscribeAPIsResponse = callPost(urlMap.get(GatewayConstants.API_SUBSCRIBE_URL)
+                        .toString(), subscribeAPIsPayload.toString(), "Bearer ".concat(token));
+                if (subscribeAPIsResponse == null) {
+                    log.error("Error while subscribing to APIs");
+                    //delete SP created to call dev portal REST APIs
+                    callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                            .concat(clientId), basicAuthHeader);
+                    handleInternalServerError(obapiResponseContext,
+                            OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+                    return;
+                }
+            }
+            //delete IAM application used to invoke am rest endpoints
+            if (!callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/")
+                    .concat(clientId), basicAuthHeader)) {
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+            }
+        } catch (ParseException | IOException | URISyntaxException | OpenBankingException e) {
+            log.error("Error occurred while creating application", e);
+            handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTRATION_UPDATE_ERROR);
+        }
+    }
+
+
+    /**
+     * Method to handle response for DCR DELETE requests.
+     *
+     * @param obapiResponseContext OB response context object
+     * @param basicAuthHeader Basic authentication header for accessing the DCR endpoint.
+     */
+    private void postProcessResponseForDelete(OBAPIResponseContext obapiResponseContext, String basicAuthHeader) {
+
+        try {
+            JsonObject dcrPayload = getIAMDCRPayload(obapiResponseContext.getApiRequestInfo().getConsumerKey());
+            JsonElement registrationResponse = callPost(urlMap.get(GatewayConstants.IAM_DCR_URL).toString(),
+                    dcrPayload.toString(), basicAuthHeader);
+            if (registrationResponse == null) {
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
+                return;
+            }
+
+            //call token endpoint to retrieve a token for invoking the devportal REST apis
+            String clientId = registrationResponse.getAsJsonObject().get(clientIdParam).getAsString();
+            String authHeaderForTokenRequest = GatewayUtils.getBasicAuthHeader(clientId,
+                    registrationResponse.getAsJsonObject().get(clientSecret).getAsString());
+
+            JsonElement tokenResponse = getToken(authHeaderForTokenRequest,
+                    urlMap.get(GatewayConstants.TOKEN_URL).toString(), clientId);
+            if (tokenResponse == null || tokenResponse.getAsJsonObject().get("access_token") == null) {
+                log.error("Error while creating tokens during delete");
+                //delete IAM application used to invoke am rest endpoints
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
+                        basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
+                return;
+            }
+            String token = tokenResponse.getAsJsonObject().get("access_token").getAsString();
+
+            //get application id of the sent request
+            String cacheKey = obapiResponseContext.getApiRequestInfo().getConsumerKey()
+                    .concat(GatewayConstants.AM_APP_NAME_CACHEKEY);
+            String applicationName = GatewayDataHolder.getGatewayCache()
+                    .getFromCache(GatewayCacheKey.of(cacheKey)).toString();
+
+            //Adding applicationName to contextProps for use in next steps
+            Map<String, String> contextProps = obapiResponseContext.getContextProps();
+            contextProps.put("AppName", applicationName);
+            obapiResponseContext.setContextProps(contextProps);
+
+            //call application get endpoint to retrieve the application id
+            JsonElement applicationSearchResponse =
+                    callGet(urlMap.get(GatewayConstants.APP_CREATE_URL).toString(),
+                            GatewayConstants.BEARER_TAG.concat(token), "query", applicationName);
+            if (applicationSearchResponse == null) {
+                log.error("Error while searching application during delete");
+                //delete IAM application used to invoke am rest endpoints
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
+                        basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
+                return;
+            }
+
+            String applicationId = applicationSearchResponse.getAsJsonObject().get("list").getAsJsonArray().get(0)
+                    .getAsJsonObject().get(applicationIdParam).getAsString();
+
+            if (!callDelete(urlMap.get(GatewayConstants.APP_CREATE_URL).toString()
+                    .concat("/").concat(applicationId), GatewayConstants.BEARER_TAG.concat(token))) {
+                log.error("Error while deleting AM application");
+                //delete IAM application used to invoke am rest endpoints
+                callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
+                        basicAuthHeader);
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
+                return;
+            }
+
+            //delete IAM application used to invoke am rest endpoints
+            if (!callDelete(urlMap.get(GatewayConstants.IAM_DCR_URL).toString().concat("/").concat(clientId),
+                    basicAuthHeader)) {
+                handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
+            }
+        } catch (IOException | OpenBankingException | URISyntaxException e) {
+            log.error("Error occurred while deleting application", e);
+            handleInternalServerError(obapiResponseContext, OpenBankingErrorCodes.REGISTATION_DELETE_ERROR);
         }
     }
 
@@ -716,20 +778,27 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         }
     }
 
-    protected List<String> filterRegulatorAPIs(Map<String, List<String>> regulatoryAPINames, JsonArray publishedAPIs,
-                                               List<String> softwareRoles) {
+    /**
+     * Filters the regulatory APIs based on the  given software roles.
+     *
+     * @param regulatoryAPIs A map containing regulatory API names and their allowed roles
+     * @param publishedAPIs The list of published APIs as JSON array
+     * @param softwareRoles The list of software roles provided in the request
+     * @return A list of API IDs that the application is authorized to access
+     */
+    protected List<String> filterRegulatoryAPIs(Map<String, List<String>> regulatoryAPIs, JsonArray publishedAPIs,
+                                                List<String> softwareRoles) {
 
         List<String> filteredAPIs = new ArrayList<>();
-        for (JsonElement apiInfo : publishedAPIs) {
-            for (Map.Entry<String, List<String>> entry : regulatoryAPINames.entrySet()) {
-                if (entry.getKey().equals(apiInfo.getAsJsonObject().get("name").getAsString())) {
-                    List<String> allowedRolesForAPI = entry.getValue();
-                    for (String allowedRole : allowedRolesForAPI) {
-                        if (softwareRoles.contains(allowedRole)) {
-                            filteredAPIs.add(apiInfo.getAsJsonObject().get("id").getAsString());
-                            break;
-                        }
-                    }
+        for (JsonElement publishedAPIInfo : publishedAPIs) {
+            String publishedAPIName = publishedAPIInfo.getAsJsonObject().get(OpenBankingConstants.API_NAME)
+                    .getAsString();
+            if (regulatoryAPIs.containsKey(publishedAPIName)) {
+                List<String> allowedRolesForAPI = regulatoryAPIs.get(publishedAPIName);
+                // Check if no specific roles are configured for the API or if software roles contain any of the
+                // allowed roles
+                if (allowedRolesForAPI.isEmpty() || allowedRolesForAPI.stream().anyMatch(softwareRoles::contains)) {
+                    filteredAPIs.add(publishedAPIInfo.getAsJsonObject().get(OpenBankingConstants.API_ID).getAsString());
                 }
             }
         }
@@ -788,6 +857,22 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
             CloseableHttpResponse appDeletedResponse = httpClient.execute(httpDelete);
             int status = appDeletedResponse.getStatusLine().getStatusCode();
             return (status == 204 || status == 200);
+        }
+    }
+
+    /**
+     * Check if the deletion of subscription at a given endpoint failed.
+     *
+     * @param endpoint   The URL of the endpoint where the subscription deletion is attempted
+     * @param authHeader The authorization header to be used in the HTTP request
+     * @return True if the subscription deletion fails or an exception occurs, false otherwise
+     */
+  protected boolean isSubscriptionDeletionFailed(String endpoint, String authHeader) {
+
+        try {
+            return !callDelete(endpoint, GatewayConstants.BEARER_TAG.concat(authHeader));
+        } catch (OpenBankingException | IOException e) {
+            return true;
         }
     }
 
@@ -872,30 +957,30 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
     protected String getApplicationName(String responsePayload, Map<String, Object> configurations)
             throws ParseException {
 
-        boolean isSoftwareIdAppName = Boolean.parseBoolean(configurations
-                .get(OpenBankingConstants.DCR_USE_SOFTWAREID_AS_APPNAME).toString());
-        String applicationNameKey = configurations
-                .get(OpenBankingConstants.DCR_APPLICATION_NAME_KEY).toString();
-        String applicationName = "";
         JsonParser jsonParser = new JsonParser();
         JsonObject createdDCRAppDetails = ((JsonObject) jsonParser.parse(responsePayload));
-        String softwareStatement = createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT)
-                .getAsString();
-        JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement, "body");
-        //get application Name
-        if (isSoftwareIdAppName) {
-            if (softwareStatementBody.containsKey("software_id")) {
-                applicationName = softwareStatementBody.get("software_id").toString();
+        String softwareStatement = createdDCRAppDetails.has(OpenBankingConstants.SOFTWARE_STATEMENT) ?
+                createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_STATEMENT).getAsString() : null;
+        boolean isSoftwareIdAppName = Boolean.parseBoolean(configurations
+                .get(OpenBankingConstants.DCR_USE_SOFTWAREID_AS_APPNAME).toString());
+        String applicationNameKey = configurations.get(OpenBankingConstants.DCR_APPLICATION_NAME_KEY).toString();
+
+        // If a software statement is not provided, get the software id directly from created app details
+        if (StringUtils.isEmpty(softwareStatement)) {
+            if (isSoftwareIdAppName) {
+                return createdDCRAppDetails.get(OpenBankingConstants.SOFTWARE_ID).getAsString();
             }
         } else {
-            if (softwareStatementBody.containsKey(applicationNameKey)) {
-                applicationName = softwareStatementBody.get(applicationNameKey).toString();
-            } else {
-                applicationName = createdDCRAppDetails.get(applicationNameKey).toString();
+            JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement,
+                    OpenBankingConstants.JWT_BODY);
+            if (isSoftwareIdAppName) {
+                //get software id form the software statement
+                return softwareStatementBody.get(OpenBankingConstants.SOFTWARE_ID).toString();
+            } else if (softwareStatementBody.containsKey(applicationNameKey)) {
+                return softwareStatementBody.get(applicationNameKey).toString();
             }
         }
-
-        return applicationName;
+        return createdDCRAppDetails.get(applicationNameKey).getAsString();
     }
 
     protected List<String> getUnAuthorizedAPIs(JsonArray subscribedAPIs, Map<String, List<String>> configuredAPIs,

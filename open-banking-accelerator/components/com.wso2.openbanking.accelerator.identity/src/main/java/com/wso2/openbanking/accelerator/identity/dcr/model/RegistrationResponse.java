@@ -69,6 +69,9 @@ public class RegistrationResponse {
     @SerializedName("software_id")
     protected String softwareId = null;
 
+    @SerializedName("jwks_uri")
+    private String jwksURI;
+
     @SerializedName("token_endpoint_auth_method")
     protected String tokenEndpointAuthMethod = null;
 
@@ -205,5 +208,13 @@ public class RegistrationResponse {
 
     public void setRegistrationClientURI(String registrationClientURI) {
         this.registrationClientURI = registrationClientURI;
+    }
+
+    public String getJwksURI() {
+        return jwksURI;
+    }
+
+    public void setJwksURI(String jwksURI) {
+        this.jwksURI = jwksURI;
     }
 }

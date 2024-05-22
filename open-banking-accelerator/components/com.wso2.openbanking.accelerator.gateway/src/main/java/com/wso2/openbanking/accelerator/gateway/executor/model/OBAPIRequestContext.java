@@ -62,10 +62,9 @@ public class OBAPIRequestContext extends RequestContextDTO {
                                Map<String, String> contextProps, Map<String, Object> analyticsData) {
 
         this.requestContextDTO = requestContextDTO;
-        this.contextProps = contextProps;
         this.addedHeaders = new HashMap<>();
         this.errors = new ArrayList<>();
-        this.contextProps = new HashMap<>();
+        this.contextProps = contextProps;
         this.analyticsData = analyticsData;
 
         Map<String, String> headers = requestContextDTO.getMsgInfo().getHeaders();
