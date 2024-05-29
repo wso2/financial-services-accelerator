@@ -105,17 +105,17 @@ public class VRPSubmissionTest {
     @BeforeMethod
     public void initMethod() {
 
-        OpenBankingConfigParser openBankingUKConfigParserMock =  mock(OpenBankingConfigParser.class);
-        doReturn(configMap).when(openBankingUKConfigParserMock).getConfiguration();
-
-        PowerMockito.mockStatic(OpenBankingConfigParser.class);
-        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingUKConfigParserMock);
-
         OpenBankingConfigParser openBankingConfigParserMock =  mock(OpenBankingConfigParser.class);
         doReturn(configMap).when(openBankingConfigParserMock).getConfiguration();
 
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
+
+        OpenBankingConfigParser openBankingConfigParsersMock =  mock(OpenBankingConfigParser.class);
+        doReturn(configMap).when(openBankingConfigParserMock).getConfiguration();
+
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParsersMock);
     }
 
     @ObjectFactory
