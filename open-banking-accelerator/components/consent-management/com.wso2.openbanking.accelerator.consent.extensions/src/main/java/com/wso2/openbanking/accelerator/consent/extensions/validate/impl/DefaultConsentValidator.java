@@ -414,21 +414,22 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         JSONObject submissionJson = consentValidateData.getPayload();
-        JSONObject submissionData = (JSONObject) submissionJson.get(ConsentExtensionConstants.DATA);
 
         JSONObject dataValidationResults = VRPSubmissionPayloadValidator.validateSubmissionData(submissionJson);
         if (!Boolean.parseBoolean(dataValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorAndLog(dataValidationResults, consentValidationResult);
+            ConsentValidatorUtil.getErrorMessage(dataValidationResults, consentValidationResult);
             return;
         }
+
+        JSONObject submissionData = (JSONObject) submissionJson.get(ConsentExtensionConstants.DATA);
 
         JSONObject initiationParameterValidationResults = VRPSubmissionPayloadValidator.
                 validateInitiationParameter(submissionData);
         if (!Boolean.parseBoolean(initiationParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
             log.error(initiationParameterValidationResults.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
-            ConsentValidatorUtil.getErrorAndLog(initiationParameterValidationResults, consentValidationResult);
+            ConsentValidatorUtil.getErrorMessage(initiationParameterValidationResults, consentValidationResult);
             return;
         }
 
@@ -437,7 +438,7 @@ public class DefaultConsentValidator implements ConsentValidator {
         if (!Boolean.parseBoolean(instructionParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
             log.error(instructionParameterValidationResults.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
-            ConsentValidatorUtil.getErrorAndLog(instructionParameterValidationResults, consentValidationResult);
+            ConsentValidatorUtil.getErrorMessage(instructionParameterValidationResults, consentValidationResult);
             return;
         }
 
@@ -463,7 +464,7 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (!Boolean.parseBoolean(initiationValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorAndLog(initiationValidationResult, consentValidationResult);
+            ConsentValidatorUtil.getErrorMessage(initiationValidationResult, consentValidationResult);
             return;
         }
 
@@ -472,14 +473,14 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (!Boolean.parseBoolean(instructionValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorAndLog(instructionValidationResult, consentValidationResult);
+            ConsentValidatorUtil.getErrorMessage(instructionValidationResult, consentValidationResult);
             return;
         }
 
         JSONObject riskParameterValidationResults = VRPSubmissionPayloadValidator.validateRiskParameter(submissionJson);
         if (!Boolean.parseBoolean(riskParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorAndLog(riskParameterValidationResults, consentValidationResult);
+            ConsentValidatorUtil.getErrorMessage(riskParameterValidationResults, consentValidationResult);
             return;
         }
 
@@ -490,7 +491,7 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (!Boolean.parseBoolean(riskValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorAndLog(riskValidationResult, consentValidationResult);
+            ConsentValidatorUtil.getErrorMessage(riskValidationResult, consentValidationResult);
             return;
         }
         consentValidationResult.setValid(true);

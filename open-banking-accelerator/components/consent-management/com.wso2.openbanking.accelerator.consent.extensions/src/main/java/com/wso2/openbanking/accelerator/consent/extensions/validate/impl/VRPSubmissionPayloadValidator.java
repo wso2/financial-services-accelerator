@@ -45,7 +45,7 @@ public class VRPSubmissionPayloadValidator {
                                                 JSONObject initiationParameterOfConsentInitiation) {
 
         JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, false);
         validationResult.put(ConsentExtensionConstants.ERROR_CODE, "");
         validationResult.put(ConsentExtensionConstants.ERROR_MESSAGE, "");
 
@@ -167,6 +167,7 @@ public class VRPSubmissionPayloadValidator {
             }
         }
 
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
 
@@ -183,7 +184,7 @@ public class VRPSubmissionPayloadValidator {
                                                  JSONObject initiation) {
 
         JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, false);
         validationResult.put(ConsentExtensionConstants.ERROR_CODE, "");
         validationResult.put(ConsentExtensionConstants.ERROR_MESSAGE, "");
 
@@ -319,6 +320,7 @@ public class VRPSubmissionPayloadValidator {
                         ErrorConstants.INITIATION_REMITTANCE_INFO_PARAMETER_NOT_FOUND);
             }
         }
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
 
@@ -490,7 +492,7 @@ public class VRPSubmissionPayloadValidator {
                 !(submissionJson.get(ConsentExtensionConstants.DATA) instanceof JSONObject)) {
             log.error(ErrorConstants.DATA_NOT_FOUND);
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                    ErrorConstants.DATA_NOT_JSON_ERROR);
+                    ErrorConstants.DATA_NOT_FOUND);
         }
         return validationResult;
     }
