@@ -418,7 +418,8 @@ public class DefaultConsentValidator implements ConsentValidator {
         JSONObject dataValidationResults = VRPSubmissionPayloadValidator.validateSubmissionData(submissionJson);
         if (!Boolean.parseBoolean(dataValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorMessage(dataValidationResults, consentValidationResult);
+            ConsentValidatorUtil.setErrorMessageForConsentValidationResult(dataValidationResults,
+                    consentValidationResult);
             return;
         }
 
@@ -429,7 +430,8 @@ public class DefaultConsentValidator implements ConsentValidator {
         if (!Boolean.parseBoolean(initiationParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
             log.error(initiationParameterValidationResults.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
-            ConsentValidatorUtil.getErrorMessage(initiationParameterValidationResults, consentValidationResult);
+            ConsentValidatorUtil.setErrorMessageForConsentValidationResult(initiationParameterValidationResults,
+                    consentValidationResult);
             return;
         }
 
@@ -438,7 +440,8 @@ public class DefaultConsentValidator implements ConsentValidator {
         if (!Boolean.parseBoolean(instructionParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
             log.error(instructionParameterValidationResults.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
-            ConsentValidatorUtil.getErrorMessage(instructionParameterValidationResults, consentValidationResult);
+            ConsentValidatorUtil.setErrorMessageForConsentValidationResult(instructionParameterValidationResults,
+                    consentValidationResult);
             return;
         }
 
@@ -464,7 +467,8 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (!Boolean.parseBoolean(initiationValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorMessage(initiationValidationResult, consentValidationResult);
+            ConsentValidatorUtil.setErrorMessageForConsentValidationResult(initiationValidationResult,
+                    consentValidationResult);
             return;
         }
 
@@ -473,14 +477,16 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (!Boolean.parseBoolean(instructionValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorMessage(instructionValidationResult, consentValidationResult);
+            ConsentValidatorUtil.setErrorMessageForConsentValidationResult(instructionValidationResult,
+                    consentValidationResult);
             return;
         }
 
         JSONObject riskParameterValidationResults = VRPSubmissionPayloadValidator.validateRiskParameter(submissionJson);
         if (!Boolean.parseBoolean(riskParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorMessage(riskParameterValidationResults, consentValidationResult);
+            ConsentValidatorUtil.setErrorMessageForConsentValidationResult(riskParameterValidationResults,
+                    consentValidationResult);
             return;
         }
 
@@ -491,7 +497,8 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (!Boolean.parseBoolean(riskValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            ConsentValidatorUtil.getErrorMessage(riskValidationResult, consentValidationResult);
+            ConsentValidatorUtil.setErrorMessageForConsentValidationResult(riskValidationResult,
+                    consentValidationResult);
             return;
         }
         consentValidationResult.setValid(true);

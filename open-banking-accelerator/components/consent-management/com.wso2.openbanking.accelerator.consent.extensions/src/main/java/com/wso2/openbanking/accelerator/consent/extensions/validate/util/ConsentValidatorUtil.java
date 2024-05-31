@@ -81,7 +81,8 @@ public class ConsentValidatorUtil {
      * @param consentValidationResult the ConsentValidationResult object to be updated with error details
      * @return validationResult
      */
-    public static JSONObject getErrorMessage(JSONObject errorResult, ConsentValidationResult consentValidationResult) {
+    public static JSONObject setErrorMessageForConsentValidationResult(JSONObject errorResult
+            , ConsentValidationResult consentValidationResult) {
 
         JSONObject validationResult = new JSONObject();
         validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, false);
