@@ -472,6 +472,9 @@ public class DefaultConsentValidator implements ConsentValidator {
             return;
         }
 
+        // Here the requestInitiation is passed as a parameter in order to compare the creditor account in
+        // the initiation payload present under the initiation parameter with the submission payload present under the
+        // instruction parameter.
         JSONObject instructionValidationResult = VRPSubmissionPayloadValidator.
                 validateInstruction(submissionInstruction, requestInitiation);
 
