@@ -60,13 +60,19 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
 
         final String sql = sqlStatements.storeEventSubscriptionQuery();
         try (PreparedStatement storeEventSubscriptionStatement = connection.prepareStatement(sql)) {
+            String driverName = connection.getMetaData().getDriverName();
             storeEventSubscriptionStatement.setString(1, eventSubscription.getSubscriptionId());
             storeEventSubscriptionStatement.setString(2, eventSubscription.getClientId());
             storeEventSubscriptionStatement.setString(3, eventSubscription.getCallbackUrl());
             storeEventSubscriptionStatement.setLong(4, eventSubscription.getTimeStamp());
             storeEventSubscriptionStatement.setString(5, eventSubscription.getSpecVersion());
             storeEventSubscriptionStatement.setString(6, eventSubscription.getStatus());
-            storeEventSubscriptionStatement.setString(7, eventSubscription.getRequestData());
+            if (driverName.contains(EventNotificationConstants.POSTGRE_SQL)) {
+                storeEventSubscriptionStatement.setObject(7, eventSubscription.getRequestData(),
+                        java.sql.Types.OTHER);
+            } else {
+                storeEventSubscriptionStatement.setString(7, eventSubscription.getRequestData());
+            }
             storeSubscriptionAffectedRows = storeEventSubscriptionStatement.executeUpdate();
             if (storeSubscriptionAffectedRows == 0) {
                 log.error("Failed to store the event notification subscription.");

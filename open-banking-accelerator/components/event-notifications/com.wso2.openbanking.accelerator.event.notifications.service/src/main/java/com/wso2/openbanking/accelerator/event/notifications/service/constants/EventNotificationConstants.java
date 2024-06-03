@@ -115,4 +115,5 @@ public class EventNotificationConstants {
     public static final String EVENT_SUBSCRIPTIONS_NOT_FOUND = "Event subscriptions not found for the given client id.";
     public static final String ERROR_HANDLING_EVENT_SUBSCRIPTION = "Error occurred while handling the event " +
             "subscription request";
+    public static final String POSTGRE_SQL = "PostgreSQL";
 }
