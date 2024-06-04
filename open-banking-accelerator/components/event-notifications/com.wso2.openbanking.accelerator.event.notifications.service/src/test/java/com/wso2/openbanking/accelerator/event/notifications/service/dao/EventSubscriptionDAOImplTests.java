@@ -34,7 +34,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,7 +50,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class EventSubscriptionDAOImplTests extends PowerMockTestCase {
     private static Connection mockedConnection;
     private PreparedStatement mockedPreparedStatement;
-    private DatabaseMetaData mockedDatabaseMetaData;
 
     EventSubscriptionDAOImpl eventSubscriptionDAOImpl = new EventSubscriptionDAOImpl(
             new EventSubscriptionSqlStatements());
@@ -60,7 +58,6 @@ public class EventSubscriptionDAOImplTests extends PowerMockTestCase {
     public void mock() throws OBEventNotificationException {
         mockedConnection = Mockito.mock(Connection.class);
         mockedPreparedStatement = Mockito.mock(PreparedStatement.class);
-        mockedDatabaseMetaData = Mockito.mock(DatabaseMetaData.class);
         PowerMockito.mockStatic(DatabaseUtil.class);
         PowerMockito.when(DatabaseUtil.getDBConnection()).thenReturn(mockedConnection);
     }
@@ -69,10 +66,6 @@ public class EventSubscriptionDAOImplTests extends PowerMockTestCase {
     public void testStoreEventSubscription() throws OBEventNotificationException, SQLException {
         when(mockedConnection.prepareStatement(anyString())).thenReturn(mockedPreparedStatement);
         when(mockedPreparedStatement.executeUpdate()).thenReturn(1);
-
-        when(mockedConnection.getMetaData()).thenReturn(mockedDatabaseMetaData);
-        when(mockedDatabaseMetaData.getDriverName()).thenReturn("");
-
         EventSubscription sampleEventSubscription = EventNotificationTestUtils.getSampleEventSubscription();
 
         EventSubscription result = eventSubscriptionDAOImpl.storeEventSubscription(mockedConnection,
@@ -87,9 +80,6 @@ public class EventSubscriptionDAOImplTests extends PowerMockTestCase {
     public void testStoreEventSubscriptionDBError() throws OBEventNotificationException, SQLException {
         when(mockedConnection.prepareStatement(anyString())).thenReturn(mockedPreparedStatement);
         when(mockedPreparedStatement.executeUpdate()).thenThrow(new SQLException());
-
-        when(mockedConnection.getMetaData()).thenReturn(mockedDatabaseMetaData);
-        when(mockedDatabaseMetaData.getDriverName()).thenReturn("");
 
         eventSubscriptionDAOImpl.storeEventSubscription(mockedConnection,
                 EventNotificationTestUtils.getSampleEventSubscription());
