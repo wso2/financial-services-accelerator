@@ -60,4 +60,9 @@
             <class name="com.wso2.openbanking.accelerator.common.test.util.SecurityUtilsTest"/>
         </classes>
     </test>
+    <test name="jwt-utils-test">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.common.test.util.JWTUtilsTest"/>
+        </classes>
+    </test>
 </suite>

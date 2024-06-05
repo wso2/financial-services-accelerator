@@ -21,7 +21,7 @@ import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationException;
 import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.ValidationOrder;
+import com.wso2.openbanking.accelerator.identity.dcr.validation.validationorder.ValidationOrder;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
