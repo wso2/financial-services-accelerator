@@ -161,7 +161,7 @@ export const WithdrawStep2 = ({ match }) => {
               <button
                 onClick={handleRevokeConsent}
                 className="withdrawBtn"
-                id="withdrawBtn2" 
+                id="withdrawBtn2"
               >
                 {withdrawLang.nextBtnStep2}
               </button>
