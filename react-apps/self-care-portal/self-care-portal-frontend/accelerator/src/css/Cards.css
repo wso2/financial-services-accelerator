@@ -56,10 +56,6 @@
     border-color: #AAA7A7;
 }
 
-.card:hover{
-    transform: scale(1.05);
-}
-
 .home-tile{
     display: flex;
     flex-direction: row;
