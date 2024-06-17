@@ -23,6 +23,7 @@ import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.event.notifications.service.dao.EventSubscriptionDAO;
 import com.wso2.openbanking.accelerator.event.notifications.service.dao.EventSubscriptionDAOImpl;
 import com.wso2.openbanking.accelerator.event.notifications.service.dao.EventSubscriptionSqlStatements;
+import com.wso2.openbanking.accelerator.event.notifications.service.dao.PostgreSqlEventSubscriptionDAOImpl;
 import com.wso2.openbanking.accelerator.event.notifications.service.exceptions.OBEventNotificationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +53,7 @@ public class EventSubscriptionStoreInitializer {
             if (driverName.contains(MYSQL) || driverName.contains(H2)) {
                 eventSubscriptionDao = new EventSubscriptionDAOImpl(new EventSubscriptionSqlStatements());
             } else if (driverName.contains(POSTGRE)) {
-                eventSubscriptionDao = new EventSubscriptionDAOImpl(new EventSubscriptionSqlStatements());
+                eventSubscriptionDao = new PostgreSqlEventSubscriptionDAOImpl(new EventSubscriptionSqlStatements());
             } else if (driverName.contains(MSSQL)) {
                 eventSubscriptionDao = new EventSubscriptionDAOImpl(new EventSubscriptionSqlStatements());
             } else if (driverName.contains(ORACLE)) {
