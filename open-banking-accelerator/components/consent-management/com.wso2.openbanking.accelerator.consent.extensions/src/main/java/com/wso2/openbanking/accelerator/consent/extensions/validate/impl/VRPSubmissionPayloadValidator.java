@@ -44,10 +44,6 @@ public class VRPSubmissionPayloadValidator {
     public static JSONObject validateInitiation(JSONObject initiationOfSubmission,
                                                 JSONObject initiationParameterOfConsentInitiation) {
 
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, false);
-        validationResult.put(ConsentExtensionConstants.ERROR_CODE, "");
-        validationResult.put(ConsentExtensionConstants.ERROR_MESSAGE, "");
 
         if (initiationOfSubmission != null && initiationParameterOfConsentInitiation != null) {
 
@@ -88,6 +84,8 @@ public class VRPSubmissionPayloadValidator {
             }
 
             //Validate Debtor Account
+            // This code if condition checks whether the debtor account parameter is present in both the request
+            // payloads (Initiation and the submission payloads) since both the payloads as to be equal.
             if ((!initiationOfSubmission.containsKey(ConsentExtensionConstants.DEBTOR_ACC) &&
                     initiationParameterOfConsentInitiation.containsKey(ConsentExtensionConstants.DEBTOR_ACC)) ||
                     (initiationOfSubmission.containsKey(ConsentExtensionConstants.DEBTOR_ACC) &&
@@ -121,11 +119,7 @@ public class VRPSubmissionPayloadValidator {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.DEBTOR_ACC_NOT_JSON_ERROR);
                 }
-            } else {
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                        ErrorConstants.DEBTOR_ACC_NOT_FOUND);
             }
-
 
             if ((!initiationOfSubmission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
                     && initiationParameterOfConsentInitiation.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)) ||
@@ -150,23 +144,23 @@ public class VRPSubmissionPayloadValidator {
                     JSONObject remittanceInformationInit = (JSONObject) initiationParameterOfConsentInitiation
                             .get(ConsentExtensionConstants.REMITTANCE_INFO);
 
-                    validationResult = VRPSubmissionPayloadValidator.validateRemittanceInfo
+                    JSONObject validateRemittanceInfoResult = VRPSubmissionPayloadValidator.validateRemittanceInfo
                             (remittanceInformationSub, remittanceInformationInit);
-                    if (!Boolean.parseBoolean(validationResult.
+                    if (!Boolean.parseBoolean(validateRemittanceInfoResult.
                             getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-                        return validationResult;
+                        return  validateRemittanceInfoResult;
                     }
                 } else {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INITIATION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
-
-            } else {
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                        ErrorConstants.INITIATION_REMITTANCE_INFO_PARAMETER_NOT_FOUND);
-            }
+           }
+        } else {
+            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    ErrorConstants.INVALID_PARAMETER);
         }
 
+        JSONObject validationResult = new JSONObject();
         validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
@@ -185,11 +179,43 @@ public class VRPSubmissionPayloadValidator {
                                                  JSONObject initiation) {
 
         JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, false);
-        validationResult.put(ConsentExtensionConstants.ERROR_CODE, "");
-        validationResult.put(ConsentExtensionConstants.ERROR_MESSAGE, "");
 
         if (submission != null && initiation != null) {
+
+            if (!submission.containsKey(ConsentExtensionConstants.INSTRUCTED_AMOUNT)) {
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                        ErrorConstants.INSTRUCTED_AMOUNT_NOT_FOUND);
+            } else {
+                Object instructedAmountObject = submission.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT);
+
+                if (isValidJSONObject(instructedAmountObject)) {
+                    JSONObject instructedAmount = (JSONObject) instructedAmountObject;
+                    if (!instructedAmount.containsKey(ConsentExtensionConstants.AMOUNT)) {
+                        return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                                ErrorConstants.INSTRUCTED_AMOUNT_AMOUNT_NOT_FOUND);
+                    } else {
+                       Object amountValue = instructedAmount.get(ConsentExtensionConstants.AMOUNT);
+                        if (!isValidString(amountValue)) {
+                            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
+                                    ErrorConstants.INSTRUCTED_AMOUNT_NOT_STRING);
+                        }
+
+                        if (!instructedAmount.containsKey(ConsentExtensionConstants.CURRENCY)) {
+                            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                                    ErrorConstants.INSTRUCTED_AMOUNT_CURRENCY_NOT_FOUND);
+                        } else {
+                            Object currencyValue = instructedAmount.get(ConsentExtensionConstants.CURRENCY);
+                            if (!isValidString(currencyValue)) {
+                                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
+                                        ErrorConstants.INSTRUCTED_AMOUNT_CURRENCY_NOT_STRING);
+                            }
+                        }
+                    }
+                } else {
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
+                            ErrorConstants.INSTRUCTED_AMOUNT_NOT_JSON_ERROR);
+                }
+            }
 
             if (submission.containsKey(ConsentExtensionConstants.INSTRUCTION_IDENTIFICATION)) {
                 Object value = submission.get(ConsentExtensionConstants.INSTRUCTION_IDENTIFICATION);
@@ -218,8 +244,8 @@ public class VRPSubmissionPayloadValidator {
 
             //Validate Creditor Account
             if (submission.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
-                //If the CreditorAccount was not specified in the the consent,
-                // the CreditorAccount must be specified in the instruction
+                // If the CreditorAccount was not specified in the consent,the CreditorAccount must be specified
+                // in the instruction
                 if (!initiation.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
                     validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
                 } else {
@@ -249,47 +275,10 @@ public class VRPSubmissionPayloadValidator {
                         ErrorConstants.CREDITOR_ACC_NOT_FOUND);
             }
 
-            if (submission.containsKey(ConsentExtensionConstants.INSTRUCTED_AMOUNT)) {
-                Object instructedAmountObject = submission.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT);
-
-                if (isValidJSONObject(instructedAmountObject)) {
-                    JSONObject instructedAmount = (JSONObject) instructedAmountObject;
-                    if (!instructedAmount.containsKey(ConsentExtensionConstants.AMOUNT)) {
-                        return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                                ErrorConstants.INSTRUCTED_AMOUNT_AMOUNT_NOT_FOUND);
-                    } else {
-                        Object amountValue = instructedAmount.get(ConsentExtensionConstants.AMOUNT);
-                        if (!isValidString(amountValue)) {
-                            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
-                                    ErrorConstants.INSTRUCTED_AMOUNT_NOT_STRING);
-                        }
-
-                        if (!instructedAmount.containsKey(ConsentExtensionConstants.CURRENCY)) {
-                            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                                    ErrorConstants.INSTRUCTED_AMOUNT_CURRENCY_NOT_FOUND);
-                        } else {
-                            Object currencyValue = instructedAmount.get(ConsentExtensionConstants.CURRENCY);
-                            if (!isValidString(currencyValue)) {
-                                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
-                                        ErrorConstants.INSTRUCTED_AMOUNT_CURRENCY_NOT_STRING);
-                            }
-                        }
-                    }
-                } else {
-                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
-                            ErrorConstants.INSTRUCTED_AMOUNT_NOT_JSON_ERROR);
-                }
-            } else {
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                        ErrorConstants.INSTRUCTED_AMOUNT_NOT_FOUND);
-            }
-
-
             if ((!submission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
                     && initiation.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)) ||
                     (submission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
-                            && !initiation.
-                            containsKey(ConsentExtensionConstants.REMITTANCE_INFO))) {
+                            && !initiation.containsKey(ConsentExtensionConstants.REMITTANCE_INFO))) {
                 return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                         ErrorConstants.REMITTANCE_INFO_NOT_FOUND);
             } else if (submission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
@@ -316,11 +305,12 @@ public class VRPSubmissionPayloadValidator {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
-            } else {
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                        ErrorConstants.INITIATION_REMITTANCE_INFO_PARAMETER_NOT_FOUND);
             }
+        } else {
+            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    ErrorConstants.INVALID_PARAMETER);
         }
+
         validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
@@ -337,9 +327,6 @@ public class VRPSubmissionPayloadValidator {
     public static JSONObject validateRemittanceInfo(JSONObject remittanceInformationSub,
                                                     JSONObject remittanceInformationInit) {
 
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
-
         if (!ConsentValidatorUtil.compareOptionalParameter(
                 remittanceInformationSub.getAsString(ConsentExtensionConstants.REFERENCE),
                 remittanceInformationInit.getAsString(ConsentExtensionConstants.REFERENCE))) {
@@ -355,6 +342,9 @@ public class VRPSubmissionPayloadValidator {
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
                     ErrorConstants.REMITTANCE_UNSTRUCTURED_MISMATCH);
         }
+
+        JSONObject validationResult = new JSONObject();
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
 
@@ -370,9 +360,6 @@ public class VRPSubmissionPayloadValidator {
     public static JSONObject validateRisk(JSONObject riskOfSubmission,
                                           JSONObject riskOfInitiation) {
 
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
-
         if (!ConsentValidatorUtil.compareOptionalParameter(
                 riskOfSubmission.getAsString(ConsentExtensionConstants.CONTEXT_CODE),
                 riskOfInitiation.getAsString(ConsentExtensionConstants.CONTEXT_CODE))) {
@@ -381,6 +368,8 @@ public class VRPSubmissionPayloadValidator {
                     ErrorConstants.RISK_PARAMETER_MISMATCH);
         }
 
+        JSONObject validationResult = new JSONObject();
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
 
     }
@@ -390,12 +379,9 @@ public class VRPSubmissionPayloadValidator {
      * instance of JSONObject.
      *
      * @param submissionJson
-     * @return
+     * @return validationResult
      */
     public static JSONObject validateRiskParameter(JSONObject submissionJson) {
-
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
 
         //Validate RISK
         if (submissionJson.containsKey(ConsentExtensionConstants.RISK)) {
@@ -411,6 +397,9 @@ public class VRPSubmissionPayloadValidator {
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                     ErrorConstants.RISK_NOT_FOUND);
         }
+
+        JSONObject validationResult = new JSONObject();
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
 
@@ -431,8 +420,6 @@ public class VRPSubmissionPayloadValidator {
      * @return A JSONObject indicating the validation result.
      */
     public static JSONObject validateInitiationParameter(JSONObject submissionData) {
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
 
         if (submissionData.containsKey(ConsentExtensionConstants.INITIATION)) {
 
@@ -448,6 +435,8 @@ public class VRPSubmissionPayloadValidator {
                     ErrorConstants.INITIATION_NOT_FOUND);
         }
 
+        JSONObject validationResult = new JSONObject();
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
 
@@ -458,8 +447,6 @@ public class VRPSubmissionPayloadValidator {
      * @return A JSONObject indicating the validation result.
      */
     public static JSONObject validateInstructionParameter(JSONObject submissionData) {
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
 
         if (submissionData.containsKey(ConsentExtensionConstants.INSTRUCTION)) {
 
@@ -474,6 +461,8 @@ public class VRPSubmissionPayloadValidator {
                     ErrorConstants.INSTRUCTION_NOT_FOUND);
         }
 
+        JSONObject validationResult = new JSONObject();
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
 
@@ -484,10 +473,6 @@ public class VRPSubmissionPayloadValidator {
      * @return A JSONObject indicating the validation result.
      */
     public static JSONObject validateSubmissionData(JSONObject submissionJson) {
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
-        validationResult.put(ConsentExtensionConstants.ERROR_CODE, "");
-        validationResult.put(ConsentExtensionConstants.ERROR_MESSAGE, "");
 
         if (!submissionJson.containsKey(ConsentExtensionConstants.DATA) &&
                 !(submissionJson.get(ConsentExtensionConstants.DATA) instanceof JSONObject)) {
@@ -495,6 +480,9 @@ public class VRPSubmissionPayloadValidator {
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                     ErrorConstants.DATA_NOT_FOUND);
         }
+
+        JSONObject validationResult = new JSONObject();
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
 
@@ -507,6 +495,8 @@ public class VRPSubmissionPayloadValidator {
     public static boolean isValidJSONObject(Object value) {
         return value instanceof JSONObject;
     }
+
+
 
 }
 

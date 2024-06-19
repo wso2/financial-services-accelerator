@@ -74,20 +74,14 @@ public class ConsentValidatorUtil {
 
 
     /**
-     * Populates the provided consent validation result object with error information and constructs a JSON object
-     * indicating an invalid payload.
+     * Populates the provided consent validation result object with error information.
      *
      * @param errorResult the JSONObject containing error details, specifically error message and error code
      * @param consentValidationResult the ConsentValidationResult object to be updated with error details
-     * @return validationResult
+     *
      */
-    public static JSONObject setErrorMessageForConsentValidationResult(JSONObject errorResult
+    public static void setErrorMessageForConsentValidationResult(JSONObject errorResult
             , ConsentValidationResult consentValidationResult) {
-
-        JSONObject validationResult = new JSONObject();
-        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, false);
-        validationResult.put(ConsentExtensionConstants.ERROR_CODE, "");
-        validationResult.put(ConsentExtensionConstants.ERROR_MESSAGE, "");
 
         String errorMessage = errorResult.getAsString(ConsentExtensionConstants.ERROR_MESSAGE);
         String errorCode = errorResult.getAsString(ConsentExtensionConstants.ERROR_CODE);
@@ -95,9 +89,8 @@ public class ConsentValidatorUtil {
         consentValidationResult.setErrorMessage(errorMessage);
         consentValidationResult.setErrorCode(errorCode);
         consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
-
-        return validationResult;
     }
+
     /**
      * Method to construct the success validation result.
      *

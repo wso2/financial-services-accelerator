@@ -242,8 +242,7 @@ public class ErrorConstants {
     public static final String PAYLOAD_FORMAT_ERROR_RISK = "Mandatory parameter Risk does not exists" +
             " in the payload";
     public static final String INVALID_PERIOD_TYPE = "Invalid value for period type in PeriodicLimits";
-    public static final String INVALID_PARAMETER = "Parameter passed in is null , " +
-            "empty or not a JSONObject";
+    public static final String INVALID_PARAMETER = "Parameter passed in is null ";
     public static final String INVALID_CLIENT_ID_MATCH = "Consent validation failed due to client ID mismatch";
     public static final String INVALID_DATE_TIME_FORMAT = "Date and Time is not in correct JSON " +
             "ISO-8601 date-time format";
