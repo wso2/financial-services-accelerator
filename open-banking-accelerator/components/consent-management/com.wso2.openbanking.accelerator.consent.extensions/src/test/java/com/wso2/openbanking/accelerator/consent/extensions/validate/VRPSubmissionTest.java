@@ -684,5 +684,91 @@ public class VRPSubmissionTest {
         Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_INVALID);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
+
+    @Test
+    public void testValidateVRPSubmissionWithoutDebtorAccInSubmission() throws ParseException,
+            ConsentManagementException {
+
+        doReturn(authorizationResources).when(detailedConsentResourceMock).getAuthorizationResources();
+        doReturn(ConsentValidateTestConstants.CLIENT_ID).when(detailedConsentResourceMock).getClientID();
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
+        doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_DEBTOR_ACC).when(detailedConsentResourceMock).getReceipt();
+        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+
+        doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
+        doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
+        doReturn(ConsentValidateTestConstants.USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(ConsentValidateTestConstants.CLIENT_ID).when(consentValidateDataMock).getClientId();
+
+        doReturn(ConsentValidateTestConstants.VRP_PATH).when(consentValidateDataMock).getRequestPath();
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
+        doReturn(headers).when(consentValidateDataMock).getHeaders();
+        doReturn(ConsentValidateTestConstants.CONSENT_ID).when(consentValidateDataMock).getConsentId();
+        JSONObject submissionPayload = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
+                .parse(ConsentValidateTestConstants.VRP_SUBMISSION_WITH_DEBTOR_ACC);
+        doReturn(submissionPayload).when(consentValidateDataMock).getPayload();
+
+        doReturn(ConsentExtensionTestUtils.getConsentAttributes("vrp"))
+                .when(consentCoreServiceMock).getConsentAttributes(Mockito.anyString());
+        doReturn(true).when(consentCoreServiceMock).deleteConsentAttributes(Mockito.anyString(),
+                Mockito.<ArrayList<String>>anyObject());
+        doReturn(true).when(consentCoreServiceMock).storeConsentAttributes(Mockito.anyString(),
+                Mockito.<Map<String, String>>anyObject());
+
+        PowerMockito.mockStatic(ConsentServiceUtil.class);
+        PowerMockito.when(ConsentServiceUtil.getConsentService()).thenReturn(consentCoreServiceMock);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        consentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertFalse(consentValidationResult.isValid());
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.DEBTOR_ACC_NOT_FOUND);
+        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_MISSING);
+        Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
+    }
+
+    @Test
+    public void testValidateVRPSubmissionWithoutCreditorAccInInitiation() throws ParseException,
+            ConsentManagementException {
+
+        doReturn(authorizationResources).when(detailedConsentResourceMock).getAuthorizationResources();
+        doReturn(ConsentValidateTestConstants.CLIENT_ID).when(detailedConsentResourceMock).getClientID();
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
+        doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_CREDITOR_ACC).when(detailedConsentResourceMock).getReceipt();
+        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+
+        doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
+        doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
+        doReturn(ConsentValidateTestConstants.USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(ConsentValidateTestConstants.CLIENT_ID).when(consentValidateDataMock).getClientId();
+
+        doReturn(ConsentValidateTestConstants.VRP_PATH).when(consentValidateDataMock).getRequestPath();
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
+        doReturn(headers).when(consentValidateDataMock).getHeaders();
+        doReturn(ConsentValidateTestConstants.CONSENT_ID).when(consentValidateDataMock).getConsentId();
+        JSONObject submissionPayload = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
+                .parse(ConsentValidateTestConstants.VRP_SUBMISSION_WITH_INSTRUCTION_CREDITOR_ACC);
+        doReturn(submissionPayload).when(consentValidateDataMock).getPayload();
+
+        doReturn(ConsentExtensionTestUtils.getConsentAttributes("vrp"))
+                .when(consentCoreServiceMock).getConsentAttributes(Mockito.anyString());
+        doReturn(true).when(consentCoreServiceMock).deleteConsentAttributes(Mockito.anyString(),
+                Mockito.<ArrayList<String>>anyObject());
+        doReturn(true).when(consentCoreServiceMock).storeConsentAttributes(Mockito.anyString(),
+                Mockito.<Map<String, String>>anyObject());
+
+        PowerMockito.mockStatic(ConsentServiceUtil.class);
+        PowerMockito.when(ConsentServiceUtil.getConsentService()).thenReturn(consentCoreServiceMock);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        consentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertFalse(consentValidationResult.isValid());
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.CREDITOR_ACC_NOT_FOUND);
+        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_MISSING);
+        Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
+    }
 }
 
