@@ -67,7 +67,6 @@ import static org.mockito.Mockito.mock;
         "jdk.internal.reflect.*"})
 public class VRPSubmissionTest {
     VRPSubmissionPayloadValidator validator = new VRPSubmissionPayloadValidator();
-
     DefaultConsentValidator consentValidator;
     @Mock
     ConsentValidateData consentValidateDataMock;
@@ -75,7 +74,6 @@ public class VRPSubmissionTest {
     DetailedConsentResource detailedConsentResourceMock;
     @Mock
     ConsentCoreServiceImpl consentCoreServiceMock;
-
     Map<String, String> resourceParams = new HashMap<>();
     JSONObject headers = new JSONObject();
     private static Map<String, String> configMap;
@@ -693,7 +691,8 @@ public class VRPSubmissionTest {
         doReturn(ConsentValidateTestConstants.CLIENT_ID).when(detailedConsentResourceMock).getClientID();
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
-        doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_DEBTOR_ACC).when(detailedConsentResourceMock).getReceipt();
+        doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_DEBTOR_ACC).when(detailedConsentResourceMock)
+                .getReceipt();
         doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
@@ -736,7 +735,8 @@ public class VRPSubmissionTest {
         doReturn(ConsentValidateTestConstants.CLIENT_ID).when(detailedConsentResourceMock).getClientID();
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
-        doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_CREDITOR_ACC).when(detailedConsentResourceMock).getReceipt();
+        doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_CREDITOR_ACC).when(detailedConsentResourceMock).
+                getReceipt();
         doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
