@@ -101,56 +101,6 @@ public class JWTUtils {
      * @throws MalformedURLException if an error occurs while creating the URL object
      */
     @Generated(message = "Excluding from code coverage since can not call this method due to external https call")
-    public static boolean isValidSignature(String jwtString, String jwksUri, String algorithm)
-            throws ParseException, BadJOSEException, JOSEException, MalformedURLException {
-
-        int defaultConnectionTimeout = 3000;
-        int defaultReadTimeout = 3000;
-        ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-        JWT jwt = JWTParser.parse(jwtString);
-        // set the Key Selector for the jwks_uri.
-        Map<String, RemoteJWKSet<SecurityContext>> jwkSourceMap = new ConcurrentHashMap<>();
-        RemoteJWKSet<SecurityContext> jwkSet = jwkSourceMap.get(jwksUri);
-        if (jwkSet == null) {
-            int connectionTimeout = Integer.parseInt(OpenBankingConfigParser.getInstance().getJWKSConnectionTimeOut());
-            int readTimeout = Integer.parseInt(OpenBankingConfigParser.getInstance().getJWKSReadTimeOut());
-            int sizeLimit = RemoteJWKSet.DEFAULT_HTTP_SIZE_LIMIT;
-            if (connectionTimeout == 0 && readTimeout == 0) {
-                connectionTimeout = defaultConnectionTimeout;
-                readTimeout = defaultReadTimeout;
-            }
-            DefaultResourceRetriever resourceRetriever = new DefaultResourceRetriever(
-                    connectionTimeout,
-                    readTimeout,
-                    sizeLimit);
-            jwkSet = new RemoteJWKSet<>(new URL(jwksUri), resourceRetriever);
-            jwkSourceMap.put(jwksUri, jwkSet);
-        }
-        // The expected JWS algorithm of the access tokens (agreed out-of-band).
-        JWSAlgorithm expectedJWSAlg = JWSAlgorithm.parse(algorithm);
-        //Configure the JWT processor with a key selector to feed matching public RSA keys sourced from the JWK set URL.
-        JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(expectedJWSAlg, jwkSet);
-        jwtProcessor.setJWSKeySelector(keySelector);
-        // Process the token, set optional context parameters.
-        SimpleSecurityContext securityContext = new SimpleSecurityContext();
-        jwtProcessor.process((SignedJWT) jwt, securityContext);
-        return true;
-    }
-
-    /**
-     * Validate the signed JWT by querying a jwks.
-     *
-     * @param jwtString signed json web token
-     * @param jwksUri   endpoint displaying the key set for the signing certificates
-     * @param algorithm the signing algorithm for jwt
-     * @return true if signature is valid
-     * @throws ParseException    if an error occurs while parsing the jwt
-     * @throws BadJOSEException  if the jwt is invalid
-     * @throws JOSEException     if an error occurs while processing the jwt
-     * @throws MalformedURLException if an error occurs while creating the URL object
-     */
-    @Deprecated
-    @Generated(message = "Excluding from code coverage since can not call this method due to external https call")
     public static boolean validateJWTSignature(String jwtString, String jwksUri, String algorithm)
             throws ParseException, BadJOSEException, JOSEException, MalformedURLException {
 
