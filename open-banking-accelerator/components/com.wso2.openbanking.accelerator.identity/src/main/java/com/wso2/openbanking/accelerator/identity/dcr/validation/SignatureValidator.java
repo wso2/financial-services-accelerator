@@ -98,7 +98,7 @@ public class SignatureValidator implements ConstraintValidator<ValidateSignature
     private boolean isValidateJWTSignature(String jwksURL, String jwtString, String alg) {
 
         try {
-            return JWTUtils.isValidSignature(jwtString, jwksURL, alg);
+            return JWTUtils.validateJWTSignature(jwtString, jwksURL, alg);
         } catch (ParseException e) {
             log.error("Error while parsing the JWT string", e);
         } catch (JOSEException | BadJOSEException | MalformedURLException e) {
