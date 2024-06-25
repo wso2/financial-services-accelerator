@@ -214,6 +214,14 @@ public class VRPSubmissionPayloadValidator {
                 }
             }
 
+            //Validate Creditor Account
+            JSONObject validateCreditorAccResult = VRPSubmissionPayloadValidator.validateCreditorAcc
+                    (submission, initiation);
+            if (!Boolean.parseBoolean(validateCreditorAccResult.
+                    getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
+                return  validateCreditorAccResult;
+            }
+
             if (submission.containsKey(ConsentExtensionConstants.INSTRUCTION_IDENTIFICATION)) {
                 Object value = submission.get(ConsentExtensionConstants.INSTRUCTION_IDENTIFICATION);
 
@@ -237,39 +245,6 @@ public class VRPSubmissionPayloadValidator {
             } else {
                 return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                         ErrorConstants.END_TO_END_IDENTIFICATION_PARAMETER_NOT_FOUND);
-            }
-
-            //Validate Creditor Account
-            if (submission.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
-                // If the CreditorAccount was not specified in the consent,the CreditorAccount must be specified
-                // in the instruction
-                if (!initiation.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
-                    validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
-                } else {
-                    Object submissionCreditorAccounts = submission.get(ConsentExtensionConstants.CREDITOR_ACC);
-                    Object consentInitiationCreditorAccounts = initiation.get(ConsentExtensionConstants.CREDITOR_ACC);
-
-                    if (submissionCreditorAccounts instanceof JSONObject &&
-                            consentInitiationCreditorAccounts instanceof JSONObject) {
-                        JSONObject submissionCreditorAccount = (JSONObject) submission.
-                                get(ConsentExtensionConstants.CREDITOR_ACC);
-                        JSONObject consentInitiationCreditorAccount = (JSONObject) initiation.
-                                get(ConsentExtensionConstants.CREDITOR_ACC);
-
-                        JSONObject creditorAccValidationResult = ConsentValidatorUtil.
-                                validateCreditorAcc(submissionCreditorAccount, consentInitiationCreditorAccount);
-                        if (!Boolean.parseBoolean(validationResult.
-                                getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-                            return creditorAccValidationResult;
-                        }
-                    } else {
-                        return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
-                                ErrorConstants.INSTRUCTION_CREDITOR_ACC_NOT_JSON_ERROR);
-                    }
-                }
-            } else {
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                        ErrorConstants.CREDITOR_ACC_NOT_FOUND);
             }
 
             if ((!submission.containsKey(ConsentExtensionConstants.REMITTANCE_INFO)
@@ -485,6 +460,56 @@ public class VRPSubmissionPayloadValidator {
      */
     public static boolean isValidJSONObject(Object value) {
         return value instanceof JSONObject;
+    }
+
+    /**
+     * Validates the creditor account parameter between the creditor account of submission under instruction parameter
+     * and the creditor account  of initiation JSONObjects.
+     *
+     * @param submission The creditor account parameters from the submission.
+     * @param initiation The creditor account parameters from the initiation.
+     * @return A JSONObject indicating the validation result. It contains a boolean value under the key
+     * ConsentExtensionConstants.IS_VALID_PAYLOAD, indicating whether the payload is valid. If the
+     * validation fails, it returns a JSONObject containing error details with keys defined in ErrorConstants.
+     */
+    public static JSONObject validateCreditorAcc(JSONObject submission,
+                                                    JSONObject initiation) {
+        JSONObject validationResult = new JSONObject();
+
+        if (submission.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
+            // If the CreditorAccount was not specified in the consent,the CreditorAccount must be specified
+            // in the instruction
+            if (!initiation.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
+                validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
+            } else {
+                Object submissionCreditorAccounts = submission.get(ConsentExtensionConstants.CREDITOR_ACC);
+                Object consentInitiationCreditorAccounts = initiation.get(ConsentExtensionConstants.CREDITOR_ACC);
+
+                if (submissionCreditorAccounts instanceof JSONObject &&
+                        consentInitiationCreditorAccounts instanceof JSONObject) {
+                    JSONObject submissionCreditorAccount = (JSONObject) submission.
+                            get(ConsentExtensionConstants.CREDITOR_ACC);
+                    JSONObject consentInitiationCreditorAccount = (JSONObject) initiation.
+                            get(ConsentExtensionConstants.CREDITOR_ACC);
+
+                    JSONObject creditorAccValidationResult = ConsentValidatorUtil.
+                            validateCreditorAcc(submissionCreditorAccount, consentInitiationCreditorAccount);
+                    if (!Boolean.parseBoolean(validationResult.
+                            getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
+                        return creditorAccValidationResult;
+                    }
+                } else {
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
+                            ErrorConstants.INSTRUCTION_CREDITOR_ACC_NOT_JSON_ERROR);
+                }
+            }
+        } else {
+            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                    ErrorConstants.CREDITOR_ACC_NOT_FOUND);
+        }
+
+        validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
+        return validationResult;
     }
 }
 
