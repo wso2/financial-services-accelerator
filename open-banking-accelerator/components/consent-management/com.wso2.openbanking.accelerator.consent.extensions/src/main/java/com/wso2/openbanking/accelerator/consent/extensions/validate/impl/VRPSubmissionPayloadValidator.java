@@ -175,7 +175,6 @@ public class VRPSubmissionPayloadValidator {
      */
     public static JSONObject validateInstruction(JSONObject submission,
                                                  JSONObject initiation) {
-        JSONObject validationResult = new JSONObject();
 
         if (submission != null && initiation != null) {
 
@@ -267,11 +266,11 @@ public class VRPSubmissionPayloadValidator {
                     JSONObject remittanceInformationInit = (JSONObject) initiation
                             .get(ConsentExtensionConstants.REMITTANCE_INFO);
 
-                    validationResult = VRPSubmissionPayloadValidator.validateRemittanceInfo
+                    JSONObject remittanceInfoValidationResult = VRPSubmissionPayloadValidator.validateRemittanceInfo
                             (remittanceInformationSub, remittanceInformationInit);
-                    if ((!Boolean.parseBoolean(validationResult.
+                    if ((!Boolean.parseBoolean(remittanceInfoValidationResult.
                             getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD)))) {
-                        return validationResult;
+                        return remittanceInfoValidationResult;
                     }
                 } else {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
@@ -283,6 +282,7 @@ public class VRPSubmissionPayloadValidator {
                     ErrorConstants.INVALID_PARAMETER);
         }
 
+        JSONObject validationResult = new JSONObject();
         validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
     }
@@ -399,7 +399,6 @@ public class VRPSubmissionPayloadValidator {
                         ErrorConstants.INITIATION_NOT_JSON);
             }
         } else {
-            log.error(ErrorConstants.INITIATION_NOT_FOUND);
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                     ErrorConstants.INITIATION_NOT_FOUND);
         }
@@ -424,7 +423,6 @@ public class VRPSubmissionPayloadValidator {
                         ErrorConstants.INSTRUCTION_NOT_JSON);
             }
         } else {
-            log.error(ErrorConstants.INSTRUCTION_NOT_FOUND);
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                     ErrorConstants.INSTRUCTION_NOT_FOUND);
         }
@@ -477,8 +475,8 @@ public class VRPSubmissionPayloadValidator {
         JSONObject validationResult = new JSONObject();
 
         if (submission.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
-            // If the CreditorAccount was not specified in the consent,the CreditorAccount must be specified
-            // in the instruction
+            // If the CreditorAccount was not specified in the consent initiation,the CreditorAccount must be specified
+            // in the instruction present in the submission payload.
             if (!initiation.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) {
                 validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
             } else {
@@ -504,6 +502,8 @@ public class VRPSubmissionPayloadValidator {
                 }
             }
         } else {
+            // Creditor account present under the instruction in the submission request
+            // is considered to be a mandatory parameter
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                     ErrorConstants.CREDITOR_ACC_NOT_FOUND);
         }

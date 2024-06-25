@@ -142,7 +142,7 @@ public class ErrorConstants {
             + ErrorConstants.PATH_ACCESS_TOKEN;
     public static final String PATH_ACCESS_TOKEN = "Header.AccessToken";
     public static final String MSG_INVALID_CLIENT_ID = "The client Id related the consent does not match with the " +
-            "client id bound to token:" + ErrorConstants.PATH_CLIENT_ID;
+            "client id bound to token";
     public static final String PATH_CLIENT_ID = "Header.Client-id";
     public static final String UNEXPECTED_ERROR = "OB.UnexpectedError";
     public static final String INVALID_CONSENT_TYPE = "Invalid Consent Type found in the request";
@@ -203,8 +203,9 @@ public class ErrorConstants {
             " bound to token";
     public static final String PAYMENT_CONSENT_STATE_INVALID = "Payment validation failed due to invalid consent" +
             " state.";
+    public static final String VRP_CONSENT_STATUS_INVALID = "Validation failed due to invalid consent status.";
     public static final String DATA_NOT_FOUND = "Data is not found or empty in the request.";
-    public static final String INITIATION_NOT_FOUND = "Initiation is not found or empty in the request.";
+    public static final String INITIATION_NOT_FOUND = "Initiation is not found or is empty in the request.";
     public static final String RISK_MISMATCH = "RISK Does Not Match.";
     public static final String INVALID_URI_ERROR = "Path requested is invalid. :" + ErrorConstants.PATH_URL;
     public static final String COF_CONSENT_STATE_INVALID = "Confirmation of Funds validation failed due to invalid" +

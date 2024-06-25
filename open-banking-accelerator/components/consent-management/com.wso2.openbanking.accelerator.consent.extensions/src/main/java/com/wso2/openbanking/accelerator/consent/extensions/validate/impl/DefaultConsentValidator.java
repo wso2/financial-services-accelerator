@@ -397,8 +397,8 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (!ConsentExtensionConstants.AUTHORIZED_STATUS
                 .equals(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
-            log.error(ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
-            consentValidationResult.setErrorMessage(ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
+            log.error(ErrorConstants.VRP_CONSENT_STATUS_INVALID);
+            consentValidationResult.setErrorMessage(ErrorConstants.VRP_CONSENT_STATUS_INVALID);
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_CONSENT_STATUS);
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
             return;
@@ -408,8 +408,9 @@ public class DefaultConsentValidator implements ConsentValidator {
         if (consentValidateData.getConsentId() == null || detailedConsentResource.getConsentID() == null ||
                 !consentValidateData.getConsentId().equals(detailedConsentResource.getConsentID())) {
             log.error(ErrorConstants.MSG_INVALID_CONSENT_ID);
-            ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
-                    ErrorConstants.MSG_INVALID_CONSENT_ID);
+            consentValidationResult.setErrorMessage(ErrorConstants.MSG_INVALID_CONSENT_ID);
+            consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_CONSENT_MISMATCH);
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
             return;
         }
 
@@ -424,12 +425,12 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         JSONObject submissionData = (JSONObject) submissionJson.get(ConsentExtensionConstants.DATA);
+        String consentId = (String) submissionData.get(ConsentExtensionConstants.CONSENT_ID);
 
         JSONObject initiationParameterValidationResults = VRPSubmissionPayloadValidator.
                 validateInitiationParameter(submissionData);
         if (!Boolean.parseBoolean(initiationParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            log.error(initiationParameterValidationResults.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
             ConsentValidatorUtil.setErrorMessageForConsentValidationResult(initiationParameterValidationResults,
                     consentValidationResult);
             return;
@@ -439,7 +440,6 @@ public class DefaultConsentValidator implements ConsentValidator {
                 validateInstructionParameter(submissionData);
         if (!Boolean.parseBoolean(instructionParameterValidationResults.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-            log.error(instructionParameterValidationResults.getAsString(ConsentExtensionConstants.ERROR_MESSAGE));
             ConsentValidatorUtil.setErrorMessageForConsentValidationResult(instructionParameterValidationResults,
                     consentValidationResult);
             return;
@@ -450,7 +450,7 @@ public class DefaultConsentValidator implements ConsentValidator {
                 !(submissionData.get(ConsentExtensionConstants.CONSENT_ID) instanceof String) ||
                 !submissionData.get(ConsentExtensionConstants.CONSENT_ID)
                         .equals(detailedConsentResource.getConsentID())) {
-            log.error(ErrorConstants.INVALID_REQUEST_CONSENT_ID);
+            log.error(ErrorConstants.INVALID_REQUEST_CONSENT_ID + consentId);
             consentValidationResult.setErrorMessage(ErrorConstants.INVALID_REQUEST_CONSENT_ID);
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_CONSENT_MISMATCH);
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);

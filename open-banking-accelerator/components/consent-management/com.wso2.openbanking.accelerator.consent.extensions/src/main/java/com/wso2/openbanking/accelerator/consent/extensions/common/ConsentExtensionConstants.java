@@ -216,6 +216,7 @@ public class ConsentExtensionConstants {
     public static final String UNSTRUCTURED = "Unstructured";
     public static final String CONTEXT_CODE = "PaymentContextCode";
     public static final String PAYMENT_TYPE = "PaymentType";
+    public static final String VRP_PATH = "/domestic-vrps";
     public static final String PREVIOUS_PAID_AMOUNT = "prevPaidAmount";
     public static final String PREVIOUS_LAST_PAYMENT_DATE = "prevLastPaymentDate";
 }
