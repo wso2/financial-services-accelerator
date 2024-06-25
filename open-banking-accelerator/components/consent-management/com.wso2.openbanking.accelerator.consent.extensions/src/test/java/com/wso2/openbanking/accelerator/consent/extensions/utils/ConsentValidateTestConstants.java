@@ -401,52 +401,6 @@ public class ConsentValidateTestConstants {
             "  }\n" +
             "}";
 
-    public static final String VRP_SUBMISSION_WITHOUT_INSTRUCTION_CREDITOR_ACC = "{\n" +
-            "  \"Data\": {\n" +
-            "    \"ConsentId\": \"" + CONSENT_ID + "\",\n" +
-            "    \"PSUAuthenticationMethod\": \"OB.SCA\",\n" +
-            "\n" +
-            "    \"Initiation\": {\n" +
-            "      \"DebtorAccount\": {\n" +
-            "        \"SchemeName\": \"OB.IBAN\",\n" +
-            "        \"Identification\": \"30080012343456\",\n" +
-            "        \"Name\": \"Marcus Sweepimus\"\n" +
-            "      },\n" +
-            "      \"CreditorAccount\": {\n" +
-            "        \"SchemeName\": \"OB.IBAN\",\n" +
-            "        \"Identification\": \"30949330000010\",\n" +
-            "        \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "        \"Name\": \"Marcus Sweepimus\"\n" +
-            "      },\n" +
-            "      \"RemittanceInformation\": {\n" +
-            "        \"Reference\": \"Sweepco\"\n" +
-            "      }\n" +
-            "    },\n" +
-            "\n" +
-            "    \"Instruction\": {\n" +
-            "        \"InstructionIdentification\": \"ACME412\",\n" +
-            "        \"EndToEndIdentification\": \"FRESCO.21302.GFX.20\",\n" +
-            "      \"\": {\n" +
-            "        \"SchemeName\": \"OB.IBAN\",\n" +
-            "        \"Identification\": \"30949330000010\",\n" +
-            "        \"SecondaryIdentification\": \"Roll 90210\",\n" +
-            "        \"Name\": \"Marcus Sweepimus\"\n" +
-            "      },\n" +
-            "      \"InstructedAmount\": {\n" +
-            "        \"Amount\": \"10.00\",\n" +
-            "        \"Currency\": \"GBP\"\n" +
-            "      },\n" +
-            "      \"RemittanceInformation\": {\n" +
-            "        \"Reference\": \"Sweepco\"\n" +
-            "      }\n" +
-            "    }\n" +
-            "  },\n" +
-            "\n" +
-            "  \"Risk\": {\n" +
-            "    \"PaymentContextCode\": \"PartyToParty\"\n" +
-            "  }\n" +
-            "}";
-
     public static final String VRP_SUBMISSION_WITHOUT_INSTRUCTION_REMITTANCE_INFO = "{\n" +
             "  \"Data\": {\n" +
             "    \"ConsentId\": \"" + CONSENT_ID + "\",\n" +
@@ -492,8 +446,6 @@ public class ConsentValidateTestConstants {
             "    \"PaymentContextCode\": \"PartyToParty\"\n" +
             "  }\n" +
             "}";
-
-
 
     public static final String VRP_SUBMISSION_DEBTOR_ACC_MISMATCH = "{\n" +
             "  \"Data\": {\n" +
@@ -558,7 +510,7 @@ public class ConsentValidateTestConstants {
             "        \"SecondaryIdentification\": \"Roll 90210\",\n" +
             "        \"Name\": \"Marcus Sweepimus\"\n" +
             "      },\n" +
-            "      \"\": {\n" +
+            "      \"RemittanceInformation\": {\n" +
             "        \"Reference\": \"Sweepco\"\n" +
             "      }\n" +
             "    },\n" +
@@ -576,7 +528,7 @@ public class ConsentValidateTestConstants {
             "        \"Amount\": \"10.00\",\n" +
             "        \"Currency\": \"GBP\"\n" +
             "      },\n" +
-            "      \"RemittanceInformation\": {\n" +
+            "      \"\": {\n" +
             "        \"Reference\": \"Sweepco\"\n" +
             "      }\n" +
             "    }\n" +
@@ -724,7 +676,6 @@ public class ConsentValidateTestConstants {
             "    \"PaymentContextCode\": \"PartyToParty\"\n" +
             "  }\n" +
             "}";
-
 
     public static final String VRP_SUBMISSION_WITHOUT_END_TO_IDENTIFICATION = "{\n" +
             "  \"Data\": {\n" +
@@ -956,7 +907,6 @@ public class ConsentValidateTestConstants {
             "  }\n" +
             "}";
 
-
     public static final String VRP_SUBMISSION_WITH_DEBTOR_ACC = "{\n" +
             "  \"Data\": {\n" +
             "    \"ConsentId\": \"" + CONSENT_ID + "\",\n" +
@@ -1049,4 +999,90 @@ public class ConsentValidateTestConstants {
             "  }\n" +
             "}";
 
+    public static final String VRP_SUBMISSION_WITHOUT_INSTRUCTION_CREDITOR_ACC = "{\n" +
+            "  \"Data\": {\n" +
+            "    \"ConsentId\": \"" + CONSENT_ID + "\",\n" +
+            "    \"PSUAuthenticationMethod\": \"OB.SCA\",\n" +
+            "\n" +
+            "    \"Initiation\": {\n" +
+            "      \"DebtorAccount\": {\n" +
+            "        \"SchemeName\": \"OB.IBAN\",\n" +
+            "        \"Identification\": \"30080012343456\",\n" +
+            "        \"Name\": \"Marcus Sweepimus\"\n" +
+            "      },\n" +
+            "      \"CreditorAccount\": {\n" +
+            "        \"SchemeName\": \"OB.IBAN\",\n" +
+            "        \"Identification\": \"30949330000010\",\n" +
+            "        \"SecondaryIdentification\": \"Roll 90210\",\n" +
+            "        \"Name\": \"Marcus Sweepimus\"\n" +
+            "      },\n" +
+            "      \"RemittanceInformation\": {\n" +
+            "        \"Reference\": \"Sweepco\"\n" +
+            "      }\n" +
+            "    },\n" +
+            "\n" +
+            "    \"Instruction\": {\n" +
+            "        \"InstructionIdentification\": \"ACME412\",\n" +
+            "        \"EndToEndIdentification\": \"FRESCO.21302.GFX.20\",\n" +
+            "      \"\": {\n" +
+            "        \"SchemeName\": \"OB.IBAN\",\n" +
+            "        \"Identification\": \"30949330000010\",\n" +
+            "        \"SecondaryIdentification\": \"Roll 90210\",\n" +
+            "        \"Name\": \"Marcus Sweepimus\"\n" +
+            "      },\n" +
+            "      \"InstructedAmount\": {\n" +
+            "        \"Amount\": \"10.00\",\n" +
+            "        \"Currency\": \"GBP\"\n" +
+            "      },\n" +
+            "      \"RemittanceInformation\": {\n" +
+            "        \"Reference\": \"Sweepco\"\n" +
+            "      }\n" +
+            "    }\n" +
+            "  },\n" +
+            "\n" +
+            "  \"Risk\": {\n" +
+            "    \"PaymentContextCode\": \"PartyToParty\"\n" +
+            "  }\n" +
+            "}";
+
+    public static final String VRP_INSTRUCTION = "{\n" +
+            "   \"Data\": {\n" +
+            "       \"ReadRefundAccount\": \"true\",\n" +
+            "       \"ControlParameters\": {\n" +
+            "           \"ValidFromDateTime\": \"2023-09-12T12:43:07.956Z\",\n" +
+            "           \"ValidToDateTime\": \"2024-05-12T12:43:07.956Z\",\n" +
+            "           \"MaximumIndividualAmount\": {\n" +
+            "               \"Amount\": \"9\",\n" +
+            "               \"Currency\": \"GBP\"\n" +
+            "           },\n" +
+            "           \"PeriodicLimits\": [\n" +
+            "               {\n" +
+            "                   \"Amount\": \"1000\",\n" +
+            "                   \"Currency\": \"GBP\",\n" +
+            "                   \"PeriodAlignment\": \"Consent\",\n" +
+            "                   \"PeriodType\": \"Half-year\"\n" +
+            "               }\n" +
+            "           ]\n" +
+            "       },\n" +
+            "       \"Initiation\": {\n" +
+            "           \"DebtorAccount\": {\n" +
+            "               \"SchemeName\": \"OB.IBAN\",\n" +
+            "               \"Identification\": \"30080012343456\",\n" +
+            "               \"Name\": \"Marcus Sweepimus\"\n" +
+            "           },\n" +
+            "           \"CreditorAccount\": {\n" +
+            "               \"SchemeName\": \"OB.IBAN\",\n" +
+            "               \"Identification\": \"30949330000010\",\n" +
+            "               \"SecondaryIdentification\": \"Roll 90210\",\n" +
+            "               \"Name\": \"Marcus Sweepimus\"\n" +
+            "           },\n" +
+            "           \"RemittanceInformation\": {\n" +
+            "               \"Reference\": \"Sweepco\"\n" +
+            "           }\n" +
+            "       }\n" +
+            "   },\n" +
+            "   \"Risk\": {\n" +
+            "       \"PaymentContextCode\": \"PartyToParty\"\n" +
+            "   }\n" +
+            "}";
 }
