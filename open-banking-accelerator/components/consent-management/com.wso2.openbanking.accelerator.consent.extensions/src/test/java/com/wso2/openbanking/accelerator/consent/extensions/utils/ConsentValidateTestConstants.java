@@ -25,7 +25,10 @@ import java.time.OffsetDateTime;
 public class ConsentValidateTestConstants {
     public static final OffsetDateTime EXPIRATION_DATE = OffsetDateTime.now().plusDays(50);
     public static final String CONSENT_ID = "0ba972a9-08cd-4cad-b7e2-20655bcbd9e0";
+    public static final String INVALID_CONSENT_ID = "0ba972a9-08cd-4cad-b7e2-20655bcbd9e0";
+    public static final String INVALID_CONSENT_TYPE = "InvalidConsentType";
     public static final String VRP_PATH = "/domestic-vrps";
+    public static final String PAYMENT_PATH = "/domestic-payments";
     public static final String USER_ID = "admin@wso2.com";
     public static final String CLIENT_ID = "xzX8t9fx6VxYMx_B6Lgpd5_yyUEa";
     public static final String SAMPLE_AUTHORIZATION_TYPE = "authorizationType";

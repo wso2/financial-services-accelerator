@@ -73,6 +73,8 @@ public class VRPSubmissionTest {
     DetailedConsentResource detailedConsentResourceMock;
     @Mock
     ConsentCoreServiceImpl consentCoreServiceMock;
+    @Mock
+    ConsentValidationResult consentValidationResultMock;
     Map<String, String> resourceParams = new HashMap<>();
     JSONObject headers = new JSONObject();
     private static Map<String, String> configMap;
@@ -269,7 +271,7 @@ public class VRPSubmissionTest {
         consentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.VRP_CONSENT_STATUS_INVALID);
         Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.RESOURCE_INVALID_CONSENT_STATUS);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
@@ -856,5 +858,31 @@ public class VRPSubmissionTest {
         Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.RESOURCE_CONSENT_MISMATCH);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
+
+    @Test
+    public void testConsentValidateVRPvWithInvalidConsentId() {
+
+        doReturn(authorizationResources).when(detailedConsentResourceMock).getAuthorizationResources();
+        doReturn(ConsentValidateTestConstants.CLIENT_ID).when(detailedConsentResourceMock).getClientID();
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
+        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentValidateTestConstants.INVALID_CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
+        doReturn(ConsentExtensionTestConstants.VALID_INITIATION_OBJECT).when(detailedConsentResourceMock)
+                .getReceipt();
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
+        doReturn(headers).when(consentValidateDataMock).getHeaders();
+        doReturn(ConsentValidateTestConstants.USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(ConsentValidateTestConstants.CLIENT_ID).when(consentValidateDataMock).getClientId();
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        consentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertFalse(consentValidationResult.isValid());
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.MSG_INVALID_CONSENT_ID);;
+        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.RESOURCE_CONSENT_MISMATCH);
+        Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
+    }
+
 }
 
