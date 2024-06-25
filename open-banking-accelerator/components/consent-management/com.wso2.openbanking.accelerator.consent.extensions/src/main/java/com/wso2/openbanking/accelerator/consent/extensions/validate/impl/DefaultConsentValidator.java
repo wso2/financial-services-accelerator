@@ -425,7 +425,6 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         JSONObject submissionData = (JSONObject) submissionJson.get(ConsentExtensionConstants.DATA);
-        String consentId = (String) submissionData.get(ConsentExtensionConstants.CONSENT_ID);
 
         JSONObject initiationParameterValidationResults = VRPSubmissionPayloadValidator.
                 validateInitiationParameter(submissionData);
@@ -450,7 +449,7 @@ public class DefaultConsentValidator implements ConsentValidator {
                 !(submissionData.get(ConsentExtensionConstants.CONSENT_ID) instanceof String) ||
                 !submissionData.get(ConsentExtensionConstants.CONSENT_ID)
                         .equals(detailedConsentResource.getConsentID())) {
-            log.error(ErrorConstants.INVALID_REQUEST_CONSENT_ID + consentId);
+            log.error(ErrorConstants.INVALID_REQUEST_CONSENT_ID);
             consentValidationResult.setErrorMessage(ErrorConstants.INVALID_REQUEST_CONSENT_ID);
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_CONSENT_MISMATCH);
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
