@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensi
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
+import com.wso2.openbanking.accelerator.consent.extensions.manage.model.PeriodicLimits;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.validator.VRPConsentRequestValidator;
 import com.wso2.openbanking.accelerator.consent.extensions.util.ConsentManageUtil;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -184,33 +185,41 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
             JSONObject controlParameters = (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
                     .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
 
-            consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT,
-                    ((JSONObject) (controlParameters)
-                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT))
-                            .get(ConsentExtensionConstants.AMOUNT).toString());
+            PeriodicLimits periodicLimits = new PeriodicLimits(
+                    controlParameters.getAsString(ConsentExtensionConstants.PERIOD_TYPE),
+                    controlParameters.getAsNumber(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).intValue(),
+                    controlParameters.getAsString(ConsentExtensionConstants.PERIOD_ALIGNMENT));
 
-            consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY,
-                    ((JSONObject) (controlParameters)
-                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT))
-                            .get(ConsentExtensionConstants.CURRENCY).toString());
+            consentAttributes.put(ConsentExtensionConstants.CONTROL_PARAMETERS, "Hello");
 
-            consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
-                    (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
-                    .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
+
+//            consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT,
+//                    ((JSONObject) (controlParameters)
+//                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT))
+//                            .get(ConsentExtensionConstants.AMOUNT).toString());
+
+//            consentAttributes.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY,
+//                    ((JSONObject) (controlParameters)
+//                            .get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT))
+//                            .get(ConsentExtensionConstants.CURRENCY).toString());
+
+//            consentAttributes.put(ConsentExtensionConstants.PERIOD_ALIGNMENT, ((JSONObject) ((JSONArray)
+//                    (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+//                    .get(ConsentExtensionConstants.PERIOD_ALIGNMENT).toString());
             //TODO: Improve the logic of storing the PERIODIC_LIMITS and rest of VRP parameters
 
-            consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE,
-                    ((JSONObject) ((JSONArray) (controlParameters)
-                    .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
-                    .toString());
+//            consentAttributes.put(ConsentExtensionConstants.PERIOD_TYPE,
+//                    ((JSONObject) ((JSONArray) (controlParameters)
+//                    .get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0)).get(ConsentExtensionConstants.PERIOD_TYPE)
+//                    .toString());
 
-            consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)
-                    ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
-                    .get(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).toString());
-
-            consentAttributes.put(ConsentExtensionConstants.PERIOD_LIMIT_CURRENCY, ((JSONObject)
-                    ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
-                    .get(ConsentExtensionConstants.CURRENCY).toString());
+////            consentAttributes.put(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT, ((JSONObject)
+////                    ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+////                    .get(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).toString());
+//
+//            consentAttributes.put(ConsentExtensionConstants.PERIOD_LIMIT_CURRENCY, ((JSONObject)
+//                    ((JSONArray) (controlParameters).get(ConsentExtensionConstants.PERIODIC_LIMITS)).get(0))
+//                    .get(ConsentExtensionConstants.CURRENCY).toString());
 
             //Store consent attributes
             ConsentServiceUtil.getConsentService().storeConsentAttributes(createdConsent.getConsentID(),
