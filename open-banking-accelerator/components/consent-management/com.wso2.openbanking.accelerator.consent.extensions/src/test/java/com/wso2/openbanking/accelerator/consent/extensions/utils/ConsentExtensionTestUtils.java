@@ -18,13 +18,24 @@
 
 package com.wso2.openbanking.accelerator.consent.extensions.utils;
 
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentAttributes;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
+
 import java.lang.reflect.Field;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Utils class for consent executor tests.
  */
 public class ConsentExtensionTestUtils {
+
+    static JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
 
     public static void injectEnvironmentVariable(String key, String value)
             throws ReflectiveOperationException {
@@ -56,4 +67,32 @@ public class ConsentExtensionTestUtils {
         Object obj = field.get(map);
         ((Map<String, String>) obj).put(key, value);
     }
+
+    public static JSONObject getInitiationPayload(JSONObject payload) {
+        return (JSONObject) ((JSONObject) payload.get(ConsentExtensionConstants.DATA))
+                .get(ConsentExtensionConstants.INITIATION);
+    }
+
+    public static JSONObject getJsonPayload(String payload) throws ParseException {
+        return (JSONObject) parser.parse(payload);
+    }
+
+    public static ConsentAttributes getConsentAttributes(String paymentType) {
+
+        Map<String, String> consentAttributesMap = new HashMap<String, String>();
+        consentAttributesMap.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT, "100.00");
+        consentAttributesMap.put(ConsentExtensionConstants.PAYMENT_TYPE, paymentType);
+        consentAttributesMap.put(ConsentExtensionConstants.PAID_AMOUNT, "20.00");
+        consentAttributesMap.put(ConsentExtensionConstants.LAST_PAYMENT_DATE,
+                OffsetDateTime.now().minusDays(50).toString());
+        consentAttributesMap.put(ConsentExtensionConstants.PREVIOUS_PAID_AMOUNT, "20.00");
+        consentAttributesMap.put(ConsentExtensionConstants.PREVIOUS_LAST_PAYMENT_DATE,
+                OffsetDateTime.now().minusDays(50).toString());
+
+        ConsentAttributes consentAttributes = new ConsentAttributes();
+        consentAttributes.setConsentAttributes(consentAttributesMap);
+
+        return consentAttributes;
+    }
+
 }

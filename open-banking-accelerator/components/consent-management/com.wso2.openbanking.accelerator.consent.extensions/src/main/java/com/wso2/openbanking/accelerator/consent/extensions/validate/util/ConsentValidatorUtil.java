@@ -22,10 +22,12 @@ import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -69,6 +71,26 @@ public class ConsentValidatorUtil {
 
         return validationResult;
     }
+
+
+    /**
+     * Populates the provided consent validation result object with error information.
+     *
+     * @param errorResult the JSONObject containing error details, specifically error message and error code
+     * @param consentValidationResult the ConsentValidationResult object to be updated with error details
+     *
+     */
+    public static void setErrorMessageForConsentValidationResult(JSONObject errorResult
+            , ConsentValidationResult consentValidationResult) {
+
+        String errorMessage = errorResult.getAsString(ConsentExtensionConstants.ERROR_MESSAGE);
+        String errorCode = errorResult.getAsString(ConsentExtensionConstants.ERROR_CODE);
+
+        consentValidationResult.setErrorMessage(errorMessage);
+        consentValidationResult.setErrorCode(errorCode);
+        consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
     /**
      * Method to construct the success validation result.
      *
@@ -91,51 +113,50 @@ public class ConsentValidatorUtil {
      */
     public static JSONObject validateCreditorAcc(JSONObject subCreditorAccount, JSONObject initCreditorAccount) {
 
-        if (subCreditorAccount.containsKey(ConsentExtensionConstants.SCHEME_NAME)) {
-            if (StringUtils.isEmpty(subCreditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME)) ||
-                    !ConsentValidatorUtil.compareMandatoryParameter(
-                            subCreditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME),
-                            initCreditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME))) {
+            if (subCreditorAccount.containsKey(ConsentExtensionConstants.SCHEME_NAME)) {
+                if (StringUtils.isEmpty(subCreditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME)) ||
+                        !ConsentValidatorUtil.compareMandatoryParameter(
+                                subCreditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME),
+                                initCreditorAccount.getAsString(ConsentExtensionConstants.SCHEME_NAME))) {
+
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
+                            ErrorConstants.CREDITOR_ACC_SCHEME_NAME_MISMATCH);
+                }
+            } else {
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                        ErrorConstants.CREDITOR_ACC_SCHEME_NAME_NOT_FOUND);
+            }
+
+            if (subCreditorAccount.containsKey(ConsentExtensionConstants.IDENTIFICATION)) {
+                if (StringUtils.isEmpty(subCreditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION)) ||
+                        !ConsentValidatorUtil.compareMandatoryParameter(
+                                subCreditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION),
+                                initCreditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION))) {
+
+                    return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
+                            ErrorConstants.CREDITOR_ACC_IDENTIFICATION_MISMATCH);
+                }
+            } else {
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                        ErrorConstants.CREDITOR_ACC_IDENTIFICATION_NOT_FOUND);
+            }
+
+            if (!ConsentValidatorUtil
+                    .compareOptionalParameter(subCreditorAccount.getAsString(ConsentExtensionConstants.NAME),
+                            initCreditorAccount.getAsString(ConsentExtensionConstants.NAME))) {
 
                 return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
-                        ErrorConstants.CREDITOR_ACC_SCHEME_NAME_MISMATCH);
+                        ErrorConstants.CREDITOR_ACC_NAME_MISMATCH);
             }
-        } else {
-            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                    ErrorConstants.CREDITOR_ACC_SCHEME_NAME_NOT_FOUND);
-        }
 
-        if (subCreditorAccount.containsKey(ConsentExtensionConstants.IDENTIFICATION)) {
-            if (StringUtils.isEmpty(subCreditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION)) ||
-                    !ConsentValidatorUtil.compareMandatoryParameter(
-                            subCreditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION),
-                            initCreditorAccount.getAsString(ConsentExtensionConstants.IDENTIFICATION))) {
+            if (!ConsentValidatorUtil.compareOptionalParameter(subCreditorAccount
+                            .getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION),
+                    initCreditorAccount.getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION))) {
 
-                return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
-                        ErrorConstants.CREDITOR_ACC_IDENTIFICATION_MISMATCH);
+                return ConsentValidatorUtil
+                        .getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
+                                ErrorConstants.CREDITOR_ACC_SEC_IDENTIFICATION_MISMATCH);
             }
-        } else {
-            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                    ErrorConstants.CREDITOR_ACC_IDENTIFICATION_NOT_FOUND);
-        }
-
-        if (!ConsentValidatorUtil
-                .compareOptionalParameter(subCreditorAccount.getAsString(ConsentExtensionConstants.NAME),
-                        initCreditorAccount.getAsString(ConsentExtensionConstants.NAME))) {
-
-            return ConsentValidatorUtil.getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
-                    ErrorConstants.CREDITOR_ACC_NAME_MISMATCH);
-        }
-
-        if (!ConsentValidatorUtil.compareOptionalParameter(subCreditorAccount
-                        .getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION),
-                initCreditorAccount.getAsString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION))) {
-
-            return ConsentValidatorUtil
-                    .getValidationResult(ErrorConstants.RESOURCE_CONSENT_MISMATCH,
-                            ErrorConstants.CREDITOR_ACC_SEC_IDENTIFICATION_MISMATCH);
-        }
-
         JSONObject validationResult = new JSONObject();
         validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
 
