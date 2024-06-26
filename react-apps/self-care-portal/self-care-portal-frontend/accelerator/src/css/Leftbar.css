@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,7 @@
  * under the License.
  */
 
-.leftbar{
+.leftbar {
     background: #081247;
     color: #fff;
     height: 100%;
@@ -26,6 +26,7 @@
 @media (max-width: 500px) {
     .leftbar {
         width: 150px;
+        left: 0;
     }
     .list-options {
         font-size: 12px;
@@ -44,6 +45,8 @@
     flex-direction: column;
     width: 100%;
     height: fit-content;
+    left: 0;
+    top: 0;
 }
 
 .list-options {
