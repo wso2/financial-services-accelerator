@@ -54,11 +54,9 @@ public class OAuthCallbackServlet extends HttpServlet {
             final String code = req.getParameter(CODE);
 
             OAuthService oAuthService = OAuthService.getInstance();
-            String redirectUrl = iamBaseUrl + "/consentmgr";
             if (StringUtils.isEmpty(code)) {
                 LOG.debug("Logout callback request received. Invalidating cookies.");
                 oAuthService.removeAllCookiesFromRequest(req, resp);
-                redirectUrl += "/logout";
             } else {
                 LOG.debug("Authorization callback request received");
                 final String clientKey = Utils.getParameter(Constants.CONFIGURED_CLIENT_ID);
@@ -70,6 +68,7 @@ public class OAuthCallbackServlet extends HttpServlet {
                 oAuthService.generateCookiesFromTokens(tokenResponse, req, resp);
             }
 
+            final String redirectUrl = iamBaseUrl + "/consentmgr";
             LOG.debug("Redirecting to frontend application: " + redirectUrl);
             resp.sendRedirect(redirectUrl);
         } catch (TokenGenerationException | IOException e) {
