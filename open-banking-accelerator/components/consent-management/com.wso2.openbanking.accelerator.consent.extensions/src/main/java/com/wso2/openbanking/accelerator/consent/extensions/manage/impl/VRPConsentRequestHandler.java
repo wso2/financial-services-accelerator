@@ -24,7 +24,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensi
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.model.PeriodicLimits;
+//import com.wso2.openbanking.accelerator.consent.extensions.manage.model.PeriodicLimits;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.validator.VRPConsentRequestValidator;
 import com.wso2.openbanking.accelerator.consent.extensions.util.ConsentManageUtil;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
