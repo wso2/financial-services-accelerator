@@ -239,7 +239,7 @@ public class VRPSubmissionPayloadValidator {
                         get(ConsentExtensionConstants.END_TO_END_IDENTIFICATION);
                 if (!isValidString(endToEndIdentificationValue)) {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
-                            ErrorConstants.INVALID_TYPE);
+                            ErrorConstants.INVALID_END_TO_END_IDENTIFICATION_TYPE);
                 }
             } else {
                 return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,

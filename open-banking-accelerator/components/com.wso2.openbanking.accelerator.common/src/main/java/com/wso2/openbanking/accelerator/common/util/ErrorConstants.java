@@ -302,8 +302,8 @@ public class ErrorConstants {
             "match";
     public static final String INVALID_SUBMISSION_TYPE = "Value associated with INSTRUCTION_IDENTIFICATION key is " +
             "not a String instance";
-    public static final String INVALID_TYPE = "Value associated with END_TO_END_IDENTIFICATION key is " +
-            "not a String instance";
+    public static final String INVALID_END_TO_END_IDENTIFICATION_TYPE = "Value associated with" +
+            " END_TO_END_IDENTIFICATION key is not a String instance";
     public static final String RISK_NOT_FOUND = "Risk is not found or empty in the request.";
     public static final String RISK_NOT_JSON_ERROR = "Risk parameter is not in the correct JSON format";
     public static final String INSTRUCTION_NOT_FOUND = "Instruction is not found or empty in the request.";

@@ -138,7 +138,7 @@ public class VRPSubmissionTest {
     }
 
     @Test
-    public void testValidateInstruction() throws ParseException {
+    public void testCreditorAccInInstruction() throws ParseException {
 
         JSONObject initPayload = ConsentExtensionTestUtils.getJsonPayload(
                 ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_CREDITOR_ACC);
@@ -611,6 +611,8 @@ public class VRPSubmissionTest {
         consentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
+        // Using VRPInvalidInitiationSubmissionPayloadsDataProvider dataProvider three test scenarios are been tested.
+        // Relevant error messages will be returned respectively.
     }
 
     @Test
@@ -694,7 +696,8 @@ public class VRPSubmissionTest {
         consentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.INVALID_TYPE);
+        Assert.assertEquals(consentValidationResult.getErrorMessage(),
+                ErrorConstants.INVALID_END_TO_END_IDENTIFICATION_TYPE);
         Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.FIELD_INVALID);
         Assert.assertEquals(consentValidationResult.getHttpCode(), 400);
     }
@@ -814,6 +817,8 @@ public class VRPSubmissionTest {
         consentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
+        // Using the VRPInvalidSubmissionPayloadsDataProvider dataProvider five test scenarios are been tested.
+        // Relevant error messages will be returned respectively.
     }
 
     @Test
