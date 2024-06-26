@@ -233,7 +233,7 @@
                             org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
                             net.minidev.json.*;version="${json-smart}",
                             javax.servlet.http; version="${imp.pkg.version.javax.servlet}",
-                            com.wso2.openbanking.accelerator.consent.mgt.service.*;version="${project.version}",
+                            com.wso2.openbanking.accelerator.consent.mgt.service.*;version="3.0.0.240",
                         </Import-Package>
                         <Export-Package>
                             !com.wso2.openbanking.accelerator.consent.extensions.internal,
