@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -101,7 +101,7 @@ public class JWTUtils {
      * @throws MalformedURLException if an error occurs while creating the URL object
      */
     @Generated(message = "Excluding from code coverage since can not call this method due to external https call")
-    public static boolean isValidSignature(String jwtString, String jwksUri, String algorithm)
+    public static boolean validateJWTSignature(String jwtString, String jwksUri, String algorithm)
             throws ParseException, BadJOSEException, JOSEException, MalformedURLException {
 
         int defaultConnectionTimeout = 3000;

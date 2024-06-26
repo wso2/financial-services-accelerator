@@ -920,7 +920,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         String jwksEndpoint = decodedSSA.getAsString(jwksEndpointName);
         SignedJWT signedJWT = SignedJWT.parse(payload);
         String alg = signedJWT.getHeader().getAlgorithm().getName();
-        JWTUtils.isValidSignature(payload, jwksEndpoint, alg);
+        JWTUtils.validateJWTSignature(payload, jwksEndpoint, alg);
         obapiRequestContext.setModifiedPayload(decodedRequest.toJSONString());
         Map<String, String> requestHeaders = obapiRequestContext.getMsgInfo().getHeaders();
         requestHeaders.remove("Content-Type");
