@@ -185,10 +185,10 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
             JSONObject controlParameters = (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
                     .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
 
-            PeriodicLimits periodicLimits = new PeriodicLimits(
-                    controlParameters.getAsString(ConsentExtensionConstants.PERIOD_TYPE),
-                    controlParameters.getAsNumber(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).intValue(),
-                    controlParameters.getAsString(ConsentExtensionConstants.PERIOD_ALIGNMENT));
+//            PeriodicLimits periodicLimits = new PeriodicLimits(
+//                    controlParameters.getAsString(ConsentExtensionConstants.PERIOD_TYPE),
+//                    controlParameters.getAsNumber(ConsentExtensionConstants.PERIOD_AMOUNT_LIMIT).intValue(),
+//                    controlParameters.getAsString(ConsentExtensionConstants.PERIOD_ALIGNMENT));
 
             consentAttributes.put(ConsentExtensionConstants.CONTROL_PARAMETERS, "Hello");
 
