@@ -41,6 +41,10 @@
   cursor: pointer;
 }
 
+.clusterRow:hover {
+  background-color: #f3f3f3;
+}
+
 .clusterContainer {
   border: 2px groove rgba(170, 167, 167, 0.16);
   border-radius: 15px;
