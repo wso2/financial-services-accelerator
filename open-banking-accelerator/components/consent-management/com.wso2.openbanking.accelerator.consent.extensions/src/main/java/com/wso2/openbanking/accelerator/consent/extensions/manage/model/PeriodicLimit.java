@@ -1,20 +1,24 @@
 package com.wso2.openbanking.accelerator.consent.extensions.manage.model;
 
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.accelerator.consent.extensions.util.PeriodicTypesEnum;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
 /**
- * This class represents a periodic limit for a consent.
+ * This class represents a periodic limit for a VRP consent.
  * It includes the period type, amount, period alignment, cyclic expiry time, and cyclic paid amount.
  */
 public class PeriodicLimit {
-    private String periodType;
-    private double amount;
+    private final String periodType;
+    private BigDecimal amount;
     private String periodAlignment;
     private long cyclicExpiryTime;
-    private double cyclicPaidAmount;
-
+    private BigDecimal cyclicRemainingAmount;
 
     /**
      * Constructs a new PeriodicLimit with the specified period type, amount, and period alignment.
@@ -24,7 +28,7 @@ public class PeriodicLimit {
      * @param amount the amount
      * @param periodAlignment the period alignment
      */
-    public PeriodicLimit(String periodType, double amount, String periodAlignment) {
+    public PeriodicLimit(String periodType, BigDecimal amount, String periodAlignment) {
         this.periodType = periodType;
         this.amount = amount;
         this.periodAlignment = periodAlignment;
@@ -32,17 +36,44 @@ public class PeriodicLimit {
         calculateCyclicPaidAmount();
     }
 
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getPeriodAlignment() {
+        return periodAlignment;
+    }
+
+    public void setPeriodAlignment(String periodAlignment) {
+        this.periodAlignment = periodAlignment;
+    }
+
+    public long getCyclicExpiryTime() {
+        return cyclicExpiryTime;
+    }
+
+    public BigDecimal getCyclicRemainingAmount() {
+        return cyclicRemainingAmount;
+    }
+
+    public void setCyclicRemainingAmount(BigDecimal cyclicRemainingAmount) {
+        this.cyclicRemainingAmount = cyclicRemainingAmount;
+    }
 
     /**
      * Calculates and sets the cyclic expiry time based on the period type and period alignment.
      */
-    private void setCyclicExpiryTime() {
+    public void setCyclicExpiryTime() {
         Instant now = Instant.now();
         Instant expiryTime;
 
-        if (periodAlignment.equalsIgnoreCase("consent")) {
+        if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CONSENT)) {
             expiryTime = calculateExpiryTimeForConsent(now);
-        } else if (periodAlignment.equalsIgnoreCase("calendar")) {
+        } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR)) {
             expiryTime = calculateExpiryTimeForCalendar(now);
         } else {
             throw new IllegalArgumentException("Invalid PeriodAlignment");
@@ -59,18 +90,19 @@ public class PeriodicLimit {
      * @return the expiry time for a consent
      */
     private Instant calculateExpiryTimeForConsent(Instant now) {
-        switch (periodType.toUpperCase()) {
-            case "DAY":
+        PeriodicTypesEnum periodType = PeriodicTypesEnum.valueOf(this.periodType.toUpperCase());
+        switch (periodType) {
+            case DAY:
                 return now.plus(Duration.ofDays(1));
-            case "WEEK":
+            case WEEK:
                 return now.plus(Duration.ofDays(7));
-            case "FORTNIGHT":
+            case FORTNIGHT:
                 return now.plus(Duration.ofDays(14));
-            case "MONTH":
+            case MONTH:
                 return now.plus(Period.ofMonths(1));
-            case "HALF-YEAR":
+            case HALF_YEAR:
                 return now.plus(Period.ofMonths(6));
-            case "YEAR":
+            case YEAR:
                 return now.plus(Period.ofYears(1));
             default:
                 throw new IllegalArgumentException("Invalid PeriodType");
@@ -85,19 +117,23 @@ public class PeriodicLimit {
      */
     private Instant calculateExpiryTimeForCalendar(Instant now) {
         LocalDate localDate = now.atZone(ZoneId.systemDefault()).toLocalDate();
-        switch (periodType.toUpperCase()) {
-            case "DAY":
+        PeriodicTypesEnum periodType = PeriodicTypesEnum.valueOf(this.periodType.toUpperCase());
+        switch (periodType) {
+            case DAY:
                 return localDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
-            case "WEEK":
-                return localDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
-            case "FORTNIGHT":
+            case WEEK:
+                return localDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).plusDays(1).
+                        atStartOfDay(ZoneId.systemDefault()).toInstant();
+            case FORTNIGHT:
                 return now.plus(Duration.ofDays(14));
-            case "MONTH":
-                return localDate.with(TemporalAdjusters.firstDayOfNextMonth()).minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
-            case "HALF_YEAR":
+            case MONTH:
+                return localDate.with(TemporalAdjusters.firstDayOfNextMonth()).
+                        atStartOfDay(ZoneId.systemDefault()).toInstant();
+            case HALF_YEAR:
                 return calculateHalfYearExpiry(localDate);
-            case "YEAR":
-                return localDate.with(TemporalAdjusters.firstDayOfNextYear()).minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+            case YEAR:
+                return localDate.with(TemporalAdjusters.firstDayOfNextYear()).atStartOfDay(ZoneId.systemDefault())
+                        .toInstant();
             default:
                 throw new IllegalArgumentException("Invalid PeriodType");
         }
@@ -112,9 +148,11 @@ public class PeriodicLimit {
     private Instant calculateHalfYearExpiry(LocalDate localDate) {
         Month currentMonth = localDate.getMonth();
         if (currentMonth.getValue() < 7) {
-            return localDate.withMonth(6).with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant();
+            return localDate.withMonth(6).with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault())
+                    .toInstant();
         } else {
-            return localDate.withMonth(12).with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant();
+            return localDate.withMonth(12).with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault())
+                    .toInstant();
         }
     }
 
@@ -122,38 +160,14 @@ public class PeriodicLimit {
      * Calculates and sets the cyclic paid amount based on the period alignment.
      */
     private void calculateCyclicPaidAmount() {
-        if (periodAlignment.equalsIgnoreCase("consent")) {
-            cyclicPaidAmount = 0;
-        } else if (periodAlignment.equalsIgnoreCase("calendar")) {
+        if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CONSENT)) {
+            cyclicRemainingAmount = BigDecimal.valueOf(0);
+        } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR )) {
             LocalDate now = LocalDate.now();
             LocalDate expiryDate = Instant.ofEpochSecond(cyclicExpiryTime).atZone(ZoneId.systemDefault()).toLocalDate();
-            long daysUntilExpiry = ChronoUnit.DAYS.between(now, expiryDate);
-            double applicableAmount = (amount / getDivisorBasedOnPeriodType()) * daysUntilExpiry;
-            cyclicPaidAmount = amount - applicableAmount;
-        }
-    }
-
-    /**
-     * Returns the divisor based on the period type.
-     *
-     * @return the divisor based on the period type
-     */
-    private int getDivisorBasedOnPeriodType() {
-        switch (periodType.toUpperCase()) {
-            case "DAY":
-                return 1;
-            case "WEEK":
-                return 7;
-            case "FORTNIGHT":
-                return 14;
-            case "MONTH":
-                return LocalDate.now().lengthOfMonth();
-            case "HALF-YEAR":
-                return LocalDate.now().getMonth().length(LocalDate.now().isLeapYear()) * 6;
-            case "YEAR":
-                return LocalDate.now().isLeapYear() ? 366 : 365;
-            default:
-                throw new IllegalArgumentException("Invalid PeriodType");
+            BigDecimal divisor = BigDecimal.valueOf(PeriodicTypesEnum.valueOf(this.periodType.toUpperCase()).getDivisor());
+            BigDecimal days = BigDecimal.valueOf(ChronoUnit.DAYS.between(now, expiryDate));
+            cyclicRemainingAmount = amount.divide(divisor, RoundingMode.HALF_UP).multiply(days).setScale(2, RoundingMode.HALF_UP);
         }
     }
 }
