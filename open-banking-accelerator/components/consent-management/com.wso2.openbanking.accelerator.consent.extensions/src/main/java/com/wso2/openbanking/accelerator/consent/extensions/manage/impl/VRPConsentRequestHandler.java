@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,95 +164,128 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     public void handlePaymentPost(ConsentManageData consentManageData, Object request)
             throws ConsentManagementException {
 
-        if (request instanceof JSONObject) {
-            JSONObject requestObject = (JSONObject) request;
-
-            // Create a ConsentResource representing the requested consent
-            ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
-                    requestObject.toJSONString(), ConsentExtensionConstants.VRP,
-                    ConsentExtensionConstants.AWAITING_AUTH_STATUS);
-
-            // Create the consent
-            DetailedConsentResource createdConsent = ConsentServiceUtil.getConsentService()
-                    .createAuthorizableConsent(requestedConsent, null,
-                            CREATED_STATUS, AUTH_TYPE_AUTHORIZATION, true);
-
-            //Set consent attributes for storing
-            Map<String, String> consentAttributes = new HashMap<>();
-            consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
-                    .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
-
-            consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(requestObject, createdConsent,
-                    consentManageData, ConsentExtensionConstants.VRP));
-
-            //Set Control Parameters as consent attributes to store
-            JSONObject controlParameters = (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
-                    .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
-
-            JSONArray periodicLimitsArray = (JSONArray) controlParameters.get("PeriodicLimits");
-
-            List<PeriodicLimit> periodicLimitsList = new ArrayList<>();
-
-            for (Object obj : periodicLimitsArray) {
-                JSONObject jsonObject = (JSONObject) obj;
-                String periodType = (String) jsonObject.get("PeriodType");
-                String amountString = (String) jsonObject.get("Amount");
-                double amount = Double.parseDouble(amountString);
-                String periodAlignment = (String) jsonObject.get("PeriodAlignment");
-
-                PeriodicLimit periodicLimits = new PeriodicLimit(periodType, amount, periodAlignment);
-                periodicLimitsList.add(periodicLimits);
-            }
-
-
-            Gson gson = new Gson();
-
-            // Get MaximumIndividualAmount from controlParameters
-            JSONObject maximumIndividualAmountObject = (JSONObject) controlParameters.get("MaximumIndividualAmount");
-            String maximumIndividualAmountString = maximumIndividualAmountObject.get("Amount").toString();
-            double maximumIndividualAmount = Double.parseDouble(maximumIndividualAmountString);
-
-            // Create a new JSONObject
-            JSONObject jsonObject = new JSONObject();
-
-            // Add MaximumIndividualAmount to the JSONObject
-            jsonObject.put("MaximumIndividualAmount", maximumIndividualAmount);
-
-            // Convert the periodicLimitsList to a JSON string
-            String periodicLimitsJson = gson.toJson(periodicLimitsList);
-
-            // Parse the JSON string back to a JSONArray
-            JSONArray newPeriodicLimitsArray;
-            try {
-                newPeriodicLimitsArray = (JSONArray) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(periodicLimitsJson);
-            } catch (ParseException e) {
-                throw new RuntimeException("Error parsing JSON", e);
-            }
-
-            // Add the PeriodicLimits array to the JSONObject
-            jsonObject.put("PeriodicLimits", newPeriodicLimitsArray);
-
-            // Convert the JSONObject to a string
-            String consentAttributesJson = jsonObject.toJSONString();
-
-            // Add the consentAttributesJson to the consentAttributes
-            consentAttributes.put(ConsentExtensionConstants.CONTROL_PARAMETERS, consentAttributesJson);
-
-            //Store consent attributes
-            ConsentServiceUtil.getConsentService().storeConsentAttributes(createdConsent.getConsentID(),
-                    consentAttributes);
-
-            // Get request headers
-            Map<String, String> headers = consentManageData.getHeaders();
-
-            consentManageData.setResponseHeader(ConsentExtensionConstants.X_IDEMPOTENCY_KEY,
-                    headers.get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
-            consentManageData.setResponseStatus(ResponseStatus.CREATED);
-
-        } else {
+        // Check if the request is a JSONObject
+        if (!(request instanceof JSONObject)) {
             log.error("Invalid request type. Expected JSONObject.");
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.PAYLOAD_FORMAT_ERROR);
         }
+
+        JSONObject requestObject = (JSONObject) request;
+
+        // Create a ConsentResource representing the requested consent
+        ConsentResource requestedConsent = createRequestedConsent(consentManageData, requestObject);
+
+        // Create the consent
+        DetailedConsentResource createdConsent = createConsent(requestedConsent);
+
+        // Set consent attributes for storing
+        Map<String, String> consentAttributes = createConsentAttributes(consentManageData);
+
+        // Store consent attributes
+        ConsentServiceUtil.getConsentService().storeConsentAttributes(createdConsent.getConsentID(),
+                consentAttributes);
+
+        // Set response payload and headers
+        setResponse(consentManageData, requestObject, createdConsent);
+    }
+
+    private ConsentResource createRequestedConsent(ConsentManageData consentManageData, JSONObject requestObject) {
+        return new ConsentResource(consentManageData.getClientId(),
+                requestObject.toJSONString(), ConsentExtensionConstants.VRP,
+                ConsentExtensionConstants.AWAITING_AUTH_STATUS);
+    }
+
+    private DetailedConsentResource createConsent(ConsentResource requestedConsent) throws ConsentManagementException {
+        return ConsentServiceUtil.getConsentService()
+                .createAuthorizableConsent(requestedConsent, null,
+                        CREATED_STATUS, AUTH_TYPE_AUTHORIZATION, true);
+    }
+
+    private Map<String, String> createConsentAttributes(ConsentManageData consentManageData) {
+        Map<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
+                .get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
+
+        JSONObject controlParameters = getControlParameters(consentManageData);
+        JSONArray periodicLimitsArray = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
+
+        List<PeriodicLimit> periodicLimitsList = createPeriodicLimitsList(periodicLimitsArray);
+
+        JSONObject jsonObject = createControlParameters(controlParameters, periodicLimitsList);
+
+        // Convert the JSONObject to a string
+        String consentAttributesJson = jsonObject.toJSONString();
+
+        // Add the consentAttributesJson to the consentAttributes
+        consentAttributes.put(ConsentExtensionConstants.CONTROL_PARAMETERS, consentAttributesJson);
+
+        return consentAttributes;
+    }
+
+    private JSONObject getControlParameters(ConsentManageData consentManageData) {
+        return (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
+                .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
+    }
+
+    private List<PeriodicLimit> createPeriodicLimitsList(JSONArray periodicLimitsArray) {
+        List<PeriodicLimit> periodicLimitsList = new ArrayList<>();
+
+        for (Object obj : periodicLimitsArray) {
+            JSONObject jsonObject = (JSONObject) obj;
+            String periodType = (String) jsonObject.get(ConsentExtensionConstants.PERIOD_TYPE);
+            BigDecimal amount = BigDecimal.valueOf(Double.parseDouble((String) jsonObject.get(ConsentExtensionConstants.
+                    AMOUNT)));
+            String periodAlignment = (String) jsonObject.get(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+
+            PeriodicLimit periodicLimits = new PeriodicLimit(periodType, amount, periodAlignment);
+            periodicLimitsList.add(periodicLimits);
+        }
+
+        return periodicLimitsList;
+    }
+
+    private JSONObject createControlParameters(JSONObject controlParameters, List<PeriodicLimit> periodicLimitsList) {
+        Gson gson = new Gson();
+
+        // Get MaximumIndividualAmount from controlParameters
+        JSONObject maximumIndividualAmountObject = (JSONObject) controlParameters.
+                get(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT);
+        double maximumIndividualAmount = Double.parseDouble(maximumIndividualAmountObject
+                .get(ConsentExtensionConstants.AMOUNT).toString());
+
+        // Create a new JSONObject
+        JSONObject jsonObject = new JSONObject();
+
+        // Add MaximumIndividualAmount to the JSONObject
+        jsonObject.put(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT, maximumIndividualAmount);
+
+        // Convert the periodicLimitsList to a JSON string
+        String periodicLimitsJson = gson.toJson(periodicLimitsList);
+
+        // Parse the JSON string back to a JSONArray
+        JSONArray newPeriodicLimitsArray;
+        try {
+            newPeriodicLimitsArray = (JSONArray) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(periodicLimitsJson);
+        } catch (ParseException e) {
+            throw new RuntimeException("Error parsing JSON", e);
+        }
+
+        // Add the PeriodicLimits array to the JSONObject
+        jsonObject.put(ConsentExtensionConstants.PERIODIC_LIMITS, newPeriodicLimitsArray);
+
+        return jsonObject;
+    }
+
+    private void setResponse(ConsentManageData consentManageData, JSONObject requestObject, DetailedConsentResource createdConsent) {
+        consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(requestObject, createdConsent,
+                consentManageData, ConsentExtensionConstants.VRP));
+
+        // Get request headers
+        Map<String, String> headers = consentManageData.getHeaders();
+
+        consentManageData.setResponseHeader(ConsentExtensionConstants.X_IDEMPOTENCY_KEY,
+                headers.get(ConsentExtensionConstants.X_IDEMPOTENCY_KEY));
+        consentManageData.setResponseStatus(ResponseStatus.CREATED);
     }
 }
