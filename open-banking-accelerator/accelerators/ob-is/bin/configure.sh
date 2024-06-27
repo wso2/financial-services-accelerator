@@ -100,7 +100,6 @@ create_mysql_databases() {
     echo "Database Created: ${DB_IS_CONFIG}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_OPEN_BANKING_STORE}; CREATE DATABASE ${DB_OPEN_BANKING_STORE};
     ALTER DATABASE ${DB_OPEN_BANKING_STORE} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
-    mysql "ALTER TABLE ${DB_OPEN_BANKING_STORE}.`ob_consent_attribute` CHANGE COLUMN `ATT_VALUE` `ATT_VALUE` VARCHAR(1023) NOT NULL" ;
     echo "Database Created: ${DB_OPEN_BANKING_STORE}"
 };
 
