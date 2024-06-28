@@ -279,6 +279,9 @@ public class VRPSubmissionPayloadValidator {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
+            } else {
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                        ErrorConstants.INVALID_PARAMETER);
             }
         }
 
