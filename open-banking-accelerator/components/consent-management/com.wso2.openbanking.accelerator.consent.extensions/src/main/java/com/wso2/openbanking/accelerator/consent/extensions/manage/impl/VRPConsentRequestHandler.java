@@ -280,7 +280,8 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     }
 
     /**
-     * Method to create JSONObject of control parameters using the provided JSONObject and list of PeriodicLimit objects.
+     * Method to create JSONObject of control parameters using the provided JSONObject and
+     * list of PeriodicLimit objects.
      *
      * @param controlParameters JSONObject of control parameters
      * @param periodicLimitsList List of PeriodicLimit objects

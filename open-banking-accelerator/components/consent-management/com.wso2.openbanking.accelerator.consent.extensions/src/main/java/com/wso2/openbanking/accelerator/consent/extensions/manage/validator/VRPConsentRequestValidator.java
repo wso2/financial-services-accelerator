@@ -202,24 +202,28 @@ public class VRPConsentRequestValidator {
         // Validate the currency of the maximum individual amount
         JSONObject maximumIndividualAmountValidationResult = validateJsonObjectKey((JSONObject) maximumIndividualAmount,
                 ConsentExtensionConstants.CURRENCY, String.class);
-        if (!(Boolean.parseBoolean(maximumIndividualAmountValidationResult.getAsString(ConsentExtensionConstants.IS_VALID)))) {
+        if (!(Boolean.parseBoolean(maximumIndividualAmountValidationResult.
+                getAsString(ConsentExtensionConstants.IS_VALID)))) {
             return maximumIndividualAmountValidationResult;
         }
         String maximumIndividualAmountCurrency;
-        maximumIndividualAmountCurrency = ((JSONObject) maximumIndividualAmount).getAsString(ConsentExtensionConstants.CURRENCY);
+        maximumIndividualAmountCurrency = ((JSONObject) maximumIndividualAmount).
+                getAsString(ConsentExtensionConstants.CURRENCY);
 
         // Retrieve the periodic limits from the control parameters
         JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
 
-        // Iterate over the periodic limits and check if the currency of the limit is the same as the currency of maximum individual amount
+        // Iterate over the periodic limits and check if the currency of the limit is the same as the currency
+        // of maximum individual amount
         for (Object limitObj : periodicLimits) {
             if (limitObj instanceof JSONObject) {
                 JSONObject limit = (JSONObject) limitObj;
                 String limitCurrency = limit.getAsString(ConsentExtensionConstants.CURRENCY);
                 if (!maximumIndividualAmountCurrency.equals(limitCurrency)) {
-                    log.error(ErrorConstants.CURRENCY_MISMATCH);
-                    return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-                            ErrorConstants.CURRENCY_MISMATCH, ErrorConstants.PATH_PERIOD_LIMIT_CURRENCY);
+                    log.error(ConsentExtensionConstants.CURRENCY_MISMATCH);
+                    return ConsentManageUtil.getValidationResponse(ConsentExtensionConstants.FIELD_INVALID,
+                            ConsentExtensionConstants.CURRENCY_MISMATCH,
+                            ConsentExtensionConstants.PATH_PERIOD_LIMIT_CURRENCY);
                 }
             }
         }
@@ -285,10 +289,11 @@ public class VRPConsentRequestValidator {
                 }
 
                 //Check if periodicLimits size exceeds 6
-                if (periodicLimits.size() > ErrorConstants.MAXIMUM_PERIODIC_LIMITS) {
-                    log.error(ErrorConstants.INVALID_PERIODIC_LIMIT_SIZE);
-                    return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-                            ErrorConstants.INVALID_PERIODIC_LIMIT_SIZE, ErrorConstants.PATH_PERIOD_LIMIT);
+                if (periodicLimits.size() > ConsentExtensionConstants.MAXIMUM_PERIODIC_LIMITS) {
+                    log.error(ConsentExtensionConstants.INVALID_PERIODIC_LIMIT_SIZE);
+                    return ConsentManageUtil.getValidationResponse(ConsentExtensionConstants.FIELD_INVALID,
+                            ConsentExtensionConstants.INVALID_PERIODIC_LIMIT_SIZE,
+                            ConsentExtensionConstants.PATH_PERIOD_LIMIT);
                 }
 
                 // Get the periodType from the limit
@@ -296,9 +301,10 @@ public class VRPConsentRequestValidator {
 
                 // If the periodType is already in the set, log an error and return a validation response
                 if (!periodTypes.add(periodType)) {
-                    log.error(ErrorConstants.DUPLICATE_PERIOD_TYPE);
-                    return ConsentManageUtil.getValidationResponse(ErrorConstants.FIELD_INVALID,
-                            ErrorConstants.DUPLICATE_PERIOD_TYPE, ErrorConstants.PATH_PERIOD_TYPE);
+                    log.error(ConsentExtensionConstants.DUPLICATE_PERIOD_TYPE);
+                    return ConsentManageUtil.getValidationResponse(ConsentExtensionConstants.FIELD_INVALID,
+                            ConsentExtensionConstants.DUPLICATE_PERIOD_TYPE,
+                            ConsentExtensionConstants.PATH_PERIOD_TYPE);
                 }
             }
         } else {

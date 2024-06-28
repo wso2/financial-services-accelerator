@@ -222,4 +222,15 @@ public class ConsentExtensionConstants {
     public static final String VRP_PATH = "/domestic-vrps";
     public static final String PREVIOUS_PAID_AMOUNT = "prevPaidAmount";
     public static final String PREVIOUS_LAST_PAYMENT_DATE = "prevLastPaymentDate";
+
+    // VRP Error Constants related to Periodic Limits Validations
+    public static final String PATH_PERIOD_TYPE = "Data.ControlParameters.PeriodicLimits.PeriodType";
+    public static final String PATH_PERIOD_LIMIT_CURRENCY = "Data.ControlParameters.PeriodicLimits.Currency";
+    public static final String FIELD_INVALID = "OB.Field.Invalid";
+    public static final String CURRENCY_MISMATCH = "Currency does not match with the currency of the periodic limits";
+    public static final String INVALID_PERIODIC_LIMIT_SIZE = "Periodic limits exceed the allowed limits";
+    public static final String PATH_PERIOD_LIMIT = "Data.ControlParameters.PeriodicLimits";
+    public static final int MAXIMUM_PERIODIC_LIMITS = 6;
+    public static final String DUPLICATE_PERIOD_TYPE = "Duplicate Period Types found in the request";
+
 }

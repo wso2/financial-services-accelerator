@@ -188,7 +188,7 @@ public class PeriodicLimit {
         
         if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CONSENT)) {
             cyclicRemainingAmount = BigDecimal.valueOf(0);
-        } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR )) {
+        } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR)) {
             LocalDate now = LocalDate.now();
             LocalDate expiryDate = Instant.ofEpochSecond(cyclicExpiryTime).atZone(ZoneId.systemDefault())
                     .toLocalDate();
