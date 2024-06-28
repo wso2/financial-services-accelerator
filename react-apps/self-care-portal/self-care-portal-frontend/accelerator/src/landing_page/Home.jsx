@@ -19,7 +19,7 @@
 import React, {useEffect, useContext} from "react";
 import {Nav, Footer} from "../common/index.js";
 import {Body} from "../landing_page";
-import {Switch, Route, useHistory} from "react-router-dom";
+import {Switch, Route} from "react-router-dom";
 import {DetailedAgreement, WithdrawStep1, WithdrawStep2, ProtectedWithdrawRoute} from "../detailedAgreementPage";
 import {FourOhFourError} from '../errorPage/index.js'
 import {BrowserRouter as Router} from "react-router-dom";
@@ -28,7 +28,6 @@ import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
 import { AppInfoContext } from "../context/AppInfoContext";
 import { HomeTile } from "./HomeTile.jsx";
-import { logout } from "../login/logout.js";
 
 export const Home = (user) => {
     const {currentContextUser} = useContext(UserContext); 

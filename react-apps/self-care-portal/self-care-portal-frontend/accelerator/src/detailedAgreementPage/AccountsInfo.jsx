@@ -12,8 +12,6 @@ import React from "react";
 import {lang, specConfigurations} from "../specConfigs/specConfigurations.js";
 import {permissionBindTypes} from "../specConfigs/common";
 
-let id = 0;
-
 export const AccountsInfo = ({consent, consentType}) => {
 
     const consentStatus = consent.currentStatus;
@@ -26,9 +24,9 @@ export const AccountsInfo = ({consent, consentType}) => {
             permissionBindTypes.samePermissionSetForAllAccounts ? (
                 <>
                     <h5>{keyDatesConfig.accountsInfoLabel}</h5>
-                    {debtorAccounts.map((account) => (
+                    {debtorAccounts.map((account, index) => (
                         account.mappingStatus === "active" ?
-                            <li key={id = id + 1}>{account.accountId}</li>
+                            <li key={index}>{account.accountId}</li>
                             :
                             <> </>
                     ))}

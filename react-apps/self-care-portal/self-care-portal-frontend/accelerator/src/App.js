@@ -27,17 +27,13 @@ import { User } from "./data/User";
 
 const idToken = User.idToken;
 
-    const handleLogout = () => {
-      logout(idToken); 
-  };
-
 export const App = () => {
   return (
     <Router>
       <Switch>
         <Route path="/consentmgr" exact component={Login} />
         <Route path="/consentmgr/error" exact component={ResponseError} />
-        <Route path="/consentmgr/logout" exact component={handleLogout} />
+        <Route path="/consentmgr/logout" exact component={() => logout(User?.idToken)} />
       </Switch>
     </Router>
   );
