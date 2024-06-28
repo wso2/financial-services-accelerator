@@ -19,7 +19,7 @@
 import React, {useEffect, useContext} from "react";
 import {Nav, Footer} from "../common/index.js";
 import {Body} from "../landing_page";
-import {Switch, Route} from "react-router-dom";
+import {Switch, Route, useHistory} from "react-router-dom";
 import {DetailedAgreement, WithdrawStep1, WithdrawStep2, ProtectedWithdrawRoute} from "../detailedAgreementPage";
 import {FourOhFourError} from '../errorPage/index.js'
 import {BrowserRouter as Router} from "react-router-dom";
@@ -28,6 +28,7 @@ import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
 import { AppInfoContext } from "../context/AppInfoContext";
 import { HomeTile } from "./HomeTile.jsx";
+import { logout } from "../login/logout.js";
 
 export const Home = (user) => {
     const {currentContextUser} = useContext(UserContext); 
@@ -51,33 +52,35 @@ export const Home = (user) => {
     }, [consents]);
 
     if (error) {
-        // errors present, rendering error page
         return <ResponseError error={error}/>
     }
 
-    return (
-        <div className="home">
-            {consents.length === 0 ? (
-                <div className="loaderBackground">
-                    <div className="loader"></div>
-                </div>
-            ) : (
-                <Router>
-                    <Nav {...user} />
-                    <Switch>
-                        <Route path="/consentmgr" exact component={HomeTile}/>
-                        <Route path="/consentmgr/consents/:id" exact component={Body}/>
-                        <Route path="/consentmgr/:id" exact component={DetailedAgreement}/>
-                        <Route path="/consentmgr/:id/withdrawal-step-1" exact component={WithdrawStep1}/>
-                        <ProtectedWithdrawRoute path="/consentmgr/:id/withdrawal-step-2" exact
-                                                component={WithdrawStep2}/>
-                        <Route path="*">
-                            <FourOhFourError/>
-                        </Route>
-                    </Switch>
-                    <Footer/>
-                </Router>
-            )}
-        </div>
-    );
-};
+return (
+    <>
+      <div className="home">
+        {consents.length === 0 ? (
+          <div className="loaderBackground">
+            <div className="loader"></div>
+          </div>
+        ) : (
+          <Router>
+            <div className="home-content">
+              <Nav {...user} />
+              <Switch>
+                <Route path="/consentmgr" exact component={HomeTile}/>
+                <Route path="/consentmgr/consents/:id" exact component={Body}/>
+                <Route path="/consentmgr/:id" exact component={DetailedAgreement}/>
+                <Route path="/consentmgr/:id/withdrawal-step-1" exact component={WithdrawStep1}/>
+                <ProtectedWithdrawRoute path="/consentmgr/:id/withdrawal-step-2" exact component={WithdrawStep2}/>
+                <Route path="*">
+                  <FourOhFourError/>
+                </Route>
+              </Switch>
+            </div>
+          </Router>
+        )}
+      </div>
+      <Footer/>
+    </>
+  );
+}
