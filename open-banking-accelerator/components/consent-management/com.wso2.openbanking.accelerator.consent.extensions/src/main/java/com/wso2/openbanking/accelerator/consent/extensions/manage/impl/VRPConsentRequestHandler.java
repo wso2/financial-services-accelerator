@@ -190,18 +190,38 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         setResponse(consentManageData, requestObject, createdConsent);
     }
 
+    /**
+     * Method to Create a ConsentResource object using the provided ConsentManageData and requestObject.
+     *
+     * @param consentManageData Object containing request details
+     * @param requestObject JSON object representing the request
+     * @return ConsentResource object
+     */
     private ConsentResource createRequestedConsent(ConsentManageData consentManageData, JSONObject requestObject) {
         return new ConsentResource(consentManageData.getClientId(),
                 requestObject.toJSONString(), ConsentExtensionConstants.VRP,
                 ConsentExtensionConstants.AWAITING_AUTH_STATUS);
     }
 
+    /**
+     * Method to create a DetailedConsentResource object using the provided ConsentResource.
+     *
+     * @param requestedConsent ConsentResource object
+     * @return DetailedConsentResource object
+     * @throws ConsentManagementException if an error occurs while creating the consent
+     */
     private DetailedConsentResource createConsent(ConsentResource requestedConsent) throws ConsentManagementException {
         return ConsentServiceUtil.getConsentService()
                 .createAuthorizableConsent(requestedConsent, null,
                         CREATED_STATUS, AUTH_TYPE_AUTHORIZATION, true);
     }
 
+    /**
+     * Method to Create a map of consent attributes using the provided ConsentManageData.
+     *
+     * @param consentManageData Object containing request details
+     * @return Map of consent attributes
+     */
     private Map<String, String> createConsentAttributes(ConsentManageData consentManageData) {
         Map<String, String> consentAttributes = new HashMap<>();
         consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
@@ -223,11 +243,23 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         return consentAttributes;
     }
 
+    /**
+     * Method to retrieve control parameters from the provided ConsentManageData.
+     *
+     * @param consentManageData Object containing request details
+     * @return JSONObject of control parameters
+     */
     private JSONObject getControlParameters(ConsentManageData consentManageData) {
         return (JSONObject) ((JSONObject) ((JSONObject) consentManageData.getPayload())
                 .get(ConsentExtensionConstants.DATA)).get(ConsentExtensionConstants.CONTROL_PARAMETERS);
     }
 
+    /**
+     * Method to create a list of PeriodicLimit objects from the provided JSONArray.
+     *
+     * @param periodicLimitsArray JSONArray of periodic limits
+     * @return List of PeriodicLimit objects
+     */
     private List<PeriodicLimit> createPeriodicLimitsList(JSONArray periodicLimitsArray) {
         List<PeriodicLimit> periodicLimitsList = new ArrayList<>();
 
@@ -245,6 +277,13 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         return periodicLimitsList;
     }
 
+    /**
+     * Method to create JSONObject of control parameters using the provided JSONObject and list of PeriodicLimit objects.
+     *
+     * @param controlParameters JSONObject of control parameters
+     * @param periodicLimitsList List of PeriodicLimit objects
+     * @return JSONObject of control parameters
+     */
     private JSONObject createControlParameters(JSONObject controlParameters, List<PeriodicLimit> periodicLimitsList) {
         Gson gson = new Gson();
 
@@ -277,6 +316,14 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
         return jsonObject;
     }
 
+    /**
+     * Method to set the response payload, headers, and status for the provided ConsentManageData using the
+     * provided requestObject and createdConsent.
+     *
+     * @param consentManageData Object containing request details
+     * @param requestObject JSON object representing the request
+     * @param createdConsent DetailedConsentResource object representing the created consent
+     */
     private void setResponse(ConsentManageData consentManageData, JSONObject requestObject, DetailedConsentResource createdConsent) {
         consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(requestObject, createdConsent,
                 consentManageData, ConsentExtensionConstants.VRP));

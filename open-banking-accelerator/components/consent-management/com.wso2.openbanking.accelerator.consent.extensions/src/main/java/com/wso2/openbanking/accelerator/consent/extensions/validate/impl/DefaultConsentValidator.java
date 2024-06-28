@@ -477,7 +477,7 @@ public class DefaultConsentValidator implements ConsentValidator {
         // the initiation payload present under the initiation parameter, with the submission payload present under the
         // instruction parameter.
         JSONObject instructionValidationResult = VRPSubmissionPayloadValidator.
-                validateInstruction(submissionInstruction, requestInitiation);
+                validateInstruction(submissionInstruction, requestInitiation, consentId);
 
         if (!Boolean.parseBoolean(instructionValidationResult.
                 getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
