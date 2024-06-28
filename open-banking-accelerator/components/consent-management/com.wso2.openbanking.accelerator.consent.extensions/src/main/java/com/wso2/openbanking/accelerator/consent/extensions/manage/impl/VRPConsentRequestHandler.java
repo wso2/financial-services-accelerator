@@ -234,10 +234,10 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
 
         List<PeriodicLimit> periodicLimitsList = createPeriodicLimitsList(periodicLimitsArray);
 
-        JSONObject jsonObject = createControlParameters(controlParameters, periodicLimitsList);
+        JSONObject controlParams = createControlParameters(controlParameters, periodicLimitsList);
 
         // Convert the JSONObject to a string
-        String consentAttributesJson = jsonObject.toJSONString();
+        String consentAttributesJson = controlParams.toJSONString();
 
         // Add the consentAttributesJson to the consentAttributes
         consentAttributes.put(ConsentExtensionConstants.CONTROL_PARAMETERS, consentAttributesJson);

@@ -95,9 +95,9 @@ public class PeriodicLimit {
         Instant now = Instant.now();
         Instant expiryTime;
 
-        if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CONSENT)) {
+        if (periodAlignment.equals(ConsentExtensionConstants.CONSENT)) {
             expiryTime = calculateExpiryTimeForConsent(now);
-        } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR)) {
+        } else if (periodAlignment.equals(ConsentExtensionConstants.CALENDAR)) {
             expiryTime = calculateExpiryTimeForCalendar(now);
         } else {
             throw new IllegalArgumentException("Invalid PeriodAlignment");
