@@ -172,13 +172,12 @@ public class VRPSubmissionPayloadValidator {
      * @param submission The submission JSONObject from submission request.
      * @param initiation The initiation JSONObject from initiation request, here we consider the initiation parameter
      *                   since the creditor account from the initiation request need to be retrieved.
-     * @param consentId
      * @return A JSONObject indicating the validation result. It contains a boolean value under the key
      * ConsentExtensionConstants.IS_VALID_PAYLOAD, indicating whether the payload is valid. If the
      * validation fails, it returns a JSONObject containing error details with keys defined in ErrorConstants.
      */
     public static JSONObject validateInstruction(JSONObject submission,
-                                                 JSONObject initiation, String consentId) {
+                                                 JSONObject initiation) {
 
         if (submission != null && initiation != null) {
 

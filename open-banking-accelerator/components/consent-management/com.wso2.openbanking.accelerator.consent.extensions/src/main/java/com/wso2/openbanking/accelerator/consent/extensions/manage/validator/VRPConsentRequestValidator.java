@@ -344,7 +344,6 @@ public class VRPConsentRequestValidator {
         JSONArray periodicLimits = (JSONArray) controlParameters.get(ConsentExtensionConstants.PERIODIC_LIMITS);
 
         JSONObject amountValidationResponse = validateAmountCurrencyPeriodicLimits((JSONArray) periodicLimits,
-                // Validate the amount
                 ConsentExtensionConstants.AMOUNT, String.class);
         if (!(Boolean.parseBoolean(amountValidationResponse.
                 getAsString(ConsentExtensionConstants.IS_VALID)))) {

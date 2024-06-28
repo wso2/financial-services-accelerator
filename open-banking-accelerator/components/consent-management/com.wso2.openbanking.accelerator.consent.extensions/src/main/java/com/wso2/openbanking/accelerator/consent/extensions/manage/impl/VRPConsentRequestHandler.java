@@ -265,8 +265,8 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
     private List<PeriodicLimit> createPeriodicLimitsList(JSONArray periodicLimitsArray) {
         List<PeriodicLimit> periodicLimitsList = new ArrayList<>();
 
-        for (Object obj : periodicLimitsArray) {
-            JSONObject jsonObject = (JSONObject) obj;
+        for (Object periodicLimit : periodicLimitsArray) {
+            JSONObject jsonObject = (JSONObject) periodicLimit;
             String periodType = (String) jsonObject.get(ConsentExtensionConstants.PERIOD_TYPE);
             BigDecimal amount = BigDecimal.valueOf(Double.parseDouble((String) jsonObject.get(ConsentExtensionConstants.
                     AMOUNT)));

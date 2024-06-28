@@ -146,8 +146,8 @@ public class PeriodicLimit {
             case DAY:
                 return localDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
             case WEEK:
-                return localDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).plusDays(1).
-                        atStartOfDay(ZoneId.systemDefault()).toInstant();
+                return localDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay(ZoneId.systemDefault())
+                        .toInstant();
             case FORTNIGHT:
                 return now.plus(Duration.ofDays(14));
             case MONTH:
