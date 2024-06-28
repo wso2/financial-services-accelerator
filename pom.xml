@@ -21,7 +21,7 @@
     <groupId>com.wso2.openbanking.accelerator</groupId>
     <artifactId>open-banking</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.8-SNAPSHOT</version>
+    <version>3.2.9-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -708,13 +708,13 @@
                 <version>${jstl.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <groupId>org.wso2.orbit.org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${org.bouncycastle.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
+                <groupId>org.wso2.orbit.org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
                 <version>${org.bouncycastle.version}</version>
             </dependency>
             <dependency>
@@ -803,7 +803,7 @@
         <org.json.version>3.0.0.wso2v1</org.json.version>
         <jjwt.version>0.9.1</jjwt.version>
         <jstl.version>1.2</jstl.version>
-        <org.bouncycastle.version>1.59</org.bouncycastle.version>
+        <org.bouncycastle.version>1.78.1.wso2v1</org.bouncycastle.version>
         <axis2.imp.pkg.version.range>[1.6,2)</axis2.imp.pkg.version.range>
         <maven.spotbugsplugin.version>4.2.3</maven.spotbugsplugin.version>
         <findsecbugs-plugin.version>1.10.1</findsecbugs-plugin.version>

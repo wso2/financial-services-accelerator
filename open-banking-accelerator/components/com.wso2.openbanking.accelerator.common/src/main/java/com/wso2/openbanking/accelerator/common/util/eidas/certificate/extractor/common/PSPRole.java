@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1UTF8String;
 import org.bouncycastle.asn1.DERUTF8String;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public enum PSPRole {
         Iterator it = sequence.iterator();
         while (it.hasNext()) {
             ASN1ObjectIdentifier objectIdentifier = ASN1ObjectIdentifier.getInstance(it.next());
-            DERUTF8String instance = DERUTF8String.getInstance(it.next());
+            ASN1UTF8String instance = DERUTF8String.getInstance(it.next());
 
             pspRoleList.add(Arrays.stream(PSPRole.values())
                     .filter(role -> role.getPspRoleOid().equals(objectIdentifier.getId())
