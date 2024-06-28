@@ -174,8 +174,11 @@ public class ConsentExtensionConstants {
     public static final String MAXIMUM_INDIVIDUAL_AMOUNT = "MaximumIndividualAmount";
     public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY = "MaximumIndividualAmount.Amount.Currency";
     public static final String PERIODIC_LIMITS = "PeriodicLimits";
+    public static final String PERIODIC_TYPES = "PeriodicTypes";
     public static final String PERIOD_AMOUNT_LIMIT = "Amount";
     public static final String PERIOD_LIMIT_CURRENCY = "PeriodicLimits.Currency";
+    public static final String CYCLIC_EXPIRY_TIME = "cyclicExpiryTime";
+    public static final String CYCLIC_REMAINING_AMOUNT = "cyclicRemainingAmount";
 
     //vrp period alignment
     public static final String PERIOD_ALIGNMENT = "PeriodAlignment";
@@ -219,4 +222,6 @@ public class ConsentExtensionConstants {
     public static final String VRP_PATH = "/domestic-vrps";
     public static final String PREVIOUS_PAID_AMOUNT = "prevPaidAmount";
     public static final String PREVIOUS_LAST_PAYMENT_DATE = "prevLastPaymentDate";
+
+
 }

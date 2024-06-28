@@ -45,6 +45,8 @@ public class VRPSubmissionPayloadValidator {
 
         if (initiationOfSubmission != null && initiationParameterOfConsentInitiation != null) {
 
+
+
             //Validate Creditor Account
             if ((!initiationOfSubmission.containsKey(ConsentExtensionConstants.CREDITOR_ACC) &&
                     initiationParameterOfConsentInitiation.containsKey(ConsentExtensionConstants.CREDITOR_ACC)) ||
@@ -190,7 +192,7 @@ public class VRPSubmissionPayloadValidator {
                         return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                                 ErrorConstants.INSTRUCTED_AMOUNT_AMOUNT_NOT_FOUND);
                     } else {
-                       Object amountValue = instructedAmount.get(ConsentExtensionConstants.AMOUNT);
+                        Object amountValue = instructedAmount.get(ConsentExtensionConstants.AMOUNT);
                         if (!isValidString(amountValue)) {
                             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                                     ErrorConstants.INSTRUCTED_AMOUNT_NOT_STRING);
@@ -217,8 +219,8 @@ public class VRPSubmissionPayloadValidator {
             JSONObject validateCreditorAccResult = VRPSubmissionPayloadValidator.validateCreditorAcc
                     (submission, initiation);
             if (!Boolean.parseBoolean(validateCreditorAccResult.
-                    getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
-                return  validateCreditorAccResult;
+                    get(ConsentExtensionConstants.IS_VALID_PAYLOAD).toString())) {
+                return validateCreditorAccResult;
             }
 
             if (submission.containsKey(ConsentExtensionConstants.INSTRUCTION_IDENTIFICATION)) {
@@ -269,17 +271,17 @@ public class VRPSubmissionPayloadValidator {
                     JSONObject remittanceInfoValidationResult = VRPSubmissionPayloadValidator.validateRemittanceInfo
                             (remittanceInformationSub, remittanceInformationInit);
                     if ((!Boolean.parseBoolean(remittanceInfoValidationResult.
-                            getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD)))) {
+                            get(ConsentExtensionConstants.IS_VALID_PAYLOAD).toString()))) {
                         return remittanceInfoValidationResult;
                     }
                 } else {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
+            } else {
+                return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
+                        ErrorConstants.INVALID_PARAMETER);
             }
-        } else {
-            return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
-                    ErrorConstants.INVALID_PARAMETER);
         }
 
         JSONObject validationResult = new JSONObject();
@@ -512,4 +514,3 @@ public class VRPSubmissionPayloadValidator {
         return validationResult;
     }
 }
-

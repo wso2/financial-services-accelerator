@@ -220,6 +220,8 @@ public class ErrorConstants {
     public static final String CONSENT_ID_NOT_FOUND = "Consent ID not available in consent data";
     public static final String FIELD_INVALID_DATE = "OB.Field.InvalidDate";
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
+    public static final String CONSENT_ATTRIBUTE_RETRIEVAL_ERROR = "Error occurred while retrieving the consent " +
+            "attributes";
 
     // VRP error constants
 
@@ -263,6 +265,14 @@ public class ErrorConstants {
     public static final String INVALID_PERIOD_ALIGNMENT = "Invalid value for period alignment in PeriodicLimits";
     public static final String INVALID_PARAMETER_MESSAGE = "Parameter '%s' passed in is null, empty, or not a %s";
     public static final String DATE_INVALID_PARAMETER_MESSAGE = "Invalid date-time range for ValidToDateTime ";
+    public static final String INVALID_PERIODIC_LIMIT_SIZE = "Periodic limits exceed the allowed limits";
+    public static final String DUPLICATE_PERIOD_TYPE = "Duplicate Period Types found in the request";
+    public static final String CURRENCY_MISMATCH = "Currency does not match with the currency of the periodic limits";
+    public static final int MAXIMUM_PERIODIC_LIMITS = 6;
+    public static final String INVALID_MAXIMUM_INDIVIDUAL_CURRENCY = "Invalid value for Currency in " +
+            "MaximumIndividualAmount";
+    public static final String INVALID_PERIODIC_LIMIT_AMOUNT = "Invalid value for in Amount in Periodic Limits";
+    public static final String INVALID_PERIODIC_LIMIT_CURRENCY = "Invalid value for Currency in Periodic Limits";
 
 
     // vrp path parameters
