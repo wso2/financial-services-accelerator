@@ -280,8 +280,6 @@ public class VRPSubmissionPayloadValidator {
                             ErrorConstants.INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
             }
-            //validate instructed amount with periodicLimits
-            ConsentCoreServiceImpl consentService = new ConsentCoreServiceImpl();
         }
 
         JSONObject validationResult = new JSONObject();
