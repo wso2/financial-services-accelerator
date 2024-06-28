@@ -19,12 +19,16 @@ package com.wso2.openbanking.accelerator.consent.extensions.manage.model;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.util.PeriodicTypesEnum;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
@@ -170,7 +174,8 @@ public class PeriodicLimit {
             return localDate.withMonth(6).with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault())
                     .toInstant();
         } else {
-            return localDate.withMonth(12).with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault())
+            return localDate.withMonth(12).with(TemporalAdjusters.lastDayOfMonth())
+                    .atStartOfDay(ZoneId.systemDefault())
                     .toInstant();
         }
     }
@@ -183,51 +188,13 @@ public class PeriodicLimit {
             cyclicRemainingAmount = BigDecimal.valueOf(0);
         } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR )) {
             LocalDate now = LocalDate.now();
-            LocalDate expiryDate = Instant.ofEpochSecond(cyclicExpiryTime).atZone(ZoneId.systemDefault()).toLocalDate();
-            BigDecimal divisor = BigDecimal.valueOf(PeriodicTypesEnum.valueOf(this.periodType.toUpperCase()).getDivisor());
+            LocalDate expiryDate = Instant.ofEpochSecond(cyclicExpiryTime).atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            BigDecimal divisor = BigDecimal.valueOf(PeriodicTypesEnum.valueOf(this.periodType.toUpperCase())
+                    .getDivisor());
             BigDecimal days = BigDecimal.valueOf(ChronoUnit.DAYS.between(now, expiryDate));
-            cyclicRemainingAmount = amount.divide(divisor, RoundingMode.HALF_UP).multiply(days).setScale(2, RoundingMode.HALF_UP);
+            cyclicRemainingAmount = amount.divide(divisor, RoundingMode.HALF_UP).multiply(days)
+                    .setScale(2, RoundingMode.HALF_UP);
         }
-    }
-
-    public boolean validateAmountWithControlParameters(Double amountValue, JSONObject controlParameters) {
-        BigDecimal instructedAmount = BigDecimal.valueOf(amountValue);
-        BigDecimal maxIndividualAmount = BigDecimal.valueOf(controlParameters.getDouble(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT));
-
-        if (instructedAmount.compareTo(maxIndividualAmount) > 0) {
-            return false;
-        }
-
-        JSONArray periodicLimits = controlParameters.getJSONArray(ConsentExtensionConstants.PERIODIC_LIMITS);
-        long currentMoment = System.currentTimeMillis() / 1000;
-
-        for (int i = 0; i < periodicLimits.length(); i++) {
-            JSONObject limit = periodicLimits.getJSONObject(i);
-            BigDecimal amount = BigDecimal.valueOf(limit.getDouble(ConsentExtensionConstants.AMOUNT));
-            long cyclicExpiryTime = limit.getLong(ConsentExtensionConstants.CYCLIC_EXPIRY_TIME);
-            BigDecimal cyclicRemainingAmount = BigDecimal.valueOf(limit.getDouble(ConsentExtensionConstants.CYCLIC_REMAINING_AMOUNT));
-
-            String periodType = limit.getString(ConsentExtensionConstants.PERIOD_TYPE);
-            String periodAlignment = limit.getString(ConsentExtensionConstants.PERIOD_ALIGNMENT);
-
-            PeriodicLimit periodicLimit = new PeriodicLimit(periodType, amount, periodAlignment);
-
-            if (currentMoment <= cyclicExpiryTime) {
-                if (instructedAmount.compareTo(cyclicRemainingAmount) > 0) {
-                    return false;
-                }
-            } else {
-                while(currentMoment > periodicLimit.getCyclicExpiryTime()) {
-                    periodicLimit.setCyclicExpiryTime();
-                }
-                cyclicRemainingAmount = amount;
-                if (instructedAmount.compareTo(cyclicRemainingAmount) > 0) {
-                    return false;
-                } else {
-                    cyclicRemainingAmount = cyclicRemainingAmount.subtract(instructedAmount);
-                }
-            }
-        }
-        return true;
     }
 }

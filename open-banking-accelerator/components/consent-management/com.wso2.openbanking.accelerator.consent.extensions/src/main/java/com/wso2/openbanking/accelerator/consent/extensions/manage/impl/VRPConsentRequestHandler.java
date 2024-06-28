@@ -44,8 +44,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants.AUTH_TYPE_AUTHORIZATION;
-import static com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants.CREATED_STATUS;
+import static com.wso2.openbanking.accelerator.consent.extensions.common.
+        ConsentExtensionConstants.AUTH_TYPE_AUTHORIZATION;
+import static com.wso2.openbanking.accelerator.consent.extensions.
+        common.ConsentExtensionConstants.CREATED_STATUS;
 
 /**
  * Consent Manage request handler class for VRP Payment Request Validation.
@@ -324,7 +326,8 @@ public class VRPConsentRequestHandler implements ConsentManageRequestHandler {
      * @param requestObject JSON object representing the request
      * @param createdConsent DetailedConsentResource object representing the created consent
      */
-    private void setResponse(ConsentManageData consentManageData, JSONObject requestObject, DetailedConsentResource createdConsent) {
+    private void setResponse(ConsentManageData consentManageData,
+                             JSONObject requestObject, DetailedConsentResource createdConsent) {
         consentManageData.setResponsePayload(ConsentManageUtil.getInitiationResponse(requestObject, createdConsent,
                 consentManageData, ConsentExtensionConstants.VRP));
 

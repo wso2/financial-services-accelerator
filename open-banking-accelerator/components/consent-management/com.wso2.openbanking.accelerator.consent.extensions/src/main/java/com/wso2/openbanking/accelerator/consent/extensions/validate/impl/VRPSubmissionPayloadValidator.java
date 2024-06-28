@@ -17,21 +17,13 @@
  */
 package com.wso2.openbanking.accelerator.consent.extensions.validate.impl;
 
-import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.model.PeriodicLimit;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.util.ConsentValidatorUtil;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.math.BigDecimal;
-import java.util.Map;
 
 /**
  * Class for validating VRP submission request.

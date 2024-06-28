@@ -19,6 +19,12 @@ package com.wso2.openbanking.accelerator.consent.extensions.util;
 
 import java.time.LocalDate;
 
+/**
+ * This enum represents the different types of periods that can be used in the application.
+ * Each enum value is associated with a string representation and a method to calculate the divisor based
+ * on the period type.
+ * The divisor is used to convert other time units to this period type.
+ */
 public enum PeriodicTypesEnum {
 
     DAY("Day"),

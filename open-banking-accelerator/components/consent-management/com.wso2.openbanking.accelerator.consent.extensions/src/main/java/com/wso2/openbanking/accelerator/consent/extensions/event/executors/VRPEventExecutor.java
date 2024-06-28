@@ -30,11 +30,25 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is responsible for executing Variable Recurring Payments (VRP) events.
+ * It implements the OBEventExecutor interface and overrides its methods to provide
+ * specific implementations for VRP events.
+ */
 public class VRPEventExecutor implements OBEventExecutor {
 
     public static List<PeriodicLimit> validateInstructedAmountWithControlParameters(BigDecimal instructedAmount,
                                                                                     JSONObject controlParameters) {
 
+        /**
+         * Validates the instructed amount with control parameters and returns a list of PeriodicLimit objects.
+         * If the instructed amount is greater than the maximum individual amount or the cyclic remaining amount,
+         * an empty list is returned. If the JSON parsing fails, an empty list is also returned.
+         *
+         * @param instructedAmount The instructed amount to be validated
+         * @param controlParameters The control parameters to be used for validation
+         * @return A list of PeriodicLimit objects
+         */
         List<PeriodicLimit> periodicLimitsList = new ArrayList<>();
 
         BigDecimal maxIndividualAmount = BigDecimal.valueOf(Double.parseDouble(controlParameters.
@@ -77,7 +91,7 @@ public class VRPEventExecutor implements OBEventExecutor {
                     cyclicRemainingAmount = cyclicRemainingAmount.subtract(instructedAmount);
                 }
             } else {
-                while(currentMoment > periodicLimit.getCyclicExpiryTime()) {
+                while (currentMoment > periodicLimit.getCyclicExpiryTime()) {
                     periodicLimit.setCyclicExpiryTime();
                 }
                 cyclicRemainingAmount = amount;
@@ -93,6 +107,11 @@ public class VRPEventExecutor implements OBEventExecutor {
         return periodicLimitsList;
     }
 
+    /**
+     * Processes the given OBEvent. This method is part of the OBEventExecutor interface and needs to be implemented.
+     *
+     * @param obEvent The OBEvent to be processed
+     */
     @Override
     public void processEvent(OBEvent obEvent) {
 
