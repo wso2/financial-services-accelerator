@@ -161,6 +161,7 @@ public class PeriodicLimit {
      * Calculates and sets the cyclic paid amount based on the period alignment.
      */
     private void calculateCyclicPaidAmount() {
+        
         if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CONSENT)) {
             cyclicRemainingAmount = BigDecimal.valueOf(0);
         } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR )) {
