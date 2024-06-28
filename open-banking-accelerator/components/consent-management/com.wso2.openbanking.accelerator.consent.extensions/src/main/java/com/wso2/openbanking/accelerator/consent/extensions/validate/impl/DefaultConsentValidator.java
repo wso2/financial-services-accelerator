@@ -461,6 +461,8 @@ public class DefaultConsentValidator implements ConsentValidator {
         JSONObject submissionInitiation = (JSONObject) submissionData.get(ConsentExtensionConstants.INITIATION);
         JSONObject submissionInstruction = (JSONObject) submissionData.get(ConsentExtensionConstants.INSTRUCTION);
 
+        String consentId = detailedConsentResource.getConsentID();
+
         JSONObject initiationValidationResult = VRPSubmissionPayloadValidator
                 .validateInitiation(submissionInitiation, requestInitiation);
 

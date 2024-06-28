@@ -177,6 +177,8 @@ public class ConsentExtensionConstants {
     public static final String PERIODIC_TYPES = "PeriodicTypes";
     public static final String PERIOD_AMOUNT_LIMIT = "Amount";
     public static final String PERIOD_LIMIT_CURRENCY = "PeriodicLimits.Currency";
+    public static final String CYCLIC_EXPIRY_TIME = "cyclicExpiryTime";
+    public static final String CYCLIC_REMAINING_AMOUNT = "cyclicRemainingAmount";
 
     //vrp period alignment
     public static final String PERIOD_ALIGNMENT = "PeriodAlignment";

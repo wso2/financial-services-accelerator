@@ -17,12 +17,22 @@
  */
 package com.wso2.openbanking.accelerator.consent.extensions.validate.impl;
 
+import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.accelerator.consent.extensions.manage.model.PeriodicLimit;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.util.ConsentValidatorUtil;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Class for validating VRP submission request.
@@ -44,6 +54,8 @@ public class VRPSubmissionPayloadValidator {
                                                 JSONObject initiationParameterOfConsentInitiation) {
 
         if (initiationOfSubmission != null && initiationParameterOfConsentInitiation != null) {
+
+
 
             //Validate Creditor Account
             if ((!initiationOfSubmission.containsKey(ConsentExtensionConstants.CREDITOR_ACC) &&
@@ -190,7 +202,7 @@ public class VRPSubmissionPayloadValidator {
                         return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
                                 ErrorConstants.INSTRUCTED_AMOUNT_AMOUNT_NOT_FOUND);
                     } else {
-                       Object amountValue = instructedAmount.get(ConsentExtensionConstants.AMOUNT);
+                        Object amountValue = instructedAmount.get(ConsentExtensionConstants.AMOUNT);
                         if (!isValidString(amountValue)) {
                             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                                     ErrorConstants.INSTRUCTED_AMOUNT_NOT_STRING);
@@ -217,7 +229,7 @@ public class VRPSubmissionPayloadValidator {
             JSONObject validateCreditorAccResult = VRPSubmissionPayloadValidator.validateCreditorAcc
                     (submission, initiation);
             if (!Boolean.parseBoolean(validateCreditorAccResult.
-                    getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD))) {
+                    get(ConsentExtensionConstants.IS_VALID_PAYLOAD).toString())) {
                 return  validateCreditorAccResult;
             }
 
@@ -269,13 +281,43 @@ public class VRPSubmissionPayloadValidator {
                     JSONObject remittanceInfoValidationResult = VRPSubmissionPayloadValidator.validateRemittanceInfo
                             (remittanceInformationSub, remittanceInformationInit);
                     if ((!Boolean.parseBoolean(remittanceInfoValidationResult.
-                            getAsString(ConsentExtensionConstants.IS_VALID_PAYLOAD)))) {
+                            get(ConsentExtensionConstants.IS_VALID_PAYLOAD).toString()))) {
                         return remittanceInfoValidationResult;
                     }
                 } else {
                     return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_INVALID,
                             ErrorConstants.INSTRUCTION_REMITTANCE_INFO_NOT_JSON_ERROR);
                 }
+            }
+            //validate instructed amount with periodicLimits
+            ConsentCoreServiceImpl consentService = new ConsentCoreServiceImpl();
+            String consentId = null;
+            try {
+                DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
+                consentId = detailedConsentResource.getConsentID();
+            } catch (ConsentManagementException e) {
+                log.error("Error retrieving consentId", e);
+                // Handle the exception
+            }
+
+            try {
+                Map<String, String> map = consentService.
+                        getConsentAttributesByName(ConsentExtensionConstants.CONTROL_PARAMETERS);
+                JSONObject controlParameters = new JSONObject(map);
+
+                JSONObject instructedAmount = (JSONObject) submission.
+                        get(ConsentExtensionConstants.INSTRUCTED_AMOUNT);
+                Double amountValue = Double.valueOf(instructedAmount.getAsString(ConsentExtensionConstants.AMOUNT));
+
+                if (!validateInstructedAmountWithControlParameters(amountValue, controlParameters)) {
+                    return ConsentValidatorUtil.
+                            getValidationResult(ErrorConstants.FIELD_INVALID, ErrorConstants.PATH_PERIOD_TYPE);
+                }
+            } catch (ConsentManagementException e) {
+                log.error(ErrorConstants.CONSENT_ATTRIBUTE_RETRIEVAL_ERROR, e);
+                return ConsentValidatorUtil.getValidationResult
+                        (ErrorConstants.FIELD_INVALID,
+                                ErrorConstants.CONSENT_ATTRIBUTE_RETRIEVAL_ERROR);
             }
         } else {
             return ConsentValidatorUtil.getValidationResult(ErrorConstants.FIELD_MISSING,
@@ -510,6 +552,62 @@ public class VRPSubmissionPayloadValidator {
 
         validationResult.put(ConsentExtensionConstants.IS_VALID_PAYLOAD, true);
         return validationResult;
+    }
+    public static boolean validateInstructedAmountWithControlParameters(Double amountValue,
+                                                                        JSONObject controlParameters) {
+        BigDecimal instructedAmount = BigDecimal.valueOf(amountValue);
+        BigDecimal maxIndividualAmount = BigDecimal.valueOf(Double.parseDouble(controlParameters.
+                getAsString(ConsentExtensionConstants.MAXIMUM_INDIVIDUAL_AMOUNT)));
+
+        if (instructedAmount.compareTo(maxIndividualAmount) > 0) {
+            return false;
+        }
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        JSONArray periodicLimits;
+        try {
+            periodicLimits = (JSONArray) parser.parse(controlParameters.
+                    getAsString(ConsentExtensionConstants.PERIODIC_LIMITS));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Error parsing periodic limits", e);
+        }
+
+        long currentMoment = System.currentTimeMillis() / 1000;
+
+        for (Object obj : periodicLimits) {
+            JSONObject limit = (JSONObject) obj;
+            BigDecimal amount = BigDecimal.
+                    valueOf(Double.parseDouble(limit.getAsString(ConsentExtensionConstants.AMOUNT)));
+            long cyclicExpiryTime = Long.parseLong(limit.getAsString(ConsentExtensionConstants.CYCLIC_EXPIRY_TIME));
+            BigDecimal cyclicRemainingAmount = BigDecimal.
+                    valueOf(Double.parseDouble(limit.getAsString(ConsentExtensionConstants.CYCLIC_REMAINING_AMOUNT)));
+
+            String periodType = limit.getAsString(ConsentExtensionConstants.PERIOD_TYPE);
+            String periodAlignment = limit.getAsString(ConsentExtensionConstants.PERIOD_ALIGNMENT);
+
+            PeriodicLimit periodicLimit = new PeriodicLimit(periodType, amount, periodAlignment);
+
+            if (currentMoment <= cyclicExpiryTime) {
+                if (instructedAmount.compareTo(cyclicRemainingAmount) > 0) {
+                    return false;
+                } else {
+                    cyclicRemainingAmount = cyclicRemainingAmount.subtract(instructedAmount);
+
+                }
+            } else {
+                while(currentMoment > periodicLimit.getCyclicExpiryTime()) {
+                    periodicLimit.setCyclicExpiryTime();
+                }
+                cyclicRemainingAmount = amount;
+                if (instructedAmount.compareTo(cyclicRemainingAmount) > 0) {
+                    return false;
+                } else {
+                    cyclicRemainingAmount = cyclicRemainingAmount.subtract(instructedAmount);
+
+                }
+            }
+        }
+        return true;
     }
 }
 

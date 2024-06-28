@@ -220,6 +220,8 @@ public class ErrorConstants {
     public static final String CONSENT_ID_NOT_FOUND = "Consent ID not available in consent data";
     public static final String FIELD_INVALID_DATE = "OB.Field.InvalidDate";
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
+    public static final String CONSENT_ATTRIBUTE_RETRIEVAL_ERROR = "Error occurred while retrieving the consent " +
+            "attributes";
 
     // VRP error constants
 
