@@ -37,6 +37,7 @@ import java.time.temporal.TemporalAdjusters;
  * It includes the period type, amount, period alignment, cyclic expiry time, and cyclic paid amount.
  */
 public class PeriodicLimit {
+    
     private final String periodType;
     private BigDecimal amount;
     private String periodAlignment;
@@ -184,6 +185,7 @@ public class PeriodicLimit {
      * Calculates and sets the cyclic paid amount based on the period alignment.
      */
     private void calculateCyclicPaidAmount() {
+        
         if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CONSENT)) {
             cyclicRemainingAmount = BigDecimal.valueOf(0);
         } else if (periodAlignment.equalsIgnoreCase(ConsentExtensionConstants.CALENDAR )) {
