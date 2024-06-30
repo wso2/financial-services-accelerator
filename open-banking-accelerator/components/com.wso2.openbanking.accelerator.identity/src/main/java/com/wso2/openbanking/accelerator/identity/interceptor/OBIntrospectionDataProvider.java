@@ -27,7 +27,6 @@ import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -41,14 +40,17 @@ public class OBIntrospectionDataProvider extends AbstractIdentityHandler impleme
     public Map<String, Object> getIntrospectionData(OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
                                                     OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO)
             throws IdentityOAuth2Exception {
+
+        Map<String, Object> additionalDataMap = getIntrospectionDataProvider()
+                .getIntrospectionData(oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO);
         String[] nonInternalScopes = IdentityCommonUtil.removeInternalScopes(oAuth2IntrospectionResponseDTO.getScope()
                 .split(IdentityCommonConstants.SPACE_SEPARATOR));
         oAuth2IntrospectionResponseDTO.setScope(StringUtils.join(nonInternalScopes,
                 IdentityCommonConstants.SPACE_SEPARATOR));
-        oAuth2IntrospectionResponseDTO.setProperties(Collections.singletonMap(IdentityCommonConstants.SCOPE,
-                StringUtils.join(nonInternalScopes, IdentityCommonConstants.SPACE_SEPARATOR)));
-        return getIntrospectionDataProvider().getIntrospectionData(oAuth2TokenValidationRequestDTO,
-                oAuth2IntrospectionResponseDTO);
+        additionalDataMap.put(IdentityCommonConstants.SCOPE, StringUtils.join(nonInternalScopes,
+                IdentityCommonConstants.SPACE_SEPARATOR));
+        oAuth2IntrospectionResponseDTO.setProperties(additionalDataMap);
+        return additionalDataMap;
     }
 
     public static IntrospectionDataProvider getIntrospectionDataProvider() {
