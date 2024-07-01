@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -506,9 +506,10 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
                 // Update account mappings as inactive
                 log.debug("Deactivating account mappings");
-                consentCoreDAO.updateConsentMappingStatus(connection, accountMappingIDsList,
-                        ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
-
+                if (accountMappingIDsList.size() > 0) {
+                    consentCoreDAO.updateConsentMappingStatus(connection, accountMappingIDsList,
+                            ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
+                }
                 //Commit transaction
                 DatabaseUtil.commitTransaction(connection);
                 log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
