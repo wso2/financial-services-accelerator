@@ -506,9 +506,10 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
                 // Update account mappings as inactive
                 log.debug("Deactivating account mappings");
-                consentCoreDAO.updateConsentMappingStatus(connection, accountMappingIDsList,
-                        ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
-
+                if (accountMappingIDsList.size() > 0) {
+                    consentCoreDAO.updateConsentMappingStatus(connection, accountMappingIDsList,
+                            ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
+                }
                 //Commit transaction
                 DatabaseUtil.commitTransaction(connection);
                 log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
