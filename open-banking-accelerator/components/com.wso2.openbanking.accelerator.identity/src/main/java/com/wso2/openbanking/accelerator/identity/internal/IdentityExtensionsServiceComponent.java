@@ -90,10 +90,12 @@ public class IdentityExtensionsServiceComponent {
         bundleContext.registerService(ApplicationAuthenticator.class.getName(),
                 app2AppAuthenticator, null);
 
-        JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
-        OpenBankingAuthenticationWorkerFunction worker = new OpenBankingAuthenticationWorkerFunctionImpl();
-        jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
-                worker);
+        if (IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry() != null) {
+            JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
+            OpenBankingAuthenticationWorkerFunction worker = new OpenBankingAuthenticationWorkerFunctionImpl();
+            jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
+                    worker);
+        }
 
     }
 
@@ -251,15 +253,17 @@ public class IdentityExtensionsServiceComponent {
     @Deactivate
     protected void deactivate(ComponentContext ctxt) {
 
-        JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
-        jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
-                null);
+        if (IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry() != null) {
+            JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
+            jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
+                    null);
+        }
         log.debug("Open banking Key Manager Extensions component is deactivated");
     }
 
     @Reference(
             service = JsFunctionRegistry.class,
-            cardinality = ReferenceCardinality.MANDATORY,
+            cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetJsFunctionRegistry"
     )
