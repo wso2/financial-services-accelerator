@@ -17,10 +17,6 @@
  */
 package com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups;
 
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.AttributeChecks;
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
-import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.SignatureCheck;
-
 import javax.validation.GroupSequence;
 
 /**
