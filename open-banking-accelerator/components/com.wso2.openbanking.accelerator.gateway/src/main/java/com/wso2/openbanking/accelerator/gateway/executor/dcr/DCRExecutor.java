@@ -131,7 +131,10 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
             } catch (ParseException e) {
                 log.error("Error occurred while decoding the provided jwt", e);
                 handleBadRequestError(obapiRequestContext, "Malformed request JWT");
-            } catch (JOSEException | BadJOSEException | MalformedURLException e) {
+            } catch (BadJOSEException e) {
+                log.error("Error occurred while validating the signature", e);
+                handleBadRequestError(obapiRequestContext, "Invalid request signature. " + e.getMessage());
+            } catch (JOSEException | MalformedURLException e) {
                 log.error("Error occurred while validating the signature", e);
                 handleBadRequestError(obapiRequestContext, "Invalid request signature");
             } catch (OpenBankingExecutorException e) {
