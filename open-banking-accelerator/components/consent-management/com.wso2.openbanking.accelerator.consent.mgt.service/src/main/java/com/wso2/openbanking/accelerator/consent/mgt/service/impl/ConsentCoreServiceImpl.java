@@ -347,24 +347,27 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     ArrayList<AuthorizationResource> authorizationResources = retrievedDetailedConsentResource
                             .getAuthorizationResources();
 
-                    String consentUserID = "";
+                    // Get all users of the consent
+                    Set<String> consentUserIDSet = new HashSet<>();
                     if (authorizationResources != null && !authorizationResources.isEmpty()) {
-                        consentUserID = authorizationResources.get(0).getUserID();
+                        for (AuthorizationResource authorizationResource : authorizationResources) {
+                            consentUserIDSet.add(authorizationResource.getUserID());
+                        }
                     }
 
-                    if (StringUtils.isBlank(consentUserID)) {
+                    if (consentUserIDSet.isEmpty()) {
                         log.error("User ID is required for token revocation, cannot proceed");
                         throw new ConsentManagementException("User ID is required for token revocation, cannot " +
                                 "proceed");
                     }
 
-                    if (!isValidUserID(userID, consentUserID)) {
+                    if (!isValidUserID(userID, consentUserIDSet)) {
                         final String errorMsg = "Requested UserID and Consent UserID do not match, cannot proceed.";
                         log.error(errorMsg + ", request UserID: " + userID.replaceAll("[\r\n]", "") +
-                                ", Consent UserID: " + consentUserID.replaceAll("[\r\n]", ""));
+                                " is not a member of the consent user list");
                         throw new ConsentManagementException(errorMsg);
                     }
-                    revokeTokens(retrievedDetailedConsentResource, consentUserID);
+                    revokeTokens(retrievedDetailedConsentResource, userID);
                 }
 
                 ArrayList<ConsentMappingResource> consentMappingResources = retrievedDetailedConsentResource
@@ -2583,12 +2586,12 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         }
     }
 
-    private boolean isValidUserID(String requestUserID, String consentUserID) {
+    private boolean isValidUserID(String requestUserID, Set<String> consentUserIDSet) {
         if (StringUtils.isEmpty(requestUserID)) {
             // userId not present in request query parameters, can use consentUserID to revoke tokens
             return true;
         }
-        return requestUserID.equals(consentUserID);
+        return consentUserIDSet.contains(requestUserID);
     }
 
     @Generated(message = "Excluded from code coverage since used for testing purposes")
