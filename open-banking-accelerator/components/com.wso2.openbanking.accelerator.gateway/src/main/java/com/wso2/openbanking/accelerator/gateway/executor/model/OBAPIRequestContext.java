@@ -252,7 +252,8 @@ public class OBAPIRequestContext extends RequestContextDTO {
     }
 
     private void handleContentTypeErrors(String errorCode, String errorMessage) {
-        OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode, errorMessage, errorMessage,
+        OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode,
+                OpenBankingErrorCodes.UNSUPPORTED_MEDIA_TYPE, errorMessage,
                 OpenBankingErrorCodes.UNSUPPORTED_MEDIA_TYPE_CODE);
 
         this.isError = true;

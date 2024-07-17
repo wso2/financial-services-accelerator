@@ -48,6 +48,9 @@ public class OpenBankingErrorCodes {
     public static final String MISSING_HEADER_PARAM_CLIENT_ID = "200015";
     public static final String ERROR_IN_EVENT_POLLING_REQUEST = "200016";
 
+    // Error titles
+    public static final String UNSUPPORTED_MEDIA_TYPE = "Unsupported Media Type";
+
     public static final String REGISTRATION_INTERNAL_ERROR = "Error occurred while registering application";
     public static final String REGISTATION_DELETE_ERROR = "Error occurred while deleting application";
     public static final String REGISTRATION_UPDATE_ERROR = "Error occurred while updating application";
