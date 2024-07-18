@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -252,7 +252,8 @@ public class OBAPIRequestContext extends RequestContextDTO {
     }
 
     private void handleContentTypeErrors(String errorCode, String errorMessage) {
-        OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode, errorMessage, errorMessage,
+        OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode,
+                OpenBankingErrorCodes.UNSUPPORTED_MEDIA_TYPE, errorMessage,
                 OpenBankingErrorCodes.UNSUPPORTED_MEDIA_TYPE_CODE);
 
         this.isError = true;
