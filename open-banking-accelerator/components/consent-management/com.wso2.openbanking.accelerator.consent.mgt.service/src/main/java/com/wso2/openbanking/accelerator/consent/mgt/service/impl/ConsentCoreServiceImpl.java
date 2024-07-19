@@ -2170,6 +2170,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 consentAmendmentHistory = processConsentAmendmentHistoryData(
                         consentAmendmentHistoryRetrievalResult, currentConsentResource);
             }
+            DatabaseUtil.commitTransaction(connection);
             return consentAmendmentHistory;
         } catch (OBConsentDataRetrievalException e) {
             log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
