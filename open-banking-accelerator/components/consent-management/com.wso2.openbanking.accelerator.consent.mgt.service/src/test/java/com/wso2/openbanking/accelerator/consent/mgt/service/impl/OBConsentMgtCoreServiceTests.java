@@ -1155,6 +1155,26 @@ public class OBConsentMgtCoreServiceTests {
     }
 
     @Test
+    public void testUpdateAccountMappingPermissionWithEmptyMap() {
+
+        try {
+            consentCoreServiceImpl.updateAccountMappingPermission(new HashMap<>());
+            Assert.fail("Expected ConsentManagementException to be thrown");
+        } catch (ConsentManagementException e) {
+            Assert.assertEquals(e.getMessage(), "Cannot proceed since account mapping IDs are not provided");
+        }
+    }
+
+    @Test
+    public void testUpdateAccountMappingPermission() throws Exception {
+
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingPermission(Mockito.any(),
+                Mockito.any());
+        Assert.assertTrue(consentCoreServiceImpl
+                .updateAccountMappingPermission(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID_PERMISSION_MAP));
+    }
+
+    @Test
     public void testSearchConsents() throws Exception {
 
         ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();

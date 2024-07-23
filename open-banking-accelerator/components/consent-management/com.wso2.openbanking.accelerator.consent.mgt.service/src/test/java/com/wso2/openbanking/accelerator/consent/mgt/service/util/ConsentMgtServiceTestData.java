@@ -183,6 +183,11 @@ public class ConsentMgtServiceTestData {
         }
     };
 
+    public static final HashMap<String, String> SAMPLE_MAPPING_ID_PERMISSION_MAP = new HashMap<String, String>() {{
+        put("mapping_id_1", "permission_1");
+        put("mapping_id_2", "permission_2");
+    }};
+
     private static final ArrayList<String> SAMPLE_CONSENT_RECEIPTS_LIST = new ArrayList<String>() {
         {
             add("{\"element1\": \"value1\"}");
