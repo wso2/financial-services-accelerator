@@ -459,8 +459,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.debug("Setting parameters to prepared statement to update consent mapping permissions");
 
             for (String mappingID : mappingIDPermissionMap.keySet()) {
-                updateConsentMappingPermissionPreparedStmt.setString(1, mappingID);
-                updateConsentMappingPermissionPreparedStmt.setString(2, mappingIDPermissionMap.get(mappingID));
+                updateConsentMappingPermissionPreparedStmt.setString(1, mappingIDPermissionMap.get(mappingID));
+                updateConsentMappingPermissionPreparedStmt.setString(2, mappingID);
                 updateConsentMappingPermissionPreparedStmt.addBatch();
             }
 
