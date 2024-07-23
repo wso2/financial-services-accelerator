@@ -1252,6 +1252,35 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
+    public boolean updateAccountMappingPermission(Map<String, String> mappingIDPermissionMap) throws
+            ConsentManagementException {
+
+        if (mappingIDPermissionMap.isEmpty()) {
+            log.error("Account mapping IDs are not provided, cannot proceed");
+            throw new ConsentManagementException("Cannot proceed since account mapping IDs are not provided");
+        }
+
+        Connection connection = DatabaseUtil.getDBConnection();
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+            try {
+                log.debug("Updating consent account mapping permissions for given mapping IDs");
+                consentCoreDAO.updateConsentMappingPermission(connection, mappingIDPermissionMap);
+                DatabaseUtil.commitTransaction(connection);
+                log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
+                return true;
+            } catch (OBConsentDataUpdationException e) {
+                log.error(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
+                DatabaseUtil.rollbackTransaction(connection);
+                throw new ConsentManagementException(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
+            }
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtil.closeConnection(connection);
+        }
+    }
+
+    @Override
     public ArrayList<DetailedConsentResource> searchDetailedConsents(ArrayList<String> consentIDs,
                                                                      ArrayList<String> clientIDs,
                                                                      ArrayList<String> consentTypes,

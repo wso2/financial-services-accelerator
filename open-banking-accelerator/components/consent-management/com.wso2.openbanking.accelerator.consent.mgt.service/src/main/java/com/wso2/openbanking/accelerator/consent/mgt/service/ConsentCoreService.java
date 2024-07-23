@@ -440,6 +440,17 @@ public interface ConsentCoreService {
      */
     boolean updateAccountMappingStatus(ArrayList<String> accountMappingIDs, String newMappingStatus) throws
             ConsentManagementException;
+
+    /**
+     * This method is used to update the permissions of the provided account mappings.
+     *
+     * @param mappingIDPermissionMap - map of mapping IDs and new permissions
+     * @return true is update is successful, false otherwise
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    boolean updateAccountMappingPermission(Map<String, String> mappingIDPermissionMap) throws
+            ConsentManagementException;
+
     /**
      * This method is used to search detailed consents for the given lists of parameters. Following optional lists
      * can be passed to retrieve detailed consents. The search will be performed according to the provided input. Any
