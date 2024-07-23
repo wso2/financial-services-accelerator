@@ -444,9 +444,9 @@ public interface ConsentCoreService {
     /**
      * This method is used to update the permissions of the provided account mappings.
      *
-     * @param mappingIDPermissionMap - map of mapping IDs and new permissions
-     * @return true is update is successful, false otherwise
-     * @throws ConsentManagementException thrown if any error occurs
+     * @param mappingIDPermissionMap - A map of mapping IDs against new permissions
+     * @return - true if update is successful
+     * @throws ConsentManagementException - Thrown if a DAO level error occurs
      */
     boolean updateAccountMappingPermission(Map<String, String> mappingIDPermissionMap) throws
             ConsentManagementException;
