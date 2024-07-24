@@ -92,6 +92,8 @@ public class ConsentMgtDAOConstants {
             " database";
     public static final String CONSENT_MAPPING_STATUS_UPDATE_ERROR_MSG = "Error occurred while updating consent " +
             "mapping status in the database";
+    public static final String CONSENT_MAPPING_PERMISSION_UPDATE_ERROR_MSG = "Error occurred while updating consent " +
+            "mapping permission in the database";
     public static final String CONSENT_AUTHORIZATION_STATUS_UPDATE_ERROR_MSG = "Error occurred while updating " +
             "authorization status in the database";
     public static final String CONSENT_AUTHORIZATION_USER_UPDATE_ERROR_MSG = "Error occurred while updating " +

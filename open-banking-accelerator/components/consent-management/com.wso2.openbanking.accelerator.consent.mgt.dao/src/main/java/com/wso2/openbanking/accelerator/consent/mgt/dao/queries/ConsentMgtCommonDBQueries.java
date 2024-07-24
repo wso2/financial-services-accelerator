@@ -71,6 +71,11 @@ public class ConsentMgtCommonDBQueries {
         return "UPDATE OB_CONSENT_MAPPING SET MAPPING_STATUS = ? WHERE MAPPING_ID = ?";
     }
 
+    public String getUpdateConsentMappingPermissionPreparedStatement() {
+
+        return "UPDATE OB_CONSENT_MAPPING SET PERMISSION = ? WHERE MAPPING_ID = ?";
+    }
+
     public String getUpdateAuthorizationStatusPreparedStatement() {
 
         return "UPDATE OB_CONSENT_AUTH_RESOURCE SET AUTH_STATUS = ?, UPDATED_TIME = ? WHERE AUTH_ID = ?";

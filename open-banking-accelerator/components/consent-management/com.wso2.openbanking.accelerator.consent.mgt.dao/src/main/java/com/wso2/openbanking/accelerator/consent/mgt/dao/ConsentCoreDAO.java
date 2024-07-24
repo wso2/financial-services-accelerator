@@ -149,6 +149,18 @@ public interface ConsentCoreDAO {
             throws OBConsentDataUpdationException;
 
     /**
+     * This method is used to update given consent mapping resource permissions. All the mapping resources of provided
+     * map will be updated with the new mapping permission provided.
+     *
+     * @param connection - Connection object
+     * @param mappingIDPermissionMap - A map of mapping IDs against new permissions
+     * @return - true if the update is successful
+     * @throws OBConsentDataUpdationException - Thrown of a database level error occurs
+     */
+    boolean updateConsentMappingPermission(Connection connection, Map<String, String> mappingIDPermissionMap)
+            throws OBConsentDataUpdationException;
+
+    /**
      * This method is used to update a given authorization object. The status of the authorization resource provided
      * will be updated with the new status.
      *
