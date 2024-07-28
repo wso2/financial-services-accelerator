@@ -322,7 +322,6 @@ public class OBOAuthAuthzRequestTest extends PowerMockTestCase {
 
         obOAuthAuthzRequest = new OBOAuthAuthzRequest(mockRequest);
 
-        // Assertion
         assertEquals(obOAuthAuthzRequest.getScopes(), new HashSet<>(Collections.singletonList("openid")));
     }
 
