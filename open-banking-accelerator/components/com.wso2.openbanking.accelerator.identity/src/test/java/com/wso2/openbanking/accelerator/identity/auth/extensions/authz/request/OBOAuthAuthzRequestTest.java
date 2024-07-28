@@ -302,7 +302,6 @@ public class OBOAuthAuthzRequestTest extends PowerMockTestCase {
     public void testValidGetScopesFromRequest_WhenRequestURIIsAbsent() throws OAuthProblemException,
             OAuthSystemException {
 
-        // Mock
         Map<String, String[]> mockParameterMap = new HashMap<>();
         mockParameterMap.put(IdentityCommonConstants.RESPONSE_TYPE, new String[]{"code id_token"});
         mockParameterMap.put(IdentityCommonConstants.SCOPE, new String[]{"openid"});

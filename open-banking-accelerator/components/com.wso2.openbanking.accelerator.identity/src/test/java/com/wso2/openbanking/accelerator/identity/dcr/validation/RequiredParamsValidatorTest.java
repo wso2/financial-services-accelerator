@@ -31,10 +31,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.ConstraintValidatorContext;
@@ -121,15 +119,10 @@ public class RequiredParamsValidatorTest extends PowerMockTestCase {
     }
 
     private ConstraintValidatorContext.ConstraintViolationBuilder getConstraintViolationBuilder() {
-        // Create instances of the required objects
-        List<String> methodParameterNames = new ArrayList<>();
-        methodParameterNames.add("param1");
-        methodParameterNames.add("param2");
-        PathImpl propertyPath = PathImpl.createPathFromString("example.path");
 
-        // Create an instance of ConstraintValidatorContextImpl
+        PathImpl propertyPath = PathImpl.createPathFromString("example.path");
         ConstraintValidatorContextImpl context = new ConstraintValidatorContextImpl(
-                methodParameterNames,
+                null,
                 null,
                 propertyPath,
                 null,
