@@ -67,6 +67,9 @@
             <class name="com.wso2.openbanking.accelerator.identity.dcr.DCRValidationTest"/>
             <class name="com.wso2.openbanking.accelerator.identity.dcr.DCRValidationUtilTest"/>
             <class name="com.wso2.openbanking.accelerator.identity.dcr.DCRExtendedValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.dcr.validation.IssuerValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.dcr.validation.AlgorithmValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.dcr.validation.RequiredParamsValidatorTest"/>
         </classes>
     </test>
     <test name="application-listener">

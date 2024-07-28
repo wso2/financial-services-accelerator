@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
- *
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
+ * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,10 +28,12 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.testng.Assert.fail;
 import static org.testng.AssertJUnit.assertEquals;
 
 /**
@@ -96,7 +98,7 @@ public class ResponseTypeHandlerTest {
     }
 
     @Test
-    public void checkHandlerLogic()  {
+    public void checkHandlerLogic() {
 
         OAuthAuthzReqMessageContext mock = mock(OAuthAuthzReqMessageContext.class);
         when(mock.getRefreshTokenvalidityPeriod()).thenReturn(6666L);
@@ -106,5 +108,25 @@ public class ResponseTypeHandlerTest {
 
         assertEquals(6666L, uut.updateRefreshTokenValidityPeriod(mock));
 
+    }
+
+    @Test
+    public void checkExceptionHandling_WhenIsRegulatoryThrowsOpenBankingException() throws Exception {
+
+        OAuthAuthzReqMessageContext mockAuthzReqMsgCtx = mock(OAuthAuthzReqMessageContext.class);
+        OAuth2AuthorizeReqDTO mockAuthorizeReqDTO = mock(OAuth2AuthorizeReqDTO.class);
+        when(mockAuthzReqMsgCtx.getAuthorizationReqDTO()).thenReturn(mockAuthorizeReqDTO);
+        when(mockAuthorizeReqDTO.getConsumerKey()).thenReturn("dummyClientId");
+        OBCodeResponseTypeHandlerExtension uut = spy(new OBCodeResponseTypeHandlerExtension());
+        doThrow(new OpenBankingException("Simulated isRegulatory exception"))
+                .when(uut).isRegulatory("dummyClientId");
+
+        try {
+            uut.issue(mockAuthzReqMsgCtx);
+            fail("Expected IdentityOAuth2Exception was not thrown.");
+        } catch (IdentityOAuth2Exception e) {
+            // Verify that the IdentityOAuth2Exception is thrown with the expected message
+            assertEquals("Error while reading regulatory property", e.getMessage());
+        }
     }
 }
