@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,7 @@ import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationException;
 import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationorder.ValidationOrder;
+import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.ValidationOrder;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;

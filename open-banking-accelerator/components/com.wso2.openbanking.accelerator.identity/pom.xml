@@ -222,6 +222,7 @@
                         <exclude>**/*DefaultSPMetadataFilter.class</exclude>
                         <exclude>**/*IdentityServiceExporter.class</exclude>
                         <exclude>**/*DeviceVerificationToken.class</exclude>
+                        <exclude>**/wrapper/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
