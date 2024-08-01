@@ -61,7 +61,7 @@ public class EventSubscriptionSqlStatements {
     }
 
     public String updateEventSubscriptionStatusQuery() {
-        return "UPDATE OB_NOTIFICATION_SUBSCRIPTION SET STATUS = ? WHERE SUBSCRIPTION_ID = ? && STATUS = 'CREATED'";
+        return "UPDATE OB_NOTIFICATION_SUBSCRIPTION SET STATUS = ? WHERE SUBSCRIPTION_ID = ? AND STATUS = 'CREATED'";
     }
 
     public String deleteSubscribedEventTypesQuery() {

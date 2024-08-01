@@ -79,6 +79,51 @@ public class PostgreSqlEventSubscriptionDAOImpl extends EventSubscriptionDAOImpl
     }
 
     @Override
+    public List<EventSubscription> getEventSubscriptionsByClientId(Connection connection, String clientId)
+            throws OBEventNotificationException {
+        List<EventSubscription> retrievedSubscriptions = new ArrayList<>();
+
+        final String sql = sqlStatements.getEventSubscriptionsByClientIdQuery();
+        try (PreparedStatement getEventSubscriptionsByClientIdStatement = connection.prepareStatement(sql,
+                ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+            getEventSubscriptionsByClientIdStatement.setString(1, clientId);
+            try (ResultSet resultSet = getEventSubscriptionsByClientIdStatement.executeQuery()) {
+                if (resultSet.isBeforeFirst()) {
+                    while (resultSet.next()) {
+                        EventSubscription eventSubscription = new EventSubscription();
+                        List<String> eventTypes = new ArrayList<>();
+                        mapResultSetToEventSubscription(eventSubscription, resultSet);
+                        resultSet.previous();
+                        while (resultSet.next()) {
+                            if (eventSubscription.getSubscriptionId().equals(resultSet.
+                                    getString(EventNotificationConstants.SUBSCRIPTION_ID))) {
+                                if (resultSet.getString(EventNotificationConstants.EVENT_TYPE) != null) {
+                                    eventTypes.add(resultSet.getString(EventNotificationConstants.EVENT_TYPE));
+                                }
+                            } else {
+                                resultSet.previous();
+                                break;
+                            }
+                        }
+                        if (!eventTypes.isEmpty()) {
+                            eventSubscription.setEventTypes(eventTypes);
+                        }
+                        retrievedSubscriptions.add(eventSubscription);
+                    }
+                    log.debug("Retrieved the event notification subscriptions successfully.");
+                }
+                return retrievedSubscriptions;
+            } catch (SQLException e) {
+                log.error("SQL exception when retrieving the event notification subscriptions.", e);
+                throw new OBEventNotificationException(EventNotificationConstants.ERROR_RETRIEVING_EVENT_SUBSCRIPTION);
+            }
+        } catch (SQLException e) {
+            log.error("SQL exception when retrieving the event notification subscriptions.", e);
+            throw new OBEventNotificationException(EventNotificationConstants.ERROR_RETRIEVING_EVENT_SUBSCRIPTIONS);
+        }
+    }
+
+    @Override
     public EventSubscription getEventSubscriptionBySubscriptionId(Connection connection, String subscriptionId)
             throws OBEventNotificationException {
         EventSubscription retrievedSubscription = new EventSubscription();
