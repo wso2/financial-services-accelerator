@@ -28,6 +28,7 @@
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.dao.AggregatedPollingDAOImplTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.dao.EventPublisherDAOImplTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.dao.EventSubscriptionDAOImplTests"></class>
+            <class name="com.wso2.openbanking.accelerator.event.notifications.service.dao.PostgreSqlEventSubscriptionDAOImplTests"/>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.service.EventPollingServiceTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.service.EventCreationServiceTests"></class>
             <class name="com.wso2.openbanking.accelerator.event.notifications.service.service.EventSubscriptionServiceTests"></class>
