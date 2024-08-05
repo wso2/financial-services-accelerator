@@ -47,6 +47,7 @@ public class GatewayConstants {
     public static final String MODIFIED_STATUS = "ModifiedStatus";
     public static final String APPLICATION = "application";
     public static final String APPLICATION_USER = "application_user";
+    public static final String AXIS2_MTLS_CERT_PROPERTY = "ssl.client.auth.cert.X509";
 
     //dcr related configs
     public static final String AM_APP_NAME_CACHEKEY = "APP_NAME";
@@ -97,6 +98,7 @@ public class GatewayConstants {
 
     // Error constants
     public static final String INVALID_CLIENT = "invalid_client";
+    public static final String INVALID_REQUEST = "invalid_request";
     public static final String CLIENT_CERTIFICATE_MISSING = "Invalid mutual TLS request. Client certificate is missing";
     public static final String CLIENT_CERTIFICATE_INVALID = "Invalid mutual TLS request. Client certificate is invalid";
     public static final String INVALID_GRANT_TYPE = "Access failure for API: grant type validation failed.";
@@ -104,6 +106,7 @@ public class GatewayConstants {
             "correct security credentials ";
     public static final String MISSING_CREDENTIALS = "Invalid Credentials. Make sure your API invocation call " +
             "has a header - 'Authorization'";
+    public static final String TRANSPORT_CERT_NOT_FOUND = "Valid transport certificate not found in the request";
 
     // Error codes
     public static final int API_AUTH_INVALID_CREDENTIALS = 900901;
