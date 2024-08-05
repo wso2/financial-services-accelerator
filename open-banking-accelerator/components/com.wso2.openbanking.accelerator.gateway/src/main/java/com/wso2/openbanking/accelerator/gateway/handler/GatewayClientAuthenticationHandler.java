@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Mutual TLS Authentication Handler.
- * Sends transport certificate as a header to identity server.
+ * Handler to send transport certificate as a header to identity server.
+ * Responds with an error if the transport certificate is not found.
  */
 public class GatewayClientAuthenticationHandler extends AbstractHandler {
 
