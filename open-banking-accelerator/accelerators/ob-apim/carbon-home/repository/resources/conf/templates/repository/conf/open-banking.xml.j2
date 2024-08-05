@@ -163,6 +163,11 @@
         		{% else %}
         		<TrustStoreDynamicLoadingInterval>86400</TrustStoreDynamicLoadingInterval>
         		{% endif %}
+        		{% if open_banking.gateway.certificate_management.client_transport_cert_header_name is defined %}
+                <ClientTransportCertHeaderName>{{open_banking.gateway.certificate_management.client_transport_cert_header_name}}</ClientTransportCertHeaderName>
+                {% else %}
+                <ClientTransportCertHeaderName>x-wso2-mutual-auth-cert</ClientTransportCertHeaderName>
+                {% endif %}
             </CertificateManagement>
 
             <TPPManagement>
