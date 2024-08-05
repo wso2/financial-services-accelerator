@@ -69,6 +69,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.PrivateKey;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPrivateKey;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -771,6 +773,49 @@ public class GatewayUtils {
         messageContext.setTo(null);
         axis2MC.removeProperty(Constants.Configuration.CONTENT_TYPE);
         Axis2Sender.sendBack(messageContext);
+    }
+
+    /**
+     * Convert X509Certificate to PEM encoded string.
+     *
+     * @param certificate X509Certificate
+     * @return PEM encoded string
+     */
+    public static String getPEMEncodedString(X509Certificate certificate) throws CertificateEncodingException {
+        StringBuilder certificateBuilder = new StringBuilder();
+        Base64.Encoder encoder = Base64.getMimeEncoder(64, "\n".getBytes());
+
+        // Get the encoded certificate in DER format
+        byte[] encoded = certificate.getEncoded();
+
+        // Encode the byte array to a Base64 string
+        String base64Encoded = encoder.encodeToString(encoded);
+
+        // Build the PEM formatted certificate
+        certificateBuilder.append(GatewayConstants.BEGIN_CERT);
+        certificateBuilder.append(base64Encoded);
+        certificateBuilder.append("\n");
+        certificateBuilder.append(GatewayConstants.END_CERT);
+
+        return certificateBuilder.toString();
+    }
+
+    /**
+     * Extract Certificate from Message Context.
+     *
+     * @param ctx Message Context
+     * @return X509Certificate
+     */
+    public static X509Certificate extractAuthCertificateFromMessageContext(
+            org.apache.axis2.context.MessageContext ctx) {
+
+        Object sslCertObject = ctx.getProperty(GatewayConstants.AXIS2_MTLS_CERT_PROPERTY);
+        if (sslCertObject != null) {
+            X509Certificate[] certs = (X509Certificate[]) sslCertObject;
+            return certs[0];
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -21,7 +21,6 @@ import org.apache.synapse.rest.AbstractHandler;
 
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,8 +31,6 @@ import java.util.Optional;
 public class GatewayClientAuthenticationHandler extends AbstractHandler {
 
     private static final Log log = LogFactory.getLog(GatewayClientAuthenticationHandler.class);
-    public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
-    public static final String END_CERT = "-----END CERTIFICATE-----";
 
     @Override
     public boolean handleRequest(org.apache.synapse.MessageContext messageContext) {
@@ -43,7 +40,7 @@ public class GatewayClientAuthenticationHandler extends AbstractHandler {
         }
 
         MessageContext ctx = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
-        X509Certificate x509Certificate = extractAuthCertificateFromMessageContext(ctx);
+        X509Certificate x509Certificate = GatewayUtils.extractAuthCertificateFromMessageContext(ctx);
         Map headers = (Map) ctx.getProperty(MessageContext.TRANSPORT_HEADERS);
 
         Optional<String> encodedCert = Optional.empty();
@@ -52,7 +49,7 @@ public class GatewayClientAuthenticationHandler extends AbstractHandler {
                 log.debug("Valid certificate found in request");
             }
             try {
-                encodedCert = Optional.of(getPEMEncodedString(x509Certificate));
+                encodedCert = Optional.of(GatewayUtils.getPEMEncodedString(x509Certificate));
             } catch (CertificateEncodingException e) {
                 log.error("Unable to encode certificate to PEM string", e);
             }
@@ -79,50 +76,7 @@ public class GatewayClientAuthenticationHandler extends AbstractHandler {
 
     @Override
     public boolean handleResponse(org.apache.synapse.MessageContext messageContext) {
-
         return true;
     }
 
-    /**
-     * Convert X509Certificate to PEM encoded string.
-     *
-     * @param certificate X509Certificate
-     * @return PEM encoded string
-     */
-    private String getPEMEncodedString(X509Certificate certificate) throws CertificateEncodingException {
-        StringBuilder certificateBuilder = new StringBuilder();
-        Base64.Encoder encoder = Base64.getMimeEncoder(64, "\n".getBytes());
-
-        // Get the encoded certificate in DER format
-        byte[] encoded = certificate.getEncoded();
-
-        // Encode the byte array to a Base64 string
-        String base64Encoded = encoder.encodeToString(encoded);
-
-        // Build the PEM formatted certificate
-        certificateBuilder.append(BEGIN_CERT);
-        certificateBuilder.append(base64Encoded);
-        certificateBuilder.append("\n");
-        certificateBuilder.append(END_CERT);
-
-        return certificateBuilder.toString();
-    }
-
-    /**
-     * Extract Certificate from Message Context.
-     *
-     * @param ctx Message Context
-     * @return X509Certificate
-     */
-    public static X509Certificate extractAuthCertificateFromMessageContext(
-            org.apache.axis2.context.MessageContext ctx) {
-
-        Object sslCertObject = ctx.getProperty(GatewayConstants.AXIS2_MTLS_CERT_PROPERTY);
-        if (sslCertObject != null) {
-            X509Certificate[] certs = (X509Certificate[]) sslCertObject;
-            return certs[0];
-        } else {
-            return null;
-        }
-    }
 }

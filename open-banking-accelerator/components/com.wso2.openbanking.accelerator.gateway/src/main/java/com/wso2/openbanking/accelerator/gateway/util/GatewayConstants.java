@@ -48,6 +48,8 @@ public class GatewayConstants {
     public static final String APPLICATION = "application";
     public static final String APPLICATION_USER = "application_user";
     public static final String AXIS2_MTLS_CERT_PROPERTY = "ssl.client.auth.cert.X509";
+    public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
+    public static final String END_CERT = "-----END CERTIFICATE-----";
 
     //dcr related configs
     public static final String AM_APP_NAME_CACHEKEY = "APP_NAME";
