@@ -62,6 +62,7 @@ public class GatewayDataHolder {
     private boolean isAPIMAnalyticsEnabled;
     private boolean isOBDataPublishingEnabled;
     private String workerThreadCount;
+    private String clientTransportCertHeaderName;
 
     private GatewayDataHolder() {
 
@@ -136,6 +137,8 @@ public class GatewayDataHolder {
             setAPIMAnalyticsEnabled((String) configurations.get(DataPublishingConstants.APIM_ANALYTICS_ENABLED));
             setOBDataPublishingEnabled((String) configurations.get(DataPublishingConstants.DATA_PUBLISHING_ENABLED));
             setWorkerThreadCount((String) configurations.get(DataPublishingConstants.WORKER_THREAD_COUNT));
+            setClientTransportCertHeaderName((String) configurations.get(OpenBankingConstants.
+                    CLIENT_TRANSPORT_CERT_HEADER_NAME));
         }
     }
 
@@ -341,5 +344,13 @@ public class GatewayDataHolder {
     public String getWorkerThreadCount() {
 
         return workerThreadCount;
+    }
+
+    public String getClientTransportCertHeaderName() {
+        return clientTransportCertHeaderName;
+    }
+
+    public void setClientTransportCertHeaderName(String clientTransportCertHeaderName) {
+        this.clientTransportCertHeaderName = clientTransportCertHeaderName;
     }
 }

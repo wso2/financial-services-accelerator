@@ -772,4 +772,16 @@ public class GatewayUtils {
         axis2MC.removeProperty(Constants.Configuration.CONTENT_TYPE);
         Axis2Sender.sendBack(messageContext);
     }
+
+    /**
+     * Method to get json error body in OAuth2 format.
+     * @return json error body
+     */
+    public static String getOAuth2JsonErrorBody(String error, String errorDescription) {
+
+        return "{\n" +
+                "    \"error\": \"" + error + "\"\n" +
+                "    \"error_description\": \"" + errorDescription + "\",\n" +
+                "}";
+    }
 }
