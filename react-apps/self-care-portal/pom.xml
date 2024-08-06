@@ -23,7 +23,7 @@
     <parent>
         <groupId>com.wso2.openbanking.accelerator</groupId>
         <artifactId>react-apps</artifactId>
-        <version>3.2.10-SNAPSHOT</version>
+        <version>3.2.10</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
