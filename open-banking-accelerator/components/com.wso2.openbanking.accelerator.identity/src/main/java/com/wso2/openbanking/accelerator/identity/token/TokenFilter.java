@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -132,15 +132,15 @@ public class TokenFilter implements Filter {
         if (request instanceof HttpServletRequest) {
             Object certAttribute = request.getAttribute(IdentityCommonConstants.JAVAX_SERVLET_REQUEST_CERTIFICATE);
             String x509Certificate = ((HttpServletRequest) request).getHeader(IdentityCommonUtil.getMTLSAuthHeader());
-            if (new IdentityCommonHelper().isTransportCertAsHeaderEnabled() && x509Certificate != null) {
-                return request;
-            } else if (certAttribute != null) {
+            if (certAttribute != null) {
                 RequestWrapper requestWrapper = new RequestWrapper((HttpServletRequest) request);
                 X509Certificate certificate = IdentityCommonUtil.getCertificateFromAttribute(certAttribute);
                 requestWrapper.setHeader(IdentityCommonUtil.getMTLSAuthHeader(),
                         new IdentityCommonHelper().encodeCertificateContent(certificate));
                 return requestWrapper;
-            } else {
+            } else if (new IdentityCommonHelper().isTransportCertAsHeaderEnabled() && x509Certificate != null) {
+                return request;
+            } else  {
                 getDefaultTokenFilter().handleValidationFailure((HttpServletResponse) response,
                         HttpServletResponse.SC_BAD_REQUEST, IdentityCommonConstants.OAUTH2_INVALID_REQUEST_MESSAGE,
                         "Transport certificate not found in the request");
