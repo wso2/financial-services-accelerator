@@ -776,6 +776,18 @@ public class GatewayUtils {
     }
 
     /**
+     * Method to get json error body in OAuth2 format.
+     * @return json error body
+     */
+    public static String getOAuth2JsonErrorBody(String error, String errorDescription) {
+
+        JSONObject errorJSON = new JSONObject();
+        errorJSON.put("error", error);
+        errorJSON.put("error_description", errorDescription);
+        return errorJSON.toString();
+    }
+
+    /**
      * Convert X509Certificate to PEM encoded string.
      *
      * @param certificate X509Certificate
@@ -783,6 +795,7 @@ public class GatewayUtils {
      */
     public static String getPEMEncodedCertificateString(X509Certificate certificate)
             throws CertificateEncodingException {
+
         StringBuilder certificateBuilder = new StringBuilder();
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encoded = certificate.getEncoded();
@@ -813,15 +826,4 @@ public class GatewayUtils {
         }
     }
 
-    /**
-     * Method to get json error body in OAuth2 format.
-     * @return json error body
-     */
-    public static String getOAuth2JsonErrorBody(String error, String errorDescription) {
-
-        return "{\n" +
-                "    \"error\": \"" + error + "\"\n" +
-                "    \"error_description\": \"" + errorDescription + "\",\n" +
-                "}";
-    }
 }

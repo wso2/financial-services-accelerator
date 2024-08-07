@@ -350,18 +350,22 @@ public class GatewayDataHolder {
     }
 
     public String getClientTransportCertHeaderName() {
+
         return clientTransportCertHeaderName;
     }
 
     public void setClientTransportCertHeaderName(String clientTransportCertHeaderName) {
+
         this.clientTransportCertHeaderName = clientTransportCertHeaderName;
     }
 
     public boolean isUrlEncodeClientTransportCertHeaderEnabled() {
+
         return isUrlEncodeClientTransportCertHeaderEnabled;
     }
 
     public void setUrlEncodeClientTransportCertHeaderEnabled(String isUrlEncodeClientTransportCertHeaderEnabled) {
+
         this.isUrlEncodeClientTransportCertHeaderEnabled =
                 Boolean.parseBoolean(isUrlEncodeClientTransportCertHeaderEnabled);
     }
