@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -69,6 +69,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.PrivateKey;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPrivateKey;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -772,4 +774,56 @@ public class GatewayUtils {
         axis2MC.removeProperty(Constants.Configuration.CONTENT_TYPE);
         Axis2Sender.sendBack(messageContext);
     }
+
+    /**
+     * Method to get json error body in OAuth2 format.
+     * @return json error body
+     */
+    public static String getOAuth2JsonErrorBody(String error, String errorDescription) {
+
+        JSONObject errorJSON = new JSONObject();
+        errorJSON.put("error", error);
+        errorJSON.put("error_description", errorDescription);
+        return errorJSON.toString();
+    }
+
+    /**
+     * Convert X509Certificate to PEM encoded string.
+     *
+     * @param certificate X509Certificate
+     * @return PEM encoded string
+     */
+    public static String getPEMEncodedCertificateString(X509Certificate certificate)
+            throws CertificateEncodingException {
+
+        StringBuilder certificateBuilder = new StringBuilder();
+        Base64.Encoder encoder = Base64.getEncoder();
+        byte[] encoded = certificate.getEncoded();
+        String base64Encoded = encoder.encodeToString(encoded);
+
+        certificateBuilder.append(GatewayConstants.BEGIN_CERT);
+        certificateBuilder.append(base64Encoded);
+        certificateBuilder.append(GatewayConstants.END_CERT);
+
+        return certificateBuilder.toString().replaceAll("\n", "+");
+    }
+
+    /**
+     * Extract Certificate from Message Context.
+     *
+     * @param ctx Message Context
+     * @return X509Certificate
+     */
+    public static X509Certificate extractAuthCertificateFromMessageContext(
+            org.apache.axis2.context.MessageContext ctx) {
+
+        Object sslCertObject = ctx.getProperty(GatewayConstants.AXIS2_MTLS_CERT_PROPERTY);
+        if (sslCertObject != null) {
+            X509Certificate[] certs = (X509Certificate[]) sslCertObject;
+            return certs[0];
+        } else {
+            return null;
+        }
+    }
+
 }

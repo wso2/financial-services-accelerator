@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -137,6 +137,10 @@ public class OpenBankingConstants {
             ".CertificateManagement.TPPValidationService.ScopeRegexPatterns.PISP";
     public static final String TPP_VALIDATION_SERVICE_CBPII_SCOPE_REGEX = "Gateway" +
             ".CertificateManagement.TPPValidationService.ScopeRegexPatterns.CBPII";
+    public static final String CLIENT_TRANSPORT_CERT_HEADER_NAME = "Gateway" +
+            ".CertificateManagement.ClientTransportCertHeaderName";
+    public static final String URL_ENCODE_CLIENT_TRANSPORT_CERT_HEADER_ENABLED = "Gateway" +
+            ".CertificateManagement.UrlEncodeClientTransportCertHeaderEnabled";
     public static final int PAGINATION_LIMIT_DEFAULT = 25;
     public static final int PAGINATION_OFFSET_DEFAULT = 0;
     public static final String CONSENT_CONFIG_TAG = "Consent";

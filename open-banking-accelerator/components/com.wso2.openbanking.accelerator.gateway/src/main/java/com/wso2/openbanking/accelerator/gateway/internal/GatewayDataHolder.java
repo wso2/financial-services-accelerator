@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -62,6 +62,8 @@ public class GatewayDataHolder {
     private boolean isAPIMAnalyticsEnabled;
     private boolean isOBDataPublishingEnabled;
     private String workerThreadCount;
+    private String clientTransportCertHeaderName;
+    private boolean isUrlEncodeClientTransportCertHeaderEnabled;
 
     private GatewayDataHolder() {
 
@@ -136,6 +138,10 @@ public class GatewayDataHolder {
             setAPIMAnalyticsEnabled((String) configurations.get(DataPublishingConstants.APIM_ANALYTICS_ENABLED));
             setOBDataPublishingEnabled((String) configurations.get(DataPublishingConstants.DATA_PUBLISHING_ENABLED));
             setWorkerThreadCount((String) configurations.get(DataPublishingConstants.WORKER_THREAD_COUNT));
+            setClientTransportCertHeaderName((String) configurations.get(OpenBankingConstants.
+                    CLIENT_TRANSPORT_CERT_HEADER_NAME));
+            setUrlEncodeClientTransportCertHeaderEnabled((String) configurations.get(OpenBankingConstants.
+                    URL_ENCODE_CLIENT_TRANSPORT_CERT_HEADER_ENABLED));
         }
     }
 
@@ -341,5 +347,26 @@ public class GatewayDataHolder {
     public String getWorkerThreadCount() {
 
         return workerThreadCount;
+    }
+
+    public String getClientTransportCertHeaderName() {
+
+        return clientTransportCertHeaderName;
+    }
+
+    public void setClientTransportCertHeaderName(String clientTransportCertHeaderName) {
+
+        this.clientTransportCertHeaderName = clientTransportCertHeaderName;
+    }
+
+    public boolean isUrlEncodeClientTransportCertHeaderEnabled() {
+
+        return isUrlEncodeClientTransportCertHeaderEnabled;
+    }
+
+    public void setUrlEncodeClientTransportCertHeaderEnabled(String isUrlEncodeClientTransportCertHeaderEnabled) {
+
+        this.isUrlEncodeClientTransportCertHeaderEnabled =
+                Boolean.parseBoolean(isUrlEncodeClientTransportCertHeaderEnabled);
     }
 }
