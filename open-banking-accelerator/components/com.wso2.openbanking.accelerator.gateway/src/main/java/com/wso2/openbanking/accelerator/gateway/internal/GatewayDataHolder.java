@@ -63,6 +63,7 @@ public class GatewayDataHolder {
     private boolean isOBDataPublishingEnabled;
     private String workerThreadCount;
     private String clientTransportCertHeaderName;
+    private boolean isUrlEncodeClientTransportCertHeaderEnabled;
 
     private GatewayDataHolder() {
 
@@ -139,6 +140,8 @@ public class GatewayDataHolder {
             setWorkerThreadCount((String) configurations.get(DataPublishingConstants.WORKER_THREAD_COUNT));
             setClientTransportCertHeaderName((String) configurations.get(OpenBankingConstants.
                     CLIENT_TRANSPORT_CERT_HEADER_NAME));
+            setUrlEncodeClientTransportCertHeaderEnabled((String) configurations.get(OpenBankingConstants.
+                    URL_ENCODE_CLIENT_TRANSPORT_CERT_HEADER_ENABLED));
         }
     }
 
@@ -352,5 +355,14 @@ public class GatewayDataHolder {
 
     public void setClientTransportCertHeaderName(String clientTransportCertHeaderName) {
         this.clientTransportCertHeaderName = clientTransportCertHeaderName;
+    }
+
+    public boolean isUrlEncodeClientTransportCertHeaderEnabled() {
+        return isUrlEncodeClientTransportCertHeaderEnabled;
+    }
+
+    public void setUrlEncodeClientTransportCertHeaderEnabled(String isUrlEncodeClientTransportCertHeaderEnabled) {
+        this.isUrlEncodeClientTransportCertHeaderEnabled =
+                Boolean.parseBoolean(isUrlEncodeClientTransportCertHeaderEnabled);
     }
 }

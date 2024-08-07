@@ -109,6 +109,7 @@ public class GatewayConstants {
     public static final String MISSING_CREDENTIALS = "Invalid Credentials. Make sure your API invocation call " +
             "has a header - 'Authorization'";
     public static final String TRANSPORT_CERT_NOT_FOUND = "Valid transport certificate not found in the request";
+    public static final String TRANSPORT_CERT_MALFORMED = "Provided transport certificate is malformed";
 
     // Error codes
     public static final int API_AUTH_INVALID_CREDENTIALS = 900901;

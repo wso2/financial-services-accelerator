@@ -781,23 +781,18 @@ public class GatewayUtils {
      * @param certificate X509Certificate
      * @return PEM encoded string
      */
-    public static String getPEMEncodedString(X509Certificate certificate) throws CertificateEncodingException {
+    public static String getPEMEncodedCertificateString(X509Certificate certificate)
+            throws CertificateEncodingException {
         StringBuilder certificateBuilder = new StringBuilder();
-        Base64.Encoder encoder = Base64.getMimeEncoder(64, "\n".getBytes());
-
-        // Get the encoded certificate in DER format
+        Base64.Encoder encoder = Base64.getEncoder();
         byte[] encoded = certificate.getEncoded();
-
-        // Encode the byte array to a Base64 string
         String base64Encoded = encoder.encodeToString(encoded);
 
-        // Build the PEM formatted certificate
         certificateBuilder.append(GatewayConstants.BEGIN_CERT);
         certificateBuilder.append(base64Encoded);
-        certificateBuilder.append("\n");
         certificateBuilder.append(GatewayConstants.END_CERT);
 
-        return certificateBuilder.toString();
+        return certificateBuilder.toString().replaceAll("\n", "+");
     }
 
     /**

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -167,6 +167,11 @@
                 <ClientTransportCertHeaderName>{{open_banking.gateway.certificate_management.client_transport_cert_header_name}}</ClientTransportCertHeaderName>
                 {% else %}
                 <ClientTransportCertHeaderName>x-wso2-mutual-auth-cert</ClientTransportCertHeaderName>
+                {% endif %}
+                {% if open_banking.gateway.certificate_management.url_encode_client_transport_cert_header_enabled is defined %}
+                <UrlEncodeClientTransportCertHeaderEnabled>{{open_banking.gateway.certificate_management.url_encode_client_transport_cert_header_enabled}}</UrlEncodeClientTransportCertHeaderEnabled>
+                {% else %}
+                <UrlEncodeClientTransportCertHeaderEnabled>true</UrlEncodeClientTransportCertHeaderEnabled>
                 {% endif %}
             </CertificateManagement>
 

@@ -139,6 +139,8 @@ public class OpenBankingConstants {
             ".CertificateManagement.TPPValidationService.ScopeRegexPatterns.CBPII";
     public static final String CLIENT_TRANSPORT_CERT_HEADER_NAME = "Gateway" +
             ".CertificateManagement.ClientTransportCertHeaderName";
+    public static final String URL_ENCODE_CLIENT_TRANSPORT_CERT_HEADER_ENABLED = "Gateway" +
+            ".CertificateManagement.UrlEncodeClientTransportCertHeaderEnabled";
     public static final int PAGINATION_LIMIT_DEFAULT = 25;
     public static final int PAGINATION_OFFSET_DEFAULT = 0;
     public static final String CONSENT_CONFIG_TAG = "Consent";

@@ -19,14 +19,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.rest.AbstractHandler;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Handler to send transport certificate as a header to identity server.
- * Responds with an error if the transport certificate is not found.
+ * Responds with an error if the transport certificate is not found or malformed.
  */
 public class GatewayClientAuthenticationHandler extends AbstractHandler {
 
@@ -35,41 +36,38 @@ public class GatewayClientAuthenticationHandler extends AbstractHandler {
     @Override
     public boolean handleRequest(org.apache.synapse.MessageContext messageContext) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Gateway Client Authentication Handler engaged");
-        }
-
+        log.debug("Gateway Client Authentication Handler engaged");
         MessageContext ctx = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
         X509Certificate x509Certificate = GatewayUtils.extractAuthCertificateFromMessageContext(ctx);
         Map headers = (Map) ctx.getProperty(MessageContext.TRANSPORT_HEADERS);
 
-        Optional<String> encodedCert = Optional.empty();
         if (x509Certificate != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Valid certificate found in request");
-            }
+            log.debug("Valid certificate found in request");
             try {
-                encodedCert = Optional.of(GatewayUtils.getPEMEncodedString(x509Certificate));
-            } catch (CertificateEncodingException e) {
-                log.error("Unable to encode certificate to PEM string", e);
+                String certificateHeader = GatewayDataHolder.getInstance().getClientTransportCertHeaderName();
+                String encodedCert = GatewayUtils.getPEMEncodedCertificateString(x509Certificate);
+                if (GatewayDataHolder.getInstance().isUrlEncodeClientTransportCertHeaderEnabled()) {
+                    log.debug("URL encoding pem encoded transport certificate");
+                    encodedCert = URLEncoder.encode(encodedCert, "UTF-8");
+                }
+                headers.put(certificateHeader, encodedCert);
+                ctx.setProperty(MessageContext.TRANSPORT_HEADERS, headers);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Added encoded transport certificate in header %s", certificateHeader));
+                }
+            } catch (CertificateEncodingException | UnsupportedEncodingException e) {
+                log.error("Unable to encode client transport certificate", e);
+                GatewayUtils.returnSynapseHandlerJSONError(messageContext, OpenBankingErrorCodes.BAD_REQUEST_CODE,
+                        GatewayUtils.getOAuth2JsonErrorBody(GatewayConstants.INVALID_REQUEST,
+                                GatewayConstants.TRANSPORT_CERT_MALFORMED));
+                return true;
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(GatewayConstants.TRANSPORT_CERT_NOT_FOUND);
-            }
+            log.debug(GatewayConstants.TRANSPORT_CERT_NOT_FOUND);
             GatewayUtils.returnSynapseHandlerJSONError(messageContext, OpenBankingErrorCodes.BAD_REQUEST_CODE,
                     GatewayUtils.getOAuth2JsonErrorBody(GatewayConstants.INVALID_REQUEST,
                             GatewayConstants.TRANSPORT_CERT_NOT_FOUND));
             return true;
-        }
-
-        if (encodedCert.isPresent()) {
-            String certificateHeader = GatewayDataHolder.getInstance().getClientTransportCertHeaderName();
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Added PEM encoded certificate in header %s", certificateHeader));
-            }
-            headers.put(certificateHeader, encodedCert.get().replaceAll("\n", ""));
-            ctx.setProperty(MessageContext.TRANSPORT_HEADERS, headers);
         }
         return true;
     }
