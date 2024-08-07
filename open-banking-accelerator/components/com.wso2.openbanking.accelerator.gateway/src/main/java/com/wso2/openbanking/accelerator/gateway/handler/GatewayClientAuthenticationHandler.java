@@ -60,20 +60,19 @@ public class GatewayClientAuthenticationHandler extends AbstractHandler {
                 GatewayUtils.returnSynapseHandlerJSONError(messageContext, OpenBankingErrorCodes.BAD_REQUEST_CODE,
                         GatewayUtils.getOAuth2JsonErrorBody(GatewayConstants.INVALID_REQUEST,
                                 GatewayConstants.TRANSPORT_CERT_MALFORMED));
-                return true;
             }
         } else {
             log.debug(GatewayConstants.TRANSPORT_CERT_NOT_FOUND);
             GatewayUtils.returnSynapseHandlerJSONError(messageContext, OpenBankingErrorCodes.BAD_REQUEST_CODE,
                     GatewayUtils.getOAuth2JsonErrorBody(GatewayConstants.INVALID_REQUEST,
                             GatewayConstants.TRANSPORT_CERT_NOT_FOUND));
-            return true;
         }
         return true;
     }
 
     @Override
     public boolean handleResponse(org.apache.synapse.MessageContext messageContext) {
+
         return true;
     }
 
