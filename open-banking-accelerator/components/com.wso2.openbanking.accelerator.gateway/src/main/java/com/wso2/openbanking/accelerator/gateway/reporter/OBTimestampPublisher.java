@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.am.analytics.publisher.exception.MetricReportingException;
 import org.wso2.am.analytics.publisher.reporter.MetricEventBuilder;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,14 +56,16 @@ public class OBTimestampPublisher implements Runnable {
         try {
             Map<String, Object> eventMap = builder.build();
             Map<String, Object> analyticsData = new HashMap<>();
+            Object requestTimestamp = eventMap.get(REQUEST_TIMESTAMP);
             analyticsData.put(CORRELATION_ID, eventMap.get(CORRELATION_ID));
-            analyticsData.put(REQUEST_TIMESTAMP, eventMap.get(REQUEST_TIMESTAMP));
+            analyticsData.put(REQUEST_TIMESTAMP, requestTimestamp);
             analyticsData.put(BACKEND_LATENCY,
                     eventMap.get(BACKEND_LATENCY) != null ? eventMap.get(BACKEND_LATENCY) : 0L);
             analyticsData.put(REQUEST_MEDIATION_LATENCY,
                     eventMap.get(REQUEST_MEDIATION_LATENCY) != null ? eventMap.get(REQUEST_MEDIATION_LATENCY) : 0L);
             analyticsData.put(RESPONSE_LATENCY,
-                    eventMap.get(RESPONSE_LATENCY) != null ? eventMap.get(RESPONSE_LATENCY) : 0L);
+                    eventMap.get(RESPONSE_LATENCY) != null ? eventMap.get(RESPONSE_LATENCY)
+                            : Duration.between(Instant.parse(requestTimestamp.toString()), Instant.now()).toMillis());
             analyticsData.put(RESPONSE_MEDIATION_LATENCY, eventMap.get(RESPONSE_MEDIATION_LATENCY) != null ?
                     eventMap.get(RESPONSE_MEDIATION_LATENCY) : 0L);
             publishLatencyData(analyticsData);
