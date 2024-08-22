@@ -32,6 +32,6 @@
     <name>WSO2 Open Banking - React Apps</name>
 
     <modules>
-        <module>self-care-portal</module>
+<!--        <module>self-care-portal</module>-->
     </modules>
 </project>
