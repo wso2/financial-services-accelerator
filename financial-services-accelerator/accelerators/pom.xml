@@ -35,6 +35,5 @@
     <modules>
         <module>ob-apim</module>
         <module>ob-is</module>
-        <module>ob-bi</module>
     </modules>
 </project>
