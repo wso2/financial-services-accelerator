@@ -32,11 +32,11 @@ public interface EventPublisherDAO {
 
     /**
      * This method is used to persist event notifications in the database.
-     * @param connection
-     * @param notificationDTO
-     * @param eventsList
+     * @param connection       Database connection
+     * @param notificationDTO  Notification details DTO
+     * @param eventsList       List of notification events
      * @return NotificationID of the saved notification.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when persisting event notification data
      */
     String persistEventNotification(Connection connection, NotificationDTO notificationDTO,
                                     ArrayList<NotificationEvent> eventsList) throws OBEventNotificationException;

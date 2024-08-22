@@ -18,7 +18,6 @@
 package com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.util;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
@@ -76,8 +75,9 @@ public class RegistrationUtils {
 
         RegistrationValidator dcrRequestValidator;
         dcrRequestValidator = RegistrationValidator.getRegistrationValidator();
-        // set the ssa payload according to the specification format
+
         if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+            // set the ssa payload according to the specification format
             String decodedSSA = JWTUtils
                     .decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body").toJSONString();
             dcrRequestValidator.setSoftwareStatementPayload(registrationRequest, decodedSSA);
@@ -105,41 +105,71 @@ public class RegistrationUtils {
     }
 
     public static ApplicationRegistrationRequest getApplicationRegistrationRequest(
-            RegistrationRequest registrationRequest, boolean useSoftwareIdAsAppName) {
+            RegistrationRequest registrationRequest, String applicationName) {
 
-        String applicationName = "";
-        if (useSoftwareIdAsAppName) {
-            applicationName = registrationRequest.getSoftwareStatementBody().getSoftwareId();
-        } else {
-            applicationName = RegistrationUtils.getSafeApplicationName(
-                    registrationRequest.getSoftwareStatementBody().getClientName());
-        }
         ApplicationRegistrationRequest appRegistrationRequest = new ApplicationRegistrationRequest();
         appRegistrationRequest.setClientName(applicationName);
-        appRegistrationRequest.setRedirectUris(registrationRequest.getSoftwareStatementBody().getCallbackUris());
         appRegistrationRequest.setGrantTypes(registrationRequest.getGrantTypes());
 
-        return appRegistrationRequest;
+        // Get the redirect URIs based on the presence of software statement
+        List<String> redirectUris = StringUtils.isEmpty(registrationRequest.getSoftwareStatement())
+                ? registrationRequest.getCallbackUris()
+                : registrationRequest.getSoftwareStatementBody().getCallbackUris();
 
+        appRegistrationRequest.setRedirectUris(redirectUris);
+
+        return appRegistrationRequest;
     }
 
     public static ApplicationUpdateRequest getApplicationUpdateRequest(RegistrationRequest registrationRequest,
-                                                                       boolean useSoftwareIdAsAppName) {
+                                                                       String applicationName) {
 
-        String applicationName = "";
-        if (useSoftwareIdAsAppName) {
-            applicationName = registrationRequest.getSoftwareStatementBody().getSoftwareId();
-        } else {
-            applicationName = RegistrationUtils.getSafeApplicationName(
-                    registrationRequest.getSoftwareStatementBody().getClientName());
-        }
         ApplicationUpdateRequest applicationUpdateRequest = new ApplicationUpdateRequest();
         applicationUpdateRequest.setClientName(applicationName);
-        applicationUpdateRequest.setRedirectUris(registrationRequest.getSoftwareStatementBody().getCallbackUris());
         applicationUpdateRequest.setGrantTypes(registrationRequest.getGrantTypes());
 
-        return applicationUpdateRequest;
+        // Get the redirect URIs based on the presence of software statement
+        List<String> redirectUris = StringUtils.isEmpty(registrationRequest.getSoftwareStatement())
+                ? registrationRequest.getCallbackUris()
+                : registrationRequest.getSoftwareStatementBody().getCallbackUris();
 
+        applicationUpdateRequest.setRedirectUris(redirectUris);
+
+        return applicationUpdateRequest;
+    }
+    /**
+     * Retrieves the application name from the registration request.
+     *
+     * @param request  registration or update request
+     * @param useSoftwareIdAsAppName  Indicates whether to use the software ID as the application name
+     * @return The application name
+     */
+    public static String getApplicationName(RegistrationRequest request, boolean useSoftwareIdAsAppName) {
+        if (useSoftwareIdAsAppName) {
+            // If the request does not contain a software statement, get the software Id directly from the request
+            if (StringUtils.isEmpty(request.getSoftwareStatement())) {
+                return request.getSoftwareId();
+            }
+            return request.getSoftwareStatementBody().getSoftwareId();
+        }
+        return RegistrationUtils.getSafeApplicationName(request.getSoftwareStatementBody().getClientName());
+    }
+
+    /**
+     * Retrieves the JWKS URI from the registration request based on the presence of the software statement.
+     *
+     * @param registrationRequest  registration or update request
+     * @param jwksEndpointName  name used for the JWKS endpoint in the software statement
+     * @return JWKS URI.
+     */
+    public static String getJwksUriFromRequest(RegistrationRequest registrationRequest, String jwksEndpointName) {
+        if (StringUtils.isEmpty(registrationRequest.getSoftwareStatement())) {
+            return registrationRequest.getJwksURI();
+        }
+        if (StringUtils.isNotEmpty(jwksEndpointName)) {
+            return registrationRequest.getSsaParameters().get(jwksEndpointName).toString();
+        }
+        return registrationRequest.getSoftwareStatementBody().getJwksURI();
     }
 
     public static ArrayList<ServiceProviderProperty> getServiceProviderPropertyList
@@ -167,7 +197,7 @@ public class RegistrationUtils {
         for (ServiceProviderProperty spProperty : spPropertyList) {
             if (spProperty.getValue().contains(DCRCommonConstants.ARRAY_ELEMENT_SEPERATOR)) {
                 List<Object> metaDataList = Stream.of(spProperty.getValue()
-                        .split(DCRCommonConstants.ARRAY_ELEMENT_SEPERATOR))
+                                .split(DCRCommonConstants.ARRAY_ELEMENT_SEPERATOR))
                         .map(String::trim)
                         .collect(Collectors.toList());
                 getJsonElementListFromString(metaDataList);
@@ -196,23 +226,17 @@ public class RegistrationUtils {
 
     }
 
-    public static Map<String, String> getAlteredApplicationAttributes(RegistrationRequest registrationRequest)
-            throws ParseException {
+    public static Map<String, String> getAlteredApplicationAttributes(RegistrationRequest registrationRequest) {
 
         Map<String, String> alteredAppAttributeMap = new HashMap<>();
-        JsonElement registrationRequestDetails = gson.toJsonTree(registrationRequest);
-        Map<String, Object> appAttributeMap = (Map<String, Object>)
-                gson.fromJson(registrationRequestDetails, Map.class);
-        appAttributeMap.remove("softwareStatementBody");
-        appAttributeMap.remove("requestParameters");
-        appAttributeMap.remove("ssaParameters");
-        addAttributes(appAttributeMap, alteredAppAttributeMap);
-        //add ssa attributes
+        addAttributes(registrationRequest.getRequestParameters(), alteredAppAttributeMap);
 
-        addAttributes(registrationRequest.getSsaParameters(), alteredAppAttributeMap);
-
-        //add ssa issuer
-        alteredAppAttributeMap.put("ssaIssuer", registrationRequest.getSsaParameters().get("iss").toString());
+        if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+            //add ssa attributes
+            addAttributes(registrationRequest.getSsaParameters(), alteredAppAttributeMap);
+            //add ssa issuer
+            alteredAppAttributeMap.put("ssaIssuer", registrationRequest.getSsaParameters().get("iss").toString());
+        }
 
         return alteredAppAttributeMap;
     }
@@ -249,7 +273,11 @@ public class RegistrationUtils {
                 alteredAttributes.put(entry.getKey().toString(), gson.toJson(entry.getValue()));
             } else {
                 //remove unnecessary inverted commas.
-                alteredAttributes.put(entry.getKey().toString(), entry.getValue().toString());
+                if (entry.getValue() != null) {
+                    // This is to handle optional nullable params.
+                    // Ex: "software_on_behalf_of_org":null
+                    alteredAttributes.put(entry.getKey().toString(), entry.getValue().toString());
+                }
             }
         }
     }

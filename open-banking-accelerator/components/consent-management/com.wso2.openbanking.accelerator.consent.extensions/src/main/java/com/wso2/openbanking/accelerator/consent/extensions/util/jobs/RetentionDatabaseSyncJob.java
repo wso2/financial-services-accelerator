@@ -42,8 +42,8 @@ public class RetentionDatabaseSyncJob implements Job {
     /**
      * Method used to enforce sync the temporary retention data.
      *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
+     * @param jobExecutionContext  Job Execution Context
+     * @throws JobExecutionException  if an error occurs while executing the job
      */
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
@@ -56,6 +56,7 @@ public class RetentionDatabaseSyncJob implements Job {
 
     /**
      * Method to sync the temporary retention data.
+     * @throws ConsentManagementException if an error occurs while syncing the retention database
      */
     public static void syncRetentionDatabase() throws ConsentManagementException {
 

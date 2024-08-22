@@ -1,3 +1,26 @@
+/**
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+-- All the data related to time are stored in unix time stamp and therefore, the data types for the time related data
+-- are represented in BIGINT.
+-- Since the database systems does not support adding default unix time to the database columns, the default data
+-- storing is handled within the database querieS.
+
 CREATE TABLE OB_NOTIFICATION (
     NOTIFICATION_ID varchar2(36) NOT NULL,
     CLIENT_ID varchar2(255) NOT NULL,
@@ -26,7 +49,6 @@ BEGIN
  SELECT OB_NOTIFICATION_EVENT_seq.NEXTVAL INTO :NEW.EVENT_ID FROM DUAL;
 END;
 
-
 CREATE TABLE OB_NOTIFICATION_ERROR (
     NOTIFICATION_ID varchar2(36) NOT NULL,
     ERROR_CODE varchar2(255) NOT NULL,
@@ -52,5 +74,3 @@ CREATE TABLE OB_NOTIFICATION_SUBSCRIBED_EVENTS (
     PRIMARY KEY (SUBSCRIPTION_ID, EVENT_TYPE),
     CONSTRAINT FK_NotificationSubEvents FOREIGN KEY (SUBSCRIPTION_ID) REFERENCES OB_NOTIFICATION_SUBSCRIPTION(SUBSCRIPTION_ID)
 );
-
-

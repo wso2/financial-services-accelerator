@@ -71,6 +71,10 @@ public class CertificateValidationUtils {
         // Adding a private constructor to hide the implicit public one.
     }
 
+    /**
+     * @deprecated use com.wso2.openbanking.accelerator.common.util.CertificateUtils.isExpired() instead
+     */
+    @Deprecated
     public static boolean isExpired(X509Certificate peerCertificate) {
         try {
             peerCertificate.checkValidity();

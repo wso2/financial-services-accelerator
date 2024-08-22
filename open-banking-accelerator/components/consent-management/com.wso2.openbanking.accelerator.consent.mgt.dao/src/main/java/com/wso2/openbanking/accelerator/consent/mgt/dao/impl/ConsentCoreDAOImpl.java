@@ -446,6 +446,42 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
+    public boolean updateConsentMappingPermission(Connection connection, Map<String, String> mappingIDPermissionMap)
+            throws OBConsentDataUpdationException {
+
+        int[] result;
+        String updateConsentMappingPermissionQuery =
+                sqlStatements.getUpdateConsentMappingPermissionPreparedStatement();
+
+        try (PreparedStatement updateConsentMappingPermissionPreparedStmt =
+                     connection.prepareStatement(updateConsentMappingPermissionQuery)) {
+
+            log.debug("Setting parameters to prepared statement to update consent mapping permissions");
+
+            for (String mappingID : mappingIDPermissionMap.keySet()) {
+                updateConsentMappingPermissionPreparedStmt.setString(1, mappingIDPermissionMap.get(mappingID));
+                updateConsentMappingPermissionPreparedStmt.setString(2, mappingID);
+                updateConsentMappingPermissionPreparedStmt.addBatch();
+            }
+
+            // With result, we can determine whether the updating was successful or not
+            result = updateConsentMappingPermissionPreparedStmt.executeBatch();
+        } catch (SQLException e) {
+            log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_PERMISSION_UPDATE_ERROR_MSG, e);
+            throw new OBConsentDataUpdationException(
+                    ConsentMgtDAOConstants.CONSENT_MAPPING_PERMISSION_UPDATE_ERROR_MSG, e);
+        }
+
+        // An empty array or an array with value -3 means the batch execution is failed
+        if (result.length != 0 && IntStream.of(result).noneMatch(value -> value == -3)) {
+            log.debug("Updated the consent mapping permissions of matching records successfully");
+            return true;
+        } else {
+            throw new OBConsentDataUpdationException("Failed to update consent mapping permissions properly.");
+        }
+    }
+
+    @Override
     public AuthorizationResource updateAuthorizationStatus(Connection connection, String authorizationID,
                                                            String newAuthorizationStatus)
             throws OBConsentDataUpdationException {

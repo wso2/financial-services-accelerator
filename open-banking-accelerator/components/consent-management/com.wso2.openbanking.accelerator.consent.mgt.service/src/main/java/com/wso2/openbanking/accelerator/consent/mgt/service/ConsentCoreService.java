@@ -218,6 +218,7 @@ public interface ConsentCoreService {
      * @param consentType consent type
      * @param applicableStatusToRevoke the status that a consent should have for revoking
      * @param revokedConsentStatus the status should be updated the consent with after revoking
+     * @param shouldRevokeTokens the check to revoke tokens or not when revoking consent
      * @return returns true if successful
      * @throws ConsentManagementException thrown if an error occurs in the process
      */
@@ -368,6 +369,11 @@ public interface ConsentCoreService {
      * @param consentID consent ID
      * @param userID user ID
      * @param accountIDsMapWithPermissions account IDs with relative permissions
+     * @param currentConsentStatus current status of the consent for creating audit record
+     * @param newConsentStatus new consent status after re authorization
+     * @param newExistingAuthStatus new status of the existing authorizations
+     * @param newAuthStatus new status of the new authorization
+     * @param newAuthType new authorization type
      * @return true if all operations are successful
      * @throws ConsentManagementException thrown if any error occurs in the process
      */
@@ -406,6 +412,7 @@ public interface ConsentCoreService {
      * used to represent permissions related to each accountID.
      *
      * @param authID authorization ID
+     * @param accountIDsMapWithPermissions account IDs with relative permissions
      * @return returns the list of created consent mapping resources
      * @throws ConsentManagementException thrown if any error occurs
      */
@@ -433,6 +440,17 @@ public interface ConsentCoreService {
      */
     boolean updateAccountMappingStatus(ArrayList<String> accountMappingIDs, String newMappingStatus) throws
             ConsentManagementException;
+
+    /**
+     * This method is used to update the permissions of the provided account mappings.
+     *
+     * @param mappingIDPermissionMap - A map of mapping IDs against new permissions
+     * @return - true if update is successful
+     * @throws ConsentManagementException - Thrown if a DAO level error occurs
+     */
+    boolean updateAccountMappingPermission(Map<String, String> mappingIDPermissionMap) throws
+            ConsentManagementException;
+
     /**
      * This method is used to search detailed consents for the given lists of parameters. Following optional lists
      * can be passed to retrieve detailed consents. The search will be performed according to the provided input. Any
@@ -508,6 +526,7 @@ public interface ConsentCoreService {
     /**
      * This method is used to bind user and accounts to the consent.
      *
+     * @param consentResource consent resource
      * @param userID user ID
      * @param authID ID of the authorization resource
      * @param accountIDsMapWithPermissions account IDs list with relevant permissions
@@ -523,6 +542,7 @@ public interface ConsentCoreService {
     /**
      * This method is used to bind user and accounts to the consent where permissions for each account is not relevant.
      *
+     * @param consentResource consent resource
      * @param userID user ID
      * @param authID ID of the authorization resource
      * @param accountIDs account IDs list
@@ -544,6 +564,7 @@ public interface ConsentCoreService {
      * @param consentID consent ID
      * @param userID user ID
      * @return a list of authorization resources
+     * @throws ConsentManagementException thrown if any error occurs in the process
      */
     ArrayList<AuthorizationResource> searchAuthorizations(String consentID, String userID)
             throws ConsentManagementException;
@@ -553,6 +574,7 @@ public interface ConsentCoreService {
      *
      * @param consentID consent ID
      * @return a list of authorization resources
+     * @throws ConsentManagementException thrown if any error occurs in the process
      */
     ArrayList<AuthorizationResource> searchAuthorizations(String consentID)
             throws ConsentManagementException;
@@ -562,6 +584,7 @@ public interface ConsentCoreService {
      *
      * @param userID user ID
      * @return a list of authorization resources
+     * @throws ConsentManagementException thrown if any error occurs in the process
      */
     ArrayList<AuthorizationResource> searchAuthorizationsForUser(String userID)
             throws ConsentManagementException;
@@ -584,10 +607,10 @@ public interface ConsentCoreService {
 
     /**
      * This method is used to update status of the consent for a given consentId and userId.
-     * @param consentId
-     * @param newConsentStatus
-     * @return
-     * @throws ConsentManagementException
+     * @param consentId        consent ID
+     * @param newConsentStatus new consent status
+     * @return updated consent resource
+     * @throws ConsentManagementException thrown if any error occurs in the process
      */
     ConsentResource updateConsentStatus(String consentId, String newConsentStatus)
             throws ConsentManagementException;
@@ -595,9 +618,9 @@ public interface ConsentCoreService {
     /**
      * This method is used to fetch consents which has a expiring time as a consent attribute
      * (eligible for expiration).
-     * @param statusesEligibleForExpiration
-     * @return
-     * @throws ConsentManagementException
+     * @param statusesEligibleForExpiration  statuses eligible for expiration
+     * @return list of consents eligible for expiration
+     * @throws ConsentManagementException thrown if any error occurs in the process
      */
     ArrayList<DetailedConsentResource> getConsentsEligibleForExpiration(String statusesEligibleForExpiration)
             throws ConsentManagementException;
@@ -620,7 +643,6 @@ public interface ConsentCoreService {
      *
      * @param authorizationID the authorization ID of the authorization resource that needs to be updated
      * @param userID the user of the authorization resource
-     * @return
      * @throws ConsentManagementException thrown if any error occurs while updating
      */
     void updateAuthorizationUser(String authorizationID, String userID)
@@ -677,8 +699,8 @@ public interface ConsentCoreService {
 
     /**
      * This method is used to sync the retention database with purged consents from consent database.
-     * @return
-     * @throws ConsentManagementException
+     * @return true if the sync is successful
+     * @throws ConsentManagementException thrown if any error occurs in the process
      */
     boolean syncRetentionDatabaseWithPurgedConsent() throws ConsentManagementException;
 

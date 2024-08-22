@@ -43,7 +43,8 @@ public class EventSubscriptionService {
      * This method will call the dao layer to persist the event subscription.
      *
      * @param eventSubscription event subscription object that needs to be persisted
-     * @throws OBEventNotificationException
+     * @return event subscription object that is persisted
+     * @throws OBEventNotificationException if an error occurred while persisting the event subscription
      */
     public EventSubscription createEventSubscription(EventSubscription eventSubscription)
             throws OBEventNotificationException {
@@ -78,7 +79,8 @@ public class EventSubscriptionService {
      * This method will call the dao layer to retrieve a single event subscription.
      *
      * @param subscriptionId subscription id of the event subscription
-     * @throws OBEventNotificationException
+     * @return event subscription object that is retrieved
+     * @throws OBEventNotificationException if an error occurred while retrieving the event subscription
      */
     public EventSubscription getEventSubscriptionBySubscriptionId(String subscriptionId)
             throws OBEventNotificationException {
@@ -101,7 +103,8 @@ public class EventSubscriptionService {
      * This method will call the dao layer to retrieve all event subscriptions of a client.
      *
      * @param clientId client id of the event subscription
-     * @throws OBEventNotificationException
+     * @return list of event subscriptions that are retrieved
+     * @throws OBEventNotificationException if an error occurred while retrieving the event subscriptions
      */
     public List<EventSubscription> getEventSubscriptionsByClientId(String clientId)
             throws OBEventNotificationException {
@@ -122,7 +125,8 @@ public class EventSubscriptionService {
      * This method will call the dao layer to retrieve all event subscriptions by event type.
      *
      * @param eventType event type that needs to be subscribed by the retrieving event subscriptions.
-     * @throws OBEventNotificationException
+     * @return list of event subscriptions that are retrieved
+     * @throws OBEventNotificationException if an error occurred while retrieving the event subscriptions
      */
     public List<EventSubscription> getEventSubscriptionsByClientIdAndEventType(String eventType)
             throws OBEventNotificationException {
@@ -144,7 +148,8 @@ public class EventSubscriptionService {
      * This method will call the dao layer to update an event subscription.
      *
      * @param eventSubscription event subscription object that needs to be updated
-     * @throws OBEventNotificationException
+     * @return true if the event subscription is updated successfully
+     * @throws OBEventNotificationException if an error occurred while updating the event subscription
      */
     public Boolean updateEventSubscription(EventSubscription eventSubscription)
             throws OBEventNotificationException {
@@ -206,7 +211,8 @@ public class EventSubscriptionService {
      * This method will call the dao layer to delete an event subscription.
      *
      * @param subscriptionId subscription id of the event subscription
-     * @throws OBEventNotificationException
+     * @return true if the event subscription is deleted successfully
+     * @throws OBEventNotificationException if an error occurred while deleting the event subscription
      */
     public Boolean deleteEventSubscription(String subscriptionId) throws OBEventNotificationException {
 

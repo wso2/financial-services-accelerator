@@ -43,8 +43,9 @@ public class CertificateUtils {
     /**
      * Parse the certificate content.
      *
-     * @param content the content to be pased
-     * @throws OpenBankingException
+     * @param content the content to be passed
+     * @return the parsed certificate
+     * @throws OpenBankingException  if an error occurs while parsing the certificate
      */
     public static X509Certificate parseCertificate(String content) throws OpenBankingException {
 
@@ -82,4 +83,23 @@ public class CertificateUtils {
         // remove spaces, \r, \\r, \n, \\n, ], [ characters from certificate string
         return value.replaceAll("\\\\r|\\\\n|\\r|\\n|\\[|]| ", StringUtils.EMPTY);
     }
+
+    /**
+     * Check whether the certificate is expired.
+     *
+     * @param peerCertificate the certificate to be checked
+     * @return true if the certificate is expired
+     */
+    public static boolean isExpired(X509Certificate peerCertificate) {
+        try {
+            peerCertificate.checkValidity();
+        } catch (CertificateException e) {
+            log.error("Certificate with the serial number " +
+                    peerCertificate.getSerialNumber() + " issued by the CA " +
+                    peerCertificate.getIssuerDN().toString() + " is expired. Caused by, " + e.getMessage());
+            return true;
+        }
+        return false;
+    }
+
 }

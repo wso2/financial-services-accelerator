@@ -35,69 +35,71 @@ public interface AggregatedPollingDAO {
      * This method is to update the notification status by ID, allowed values are.
      * OPEN,ACK and ERR
      *
-     * @param notificationId
-     * @param notificationStatus
-     * @return
-     * @throws OBEventNotificationException
+     * @param notificationId     Notification ID to update
+     * @param notificationStatus Notification status to update
+     * @return Update is success or not
+     * @throws OBEventNotificationException  Exception when updating notification status by ID
      */
     Boolean updateNotificationStatusById(String notificationId, String notificationStatus)
             throws OBEventNotificationException;
 
     /**
-     * This method is to store event notifications in the OB_NOTIFICATION table.
-     * @param notificationError
-     * @return
-     * @throws OBEventNotificationException
+     * This method is to store event notifications error details in the OB_NOTIFICATION table.
+     *
+     * @param notificationError  Notification error details
+     * @return Stored event notifications error details
+     * @throws OBEventNotificationException  Exception when storing event notifications error details
      */
     Map<String, NotificationError> storeErrorNotification(NotificationError notificationError)
             throws OBEventNotificationException;
 
     /**
      * This method is to retrieve given number of notifications in the OB_NOTIFICATION table by client and status.
-     * @param clientId
-     * @param status
-     * @param max
-     * @return
-     * @throws OBEventNotificationException
+     *
+     * @param clientId  Client ID to retrieve notifications
+     * @param status    Notification status to retrieve
+     * @param max       Maximum number of notifications to retrieve
+     * @return List of notifications by client and status
+     * @throws OBEventNotificationException  Exception when retrieving notifications by client ID and status
      */
     List<NotificationDTO> getNotificationsByClientIdAndStatus(String clientId, String
             status, int max) throws OBEventNotificationException;
 
     /**
      * This method is to retrieve notifications by NotificationID.
-     * @param notificationId
      *
-     * @return
-     * @throws OBEventNotificationException
+     * @param notificationId  Notification ID to retrieve
+     * @return List of notifications by notification ID
+     * @throws OBEventNotificationException  Exception when retrieving notifications by notification ID
      */
     List<NotificationEvent> getEventsByNotificationID(String notificationId) throws OBEventNotificationException;
 
     /**
      * This method is to retrieve notifications in the OB_NOTIFICATION table by status.
-     * @param status
      *
-     * @return List<NotificationDTO>
-     * @throws OBEventNotificationException
+     * @param status  Notification status to retrieve
+     * @return List of notifications by status
+     * @throws OBEventNotificationException  Exception when retrieving notifications by status
      */
     List<NotificationDTO> getNotificationsByStatus(String status) throws OBEventNotificationException;
 
     /**
      * This method is to retrieve notificationsCount by ClientId and Status.
-     * @param clientId
-     * @param eventStatus
      *
-     * @return
-     * @throws OBEventNotificationException
+     * @param clientId    Client ID to retrieve notifications
+     * @param eventStatus Notification status to retrieve
+     * @return List of notifications by status and client id
+     * @throws OBEventNotificationException  Exception when retrieving notification count by client ID and status
      */
     int getNotificationCountByClientIdAndStatus(String clientId, String eventStatus)
             throws OBEventNotificationException;
 
     /**
      * This method is to retrieve the notification status.
-     * @param notificationId
      *
-     * @return
-     * @throws OBEventNotificationException
+     * @param notificationId  Notification ID to retrieve
+     * @return Notification status by notification ID
+     * @throws OBEventNotificationException  Exception when retrieving notification status
      */
     boolean getNotificationStatus(String notificationId) throws OBEventNotificationException;
 }

@@ -18,14 +18,14 @@
 package com.wso2.openbanking.accelerator.identity.dcr.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.AttributeChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.SignatureCheck;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateAlgorithm;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateIssuer;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateRequiredParams;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateSignature;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.AttributeChecks;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.MandatoryChecks;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.SignatureCheck;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +53,9 @@ public class RegistrationRequest {
 
     @SerializedName("token_endpoint_auth_method")
     private String tokenEndPointAuthMethod;
+
+    @SerializedName("jwks_uri")
+    private String jwksURI;
 
     @SerializedName("grant_types")
     private List<String> grantTypes;
@@ -353,4 +356,11 @@ public class RegistrationRequest {
         this.jti = jti;
     }
 
+    public String getJwksURI() {
+        return jwksURI;
+    }
+
+    public void setJwksURI(String jwksURI) {
+        this.jwksURI = jwksURI;
+    }
 }

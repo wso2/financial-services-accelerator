@@ -17,10 +17,10 @@
 name: Build Open Banking Repository
 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push or pull request events
   pull_request:
     branches:
-      - 'main'
+      - '3.0.0'
 
 jobs:
 

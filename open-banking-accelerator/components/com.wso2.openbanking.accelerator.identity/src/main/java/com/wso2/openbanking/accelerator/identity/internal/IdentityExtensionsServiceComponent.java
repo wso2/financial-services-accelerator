@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.identity.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
+import com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthenticator;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.adaptive.function.OpenBankingAuthenticationWorkerFunction;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.adaptive.function.OpenBankingAuthenticationWorkerFunctionImpl;
 import com.wso2.openbanking.accelerator.identity.authenticator.OBIdentifierAuthenticator;
@@ -85,11 +86,16 @@ public class IdentityExtensionsServiceComponent {
                 new OBIdentifierAuthenticator(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
         bundleContext.registerService(OAuthEventInterceptor.class, new TokenRevocationListener(), null);
+        App2AppAuthenticator app2AppAuthenticator = new App2AppAuthenticator();
+        bundleContext.registerService(ApplicationAuthenticator.class.getName(),
+                app2AppAuthenticator, null);
 
-        JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
-        OpenBankingAuthenticationWorkerFunction worker = new OpenBankingAuthenticationWorkerFunctionImpl();
-        jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
-                worker);
+        if (IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry() != null) {
+            JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
+            OpenBankingAuthenticationWorkerFunction worker = new OpenBankingAuthenticationWorkerFunctionImpl();
+            jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
+                    worker);
+        }
 
     }
 
@@ -247,15 +253,17 @@ public class IdentityExtensionsServiceComponent {
     @Deactivate
     protected void deactivate(ComponentContext ctxt) {
 
-        JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
-        jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
-                null);
+        if (IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry() != null) {
+            JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
+            jsFunctionRegistry.register(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER, "OBAuthenticationWorker",
+                    null);
+        }
         log.debug("Open banking Key Manager Extensions component is deactivated");
     }
 
     @Reference(
             service = JsFunctionRegistry.class,
-            cardinality = ReferenceCardinality.MANDATORY,
+            cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetJsFunctionRegistry"
     )

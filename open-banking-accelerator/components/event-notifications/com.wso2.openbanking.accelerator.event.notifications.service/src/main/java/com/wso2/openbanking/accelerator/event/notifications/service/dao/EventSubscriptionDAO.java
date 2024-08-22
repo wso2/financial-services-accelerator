@@ -35,7 +35,7 @@ public interface EventSubscriptionDAO {
      * @param connection Database connection.
      * @param eventSubscription EventSubscription object.
      * @return EventSubscription object.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when storing event subscription
      */
     EventSubscription storeEventSubscription(Connection connection, EventSubscription eventSubscription)
             throws OBEventNotificationException;
@@ -47,7 +47,7 @@ public interface EventSubscriptionDAO {
      * @param subscriptionId Subscription ID.
      * @param eventTypes Event types to be stored.
      * @return List of strings with subscribed event types.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when storing subscribed event types
      */
     List<String> storeSubscribedEventTypes(Connection connection, String subscriptionId, List<String> eventTypes)
             throws OBEventNotificationException;
@@ -58,7 +58,7 @@ public interface EventSubscriptionDAO {
      * @param connection Database connection.
      * @param subscriptionId Subscription ID.
      * @return EventSubscription model.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when retrieving event subscription by subscription ID
      */
     EventSubscription getEventSubscriptionBySubscriptionId(Connection connection, String subscriptionId)
             throws OBEventNotificationException;
@@ -69,7 +69,7 @@ public interface EventSubscriptionDAO {
      * @param connection Database connection.
      * @param clientId Client ID.
      * @return List of EventSubscription models.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when retrieving event subscriptions by client ID
      */
     List<EventSubscription> getEventSubscriptionsByClientId(Connection connection, String clientId)
             throws OBEventNotificationException;
@@ -80,7 +80,7 @@ public interface EventSubscriptionDAO {
      * @param connection Database connection.
      * @param eventType Event type that need to be subscribed by the retrieving subscriptions.
      * @return List of EventSubscription models.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException   Exception when retrieving event subscriptions by event type
      */
     List<EventSubscription> getEventSubscriptionsByEventType(Connection connection, String eventType)
             throws OBEventNotificationException;
@@ -91,7 +91,7 @@ public interface EventSubscriptionDAO {
      * @param connection Database connection.
      * @param eventSubscription eventSubscription object.
      * @return true if update was successful.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when updating event subscription
      */
     Boolean updateEventSubscription(Connection connection, EventSubscription eventSubscription)
             throws OBEventNotificationException;
@@ -102,7 +102,7 @@ public interface EventSubscriptionDAO {
      * @param connection Database connection.
      * @param subscriptionId Subscription ID.
      * @return true if deletion was successful.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when deleting event subscription
      */
     Boolean deleteEventSubscription(Connection connection, String subscriptionId) throws OBEventNotificationException;
 
@@ -112,7 +112,7 @@ public interface EventSubscriptionDAO {
      * @param connection Database connection.
      * @param subscriptionId subscription ID.
      * @return true if deletion was successful.
-     * @throws OBEventNotificationException
+     * @throws OBEventNotificationException  Exception when deleting subscribed event types
      */
     Boolean deleteSubscribedEventTypes(Connection connection, String subscriptionId)
             throws OBEventNotificationException;

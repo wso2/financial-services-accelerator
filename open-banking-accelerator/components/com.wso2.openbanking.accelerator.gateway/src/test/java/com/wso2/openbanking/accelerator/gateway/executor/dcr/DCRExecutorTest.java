@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.gateway.executor.dcr;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
@@ -70,7 +71,7 @@ import static org.mockito.Mockito.verify;
  * Test for DCR executor.
  */
 @PowerMockIgnore("jdk.internal.reflect.*")
-@PrepareForTest({IdentityUtil.class, GatewayDataHolder.class})
+@PrepareForTest({IdentityUtil.class, GatewayDataHolder.class, OpenBankingConfigParser.class})
 public class DCRExecutorTest {
 
     @Mock
@@ -84,6 +85,9 @@ public class DCRExecutorTest {
 
     @Mock
     APIManagerConfiguration apiManagerConfiguration;
+
+    @Mock
+    OpenBankingConfigParser openBankingConfigParser;
 
     @InjectMocks
     DCRExecutor dcrExecutor = new DCRExecutor();
@@ -282,6 +286,32 @@ public class DCRExecutorTest {
             "    \"id_token_signed_response_alg\": \"PS256\"\n" +
             "}";
 
+    String dcrResponsePayloadWithoutSSA = "{\n" +
+            "    \"software_id\": \"test12345\",\n" +
+            "\"client_name\" : \"sample app name\",\n" +
+            "    \"grant_types\": [\n" +
+            "        \"client_credentials\",\n" +
+            "        \"authorization_code\",\n" +
+            "        \"refresh_token\",\n" +
+            "        \"urn:ietf:params:oauth:grant-type:jwt-bearer\"\n" +
+            "    ],\n" +
+            "    \"application_type\": \"web\",\n" +
+            "    \"scope\": \"bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read " +
+            "bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read" +
+            " cdr:registration\",\n" +
+            "    \"client_id_issued_at\": 1619150285,\n" +
+            "    \"redirect_uris\": [\n" +
+            "        \"https://www.google.com/redirects/redirect1\",\n" +
+            "        \"https://www.google.com/redirects/redirect2\"\n" +
+            "    ],\n" +
+            "    \"request_object_signing_alg\": \"PS256\",\n" +
+            "    \"client_id\": \"uagAipmOU5quayzoznU1ddWg6tca\",\n" +
+            "    \"token_endpoint_auth_method\": \"private_key_jwt\",\n" +
+            "    \"response_types\": \"code id_token\",\n" +
+            "    \"id_token_signed_response_alg\": \"PS256\"\n" +
+            "}";
+
+
     @Test
     public void testFilterRegulatorAPIs() {
 
@@ -301,8 +331,17 @@ public class DCRExecutorTest {
         publishedAPIs.add(dcrApi);
 
         DCRExecutor dcrExecutor = new DCRExecutor();
-        List<String> filteredAPIList = dcrExecutor.filterRegulatorAPIs(configuredAPIList, publishedAPIs, dcrRoles);
+        List<String> filteredAPIList = dcrExecutor.filterRegulatoryAPIs(configuredAPIList, publishedAPIs, dcrRoles);
         Assert.assertEquals(filteredAPIList.get(0), "1");
+    }
+    @Test
+    public void isSubscriptionDeletionFailed() throws OpenBankingException, IOException {
+        DCRExecutor dcrExecutor = Mockito.spy(DCRExecutor.class);
+        Mockito.doReturn(false).when(dcrExecutor)
+                .callDelete(Mockito.anyString(), anyString());
+        boolean subscriptionDeletionFailed = dcrExecutor.isSubscriptionDeletionFailed(Mockito.anyString(),
+                Mockito.anyString());
+        Assert.assertTrue(subscriptionDeletionFailed);
     }
 
     @Test
@@ -316,7 +355,27 @@ public class DCRExecutorTest {
     }
 
     @Test
-    public void testExtractApplicationNameWithSoftwateIDEnabledFalse() throws ParseException {
+    public void testExtractApplicationNameFromAppDetails() throws ParseException {
+
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(OpenBankingConstants.DCR_USE_SOFTWAREID_AS_APPNAME, "true");
+        configMap.put(OpenBankingConstants.DCR_APPLICATION_NAME_KEY, "software_client_name");
+        String applicationName = dcrExecutor.getApplicationName(dcrResponsePayloadWithoutSSA, configMap);
+        Assert.assertEquals("test12345", applicationName);
+    }
+
+    @Test
+    public void testExtractApplicationNameWhenSSANotContainsApplicationNameKey() throws ParseException {
+
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(OpenBankingConstants.DCR_USE_SOFTWAREID_AS_APPNAME, "false");
+        configMap.put(OpenBankingConstants.DCR_APPLICATION_NAME_KEY, "client_name");
+        String applicationName = dcrExecutor.getApplicationName(dcrResponsePayloadWithoutSSA, configMap);
+        Assert.assertEquals("sample app name", applicationName);
+    }
+
+    @Test
+    public void testExtractApplicationNameWithSoftwareIDEnabledFalse() throws ParseException {
 
         Map<String, Object> configMap = new HashMap<>();
         configMap.put(OpenBankingConstants.DCR_USE_SOFTWAREID_AS_APPNAME, "false");
@@ -392,6 +451,10 @@ public class DCRExecutorTest {
     @Test
     public void testPostProcessResponseForRegister() throws Exception {
 
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        Mockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+        Mockito.when(OpenBankingConfigParser.getInstance()
+                        .getSoftwareEnvIdentificationSSAPropertyValueForSandbox()).thenReturn("sandbox");
         OBAPIResponseContext obapiResponseContext = Mockito.mock(OBAPIResponseContext.class);
         MsgInfoDTO msgInfoDTO = Mockito.mock(MsgInfoDTO.class);
         DCRExecutor dcrExecutor = Mockito.spy(DCRExecutor.class);
@@ -633,6 +696,10 @@ public class DCRExecutorTest {
         Mockito.doReturn(dcrResponsePayload).when(obapiResponseContext).getResponsePayload();
 
         Mockito.when(openBankingConfigurationService.getAllowedAPIs()).thenReturn(configuredAPIList);
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        Mockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+        Mockito.when(OpenBankingConfigParser.getInstance().getSoftwareEnvIdentificationSSAPropertyValueForSandbox())
+                .thenReturn("sandbox");
         GatewayDataHolder.getInstance().setApiManagerConfiguration(apiManagerConfigurationService);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
         Mockito.doReturn("admin").when(apiManagerConfiguration).getFirstProperty(anyString());
@@ -767,4 +834,5 @@ public class DCRExecutorTest {
         dcrExecutor.postProcessResponse(obapiResponseContext);
         verify(obapiResponseContext, times(8)).setError(true);
     }
+
 }

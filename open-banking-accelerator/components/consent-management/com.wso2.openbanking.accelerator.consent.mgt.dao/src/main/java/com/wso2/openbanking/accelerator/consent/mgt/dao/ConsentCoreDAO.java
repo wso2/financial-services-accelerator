@@ -149,6 +149,18 @@ public interface ConsentCoreDAO {
             throws OBConsentDataUpdationException;
 
     /**
+     * This method is used to update given consent mapping resource permissions. All the mapping resources of provided
+     * map will be updated with the new mapping permission provided.
+     *
+     * @param connection - Connection object
+     * @param mappingIDPermissionMap - A map of mapping IDs against new permissions
+     * @return - true if the update is successful
+     * @throws OBConsentDataUpdationException - Thrown of a database level error occurs
+     */
+    boolean updateConsentMappingPermission(Connection connection, Map<String, String> mappingIDPermissionMap)
+            throws OBConsentDataUpdationException;
+
+    /**
      * This method is used to update a given authorization object. The status of the authorization resource provided
      * will be updated with the new status.
      *
@@ -217,7 +229,7 @@ public interface ConsentCoreDAO {
      * @param connection connection object
      * @param attributeName attribute name
      * @return a map with the conesnt ID and the related attribute value
-     * @throws OBConsentDataRetrievalException
+     * @throws OBConsentDataRetrievalException thrown if a database error occurs
      */
     Map<String, String> getConsentAttributesByName(Connection connection, String attributeName)
             throws OBConsentDataRetrievalException;
@@ -229,7 +241,7 @@ public interface ConsentCoreDAO {
      * @param attributeName attribute name
      * @param attributeValue attribute value
      * @return Consent ID related to the given attribute key and value
-     * @throws OBConsentDataRetrievalException
+     * @throws OBConsentDataRetrievalException  `thrown if a database error occurs
      */
     ArrayList<String> getConsentIdByConsentAttributeNameAndValue(Connection connection, String attributeName,
                                                                  String attributeValue)
@@ -424,7 +436,7 @@ public interface ConsentCoreDAO {
      *                          relevant to each history record
      * @param amendmentReason A string that indicates the reason that caused the amendment of the consent
      * @return true if insertion successful
-     * @throws OBConsentDataUpdationException
+     * @throws OBConsentDataInsertionException thrown if any error occurs in the process
      */
     boolean storeConsentAmendmentHistory(Connection connection, String historyID, long timestamp, String recordID,
                  String consentDataType, String changedAttributesJsonString, String amendmentReason)

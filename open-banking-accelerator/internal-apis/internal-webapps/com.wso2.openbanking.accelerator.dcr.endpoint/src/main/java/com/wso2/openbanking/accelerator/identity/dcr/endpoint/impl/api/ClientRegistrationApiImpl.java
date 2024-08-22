@@ -15,10 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.RegistrationConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.service.RegistrationServiceHandler;
@@ -173,19 +175,16 @@ public class ClientRegistrationApiImpl {
             Map<String, Object> requestAttributes = (Map<String, Object>)
                     gson.fromJson(registrationRequestDetails, Map.class);
 
-            //decode SSA
-            if (registrationRequest.getSoftwareStatement() == null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                                .getErrorDTO(DCRCommonConstants.INVALID_META_DATA,
-                                        "Required parameter software statement cannot be null"))
-                        .build();
-            }
-            String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
-                    .toString();
-            Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
-            //RegistrationRequest registrationRequest = RegistrationUtils.getRegistrationRequest(requestAttributeMap);
             registrationRequest.setRequestParameters(requestAttributes);
-            registrationRequest.setSsaParameters(ssaAttributesMap);
+
+            if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+                //decode SSA if provided in the registration request
+                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(),
+                                OpenBankingConstants.JWT_BODY)
+                        .toString();
+                Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
+                registrationRequest.setSsaParameters(ssaAttributesMap);
+            }
 
             String clientId = uriInfo.getPathParameters().getFirst("s");
             RegistrationUtils.validateRegistrationCreation(registrationRequest);
@@ -265,19 +264,16 @@ public class ClientRegistrationApiImpl {
                 log.error("Certificate not valid", e);
             }
 
-            //decode SSA
-            if (StringUtils.isBlank(registrationRequest.getSoftwareStatement())) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                                .getErrorDTO(DCRCommonConstants.INVALID_META_DATA,
-                                        "Required parameter software statement cannot be null"))
-                        .build();
-            }
-            String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body")
-                    .toString();
-            Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
-
             registrationRequest.setRequestParameters(requestAttributes);
-            registrationRequest.setSsaParameters(ssaAttributesMap);
+            if (StringUtils.isNotEmpty(registrationRequest.getSoftwareStatement())) {
+                //decode SSA if provided in the registration request
+                String ssaBody = JWTUtils.decodeRequestJWT(registrationRequest.getSoftwareStatement(),
+                                OpenBankingConstants.JWT_BODY)
+                        .toString();
+                Map<String, Object> ssaAttributesMap = gson.fromJson(ssaBody, Map.class);
+                registrationRequest.setSsaParameters(ssaAttributesMap);
+            }
+
             RegistrationUtils.validateRegistrationCreation(registrationRequest);
             //do specific validations
             registrationValidator.validatePost(registrationRequest);
@@ -288,7 +284,7 @@ public class ClientRegistrationApiImpl {
             log.error("Error occurred while creating the Service provider", e);
             if (DCRCommonConstants.DUPLICATE_APPLICATION_NAME.equalsIgnoreCase(e.getErrorCode())) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                        .getErrorDTO(DCRCommonConstants.INVALID_META_DATA, e.getErrorDescription()))
+                                .getErrorDTO(DCRCommonConstants.INVALID_META_DATA, e.getErrorDescription()))
                         .build();
             }
         } catch (IdentityApplicationManagementException e) {
@@ -296,7 +292,7 @@ public class ClientRegistrationApiImpl {
         } catch (DCRValidationException e) {
             log.error("Error occurred while validating request", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(RegistrationUtils
-                    .getErrorDTO(e.getErrorCode(), e.getErrorDescription()))
+                            .getErrorDTO(e.getErrorCode(), e.getErrorDescription()))
                     .build();
         } catch (net.minidev.json.parser.ParseException | IOException e) {
             log.error("Error occurred while parsing the request", e);

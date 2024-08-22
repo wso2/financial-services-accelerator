@@ -14,13 +14,11 @@
  ~ KIND, either express or implied. See the License for the
  ~ specific language governing permissions and limitations
  ~ under the License.
- --><project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
-        <groupId>com.wso2</groupId>
-        <version>3.0.0</version>
+        <groupId>com.wso2.openbanking.accelerator</groupId>
+        <version>3.2.11-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -39,7 +37,7 @@
             <artifactId>org.eclipse.osgi</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -50,10 +48,6 @@
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.identity.framework</groupId>
-            <artifactId>org.wso2.carbon.identity.application.mgt.stub</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -204,8 +198,6 @@
                             org.wso2.carbon.apimgt.impl;version="${org.wso2.carbon.apimgt.version.range}",
                             org.wso2.carbon.apimgt.impl.jwt;version="${org.wso2.carbon.apimgt.version.range}",
                             org.wso2.carbon.authenticator.stub;version="${carbon.kernel.version.range}",
-                            org.wso2.carbon.identity.application.common.model.xsd;version="${carbon.identity.framework.version.range}",
-                            org.wso2.carbon.identity.application.mgt.stub;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.user.mgt.stub;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.identity.oauth.stub;version="${org.wso2.carbon.identity.oauth.stub.version.range}",
                             org.wso2.carbon.identity.oauth.stub.dto;version="${org.wso2.carbon.identity.oauth.stub.version.range}",

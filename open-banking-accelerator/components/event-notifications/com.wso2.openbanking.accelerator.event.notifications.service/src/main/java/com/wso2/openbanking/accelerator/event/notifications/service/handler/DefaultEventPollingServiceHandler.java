@@ -51,8 +51,8 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
 
     /**
      * This method is used to Poll Events as per request params.
-     * @param eventPollingRequest
-     * @return
+     * @param eventPollingRequest JSON request for event polling
+     * @return  EventPollingResponse
      */
     public EventPollingResponse pollEvents(JSONObject eventPollingRequest) {
 
@@ -66,7 +66,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
             log.error("Invalid client ID", e);
             eventPollingResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
             eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST, String.format("A client was not found" +
+                            EventNotificationConstants.INVALID_REQUEST, String.format("A client was not found" +
                             " for the client id : '%s' in the database.. ", eventPollingDTO.getClientId())));
             return eventPollingResponse;
         }
@@ -89,7 +89,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
 
     /**
      * This method will map the eventPollingRequest JSON to EventPollingDTO.
-     * @param eventPollingRequest
+     * @param eventPollingRequest JSON request for event polling
      * @return EventPollingDTO
      */
     public EventPollingDTO mapPollingRequest(JSONObject eventPollingRequest) {

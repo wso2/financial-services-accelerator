@@ -18,10 +18,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.wso2</groupId>
+    <groupId>com.wso2.openbanking.accelerator</groupId>
     <artifactId>open-banking</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0</version>
+    <version>3.2.11-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.wso2</groupId>
+        <artifactId>wso2</artifactId>
+        <version>1.4</version>
+    </parent>
 
     <profiles>
         <profile>
@@ -38,6 +44,28 @@
                 <module>open-banking-accelerator</module>
                 <module>react-apps</module>
             </modules>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <sourcepath>src/main/java</sourcepath>
+                            <sourceFileIncludes>
+                                <include>**/RegistrationErrorDTO.java</include>
+                            </sourceFileIncludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
             <properties>
                 <npm.executable>npm</npm.executable>
             </properties>
@@ -253,67 +281,67 @@
         <dependencies>
             <!--Open banking components-->
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.gateway</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.runtime.identity.authn.filter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.data.publisher.common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.keymanager</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.throttler.dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.throttler.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.event.notifications.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.event.notifications.endpoint</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -480,11 +508,6 @@
                 <groupId>org.eclipse.equinox</groupId>
                 <artifactId>javax.servlet</artifactId>
                 <version>${equinox.javax.servlet.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast</artifactId>
-                <version>${com.hazelcast.hazelcast.version}</version>
             </dependency>
             <!-- Dependencies for testing -->
             <dependency>
@@ -685,13 +708,13 @@
                 <version>${jstl.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <groupId>org.wso2.orbit.org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${org.bouncycastle.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
+                <groupId>org.wso2.orbit.org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
                 <version>${org.bouncycastle.version}</version>
             </dependency>
             <dependency>
@@ -780,13 +803,12 @@
         <org.json.version>3.0.0.wso2v1</org.json.version>
         <jjwt.version>0.9.1</jjwt.version>
         <jstl.version>1.2</jstl.version>
-        <org.bouncycastle.version>1.59</org.bouncycastle.version>
+        <org.bouncycastle.version>1.78.1.wso2v1</org.bouncycastle.version>
         <axis2.imp.pkg.version.range>[1.6,2)</axis2.imp.pkg.version.range>
         <maven.spotbugsplugin.version>4.2.3</maven.spotbugsplugin.version>
         <findsecbugs-plugin.version>1.10.1</findsecbugs-plugin.version>
         <spotbugs.annotations.version>4.7.3</spotbugs.annotations.version>
         <maven.checkstyleplugin.version>3.1.0</maven.checkstyleplugin.version>
-        <com.hazelcast.hazelcast.version>5.0.2</com.hazelcast.hazelcast.version>
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <com.h3xstream.findsecbugs.version>1.12.0</com.h3xstream.findsecbugs.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>

@@ -18,12 +18,16 @@
 package com.wso2.openbanking.accelerator.common.util;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
+import com.wso2.openbanking.accelerator.common.identity.IdentityConstants;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 
 /**
  * Open Banking common utility class.
@@ -54,6 +58,33 @@ public class OpenBankingUtils {
     }
 
     /**
+     * Extract software_environment (SANDBOX or PRODUCTION) from SSA.
+     *
+     * @param softwareStatement software statement (jwt) extracted from request payload
+     * @return software_environment
+     * @throws ParseException  if an error occurs while parsing the software statement
+     */
+    public static String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
+
+        if (StringUtils.isEmpty(softwareStatement)) {
+            return IdentityConstants.PRODUCTION;
+        }
+
+        final JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement,
+                OpenBankingConstants.JWT_BODY);
+        // Retrieve the SSA property name used for software environment identification
+        final String sandboxEnvIdentificationPropertyName = OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyName();
+        // Retrieve the expected value for the sandbox environment
+        final String sandboxEnvIdentificationValue = OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
+        return sandboxEnvIdentificationValue.equalsIgnoreCase(softwareStatementBody
+                .getAsString(sandboxEnvIdentificationPropertyName))
+                ? IdentityConstants.SANDBOX
+                : IdentityConstants.PRODUCTION;
+    }
+
+    /**
      * Method to obtain boolean value for check if the Dispute Resolution Data is publishable.
      *
      * @param statusCode for dispute data
@@ -70,10 +101,11 @@ public class OpenBankingUtils {
     }
 
     /**
-     * Method to reduce string length
+     * Method to reduce string length.
      *
-     * @param input and maxLength for dispute data
-     * @return String
+     * @param input        Input for dispute data
+     * @param maxLength    Max length for dispute data
+     * @return String with reduced length
      */
     public static String reduceStringLength(String input, int maxLength) {
         if (StringUtils.isEmpty(input) || input.length() <= maxLength) {

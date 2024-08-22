@@ -30,7 +30,7 @@ public interface EventCreationServiceHandler {
     /**
      * This method is used to publish OB events in the accelerator database. The method is a generic
      * method that is used to persist data into the OB_NOTIFICATION and OB_NOTIFICATION_EVENT tables.
-     * @param notificationCreationDTO
+     * @param notificationCreationDTO Notification details DTO
      * @return For successful request the API will return a JSON with the notificationID
      */
     EventCreationResponse publishOBEvent(NotificationCreationDTO notificationCreationDTO);

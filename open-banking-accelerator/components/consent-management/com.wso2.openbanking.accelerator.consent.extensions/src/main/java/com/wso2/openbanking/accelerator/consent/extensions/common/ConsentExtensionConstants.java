@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,6 @@
  * under the License.
  */
 package com.wso2.openbanking.accelerator.consent.extensions.common;
-;
 
 /**
  * Constant class for consent extension module.
@@ -48,6 +47,8 @@ public class ConsentExtensionConstants {
     public static final String HTTP_CODE = "httpCode";
     public static final String ERRORS = "errors";
     public static final String PAYMENTS = "payments";
+    public static final String VRP = "vrp";
+
     public static final String DATA = "Data";
     public static final String INITIATION = "Initiation";
     public static final String STATUS = "Status";
@@ -92,10 +93,8 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS = "accounts";
     public static final String CONSENT_DATA = "consentData";
     public static final String TITLE = "title";
-    public static final String DATA_SIMPLE = "data";
     public static final String DEBTOR_ACCOUNT_ID = "AccountId";
     public static final String ACCOUNT_ID = "account_id";
-
     public static final String DATA_REQUESTED = "data_requested";
     public static final String PAYMENT_ACCOUNT = "paymentAccount";
     public static final String COF_ACCOUNT = "cofAccount";
@@ -108,7 +107,6 @@ public class ConsentExtensionConstants {
     public static final String OPENBANKING_INTENT_ID = "openbanking_intent_id";
     public static final String VALUE = "value";
     public static final String AUTHORIZED_STATUS = "authorised";
-
     public static final String EXPIRATION_DATE = "ExpirationDateTime";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String INSTRUCTED_AMOUNT_TITLE = "Instructed Amount";
@@ -153,19 +151,77 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS_SELF_LINK = "Consent.AccountAPIURL";
     public static final String PAYMENT_SELF_LINK = "Consent.PaymentAPIURL";
     public static final String COF_SELF_LINK = "Consent.FundsConfirmationAPIURL";
+    public static final String VRP_SELF_LINK = "Consent.VRPAPIURL";
     public static final String REVOKED_STATUS = "revoked";
-
     public static final String DISPLAY_NAME = "display_name";
     public static final String ACCOUNT_DATA = "account_data";
     public static final String SELECTED_ACCOUNT = "selectedAccount";
     public static final String PAYMENT_COF_PATH = "funds-confirmation";
-
     public static final String AWAITING_UPLOAD_STATUS = "awaitingUpload";
-
     public static final String OB_REVOKED_STATUS = "Revoked";
     public static final String OB_REJECTED_STATUS = "Rejected";
     public static final String OB_AUTHORIZED_STATUS = "Authorised";
     public static final String OB_AWAITING_AUTH_STATUS = "AwaitingAuthorisation";
     public static final String OB_AWAITING_UPLOAD_STATUS = "AwaitingUpload";
+
+    //VRP Constants
+    public static final String VRP_CONSENT_PATH = "domestic-vrp-consents";
+    public static final String VRP_PAYMENT = "vrp-payment";
+    public static final String PAID_AMOUNT = "paid-amount";
+    public static final String LAST_PAYMENT_DATE = "last-payment-date";
+    public static final String AUTH_TYPE_AUTHORIZATION = "authorization";
+    public static final String CONTROL_PARAMETERS = "ControlParameters";
+    public static final String MAXIMUM_INDIVIDUAL_AMOUNT = "MaximumIndividualAmount";
+    public static final String MAXIMUM_INDIVIDUAL_AMOUNT_CURRENCY = "MaximumIndividualAmount.Amount.Currency";
+    public static final String PERIODIC_LIMITS = "PeriodicLimits";
+    public static final String PERIODIC_TYPES = "PeriodicTypes";
+    public static final String PERIOD_AMOUNT_LIMIT = "Amount";
+    public static final String PERIOD_LIMIT_CURRENCY = "PeriodicLimits.Currency";
+    public static final String CYCLIC_EXPIRY_TIME = "cyclicExpiryTime";
+    public static final String CYCLIC_REMAINING_AMOUNT = "cyclicRemainingAmount";
+
+    //vrp period alignment
+    public static final String PERIOD_ALIGNMENT = "PeriodAlignment";
+
+    // vrp periodic alignment types
+    public static final String CONSENT = "Consent";
+    public static final String CALENDAR = "Calendar";
+
+    //vrp periodicLimits
+    public static final String PERIOD_TYPE = "PeriodType";
+
+    //vrp periodic types
+    public static final String DAY = "Day";
+    public static final String WEEK = "Week";
+    public static final String FORTNIGHT = "Fortnight";
+    public static final String MONTH = "Month";
+    public static final String HALF_YEAR = "Half-year";
+    public static final String YEAR = "Year";
+    public static final String VALID_TO_DATE_TIME = "ValidToDateTime";
+    public static final String VALID_FROM_DATE_TIME = "ValidFromDateTime";
+    public static final String VRP_RESPONSE_PROCESS_PATH = "vrp-response-process";
+
+    // vrp authorization flow constants
+    public static final String DOMESTIC_VRP = "Domestic VRP";
+    public static final String CONTROL_PARAMETER_MAX_INDIVIDUAL_AMOUNT_TITLE = "Maximum amount per payment";
+    public static final String CONTROL_PARAMETER_VALID_TO_DATE_TITLE = "Valid to date and time";
+    public static final String CONTROL_PARAMETER_PERIOD_ALIGNMENT_TITLE = "Period Alignment";
+    public static final String CONTROL_PARAMETER_PERIOD_TYPE_TITLE = "Period Type";
+    public static final Object CONTROL_PARAMETER_AMOUNT_TITLE = "Maximum payment amount per ";
+    public static final String VRP_ACCOUNT = "vrpAccount";
+    public static final Object CONTROL_PARAMETER_VALID_FROM_DATE_TITLE = "Valid from date and time";
+
+    // VRP submission flow
+    public static final String ACCOUNT_IDS = "accountIds";
+    public static final String INSTRUCTION = "Instruction";
+    public static final String REMITTANCE_INFO = "RemittanceInformation";
+    public static final String REFERENCE = "Reference";
+    public static final String UNSTRUCTURED = "Unstructured";
+    public static final String CONTEXT_CODE = "PaymentContextCode";
+    public static final String PAYMENT_TYPE = "PaymentType";
+    public static final String VRP_PATH = "/domestic-vrps";
+    public static final String PREVIOUS_PAID_AMOUNT = "prevPaidAmount";
+    public static final String PREVIOUS_LAST_PAYMENT_DATE = "prevLastPaymentDate";
+
 
 }

@@ -44,9 +44,16 @@
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
+    <jaxrs:server id="vrpService" address="/domestic-vrps">
+        <jaxrs:serviceBeans>
+            <ref bean="vrpServiceBean"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
 
     <bean id="accServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.AccountService"/>
     <bean id="fundsConfServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.FundsConfirmationService"/>
     <bean id="paymentServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.PaymentService"/>
+    <bean id="vrpServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.VrpService"/>
 
 </beans>

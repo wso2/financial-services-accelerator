@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -347,24 +347,27 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     ArrayList<AuthorizationResource> authorizationResources = retrievedDetailedConsentResource
                             .getAuthorizationResources();
 
-                    String consentUserID = "";
+                    // Get all users of the consent
+                    Set<String> consentUserIDSet = new HashSet<>();
                     if (authorizationResources != null && !authorizationResources.isEmpty()) {
-                        consentUserID = authorizationResources.get(0).getUserID();
+                        for (AuthorizationResource authorizationResource : authorizationResources) {
+                            consentUserIDSet.add(authorizationResource.getUserID());
+                        }
                     }
 
-                    if (StringUtils.isBlank(consentUserID)) {
+                    if (consentUserIDSet.isEmpty()) {
                         log.error("User ID is required for token revocation, cannot proceed");
                         throw new ConsentManagementException("User ID is required for token revocation, cannot " +
                                 "proceed");
                     }
 
-                    if (!isValidUserID(userID, consentUserID)) {
+                    if (!isValidUserID(userID, consentUserIDSet)) {
                         final String errorMsg = "Requested UserID and Consent UserID do not match, cannot proceed.";
                         log.error(errorMsg + ", request UserID: " + userID.replaceAll("[\r\n]", "") +
-                                ", Consent UserID: " + consentUserID.replaceAll("[\r\n]", ""));
+                                " is not a member of the consent user list");
                         throw new ConsentManagementException(errorMsg);
                     }
-                    revokeTokens(retrievedDetailedConsentResource, consentUserID);
+                    revokeTokens(retrievedDetailedConsentResource, userID);
                 }
 
                 ArrayList<ConsentMappingResource> consentMappingResources = retrievedDetailedConsentResource
@@ -506,9 +509,10 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
                 // Update account mappings as inactive
                 log.debug("Deactivating account mappings");
-                consentCoreDAO.updateConsentMappingStatus(connection, accountMappingIDsList,
-                        ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
-
+                if (accountMappingIDsList.size() > 0) {
+                    consentCoreDAO.updateConsentMappingStatus(connection, accountMappingIDsList,
+                            ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
+                }
                 //Commit transaction
                 DatabaseUtil.commitTransaction(connection);
                 log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
@@ -1233,6 +1237,35 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         newMappingStatus);
 
                 // Commit transaction
+                DatabaseUtil.commitTransaction(connection);
+                log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
+                return true;
+            } catch (OBConsentDataUpdationException e) {
+                log.error(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
+                DatabaseUtil.rollbackTransaction(connection);
+                throw new ConsentManagementException(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
+            }
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtil.closeConnection(connection);
+        }
+    }
+
+    @Override
+    public boolean updateAccountMappingPermission(Map<String, String> mappingIDPermissionMap) throws
+            ConsentManagementException {
+
+        if (mappingIDPermissionMap.isEmpty()) {
+            log.error("Account mapping IDs are not provided, cannot proceed");
+            throw new ConsentManagementException("Cannot proceed since account mapping IDs are not provided");
+        }
+
+        Connection connection = DatabaseUtil.getDBConnection();
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+            try {
+                log.debug("Updating consent account mapping permissions for given mapping IDs");
+                consentCoreDAO.updateConsentMappingPermission(connection, mappingIDPermissionMap);
                 DatabaseUtil.commitTransaction(connection);
                 log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
                 return true;
@@ -2169,6 +2202,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 consentAmendmentHistory = processConsentAmendmentHistoryData(
                         consentAmendmentHistoryRetrievalResult, currentConsentResource);
             }
+            DatabaseUtil.commitTransaction(connection);
             return consentAmendmentHistory;
         } catch (OBConsentDataRetrievalException e) {
             log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
@@ -2582,12 +2616,12 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         }
     }
 
-    private boolean isValidUserID(String requestUserID, String consentUserID) {
+    private boolean isValidUserID(String requestUserID, Set<String> consentUserIDSet) {
         if (StringUtils.isEmpty(requestUserID)) {
             // userId not present in request query parameters, can use consentUserID to revoke tokens
             return true;
         }
-        return requestUserID.equals(consentUserID);
+        return consentUserIDSet.contains(requestUserID);
     }
 
     @Generated(message = "Excluded from code coverage since used for testing purposes")

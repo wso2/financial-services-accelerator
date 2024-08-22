@@ -29,6 +29,11 @@
             <class name="com.wso2.openbanking.accelerator.identity.token.validators.ClientAuthenticatorValidatorTest"/>
         </classes>
     </test>
+    <test name="mtls-certificate-validator">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.token.validators.MTLSCertificateValidatorTest"/>
+        </classes>
+    </test>
     <test name="client-mutual-tls-enforcement-validator">
         <classes>
             <class name="com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidatorTest"/>
@@ -62,6 +67,9 @@
             <class name="com.wso2.openbanking.accelerator.identity.dcr.DCRValidationTest"/>
             <class name="com.wso2.openbanking.accelerator.identity.dcr.DCRValidationUtilTest"/>
             <class name="com.wso2.openbanking.accelerator.identity.dcr.DCRExtendedValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.dcr.validation.IssuerValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.dcr.validation.AlgorithmValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.dcr.validation.RequiredParamsValidatorTest"/>
         </classes>
     </test>
     <test name="application-listener">
@@ -123,6 +131,21 @@
     <test name="dispute-resolution-tests">
         <classes>
             <class name="com.wso2.openbanking.accelerator.identity.dispute.resolution.DisputeResolutionFilterTest"/>
+        </classes>
+    </test>
+    <test name="app2app-auth-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthenticatorTest"/>
+        </classes>
+    </test>
+    <test name="app2app-auth-utils-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthUtilsTest"/>
+        </classes>
+    </test>
+    <test name="app2app-auth-validation-tests">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthValidationTest"/>
         </classes>
     </test>
 </suite>

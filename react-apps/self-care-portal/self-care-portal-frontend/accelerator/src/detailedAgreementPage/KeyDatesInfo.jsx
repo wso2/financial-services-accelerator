@@ -127,7 +127,13 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
     return (
         <div className="keyDatesBody">
             <h5>{keyDatesConfig.keyDatesInfoLabel}</h5>
-            {keyDatesMap}
+            <div className="row justify-content-between">
+                {keyDatesMap.map((item, index) => (
+                    <div className="col-sm-6 pl-0" key={index}>
+                    {item}
+                    </div>
+                ))}
+          </div>
         </div>
     );
 };

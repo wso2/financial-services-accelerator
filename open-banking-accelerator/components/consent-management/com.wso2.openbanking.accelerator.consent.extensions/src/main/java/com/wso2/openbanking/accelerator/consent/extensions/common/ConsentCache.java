@@ -77,6 +77,7 @@ public class ConsentCache {
      * Add consent data to consent data cache.
      * @param sessionDataKey session data key
      * @param consentData consent data
+     * @throws ConsentManagementException if an error occurs while adding consent data to cache
      */
     public static void addConsentDataToCache(String sessionDataKey, ConsentData consentData)
             throws ConsentManagementException {
@@ -91,6 +92,7 @@ public class ConsentCache {
      * Add consent data to database.
      * @param sessionDataKey session data key
      * @param consentData consent data
+     * @throws ConsentManagementException if an error occurs while storing consent data
      */
     public static void storeConsent(ConsentData consentData, String sessionDataKey) throws ConsentManagementException {
 

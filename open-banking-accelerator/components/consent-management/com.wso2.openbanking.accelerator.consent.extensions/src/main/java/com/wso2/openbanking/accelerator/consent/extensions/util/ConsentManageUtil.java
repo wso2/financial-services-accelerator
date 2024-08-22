@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionUtils;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
@@ -54,14 +55,16 @@ public class ConsentManageUtil {
     /**
      * Check whether valid Data object is provided.
      *
-     * @param initiation Data object in initiation payload
+     * @param initiationRequestbody Data object in initiation payload
      * @return whether the Data object is valid
      */
-    public static JSONObject validateInitiationDataBody(JSONObject initiation) {
+    public static JSONObject validateInitiationDataBody(JSONObject initiationRequestbody) {
         JSONObject validationResponse = new JSONObject();
 
-        if (!initiation.containsKey(ConsentExtensionConstants.DATA) || !(initiation.get(ConsentExtensionConstants.DATA)
-                instanceof JSONObject)) {
+        if (!initiationRequestbody.containsKey(ConsentExtensionConstants.DATA) || !(initiationRequestbody.
+                get(ConsentExtensionConstants.DATA)
+                instanceof JSONObject) || ((JSONObject) initiationRequestbody.get(ConsentExtensionConstants.DATA))
+                .isEmpty()) {
             log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
             return ConsentManageUtil.getValidationResponse(ErrorConstants.RESOURCE_INVALID_FORMAT,
                     ErrorConstants.PAYLOAD_FORMAT_ERROR, ErrorConstants.PATH_REQUEST_BODY);
@@ -77,9 +80,25 @@ public class ConsentManageUtil {
      * @param errorCode    Error Code
      * @param errorMessage Error Message
      * @param errorPath    Error Path
-     * @return
+     * @return JSONObject Validation response
      */
     public static JSONObject getValidationResponse(String errorCode, String errorMessage, String errorPath) {
+        JSONObject validationResponse = new JSONObject();
+
+        validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
+        validationResponse.put(ConsentExtensionConstants.HTTP_CODE, ResponseStatus.BAD_REQUEST);
+        validationResponse.put(ConsentExtensionConstants.ERRORS, errorMessage);
+        return validationResponse;
+    }
+
+    /**
+     * Method to construct the consent manage validation response for vrp.
+     *
+     * @param errorMessage Error Message
+     *
+     * @return JSONObject Validation response
+     */
+    public static JSONObject getValidationResponse(String errorMessage) {
         JSONObject validationResponse = new JSONObject();
 
         validationResponse.put(ConsentExtensionConstants.IS_VALID, false);
@@ -92,7 +111,7 @@ public class ConsentManageUtil {
      * Method to validate debtor account.
      *
      * @param debtorAccount Debtor Account object
-     * @return
+     * @return JSONObject Validation response
      */
     public static JSONObject validateDebtorAccount(JSONObject debtorAccount) {
 
@@ -205,7 +224,7 @@ public class ConsentManageUtil {
      * Validate creditor account.
      *
      * @param creditorAccount Creditor Account object
-     * @return
+     * @return JSONObject Validation response
      */
     public static JSONObject validateCreditorAccount(JSONObject creditorAccount) {
 
@@ -320,8 +339,7 @@ public class ConsentManageUtil {
         Boolean shouldRevokeTokens;
         if (ConsentManageUtil.isConsentIdValid(consentId)) {
             try {
-
-                ConsentResource consentResource = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
+                ConsentResource consentResource = ConsentServiceUtil.getConsentService()
                         .getConsent(consentId, false);
 
                 if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
@@ -361,7 +379,7 @@ public class ConsentManageUtil {
      * Utility class to check whether the Debtor Account Scheme name length.
      *
      * @param debtorAccSchemeName Debtor Account Scheme Name
-     * @return
+     * @return boolean Whether the Debtor Account Scheme name length is valid
      */
     public static boolean validateDebtorAccSchemeNameLength(String debtorAccSchemeName) {
         if (log.isDebugEnabled()) {
@@ -375,7 +393,7 @@ public class ConsentManageUtil {
      * Utility class to check whether the Debtor Account Scheme name matches with Enum values.
      *
      * @param debtorAccSchemeName Debtor Account Scheme Name
-     * @return
+     * @return  boolean Whether the Debtor Account Scheme name is valid
      */
     public static boolean isDebtorAccSchemeNameValid(String debtorAccSchemeName) {
         if (log.isDebugEnabled()) {
@@ -394,7 +412,7 @@ public class ConsentManageUtil {
      * Utility class to check whether the Debtor Account Identification is valid.
      *
      * @param debtorAccIdentification Debtor Account Identification
-     * @return
+     * @return  boolean Whether the Debtor Account Identification is valid
      */
     public static boolean isDebtorAccIdentificationValid(String debtorAccIdentification) {
         if (log.isDebugEnabled()) {
@@ -408,7 +426,7 @@ public class ConsentManageUtil {
      * Utility class to check whether the Debtor Account Name is valid.
      *
      * @param debtorAccName Debtor Account Name
-     * @return
+     * @return boolean Whether the Debtor Account Name is valid
      */
     public static boolean isDebtorAccNameValid(String debtorAccName) {
         if (log.isDebugEnabled()) {
@@ -422,7 +440,7 @@ public class ConsentManageUtil {
      * Utility class to check whether the Debtor AccountSecondary Identification is valid.
      *
      * @param debtorAccSecondaryIdentification Debtor Account Secondary Identification
-     * @return
+     * @return boolean Whether the Debtor Account Secondary Identification is valid
      */
     public static boolean isDebtorAccSecondaryIdentificationValid(String debtorAccSecondaryIdentification) {
         if (log.isDebugEnabled()) {
@@ -456,6 +474,7 @@ public class ConsentManageUtil {
      * Check whether the local instrument is supported.
      *
      * @param localInstrument Local Instrument value to validate
+     * @return Whether the local instrument is valid
      */
     public static boolean validateLocalInstrument(String localInstrument) {
         ArrayList<String> defaultLocalInstrumentList = new ArrayList<>(Arrays.asList(
@@ -479,6 +498,7 @@ public class ConsentManageUtil {
      * Check whether the amount is higher that the max instructed amount allowed by the bank.
      *
      * @param instructedAmount Instructed Amount to validate
+     * @return Whether the instructed amount is valid
      */
     public static boolean validateMaxInstructedAmount(String instructedAmount) {
         //This is a mandatory configuration in open-banking.xml. Hence can't be null.
@@ -493,11 +513,12 @@ public class ConsentManageUtil {
      *
      * @param response       Response of the request
      * @param createdConsent Consent response received from service layer
-     * @return
+     * @param consentManageData Request Details received
+     * @param type ConsentType
+     * @return  JSONObject Initiation Response
      */
     public static JSONObject getInitiationResponse(JSONObject response, DetailedConsentResource createdConsent,
                                                    ConsentManageData consentManageData, String type) {
-
         JSONObject dataObject = (JSONObject) response.get(ConsentExtensionConstants.DATA);
         dataObject.appendField(ConsentExtensionConstants.CONSENT_ID, createdConsent.getConsentID());
         dataObject.appendField("CreationDateTime", convertEpochDateTime(createdConsent.getCreatedTime()));
@@ -531,7 +552,9 @@ public class ConsentManageUtil {
      *
      * @param receiptJSON Initiation of the request
      * @param consent     Consent response received from service layer
-     * @return
+     * @param consentManageData Request Details received
+     * @param type ConsentType
+     * @return  JSONObject Initiation Response
      */
     public static JSONObject getInitiationRetrievalResponse(JSONObject receiptJSON, ConsentResource consent,
                                                             ConsentManageData consentManageData, String type) {
@@ -571,7 +594,7 @@ public class ConsentManageUtil {
      * @param consentId         Consent ID
      * @param consentManageData Request Details recieved
      * @param type              ConsentType
-     * @return
+     * @return Constructed Self Link
      */
     public static String constructSelfLink(String consentId, ConsentManageData consentManageData, String type) {
 
@@ -585,6 +608,9 @@ public class ConsentManageUtil {
         } else if (ConsentExtensionConstants.FUNDSCONFIRMATIONS.equals(type)) {
             baseUrl = (String) parser.getConfiguration().get(
                     ConsentExtensionConstants.COF_SELF_LINK);
+        } else if (ConsentExtensionConstants.VRP.equals(type)) {
+            baseUrl = (String) parser.getConfiguration().get(
+                    ConsentExtensionConstants.VRP_SELF_LINK);
         }
 
         String requestPath = consentManageData.getRequestPath();
@@ -595,7 +621,7 @@ public class ConsentManageUtil {
      * Validate the consent ID.
      *
      * @param consentId Consent Id to validate
-     * @return
+     * @return Whether the consent ID is valid
      */
     public static boolean isConsentIdValid(String consentId) {
         return (consentId.length() == 36 && Pattern.matches(ConsentExtensionConstants.UUID_REGEX, consentId));
@@ -605,7 +631,7 @@ public class ConsentManageUtil {
      * Validate Expiration Date Time.
      *
      * @param expDateVal Expiration Date Time
-     * @return
+     * @return Whether the expiration date time is valid
      */
     public static boolean isConsentExpirationTimeValid(String expDateVal) {
         if (expDateVal == null) {
@@ -620,5 +646,19 @@ public class ConsentManageUtil {
             return false;
         }
     }
+    /**
+     * Validate whether the date is a valid ISO 8601 format.
+     * @param dateValue  Date value to validate
+     * @return Whether the date is a valid ISO 8601 format
+     */
+    public static boolean isValid8601(String dateValue) {
+        try {
+            OffsetDateTime.parse(dateValue);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
 
 }

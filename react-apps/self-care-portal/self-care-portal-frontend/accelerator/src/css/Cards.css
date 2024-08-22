@@ -56,10 +56,6 @@
     border-color: #AAA7A7;
 }
 
-.card:hover{
-    transform: scale(1.05);
-}
-
 .home-tile{
     display: flex;
     flex-direction: row;
@@ -68,3 +64,26 @@
     margin-bottom: 200px;
     justify-content: center;
 }
+
+.home {
+    width: 100%; /* Full width */
+    min-height: calc(100vh - 100px); /* Full viewport height minus footer height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+
+.home-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+    min-height: calc(100vh - 100px); 
+  }
+  
+  @media (max-width: 768px) {
+    .home-content {
+      flex-direction: column;
+    }
+  }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -47,6 +47,9 @@ public class OpenBankingErrorCodes {
     public static final String INVALID_CHARS_IN_HEADER_ERROR = "200014";
     public static final String MISSING_HEADER_PARAM_CLIENT_ID = "200015";
     public static final String ERROR_IN_EVENT_POLLING_REQUEST = "200016";
+
+    // Error titles
+    public static final String UNSUPPORTED_MEDIA_TYPE = "Unsupported Media Type";
 
     public static final String REGISTRATION_INTERNAL_ERROR = "Error occurred while registering application";
     public static final String REGISTATION_DELETE_ERROR = "Error occurred while deleting application";

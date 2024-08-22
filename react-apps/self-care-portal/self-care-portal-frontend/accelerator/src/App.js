@@ -22,6 +22,10 @@ import "./css/App.css";
 import { Login } from "./login/login.js";
 import { ResponseError } from "./errorPage/index.js";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { logout } from "./login/logout.js";
+import { User } from "./data/User";
+
+const idToken = User.idToken;
 
 export const App = () => {
   return (
@@ -29,6 +33,7 @@ export const App = () => {
       <Switch>
         <Route path="/consentmgr" exact component={Login} />
         <Route path="/consentmgr/error" exact component={ResponseError} />
+        <Route path="/consentmgr/logout" exact component={() => logout(User?.idToken)} />
       </Switch>
     </Router>
   );

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -62,16 +62,28 @@ public class OpenBankingConstants {
     public static final String DCR_JWKS_NAME = "DCR.JWKSEndpointName";
     public static final String DCR_APPLICATION_NAME_KEY = "DCR.ApplicationName";
     public static final String OB_KM_NAME = "KeyManagerName";
+    public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_PROPERTY_NAME =
+            "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyName";
+    public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX =
+            "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyValueForSandbox";
+    public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_PRODUCTION =
+            "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyValueForProduction";
 
     public static final String APIM_APPCREATION = "DCR.APIMRESTEndPoints.AppCreation";
     public static final String APIM_KEYGENERATION = "DCR.APIMRESTEndPoints.KeyGeneration";
     public static final String APIM_GETAPIS = "DCR.APIMRESTEndPoints.RetrieveAPIS";
     public static final String APIM_SUBSCRIBEAPIS = "DCR.APIMRESTEndPoints.SubscribeAPIs";
     public static final String APIM_GETSUBSCRIPTIONS = "DCR.APIMRESTEndPoints.RetrieveSubscribedAPIs";
-    public static final String REGULATORY_APINAMES = "RegulatoryAPINames";
+    public static final String REGULATORY_API_NAMES = "RegulatoryAPINames";
+    public static final String API_NAME = "name";
+    public static final String API_ROLE = "roles";
+    public static final String API_ID = "id";
+    public static final String API_LIST = "list";
     public static final String REGULATORY_API = "API";
     public static final String SOFTWARE_ROLES = "software_roles";
     public static final String SOFTWARE_STATEMENT = "software_statement";
+    public static final String SOFTWARE_ID = "software_id";
+    public static final String JWT_BODY = "body";
     public static final String SOFTWARE_ENVIRONMENT = "software_environment";
     public static final String TOKEN_ENDPOINT = "DCR.TokenEndpoint";
     public static final String STORE_HOSTNAME = "PublisherURL";
@@ -125,6 +137,10 @@ public class OpenBankingConstants {
             ".CertificateManagement.TPPValidationService.ScopeRegexPatterns.PISP";
     public static final String TPP_VALIDATION_SERVICE_CBPII_SCOPE_REGEX = "Gateway" +
             ".CertificateManagement.TPPValidationService.ScopeRegexPatterns.CBPII";
+    public static final String CLIENT_TRANSPORT_CERT_HEADER_NAME = "Gateway" +
+            ".CertificateManagement.ClientTransportCertHeaderName";
+    public static final String URL_ENCODE_CLIENT_TRANSPORT_CERT_HEADER_ENABLED = "Gateway" +
+            ".CertificateManagement.UrlEncodeClientTransportCertHeaderEnabled";
     public static final int PAGINATION_LIMIT_DEFAULT = 25;
     public static final int PAGINATION_OFFSET_DEFAULT = 0;
     public static final String CONSENT_CONFIG_TAG = "Consent";
@@ -249,4 +265,8 @@ public class OpenBankingConstants {
     public static final String QUERY = "query";
     public static final String IS_PSU_FEDERATED = "PSUFederatedAuthentication.Enabled";
     public static final String PSU_FEDERATED_IDP_NAME = "PSUFederatedAuthentication.IDPName";
+    public static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
+    public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
+    public static final String DOT_SEPARATOR = ".";
 }
+

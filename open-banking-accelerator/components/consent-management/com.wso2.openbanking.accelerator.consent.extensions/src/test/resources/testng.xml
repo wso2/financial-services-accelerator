@@ -24,6 +24,14 @@
             <class name="com.wso2.openbanking.accelerator.consent.extensions.authservlet.impl.ConsentMgrAuthServletImplTest"/>
             <class name="com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.CIBAPushAuthenticatorTests"/>
             <class name="com.wso2.openbanking.accelerator.consent.extensions.event.executors.ConsentAmendmentHistoryEventExecutorTests"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.manage.vrp.VRPConsentRequestValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.manage.vrp.VRPConsentHandlerTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.common.idempotency.IdempotencyValidatorTests"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow.VRPConsentRetrievalStepTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.retrieval.flow.VRPConsentRetrievalUtilTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.authservlet.impl.AuthServletTest"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.authorize.vrp.persistence.flow.ConsentPersistStepTests"/>
+            <class name="com.wso2.openbanking.accelerator.consent.extensions.validate.VRPSubmissionTest"/>
         </classes>
     </test>
 </suite>

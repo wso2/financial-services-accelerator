@@ -20,17 +20,21 @@
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
-import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.handler.persist.ConsentPersistenceHandler;
+import com.wso2.openbanking.accelerator.common.util.ErrorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.accelerator.consent.extensions.common.factory.AcceleratorConsentExtensionFactory;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
 
 
 /**
@@ -66,16 +70,57 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                         "Auth resource not available in consent data");
             }
 
-            //Bind the user and accounts with the consent
-            String type = consentResource.getConsentType();
-            ConsentPersistenceHandler consentPersistenceHandler = AcceleratorConsentExtensionFactory
-                    .getConsentPersistenceHandler(type);
+            consentPersist(consentPersistData, consentResource);
 
-            consentPersistenceHandler.consentPersist(consentPersistData, consentResource);
 
         } catch (ConsentManagementException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occured while persisting consent");
         }
+    }
+
+    /**
+     * This method defined to handle consent persistence based on the consent type.
+     *
+     * @param consentPersistData    Consent Persist Data Object
+     * @param consentResource       Consent Resource Object
+     * @throws ConsentManagementException
+     */
+    public static void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
+            throws ConsentManagementException {
+
+        ConsentData consentData = consentPersistData.getConsentData();
+
+        JSONObject payload = consentPersistData.getPayload();
+
+        if (payload.get(ConsentExtensionConstants.ACCOUNT_IDS) == null ||
+                !(payload.get(ConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
+            log.error(ErrorConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    ErrorConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
+        }
+
+        JSONArray accountIds = (JSONArray) payload.get(ConsentExtensionConstants.ACCOUNT_IDS);
+        ArrayList<String> accountIdsString = new ArrayList<>();
+        for (Object account : accountIds) {
+            if (!(account instanceof String)) {
+                log.error(ErrorConstants.ACCOUNT_ID_FORMAT_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                        ErrorConstants.ACCOUNT_ID_FORMAT_ERROR);
+            }
+            accountIdsString.add((String) account);
+        }
+        String consentStatus;
+
+        if (consentPersistData.getApproval()) {
+            consentStatus = ConsentExtensionConstants.AUTHORIZED_STATUS;
+        } else {
+            consentStatus = ConsentExtensionConstants.REJECTED_STATUS;
+        }
+
+        ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
+                .bindUserAccountsToConsent(consentResource, consentData.getUserId(),
+                        consentData.getAuthResource().getAuthorizationID(), accountIdsString, consentStatus,
+                        consentStatus);
     }
 }

@@ -43,6 +43,12 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
         this.eventCreationService = eventCreationService;
     }
 
+    /**
+     * This method is used to publish OB events in the accelerator database.
+     *
+     * @param notificationCreationDTO  Notification details DTO
+     * @return EventCreationResponse   Response after event creation
+     */
     public EventCreationResponse publishOBEvent(NotificationCreationDTO notificationCreationDTO) {
 
         //validate if the resourceID is existing
@@ -53,6 +59,7 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
         try {
             consentResource = consentCoreService.getConsent(notificationCreationDTO.getResourceId(),
                     false);
+
             if (log.isDebugEnabled()) {
                 log.debug("Consent resource available for resource ID " +
                         consentResource.getConsentID().replaceAll("[\r\n]", ""));
@@ -71,9 +78,9 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
 
         } catch (OBEventNotificationException e) {
             log.error("Invalid client ID", e);
-            eventCreationResponse.setErrorResponse(String.format(String.format("A client was not found" +
+            eventCreationResponse.setErrorResponse(String.format("A client was not found" +
                             " for the client id : '%s' in the database. ",
-                    notificationCreationDTO.getClientId())));
+                    notificationCreationDTO.getClientId().replaceAll("[\r\n]", "")));
             eventCreationResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
             return eventCreationResponse;
         }

@@ -47,13 +47,12 @@ public class IssuerValidator implements ConstraintValidator<ValidateIssuer, Obje
     }
 
     @Override
-    public boolean isValid(Object registrationRequest,
-                           ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Object registrationRequest, ConstraintValidatorContext constraintValidatorContext) {
 
         try {
             String issuer = BeanUtils.getProperty(registrationRequest, issuerPath);
-            if (issuer != null) {
-                String softwareStatement = BeanUtils.getProperty(registrationRequest, ssaPath);
+            String softwareStatement = BeanUtils.getProperty(registrationRequest, ssaPath);
+            if (issuer != null && softwareStatement != null) {
                 String softwareId = JWTUtils.decodeRequestJWT(softwareStatement, "body")
                         .getAsString(DCRCommonConstants.SOFTWARE_ID);
                 if (softwareId != null && softwareId.equals(issuer)) {
