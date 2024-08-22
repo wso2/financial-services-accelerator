@@ -54,6 +54,8 @@ plugins/ios.json
 www/
 $RECYCLE.BIN/
 node_modules/
+**/webapps
+
 
 
 #mac
