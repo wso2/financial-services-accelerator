@@ -54,11 +54,10 @@ plugins/ios.json
 www/
 $RECYCLE.BIN/
 node_modules/
-
+**/webapps
 
 #mac
 .DS_Store
-
 
 # React dashboard ignore
 .DS_STORE
