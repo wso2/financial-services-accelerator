@@ -25,12 +25,6 @@
         </DataSource>
         <ConnectionVerificationTimeout>1000</ConnectionVerificationTimeout>
     </JDBCPersistenceManager>
-    <JDBCRetentionDataPersistenceManager>
-        <DataSource>
-            <Name>jdbc/WSO2OB_RET_DB</Name>
-        </DataSource>
-        <ConnectionVerificationTimeout>1</ConnectionVerificationTimeout>
-    </JDBCRetentionDataPersistenceManager>
     <Identity>
         <Extensions>
             <RequestObjectValidator>
@@ -55,10 +49,10 @@
     </Identity>
 
     <Sample>
-        <OBHandler>DummyValue</OBHandler>
-        <OBHandler2>${some.property}</OBHandler2>
-        <OBHandler3 prop="somevalue"></OBHandler3>
-        <OBHandler4>${carbon.home}</OBHandler4>
+        <FSHandler>DummyValue</FSHandler>
+        <FSHandler2>${some.property}</FSHandler2>
+        <FSHandler3 prop="somevalue"></FSHandler3>
+        <FSHandler4>${carbon.home}</FSHandler4>
     </Sample>
     <Sample2>
         <SomethingArray>
@@ -73,13 +67,13 @@
                 <Executor class="org.wso2.financial.services.accelerator.common.test.CustomHandler" priority="2"/>
                 <Executor class="org.wso2.financial.services.accelerator.common.test.CustomHandler2" priority="1"/>
                 <Executor class="org.wso2.financial.services.accelerator.common.test.CustomHandler3" priority="3"/>
-                <Executor class="org.wso2.financial.services.accelerator.common.test.SampleOBExecutor" priority="4"/>
+                <Executor class="org.wso2.financial.services.accelerator.common.test.SampleFSExecutor" priority="4"/>
             </CustomType1>
             <CustomType2>
                 <Executor class="org.wso2.financial.services.accelerator.common.test.CustomHandler" priority="1"/>
                 <Executor class="org.wso2.financial.services.accelerator.common.test.CustomHandler2" priority="2"/>
                 <Executor class="org.wso2.financial.services.accelerator.common.test.CustomHandler3" priority="3"/>
-                <Executor class="org.wso2.financial.services.accelerator.common.test.SampleOBExecutor" priority="4"/>
+                <Executor class="org.wso2.financial.services.accelerator.common.test.SampleFSExecutor" priority="4"/>
             </CustomType2>
             <CustomType3>
                 <Executor class="org.wso2.financial.services.accelerator.common.test.CustomHandler" priority="2"/>
@@ -210,7 +204,7 @@
     </ServiceActivator>
 
     <KeyManager>
-        <KeyManagerExtensionImpl>org.wso2.financial.services.accelerator.keymanager.OBKeyManagerImpl</KeyManagerExtensionImpl>
+        <KeyManagerExtensionImpl>org.wso2.financial.services.accelerator.keymanager.FSKeyManagerImpl</KeyManagerExtensionImpl>
         <KeyManagerAdditionalProperties>
             <Property name="name" label="label" type="text" tooltip="tooltip" default="" values="" required="false" mask="false" multiple="false" priority="1" />
         </KeyManagerAdditionalProperties>

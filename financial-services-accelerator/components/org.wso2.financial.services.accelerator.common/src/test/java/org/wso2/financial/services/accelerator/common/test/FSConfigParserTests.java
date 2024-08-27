@@ -65,9 +65,9 @@ public class FSConfigParserTests {
 
         System.setProperty("carbon.home", absolutePathForTestResources);
         FinancialServicesConfigParser openBankingConfigParser = FinancialServicesConfigParser.getInstance();
-        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.OBHandler"), "DummyValue");
-        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.OBHandler2"), "property.value");
-        Assert.assertNotNull(openBankingConfigParser.getConfiguration().get("Sample.OBHandler4"));
+        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.FSHandler"), "DummyValue");
+        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.FSHandler2"), "property.value");
+        Assert.assertNotNull(openBankingConfigParser.getConfiguration().get("Sample.FSHandler4"));
         Map<String, Map<Integer, String>> openBankingExecutors =
                 FinancialServicesConfigParser.getInstance().getFinancialServicesExecutors();
 

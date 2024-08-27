@@ -116,10 +116,11 @@
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
-                    <failOnError>false</failOnError>
+                    <failOnError>true</failOnError>
                     <xmlOutput>true</xmlOutput>
                     <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs</spotbugsXmlOutputDirectory>
                     <includeFilterFile>${project.basedir}/src/main/resources/findbugs-include.xml</includeFilterFile>
+                    <excludeFilterFile>${project.basedir}/src/main/resources/findbugs-exclude.xml</excludeFilterFile>
                     <plugins>
                         <plugin>
                             <groupId>com.h3xstream.findsecbugs</groupId>
@@ -230,13 +231,31 @@
                         </Private-Package>
                         <Import-Package>
                             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
-                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}"
+                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
+                            com.nimbusds.jose;version="${org.wso2.orbit.nimbus.version.range}",
+                            com.nimbusds.jwt;version="${org.wso2.orbit.nimbus.version.range}",
+                            javax.cache,
+                            net.minidev.json;version="${json-smart.version}",
+                            org.apache.axiom.*;version="${axiom.osgi.version.range}",
+<!--                            org.apache.commons.beanutils;version="${commons.bean.utils.version}",-->
+                            org.apache.commons.lang3;version="${commons-lang3.version}",
+                            org.apache.commons.logging;version="${commons.logging.version}",
+<!--                            org.apache.http.config;version="[4.4,5)",-->
+<!--                            org.apache.http.conn;version="[4.5,5)",-->
+<!--                            org.apache.http.conn.socket;version="[4.5,5)",-->
+<!--                            org.apache.http.conn.ssl;version="[4.5,5)",-->
+<!--                            org.apache.http.impl.client;version="[4.5,5)",-->
+<!--                            org.apache.http.impl.conn;version="[4.5,5)",-->
+<!--                            org.apache.http.ssl;version="[4.4,5)",-->
+                            org.wso2.carbon.identity.application.mgt.*;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.oauth.*;version="${identity.inbound.auth.oauth.version.range}",
+                            org.wso2.carbon.identity.oauth2.*;version="${identity.inbound.auth.oauth.version.range}",
+                            org.wso2.securevault;version="${org.wso2.securevault.version}"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.common.internal,
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                         <_dsannotations>*</_dsannotations>
                     </instructions>
                 </configuration>
