@@ -178,7 +178,7 @@
                         <exclude>**/*FinancialServicesBaseCache.class</exclude>
                         <exclude>**/*FinancialServicesBaseCacheKey.class</exclude>
                         <!-- Excluded since involves datasource initialization -->
-                        <exclude>**/DatabaseUtil.class</exclude>
+                        <exclude>**/DatabaseUtils.class</exclude>
                         <exclude>**/JDBCPersistenceManager.class</exclude>
                     </excludes>
                 </configuration>
@@ -220,7 +220,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.77</minimum>
+                                            <minimum>0.8</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
