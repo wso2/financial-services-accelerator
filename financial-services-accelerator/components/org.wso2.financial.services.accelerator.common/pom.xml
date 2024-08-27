@@ -31,18 +31,6 @@
     <packaging>bundle</packaging>
     <name>WSO2 Financial Services - Common component</name>
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.orbit.org.bouncycastle</groupId>-->
-<!--            <artifactId>bcpkix-jdk18on</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.orbit.org.bouncycastle</groupId>-->
-<!--            <artifactId>bcprov-jdk18on</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.ws.commons.axiom.wso2</groupId>-->
-<!--            <artifactId>axiom</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -65,16 +53,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.carbon.identity.framework</groupId>-->
-<!--            <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.wso2.orbit.org.bouncycastle</groupId>-->
-<!--                    <artifactId>bcprov-jdk15on</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
