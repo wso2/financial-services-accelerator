@@ -23,7 +23,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 
 /**
- * Data holder for Open Banking Common module.
+ * Data holder for  Common module.
  */
 public class FinancialServicesCommonDataHolder {
 

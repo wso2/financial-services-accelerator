@@ -80,7 +80,7 @@ public final class FinancialServicesConfigParser {
     /**
      * Singleton getInstance method to create only one object.
      *
-     * @return OpenBankingConfigParser object
+     * @return FinancialServicesConfigParser object
      */
     public static FinancialServicesConfigParser getInstance() {
 
@@ -160,7 +160,7 @@ public final class FinancialServicesConfigParser {
                             FinancialServicesConstants.GATEWAY_EXECUTOR_CONFIG_TAG));
 
             if (financialServicesGatewayExecutors != null) {
-                //obtaining each consent type element under OpenBankingGatewayExecutors tag
+                //obtaining each consent type element under FinancialServicesGatewayExecutors tag
                 Iterator consentTypeElement = financialServicesGatewayExecutors.getChildElements();
                 while (consentTypeElement.hasNext()) {
                     OMElement consentType = (OMElement) consentTypeElement.next();

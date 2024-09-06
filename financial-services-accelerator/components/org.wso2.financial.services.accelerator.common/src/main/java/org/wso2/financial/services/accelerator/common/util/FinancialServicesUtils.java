@@ -34,11 +34,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 
 /**
- * Open Banking common utility class.
+ * Financial Services common utility class.
  */
-public class OpenBankingUtils {
+public class FinancialServicesUtils {
 
-    private static final Log log = LogFactory.getLog(OpenBankingUtils.class);
+    private static final Log log = LogFactory.getLog(FinancialServicesUtils.class);
 
     /**
      * Get Tenant Domain String for the client id.

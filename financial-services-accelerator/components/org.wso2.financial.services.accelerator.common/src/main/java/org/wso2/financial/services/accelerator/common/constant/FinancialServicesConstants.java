@@ -184,7 +184,7 @@ public class FinancialServicesConstants {
     public static final String JWS_RESP_SIGNING_ENABLE = "JwsSignatureConfiguration.ResponseSigning.Enable";
     public static final String JWS_RESP_SIGNING_ALGO = "JwsSignatureConfiguration.ResponseSigning.AllowedAlgorithm";
 
-    // Open Banking Identity Manager
+    // OIdentity Manager
     public static final String FS_IDN_RETRIEVER_SIG_ALIAS = "FSIdentityRetriever.Server.SigningCertificateAlias";
     public static final String FS_IDN_RETRIEVER_SANDBOX_SIG_ALIAS =
             "FSIdentityRetriever.Server.SandboxSigningCertificateAlias";

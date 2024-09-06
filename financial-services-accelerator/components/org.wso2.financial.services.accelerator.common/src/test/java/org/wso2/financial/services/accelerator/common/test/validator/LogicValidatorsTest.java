@@ -73,7 +73,7 @@ public class LogicValidatorsTest {
     }
 
     @Test(dataProvider = "dp-checkValidScopeFormat", dataProviderClass = ValidatorTestDataProvider.class)
-    public void checkOpenBankingValidator(String claimsString) throws ParseException {
+    public void checkFinancialServicesValidator(String claimsString) throws ParseException {
 
         //Assign
         sampleRequestObject.setClaimSet(JWTClaimsSet.parse(claimsString));

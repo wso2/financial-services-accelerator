@@ -32,9 +32,9 @@
             <class name="org.wso2.financial.services.accelerator.common.test.validator.ModelValidatorsTest"/>
         </classes>
     </test>
-    <test name="open-banking-utils-test">
+    <test name="financial-services-utils-test">
         <classes>
-            <class name="org.wso2.financial.services.accelerator.common.test.util.OpenBankingUtilsTest"/>
+            <class name="org.wso2.financial.services.accelerator.common.test.util.FinancialServicesUtilsTest"/>
         </classes>
     </test>
     <test name="jwt-utils-test">
