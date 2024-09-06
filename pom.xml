@@ -338,6 +338,26 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>${spotbugs.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
+                <artifactId>encoder</artifactId>
+                <version>${encoder.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json.wso2</groupId>
+                <artifactId>json</artifactId>
+                <version>${org.json.version}</version>
+            </dependency>
             <!--Base Products related dependencies-->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -348,6 +368,27 @@
                 <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth</artifactId>
                 <version>${identity.inbound.auth.oauth.version}</version>
+            </dependency>
+            <!-- Accelerator Dependencies -->
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.consent.mgt.service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.consent.mgt.extensions</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <!-- Test Dependencies -->
             <dependency>
@@ -367,6 +408,24 @@
                 <artifactId>mockito-testng</artifactId>
                 <version>${mockito.testng.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons-dbcp.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database.wso2</groupId>
+                <artifactId>h2-database-engine</artifactId>
+                <version>${orbit.version.h2.engine}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.agent</artifactId>
+                <classifier>runtime</classifier>
+                <version>${jacoco.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -395,6 +454,11 @@
         <org.wso2.securevault.version>1.1.3</org.wso2.securevault.version>
         <org.wso2.orbit.nimbus.version>7.9.0.wso2v1</org.wso2.orbit.nimbus.version>
         <hibernate-validator>6.0.20.Final</hibernate-validator>
+        <commons-collections.version>4.4</commons-collections.version>
+        <spotbugs.annotations.version>4.7.3</spotbugs.annotations.version>
+        <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
+        <org.json.version>3.0.0.wso2v4</org.json.version>
+        <jackson.databinding.version>2.16.1</jackson.databinding.version>
         <!--Base Products related dependencies-->
         <identity.inbound.auth.oauth.version>7.0.26</identity.inbound.auth.oauth.version>
         <!--Unit Test related dependencies-->
@@ -402,9 +466,12 @@
         <mockito.version>5.3.1</mockito.version>
         <org.testng.version>7.10.1</org.testng.version>
         <mockito.testng.version>0.5.2</mockito.testng.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
         <!-- OSGi Version ranges -->
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
+        <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
 
     </properties>
 </project>
