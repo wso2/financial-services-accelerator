@@ -200,8 +200,6 @@
                             org.wso2.financial.services.accelerator.consent.mgt.management.dao.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.management.service.*;version="${project.version}",
                             com.fasterxml.jackson.databind;version="${jackson.databinding.version}",
-                            com.nimbusds.jose.*;version ="${org.wso2.orbit.nimbus.version}",
-                            com.nimbusds.jwt;version="${org.wso2.orbit.nimbus.version}",
                             org.owasp.encoder;version="${encoder.wso2.version}"
                         </Import-Package>
                         <Export-Package>

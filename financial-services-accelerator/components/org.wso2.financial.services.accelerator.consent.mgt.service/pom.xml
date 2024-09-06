@@ -209,11 +209,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -230,12 +225,12 @@
                         <Import-Package>
                             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
                             org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
-                            org.apache.commons.lang3;version="${commons-lang.version}",
+                            org.apache.commons.lang3;version="${commons-lang3.version}",
                             net.minidev.json.*;version="${json-smart.version}",
                             org.apache.commons.collections4;version="${commons-collections.version.range}",
                             org.apache.commons.logging;version="${commons.logging.version}",
                             org.wso2.carbon.identity.oauth2.*;version="${identity.inbound.auth.oauth.version.range}",
-                            org.wso2.financial.services.accelerator.consent.mgt.common.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",
                             com.google.gson;version="${google.gson.version.range}",
                             org.apache.oltu.oauth2.*;version="${oltu.version}",
