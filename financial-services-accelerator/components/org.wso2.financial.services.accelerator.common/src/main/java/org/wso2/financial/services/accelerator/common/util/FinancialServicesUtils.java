@@ -18,12 +18,15 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
+import com.nimbusds.jose.JWSObject;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
@@ -36,9 +39,9 @@ import java.text.ParseException;
 /**
  * Open Banking common utility class.
  */
-public class OpenBankingUtils {
+public class FinancialServicesUtils {
 
-    private static final Log log = LogFactory.getLog(OpenBankingUtils.class);
+    private static final Log log = LogFactory.getLog(FinancialServicesUtils.class);
 
     /**
      * Get Tenant Domain String for the client id.
@@ -118,5 +121,45 @@ public class OpenBankingUtils {
         } else {
             return input.substring(0, maxLength);
         }
+    }
+
+    /**
+     * Check whether the client ID belongs to a regulatory app.
+     * @param clientId  client ID
+     * @return true if the client ID belongs to a regulatory app
+     * @throws RequestObjectException If an error occurs while checking the client ID
+     */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    public static boolean isRegulatoryApp(String clientId) throws RequestObjectException {
+
+        try {
+            return OAuth2Util.isFapiConformantApp(clientId);
+        } catch (InvalidOAuthClientException e) {
+            throw new RequestObjectException(OAuth2ErrorCodes.INVALID_CLIENT, "Could not find an existing app for " +
+                    "clientId: " + clientId, e);
+        } catch (IdentityOAuth2Exception e) {
+            throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
+                    "provider for clientId: " + clientId, e);
+        }
+    }
+
+    /**
+     * Decode request JWT.
+     *
+     * @param jwtToken jwt sent by the tpp
+     * @param jwtPart  expected jwt part (header, body)
+     * @return json object containing requested jwt part
+     * @throws java.text.ParseException if an error occurs while parsing the jwt
+     */
+    public static JSONObject decodeRequestJWT(String jwtToken, String jwtPart) throws java.text.ParseException {
+
+        JWSObject plainObject = JWSObject.parse(jwtToken);
+
+        if ("head".equals(jwtPart)) {
+            return plainObject.getHeader().toJSONObject();
+        } else if ("body".equals(jwtPart)) {
+            return plainObject.getPayload().toJSONObject();
+        }
+        return null;
     }
 }

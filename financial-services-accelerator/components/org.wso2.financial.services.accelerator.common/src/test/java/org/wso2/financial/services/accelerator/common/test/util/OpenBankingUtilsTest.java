@@ -26,7 +26,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.util.OpenBankingUtils;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -96,7 +96,7 @@ public class OpenBankingUtilsTest {
                 "lTXkM0KsdNSWgG3vl25JTkwqo1tTsYlZUcQFltlLQ-lCXT2nWnu_dPZWUqzVb9g4s2DcQ78xkJwqHJKgGLsloXzAMDx36MZQ01" +
                 "fHP2eIFu82D0PgsxqvHbNeyXVlg5XsX5TLRwrRy8W4wP_SLMoP7jDic0yEufBRULROX2ckpoZuk31a_QyaJFKtIiPj9zlltM9Zg";
 
-        String softwareEnvironmentFromSSA = OpenBankingUtils.getSoftwareEnvironmentFromSSA(sandboxSsa);
+        String softwareEnvironmentFromSSA = FinancialServicesUtils.getSoftwareEnvironmentFromSSA(sandboxSsa);
         Assert.assertEquals(softwareEnvironmentFromSSA, FinancialServicesConstants.SANDBOX);
     }
 
@@ -132,7 +132,7 @@ public class OpenBankingUtilsTest {
                 "yi72RH7T6HyF5lobTHWcZRkCNtc9cWJMKbftGCDSGRlO0XSYvvdGMDBCQT5-KiuKiWcKcBcFX2TLpTDDYaf-GNtATQ0O_vl266" +
                 "fDPyzG9XF6NLheG0ITrTBGuVN2JzSDC50_vCqR754LtFKNLXKQ2WTnrY3TgEBbyaKj3N0_YdDIuT442zkadg8lvoNpXyk4A";
 
-        String softwareEnvironmentFromSSA = OpenBankingUtils.getSoftwareEnvironmentFromSSA(prodSsa);
+        String softwareEnvironmentFromSSA = FinancialServicesUtils.getSoftwareEnvironmentFromSSA(prodSsa);
         Assert.assertEquals(softwareEnvironmentFromSSA, FinancialServicesConstants.PRODUCTION);
     }
 
@@ -140,7 +140,7 @@ public class OpenBankingUtilsTest {
     public void testReducingStringLength() throws Exception {
 
         String body = "String Body";
-        Assert.assertEquals(OpenBankingUtils.reduceStringLength(body, 25), body);
-        Assert.assertEquals(OpenBankingUtils.reduceStringLength(body, 6), "String");
+        Assert.assertEquals(FinancialServicesUtils.reduceStringLength(body, 25), body);
+        Assert.assertEquals(FinancialServicesUtils.reduceStringLength(body, 6), "String");
     }
 }

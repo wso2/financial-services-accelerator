@@ -358,6 +358,16 @@
                 <artifactId>json</artifactId>
                 <version>${org.json.version}</version>
             </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.oltu.oauth2</groupId>
+                <artifactId>oltu</artifactId>
+                <version>${oltu.version}</version>
+            </dependency>
             <!--Base Products related dependencies-->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -368,6 +378,16 @@
                 <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth</artifactId>
                 <version>${identity.inbound.auth.oauth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.framework</groupId>
+                <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>
+                <version>${carbon.identity.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.framework</groupId>
+                <artifactId>org.wso2.carbon.identity.core</artifactId>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <!-- Accelerator Dependencies -->
             <dependency>
@@ -460,6 +480,7 @@
         <org.json.version>3.0.0.wso2v4</org.json.version>
         <jackson.databinding.version>2.16.1</jackson.databinding.version>
         <oltu.version>1.0.0.wso2v3</oltu.version>
+        <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
         <!--Base Products related dependencies-->
         <identity.inbound.auth.oauth.version>7.0.26</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.oauth.version.range>[7.0.26, 7.0.62)</identity.inbound.auth.oauth.version.range>
