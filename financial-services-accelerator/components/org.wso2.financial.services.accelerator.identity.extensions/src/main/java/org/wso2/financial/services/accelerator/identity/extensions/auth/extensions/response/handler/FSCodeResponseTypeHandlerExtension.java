@@ -49,7 +49,7 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
     public OAuth2AuthorizeRespDTO issue(OAuthAuthzReqMessageContext oauthAuthzMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (!FinancialServicesUtils.isRegulatoryApp(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
+            if (!isRegulatory(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
                 return issueCode(oauthAuthzMsgCtx);
             }
         } catch (RequestObjectException e) {
@@ -81,5 +81,11 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
             OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) throws IdentityOAuth2Exception {
 
         return super.issue(oAuthAuthzReqMessageContext);
+    }
+
+    @Generated(message = "Ignoring because it requires a service call")
+    boolean isRegulatory(String clientId) throws RequestObjectException {
+
+        return FinancialServicesUtils.isRegulatoryApp(clientId);
     }
 }

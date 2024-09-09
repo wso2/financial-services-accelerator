@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.validator;
 
+import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.mockito.MockedStatic;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -36,7 +37,7 @@ import static org.mockito.Mockito.when;
 public class FSCodeResponseTypeValidatorTest {
 
     @Test
-    public void checkValidCodeResponseTypeValidation() {
+    public void checkValidCodeResponseTypeValidation() throws OAuthProblemException {
 
         try (MockedStatic<FinancialServicesUtils> mock = mockStatic(FinancialServicesUtils.class)) {
             // Mock

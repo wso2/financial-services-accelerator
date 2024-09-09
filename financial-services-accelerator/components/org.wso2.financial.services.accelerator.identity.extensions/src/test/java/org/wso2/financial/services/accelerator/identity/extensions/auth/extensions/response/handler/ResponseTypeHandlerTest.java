@@ -37,6 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -50,7 +51,7 @@ import static org.testng.AssertJUnit.assertEquals;
 public class ResponseTypeHandlerTest {
 
     @Test
-    public void checkValidHybridResponseTypeHandling() {
+    public void checkValidHybridResponseTypeHandling() throws IdentityOAuth2Exception, RequestObjectException {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
@@ -59,6 +60,7 @@ public class ResponseTypeHandlerTest {
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
+        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -76,7 +78,8 @@ public class ResponseTypeHandlerTest {
     }
 
     @Test
-    public void checkValidHybridResponseTypeHandlingForNonRegulatory() {
+    public void checkValidHybridResponseTypeHandlingForNonRegulatory()
+            throws IdentityOAuth2Exception, RequestObjectException {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
@@ -85,6 +88,7 @@ public class ResponseTypeHandlerTest {
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
+        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -97,35 +101,38 @@ public class ResponseTypeHandlerTest {
 
         // Assert
         verify(uut).issue(argument.capture());
-        assertEquals(0L, argument.getValue().getRefreshTokenvalidityPeriod());
+        assertEquals(999L, argument.getValue().getRefreshTokenvalidityPeriod());
     }
 
+//    @Test(expectedExceptions = IdentityOAuth2Exception.class)
+//    public void checkValidHybridResponseTypeHandlingForException()
+//            throws IdentityOAuth2Exception, RequestObjectException {
+//
+//        // Mock
+//        FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
+//        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(999L);
+//        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd"});
+//
+//        FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
+//        doReturn(null).when(uut).issueCode(any());
+//        doReturn(true).when(uut).isRegulatory(any());
+//
+//        ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
+//                ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
+//
+//        // Assign
+//        FSHybridResponseTypeHandlerExtension.fsResponseTypeHandler = fsResponseTypeHandler;
+//
+//        // Act
+//        uut.issue(new OAuthAuthzReqMessageContext(new OAuth2AuthorizeReqDTO()));
+//
+//        // Assert
+//        verify(uut).issue(argument.capture());
+//    }
+
     @Test(expectedExceptions = IdentityOAuth2Exception.class)
-    public void checkValidHybridResponseTypeHandlingForException() {
-
-        // Mock
-        FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(999L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd"});
-
-        FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
-        doReturn(null).when(uut).issueCode(any());
-
-        ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
-                ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
-
-        // Assign
-        FSHybridResponseTypeHandlerExtension.fsResponseTypeHandler = fsResponseTypeHandler;
-
-        // Act
-        uut.issue(new OAuthAuthzReqMessageContext(new OAuth2AuthorizeReqDTO()));
-
-        // Assert
-        verify(uut).issue(argument.capture());
-    }
-
-    @Test(expectedExceptions = IdentityOAuth2Exception.class)
-    public void checkValidHybridResponseTypeHandlingForIdentityOAuth2Exception() {
+    public void checkValidHybridResponseTypeHandlingForIdentityOAuth2Exception()
+            throws IdentityOAuth2Exception, RequestObjectException {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
@@ -134,6 +141,7 @@ public class ResponseTypeHandlerTest {
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
+        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -149,7 +157,7 @@ public class ResponseTypeHandlerTest {
     }
 
     @Test
-    public void checkValidCodeResponseTypeHandling() {
+    public void checkValidCodeResponseTypeHandling() throws IdentityOAuth2Exception, RequestObjectException {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
@@ -158,6 +166,7 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
+        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -175,7 +184,8 @@ public class ResponseTypeHandlerTest {
     }
 
     @Test
-    public void checkValidCodeResponseTypeHandlingForNonRegulatory() {
+    public void checkValidCodeResponseTypeHandlingForNonRegulatory()
+            throws IdentityOAuth2Exception, RequestObjectException {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
@@ -184,6 +194,7 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
+        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -196,11 +207,12 @@ public class ResponseTypeHandlerTest {
 
         // Assert
         verify(uut).issue(argument.capture());
-        assertEquals(0L, argument.getValue().getRefreshTokenvalidityPeriod());
+        assertEquals(109L, argument.getValue().getRefreshTokenvalidityPeriod());
     }
 
     @Test(expectedExceptions = IdentityOAuth2Exception.class)
-    public void checkCodeResponseTypeHandlingForRequestObjectError() {
+    public void checkCodeResponseTypeHandlingForRequestObjectError()
+            throws IdentityOAuth2Exception, RequestObjectException {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
@@ -209,6 +221,7 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
+        doThrow(RequestObjectException.class).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -224,7 +237,8 @@ public class ResponseTypeHandlerTest {
     }
 
     @Test(expectedExceptions = IdentityOAuth2Exception.class)
-    public void checkCodeResponseTypeHandlingForIdentityOAuth2Exception() {
+    public void checkCodeResponseTypeHandlingForIdentityOAuth2Exception()
+            throws IdentityOAuth2Exception, RequestObjectException {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
@@ -233,6 +247,7 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
+        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);

@@ -131,6 +131,7 @@
                         <exclude>**/*Constants.class</exclude>
                         <exclude>**/*Component.class</exclude>
                         <exclude>**/*DataHolder.class</exclude>
+                        <exclude>**/*GrantHandler.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

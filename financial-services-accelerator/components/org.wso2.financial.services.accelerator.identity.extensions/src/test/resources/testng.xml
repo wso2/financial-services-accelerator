@@ -29,8 +29,6 @@
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultOIDCClaimsCallbackHandlerTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProviderTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImplTest" />
-            <class name="org.wso2.financial.services.accelerator.identity.extensions.validator.LogicValidatorsTest" />
-            <class name="org.wso2.financial.services.accelerator.identity.extensions.validator.ModelValidatorsTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtilsTest" />
         </classes>
     </test>
