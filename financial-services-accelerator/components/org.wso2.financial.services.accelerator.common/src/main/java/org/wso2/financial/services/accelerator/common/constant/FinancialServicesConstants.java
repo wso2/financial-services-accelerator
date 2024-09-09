@@ -267,7 +267,6 @@ public class FinancialServicesConstants {
     public static final String PRODUCTION = "PRODUCTION";
     public static final String SANDBOX = "SANDBOX";
 
-// NEw
     public static final String MANAGE_HANDLER = "ConsentManagement.ManageHandler";
     public static final String AUTHORIZE_STEPS_CONFIG_TAG = "AuthorizeSteps";
     public static final String STEP_CONFIG_TAG = "Step";

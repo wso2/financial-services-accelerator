@@ -28,7 +28,7 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
     public String getSearchConsentsPreparedStatement(String whereClause, boolean shouldLimit, boolean shouldOffset,
                                                      String userIdFilterClause) {
 
-        String selectClause = "OB_CONSENT ";
+        String selectClause = "FS_CONSENT ";
         String joinType = "LEFT";
 
         if (StringUtils.isNotEmpty(userIdFilterClause)) {
@@ -43,23 +43,23 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
         }
 
         StringBuilder query = new StringBuilder("SELECT OBC.CONSENT_ID, " +
-                " ( SELECT receipt FROM OB_CONSENT WHERE consent_id = obc.consent_id " +
+                " ( SELECT receipt FROM FS_CONSENT WHERE consent_id = obc.consent_id " +
                 "               FETCH first 1 rows only ) AS RECEIPT, " +
-                " (SELECT client_id FROM OB_CONSENT WHERE consent_id = obc.consent_id " +
+                " (SELECT client_id FROM FS_CONSENT WHERE consent_id = obc.consent_id " +
                 "               FETCH FIRST 1 rows only ) AS CLIENT_ID, " +
-                " (SELECT consent_type FROM OB_CONSENT WHERE consent_id = obc.consent_id  " +
+                " (SELECT consent_type FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS CONSENT_TYPE, " +
-                " (SELECT current_status FROM OB_CONSENT WHERE consent_id = obc.consent_id  " +
+                " (SELECT current_status FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS current_status, " +
-                " (SELECT consent_frequency FROM OB_CONSENT WHERE consent_id = obc.consent_id  " +
+                " (SELECT consent_frequency FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS CONSENT_FREQUENCY, " +
-                " (SELECT validity_time FROM OB_CONSENT WHERE consent_id = obc.consent_id  " +
+                " (SELECT validity_time FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS VALIDITY_TIME, " +
-                " (SELECT recurring_indicator FROM OB_CONSENT WHERE consent_id = obc.consent_id  " +
+                " (SELECT recurring_indicator FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS RECURRING_INDICATOR, " +
-                " (SELECT created_time FROM OB_CONSENT WHERE consent_id = obc.consent_id  " +
+                " (SELECT created_time FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS consent_created_time,       " +
-                " (SELECT updated_time FROM OB_CONSENT WHERE consent_id = obc.consent_id  " +
+                " (SELECT updated_time FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS consent_updated_time, " +
 
                 "          ( SELECT   listagg(att_key || '||') within GROUP (ORDER BY att_key) " +
@@ -129,10 +129,10 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
                 "                   WHERE    ocar2.consent_id = obc.consent_id) AS PERMISSION " +
 
                 "FROM " + selectClause + " OBC " +
-                "LEFT JOIN OB_CONSENT_ATTRIBUTE CA ON OBC.CONSENT_ID=CA.CONSENT_ID " +
-                joinType + " JOIN OB_CONSENT_AUTH_RESOURCE OCAR ON OBC.CONSENT_ID=OCAR.CONSENT_ID "
+                "LEFT JOIN FS_CONSENT_ATTRIBUTE CA ON OBC.CONSENT_ID=CA.CONSENT_ID " +
+                joinType + " JOIN FS_CONSENT_AUTH_RESOURCE OCAR ON OBC.CONSENT_ID=OCAR.CONSENT_ID "
                 + userIdFilterClause +
-                "LEFT JOIN OB_CONSENT_MAPPING OCM ON OCAR.AUTH_ID=OCM.AUTH_ID " + whereClause +
+                "LEFT JOIN FS_CONSENT_MAPPING OCM ON OCAR.AUTH_ID=OCM.AUTH_ID " + whereClause +
                 " (OBC.UPDATED_TIME >= COALESCE(?, OBC.UPDATED_TIME) " +
                 " AND OBC.UPDATED_TIME <= COALESCE(?, OBC.UPDATED_TIME)) GROUP BY obc.consent_id " +
                 "ORDER BY UPDATED_TIME DESC ");
@@ -156,7 +156,7 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
                                                                             boolean shouldOffset) {
 
         StringBuilder query =
-                new StringBuilder("SELECT * FROM OB_CONSENT_STATUS_AUDIT " + whereClause);
+                new StringBuilder("SELECT * FROM FS_CONSENT_STATUS_AUDIT " + whereClause);
 
         if (shouldLimit && shouldOffset) {
             query.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");

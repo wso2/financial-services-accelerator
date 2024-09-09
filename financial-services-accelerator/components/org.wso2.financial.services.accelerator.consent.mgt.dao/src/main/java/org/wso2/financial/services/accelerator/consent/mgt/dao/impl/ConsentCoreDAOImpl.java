@@ -138,7 +138,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             try (ResultSet resultSet = getConsentResourcePreparedStmt.executeQuery()) {
                 if (resultSet.next()) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Retrieved the consent resource from OB_CONSENT table for consent ID" +
+                        log.debug(String.format("Retrieved the consent resource from FS_CONSENT table for consent ID" +
                                         " : %s", consentID.replaceAll("[\r\n]", "")));
                     }
                     return ConsentManagementDAOUtil.setDataToConsentResource(resultSet);

@@ -41,7 +41,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
     public String getSearchConsentsPreparedStatement(String whereClause, boolean shouldLimit, boolean shouldOffset,
                                                      String userIdFilterClause) {
 
-        String selectClause = "(SELECT * FROM OB_CONSENT " + whereClause + ")";
+        String selectClause = "(SELECT * FROM FS_CONSENT " + whereClause + ")";
         String joinType = "LEFT ";
         if (StringUtils.isNotEmpty(userIdFilterClause)) {
             joinType = "INNER ";
@@ -71,7 +71,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCAR2.auth_id:: varchar, '||' order by OCAR2.auth_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_AUTH_RESOURCE OCAR2 " +
+                "      FS_CONSENT_AUTH_RESOURCE OCAR2 " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id " +
                 "    GROUP BY " +
@@ -83,7 +83,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCAR2.auth_status :: varchar, '||' order by OCAR2.auth_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_AUTH_RESOURCE OCAR2 " +
+                "      FS_CONSENT_AUTH_RESOURCE OCAR2 " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id " +
                 "    GROUP BY " +
@@ -95,7 +95,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCAR2.auth_type :: varchar, '||' order by OCAR2.auth_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_AUTH_RESOURCE OCAR2 " +
+                "      FS_CONSENT_AUTH_RESOURCE OCAR2 " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id " +
                 "    GROUP BY " +
@@ -107,7 +107,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCAR2.updated_time :: varchar, '||' order by OCAR2.auth_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_AUTH_RESOURCE OCAR2 " +
+                "      FS_CONSENT_AUTH_RESOURCE OCAR2 " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id " +
                 "    GROUP BY " +
@@ -119,7 +119,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCAR2.user_id :: varchar, '||' order by OCAR2.auth_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_AUTH_RESOURCE OCAR2 " +
+                "      FS_CONSENT_AUTH_RESOURCE OCAR2 " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id " +
                 "    GROUP BY " +
@@ -131,8 +131,8 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCAR2.auth_id:: varchar, '||' order by OCM2.mapping_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_MAPPING OCM2 " +
-                "      JOIN OB_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
+                "      FS_CONSENT_MAPPING OCM2 " +
+                "      JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id" +
                 "  ) AS AUTH_MAPPING_ID, " +
@@ -142,8 +142,8 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCM2.account_id :: varchar, '||' order by OCM2.mapping_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_MAPPING OCM2 " +
-                "      JOIN OB_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
+                "      FS_CONSENT_MAPPING OCM2 " +
+                "      JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id" +
                 "  ) AS ACCOUNT_ID, " +
@@ -153,8 +153,8 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCM2.mapping_id :: varchar, '||' order by OCM2.mapping_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_MAPPING OCM2 " +
-                "      JOIN OB_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
+                "      FS_CONSENT_MAPPING OCM2 " +
+                "      JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id" +
                 "  ) AS MAPPING_ID, " +
@@ -164,8 +164,8 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCM2.mapping_status :: varchar, '||' order by OCM2.mapping_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_MAPPING OCM2 " +
-                "      JOIN OB_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
+                "      FS_CONSENT_MAPPING OCM2 " +
+                "      JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id" +
                 "  ) AS MAPPING_STATUS, " +
@@ -175,18 +175,18 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "    OCM2.permission :: varchar, '||' order by OCM2.mapping_id :: varchar" +
                 "  )" +
                 "    FROM " +
-                "      OB_CONSENT_MAPPING OCM2 " +
-                "      JOIN OB_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
+                "      FS_CONSENT_MAPPING OCM2 " +
+                "      JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
                 "    WHERE " +
                 "      OCAR2.consent_id = OBC.consent_id" +
                 "  ) AS PERMISSION" +
                 " FROM " +
                 selectClause +
                 "AS OBC " +
-                "LEFT JOIN OB_CONSENT_ATTRIBUTE CA ON OBC.CONSENT_ID=CA.CONSENT_ID " +
-                joinType + "JOIN OB_CONSENT_AUTH_RESOURCE OCAR ON OBC.CONSENT_ID=OCAR.CONSENT_ID "
+                "LEFT JOIN FS_CONSENT_ATTRIBUTE CA ON OBC.CONSENT_ID=CA.CONSENT_ID " +
+                joinType + "JOIN FS_CONSENT_AUTH_RESOURCE OCAR ON OBC.CONSENT_ID=OCAR.CONSENT_ID "
                 + userIdFilterClause +
-                "LEFT JOIN OB_CONSENT_MAPPING OCM ON OCAR.AUTH_ID=OCM.AUTH_ID WHERE " +
+                "LEFT JOIN FS_CONSENT_MAPPING OCM ON OCAR.AUTH_ID=OCM.AUTH_ID WHERE " +
                 "(OBC.UPDATED_TIME >= COALESCE(?, OBC.UPDATED_TIME) " +
                 "AND OBC.UPDATED_TIME <= COALESCE(?, OBC.UPDATED_TIME)) " +
                 "group by OBC.CONSENT_ID," +
