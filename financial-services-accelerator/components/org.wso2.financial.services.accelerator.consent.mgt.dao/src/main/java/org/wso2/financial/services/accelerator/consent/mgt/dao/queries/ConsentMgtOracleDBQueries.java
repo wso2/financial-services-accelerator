@@ -63,68 +63,68 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
                 "               FETCH FIRST 1  rows only ) AS consent_updated_time, " +
 
                 "          ( SELECT   listagg(att_key || '||') within GROUP (ORDER BY att_key) " +
-                "                   FROM     ob_consent_attribute " +
+                "                   FROM     fs_consent_attribute " +
                 "                   WHERE    consent_id = obc.consent_id " +
                 "                   GROUP BY consent_id ) AS ATT_KEY, " +
 
                 "          ( SELECT   listagg(att_value || '||') within GROUP (ORDER BY att_key)" +
-                "                   FROM     ob_consent_attribute" +
+                "                   FROM     fs_consent_attribute" +
                 "                   WHERE    consent_id = obc.consent_id" +
                 "                   GROUP BY consent_id ) AS ATT_VALUE, " +
 
                 "          ( SELECT   listagg(auth_id || '||') within GROUP (ORDER BY auth_id)" +
-                "                   FROM     ob_consent_auth_resource" +
+                "                   FROM     fs_consent_auth_resource" +
                 "                   WHERE    consent_id = obc.consent_id" +
                 "                   GROUP BY consent_id ) AS AUTH_ID, " +
 
                 "          ( SELECT   listagg(auth_status || '||') within GROUP (ORDER BY auth_id)" +
-                "                   FROM     ob_consent_auth_resource" +
+                "                   FROM     fs_consent_auth_resource" +
                 "                   WHERE    consent_id = obc.consent_id" +
                 "                   GROUP BY consent_id ) AS AUTH_STATUS, " +
 
                 "          ( SELECT   listagg(auth_type || '||') within GROUP (ORDER BY auth_id) " +
-                "                   FROM     ob_consent_auth_resource " +
+                "                   FROM     fs_consent_auth_resource " +
                 "                   WHERE    consent_id = obc.consent_id " +
                 "                   GROUP BY consent_id ) AS AUTH_TYPE, " +
 
                 "          ( SELECT   listagg(updated_time || '||') within GROUP (ORDER BY auth_id) " +
-                "                   FROM     ob_consent_auth_resource " +
+                "                   FROM     fs_consent_auth_resource " +
                 "                   WHERE    consent_id = obc.consent_id " +
                 "                   GROUP BY consent_id ) AS UPDATED_TIME, " +
 
                 "          ( SELECT   listagg(user_id || '||') within GROUP (ORDER BY auth_id) " +
-                "                   FROM     ob_consent_auth_resource " +
+                "                   FROM     fs_consent_auth_resource " +
                 "                   WHERE    consent_id = obc.consent_id " +
                 "                   GROUP BY consent_id ) AS USER_ID, " +
 
 
                 "           ( SELECT   listagg(ocm2.auth_id || '||') within GROUP (ORDER BY ocm2.mapping_id) " +
-                "                   FROM     ob_consent_mapping ocm2 " +
-                "                   JOIN     ob_consent_auth_resource ocar2 " +
+                "                   FROM     fs_consent_mapping ocm2 " +
+                "                   JOIN     fs_consent_auth_resource ocar2 " +
                 "                   ON       ocar2.auth_id = ocm2.auth_id " +
                 "                   WHERE    ocar2.consent_id = obc.consent_id) AS AUTH_MAPPING_ID , " +
 
                 "           ( SELECT   listagg(ocm2.account_id || '||') within GROUP (ORDER BY ocm2.mapping_id) " +
-                "                   FROM     ob_consent_mapping ocm2 " +
-                "                   JOIN     ob_consent_auth_resource ocar2 " +
+                "                   FROM     fs_consent_mapping ocm2 " +
+                "                   JOIN     fs_consent_auth_resource ocar2 " +
                 "                   ON       ocar2.auth_id = ocm2.auth_id " +
                 "                   WHERE    ocar2.consent_id = obc.consent_id) AS ACCOUNT_ID , " +
 
                 "          ( SELECT   listagg(ocm2.mapping_id || '||') within GROUP (ORDER BY ocm2.mapping_id) " +
-                "                   FROM     ob_consent_mapping ocm2 " +
-                "                   JOIN     ob_consent_auth_resource ocar2 " +
+                "                   FROM     fs_consent_mapping ocm2 " +
+                "                   JOIN     fs_consent_auth_resource ocar2 " +
                 "                   ON       ocar2.auth_id = ocm2.auth_id " +
                 "                   WHERE    ocar2.consent_id = obc.consent_id) AS MAPPING_ID , " +
 
                 "          ( SELECT   listagg(ocm2.mapping_status || '||') within GROUP (ORDER BY ocm2.mapping_id) " +
-                "                   FROM     ob_consent_mapping ocm2 " +
-                "                   JOIN     ob_consent_auth_resource ocar2 " +
+                "                   FROM     fs_consent_mapping ocm2 " +
+                "                   JOIN     fs_consent_auth_resource ocar2 " +
                 "                   ON       ocar2.auth_id = ocm2.auth_id " +
                 "                   WHERE    ocar2.consent_id = obc.consent_id) AS MAPPING_STATUS , " +
 
                 "          ( SELECT   listagg(ocm2.permission || '||') within GROUP (ORDER BY ocm2.mapping_id) " +
-                "                   FROM     ob_consent_mapping ocm2 " +
-                "                   JOIN     ob_consent_auth_resource ocar2 " +
+                "                   FROM     fs_consent_mapping ocm2 " +
+                "                   JOIN     fs_consent_auth_resource ocar2 " +
                 "                   ON       ocar2.auth_id = ocm2.auth_id " +
                 "                   WHERE    ocar2.consent_id = obc.consent_id) AS PERMISSION " +
 
