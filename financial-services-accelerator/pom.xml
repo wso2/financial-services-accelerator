@@ -33,7 +33,7 @@
     <version>4.0.0-SNAPSHOT</version>
 
     <modules>
-<!--        <module>components/com.wso2.openbanking.accelerator.common</module>-->
+        <module>components/org.wso2.financial.services.accelerator.common</module>
 <!--        <module>components/consent-management/com.wso2.openbanking.accelerator.consent.mgt.dao</module>-->
 <!--        <module>components/com.wso2.openbanking.accelerator.gateway</module>-->
 <!--        <module>components/com.wso2.openbanking.accelerator.identity</module>-->
