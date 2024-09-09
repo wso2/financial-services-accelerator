@@ -520,27 +520,6 @@ public final class FinancialServicesConfigParser {
         return timeout.map(Integer::parseInt).orElse(5);
     }
 
-    public boolean isSubClaimIncluded() {
-
-        Optional<String> timeout = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.IS_SUB_CLAIM_INCLUDED);
-        return timeout.map(Boolean::parseBoolean).orElse(false);
-    }
-
-    public boolean isToeClaimIncluded() {
-
-        Optional<String> timeout = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.IS_TOE_CLAIM_INCLUDED);
-        return timeout.map(Boolean::parseBoolean).orElse(false);
-    }
-
-    public boolean isTxnClaimIncluded() {
-
-        Optional<String> timeout = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.IS_TXN_CLAIM_INCLUDED);
-        return timeout.map(Boolean::parseBoolean).orElse(false);
-    }
-
     /**
      * Returns the expiry time for cache modification.
      *
@@ -588,28 +567,24 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse(null);
     }
 
-    /**
-     * Method to get MAX_RETRIES config for realtime event notifications.
-     *
-     * @return integer maximum number of retries to the retry policy in real-time notification sender
-     */
-    public int getRealtimeEventNotificationMaxRetries() {
 
-        Optional<String> timeout = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.MAX_RETRIES);
-        return timeout.map(Integer::parseInt).orElse(5);
+    /**
+     * Method to get the value Idempotency enable configuration.
+     * @return  Whether Idempotency is enabled or not
+     */
+    public boolean isIdempotencyValidationEnabled() {
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_IS_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
     }
 
     /**
-     * Method to get INITIAL_BACKOFF_TIME_IN_SECONDS config for realtime event notifications.
-     *
-     * @return integer start waiting time for the retry policy before the first retry
+     * Method to get the value Idempotency allowed time configuration.
+     * @return  Idempotency allowed time
      */
-    public int getRealtimeEventNotificationInitialBackoffTimeInSeconds() {
-
-        Optional<String> timeout = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.INITIAL_BACKOFF_TIME_IN_SECONDS);
-        return timeout.map(Integer::parseInt).orElse(60);
+    public String getIdempotencyAllowedTime() {
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_ALLOWED_TIME);
+        return config.map(String::trim).orElse("1440");
     }
+
 
 }
