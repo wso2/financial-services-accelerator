@@ -37,6 +37,5 @@
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.dao</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.service</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.extensions</module>
-<!--        <module>components/org.wso2.financial.services.accelerator.i</module>-->
     </modules>
 </project>
