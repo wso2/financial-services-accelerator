@@ -544,24 +544,24 @@ public final class FinancialServicesConfigParser {
     /**
      * Returns the expiry time for cache modification.
      *
-     * @return String Expiry time.
+     * @return int Expiry time.
      */
-    public String getCommonCacheModifiedExpiryTime() {
-        Optional<String> source = getConfigurationFromKeyAsString(
+    public int getCommonCacheModifiedExpiryTime() {
+        Optional<String> expiryTime = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.COMMON_IDENTITY_CACHE_MODIFY_EXPIRY);
-        return source.map(String::trim).orElse("60");
+        return expiryTime.map(Integer::parseInt).orElse(60);
     }
 
     /**
      * Returns the expiry time for cache access.
      *
-     * @return String Expiry time.
+     * @return int Expiry time.
      */
-    public String getCommonCacheAccessExpiryTime() {
+    public int getCommonCacheAccessExpiryTime() {
 
-        Optional<String> source = getConfigurationFromKeyAsString(
+        Optional<String> expiryTime = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.COMMON_IDENTITY_CACHE_ACCESS_EXPIRY);
-        return source.map(String::trim).orElse("60");
+        return expiryTime.map(Integer::parseInt).orElse(60);
     }
 
     /**
@@ -610,6 +610,18 @@ public final class FinancialServicesConfigParser {
         Optional<String> timeout = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.INITIAL_BACKOFF_TIME_IN_SECONDS);
         return timeout.map(Integer::parseInt).orElse(60);
+    }
+
+    public String getConsentAPIUsername() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_USERNAME);
+        return source.map(String::trim).orElse("admin");
+    }
+
+    public String getConsentAPIPassword() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_PASSWORD);
+        return source.map(String::trim).orElse("admin");
     }
 
 }

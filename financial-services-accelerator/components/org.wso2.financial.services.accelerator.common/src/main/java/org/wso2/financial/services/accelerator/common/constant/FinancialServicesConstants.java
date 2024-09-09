@@ -269,5 +269,8 @@ public class FinancialServicesConstants {
     public static final String DOT_SEPARATOR = ".";
     public static final String PRODUCTION = "PRODUCTION";
     public static final String SANDBOX = "SANDBOX";
+
+    public static final String CONSENT_API_USERNAME = "ConsentManagement.ConsentAPICredentials.Username";
+    public static final String CONSENT_API_PASSWORD = "ConsentManagement.ConsentAPICredentials.Password";
 }
 

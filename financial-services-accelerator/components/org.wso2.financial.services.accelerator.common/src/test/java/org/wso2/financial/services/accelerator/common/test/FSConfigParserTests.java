@@ -181,18 +181,18 @@ public class FSConfigParserTests {
     @Test (priority = 18)
     public void testGetCommonCacheModifiedExpiryTime() {
 
-        String connectionTimeOut = FinancialServicesConfigParser.getInstance()
+        int connectionTimeOut = FinancialServicesConfigParser.getInstance()
                 .getCommonCacheModifiedExpiryTime();
 
-        Assert.assertEquals(connectionTimeOut, "60");
+        Assert.assertEquals(connectionTimeOut, 60);
     }
 
     @Test (priority = 19)
     public void testGetCommonCacheAccessExpiryTime() {
 
-        String connectionTimeOut = FinancialServicesConfigParser.getInstance()
+        int connectionTimeOut = FinancialServicesConfigParser.getInstance()
                 .getCommonCacheAccessExpiryTime();
 
-        Assert.assertEquals(connectionTimeOut, "60");
+        Assert.assertEquals(connectionTimeOut, 60);
     }
 }
