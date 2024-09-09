@@ -48,7 +48,6 @@ public class FinancialServicesConstants {
     public static final String IS_CONSENT_REVOCATION_FLOW = "IS_CONSENT_REVOCATION_FLOW";
 
     public static final String SIGNATURE_ALGORITHMS = "SignatureValidation.AllowedAlgorithms.Algorithm";
-    public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";
     public static final String COMMON_IDENTITY_CACHE_ACCESS_EXPIRY = "Common.Identity.Cache.CacheAccessExpiry";
     public static final String COMMON_IDENTITY_CACHE_MODIFY_EXPIRY = "Common.Identity.Cache.CacheModifiedExpiry";
     public static final String JWKS_ENDPOINT_NAME = "DCR.JWKSEndpointName";
@@ -143,8 +142,6 @@ public class FinancialServicesConstants {
     public static final int PAGINATION_LIMIT_DEFAULT = 25;
     public static final int PAGINATION_OFFSET_DEFAULT = 0;
     public static final String CONSENT_CONFIG_TAG = "Consent";
-    public static final String AUTHORIZE_STEPS_CONFIG_TAG = "AuthorizeSteps";
-    public static final String STEP_CONFIG_TAG = "Step";
     public static final String ALLOWED_SCOPES_CONFIG_TAG = "AllowedScopes";
     public static final String SCOPE_CONFIG_TAG = "Scope";
     public static final String REVOCATION_VALIDATORS_CONFIG_TAG = "RevocationValidators";
@@ -270,7 +267,22 @@ public class FinancialServicesConstants {
     public static final String PRODUCTION = "PRODUCTION";
     public static final String SANDBOX = "SANDBOX";
 
+    public static final String MANAGE_HANDLER = "ConsentManagement.ManageHandler";
+    public static final String AUTHORIZE_STEPS_CONFIG_TAG = "AuthorizeSteps";
+    public static final String STEP_CONFIG_TAG = "Step";
+    public static final String CONSENT_JWT_PAYLOAD_VALIDATION = "ConsentManagement.Validation.JWTPayloadValidation";
+    public static final String SIGNATURE_ALIAS = "ConsentManagement.Validation.RequestSignatureAlias";
+    public static final String CONSENT_VALIDATOR = "ConsentManagement.Validation.Validator";
+    public static final String ADMIN_HANDLER = "ConsentManagement.AdminHandler";
+    public static final String CACHE_MODIFY_EXPIRY = "ConsentManagement.CacheModifiedExpiry";
+    public static final String CACHE_ACCESS_EXPIRY = "ConsentManagement.CacheAccessExpiry";
+    public static final String PRESERVE_CONSENT = "ConsentManagement.PreserveConsentLink";
+    public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";
     public static final String CONSENT_API_USERNAME = "ConsentManagement.ConsentAPICredentials.Username";
     public static final String CONSENT_API_PASSWORD = "ConsentManagement.ConsentAPICredentials.Password";
+    public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
+    public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
+    public static final String MAX_INSTRUCTED_AMOUNT = "ConsentManagement.Payments" +
+            ".MaximumInstructedAmount";
 }
 

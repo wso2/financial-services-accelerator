@@ -36,16 +36,6 @@
                 sampleServletExtension
             </ServletExtension>
         </AuthenticationWebApp>
-        <CIBAAuthenticationEndpointWebApp>
-            <ServletExtension>
-                sampleCIBAServletExtension
-            </ServletExtension>
-        </CIBAAuthenticationEndpointWebApp>
-        <ApplicationInformationEndpoint>
-            <SPMetadataFilterExtension>
-                sampleSPMetadataFilterExtension
-            </SPMetadataFilterExtension>
-        </ApplicationInformationEndpoint>
     </Identity>
 
     <Sample>
@@ -81,22 +71,6 @@
             </CustomType3>
         </FinancialServicesGatewayExecutors>
 
-        <TPPManagement>
-            <TPPValidation>
-                <Enabled>false</Enabled>
-                <ServiceImplClass></ServiceImplClass>
-            </TPPValidation>
-
-            <PSD2RoleValidation>
-                <Enabled>true</Enabled>
-            </PSD2RoleValidation>
-
-            <AllowedScopes>
-                <Scope name="scope 1" roles="PISP"/>
-                <Scope name="scope 2" roles="AISP, PISP"/>
-            </AllowedScopes>
-        </TPPManagement>
-
         <CertificateManagement>
             <ClientCertificateCacheExpiry>3600</ClientCertificateCacheExpiry>
             <TPPValidationCacheExpiry>3600</TPPValidationCacheExpiry>
@@ -125,17 +99,6 @@
 
     </Gateway>
     <Consent>
-        <DataRetention>
-            <Enabled>true</Enabled>
-            <DBSyncEnabled>true</DBSyncEnabled>
-            <CronValue>0 0 0 * * ?</CronValue>
-        </DataRetention>
-        <PeriodicalExpiration>
-            <Enabled>false</Enabled>
-            <CronValue>0 0 0 * * ?</CronValue>
-            <ExpiredConsentStatusValue>Expired</ExpiredConsentStatusValue>
-            <EligibleStatuses>authorised</EligibleStatuses>
-        </PeriodicalExpiration>
         <AuthorizeSteps>
             <Retrieve>
                 <Step class="org.wso2.financial.services.accelerator.common.test.CustomStep1" priority="1"/>
@@ -154,37 +117,20 @@
             <Enabled>true</Enabled>
         </AmendmentHistory>
     </Consent>
-    <DataPublishing>
-        <Thrift>
-            <Streams>
-                <DataStream1>
-                    <Attribute name="attribute1" priority="1"/>
-                    <Attribute name="attribute2" priority="2"/>
-                </DataStream1>
-                <DataStream2>
-                    <Attribute name="attribute11" priority="1"/>
-                    <Attribute name="attribute12" priority="2"/>
-                    <Attribute name="attribute13" priority="3"/>
-                </DataStream2>
-            </Streams>
-        </Thrift>
-        <DisputeResolution>
-            <Enabled>true</Enabled>
-            <PublishNonErrorDisputeResolutionData>true</PublishNonErrorDisputeResolutionData>
-        </DisputeResolution>
-    </DataPublishing>
     <DCR>
         <RegulatoryAPINames>
             <API name = "DynamicClientRegistration"  roles = "AISP, PISP"/>
             <API name = "AccountandTransactionAPI"  roles = "AISP"/>
         </RegulatoryAPINames>
         <RegistrationRequestParams>
-            <ParameterType>
+            <SoftwareEnvironmentIdentification>
                 <Required>true</Required>
                 <AllowedValues>
                     <Value>Sample</Value>
                 </AllowedValues>
-            </ParameterType>
+                <PropertyName>software_environment</PropertyName>
+                <PropertyValueForSandbox>sandbox</PropertyValueForSandbox>
+            </SoftwareEnvironmentIdentification>
         </RegistrationRequestParams>
         <JWKS-Retriever>
             <ConnectionTimeout>1000</ConnectionTimeout>
