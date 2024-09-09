@@ -72,7 +72,7 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
      * @throws IdentityOAuth2Exception
      */
     @Generated(message = "cant unit test super calls")
-    private OAuth2AuthorizeRespDTO issueCode(
+    OAuth2AuthorizeRespDTO issueCode(
             OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) throws IdentityOAuth2Exception {
 
         return super.issue(oAuthAuthzReqMessageContext);

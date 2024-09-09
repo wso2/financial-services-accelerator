@@ -23,9 +23,13 @@ package org.wso2.financial.services.accelerator.identity.extensions.util;
  */
 public class IdentityCommonConstants {
 
+    public static final String CLIENT_ID = "client_id";
     public static final String REQUEST_URI = "request_uri";
+    public static final String RESPONSE_TYPE = "response_type";
+    public static final String REDIRECT_URI = "redirect_uri";
     public static final String REQUEST_OBJECT_SIGNING_ALG = "request_object_signing_alg";
     public static final String CLIENT_ID_ERROR = "Client id not found";
+    public static final String CERTIFICATE_HEADER = "x-wso2-mutual-auth-cert";
     public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     public static final String END_CERT = "-----END CERTIFICATE-----";
     public static final String MTLS_AUTH_HEADER = "MutualTLS.ClientCertificateHeader";
