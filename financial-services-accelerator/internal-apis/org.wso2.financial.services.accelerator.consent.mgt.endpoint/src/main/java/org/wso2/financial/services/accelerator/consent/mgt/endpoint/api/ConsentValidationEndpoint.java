@@ -23,7 +23,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.JWTUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.builder.ConsentValidateBuilder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidationResult;
+import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -46,12 +58,14 @@ import javax.ws.rs.core.Response;
 /**
  * ConsentValidationEndpoint.
  *
- * This specifies a REST API for consent validation to be used at consent enforcement of resource
+ * This specifies a REST API for consent validation to be used at consent
+ * enforcement of resource
  * retrieval/submission requests.
  */
 @SuppressFBWarnings("JAXRS_ENDPOINT")
 // Suppressed content - Endpoints
-// Suppression reason - False Positive : These endpoints are secured with access control
+// Suppression reason - False Positive : These endpoints are secured with access
+// control
 // as defined in the IS deployment.toml file
 // Suppressed warning count - 1
 @Path("/validate")
@@ -90,8 +104,8 @@ public class ConsentValidationEndpoint {
      */
     @POST
     @Path("/validate")
-    @Consumes({"application/jwt; charset=utf-8"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/jwt; charset=utf-8" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response validate(@Context HttpServletRequest request, @Context HttpServletResponse response) {
 
         String payload = ConsentUtils.getStringPayload(request);
@@ -99,9 +113,10 @@ public class ConsentValidationEndpoint {
 
         if (ConsentUtils.getConsentJWTPayloadValidatorConfigEnabled()) {
             try {
-                ConsentExtensionUtils.validateJWTSignatureWithPublicKey(payload, requestSignatureAlias);
-                String decodedRequest = CommonUtils.decodeRequestJWT(payload, ConsentExtensionConstants.BODY) != null ?
-                        CommonUtils.decodeRequestJWT(payload, ConsentExtensionConstants.BODY).toJSONString() : null;
+                JWTUtils.validateJWTSignatureWithPublicKey(payload, requestSignatureAlias);
+                String decodedRequest = JWTUtils.decodeRequestJWT(payload, ConsentExtensionConstants.BODY) != null
+                        ? JWTUtils.decodeRequestJWT(payload, ConsentExtensionConstants.BODY).toJSONString()
+                        : null;
                 if (Objects.nonNull(decodedRequest)) {
                     requestData = new JSONObject(decodedRequest);
                 } else {
@@ -135,8 +150,9 @@ public class ConsentValidationEndpoint {
             headersMap.put(headerName, requestHeaders.getString(headerName));
         }
 
-        JSONObject requestPayload = requestData.has(ConsentExtensionConstants.BODY) ?
-                requestData.getJSONObject(ConsentExtensionConstants.BODY) : null;
+        JSONObject requestPayload = requestData.has(ConsentExtensionConstants.BODY)
+                ? requestData.getJSONObject(ConsentExtensionConstants.BODY)
+                : null;
         String requestPath = requestData.getString(ConsentExtensionConstants.ELECTED_RESOURCE);
         String consentId = requestData.getString(ConsentExtensionConstants.CC_CONSENT_ID);
         String userId = requestData.getString(ConsentExtensionConstants.USER_ID);
@@ -150,12 +166,12 @@ public class ConsentValidationEndpoint {
 
         Map<String, String> resourceParamsMap = new HashMap<>();
         try {
-            //Adding query parameters to the resource map
+            // Adding query parameters to the resource map
             resourceParamsMap = ConsentUtils.addQueryParametersToResourceParamMap(resourceParams);
         } catch (URISyntaxException e) {
             log.error("Error while extracting query parameters", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-            "Error while extracting query parameters");
+                    "Error while extracting query parameters");
         }
 
         ConsentValidateData consentValidateData = new ConsentValidateData(requestHeaders, requestPayload,

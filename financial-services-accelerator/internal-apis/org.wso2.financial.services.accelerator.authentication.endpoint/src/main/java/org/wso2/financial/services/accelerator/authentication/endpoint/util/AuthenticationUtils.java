@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.financial.services.accelerator.authentication.endpoint.FSConsentConfirmServlet;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,8 +80,8 @@ public class AuthenticationUtils {
         try {
             return (FSAuthServletInterface) Class.forName(parser.getAuthServletExtension())
                     .getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException |
-                 InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException
+                | ClassNotFoundException e) {
             log.error("Webapp extension not found", e);
             return null;
         }
@@ -93,9 +94,10 @@ public class AuthenticationUtils {
     }
 
     /**
-     * Retrieve admin credentials in Base64 format from webapp properties or OB configs.
+     * Retrieve admin credentials in Base64 format from webapp properties or OB
+     * configs.
      */
-    public static String getConsentApiCredentials () {
+    public static String getConsentApiCredentials() {
         String username, password;
         try {
             InputStream configurations = FSConsentConfirmServlet.class.getClassLoader()

@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.AuthenticationUtils;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.Constants;
+import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -60,8 +62,9 @@ public class FSConsentConfirmServlet extends HttpServlet {
 
     @SuppressFBWarnings("COOKIE_USAGE")
     // Suppressed content - browserCookies.put(cookie.getName(), cookie.getValue())
-    // Suppression reason - False Positive : The cookie values are only read and here. No sensitive info is added to
-    //                      the cookie in this step.
+    // Suppression reason - False Positive : The cookie values are only read and
+    // here. No sensitive info is added to
+    // the cookie in this step.
     // Suppressed warning count - 1
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -72,7 +75,8 @@ public class FSConsentConfirmServlet extends HttpServlet {
         Map<String, String> browserCookies = new HashMap<>();
         JSONObject consentData = new JSONObject();
 
-        //retrieve commonAuthId to be stored for co-relation of consent Id and access token issued
+        // retrieve commonAuthId to be stored for co-relation of consent Id and access
+        // token issued
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             browserCookies.put(cookie.getName(), cookie.getValue());

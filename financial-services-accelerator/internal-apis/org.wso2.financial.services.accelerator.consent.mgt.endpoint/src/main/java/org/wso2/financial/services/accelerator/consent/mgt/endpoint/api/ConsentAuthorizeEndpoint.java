@@ -31,10 +31,22 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentCache;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.builder.ConsentStepsBuilder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
+import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -63,7 +75,8 @@ import javax.ws.rs.core.Response;
  */
 @SuppressFBWarnings("JAXRS_ENDPOINT")
 // Suppressed content - Endpoints
-// Suppression reason - False Positive : These endpoints are secured with access control
+// Suppression reason - False Positive : These endpoints are secured with access
+// control
 // as defined in the IS deployment.toml file
 // Suppressed warning count - 2
 @Path("/authorize")
@@ -108,10 +121,10 @@ public class ConsentAuthorizeEndpoint {
      */
     @GET
     @Path("/retrieve/{session-data-key}")
-    @Consumes({"application/x-www-form-urlencoded"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/x-www-form-urlencoded" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response retrieve(@Context HttpServletRequest request, @Context HttpServletResponse response,
-                             @PathParam("session-data-key") String sessionDataKey) throws ConsentException,
+            @PathParam("session-data-key") String sessionDataKey) throws ConsentException,
             ConsentManagementException, UserStoreException {
 
         String loggedInUser;
@@ -122,20 +135,20 @@ public class ConsentAuthorizeEndpoint {
         SessionDataCacheEntry cacheEntry = ConsentCache.getCacheEntryFromSessionDataKey(sessionDataKey);
         OAuth2Parameters oAuth2Parameters = cacheEntry.getoAuth2Parameters();
 
-        //Extracting client ID for regulatory identification and redirect URI for error redirects
+        // Extracting client ID for regulatory identification and redirect URI for error
+        // redirects
         String clientId = oAuth2Parameters.getClientId();
         String state = oAuth2Parameters.getState();
         URI redirectURI;
         try {
             redirectURI = new URI(oAuth2Parameters.getRedirectURI());
         } catch (URISyntaxException e) {
-            //Unlikely to happen. In case it happens, error response is sent
+            // Unlikely to happen. In case it happens, error response is sent
             throw new ConsentException(null, AuthErrorCode.INVALID_REQUEST,
                     "Invalid redirect URI", state);
         }
 
-        Map<String, Serializable> sensitiveDataMap =
-                ConsentUtils.getSensitiveDataWithConsentKey(sessionDataKey);
+        Map<String, Serializable> sensitiveDataMap = ConsentUtils.getSensitiveDataWithConsentKey(sessionDataKey);
 
         if ("false".equals(sensitiveDataMap.get(ConsentExtensionConstants.IS_ERROR))) {
             String loggedInUserId = (String) sensitiveDataMap.get("loggedInUser");
@@ -151,7 +164,8 @@ public class ConsentAuthorizeEndpoint {
             }
         } else {
             String isError = (String) sensitiveDataMap.get(ConsentExtensionConstants.IS_ERROR);
-            //Have to throw standard error because cannot access redirect URI with this error
+            // Have to throw standard error because cannot access redirect URI with this
+            // error
             log.error(String.format("Error while getting endpoint parameters. %s",
                     isError.replaceAll("\n\r", "")));
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
@@ -165,7 +179,7 @@ public class ConsentAuthorizeEndpoint {
 
         if (clientId == null) {
             log.error("Client Id not available");
-            //Unlikely error. Included just in case.
+            // Unlikely error. Included just in case.
             throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
                     "Client Id not available", state);
         }
@@ -173,7 +187,7 @@ public class ConsentAuthorizeEndpoint {
         consentData.setState(state);
 
         try {
-            consentData.setRegulatory(CommonUtils.isRegulatoryApp(clientId));
+            consentData.setRegulatory(FinancialServicesUtils.isRegulatoryApp(clientId));
         } catch (RequestObjectException e) {
             log.error("Error while getting regulatory data", e);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
@@ -205,11 +219,11 @@ public class ConsentAuthorizeEndpoint {
      */
     @PATCH
     @Path("/persist/{session-data-key}")
-    @Consumes({"application/json; charset=utf-8"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/json; charset=utf-8" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response persist(@Context HttpServletRequest request, @Context HttpServletResponse response,
-                            @PathParam("session-data-key") String sessionDataKey,
-                            @QueryParam("authorize") String authorize)
+            @PathParam("session-data-key") String sessionDataKey,
+            @QueryParam("authorize") String authorize)
             throws ConsentException, ConsentManagementException, URISyntaxException {
 
         ConsentData consentData = ConsentCache.getConsentDataFromCache(sessionDataKey);
@@ -217,8 +231,8 @@ public class ConsentAuthorizeEndpoint {
         try {
             if (consentData == null) {
                 if (ConsentConstants.STORE_CONSENT) {
-                    Map<String, String> consentDetailsMap =
-                            consentCoreService.getConsentAttributesByName(sessionDataKey);
+                    Map<String, String> consentDetailsMap = consentCoreService
+                            .getConsentAttributesByName(sessionDataKey);
                     if (consentDetailsMap.isEmpty()) {
                         throw new ConsentException(consentData.getRedirectURI(),
                                 AuthErrorCode.SERVER_ERROR,
@@ -297,24 +311,28 @@ public class ConsentAuthorizeEndpoint {
                         "User denied the consent", consentData.getState());
             } else if (authorize != null && !StringUtils.equals("true", authorize)) {
                 if (StringUtils.equals(StringUtils.EMPTY, authorize) || !StringUtils.equals("false", authorize)) {
-            /* "authorize" parameter comes as an empty string only when a value was not defined for the parameter in
-               the URL. Throwing an error since a value must be present for the query parameter. Also, the value should
-               only be true or false */
+                    /*
+                     * "authorize" parameter comes as an empty string only when a value was not
+                     * defined for the parameter in
+                     * the URL. Throwing an error since a value must be present for the query
+                     * parameter. Also, the value should
+                     * only be true or false
+                     */
                     throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
                             ConsentConstants.ERROR_INVALID_VALUE_FOR_AUTHORIZE_PARAM, consentData.getState());
                 } else {
                     return Response.ok().build();
                 }
             } else {
-                location = ConsentUtils.authorizeRequest(Boolean.toString(consentPersistData.getApproval())
-                        , consentPersistData.getBrowserCookies(), consentData);
+                location = ConsentUtils.authorizeRequest(Boolean.toString(consentPersistData.getApproval()),
+                        consentPersistData.getBrowserCookies(), consentData);
             }
         } finally {
             if (ConsentConstants.STORE_CONSENT && consentData != null) {
                 // remove all session data related to the consent from consent attributes
                 ArrayList<String> keysToDelete = new ArrayList<>();
-                Map<String, String> consentAttributes = consentCoreService.
-                        getConsentAttributes(consentData.getConsentId()).getConsentAttributes();
+                Map<String, String> consentAttributes = consentCoreService
+                        .getConsentAttributes(consentData.getConsentId()).getConsentAttributes();
                 consentAttributes.forEach((key, value) -> {
                     if (ConsentUtils.isValidJson(value) && value.contains("sessionDataKey")) {
                         keysToDelete.add(key);
@@ -331,9 +349,10 @@ public class ConsentAuthorizeEndpoint {
     /**
      * Method to execute retrieval steps.
      *
-     * @param consentData   Consent data
-     * @param jsonObject    JSON object
-     * @throws ConsentException if there is an error in executing the retrieval steps
+     * @param consentData Consent data
+     * @param jsonObject  JSON object
+     * @throws ConsentException if there is an error in executing the retrieval
+     *                          steps
      */
     private void executeRetrieval(ConsentData consentData, JSONObject jsonObject) {
 
@@ -349,7 +368,7 @@ public class ConsentAuthorizeEndpoint {
     /**
      * Method to execute persist steps.
      *
-     * @param consentPersistData   Consent Persist data
+     * @param consentPersistData Consent Persist data
      * @throws ConsentException if there is an error in executing the persist steps
      */
     private void executePersistence(ConsentPersistData consentPersistData) throws ConsentException {

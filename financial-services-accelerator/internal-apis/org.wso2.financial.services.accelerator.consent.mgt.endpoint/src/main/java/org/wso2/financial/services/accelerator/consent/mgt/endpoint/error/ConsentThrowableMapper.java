@@ -21,6 +21,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.error;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.consent.mgt.core.constant.ConsentConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.Response;
@@ -39,8 +41,8 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
 
         if (throwable instanceof ConsentException) {
             if (((ConsentException) throwable).getErrorRedirectURI() != null) {
-                return Response.status(((ConsentException) throwable).getStatus().getStatusCode()).
-                        location(((ConsentException) throwable).getErrorRedirectURI()).build();
+                return Response.status(((ConsentException) throwable).getStatus().getStatusCode())
+                        .location(((ConsentException) throwable).getErrorRedirectURI()).build();
             } else {
                 return Response.status(((ConsentException) throwable).getStatus().getStatusCode())
                         .entity(((ConsentException) throwable).getPayload().toString())

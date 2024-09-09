@@ -116,6 +116,10 @@
         <AmendmentHistory>
             <Enabled>true</Enabled>
         </AmendmentHistory>
+        <ConsentAPICredentials>
+            <Username>admin</Username>
+            <Password>admin</Password>
+        </ConsentAPICredentials>
     </Consent>
     <DCR>
         <RegulatoryAPINames>

@@ -143,16 +143,4 @@ public class FinancialServicesUtilsTest {
         Assert.assertEquals(FinancialServicesUtils.reduceStringLength(body, 25), body);
         Assert.assertEquals(FinancialServicesUtils.reduceStringLength(body, 6), "String");
     }
-
-    @Test(priority = 13)
-    public void testGetConsentAPIUsername() {
-
-        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIUsername(), "admin");
-    }
-
-    @Test(priority = 14)
-    public void testGetConsentAPIPassword() {
-
-        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIPassword(), "admin");
-    }
 }

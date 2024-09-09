@@ -18,24 +18,26 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils;
 
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 
 /**
  * Constants class for consent management endpoint.
  */
 public class ConsentConstants {
 
-    public static final String CONSENT_KEY = "OauthConsentKey";
-    public static final String REQUEST_KEY = "AuthRequestKey";
-    public static final String ERROR_PAYLOAD_READ = "Error while reading payload";
-    public static final String ERROR_PAYLOAD_PARSE = "Error while parsing payload";
-    public static final String ERROR_PERSIST_INVALID_APPROVAL = "Invalid value for approval. Should be true/false";
-    public static final String ERROR_PERSIST_APPROVAL_MANDATORY = "Mandatory body parameter approval is unavailable";
-    public static final String ERROR_NO_TYPE_AND_APP_DATA = "Type and application data is unavailable";
-    public static final String ERROR_SERVER_ERROR = "Internal server error";
-    public static final String ERROR_NO_DATA_IN_SESSION_CACHE =
-            "Data unavailable in session cache corresponding to the key provided";
-    public static final String ERROR_INVALID_VALUE_FOR_AUTHORIZE_PARAM = "\"authorize\" parameter is not defined " +
-            "properly or invalid";
-    public static final String PRESERVE_CONSENT = ConsentManagementConfigParser.getInstance().getPreserveConsent();
-    public static final boolean STORE_CONSENT = Boolean.parseBoolean(PRESERVE_CONSENT);
+        public static final String CONSENT_KEY = "OauthConsentKey";
+        public static final String REQUEST_KEY = "AuthRequestKey";
+        public static final String ERROR_PAYLOAD_READ = "Error while reading payload";
+        public static final String ERROR_PAYLOAD_PARSE = "Error while parsing payload";
+        public static final String ERROR_PERSIST_INVALID_APPROVAL = "Invalid value for approval. Should be true/false";
+        public static final String ERROR_PERSIST_APPROVAL_MANDATORY = "Mandatory body parameter approval is " +
+                "unavailable";
+        public static final String ERROR_NO_TYPE_AND_APP_DATA = "Type and application data is unavailable";
+        public static final String ERROR_SERVER_ERROR = "Internal server error";
+        public static final String ERROR_NO_DATA_IN_SESSION_CACHE = "Data unavailable in session cache corresponding" +
+                " to the key provided";
+        public static final String ERROR_INVALID_VALUE_FOR_AUTHORIZE_PARAM = "\"authorize\" parameter is not defined " +
+                        "properly or invalid";
+        public static final String PRESERVE_CONSENT = FinancialServicesConfigParser.getInstance().getPreserveConsent();
+        public static final boolean STORE_CONSENT = Boolean.parseBoolean(PRESERVE_CONSENT);
 }

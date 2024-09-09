@@ -28,6 +28,12 @@ import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
 import org.wso2.financial.services.accelerator.common.caching.FinancialServicesBaseCache;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -36,7 +42,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Cache definition to store objects in consent management component implementations.
+ * Cache definition to store objects in consent management component
+ * implementations.
  */
 public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Object> {
 
@@ -62,6 +69,7 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
     /**
      * Get consent cache instance.
+     * 
      * @return consent cache instance
      */
     public static ConsentCache getInstance() {
@@ -78,9 +86,11 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
     /**
      * Add consent data to consent data cache.
+     * 
      * @param sessionDataKey session data key
-     * @param consentData consent data
-     * @throws ConsentManagementException if an error occurs while adding consent data to cache
+     * @param consentData    consent data
+     * @throws ConsentManagementException if an error occurs while adding consent
+     *                                    data to cache
      */
     public static void addConsentDataToCache(String sessionDataKey, ConsentData consentData)
             throws ConsentManagementException {
@@ -91,9 +101,11 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
     /**
      * Add consent data to database.
+     * 
      * @param sessionDataKey session data key
-     * @param consentData consent data
-     * @throws ConsentManagementException if an error occurs while storing consent data
+     * @param consentData    consent data
+     * @throws ConsentManagementException if an error occurs while storing consent
+     *                                    data
      */
     public static void storeConsent(ConsentData consentData, String sessionDataKey) throws ConsentManagementException {
 
@@ -110,6 +122,7 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
     /**
      * Get Cache Entry by Session Data Key.
+     * 
      * @param sessionDataKey Session Data Key
      * @return Session data cache entry
      */
@@ -120,6 +133,7 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
     /**
      * Get session data cache entry by session data cache key.
+     * 
      * @param cacheKey session data cache key
      * @return Session data cache entry
      */
@@ -130,6 +144,7 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
     /**
      * Get new session data cache key using session data key.
+     * 
      * @param sessionDataKey Session data key
      * @return session data cache key
      */
@@ -140,6 +155,7 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
     /**
      * Get Consent data from the consent cache.
+     * 
      * @param sessionDataKey Session data key
      * @return consent data
      */
@@ -167,8 +183,8 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
                     // remove all session data related to the consent from consent attributes
                     ArrayList<String> keysToDelete = new ArrayList<>();
 
-                    Map<String, String> consentAttributes = consentCoreService.
-                            getConsentAttributes(consentData.getConsentId()).getConsentAttributes();
+                    Map<String, String> consentAttributes = consentCoreService
+                            .getConsentAttributes(consentData.getConsentId()).getConsentAttributes();
 
                     consentAttributes.forEach((key, value) -> {
                         if (ConsentUtils.isValidJson(value) &&

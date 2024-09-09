@@ -51,6 +51,17 @@ import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.local.auth.api.core.ParameterResolverService;
 import org.wso2.carbon.utils.HTTPClientUtils;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementRuntimeException;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -84,10 +95,11 @@ public class ConsentUtils {
      * @return Map of header key value pairs
      */
     @SuppressFBWarnings("SERVLET_HEADER")
-// Suppressed content - Endpoints
-// Suppression reason - False Positive : These endpoints are secured with access control
-// as defined in the IS deployment.toml file
-// Suppressed warning count - 1
+    // Suppressed content - Endpoints
+    // Suppression reason - False Positive : These endpoints are secured with access
+    // control
+    // as defined in the IS deployment.toml file
+    // Suppressed warning count - 1
     public static Map<String, String> getHeaders(HttpServletRequest request) {
         Map<String, String> headers = new HashMap<>();
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -99,12 +111,15 @@ public class ConsentUtils {
     }
 
     /**
-     * Util method to extract the payload from HTTP request object. Can be JSONObject or JSONArray
+     * Util method to extract the payload from HTTP request object. Can be
+     * JSONObject or JSONArray
      *
      * @param request The HTTP request object
-     * @return Object payload can be either an instance of JSONObject or JSONArray only. Can be a ConsentException if
-     * is and error scenario. Error is returned instead of throwing since the error response should be handled by the
-     * toolkit is the manage scenario.
+     * @return Object payload can be either an instance of JSONObject or JSONArray
+     *         only. Can be a ConsentException if
+     *         is and error scenario. Error is returned instead of throwing since
+     *         the error response should be handled by the
+     *         toolkit is the manage scenario.
      */
     public static Object getPayload(HttpServletRequest request) {
         try {
@@ -136,7 +151,8 @@ public class ConsentUtils {
     }
 
     /**
-     * Util method to extract the payload from HTTP request object. Can be only JSONObject
+     * Util method to extract the payload from HTTP request object. Can be only
+     * JSONObject
      *
      * @param request The request object
      * @return JSONObject payload can only be an instance of JSONObject
@@ -144,7 +160,8 @@ public class ConsentUtils {
      */
     public static JSONObject getJSONObjectPayload(HttpServletRequest request) throws ConsentException {
         Object payload = getPayload(request);
-        //JSONArray not supported here. If requirement arises, cast the object to JSONArray from here
+        // JSONArray not supported here. If requirement arises, cast the object to
+        // JSONArray from here
         if (!(payload instanceof JSONObject)) {
             return null;
         }
@@ -155,9 +172,11 @@ public class ConsentUtils {
      * Util method to extract the payload from a HTTP request object.
      *
      * @param request The HTTP request object
-     * @return Object payload can be xml or json. Can be a ConsentException if is and error scenario.
-     * Error is returned instead of throwing since the error response should be handled by the
-     * toolkit is the manage scenario.
+     * @return Object payload can be xml or json. Can be a ConsentException if is
+     *         and error scenario.
+     *         Error is returned instead of throwing since the error response should
+     *         be handled by the
+     *         toolkit is the manage scenario.
      */
     public static Object getFileUploadPayload(HttpServletRequest request) {
         try {
@@ -167,7 +186,7 @@ public class ConsentUtils {
             }
             return payload;
         } catch (ConsentException e) {
-            //Not throwing error since error should be formatted by manage toolkit
+            // Not throwing error since error should be formatted by manage toolkit
             log.error(String.format("%s. Returning null", e.getMessage().replaceAll("\n\r", "")), e);
             return null;
         }
@@ -176,7 +195,8 @@ public class ConsentUtils {
     /**
      * Get the sensitive data corresponding to the session data consent key.
      *
-     * @param sessionDataKeyConsent The session data key corresponding to the data hidden from redirect URLs
+     * @param sessionDataKeyConsent The session data key corresponding to the data
+     *                              hidden from redirect URLs
      * @return The hidden sensitive data as key-value pairs.
      */
     public static Map<String, Serializable> getSensitiveDataWithConsentKey(String sessionDataKeyConsent) {
@@ -185,9 +205,11 @@ public class ConsentUtils {
     }
 
     /**
-     * Get the sensitive data corresponding to the session data key or the session data consent key.
+     * Get the sensitive data corresponding to the session data key or the session
+     * data consent key.
      *
-     * @param key The session data key or session data consent key corresponding to the data hidden from redirect URLs
+     * @param key The session data key or session data consent key corresponding to
+     *            the data hidden from redirect URLs
      * @return The hidden sensitive data as key-value pairs.
      */
     public static Map<String, Serializable> getSensitiveData(String key) {
@@ -227,8 +249,9 @@ public class ConsentUtils {
 
     /**
      * Method to set common data to the response object.
-     * @param consentData   Consent data object
-     * @param jsonObject    JSON object to which the data should be appended
+     * 
+     * @param consentData Consent data object
+     * @param jsonObject  JSON object to which the data should be appended
      */
     public static void setCommonDataToResponse(ConsentData consentData, JSONObject jsonObject) {
 
@@ -242,9 +265,9 @@ public class ConsentUtils {
 
     /**
      * @param consentDetails json object of consent data
-     * @param sessionDataKey  session data key
-     * @return  ConsentData object
-     * @throws URISyntaxException  if the URI is invalid
+     * @param sessionDataKey session data key
+     * @return ConsentData object
+     * @throws URISyntaxException if the URI is invalid
      */
     public static ConsentData getConsentDataFromAttributes(JsonObject consentDetails, String sessionDataKey)
             throws URISyntaxException {
@@ -269,7 +292,7 @@ public class ConsentUtils {
                 ConsentResource.class);
         consentData.setConsentResource(consentResource);
         AuthorizationResource authorizationResource = gson.fromJson(consentDetails
-                        .get(ConsentExtensionConstants.AUTH_RESOURCE), AuthorizationResource.class);
+                .get(ConsentExtensionConstants.AUTH_RESOURCE), AuthorizationResource.class);
         consentData.setAuthResource(authorizationResource);
         consentData.setMetaDataMap(gson.fromJson(consentDetails.get(ConsentExtensionConstants.META_DATA), Map.class));
         consentData.setType(consentDetails.get(ConsentExtensionConstants.TYPE).getAsString());
@@ -277,7 +300,8 @@ public class ConsentUtils {
     }
 
     /**
-     * Send authorize request in order to complete the authorize flow and get the redirect.
+     * Send authorize request in order to complete the authorize flow and get the
+     * redirect.
      *
      * @param consent     The approval/denial of the consent of the user
      * @param cookies     The session cookies used in auth flow
@@ -315,7 +339,7 @@ public class ConsentUtils {
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Error while getting authorize redirect", consentData.getState());
             } else {
-                //Extract the location header from the authorization redirect
+                // Extract the location header from the authorization redirect
                 return new URI(authorizeResponse.getLastHeader(ConsentExtensionConstants.LOCATION).getValue());
             }
         } catch (IOException e) {
@@ -336,7 +360,7 @@ public class ConsentUtils {
         consentResource.put(ConsentExtensionConstants.CLIENT_ID, detailedConsentResource.getClientID());
         try {
             consentResource.put(ConsentExtensionConstants.RECEIPT,
-                   new JSONObject(detailedConsentResource.getReceipt()));
+                    new JSONObject(detailedConsentResource.getReceipt()));
         } catch (JSONException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Exception occurred while parsing" +
                     " receipt");
@@ -403,7 +427,8 @@ public class ConsentUtils {
     }
 
     /**
-     * Util method to generate JWT using a payload and a private key. RS256 is the algorithm used
+     * Util method to generate JWT using a payload and a private key. RS256 is the
+     * algorithm used
      *
      * @param payload    The payload body to be signed
      * @param privateKey The private key for the JWT to be signed with
@@ -434,17 +459,20 @@ public class ConsentUtils {
     }
 
     /**
-     * This method returns the configuration value on whether the JWT payload validation needs to be performed in the
+     * This method returns the configuration value on whether the JWT payload
+     * validation needs to be performed in the
      * consent validation endpoint.
+     * 
      * @return config value
      */
     public static boolean getConsentJWTPayloadValidatorConfigEnabled() {
-        return Boolean.parseBoolean(ConsentManagementConfigParser.getInstance().getConsentValidationConfig());
+        return Boolean.parseBoolean(FinancialServicesConfigParser.getInstance().getConsentValidationConfig());
     }
 
     /**
      * Extract and add query parameters from a URL to existing resource map.
-     * Resource parameter map will contain the resource path(ex: /aisp/accounts/{AccountId}?queryParam=queryParamValue),
+     * Resource parameter map will contain the resource path(ex:
+     * /aisp/accounts/{AccountId}?queryParam=queryParamValue),
      * http method, context(ex: /open-banking/v3.1/aisp)
      *
      * @param resourceParams Map containing the resource parameters
@@ -480,7 +508,8 @@ public class ConsentUtils {
 
     /**
      * Check whether the given string is a valid JSON or not.
-     * @param json  JSON string
+     * 
+     * @param json JSON string
      * @return true if the string is a valid JSON, false otherwise
      */
     public static boolean isValidJson(String json) {

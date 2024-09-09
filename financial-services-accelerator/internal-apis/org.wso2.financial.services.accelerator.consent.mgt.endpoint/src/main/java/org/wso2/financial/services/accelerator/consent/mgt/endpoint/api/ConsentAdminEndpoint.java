@@ -22,6 +22,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.ConsentAdminHandler;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.builder.ConsentAdminBuilder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model.ConsentAdminData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,11 +43,13 @@ import javax.ws.rs.core.UriInfo;
 /**
  * ConsentSearchEndpoint.
  * <p>
- * This specifies a REST API for consent search to be used at consent user and customer service portals.
+ * This specifies a REST API for consent search to be used at consent user and
+ * customer service portals.
  */
 @SuppressFBWarnings("JAXRS_ENDPOINT")
 // Suppressed content - Endpoints
-// Suppression reason - False Positive : These endpoints are secured with access control
+// Suppression reason - False Positive : These endpoints are secured with access
+// control
 // as defined in the IS deployment.toml file
 // Suppressed warning count - 5
 @Path("/admin")
@@ -77,10 +85,10 @@ public class ConsentAdminEndpoint {
      */
     @GET
     @Path("/search")
-    @Consumes({"application/x-www-form-urlencoded"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/x-www-form-urlencoded" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response search(@Context HttpServletRequest request, @Context HttpServletResponse response,
-                           @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo) {
 
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getAbsolutePath().getPath(), request, response);
@@ -93,10 +101,10 @@ public class ConsentAdminEndpoint {
      */
     @GET
     @Path("/search/consent-status-audit")
-    @Consumes({"application/x-www-form-urlencoded"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/x-www-form-urlencoded" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response searchConsentStatusAudit(@Context HttpServletRequest request, @Context HttpServletResponse response,
-                           @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo) {
 
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getAbsolutePath().getPath(), request, response);
@@ -109,10 +117,10 @@ public class ConsentAdminEndpoint {
      */
     @GET
     @Path("/search/consent-file")
-    @Consumes({"application/x-www-form-urlencoded"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/x-www-form-urlencoded" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response searchConsentFile(@Context HttpServletRequest request, @Context HttpServletResponse response,
-                                             @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo) {
 
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getAbsolutePath().getPath(), request, response);
@@ -125,10 +133,10 @@ public class ConsentAdminEndpoint {
      */
     @GET
     @Path("/consent-amendment-history")
-    @Consumes({"application/json; charset=utf-8"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/json; charset=utf-8" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response getConsentAmendmentHistoryById(@Context HttpServletRequest request,
-                           @Context HttpServletResponse response, @Context UriInfo uriInfo) {
+            @Context HttpServletResponse response, @Context UriInfo uriInfo) {
 
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getAbsolutePath().getPath(), request, response);
@@ -141,10 +149,10 @@ public class ConsentAdminEndpoint {
      */
     @DELETE
     @Path("/revoke")
-    @Consumes({"application/x-www-form-urlencoded"})
-    @Produces({"application/json; charset=utf-8"})
+    @Consumes({ "application/x-www-form-urlencoded" })
+    @Produces({ "application/json; charset=utf-8" })
     public Response revoke(@Context HttpServletRequest request, @Context HttpServletResponse response,
-                           @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo) {
 
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getJSONObjectPayload(request), uriInfo.getQueryParameters(),
@@ -155,13 +163,14 @@ public class ConsentAdminEndpoint {
 
     /**
      * Method to send response using the payload and response status.
-     * @param consentAdminData  Consent admin data
+     * 
+     * @param consentAdminData Consent admin data
      * @return Response
      */
     private Response sendResponse(ConsentAdminData consentAdminData) {
         if (consentAdminData.getPayload() != null || consentAdminData.getResponseStatus() != null) {
-            return Response.status(consentAdminData.getResponseStatus().getStatusCode()).
-                    entity(consentAdminData.getResponsePayload().toString()).build();
+            return Response.status(consentAdminData.getResponseStatus().getStatusCode())
+                    .entity(consentAdminData.getResponsePayload().toString()).build();
         } else {
             log.debug("Response status or payload unavailable. Throwing exception");
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Response data unavailable");

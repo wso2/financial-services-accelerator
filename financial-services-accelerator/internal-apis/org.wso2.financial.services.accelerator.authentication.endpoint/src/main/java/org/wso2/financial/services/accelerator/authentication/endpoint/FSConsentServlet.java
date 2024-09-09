@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.AuthenticationUtils;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.Constants;
-import org.wso2.bfsi.consent.management.extensions.authservlet.BFSIAuthServletInterface;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -50,10 +50,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import static org.wso2.bfsi.consent.management.extensions.authservlet.utils.Utils.i18n;
+import static org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils.i18n;
 
 /**
- * The servlet responsible for displaying the consent details in the auth UI flow.
+ * The servlet responsible for displaying the consent details in the auth UI
+ * flow.
  */
 public class FSConsentServlet extends HttpServlet {
 
@@ -61,12 +62,14 @@ public class FSConsentServlet extends HttpServlet {
     private static final long serialVersionUID = 6106269076132678046L;
     private static Logger log = LoggerFactory.getLogger(FSConsentServlet.class);
 
-    @SuppressFBWarnings({"REQUESTDISPATCHER_FILE_DISCLOSURE", "TRUST_BOUNDARY_VIOLATION"})
+    @SuppressFBWarnings({ "REQUESTDISPATCHER_FILE_DISCLOSURE", "TRUST_BOUNDARY_VIOLATION" })
     // Suppressed content - obAuthServlet.getJSPPath()
-    // Suppression reason - False Positive : JSP path is hard coded and does not accept any user inputs, therefore it
-    //                      can be trusted
+    // Suppression reason - False Positive : JSP path is hard coded and does not
+    // accept any user inputs, therefore it
+    // can be trusted
     // Suppressed content - Encode.forJava(sessionDataKey)
-    // Suppression reason - False positive : sessionDataKey is encoded for Java which escapes untrusted characters
+    // Suppression reason - False positive : sessionDataKey is encoded for Java
+    // which escapes untrusted characters
     // Suppressed warning count - 2
     @Override
     public void doGet(HttpServletRequest originalRequest, HttpServletResponse response)
@@ -141,8 +144,6 @@ public class FSConsentServlet extends HttpServlet {
             log.error("Unable to find BFSI auth servlet extension implementation. Returning error.");
             return;
         }
-        // Get servlet extension
-        FSAuthServletInterface fsAuthServletTK = fsAuthServletTK;
 
         Map<String, Object> updatedValues;
 
@@ -161,16 +162,17 @@ public class FSConsentServlet extends HttpServlet {
 
     /**
      * Retrieve consent data with the session data key.
-     * @param sessionDataKeyConsent  session data key
-     * @param servletContext         servlet context
-     * @return   HTTP response
+     * 
+     * @param sessionDataKeyConsent session data key
+     * @param servletContext        servlet context
+     * @return HTTP response
      * @throws IOException if an error occurs while retrieving consent data
      */
     HttpResponse getConsentDataWithKey(String sessionDataKeyConsent, ServletContext servletContext) throws IOException {
 
         String retrievalBaseURL = servletContext.getInitParameter(Constants.RETRIEVAL_BASE_URL);
-        String retrieveUrl = (retrievalBaseURL.endsWith(Constants.SLASH)) ? retrievalBaseURL + sessionDataKeyConsent :
-                retrievalBaseURL + Constants.SLASH + sessionDataKeyConsent;
+        String retrieveUrl = (retrievalBaseURL.endsWith(Constants.SLASH)) ? retrievalBaseURL + sessionDataKeyConsent
+                : retrievalBaseURL + Constants.SLASH + sessionDataKeyConsent;
 
         CloseableHttpClient client = HttpClientBuilder.create().build();
         HttpGet dataRequest = new HttpGet(retrieveUrl);
@@ -183,9 +185,10 @@ public class FSConsentServlet extends HttpServlet {
 
     /**
      * Create consent data from the response of the consent retrieval.
-     * @param consentResponse  consent response from retrieval
-     * @param statusCode       status code of the response
-     * @return  consent data JSON object
+     * 
+     * @param consentResponse consent response from retrieval
+     * @param statusCode      status code of the response
+     * @return consent data JSON object
      * @throws IOException if an error occurs while creating the consent data
      */
     JSONObject createConsentDataset(JSONObject consentResponse, int statusCode) throws IOException {
