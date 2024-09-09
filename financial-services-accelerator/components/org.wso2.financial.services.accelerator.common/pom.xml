@@ -31,18 +31,6 @@
     <packaging>bundle</packaging>
     <name>WSO2 Financial Services - Common component</name>
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.orbit.org.bouncycastle</groupId>-->
-<!--            <artifactId>bcpkix-jdk18on</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.orbit.org.bouncycastle</groupId>-->
-<!--            <artifactId>bcprov-jdk18on</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.ws.commons.axiom.wso2</groupId>-->
-<!--            <artifactId>axiom</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -65,16 +53,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.carbon.identity.framework</groupId>-->
-<!--            <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.wso2.orbit.org.bouncycastle</groupId>-->
-<!--                    <artifactId>bcprov-jdk15on</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -138,10 +116,11 @@
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
-                    <failOnError>false</failOnError>
+                    <failOnError>true</failOnError>
                     <xmlOutput>true</xmlOutput>
                     <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs</spotbugsXmlOutputDirectory>
                     <includeFilterFile>${project.basedir}/src/main/resources/findbugs-include.xml</includeFilterFile>
+                    <excludeFilterFile>${project.basedir}/src/main/resources/findbugs-exclude.xml</excludeFilterFile>
                     <plugins>
                         <plugin>
                             <groupId>com.h3xstream.findsecbugs</groupId>
@@ -252,13 +231,23 @@
                         </Private-Package>
                         <Import-Package>
                             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
-                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}"
+                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
+                            com.nimbusds.jose;version="${org.wso2.orbit.nimbus.version.range}",
+                            com.nimbusds.jwt;version="${org.wso2.orbit.nimbus.version.range}",
+                            javax.cache,
+                            net.minidev.json;version="${json-smart.version}",
+                            org.apache.axiom.*;version="${axiom.osgi.version.range}",
+                            org.apache.commons.lang3;version="${commons-lang3.version}",
+                            org.apache.commons.logging;version="${commons.logging.version}",
+                            org.wso2.carbon.identity.application.mgt.*;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.oauth.*;version="${identity.inbound.auth.oauth.version.range}",
+                            org.wso2.carbon.identity.oauth2.*;version="${identity.inbound.auth.oauth.version.range}",
+                            org.wso2.securevault;version="${org.wso2.securevault.version}"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.common.internal,
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                         <_dsannotations>*</_dsannotations>
                     </instructions>
                 </configuration>

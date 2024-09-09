@@ -32,10 +32,10 @@ public class ErrorConstants {
     public static final String ERROR = "error";
 
     //Low level textual error code
-    public static final String FIELD_INVALID = "OB.Field.Invalid";
-    public static final String FIELD_MISSING = "OB.Field.Missing";
-    public static final String RESOURCE_INVALID_FORMAT = "OB.Resource.InvalidFormat";
-    public static final String UNSUPPORTED_LOCAL_INSTRUMENTS = "OB.Unsupported.LocalInstrument";
+    public static final String FIELD_INVALID = "FS.Field.Invalid";
+    public static final String FIELD_MISSING = "FS.Field.Missing";
+    public static final String RESOURCE_INVALID_FORMAT = "FS.Resource.InvalidFormat";
+    public static final String UNSUPPORTED_LOCAL_INSTRUMENTS = "FS.Unsupported.LocalInstrument";
     public static final String PATH_REQUEST_BODY = "Payload.Body";
     public static final String PATH_INSTRUCTED_AMOUNT = "Data.Initiation.InstructedAmount";
     public static final String PATH_CREDIT_ACCOUNT = "Data.Initiation.CreditorAccount";
@@ -112,7 +112,7 @@ public class ErrorConstants {
     public static final String COF_PATH_DEBTOR_ACCOUNT_SECOND_IDENTIFICATION =
             "Data.DebtorAccount.SecondaryIdentification";
     public static final String PATH_CUTOFF_DATE = "Data.CutOffDateTime";
-    public static final String RULES_CUTOFF = "OB.Rules.AfterCutOffDateTime";
+    public static final String RULES_CUTOFF = "FS.Rules.AfterCutOffDateTime";
     public static final String PATH_CONSENT_ID = "Data.Initiation.Consent-id";
     public static final String PATH_DATA = "Data";
     public static final String PATH_INITIATION = "Data.Initiation";
@@ -137,19 +137,19 @@ public class ErrorConstants {
     public static final String AUTH_TOKEN_REVOKE_ERROR = "Cutoff date time elapsed. Error while revoking the consent.";
     public static final String ACCOUNT_ID_NOT_FOUND_ERROR = "Account IDs not available in persist request";
     public static final String ACCOUNT_ID_FORMAT_ERROR = "Account IDs format error in persist request";
-    public static final String RESOURCE_CONSENT_MISMATCH = "OB.Resource.ConsentMismatch";
+    public static final String RESOURCE_CONSENT_MISMATCH = "FS.Resource.ConsentMismatch";
     public static final String INVALID_USER_ID = "Token received does not bound to the authorized user.:"
             + ErrorConstants.PATH_ACCESS_TOKEN;
     public static final String PATH_ACCESS_TOKEN = "Header.AccessToken";
     public static final String MSG_INVALID_CLIENT_ID = "The client Id related the consent does not match with the " +
             "client id bound to token";
     public static final String PATH_CLIENT_ID = "Header.Client-id";
-    public static final String UNEXPECTED_ERROR = "OB.UnexpectedError";
+    public static final String UNEXPECTED_ERROR = "FS.UnexpectedError";
     public static final String INVALID_CONSENT_TYPE = "Invalid Consent Type found in the request";
     public static final String ACCOUNT_CONSENT_STATE_INVALID = "Account validation failed due to invalid consent" +
             " state. :" + ErrorConstants.PATH_STATUS;
     public static final String PATH_STATUS = "Payload.Status";
-    public static final String RESOURCE_INVALID_CONSENT_STATUS = "OB.Resource.InvalidConsentStatus";
+    public static final String RESOURCE_INVALID_CONSENT_STATUS = "FS.Resource.InvalidConsentStatus";
     public static final String INSTRUCTION_IDENTIFICATION_MISMATCH = "Instruction Identification does not match:"
             + ErrorConstants.PATH_INSTRUCTION_IDENTIFICATION;
     public static final String PATH_INSTRUCTION_IDENTIFICATION = "Data.Initiation.InstructionIdentification";
@@ -213,12 +213,12 @@ public class ErrorConstants {
     public static final String CONSENT_EXPIRED_ERROR = "Provided consent is expired. :"
             + ErrorConstants.PATH_EXPIRATION_DATE;
     public static final String MSG_MISSING_CLIENT_ID = "Missing mandatory parameter x-wso2-client-id.";
-    public static final String RESOURCE_NOT_FOUND = "OB.Resource.NotFound";
+    public static final String RESOURCE_NOT_FOUND = "FS.Resource.NotFound";
     public static final String ACC_INITIATION_RETRIEVAL_ERROR = "Error occurred while handling the account initiation" +
             " retrieval request";
     public static final String INVALID_CONSENT_ID = "Invalid Consent Id found in the request";
     public static final String CONSENT_ID_NOT_FOUND = "Consent ID not available in consent data";
-    public static final String FIELD_INVALID_DATE = "OB.Field.InvalidDate";
+    public static final String FIELD_INVALID_DATE = "FS.Field.InvalidDate";
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
     public static final String CONSENT_ATTRIBUTE_RETRIEVAL_ERROR = "Error occurred while retrieving the consent " +
             "attributes";

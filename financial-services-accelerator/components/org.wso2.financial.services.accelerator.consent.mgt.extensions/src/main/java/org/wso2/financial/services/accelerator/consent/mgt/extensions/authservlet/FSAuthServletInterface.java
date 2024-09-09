@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * The interface to define how the servlet extension should be implemented.
  */
-public interface BFSIAuthServletInterface {
+public interface FSAuthServletInterface {
 
     /**
      * Method to update the request attributes.

@@ -80,7 +80,7 @@ public final class FinancialServicesConfigParser {
     /**
      * Singleton getInstance method to create only one object.
      *
-     * @return OpenBankingConfigParser object
+     * @return FinancialServicesConfigParser object
      */
     public static FinancialServicesConfigParser getInstance() {
 
@@ -129,7 +129,7 @@ public final class FinancialServicesConfigParser {
             Stack<String> nameStack = new Stack<>();
             secretResolver = SecretResolverFactory.create(rootElement, true);
             readChildElements(rootElement, nameStack);
-            buildOBExecutors();
+            buildFSExecutors();
             buildConsentAuthSteps();
             buildAllowedScopes();
             buildAllowedSubscriptions();
@@ -147,7 +147,7 @@ public final class FinancialServicesConfigParser {
         }
     }
 
-    private void buildOBExecutors() {
+    private void buildFSExecutors() {
 
         OMElement gatewayElement = rootElement.getFirstChildWithName(
                 new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
@@ -155,13 +155,13 @@ public final class FinancialServicesConfigParser {
 
         if (gatewayElement != null) {
 
-            OMElement openBankingGatewayExecutors = gatewayElement.getFirstChildWithName(
+            OMElement financialServicesGatewayExecutors = gatewayElement.getFirstChildWithName(
                     new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
                             FinancialServicesConstants.GATEWAY_EXECUTOR_CONFIG_TAG));
 
-            if (openBankingGatewayExecutors != null) {
-                //obtaining each consent type element under OpenBankingGatewayExecutors tag
-                Iterator consentTypeElement = openBankingGatewayExecutors.getChildElements();
+            if (financialServicesGatewayExecutors != null) {
+                //obtaining each consent type element under FinancialServicesGatewayExecutors tag
+                Iterator consentTypeElement = financialServicesGatewayExecutors.getChildElements();
                 while (consentTypeElement.hasNext()) {
                     OMElement consentType = (OMElement) consentTypeElement.next();
                     String consentTypeName = consentType.getLocalName();

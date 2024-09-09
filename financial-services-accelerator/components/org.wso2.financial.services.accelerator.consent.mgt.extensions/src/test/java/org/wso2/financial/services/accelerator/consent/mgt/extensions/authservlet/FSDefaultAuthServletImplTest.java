@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.BFSIDefaultAuthServletImpl;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
@@ -42,9 +42,9 @@ import static org.testng.Assert.assertTrue;
 /**
  * Default Auth Servlet Impl Test.
  */
-public class BFSIDefaultAuthServletImplTest {
+public class FSDefaultAuthServletImplTest {
 
-    BFSIDefaultAuthServletImpl servletImpl = new BFSIDefaultAuthServletImpl();
+    FSDefaultAuthServletImpl servletImpl = new FSDefaultAuthServletImpl();
     @Mock
     HttpServletRequest httpServletRequestMock;
     @Mock
@@ -139,6 +139,6 @@ public class BFSIDefaultAuthServletImplTest {
     @Test
     public void testGetJSPPath() {
 
-        assertEquals("/bfsi_default.jsp", servletImpl.getJSPPath());
+        assertEquals("/fs_default.jsp", servletImpl.getJSPPath());
     }
 }

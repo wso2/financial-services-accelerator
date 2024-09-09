@@ -101,7 +101,7 @@ public class ModelValidatorsTest {
     }
 
     @Test
-    public void checkOpenBankingValidator() {
+    public void checkFinancialServicesValidator() {
 
         SampleDifferentClass sampleRequestObject = new SampleDifferentClass();
         sampleRequestObject.setName("name");

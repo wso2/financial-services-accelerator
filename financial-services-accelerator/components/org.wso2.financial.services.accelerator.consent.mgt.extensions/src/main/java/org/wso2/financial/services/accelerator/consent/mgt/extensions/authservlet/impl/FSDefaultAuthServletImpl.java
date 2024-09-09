@@ -20,7 +20,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservl
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.BFSIAuthServletInterface;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 
@@ -32,9 +32,9 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * The default implementation for BFSI flow.
+ * The default implementation for FS flow.
  */
-public class BFSIDefaultAuthServletImpl implements BFSIAuthServletInterface {
+public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
 
     private String jspPath;
     @Override
@@ -91,6 +91,6 @@ public class BFSIDefaultAuthServletImpl implements BFSIAuthServletInterface {
     @Override
     public String getJSPPath() {
 
-        return "/bfsi_default.jsp";
+        return "/fs_default.jsp";
     }
 }

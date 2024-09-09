@@ -159,7 +159,7 @@ public class ConsentManageUtils {
      * @return Whether the instructed amount is valid
      */
     public static boolean validateMaxInstructedAmount(String instructedAmount) {
-        //This is a mandatory configuration in bfsi-consent-management.xml. Hence can't be null.
+        //This is a mandatory configuration in finanical-services.xml. Hence can't be null.
         String maxInstructedAmount = (String) parser.getConfiguration().get(
                 FinancialServicesConstants.MAX_INSTRUCTED_AMOUNT);
         return Double.parseDouble(instructedAmount) <= Double.parseDouble(maxInstructedAmount);

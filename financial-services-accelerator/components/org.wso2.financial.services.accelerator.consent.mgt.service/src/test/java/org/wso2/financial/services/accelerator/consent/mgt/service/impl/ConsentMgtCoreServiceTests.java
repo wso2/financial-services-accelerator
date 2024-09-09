@@ -68,7 +68,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mockStatic;
 
 /**
- * Test for BFSI consent management core service.
+ * Test for FS consent management core service.
  */
 public class ConsentMgtCoreServiceTests {
 

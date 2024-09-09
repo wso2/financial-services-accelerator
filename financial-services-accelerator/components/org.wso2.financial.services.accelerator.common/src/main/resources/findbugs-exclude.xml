@@ -22,20 +22,36 @@
         <Class name="org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser"/>
         <Bug pattern="DC_DOUBLECHECK"/>
     </Match>
-
     <Match>
         <Class name="org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser"/>
         <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
     </Match>
     <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.persistence.JDBCPersistenceManager"/>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.persistence.JDBCPersistenceManager"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.internal.FinancialServicesCommonDataHolder"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.internal.FinancialServicesCommonDataHolder"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.internal.FinancialServicesCommonDataHolder"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
+    <Match>
         <Class name="org.wso2.financial.services.accelerator.common.util.CarbonUtils"/>
         <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/>
-    </Match>
-    <!--Java Executor Services return a Future object when submitting the executor services. Since we are expecting
-     the executorService.submit() of EventQueue class to run asynchronously and we are not doing anything with
-     the returned Future object the following bug pattern is excluded.-->
-    <Match>
-        <Class name="org.wso2.financial.services.accelerator.common.event.executor.OBEventQueue"/>
-        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
     </Match>
 </FindBugsFilter>

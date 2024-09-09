@@ -336,7 +336,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate-validator}</version>
+                <version>${hibernate-validator.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -461,10 +461,10 @@
         <jackson.databinding.version>2.16.1</jackson.databinding.version>
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <!--Base Products related dependencies-->
-        <identity.inbound.auth.oauth.version>7.0.26</identity.inbound.auth.oauth.version>
-        <identity.inbound.auth.oauth.version.range>[7.0.26, 7.0.62)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
+        <identity.inbound.auth.oauth.version>7.0.26</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.oauth.version.range>[7.0.26, 7.0.62)</identity.inbound.auth.oauth.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>
         <mockito.version>5.3.1</mockito.version>
@@ -478,5 +478,7 @@
         <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
         <google.gson.version.range>[2.9,3)</google.gson.version.range>
         <commons-collections.version.range>[4.4.0, 5.0.0)</commons-collections.version.range>
+        <axiom.osgi.version.range>[1.2.11, 2.0.0)</axiom.osgi.version.range>
+        <org.wso2.orbit.nimbus.version.range>[7.9.0, 8.0)</org.wso2.orbit.nimbus.version.range>
     </properties>
 </project>
