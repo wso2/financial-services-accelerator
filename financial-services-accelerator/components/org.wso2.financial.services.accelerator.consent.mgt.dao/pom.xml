@@ -222,7 +222,7 @@
                         <Import-Package>
                             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
                             org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
-                            org.wso2.bfsi.consent.management.common.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                             org.apache.commons.lang3;version="${commons-lang3.version}",
                             org.apache.commons.collections4;version="${commons-collections.version}",
                             org.apache.commons.logging;version="${commons.logging.version}",

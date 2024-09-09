@@ -50,7 +50,7 @@ public class ConsentMgtServiceComponent {
 
         ConsentCoreService consentCoreService = new ConsentCoreServiceImpl();
 
-        // Verify BFSI consent database connection when the server starts up
+        // Verify FS consent database connection when the server starts up
         try {
             boolean isConnectionActive = JDBCPersistenceManager.getInstance().getDBConnection()
                     .isValid(FinancialServicesConfigParser.getInstance().getConnectionVerificationTimeout());

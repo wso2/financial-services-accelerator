@@ -80,19 +80,19 @@ public class ConsentMgtDAOConstants {
     public static final String PLAIN_PLACEHOLDER = "plainPlaceholder";
     public static final String EQUALS = "equals";
     // Consent Database Table Identifiers
-    public static final String TABLE_OB_CONSENT = "OB_CONSENT";
-    public static final String TABLE_OB_CONSENT_AUTH_RESOURCE = "OB_CONSENT_AUTH_RESOURCE";
-    public static final String TABLE_OB_CONSENT_MAPPING = "OB_CONSENT_MAPPING";
-    public static final String TABLE_OB_CONSENT_ATTRIBUTE = "OB_CONSENT_ATTRIBUTE";
-    public static final String TABLE_OB_CONSENT_FILE = "OB_CONSENT_FILE";
+    public static final String TABLE_FS_CONSENT = "FS_CONSENT";
+    public static final String TABLE_FS_CONSENT_AUTH_RESOURCE = "FS_CONSENT_AUTH_RESOURCE";
+    public static final String TABLE_FS_CONSENT_MAPPING = "FS_CONSENT_MAPPING";
+    public static final String TABLE_FS_CONSENT_ATTRIBUTE = "FS_CONSENT_ATTRIBUTE";
+    public static final String TABLE_FS_CONSENT_FILE = "FS_CONSENT_FILE";
 
     //Numbers are assigned to each consent DB table & used as the reference for each table when storing CA history
     public static final Map<String, String> TABLES_MAP = Map.of(
-            TABLE_OB_CONSENT, "01",
-            TABLE_OB_CONSENT_AUTH_RESOURCE, "02",
-            TABLE_OB_CONSENT_MAPPING, "03",
-            TABLE_OB_CONSENT_ATTRIBUTE, "04",
-            TABLE_OB_CONSENT_FILE, "05"
+            TABLE_FS_CONSENT, "01",
+            TABLE_FS_CONSENT_AUTH_RESOURCE, "02",
+            TABLE_FS_CONSENT_MAPPING, "03",
+            TABLE_FS_CONSENT_ATTRIBUTE, "04",
+            TABLE_FS_CONSENT_FILE, "05"
     );
 
     public static final Map<String, String> COLUMNS_MAP = Map.of(

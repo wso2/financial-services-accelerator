@@ -181,7 +181,7 @@ public class FinancialServicesConstants {
     public static final String JWS_RESP_SIGNING_ENABLE = "JwsSignatureConfiguration.ResponseSigning.Enable";
     public static final String JWS_RESP_SIGNING_ALGO = "JwsSignatureConfiguration.ResponseSigning.AllowedAlgorithm";
 
-    // Open Banking Identity Manager
+    // OIdentity Manager
     public static final String FS_IDN_RETRIEVER_SIG_ALIAS = "FSIdentityRetriever.Server.SigningCertificateAlias";
     public static final String FS_IDN_RETRIEVER_SANDBOX_SIG_ALIAS =
             "FSIdentityRetriever.Server.SandboxSigningCertificateAlias";
@@ -267,7 +267,6 @@ public class FinancialServicesConstants {
     public static final String PRODUCTION = "PRODUCTION";
     public static final String SANDBOX = "SANDBOX";
 
-// NEw
     public static final String MANAGE_HANDLER = "ConsentManagement.ManageHandler";
     public static final String AUTHORIZE_STEPS_CONFIG_TAG = "AuthorizeSteps";
     public static final String STEP_CONFIG_TAG = "Step";
@@ -283,6 +282,7 @@ public class FinancialServicesConstants {
     public static final String CONSENT_API_PASSWORD = "ConsentManagement.ConsentAPICredentials.Password";
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
+<<<<<<< HEAD
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
     public static final String MAX_INSTRUCTED_AMOUNT = "ConsentManagement.Payments" +
             ".MaximumInstructedAmount";
@@ -290,5 +290,9 @@ public class FinancialServicesConstants {
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
     public static final String REMOVE_TENANT_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveTenantDomainFromSubject";
+=======
+    public static final String MAX_INSTRUCTED_AMOUNT = "ConsentManagement.Payments" +
+            ".MaximumInstructedAmount";
+>>>>>>> upstream/main
 }
 

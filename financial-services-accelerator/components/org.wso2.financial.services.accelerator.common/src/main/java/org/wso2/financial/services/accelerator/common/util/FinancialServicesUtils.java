@@ -37,7 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 
 /**
- * Open Banking common utility class.
+ * Financial Services common utility class.
  */
 public class FinancialServicesUtils {
 

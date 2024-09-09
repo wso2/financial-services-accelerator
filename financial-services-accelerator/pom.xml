@@ -28,28 +28,6 @@
     </parent>
 
     <name>WSO2 Financial Services Accelerator</name>
-<!--    <dependencies>-->
-<!--        <dependency>-->
-<!--            <groupId>org.json.wso2</groupId>-->
-<!--            <artifactId>json</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.orbit.com.nimbusds</groupId>-->
-<!--            <artifactId>nimbus-jose-jwt</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.financial.services.accelerator</groupId>-->
-<!--            <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.financial.services.accelerator</groupId>-->
-<!--            <artifactId>org.wso2.financial.services.accelerator.consent.mgt.service</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.wso2.financial.services.accelerator</groupId>-->
-<!--            <artifactId>org.wso2.financial.services.accelerator.common</artifactId>-->
-<!--        </dependency>-->
-<!--    </dependencies>-->
     <artifactId>financial-services-accelerator</artifactId>
     <packaging>pom</packaging>
     <version>4.0.0-SNAPSHOT</version>
@@ -60,5 +38,6 @@
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.service</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.extensions</module>
         <module>components/org.wso2.financial.services.accelerator.identity.extensions</module>
+
     </modules>
 </project>

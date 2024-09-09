@@ -32,7 +32,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationServiceImpl;
 
 /**
- * Method to register Open Banking common OSGi Services.
+ * Method to register Financial Services common OSGi Services.
  */
 @Component(
         name = "org.wso2.financial.services.accelerator.common",

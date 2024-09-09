@@ -64,7 +64,7 @@ public class HTTPClientUtils {
      * Get closeable https client.
      *
      * @return Closeable https client
-     * @throws FinancialServicesException OpenBankingException exception
+     * @throws FinancialServicesException FinancialServicesException exception
      */
     @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
     public static CloseableHttpClient getHttpsClient() throws FinancialServicesException {

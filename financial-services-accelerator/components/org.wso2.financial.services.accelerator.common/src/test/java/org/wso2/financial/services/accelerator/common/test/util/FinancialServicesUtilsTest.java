@@ -37,9 +37,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 /**
- * Test for Open Banking Utils.
+ * Test for Financial Services Utils.
  */
-public class OpenBankingUtilsTest {
+public class FinancialServicesUtilsTest {
 
     @Mock
     private MockedStatic<FinancialServicesConfigParser> configParser;

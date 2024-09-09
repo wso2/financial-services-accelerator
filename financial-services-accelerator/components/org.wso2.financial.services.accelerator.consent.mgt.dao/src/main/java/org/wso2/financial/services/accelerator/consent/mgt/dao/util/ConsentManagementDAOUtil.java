@@ -472,13 +472,13 @@ public class ConsentManagementDAOUtil {
 
         String tableId;
         if (ConsentMgtDAOConstants.TYPE_CONSENT_BASIC_DATA.equals(consentDataType)) {
-            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT);
+            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT);
         } else if (ConsentMgtDAOConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA.equals(consentDataType)) {
-            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT_AUTH_RESOURCE);
+            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT_AUTH_RESOURCE);
         } else if (ConsentMgtDAOConstants.TYPE_CONSENT_ATTRIBUTES_DATA.equals(consentDataType)) {
-            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT_ATTRIBUTE);
+            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT_ATTRIBUTE);
         } else if (ConsentMgtDAOConstants.TYPE_CONSENT_MAPPING_DATA.equals(consentDataType)) {
-            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT_MAPPING);
+            tableId = ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT_MAPPING);
         } else {
             log.error(String.format("Can not find a table matching to the provided consentDataType : %s",
                     consentDataType.replaceAll("[\r\n]", "")));
@@ -576,15 +576,15 @@ public class ConsentManagementDAOUtil {
 
             changedAttributesJsonDataMap = consentHistoryResource.getChangedAttributesJsonDataMap();
 
-            if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT)
+           if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT)
                     .equals(tableID)) {
                 changedAttributesJsonDataMap.put(ConsentMgtDAOConstants.TYPE_CONSENT_BASIC_DATA,
                         changedAttributesString);
-            } else if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT_ATTRIBUTE)
+            } else if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT_ATTRIBUTE)
                     .equals(tableID)) {
                 changedAttributesJsonDataMap.put(ConsentMgtDAOConstants.TYPE_CONSENT_ATTRIBUTES_DATA,
                         changedAttributesString);
-            } else if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT_AUTH_RESOURCE)
+            } else if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT_AUTH_RESOURCE)
                     .equals(tableID)) {
                 Map<String, Object> consentAuthResources;
                 if (changedAttributesJsonDataMap.containsKey(ConsentMgtDAOConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA)) {
@@ -596,7 +596,7 @@ public class ConsentManagementDAOUtil {
                 consentAuthResources.put(recordID, changedAttributesString);
                 changedAttributesJsonDataMap.put(ConsentMgtDAOConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA,
                         consentAuthResources);
-            } else if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_OB_CONSENT_MAPPING)
+            } else if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT_MAPPING)
                     .equals(tableID)) {
                 Map<String, Object> consentMappingResources;
                 if (changedAttributesJsonDataMap.containsKey(ConsentMgtDAOConstants.TYPE_CONSENT_MAPPING_DATA)) {
