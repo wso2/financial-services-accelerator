@@ -21,7 +21,7 @@ package org.wso2.financial.services.accelerator.identity.extensions.auth.extensi
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.mockito.MockedStatic;
 import org.testng.annotations.Test;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,13 +39,13 @@ public class FSCodeResponseTypeValidatorTest {
     @Test
     public void checkValidCodeResponseTypeValidation() throws OAuthProblemException {
 
-        try (MockedStatic<IdentityCommonUtils> mock = mockStatic(IdentityCommonUtils.class)) {
+        try (MockedStatic<FinancialServicesUtils> mock = mockStatic(FinancialServicesUtils.class)) {
             // Mock
             HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
             when(httpServletRequestMock.getParameter("response_type")).thenReturn("code");
             when(httpServletRequestMock.getParameter("client_id")).thenReturn("1234567654321");
 
-            mock.when(() -> IdentityCommonUtils.isRegulatoryApp(anyString())).thenReturn(false);
+            mock.when(() -> FinancialServicesUtils.isRegulatoryApp(anyString())).thenReturn(false);
 
             FSCodeResponseTypeValidator uut = spy(new FSCodeResponseTypeValidator());
 

@@ -25,9 +25,9 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.authz.handlers.CodeResponseTypeHandler;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 /**
  * Extension to append scope with BFSI_ prefix at the end of auth flow, before offering auth code.
@@ -86,6 +86,6 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
     @Generated(message = "Ignoring because it requires a service call")
     boolean isRegulatory(String clientId) throws RequestObjectException {
 
-        return IdentityCommonUtils.isRegulatoryApp(clientId);
+        return FinancialServicesUtils.isRegulatoryApp(clientId);
     }
 }

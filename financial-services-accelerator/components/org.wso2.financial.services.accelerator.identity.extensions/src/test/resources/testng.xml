@@ -30,8 +30,6 @@
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProviderTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImplTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtilsTest" />
-            <class name="org.wso2.financial.services.accelerator.identity.extensions.validator.LogicValidatorsTest" />
-            <class name="org.wso2.financial.services.accelerator.identity.extensions.validator.ModelValidatorsTest" />
         </classes>
     </test>
 </suite>

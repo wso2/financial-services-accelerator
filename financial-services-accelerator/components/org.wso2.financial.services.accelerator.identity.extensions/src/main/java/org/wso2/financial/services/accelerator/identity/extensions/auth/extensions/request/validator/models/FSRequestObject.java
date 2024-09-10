@@ -24,9 +24,9 @@ import com.nimbusds.jwt.SignedJWT;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.openidconnect.model.RequestObject;
 import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
-import org.wso2.financial.services.accelerator.identity.extensions.validator.annotation.RequiredParameter;
-import org.wso2.financial.services.accelerator.identity.extensions.validator.annotation.RequiredParameters;
-import org.wso2.financial.services.accelerator.identity.extensions.validator.annotation.ValidScopeFormat;
+import org.wso2.financial.services.accelerator.common.validator.annotation.RequiredParameter;
+import org.wso2.financial.services.accelerator.common.validator.annotation.RequiredParameters;
+import org.wso2.financial.services.accelerator.common.validator.annotation.ValidScopeFormat;
 
 import java.util.List;
 import java.util.Map;

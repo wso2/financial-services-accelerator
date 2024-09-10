@@ -19,9 +19,9 @@
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
-import org.wso2.financial.services.accelerator.identity.extensions.validator.FinancialServicesValidator;
 
 import java.util.Map;
 

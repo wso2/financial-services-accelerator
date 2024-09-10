@@ -27,9 +27,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.openidconnect.model.RequestObject;
+import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
-import org.wso2.financial.services.accelerator.identity.extensions.validator.FinancialServicesValidator;
 
 import java.text.ParseException;
 import java.util.List;
