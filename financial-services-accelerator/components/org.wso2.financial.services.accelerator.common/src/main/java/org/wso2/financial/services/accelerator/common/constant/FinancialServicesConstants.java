@@ -76,6 +76,7 @@ public class FinancialServicesConstants {
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
+    public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
     public static final String MAX_INSTRUCTED_AMOUNT = "Consent.Payments.MaximumInstructedAmount";
     public static final String REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
