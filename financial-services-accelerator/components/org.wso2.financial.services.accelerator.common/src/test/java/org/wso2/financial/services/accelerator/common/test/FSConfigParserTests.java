@@ -57,7 +57,7 @@ public class FSConfigParserTests {
     @Test(expectedExceptions = FinancialServicesRuntimeException.class, priority = 1)
     public void testConfigParserInitiationWithoutPath() {
 
-        FinancialServicesConfigParser openBankingConfigParser = FinancialServicesConfigParser.getInstance();
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     }
 
@@ -65,16 +65,16 @@ public class FSConfigParserTests {
     public void testConfigParserInit() {
 
         System.setProperty("carbon.home", absolutePathForTestResources);
-        FinancialServicesConfigParser openBankingConfigParser = FinancialServicesConfigParser.getInstance();
-        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.FSHandler"), "DummyValue");
-        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.FSHandler2"), "property.value");
-        Assert.assertNotNull(openBankingConfigParser.getConfiguration().get("Sample.FSHandler4"));
-        Map<String, Map<Integer, String>> openBankingExecutors = FinancialServicesConfigParser.getInstance()
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        Assert.assertEquals(configParser.getConfiguration().get("Sample.FSHandler"), "DummyValue");
+        Assert.assertEquals(configParser.getConfiguration().get("Sample.FSHandler2"), "property.value");
+        Assert.assertNotNull(configParser.getConfiguration().get("Sample.FSHandler4"));
+        Map<String, Map<Integer, String>> fsExecutors = FinancialServicesConfigParser.getInstance()
                 .getFinancialServicesExecutors();
 
-        assertEquals(openBankingExecutors.get("CustomType1").get(1),
+        assertEquals(fsExecutors.get("CustomType1").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomHandler2");
-        assertEquals(openBankingExecutors.get("CustomType2").get(1),
+        assertEquals(fsExecutors.get("CustomType2").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomHandler");
 
         Map<String, Map<Integer, String>> stepsConfig = FinancialServicesConfigParser.getInstance()
@@ -85,7 +85,7 @@ public class FSConfigParserTests {
         assertEquals(stepsConfig.get("Retrieve").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomStep1");
 
-        Map<String, List<String>> apiMap = openBankingConfigParser.getAllowedAPIs();
+        Map<String, List<String>> apiMap = configParser.getAllowedAPIs();
         List<String> roles = apiMap.get("DynamicClientRegistration");
         Assert.assertNotNull(apiMap);
         Assert.assertNotNull(apiMap.get("DynamicClientRegistration"));
