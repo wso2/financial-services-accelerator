@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl;
 
-import com.sun.org.apache.xpath.internal.operations.String;
 import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
