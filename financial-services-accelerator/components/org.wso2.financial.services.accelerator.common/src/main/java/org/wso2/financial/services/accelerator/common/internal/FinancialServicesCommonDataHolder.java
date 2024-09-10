@@ -22,8 +22,10 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 
+import java.security.KeyStore;
+
 /**
- * Data holder for  Common module.
+ * Data holder for Common module.
  */
 public class FinancialServicesCommonDataHolder {
 
@@ -31,6 +33,7 @@ public class FinancialServicesCommonDataHolder {
     private ApplicationManagementService applicationManagementService;
     private int commonCacheAccessExpiry;
     private int commonCacheModifiedExpiry;
+    private KeyStore trustStore = null;
 
     private FinancialServicesCommonDataHolder() {
 
@@ -65,7 +68,8 @@ public class FinancialServicesCommonDataHolder {
     /**
      * To set the ApplicationManagementService.
      *
-     * @param applicationManagementService instance of {@link ApplicationManagementService}
+     * @param applicationManagementService instance of
+     *                                     {@link ApplicationManagementService}
      */
     public void setApplicationManagementService(ApplicationManagementService applicationManagementService) {
 
@@ -90,5 +94,13 @@ public class FinancialServicesCommonDataHolder {
     public void setCommonCacheModifiedExpiry(String expTime) {
 
         this.commonCacheModifiedExpiry = expTime == null ? 60 : Integer.parseInt(expTime);
+    }
+
+    public KeyStore getTrustStore() {
+        return trustStore;
+    }
+
+    public void setTrustStore(KeyStore trustStore) {
+        this.trustStore = trustStore;
     }
 }

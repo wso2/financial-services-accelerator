@@ -43,7 +43,7 @@ public class FSConfigParserTests {
     @BeforeClass
     public void beforeClass() throws ReflectiveOperationException {
 
-        //to execute util class initialization
+        // to execute util class initialization
         new CarbonUtils();
         System.setProperty("some.property", "property.value");
         System.setProperty("carbon.home", ".");
@@ -52,11 +52,12 @@ public class FSConfigParserTests {
         absolutePathForTestResources = file.getAbsolutePath();
     }
 
-    //Runtime exception is thrown here because carbon home is not defined properly for an actual carbon product
+    // Runtime exception is thrown here because carbon home is not defined properly
+    // for an actual carbon product
     @Test(expectedExceptions = FinancialServicesRuntimeException.class, priority = 1)
     public void testConfigParserInitiationWithoutPath() {
 
-        FinancialServicesConfigParser openBankingConfigParser = FinancialServicesConfigParser.getInstance();
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     }
 
@@ -64,27 +65,27 @@ public class FSConfigParserTests {
     public void testConfigParserInit() {
 
         System.setProperty("carbon.home", absolutePathForTestResources);
-        FinancialServicesConfigParser openBankingConfigParser = FinancialServicesConfigParser.getInstance();
-        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.FSHandler"), "DummyValue");
-        Assert.assertEquals(openBankingConfigParser.getConfiguration().get("Sample.FSHandler2"), "property.value");
-        Assert.assertNotNull(openBankingConfigParser.getConfiguration().get("Sample.FSHandler4"));
-        Map<String, Map<Integer, String>> openBankingExecutors =
-                FinancialServicesConfigParser.getInstance().getFinancialServicesExecutors();
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        Assert.assertEquals(configParser.getConfiguration().get("Sample.FSHandler"), "DummyValue");
+        Assert.assertEquals(configParser.getConfiguration().get("Sample.FSHandler2"), "property.value");
+        Assert.assertNotNull(configParser.getConfiguration().get("Sample.FSHandler4"));
+        Map<String, Map<Integer, String>> fsExecutors = FinancialServicesConfigParser.getInstance()
+                .getFinancialServicesExecutors();
 
-        assertEquals(openBankingExecutors.get("CustomType1").get(1),
+        assertEquals(fsExecutors.get("CustomType1").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomHandler2");
-        assertEquals(openBankingExecutors.get("CustomType2").get(1),
+        assertEquals(fsExecutors.get("CustomType2").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomHandler");
 
-        Map<String, Map<Integer, String>> stepsConfig =
-                FinancialServicesConfigParser.getInstance().getConsentAuthorizeSteps();
+        Map<String, Map<Integer, String>> stepsConfig = FinancialServicesConfigParser.getInstance()
+                .getConsentAuthorizeSteps();
 
         assertEquals(stepsConfig.get("Persist").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomStep2");
         assertEquals(stepsConfig.get("Retrieve").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomStep1");
 
-        Map<String, List<String>> apiMap = openBankingConfigParser.getAllowedAPIs();
+        Map<String, List<String>> apiMap = configParser.getAllowedAPIs();
         List<String> roles = apiMap.get("DynamicClientRegistration");
         Assert.assertNotNull(apiMap);
         Assert.assertNotNull(apiMap.get("DynamicClientRegistration"));
@@ -126,7 +127,7 @@ public class FSConfigParserTests {
         Assert.assertEquals(maxConnectionsPerRoute, 500);
     }
 
-    @Test (priority = 10)
+    @Test(priority = 10)
     public void testGetAuthServletExtension() {
 
         String authServletExtension = FinancialServicesConfigParser.getInstance().getAuthServletExtension();
@@ -134,7 +135,7 @@ public class FSConfigParserTests {
         Assert.assertEquals(authServletExtension, "sampleServletExtension");
     }
 
-    @Test (priority = 12)
+    @Test(priority = 12)
     public void testGetJWKSConnectionTimeout() {
 
         String connectionTimeOut = FinancialServicesConfigParser.getInstance()
@@ -143,7 +144,7 @@ public class FSConfigParserTests {
         Assert.assertEquals(connectionTimeOut, "1000");
     }
 
-    @Test (priority = 13)
+    @Test(priority = 13)
     public void testGetConnectionVerificationTimeout() {
 
         int connectionTimeOut = FinancialServicesConfigParser.getInstance()
@@ -152,7 +153,7 @@ public class FSConfigParserTests {
         Assert.assertEquals(connectionTimeOut, 1000);
     }
 
-    @Test (priority = 14)
+    @Test(priority = 14)
     public void testGetJWKSReadTimeout() {
 
         String connectionTimeOut = FinancialServicesConfigParser.getInstance()
@@ -161,38 +162,45 @@ public class FSConfigParserTests {
         Assert.assertEquals(connectionTimeOut, "3000");
     }
 
-    @Test (priority = 16)
-    public void testGetEventNotificationTokenIssuer() {
-
-        String tokenIssuer = FinancialServicesConfigParser.getInstance()
-                .getEventNotificationTokenIssuer();
-
-        Assert.assertEquals(tokenIssuer, "www.wso2.com");
-    }
-
-    @Test (priority = 17)
-    public void testGetNumberOfSetsToReturn() {
-
-        int maxEvents = FinancialServicesConfigParser.getInstance().getNumberOfSetsToReturn();
-
-        Assert.assertEquals(maxEvents, 5);
-    }
-
-    @Test (priority = 18)
+    @Test(priority = 18)
     public void testGetCommonCacheModifiedExpiryTime() {
 
-        String connectionTimeOut = FinancialServicesConfigParser.getInstance()
+        int connectionTimeOut = FinancialServicesConfigParser.getInstance()
                 .getCommonCacheModifiedExpiryTime();
 
-        Assert.assertEquals(connectionTimeOut, "60");
+        Assert.assertEquals(connectionTimeOut, 60);
     }
 
-    @Test (priority = 19)
+    @Test(priority = 19)
     public void testGetCommonCacheAccessExpiryTime() {
 
-        String connectionTimeOut = FinancialServicesConfigParser.getInstance()
+        int connectionTimeOut = FinancialServicesConfigParser.getInstance()
                 .getCommonCacheAccessExpiryTime();
 
-        Assert.assertEquals(connectionTimeOut, "60");
+        Assert.assertEquals(connectionTimeOut, 60);
+    }
+
+    @Test(priority = 20)
+    public void testGetConsentAPIUsername() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIUsername(), "admin");
+    }
+
+    @Test(priority = 21)
+    public void testGetConsentAPIPassword() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIPassword(), "admin");
+    }
+
+    @Test(priority = 22)
+    public void testGetPreserveConsent() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getPreserveConsent(), "false");
+    }
+
+    @Test(priority = 23)
+    public void testGetConsentValidationConfig() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance().getConsentValidationConfig());
     }
 }

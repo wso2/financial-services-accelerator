@@ -45,10 +45,10 @@ public class FinancialServicesCommonServiceComponent {
     @Activate
     protected void activate(ComponentContext context) {
 
-        FinancialServicesConfigurationService openBankingConfigurationService
+        FinancialServicesConfigurationService financialServicesConfigurationService
                 = new FinancialServicesConfigurationServiceImpl();
         context.getBundleContext().registerService(FinancialServicesConfigurationService.class.getName(),
-                openBankingConfigurationService, null);
+                financialServicesConfigurationService, null);
         context.getBundleContext().registerService(ApplicationManagementService.class,
                 ApplicationManagementService.getInstance(), null);
 
