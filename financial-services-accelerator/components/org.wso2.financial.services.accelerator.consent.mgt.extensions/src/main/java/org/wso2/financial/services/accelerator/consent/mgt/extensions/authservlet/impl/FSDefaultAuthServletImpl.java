@@ -18,8 +18,10 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -36,13 +38,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
 
-    private String jspPath;
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest request, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
 
-        String consentType = dataSet.getString("type");
-        switch (consentType) {
+        switch (dataSet.getString("type")) {
 
             case ConsentExtensionConstants.ACCOUNTS:
                 return Utils.populateAccountsData(request, dataSet);
@@ -51,7 +51,7 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
             case ConsentExtensionConstants.FUNDS_CONFIRMATIONS:
                 return Utils.populateCoFData(request, dataSet);
             default:
-                return new HashMap<>();
+                return Collections.emptyMap();
         }
     }
 
@@ -59,7 +59,7 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
     public Map<String, Object> updateSessionAttribute(HttpServletRequest request, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
 
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
     @Override
@@ -72,20 +72,22 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
 
         Map<String, Object> returnMaps = new HashMap<>();
 
-        String[] accounts = request.getParameter("accounts[]").replaceAll("[\r\n]", "").split(":");
+        String[] accounts = request.getParameter("accounts[]")
+                .replaceAll(FinancialServicesConstants.NEW_LINE, "").split(":");
         returnMaps.put("accountIds", List.of(accounts));
-
         returnMaps.put(ConsentExtensionConstants.PAYMENT_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.PAYMENT_ACCOUNT).replaceAll("[\r\n]", ""));
+                request.getParameter(ConsentExtensionConstants.PAYMENT_ACCOUNT)
+                        .replaceAll(FinancialServicesConstants.NEW_LINE, ""));
         returnMaps.put(ConsentExtensionConstants.COF_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.COF_ACCOUNT).replaceAll("[\r\n]", ""));
+                request.getParameter(ConsentExtensionConstants.COF_ACCOUNT)
+                        .replaceAll(FinancialServicesConstants.NEW_LINE, ""));
         return returnMaps;
     }
 
     @Override
     public Map<String, String> updateConsentMetaData(HttpServletRequest request) {
 
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
     @Override

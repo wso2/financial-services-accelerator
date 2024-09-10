@@ -81,7 +81,9 @@ public class FinancialServicesConstants {
     public static final String SOFTWARE_ROLES = "software_roles";
     public static final String SOFTWARE_STATEMENT = "software_statement";
     public static final String SOFTWARE_ID = "software_id";
+    public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
+    public static final String NEW_LINE = "[\r\n]";
     public static final String SOFTWARE_ENVIRONMENT = "software_environment";
     public static final String TOKEN_ENDPOINT = "DCR.TokenEndpoint";
     public static final String STORE_HOSTNAME = "PublisherURL";

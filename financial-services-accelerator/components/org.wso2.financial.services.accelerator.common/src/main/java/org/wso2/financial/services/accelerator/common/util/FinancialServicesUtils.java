@@ -155,9 +155,9 @@ public class FinancialServicesUtils {
 
         JWSObject plainObject = JWSObject.parse(jwtToken);
 
-        if ("head".equals(jwtPart)) {
+        if (FinancialServicesConstants.JWT_HEAD.equals(jwtPart)) {
             return plainObject.getHeader().toJSONObject();
-        } else if ("body".equals(jwtPart)) {
+        } else if (FinancialServicesConstants.JWT_BODY.equals(jwtPart)) {
             return plainObject.getPayload().toJSONObject();
         }
         return null;
