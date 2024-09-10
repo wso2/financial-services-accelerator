@@ -26,7 +26,6 @@ import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.identity.openidconnect.RequestObjectValidatorImpl;
 import org.wso2.carbon.identity.openidconnect.model.RequestObject;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
@@ -153,6 +152,6 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
     @Generated(message = "Excluding from code coverage since it requires a service call")
     protected boolean isRegulatory(OAuth2Parameters oAuth2Parameters) throws RequestObjectException {
 
-        return FinancialServicesUtils.isRegulatoryApp(oAuth2Parameters.getClientId());
+        return IdentityCommonUtils.isRegulatoryApp(oAuth2Parameters.getClientId());
     }
 }

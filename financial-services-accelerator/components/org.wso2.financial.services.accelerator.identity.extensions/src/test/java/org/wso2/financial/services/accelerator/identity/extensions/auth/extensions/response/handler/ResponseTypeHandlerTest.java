@@ -104,32 +104,6 @@ public class ResponseTypeHandlerTest {
         assertEquals(999L, argument.getValue().getRefreshTokenvalidityPeriod());
     }
 
-//    @Test(expectedExceptions = IdentityOAuth2Exception.class)
-//    public void checkValidHybridResponseTypeHandlingForException()
-//            throws IdentityOAuth2Exception, RequestObjectException {
-//
-//        // Mock
-//        FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-//        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(999L);
-//        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd"});
-//
-//        FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
-//        doReturn(null).when(uut).issueCode(any());
-//        doReturn(true).when(uut).isRegulatory(any());
-//
-//        ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
-//                ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
-//
-//        // Assign
-//        FSHybridResponseTypeHandlerExtension.fsResponseTypeHandler = fsResponseTypeHandler;
-//
-//        // Act
-//        uut.issue(new OAuthAuthzReqMessageContext(new OAuth2AuthorizeReqDTO()));
-//
-//        // Assert
-//        verify(uut).issue(argument.capture());
-//    }
-
     @Test(expectedExceptions = IdentityOAuth2Exception.class)
     public void checkValidHybridResponseTypeHandlingForIdentityOAuth2Exception()
             throws IdentityOAuth2Exception, RequestObjectException {

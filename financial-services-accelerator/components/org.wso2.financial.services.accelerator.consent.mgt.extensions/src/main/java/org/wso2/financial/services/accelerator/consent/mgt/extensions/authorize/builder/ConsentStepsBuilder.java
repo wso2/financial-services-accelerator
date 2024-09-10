@@ -49,7 +49,7 @@ public class ConsentStepsBuilder {
 
         try {
             Map<String, Map<Integer, String>> stepsConfig = ConsentExtensionsDataHolder.getInstance()
-                    .getConfigurationService().getConsentAuthorizeSteps();
+                    .getConfigurationService().getAuthorizeSteps();
             Map<Integer, String> persistIntegerStringMap = stepsConfig.get(PERSIST);
             if (persistIntegerStringMap != null) {
                 consentPersistSteps = persistIntegerStringMap.keySet().stream()

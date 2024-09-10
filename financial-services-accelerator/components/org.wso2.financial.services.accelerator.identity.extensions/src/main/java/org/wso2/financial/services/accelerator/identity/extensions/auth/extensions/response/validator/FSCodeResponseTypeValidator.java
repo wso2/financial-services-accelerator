@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.validators.AbstractValidator;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -74,7 +74,7 @@ public class FSCodeResponseTypeValidator extends AbstractValidator<HttpServletRe
     private boolean isValidResponseType(String clientId, String responseType) {
 
         try {
-            if (FinancialServicesUtils.isRegulatoryApp(clientId) && CODE.equals(responseType)) {
+            if (IdentityCommonUtils.isRegulatoryApp(clientId) && CODE.equals(responseType)) {
                 return false;
             }
         } catch (RequestObjectException e) {

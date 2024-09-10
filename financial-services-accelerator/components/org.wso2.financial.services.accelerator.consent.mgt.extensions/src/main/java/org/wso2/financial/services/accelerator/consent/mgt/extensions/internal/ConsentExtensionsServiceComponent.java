@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
@@ -51,17 +51,18 @@ public class ConsentExtensionsServiceComponent {
     }
 
     @Reference(
-            service = FinancialServicesConfigParser.class,
+            name = "FinancialServicesConfigurationService",
+            service = FinancialServicesConfigurationService.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetConfigService"
     )
-    public void setConfigService(FinancialServicesConfigParser configurationService) {
+    public void setConfigService(FinancialServicesConfigurationService configurationService) {
 
         ConsentExtensionsDataHolder.getInstance().setConfigurationService(configurationService);
     }
 
-    public void unsetConfigService(FinancialServicesConfigParser configurationService) {
+    public void unsetConfigService(FinancialServicesConfigurationService configurationService) {
 
         ConsentExtensionsDataHolder.getInstance().setConfigurationService(null);
 
@@ -74,7 +75,8 @@ public class ConsentExtensionsServiceComponent {
     }
 
     @Reference(
-            service = org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService.class,
+            name = "ConsentCoreService",
+            service = ConsentCoreService.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetConsentCoreService"

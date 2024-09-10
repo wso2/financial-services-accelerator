@@ -20,7 +20,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.builder.ConsentAdminBuilder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.builder.ConsentStepsBuilder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
@@ -37,7 +37,7 @@ public class ConsentExtensionsDataHolder {
 
     private static Log log = LogFactory.getLog(ConsentExtensionsDataHolder.class);
     private static volatile ConsentExtensionsDataHolder instance;
-    private FinancialServicesConfigParser configurationService;
+    private FinancialServicesConfigurationService configurationService;
     private ConsentCoreService consentCoreService;
     private ConsentStepsBuilder consentStepsBuilder;
     private ConsentManageBuilder consentManageBuilder;
@@ -64,12 +64,12 @@ public class ConsentExtensionsDataHolder {
         return instance;
     }
 
-    public FinancialServicesConfigParser getConfigurationService() {
+    public FinancialServicesConfigurationService getConfigurationService() {
 
         return configurationService;
     }
 
-    public void setConfigurationService(FinancialServicesConfigParser configurationService) {
+    public void setConfigurationService(FinancialServicesConfigurationService configurationService) {
 
         this.configurationService = configurationService;
 

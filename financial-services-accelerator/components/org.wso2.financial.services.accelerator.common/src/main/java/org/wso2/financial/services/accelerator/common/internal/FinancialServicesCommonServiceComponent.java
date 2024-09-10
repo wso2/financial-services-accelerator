@@ -24,10 +24,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationServiceImpl;
 
@@ -49,27 +45,8 @@ public class FinancialServicesCommonServiceComponent {
                 = new FinancialServicesConfigurationServiceImpl();
         context.getBundleContext().registerService(FinancialServicesConfigurationService.class.getName(),
                 financialServicesConfigurationService, null);
-        context.getBundleContext().registerService(ApplicationManagementService.class,
-                ApplicationManagementService.getInstance(), null);
 
         log.debug("Financial Services common component is activated successfully");
-    }
-
-    @Reference(
-            name = "ApplicationManagementService",
-            service = ApplicationManagementService.class,
-            cardinality = ReferenceCardinality.MANDATORY,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetApplicationManagementService"
-    )
-    protected void setApplicationManagementService(ApplicationManagementService mgtService) {
-
-        FinancialServicesCommonDataHolder.getInstance().setApplicationManagementService(mgtService);
-    }
-
-    protected void unsetApplicationManagementService(ApplicationManagementService mgtService) {
-
-        FinancialServicesCommonDataHolder.getInstance().setApplicationManagementService(null);
     }
 
     @Deactivate

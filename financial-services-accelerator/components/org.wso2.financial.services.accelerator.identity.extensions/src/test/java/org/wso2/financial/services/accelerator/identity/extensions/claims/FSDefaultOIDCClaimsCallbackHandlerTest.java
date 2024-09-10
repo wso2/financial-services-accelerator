@@ -39,7 +39,6 @@ import org.wso2.carbon.identity.oauth2.internal.OAuth2ServiceComponentHolder;
 import org.wso2.carbon.identity.oauth2.model.HttpRequestHeader;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
@@ -109,7 +108,6 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
 
         try (MockedStatic<IdentityCommonUtils> identityCommonUtilsMock =
                      Mockito.mockStatic(IdentityCommonUtils.class);
-             MockedStatic<FinancialServicesUtils> commonUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
              MockedStatic<FrameworkUtils> frameworkUtilsMock = Mockito.mockStatic(FrameworkUtils.class);
              MockedStatic<X509CertUtils> x509CertUtilsMock = Mockito.mockStatic(X509CertUtils.class)) {
 
@@ -144,7 +142,7 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
             identityCommonUtilsMock.when(IdentityCommonUtils::getMTLSAuthHeader)
                     .thenReturn(TestConstants.CERTIFICATE_HEADER);
 
-            commonUtilsMock.when(() -> FinancialServicesUtils.isRegulatoryApp(anyString())).thenReturn(true);
+            identityCommonUtilsMock.when(() -> IdentityCommonUtils.isRegulatoryApp(anyString())).thenReturn(true);
             frameworkUtilsMock.when(FrameworkUtils::getMultiAttributeSeparator)
                     .thenReturn(MULTI_ATTRIBUTE_SEPARATOR_DEFAULT);
             Base64URL base64URL = Base64URL.encode(TestConstants.CERTIFICATE_CONTENT);

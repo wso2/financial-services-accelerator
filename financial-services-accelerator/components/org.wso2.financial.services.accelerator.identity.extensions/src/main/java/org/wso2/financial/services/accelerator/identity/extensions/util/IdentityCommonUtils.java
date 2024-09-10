@@ -29,9 +29,11 @@ import org.wso2.carbon.identity.application.common.util.IdentityApplicationConst
 import org.wso2.carbon.identity.base.IdentityRuntimeException;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -280,6 +282,27 @@ public class IdentityCommonUtils {
             return IdentityTenantUtil.getTenantIdOfUser(userId);
         } catch (IdentityRuntimeException e) {
             throw new FinancialServicesException("Error retrieving tenant id for user: " + userId, e);
+        }
+    }
+
+    /**
+     * Check whether the client ID belongs to a regulatory app.
+     *
+     * @param clientId client ID
+     * @return true if the client ID belongs to a regulatory app
+     * @throws RequestObjectException If an error occurs while checking the client ID
+     */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    public static boolean isRegulatoryApp(String clientId) throws RequestObjectException {
+
+        try {
+            return OAuth2Util.isFapiConformantApp(clientId);
+        } catch (InvalidOAuthClientException e) {
+            throw new RequestObjectException(OAuth2ErrorCodes.INVALID_CLIENT, "Could not find an existing app for " +
+                    "clientId: " + clientId, e);
+        } catch (IdentityOAuth2Exception e) {
+            throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
+                    "provider for clientId: " + clientId, e);
         }
     }
 }

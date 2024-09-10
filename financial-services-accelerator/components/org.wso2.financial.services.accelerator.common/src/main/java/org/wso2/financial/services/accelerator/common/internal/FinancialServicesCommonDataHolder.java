@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.common.internal;
 
-import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 
@@ -30,7 +29,6 @@ import java.security.KeyStore;
 public class FinancialServicesCommonDataHolder {
 
     private static volatile FinancialServicesCommonDataHolder instance;
-    private ApplicationManagementService applicationManagementService;
     private int commonCacheAccessExpiry;
     private int commonCacheModifiedExpiry;
     private KeyStore trustStore = null;
@@ -53,27 +51,6 @@ public class FinancialServicesCommonDataHolder {
             }
         }
         return instance;
-    }
-
-    /**
-     * To get the instance of {@link ApplicationManagementService}.
-     *
-     * @return applicationManagementService
-     */
-    public ApplicationManagementService getApplicationManagementService() {
-
-        return applicationManagementService;
-    }
-
-    /**
-     * To set the ApplicationManagementService.
-     *
-     * @param applicationManagementService instance of
-     *                                     {@link ApplicationManagementService}
-     */
-    public void setApplicationManagementService(ApplicationManagementService applicationManagementService) {
-
-        this.applicationManagementService = applicationManagementService;
     }
 
     public int getCommonCacheAccessExpiry() {

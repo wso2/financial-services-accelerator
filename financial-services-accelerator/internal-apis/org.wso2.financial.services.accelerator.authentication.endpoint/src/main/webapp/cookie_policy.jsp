@@ -1,4 +1,4 @@
-<%@ page import="static org.wso2.bfsi.consent.management.extensions.authservlet.utils.Utils.i18n" %><%--
+<%@ page import="static org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils.i18n" %><%--
  ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,

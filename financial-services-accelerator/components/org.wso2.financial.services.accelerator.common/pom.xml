@@ -248,6 +248,7 @@
                             !org.wso2.financial.services.accelerator.common.internal,
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                         </Export-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <_dsannotations>*</_dsannotations>
                     </instructions>
                 </configuration>

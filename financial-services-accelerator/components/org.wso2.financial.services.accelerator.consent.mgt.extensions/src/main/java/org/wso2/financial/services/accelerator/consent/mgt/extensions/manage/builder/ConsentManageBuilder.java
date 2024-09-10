@@ -40,7 +40,7 @@ public class ConsentManageBuilder {
     private void build() {
 
         String handlerConfig = (String) ConsentExtensionsDataHolder.getInstance().getConfigurationService()
-                .getConfiguration().get(FinancialServicesConstants.MANAGE_HANDLER);
+                .getConfigurations().get(FinancialServicesConstants.MANAGE_HANDLER);
         consentManageHandler = ConsentExtensionUtils.getClassInstanceFromFQN(handlerConfig, ConsentManageHandler.class);
 
         log.debug("Manage handler loaded successfully");

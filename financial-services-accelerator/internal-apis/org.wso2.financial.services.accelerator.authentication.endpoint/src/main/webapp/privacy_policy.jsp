@@ -17,10 +17,10 @@
  --%>
 
 <%@ page import="java.util.ResourceBundle" %>
-<%@ page import="static org.wso2.bfsi.consent.management.extensions.authservlet.utils.Utils.i18n" %>
+<%@ page import="static org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils.i18n" %>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%
-    String BUNDLE = "org.wso2.bfsi.authentication.endpoint.i18n";
+    String BUNDLE = "org.wso2.financial.services.accelerator.authentication.endpoint.i18n";
     ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE, request.getLocale());
 %>
 

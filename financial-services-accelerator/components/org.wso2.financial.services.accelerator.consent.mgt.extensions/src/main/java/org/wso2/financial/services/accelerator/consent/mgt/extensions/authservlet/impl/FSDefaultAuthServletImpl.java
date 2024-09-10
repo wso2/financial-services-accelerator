@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -27,6 +26,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservle
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
