@@ -41,12 +41,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.internal.FinancialServicesCommonDataHolder;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyFactory;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -96,10 +106,11 @@ public class JWTUtils {
      * @param jwksUri   endpoint displaying the key set for the signing certificates
      * @param algorithm the signing algorithm for jwt
      * @return true if signature is valid
-     * @throws ParseException    if an error occurs while parsing the jwt
-     * @throws BadJOSEException  if the jwt is invalid
-     * @throws JOSEException     if an error occurs while processing the jwt
-     * @throws MalformedURLException if an error occurs while creating the URL object
+     * @throws ParseException        if an error occurs while parsing the jwt
+     * @throws BadJOSEException      if the jwt is invalid
+     * @throws JOSEException         if an error occurs while processing the jwt
+     * @throws MalformedURLException if an error occurs while creating the URL
+     *                               object
      */
     @Generated(message = "Excluding from code coverage since can not call this method due to external https call")
     public static boolean validateJWTSignature(String jwtString, String jwksUri, String algorithm)
@@ -130,7 +141,8 @@ public class JWTUtils {
         }
         // The expected JWS algorithm of the access tokens (agreed out-of-band).
         JWSAlgorithm expectedJWSAlg = JWSAlgorithm.parse(algorithm);
-        //Configure the JWT processor with a key selector to feed matching public RSA keys sourced from the JWK set URL.
+        // Configure the JWT processor with a key selector to feed matching public RSA
+        // keys sourced from the JWK set URL.
         JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(expectedJWSAlg, jwkSet);
         jwtProcessor.setJWSKeySelector(keySelector);
         // Process the token, set optional context parameters.
@@ -146,8 +158,9 @@ public class JWTUtils {
      * @param publicKey the public key that is used for validation
      * @return true if signature is valid else false
      * @throws NoSuchAlgorithmException if the given algorithm doesn't exist
-     * @throws InvalidKeySpecException if the provided key is invalid
-     * @throws JOSEException if an error occurs during the signature validation process
+     * @throws InvalidKeySpecException  if the provided key is invalid
+     * @throws JOSEException            if an error occurs during the signature
+     *                                  validation process
      */
     @Generated(message = "Excluding from code coverage as KeyFactory does not initialize in testsuite")
     public static boolean isValidSignature(SignedJWT signedJWT, String publicKey)
@@ -171,8 +184,8 @@ public class JWTUtils {
      */
     public static boolean isValidJWSFormat(String jwsString) {
 
-        return StringUtils.isBlank(jwsString) ? false :
-                StringUtils.countMatches(jwsString, FinancialServicesConstants.DOT_SEPARATOR) == 2;
+        return StringUtils.isBlank(jwsString) ? false
+                : StringUtils.countMatches(jwsString, FinancialServicesConstants.DOT_SEPARATOR) == 2;
     }
 
     /**
@@ -180,7 +193,8 @@ public class JWTUtils {
      *
      * @param jwtString the JWT string to parse
      * @return the parsed SignedJWT object
-     * @throws IllegalArgumentException if the provided token identifier is not a parsable JWT
+     * @throws IllegalArgumentException if the provided token identifier is not a
+     *                                  parsable JWT
      *
      */
     public static SignedJWT getSignedJWT(String jwtString) throws ParseException {
@@ -197,11 +211,13 @@ public class JWTUtils {
     }
 
     /**
-     * Checks if the given expiration time is valid based on the current system time and a default time skew.
+     * Checks if the given expiration time is valid based on the current system time
+     * and a default time skew.
      *
      * @param defaultTimeSkew defaultTimeSkew to adjust latency issues.
      * @param expirationTime  the exp of the jwt that should be validated.
-     * @return True if the expiration time is valid considering the default time skew; false otherwise.
+     * @return True if the expiration time is valid considering the default time
+     *         skew; false otherwise.
      */
     public static boolean isValidExpiryTime(Date expirationTime, long defaultTimeSkew) {
 
@@ -216,13 +232,15 @@ public class JWTUtils {
     }
 
     /**
-     * Checks if the given "not before" time is valid based on the current system time and a default time skew.
+     * Checks if the given "not before" time is valid based on the current system
+     * time and a default time skew.
      *
      * @param defaultTimeSkew defaultTimeSkew to adjust latency issues.
-     * @param notBeforeTime nbf of the jwt that should be validated
-     * @return True if the "not before" time is valid considering the default time skew; false otherwise.
+     * @param notBeforeTime   nbf of the jwt that should be validated
+     * @return True if the "not before" time is valid considering the default time
+     *         skew; false otherwise.
      */
-    public static boolean isValidNotValidBeforeTime(Date notBeforeTime, long defaultTimeSkew)  {
+    public static boolean isValidNotValidBeforeTime(Date notBeforeTime, long defaultTimeSkew) {
 
         if (notBeforeTime != null) {
             long timeStampSkewMillis = defaultTimeSkew * 1000;
@@ -239,14 +257,16 @@ public class JWTUtils {
      *
      * @param algorithm the algorithm name, such as "RS256".
      * @return the KeyFactory instance.
-     * @throws FinancialServicesException if the provided algorithm is not supported.
-     * @throws NoSuchAlgorithmException if the specified algorithm is invalid.
+     * @throws FinancialServicesException if the provided algorithm is not
+     *                                    supported.
+     * @throws NoSuchAlgorithmException   if the specified algorithm is invalid.
      */
     @Generated(message = "Excluding from code coverage as KeyFactory does not initialize in testsuite")
     private static KeyFactory getKeyFactory(String algorithm) throws FinancialServicesException,
             NoSuchAlgorithmException {
 
-        // In here if the algorithm is directly passes (like RS256) it will generate exceptions
+        // In here if the algorithm is directly passes (like RS256) it will generate
+        // exceptions
         // hence Base algorithm should be passed (Example: RSA)
         if (algorithm.indexOf(RS) == 0) {
             return KeyFactory.getInstance(ALGORITHM_RSA);
@@ -254,5 +274,83 @@ public class JWTUtils {
             throw new FinancialServicesException("Algorithm " + algorithm + " not yet supported.");
         }
     }
-}
 
+    /**
+     * Validate a JWT signature by providing the alias in the client truststore.
+     * Skipped in unit tests since @KeystoreManager cannot be mocked
+     *
+     * @param jwtString string value of the JWT to be validated
+     * @param alias     alias in the trust store
+     * @return boolean value depicting whether the signature is valid
+     * @throws ConsentManagementException error with message mentioning the cause
+     */
+    @Generated(message = "Excluding from code coverage since can not call this method due to external call")
+    public static boolean validateJWTSignatureWithPublicKey(String jwtString, String alias)
+            throws ConsentManagementException {
+
+        Certificate certificate = getCertificateFromAlias(alias);
+
+        if (certificate == null) {
+            throw new ConsentManagementException("Certificate not found for provided alias");
+        }
+        PublicKey publicKey = certificate.getPublicKey();
+
+        try {
+            JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
+            return SignedJWT.parse(jwtString).verify(verifier);
+        } catch (JOSEException | java.text.ParseException e) {
+            log.error("Error occurred while validating JWT signature", e);
+            throw new ConsentManagementException("Error occurred while validating JWT signature");
+        }
+
+    }
+
+    /**
+     * Util method to get the certificate from the trust store by alias.
+     * 
+     * @param alias Alias of the certificate
+     * @return Certificate instance
+     * @throws ConsentManagementException Error while retrieving certificate from
+     *                                    truststore
+     */
+    @Generated(message = "Excluding from code coverage since can not call this method due to external call")
+    public static Certificate getCertificateFromAlias(String alias) throws ConsentManagementException {
+        try {
+            KeyStore trustStore = getTrustStore();
+            return trustStore.getCertificate(alias);
+        } catch (KeyStoreException | ConsentManagementException e) {
+            throw new ConsentManagementException("Error while retrieving certificate from truststore");
+        }
+    }
+
+    /**
+     * Util method to get the configured trust store by carbon config or cached
+     * instance.
+     *
+     * @return Keystore instance of the truststore
+     * @throws ConsentManagementException Error when loading truststore or carbon
+     *                                    truststore config unavailable
+     */
+    @Generated(message = "Excluding from code coverage since can not call this method due to external call")
+    public static KeyStore getTrustStore() throws ConsentManagementException {
+        if (FinancialServicesCommonDataHolder.getInstance().getTrustStore() == null) {
+            String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
+            String trustStorePassword = System.getProperty("javax.net.ssl.trustStorePassword");
+            String trustStoreType = System.getProperty("javax.net.ssl.trustStoreType");
+
+            if (trustStoreLocation == null || trustStorePassword == null || trustStoreType == null) {
+                log.error("Either of the Trust store configs (Location, Password or Type) is not available");
+                throw new ConsentManagementException("Trust store config not available");
+            }
+
+            try (InputStream keyStoreStream = new FileInputStream(trustStoreLocation)) {
+                KeyStore trustStore = KeyStore.getInstance(trustStoreType); // or "PKCS12"
+                trustStore.load(keyStoreStream, trustStorePassword.toCharArray());
+                FinancialServicesCommonDataHolder.getInstance().setTrustStore(trustStore);
+            } catch (IOException | CertificateException | KeyStoreException | NoSuchAlgorithmException e) {
+                throw new ConsentManagementException("Error while loading truststore.", e);
+            }
+        }
+        return FinancialServicesCommonDataHolder.getInstance().getTrustStore();
+    }
+}

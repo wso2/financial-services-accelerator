@@ -45,9 +45,11 @@ public class FinancialServicesUtils {
 
     /**
      * Get Tenant Domain String for the client id.
+     * 
      * @param clientId the client id of the application
      * @return tenant domain of the client
-     * @throws FinancialServicesException  if an error occurs while retrieving the tenant domain
+     * @throws FinancialServicesException if an error occurs while retrieving the
+     *                                    tenant domain
      */
     @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
     public static String getSpTenantDomain(String clientId) throws FinancialServicesException {
@@ -74,9 +76,9 @@ public class FinancialServicesUtils {
         } catch (ClassNotFoundException e) {
             log.error("Class not found: " + classpath.replaceAll("[\r\n]", ""));
             throw new FinancialServicesRuntimeException("Cannot find the defined class", e);
-        } catch (InstantiationException | InvocationTargetException |
-                NoSuchMethodException | IllegalAccessException e) {
-            //Throwing a runtime exception since we cannot proceed with invalid objects
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException
+                | IllegalAccessException e) {
+            // Throwing a runtime exception since we cannot proceed with invalid objects
             throw new FinancialServicesRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
     }
@@ -84,9 +86,11 @@ public class FinancialServicesUtils {
     /**
      * Extract software_environment (SANDBOX or PRODUCTION) from SSA.
      *
-     * @param softwareStatement software statement (jwt) extracted from request payload
+     * @param softwareStatement software statement (jwt) extracted from request
+     *                          payload
      * @return software_environment
-     * @throws ParseException  if an error occurs while parsing the software statement
+     * @throws ParseException if an error occurs while parsing the software
+     *                        statement
      */
     public static String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
 
@@ -104,15 +108,15 @@ public class FinancialServicesUtils {
                 .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
         return sandboxEnvIdentificationValue.equals(softwareStatementBody
                 .getAsString(sandboxEnvIdentificationPropertyName))
-                ? FinancialServicesConstants.SANDBOX
-                : FinancialServicesConstants.PRODUCTION;
+                        ? FinancialServicesConstants.SANDBOX
+                        : FinancialServicesConstants.PRODUCTION;
     }
 
     /**
      * Method to reduce string length.
      *
-     * @param input        Input for dispute data
-     * @param maxLength    Max length for dispute data
+     * @param input     Input for dispute data
+     * @param maxLength Max length for dispute data
      * @return String with reduced length
      */
     public static String reduceStringLength(String input, int maxLength) {
@@ -125,7 +129,8 @@ public class FinancialServicesUtils {
 
     /**
      * Check whether the client ID belongs to a regulatory app.
-     * @param clientId  client ID
+     * 
+     * @param clientId client ID
      * @return true if the client ID belongs to a regulatory app
      * @throws RequestObjectException If an error occurs while checking the client ID
      */

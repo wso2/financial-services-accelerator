@@ -103,7 +103,8 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Method to read the configuration (in a recursive manner) as a model and put them in the configuration map.
+     * Method to read the configuration (in a recursive manner) as a model and put
+     * them in the configuration map.
      */
     private void buildConfiguration() {
 
@@ -160,36 +161,37 @@ public final class FinancialServicesConfigParser {
                             FinancialServicesConstants.GATEWAY_EXECUTOR_CONFIG_TAG));
 
             if (financialServicesGatewayExecutors != null) {
-                //obtaining each consent type element under FinancialServicesGatewayExecutors tag
+                // obtaining each consent type element under FinancialServicesGatewayExecutors
+                // tag
                 Iterator consentTypeElement = financialServicesGatewayExecutors.getChildElements();
                 while (consentTypeElement.hasNext()) {
                     OMElement consentType = (OMElement) consentTypeElement.next();
                     String consentTypeName = consentType.getLocalName();
                     Map<Integer, String> executors = new HashMap<>();
-                    //obtaining each Executor element under each consent type
-                    Iterator<OMElement> obExecutor = consentType.getChildrenWithName(
+                    // obtaining each Executor element under each consent type
+                    Iterator<OMElement> fsExecutor = consentType.getChildrenWithName(
                             new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
                                     FinancialServicesConstants.EXECUTOR_CONFIG_TAG));
-                    if (obExecutor != null) {
-                        while (obExecutor.hasNext()) {
-                            OMElement executorElement = obExecutor.next();
-                            //Retrieve class name and priority from executor config
-                            String obExecutorClass = executorElement.getAttributeValue(new QName("class"));
-                            String obExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
+                    if (fsExecutor != null) {
+                        while (fsExecutor.hasNext()) {
+                            OMElement executorElement = fsExecutor.next();
+                            // Retrieve class name and priority from executor config
+                            String fsExecutorClass = executorElement.getAttributeValue(new QName("class"));
+                            String fsExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
 
-                            if (StringUtils.isEmpty(obExecutorClass)) {
-                                //Throwing exceptions since we cannot proceed without invalid executor names
+                            if (StringUtils.isEmpty(fsExecutorClass)) {
+                                // Throwing exceptions since we cannot proceed without invalid executor names
                                 throw new FinancialServicesRuntimeException("Executor class is not defined " +
                                         "correctly in financial-services.xml");
                             }
                             int priority = Integer.MAX_VALUE;
-                            if (!StringUtils.isEmpty(obExecutorPriority)) {
-                                priority = Integer.parseInt(obExecutorPriority);
+                            if (!StringUtils.isEmpty(fsExecutorPriority)) {
+                                priority = Integer.parseInt(fsExecutorPriority);
                             }
-                            executors.put(priority, obExecutorClass);
+                            executors.put(priority, fsExecutorClass);
                         }
                     }
-                    //Ordering the executors based on the priority number
+                    // Ordering the executors based on the priority number
                     LinkedHashMap<Integer, String> priorityMap = executors.entrySet()
                             .stream()
                             .sorted(comparingByKey())
@@ -213,36 +215,36 @@ public final class FinancialServicesConfigParser {
                             FinancialServicesConstants.AUTHORIZE_STEPS_CONFIG_TAG));
 
             if (consentAuthorizeSteps != null) {
-                //obtaining each step type element under AuthorizeSteps tag
+                // obtaining each step type element under AuthorizeSteps tag
                 Iterator stepTypeElement = consentAuthorizeSteps.getChildElements();
                 while (stepTypeElement.hasNext()) {
                     OMElement stepType = (OMElement) stepTypeElement.next();
                     String consentTypeName = stepType.getLocalName();
                     Map<Integer, String> executors = new HashMap<>();
-                    //obtaining each step under each consent type
-                    Iterator<OMElement> obExecutor = stepType.getChildrenWithName(
+                    // obtaining each step under each consent type
+                    Iterator<OMElement> fsExecutor = stepType.getChildrenWithName(
                             new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
                                     FinancialServicesConstants.STEP_CONFIG_TAG));
-                    if (obExecutor != null) {
-                        while (obExecutor.hasNext()) {
-                            OMElement executorElement = obExecutor.next();
-                            //Retrieve class name and priority from executor config
-                            String obExecutorClass = executorElement.getAttributeValue(new QName("class"));
-                            String obExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
+                    if (fsExecutor != null) {
+                        while (fsExecutor.hasNext()) {
+                            OMElement executorElement = fsExecutor.next();
+                            // Retrieve class name and priority from executor config
+                            String fsExecutorClass = executorElement.getAttributeValue(new QName("class"));
+                            String fsExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
 
-                            if (StringUtils.isEmpty(obExecutorClass)) {
-                                //Throwing exceptions since we cannot proceed without invalid executor names
+                            if (StringUtils.isEmpty(fsExecutorClass)) {
+                                // Throwing exceptions since we cannot proceed without invalid executor names
                                 throw new FinancialServicesRuntimeException("Executor class is not defined " +
                                         "correctly in financial-services.xml");
                             }
                             int priority = Integer.MAX_VALUE;
-                            if (!StringUtils.isEmpty(obExecutorPriority)) {
-                                priority = Integer.parseInt(obExecutorPriority);
+                            if (!StringUtils.isEmpty(fsExecutorPriority)) {
+                                priority = Integer.parseInt(fsExecutorPriority);
                             }
-                            executors.put(priority, obExecutorClass);
+                            executors.put(priority, fsExecutorClass);
                         }
                     }
-                    //Ordering the executors based on the priority number
+                    // Ordering the executors based on the priority number
                     LinkedHashMap<Integer, String> priorityMap = executors.entrySet()
                             .stream()
                             .sorted(comparingByKey())
@@ -262,7 +264,7 @@ public final class FinancialServicesConfigParser {
      */
     private void readChildElements(OMElement serverConfig, Stack<String> nameStack) {
 
-        for (Iterator childElements = serverConfig.getChildElements(); childElements.hasNext(); ) {
+        for (Iterator childElements = serverConfig.getChildElements(); childElements.hasNext();) {
             OMElement element = (OMElement) childElements.next();
             nameStack.push(element.getLocalName());
             if (elementHasText(element)) {
@@ -309,9 +311,9 @@ public final class FinancialServicesConfigParser {
                         FinancialServicesConstants.FS_CONFIG_QNAME,
                         FinancialServicesConstants.ALLOWED_SCOPES_CONFIG_TAG));
 
-                //obtaining each scope under allowed scopes
-                Iterator environmentIterator =
-                        allowedScopesElement.getChildrenWithLocalName(FinancialServicesConstants.SCOPE_CONFIG_TAG);
+                // obtaining each scope under allowed scopes
+                Iterator environmentIterator = allowedScopesElement
+                        .getChildrenWithLocalName(FinancialServicesConstants.SCOPE_CONFIG_TAG);
 
                 while (environmentIterator.hasNext()) {
                     OMElement scopeElem = (OMElement) environmentIterator.next();
@@ -340,9 +342,9 @@ public final class FinancialServicesConfigParser {
 
             if (regulatoryAPIs != null) {
 
-                //obtaining each regulatory API under allowed regulatory APIs
-                Iterator environmentIterator =
-                        regulatoryAPIs.getChildrenWithLocalName(FinancialServicesConstants.REGULATORY_API);
+                // obtaining each regulatory API under allowed regulatory APIs
+                Iterator environmentIterator = regulatoryAPIs
+                        .getChildrenWithLocalName(FinancialServicesConstants.REGULATORY_API);
 
                 while (environmentIterator.hasNext()) {
                     OMElement regulatoryAPIElem = (OMElement) environmentIterator.next();
@@ -453,7 +455,8 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Returns the database connection verification timeout in seconds configured in financial-services.xml.
+     * Returns the database connection verification timeout in seconds configured in
+     * financial-services.xml.
      *
      * @return 1 if nothing is configured
      */
@@ -506,41 +509,27 @@ public final class FinancialServicesConfigParser {
         return timeout.map(Integer::parseInt).orElse(1500);
     }
 
-    //Event notifications configurations.
-    public String getEventNotificationTokenIssuer() {
-
-        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.TOKEN_ISSUER);
-        return source.map(String::trim).orElse("www.wso2.com");
-    }
-
-    public int getNumberOfSetsToReturn() {
-
-        Optional<String> timeout = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.MAX_SETS_TO_RETURN);
-        return timeout.map(Integer::parseInt).orElse(5);
-    }
-
     /**
      * Returns the expiry time for cache modification.
      *
-     * @return String Expiry time.
+     * @return int Expiry time.
      */
-    public String getCommonCacheModifiedExpiryTime() {
-        Optional<String> source = getConfigurationFromKeyAsString(
+    public int getCommonCacheModifiedExpiryTime() {
+        Optional<String> expiryTime = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.COMMON_IDENTITY_CACHE_MODIFY_EXPIRY);
-        return source.map(String::trim).orElse("60");
+        return expiryTime.map(Integer::parseInt).orElse(60);
     }
 
     /**
      * Returns the expiry time for cache access.
      *
-     * @return String Expiry time.
+     * @return int Expiry time.
      */
-    public String getCommonCacheAccessExpiryTime() {
+    public int getCommonCacheAccessExpiryTime() {
 
-        Optional<String> source = getConfigurationFromKeyAsString(
+        Optional<String> expiryTime = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.COMMON_IDENTITY_CACHE_ACCESS_EXPIRY);
-        return source.map(String::trim).orElse("60");
+        return expiryTime.map(Integer::parseInt).orElse(60);
     }
 
     /**
@@ -567,10 +556,10 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse(null);
     }
 
-
     /**
      * Method to get the value Idempotency enable configuration.
-     * @return  Whether Idempotency is enabled or not
+     * 
+     * @return Whether Idempotency is enabled or not
      */
     public boolean isIdempotencyValidationEnabled() {
         Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_IS_ENABLED);
@@ -579,12 +568,37 @@ public final class FinancialServicesConfigParser {
 
     /**
      * Method to get the value Idempotency allowed time configuration.
-     * @return  Idempotency allowed time
+     * 
+     * @return Idempotency allowed time
      */
     public String getIdempotencyAllowedTime() {
         Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_ALLOWED_TIME);
         return config.map(String::trim).orElse("1440");
     }
 
+    public String getConsentAPIUsername() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_USERNAME);
+        return source.map(String::trim).orElse("admin");
+    }
+
+    public String getConsentAPIPassword() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_PASSWORD);
+        return source.map(String::trim).orElse("admin");
+    }
+
+    public String getPreserveConsent() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.PRESERVE_CONSENT);
+        return source.map(String::trim).orElse("false");
+    }
+
+    public String getConsentValidationConfig() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_JWT_PAYLOAD_VALIDATION);
+        return source.map(String::trim).orElse("");
+    }
 
 }
