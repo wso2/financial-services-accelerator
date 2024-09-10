@@ -18,8 +18,10 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl;
 
+import com.sun.org.apache.xpath.internal.operations.String;
 import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
@@ -73,14 +75,14 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
         Map<String, Object> returnMaps = new HashMap<>();
 
         String[] accounts = request.getParameter("accounts[]")
-                .replaceAll(FinancialServicesConstants.NEW_LINE, "").split(":");
+                .replaceAll(FinancialServicesConstants.NEW_LINE, StringUtils.EMPTY).split(":");
         returnMaps.put("accountIds", List.of(accounts));
         returnMaps.put(ConsentExtensionConstants.PAYMENT_ACCOUNT,
                 request.getParameter(ConsentExtensionConstants.PAYMENT_ACCOUNT)
-                        .replaceAll(FinancialServicesConstants.NEW_LINE, ""));
+                        .replaceAll(FinancialServicesConstants.NEW_LINE, StringUtils.EMPTY));
         returnMaps.put(ConsentExtensionConstants.COF_ACCOUNT,
                 request.getParameter(ConsentExtensionConstants.COF_ACCOUNT)
-                        .replaceAll(FinancialServicesConstants.NEW_LINE, ""));
+                        .replaceAll(FinancialServicesConstants.NEW_LINE, StringUtils.EMPTY));
         return returnMaps;
     }
 
