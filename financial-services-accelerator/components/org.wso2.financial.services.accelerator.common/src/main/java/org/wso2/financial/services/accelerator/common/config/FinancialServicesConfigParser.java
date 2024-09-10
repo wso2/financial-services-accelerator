@@ -169,26 +169,26 @@ public final class FinancialServicesConfigParser {
                     String consentTypeName = consentType.getLocalName();
                     Map<Integer, String> executors = new HashMap<>();
                     // obtaining each Executor element under each consent type
-                    Iterator<OMElement> obExecutor = consentType.getChildrenWithName(
+                    Iterator<OMElement> fsExecutor = consentType.getChildrenWithName(
                             new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
                                     FinancialServicesConstants.EXECUTOR_CONFIG_TAG));
-                    if (obExecutor != null) {
-                        while (obExecutor.hasNext()) {
-                            OMElement executorElement = obExecutor.next();
+                    if (fsExecutor != null) {
+                        while (fsExecutor.hasNext()) {
+                            OMElement executorElement = fsExecutor.next();
                             // Retrieve class name and priority from executor config
-                            String obExecutorClass = executorElement.getAttributeValue(new QName("class"));
-                            String obExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
+                            String fsExecutorClass = executorElement.getAttributeValue(new QName("class"));
+                            String fsExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
 
-                            if (StringUtils.isEmpty(obExecutorClass)) {
+                            if (StringUtils.isEmpty(fsExecutorClass)) {
                                 // Throwing exceptions since we cannot proceed without invalid executor names
                                 throw new FinancialServicesRuntimeException("Executor class is not defined " +
                                         "correctly in financial-services.xml");
                             }
                             int priority = Integer.MAX_VALUE;
-                            if (!StringUtils.isEmpty(obExecutorPriority)) {
-                                priority = Integer.parseInt(obExecutorPriority);
+                            if (!StringUtils.isEmpty(fsExecutorPriority)) {
+                                priority = Integer.parseInt(fsExecutorPriority);
                             }
-                            executors.put(priority, obExecutorClass);
+                            executors.put(priority, fsExecutorClass);
                         }
                     }
                     // Ordering the executors based on the priority number
@@ -222,26 +222,26 @@ public final class FinancialServicesConfigParser {
                     String consentTypeName = stepType.getLocalName();
                     Map<Integer, String> executors = new HashMap<>();
                     // obtaining each step under each consent type
-                    Iterator<OMElement> obExecutor = stepType.getChildrenWithName(
+                    Iterator<OMElement> fsExecutor = stepType.getChildrenWithName(
                             new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
                                     FinancialServicesConstants.STEP_CONFIG_TAG));
-                    if (obExecutor != null) {
-                        while (obExecutor.hasNext()) {
-                            OMElement executorElement = obExecutor.next();
+                    if (fsExecutor != null) {
+                        while (fsExecutor.hasNext()) {
+                            OMElement executorElement = fsExecutor.next();
                             // Retrieve class name and priority from executor config
-                            String obExecutorClass = executorElement.getAttributeValue(new QName("class"));
-                            String obExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
+                            String fsExecutorClass = executorElement.getAttributeValue(new QName("class"));
+                            String fsExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
 
-                            if (StringUtils.isEmpty(obExecutorClass)) {
+                            if (StringUtils.isEmpty(fsExecutorClass)) {
                                 // Throwing exceptions since we cannot proceed without invalid executor names
                                 throw new FinancialServicesRuntimeException("Executor class is not defined " +
                                         "correctly in financial-services.xml");
                             }
                             int priority = Integer.MAX_VALUE;
-                            if (!StringUtils.isEmpty(obExecutorPriority)) {
-                                priority = Integer.parseInt(obExecutorPriority);
+                            if (!StringUtils.isEmpty(fsExecutorPriority)) {
+                                priority = Integer.parseInt(fsExecutorPriority);
                             }
-                            executors.put(priority, obExecutorClass);
+                            executors.put(priority, fsExecutorClass);
                         }
                     }
                     // Ordering the executors based on the priority number
