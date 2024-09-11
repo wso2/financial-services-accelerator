@@ -75,7 +75,7 @@ public class ConsentExtensionsServiceComponent {
     }
 
     @Reference(
-            name = "ConsentCoreService",
+            name = ConsentCoreService.class.getName(),
             service = ConsentCoreService.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
