@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
+import com.nimbusds.jose.JWSObject;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -131,8 +132,7 @@ public class FinancialServicesUtils {
      * 
      * @param clientId client ID
      * @return true if the client ID belongs to a regulatory app
-     * @throws RequestObjectException If an error occurs while checking the client
-     *                                ID
+     * @throws RequestObjectException If an error occurs while checking the client ID
      */
     @Generated(message = "Excluding from code coverage since it requires a service call")
     public static boolean isRegulatoryApp(String clientId) throws RequestObjectException {
@@ -146,5 +146,25 @@ public class FinancialServicesUtils {
             throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
                     "provider for clientId: " + clientId, e);
         }
+    }
+
+    /**
+     * Decode request JWT.
+     *
+     * @param jwtToken jwt sent by the tpp
+     * @param jwtPart  expected jwt part (header, body)
+     * @return json object containing requested jwt part
+     * @throws java.text.ParseException if an error occurs while parsing the jwt
+     */
+    public static JSONObject decodeRequestJWT(String jwtToken, String jwtPart) throws java.text.ParseException {
+
+        JWSObject plainObject = JWSObject.parse(jwtToken);
+
+        if (FinancialServicesConstants.JWT_HEAD.equals(jwtPart)) {
+            return plainObject.getHeader().toJSONObject();
+        } else if (FinancialServicesConstants.JWT_BODY.equals(jwtPart)) {
+            return plainObject.getPayload().toJSONObject();
+        }
+        return null;
     }
 }

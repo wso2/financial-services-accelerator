@@ -43,7 +43,7 @@ public class ConsentValidateBuilder {
     private void build() {
 
         Map<String, Object> configs =  ConsentExtensionsDataHolder.getInstance().getConfigurationService()
-                .getConfiguration();
+                .getConfigurations();
         String handlerConfig = (String)  configs.get(FinancialServicesConstants.CONSENT_VALIDATOR);
         consentValidator = ConsentExtensionUtils.getClassInstanceFromFQN(handlerConfig, ConsentValidator.class);
         requestSignatureAlias = (String) configs.get(FinancialServicesConstants.SIGNATURE_ALIAS);

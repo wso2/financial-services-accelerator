@@ -196,10 +196,11 @@
                             org.apache.commons.logging;version="${commons.logging.version}",
                             org.json.*;version="${org.json.version}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
-                            org.wso2.financial.services.accelerator.consent.mgt.management.common.*;version="${project.version}",
-                            org.wso2.financial.services.accelerator.consent.mgt.management.dao.*;version="${project.version}",
-                            org.wso2.financial.services.accelerator.consent.mgt.management.service.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",
                             com.fasterxml.jackson.databind;version="${jackson.databinding.version}",
+                            com.fasterxml.jackson.core;version="${jackson.databinding.version}",
                             org.owasp.encoder;version="${encoder.wso2.version}"
                         </Import-Package>
                         <Export-Package>

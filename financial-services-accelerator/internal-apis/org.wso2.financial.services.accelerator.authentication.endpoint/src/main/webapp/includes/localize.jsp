@@ -18,6 +18,6 @@
 <%@ page import="java.util.ResourceBundle" %>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%
-    String BUNDLE = "org.wso2.bfsi.authentication.endpoint.i18n";
+    String BUNDLE = "org.wso2.financial.services.accelerator.authentication.endpoint.i18n";
     ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE, request.getLocale());
 %>

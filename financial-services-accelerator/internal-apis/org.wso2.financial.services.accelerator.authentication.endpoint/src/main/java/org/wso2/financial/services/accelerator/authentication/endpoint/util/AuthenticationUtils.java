@@ -45,7 +45,7 @@ public class AuthenticationUtils {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationUtils.class);
     private static final FinancialServicesConfigParser parser = FinancialServicesConfigParser.getInstance();
 
-    private static final String BUNDLE = "org.wso2.bfsi.authentication.endpoint.i18n";
+    private static final String BUNDLE = "org.wso2.financial.services.accelerator.authentication.endpoint.i18n";
 
     /**
      * @param data error response received from consent data retrieval endpoint

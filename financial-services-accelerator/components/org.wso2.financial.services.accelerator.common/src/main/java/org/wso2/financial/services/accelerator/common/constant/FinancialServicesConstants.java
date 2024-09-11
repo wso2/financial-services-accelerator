@@ -42,7 +42,9 @@ public class FinancialServicesConstants {
     public static final String API_NAME = "name";
     public static final String API_ROLE = "roles";
     public static final String REGULATORY_API = "API";
+    public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
+    public static final String NEW_LINE = "[\r\n]";
     public static final String JDBC_PERSISTENCE_CONFIG = "JDBCPersistenceManager.DataSource.Name";
     public static final String DB_CONNECTION_VERIFICATION_TIMEOUT =
             "JDBCPersistenceManager.ConnectionVerificationTimeout";
@@ -73,7 +75,12 @@ public class FinancialServicesConstants {
     public static final String CONSENT_API_PASSWORD = "Consent.ConsentAPICredentials.Password";
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
-    public static final String MAX_INSTRUCTED_AMOUNT = "Consent.Payments" +
-            ".MaximumInstructedAmount";
+    public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
+    public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
+    public static final String MAX_INSTRUCTED_AMOUNT = "Consent.Payments.MaximumInstructedAmount";
+    public static final String REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT =
+            "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
+    public static final String REMOVE_TENANT_DOMAIN_FROM_SUBJECT =
+            "Identity.TokenSubject.RemoveTenantDomainFromSubject";
 }
 

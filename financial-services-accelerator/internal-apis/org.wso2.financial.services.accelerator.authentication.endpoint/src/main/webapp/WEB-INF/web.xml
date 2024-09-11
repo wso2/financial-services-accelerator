@@ -25,23 +25,23 @@
     <!-- 1 -->
 
     <servlet>
-        <servlet-name>BFSIConsentServlet</servlet-name>
+        <servlet-name>FSConsentServlet</servlet-name>
         <servlet-class>org.wso2.financial.services.accelerator.authentication.endpoint.FSConsentServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>BFSIConsentServlet</servlet-name>
+        <servlet-name>FSConsentServlet</servlet-name>
         <url-pattern>/oauth2_authz.do</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>BFSIConsentServlet</servlet-name>
+        <servlet-name>FSConsentServlet</servlet-name>
         <url-pattern>/oauth2_consent.do</url-pattern>
     </servlet-mapping>
 
     <context-param>
         <param-name>retrievalBaseURL</param-name>
-        <param-value>https://localhost:9443/api/bfsi/consent/authorize/retrieve</param-value>
+        <param-value>https://localhost:9443/api/fs/consent/authorize/retrieve</param-value>
     </context-param>
 
     <context-param>
@@ -52,18 +52,18 @@
     <!-- 2 -->
 
     <servlet>
-        <servlet-name>BFSIConsentConfirmServlet</servlet-name>
+        <servlet-name>FSConsentConfirmServlet</servlet-name>
         <servlet-class>org.wso2.financial.services.accelerator.authentication.endpoint.FSConsentConfirmServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>BFSIConsentConfirmServlet</servlet-name>
+        <servlet-name>FSConsentConfirmServlet</servlet-name>
         <url-pattern>/oauth2_authz_confirm.do</url-pattern>
     </servlet-mapping>
 
     <context-param>
         <param-name>persistenceBaseURL</param-name>
-        <param-value>https://localhost:9443/api/bfsi/consent/authorize/persist</param-value>
+        <param-value>https://localhost:9443/api/fs/consent/authorize/persist</param-value>
     </context-param>
 
     <!-- 3 -->
