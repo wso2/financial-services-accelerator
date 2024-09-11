@@ -576,7 +576,7 @@ public class ConsentManagementDAOUtil {
 
             changedAttributesJsonDataMap = consentHistoryResource.getChangedAttributesJsonDataMap();
 
-           if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT)
+            if (ConsentMgtDAOConstants.TABLES_MAP.get(ConsentMgtDAOConstants.TABLE_FS_CONSENT)
                     .equals(tableID)) {
                 changedAttributesJsonDataMap.put(ConsentMgtDAOConstants.TYPE_CONSENT_BASIC_DATA,
                         changedAttributesString);
