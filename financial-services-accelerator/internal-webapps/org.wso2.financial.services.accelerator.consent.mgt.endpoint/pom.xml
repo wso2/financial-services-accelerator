@@ -30,7 +30,7 @@
 
     <artifactId>org.wso2.financial.services.accelerator.consent.mgt.endpoint</artifactId>
     <packaging>war</packaging>
-    <name>WSO2 BFSI - Consent Endpoint</name>
+    <name>WSO2 Financial Services - Consent Endpoint</name>
 
     <dependencies>
         <dependency>

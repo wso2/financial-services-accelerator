@@ -28,7 +28,7 @@ import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import java.util.Map;
 
 /**
- * BFSI specific claim provider.
+ * FS specific claim provider.
  */
 public class FSClaimProvider implements ClaimProvider {
 

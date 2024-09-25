@@ -54,7 +54,7 @@ public class IdentityExtensionsServiceComponent {
         BundleContext bundleContext = context.getBundleContext();
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
 
-        log.debug("Registered BFSI related Identity services.");
+        log.debug("Registered FS related Identity services.");
     }
 
     @Reference(

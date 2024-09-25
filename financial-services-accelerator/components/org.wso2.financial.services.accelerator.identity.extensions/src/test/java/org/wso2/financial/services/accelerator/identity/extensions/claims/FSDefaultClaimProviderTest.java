@@ -40,7 +40,7 @@ import static org.mockito.Mockito.spy;
 import static org.testng.AssertJUnit.assertFalse;
 
 /**
- * Test class for BFSIDefaultClaimProvider.
+ * Test class for FSDefaultClaimProvider.
  */
 public class FSDefaultClaimProviderTest {
 

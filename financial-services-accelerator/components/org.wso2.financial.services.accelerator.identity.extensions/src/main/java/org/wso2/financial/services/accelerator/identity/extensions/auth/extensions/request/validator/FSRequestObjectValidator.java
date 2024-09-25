@@ -26,7 +26,7 @@ import org.wso2.financial.services.accelerator.identity.extensions.auth.extensio
 import java.util.Map;
 
 /**
- * The extension class for enforcing BFSI Request Object Validations. For Tool kits to extend.
+ * The extension class for enforcing FS Request Object Validations. For Tool kits to extend.
  */
 public class FSRequestObjectValidator {
 

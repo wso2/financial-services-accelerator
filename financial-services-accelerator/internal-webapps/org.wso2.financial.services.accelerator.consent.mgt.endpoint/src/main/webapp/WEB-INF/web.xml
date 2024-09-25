@@ -23,8 +23,8 @@
          version="3.0" metadata-complete="true">
   <absolute-ordering />
 
-  <display-name>WSO2 BFSI - Consent API</display-name>
-  <description>WSO2 BFSI - Consent API</description>
+  <display-name>WSO2 Financial Services - Consent API</display-name>
+  <description>WSO2 Financial Services - Consent API</description>
 
   <context-param>
     <param-name>contextConfigLocation</param-name>

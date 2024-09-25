@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * BFSI specific refresh grant handler.
+ * FS specific refresh grant handler.
  */
 public class FSRefreshGrantHandler extends RefreshGrantHandler {
 

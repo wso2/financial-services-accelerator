@@ -141,7 +141,7 @@ public class FSConsentServlet extends HttpServlet {
         if (fsAuthServletTK == null) {
             request.getSession().invalidate();
             response.sendRedirect("retry.do?status=Error&statusMsg=Error while processing request");
-            log.error("Unable to find BFSI auth servlet extension implementation. Returning error.");
+            log.error("Unable to find FS auth servlet extension implementation. Returning error.");
             return;
         }
 

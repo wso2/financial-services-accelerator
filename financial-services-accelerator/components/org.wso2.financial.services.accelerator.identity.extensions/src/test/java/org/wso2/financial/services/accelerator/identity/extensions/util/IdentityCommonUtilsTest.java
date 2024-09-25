@@ -33,12 +33,12 @@ public class IdentityCommonUtilsTest {
 
     @Test
     public void testGetConsentIdFromScopes() {
-        String[] scopes = {"dummy-scope1", "dummy-scope2", "consent_id_ConsentId", "dummy-scope3", "BFSI_ConsentId",
+        String[] scopes = {"dummy-scope1", "dummy-scope2", "consent_id_ConsentId", "dummy-scope3", "FS_ConsentId",
                 "TIME_ConsentId", "x5t#_ConsentId"};
         Assert.assertTrue(Arrays.toString(scopes).contains("consent_id"));
         String[] modifiedScopes = IdentityCommonUtils.removeInternalScopes(scopes);
         Assert.assertFalse(Arrays.toString(modifiedScopes).contains("consent_id"));
-        Assert.assertFalse(Arrays.toString(modifiedScopes).contains("BFSI_"));
+        Assert.assertFalse(Arrays.toString(modifiedScopes).contains("FS_"));
         Assert.assertFalse(Arrays.toString(modifiedScopes).contains("TIME_"));
         Assert.assertFalse(Arrays.toString(modifiedScopes).contains("x5t#_"));
     }

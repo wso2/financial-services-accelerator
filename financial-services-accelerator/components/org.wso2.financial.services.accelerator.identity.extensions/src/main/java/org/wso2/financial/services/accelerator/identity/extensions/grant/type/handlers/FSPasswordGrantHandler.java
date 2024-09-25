@@ -27,7 +27,7 @@ import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtil
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 /**
- * BFSI specific password grant handler.
+ * FS specific password grant handler.
  */
 public class FSPasswordGrantHandler extends PasswordGrantHandler {
 

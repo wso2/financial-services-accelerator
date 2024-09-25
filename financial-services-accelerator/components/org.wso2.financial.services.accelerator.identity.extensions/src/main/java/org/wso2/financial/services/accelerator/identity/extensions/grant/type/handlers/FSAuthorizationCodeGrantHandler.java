@@ -27,7 +27,7 @@ import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtil
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 /**
- * BFSI specific authorization code grant handler.
+ * FS specific authorization code grant handler.
  */
 public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandler {
 

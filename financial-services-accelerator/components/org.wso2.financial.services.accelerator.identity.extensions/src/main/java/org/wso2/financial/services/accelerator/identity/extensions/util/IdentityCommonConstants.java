@@ -34,7 +34,7 @@ public class IdentityCommonConstants {
     public static final String END_CERT = "-----END CERTIFICATE-----";
     public static final String MTLS_AUTH_HEADER = "MutualTLS.ClientCertificateHeader";
     public static final String X509 = "X.509";
-    public static final String BFSI_PREFIX = "BFSI_";
+    public static final String FS_PREFIX = "FS_";
     public static final String TIME_PREFIX = "TIME_";
     public static final String CERT_PREFIX = "x5t#";
     public static final String SPACE_SEPARATOR = " ";
