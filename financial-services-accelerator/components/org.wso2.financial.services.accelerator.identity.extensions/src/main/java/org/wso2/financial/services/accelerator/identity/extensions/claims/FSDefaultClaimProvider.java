@@ -45,7 +45,7 @@ import static org.wso2.carbon.identity.openidconnect.model.Constants.JWT_PART_DE
 import static org.wso2.carbon.identity.openidconnect.model.Constants.NUMBER_OF_PARTS_IN_JWE;
 
 /**
- * Default BFSI specific claim provider implementation.
+ * Default FS specific claim provider implementation.
  */
 public class FSDefaultClaimProvider extends FSClaimProvider {
 

@@ -44,8 +44,8 @@ public class RequestObjectValidatorTest {
                                         OAuth2Parameters oAuth2Parameters) throws Exception {
 
         // Mock
-        FSRequestObjectValidator bfsiDefaultRequestObjectValidator = mock(FSRequestObjectValidator.class);
-        when(bfsiDefaultRequestObjectValidator.validateFSConstraints(any(), anyMap()))
+        FSRequestObjectValidator fsDefaultRequestObjectValidator = mock(FSRequestObjectValidator.class);
+        when(fsDefaultRequestObjectValidator.validateFSConstraints(any(), anyMap()))
                 .thenReturn(new ValidationResponse(true));
 
         FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
@@ -54,7 +54,7 @@ public class RequestObjectValidatorTest {
         doReturn("accounts payments").when(uut).getAllowedScopes(any());
 
         // Assign
-        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = bfsiDefaultRequestObjectValidator;
+        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = fsDefaultRequestObjectValidator;
 
         // Act
         boolean result = uut.validateRequestObject(requestObject, oAuth2Parameters);
@@ -91,8 +91,8 @@ public class RequestObjectValidatorTest {
                                           OAuth2Parameters oAuth2Parameters) throws Exception {
 
         // Mock
-        FSRequestObjectValidator bfsiRequestObjectValidator = mock(FSRequestObjectValidator.class);
-        when(bfsiRequestObjectValidator.validateFSConstraints(any(), anyMap()))
+        FSRequestObjectValidator fsRequestObjectValidator = mock(FSRequestObjectValidator.class);
+        when(fsRequestObjectValidator.validateFSConstraints(any(), anyMap()))
                 .thenReturn(new ValidationResponse(true));
 
         FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
@@ -101,7 +101,7 @@ public class RequestObjectValidatorTest {
         doReturn("accounts payments").when(uut).getAllowedScopes(any());
 
         // Assign
-        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = bfsiRequestObjectValidator;
+        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = fsRequestObjectValidator;
 
         // Act
         boolean result = uut.validateRequestObject(requestObject, oAuth2Parameters);
@@ -120,8 +120,8 @@ public class RequestObjectValidatorTest {
             }
         }
 
-        FSRequestObject bfsiRequestObject = new FSRequestObject(requestObject);
-        UKRequestObject ukRequestObject = new UKRequestObject(bfsiRequestObject);
+        FSRequestObject fsRequestObject = new FSRequestObject(requestObject);
+        UKRequestObject ukRequestObject = new UKRequestObject(fsRequestObject);
 
         // Assert
         assertEquals("Inheritance should be preserved in toolkit child classes",

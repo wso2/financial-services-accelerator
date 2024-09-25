@@ -38,7 +38,7 @@
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.service</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.extensions</module>
         <module>components/org.wso2.financial.services.accelerator.identity.extensions</module>
-        <module>internal-apis/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
-        <module>internal-apis/org.wso2.financial.services.accelerator.authentication.endpoint</module>
+        <module>internal-webapps/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
+        <module>internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint</module>
     </modules>
 </project>

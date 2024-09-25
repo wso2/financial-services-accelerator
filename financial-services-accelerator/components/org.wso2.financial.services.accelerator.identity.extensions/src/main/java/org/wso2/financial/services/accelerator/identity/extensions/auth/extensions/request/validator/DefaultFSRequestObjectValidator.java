@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The extension class for enforcing BFSI Request Object Validations. For Tool kits to extend.
+ * The extension class for enforcing FS Request Object Validations. For Tool kits to extend.
  */
 public class DefaultFSRequestObjectValidator extends FSRequestObjectValidator {
 

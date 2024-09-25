@@ -28,7 +28,7 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 /**
- * Extension to append scope with BFSI_ prefix at the end of auth flow, before offering auth code.
+ * Extension to append scope with FS_ prefix at the end of auth flow, before offering auth code.
  */
 public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHandler {
 

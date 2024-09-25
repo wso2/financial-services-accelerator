@@ -97,7 +97,7 @@ public class IdentityCommonUtils {
         if (scopes != null && scopes.length > 0) {
             List<String> scopesList = new LinkedList<>(Arrays.asList(scopes));
             scopesList.removeIf(s -> s.startsWith(consentIdClaim));
-            scopesList.removeIf(s -> s.startsWith(IdentityCommonConstants.BFSI_PREFIX));
+            scopesList.removeIf(s -> s.startsWith(IdentityCommonConstants.FS_PREFIX));
             scopesList.removeIf(s -> s.startsWith(IdentityCommonConstants.TIME_PREFIX));
             scopesList.removeIf(s -> s.startsWith(IdentityCommonConstants.CERT_PREFIX));
             return scopesList.toArray(new String[scopesList.size()]);

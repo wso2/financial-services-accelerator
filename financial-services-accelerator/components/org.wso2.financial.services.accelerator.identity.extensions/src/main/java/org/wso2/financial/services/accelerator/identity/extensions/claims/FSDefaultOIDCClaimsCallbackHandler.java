@@ -128,14 +128,14 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
         String consentIdClaimName =
                 identityConfigurations.get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
         String consentID = Arrays.stream(tokenReqMessageContext.getScope())
-                .filter(scope -> scope.contains(IdentityCommonConstants.BFSI_PREFIX)).findFirst().orElse(null);
+                .filter(scope -> scope.contains(IdentityCommonConstants.FS_PREFIX)).findFirst().orElse(null);
         if (StringUtils.isEmpty(consentID)) {
             consentID = Arrays.stream(tokenReqMessageContext.getScope())
                     .filter(scope -> scope.contains(consentIdClaimName))
                     .findFirst().orElse(StringUtils.EMPTY)
                     .replaceAll(consentIdClaimName, StringUtils.EMPTY);
         } else {
-            consentID = consentID.replace(IdentityCommonConstants.BFSI_PREFIX, StringUtils.EMPTY);
+            consentID = consentID.replace(IdentityCommonConstants.FS_PREFIX, StringUtils.EMPTY);
         }
 
         if (StringUtils.isNotEmpty(consentID)) {

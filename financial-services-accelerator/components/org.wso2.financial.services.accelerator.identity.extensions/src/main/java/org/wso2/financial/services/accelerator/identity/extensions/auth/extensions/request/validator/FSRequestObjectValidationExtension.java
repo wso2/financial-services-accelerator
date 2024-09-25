@@ -71,7 +71,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
                 if (StringUtils.isNotBlank(allowedScopes)) {
                     dataMap.put(IdentityCommonConstants.SCOPE, Arrays.asList(allowedScopes.split(" ")));
                 }
-                // perform BFSI customized validations
+                // perform FS customized validations
                 ValidationResponse validationResponse = fsDefaultRequestObjectValidator
                         .validateFSConstraints(fsRequestObject, dataMap);
 
