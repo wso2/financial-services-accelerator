@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
+    <Common>
+    </Common>
+    <Gateway>
+        {% if open_banking.gateway.request_router is defined %}
+        <RequestRouter>{{open_banking.gateway.request_router}}</RequestRouter>
+        {% else %}
+        <RequestRouter>org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
+        {% endif %}
+        <OpenBankingGatewayExecutors>
+            {% for type in open_banking.gateway.openbanking_gateway_executors.type %}
+                <{{type.name}}>
+                    {% for executor in type.executors %}
+                       <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
+                        {% endfor %}
+                 </{{type.name}}>
+            {% endfor %}
+        </OpenBankingGatewayExecutors>
+        {% if open_banking.gateway.consent.validation.endpoint is defined %}
+        <ConsentValidationEndpoint>{{open_banking.gateway.consent.validation.endpoint}}</ConsentValidationEndpoint>
+        {% else %}
+        <ConsentValidationEndpoint>https://localhost:9446/api/openbanking/consent/validate</ConsentValidationEndpoint>
+        {% endif %}
+        <Cache>
+            <GatewayCache>
+                {% if open_banking.gateway.cache.cache_access_expiry_minutes is defined %}
+                    <CacheAccessExpiry>{{open_banking.gateway.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+                {% endif %}
+                {% if open_banking.gateway.cache.cache_modified_expiry_minutes is defined %}
+                    <CacheModifiedExpiry>{{open_banking.gateway.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+                {% endif %}
+            </GatewayCache>
+        </Cache>
+    </Gateway>
+    <HTTPConnectionPool>
+        {% if open_banking.http_connection_pool.max_connections is defined %}
+        <MaxConnections>{{open_banking.http_connection_pool.max_connections}}</MaxConnections>
+        {% endif %}
+        {% if open_banking.http_connection_pool.max_connections_per_route is defined %}
+        <MaxConnectionsPerRoute>{{open_banking.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
+        {% endif %}
+    </HTTPConnectionPool>
+</Server>

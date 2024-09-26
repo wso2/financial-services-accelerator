@@ -16,10 +16,10 @@
  # under the License.
 
 # command to execute
-# ./merge.sh <WSO2_OB_APIM_HOME>
+# ./merge.sh <WSO2_APIM_HOME>
 
 source $(pwd)/../repository/conf/configure.properties
-WSO2_OB_APIM_HOME=$1
+WSO2_APIM_HOME=$1
 
 # set accelerator home
 cd ../
@@ -27,15 +27,15 @@ ACCELERATOR_HOME=$(pwd)
 echo "Accelerator Home: ${ACCELERATOR_HOME}"
 
 # set product home
-if [ "${WSO2_OB_APIM_HOME}" == "" ]
+if [ "${WSO2_APIM_HOME}" == "" ]
   then
     cd ../
-    WSO2_OB_APIM_HOME=$(pwd)
-    echo "Product Home: ${WSO2_OB_APIM_HOME}"
+    WSO2_APIM_HOME=$(pwd)
+    echo "Product Home: ${WSO2_APIM_HOME}"
 fi
 
 # validate product home
-if [ ! -d "${WSO2_OB_APIM_HOME}/repository/components" ]; then
+if [ ! -d "${WSO2_APIM_HOME}/repository/components" ]; then
   echo -e "\n\aERROR:specified product path is not a valid carbon product path\n";
   exit 2;
 else
@@ -86,7 +86,7 @@ create_databases() {
 
             echo -e "\nUpdate am_application_registration table input field size (temporary)"
             echo -e "=======================================================================\n"
-            sed -i -e 's|INPUTS VARCHAR(1000)|INPUTS VARCHAR(7500)|g' ${WSO2_OB_APIM_HOME}/dbscripts/apimgt/mysql.sql
+            sed -i -e 's|INPUTS VARCHAR(1000)|INPUTS VARCHAR(7500)|g' ${WSO2_APIM_HOME}/dbscripts/apimgt/mysql.sql
 
 
             echo -e "\nCreate database tables"
@@ -101,8 +101,8 @@ create_databases() {
 
             echo -e "\nUpdate idn_req_object_reference table foreign keys (temporary)"
             echo -e "=======================================================================\n"
-            sed -i -e 's|FOREIGN KEY (CONSUMER_KEY_ID) REFERENCES IDN_OAUTH_CONSUMER_APPS(ID) ON DELETE CASCADE ,|FOREIGN KEY (CONSUMER_KEY_ID) REFERENCES IDN_OAUTH_CONSUMER_APPS(ID),|g' ${WSO2_OB_APIM_HOME}/dbscripts/apimgt/mssql.sql
-            sed -i -e 's|FOREIGN KEY (TOKEN_ID) REFERENCES IDN_OAUTH2_ACCESS_TOKEN(TOKEN_ID),|FOREIGN KEY (TOKEN_ID) REFERENCES IDN_OAUTH2_ACCESS_TOKEN(TOKEN_ID) ON DELETE CASCADE,|g' ${WSO2_OB_APIM_HOME}/dbscripts/apimgt/mssql.sql
+            sed -i -e 's|FOREIGN KEY (CONSUMER_KEY_ID) REFERENCES IDN_OAUTH_CONSUMER_APPS(ID) ON DELETE CASCADE ,|FOREIGN KEY (CONSUMER_KEY_ID) REFERENCES IDN_OAUTH_CONSUMER_APPS(ID),|g' ${WSO2_APIM_HOME}/dbscripts/apimgt/mssql.sql
+            sed -i -e 's|FOREIGN KEY (TOKEN_ID) REFERENCES IDN_OAUTH2_ACCESS_TOKEN(TOKEN_ID),|FOREIGN KEY (TOKEN_ID) REFERENCES IDN_OAUTH2_ACCESS_TOKEN(TOKEN_ID) ON DELETE CASCADE,|g' ${WSO2_APIM_HOME}/dbscripts/apimgt/mssql.sql
 
     fi
 }
@@ -123,25 +123,24 @@ create_mysql_databases() {
 };
 
 create_mysql_database_tables() {
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_APIMGT} -h${DB_HOST} -e "SOURCE ${WSO2_OB_APIM_HOME}/dbscripts/apimgt/mysql.sql";
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_APIMGT} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/apimgt/mysql.sql";
     echo "Database tables Created for: ${DB_APIMGT}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_AM_CONFIG} -h${DB_HOST} -e "SOURCE ${WSO2_OB_APIM_HOME}/dbscripts/mysql.sql";
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_AM_CONFIG} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_AM_CONFIG}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_GOV} -h${DB_HOST} -e "SOURCE ${WSO2_OB_APIM_HOME}/dbscripts/mysql.sql";
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_GOV} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_GOV}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_USER_STORE} -h${DB_HOST} -e "SOURCE ${WSO2_OB_APIM_HOME}/dbscripts/mysql.sql";
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_USER_STORE} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_USER_STORE}"
 };
 
 add_json_fault_sequence() {
-  sed -i -e 's|</sequence>|\t<sequence key="jsonConverter"/>\n</sequence>|g' ${WSO2_OB_APIM_HOME}/repository/deployment/server/synapse-configs/default/sequences/_cors_request_handler_.xml
+  sed -i -e 's|</sequence>|\t<sequence key="jsonConverter"/>\n</sequence>|g' ${WSO2_APIM_HOME}/repository/deployment/server/synapse-configs/default/sequences/_cors_request_handler_.xml
 }
 
 echo -e "\nReplace hostnames \n"
 echo -e "================================================\n"
 sed -i -e 's|APIM_HOSTNAME|'${APIM_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 sed -i -e 's|IS_HOSTNAME|'${IS_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
-sed -i -e 's|BI_HOSTNAME|'${BI_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 
 echo -e "\nConfigure datasources \n"
 echo -e "================================================\n"
@@ -153,7 +152,7 @@ create_databases;
 
 echo -e "\nCopy deployment.toml file to repository/conf \n"
 echo -e "================================================\n"
-cp ${DEPLOYMENT_TOML_FILE} ${WSO2_OB_APIM_HOME}/repository/conf/
+cp ${DEPLOYMENT_TOML_FILE} ${WSO2_APIM_HOME}/repository/conf/
 rm ${DEPLOYMENT_TOML_FILE}
 rm -f ${DEPLOYMENT_TOML_FILE}-e
 

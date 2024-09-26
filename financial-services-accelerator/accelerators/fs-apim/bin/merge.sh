@@ -15,11 +15,11 @@
  # specific language governing permissions and limitations
  # under the License.
 
-# merge.sh script copy the WSO2 OB APIM accelerator artifacts on top of WSO2 APIM base product
+# merge.sh script copy the WSO2 FS APIM accelerator artifacts on top of WSO2 APIM base product
 #
-# merge.sh <WSO2_OB_APIM_HOME>
+# merge.sh <WSO2_APIM_HOME>
 
-WSO2_OB_APIM_HOME=$1
+WSO2_APIM_HOME=$1
 
 # set accelerator home
 cd ../
@@ -27,15 +27,15 @@ ACCELERATOR_HOME=$(pwd)
 echo "Accelerator home is: ${ACCELERATOR_HOME}"
 
 # set product home
-if [ "${WSO2_OB_APIM_HOME}" == "" ];
+if [ "${WSO2_APIM_HOME}" == "" ];
   then
     cd ../
-    WSO2_OB_APIM_HOME=$(pwd)
-    echo "Product home is: ${WSO2_OB_APIM_HOME}"
+    WSO2_APIM_HOME=$(pwd)
+    echo "Product home is: ${WSO2_APIM_HOME}"
 fi
 
 # validate product home
-if [ ! -d "${WSO2_OB_APIM_HOME}/repository/components" ]; then
+if [ ! -d "${WSO2_APIM_HOME}/repository/components" ]; then
   echo -e "\n\aERROR:specified product path is not a valid carbon product path\n";
   exit 2;
 else
@@ -44,5 +44,5 @@ fi
 
 echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
-cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_OB_APIM_HOME}"/
+cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_APIM_HOME}"/
 echo -e "\nComplete!\n"
