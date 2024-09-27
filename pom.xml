@@ -76,7 +76,7 @@
                 </property>
             </activation>
             <modules>
-<!--                <module>financial-services-accelerator</module>-->
+                <module>financial-services-accelerator</module>
                 <module>financial-services-accelerator/accelerators</module>
             </modules>
             <properties>

@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>wso2-financial-services-am-accelerator</artifactId>
+    <artifactId>wso2-fsam-accelerator</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Financial Services - API Manager Accelerator Module</name>
     <url>http://wso2.org</url>
