@@ -88,6 +88,7 @@
             {% else %}
             <RequestSignatureAlias>wso2carbon</RequestSignatureAlias>
             {% endif %}
+
             {% if financial_services.consent.validation.jwt.payload.enabled is defined %}
             <JWTPayloadValidation>{{financial_services.consent.validation.jwt.payload.enabled}}</JWTPayloadValidation>
             {% else %}
@@ -151,6 +152,7 @@
             {% else %}
                 <IsEnabled>false</IsEnabled>
             {% endif %}
+
             {% if financial_services.consent.idempotency.allowed_time_duration is defined %}
                 <AllowedTimeDuration>{{financial_services.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
             {% else %}

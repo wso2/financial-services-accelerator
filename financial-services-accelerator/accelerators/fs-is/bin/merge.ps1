@@ -48,7 +48,7 @@ Write-Output "[INFO] Accelerator Home : $WSO2_ACCELERATOR_HOME"
 
 # Get the root directory of the base product.
 if ($null -eq $WSO2_BASE_PRODUCT_HOME) {
-    Set-Location (Join-Path $WSO2_OB_ACCELERATOR_HOME ".\..\")
+    Set-Location (Join-Path $WSO2_ACCELERATOR_HOME ".\..\")
     $WSO2_BASE_PRODUCT_HOME = (Get-Location).path
 }
 Write-Output "[INFO] Base Product Home : $WSO2_BASE_PRODUCT_HOME"
@@ -70,8 +70,8 @@ Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\dropins"
 Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\lib") | Where-Object{$_.Name -Match "org.wso2.financial.services.accelerator.*"} | Remove-Item
 Write-Output "[INFO] All previous FS artifacts have been deleted!"
 
-# Copying all the new OB artifacts to the base product
-# Copy-Item -Force -Recurse -Verbose (Join-Path $WSO2_OB_ACCELERATOR_HOME "carbon-home\*") -Destination $WSO2_BASE_PRODUCT_HOME
+# Copying all the new FS artifacts to the base product
+# Copy-Item -Force -Recurse -Verbose (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home\*") -Destination $WSO2_BASE_PRODUCT_HOME
 # Using Robocopy.exe becuase powershell Copy-Item cmdlet doesn't do recursive copying after a certain number of subdirectories.
 Write-Output "[INFO] Copying new financial services artifacts..."
 Robocopy.exe (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home") $WSO2_BASE_PRODUCT_HOME * /E /NFL /NDL /NJH /NJS /nc /ns /np
