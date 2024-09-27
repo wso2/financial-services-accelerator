@@ -19,44 +19,61 @@
 
 <Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
     <Common>
+        <Cache>
+            {% if financial_services.common.cache.cache_access_expiry_minutes is defined %}
+            <CacheAccessExpiry>{{financial_services.common.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+            {% else %}
+            <CacheAccessExpiry>60</CacheAccessExpiry>
+            {% endif %}
+            {% if financial_services.common.cache.cache_modified_expiry_minutes is defined %}
+            <CacheModifiedExpiry>{{financial_services.common.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+            {% else %}
+            <CacheModifiedExpiry>60</CacheModifiedExpiry>
+            {% endif %}
+        </Cache>
     </Common>
     <Gateway>
-        {% if open_banking.gateway.request_router is defined %}
-        <RequestRouter>{{open_banking.gateway.request_router}}</RequestRouter>
+        {% if financial_services.gateway.request_router is defined %}
+        <RequestRouter>{{financial_services.gateway.request_router}}</RequestRouter>
         {% else %}
         <RequestRouter>org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
         {% endif %}
-        <OpenBankingGatewayExecutors>
-            {% for type in open_banking.gateway.openbanking_gateway_executors.type %}
+        <FinancialServicesGatewayExecutors>
+            {% for type in financial_services.gateway.openbanking_gateway_executors.type %}
                 <{{type.name}}>
                     {% for executor in type.executors %}
                        <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
                         {% endfor %}
                  </{{type.name}}>
             {% endfor %}
-        </OpenBankingGatewayExecutors>
-        {% if open_banking.gateway.consent.validation.endpoint is defined %}
-        <ConsentValidationEndpoint>{{open_banking.gateway.consent.validation.endpoint}}</ConsentValidationEndpoint>
+        </FinancialServicesGatewayExecutors>
+        {% if financial_services.gateway.consent.validation.endpoint is defined %}
+        <ConsentValidationEndpoint>{{financial_services.gateway.consent.validation.endpoint}}</ConsentValidationEndpoint>
         {% else %}
-        <ConsentValidationEndpoint>https://localhost:9446/api/openbanking/consent/validate</ConsentValidationEndpoint>
+        <ConsentValidationEndpoint>https://localhost:9446/api/fs/consent/validate</ConsentValidationEndpoint>
         {% endif %}
         <Cache>
             <GatewayCache>
-                {% if open_banking.gateway.cache.cache_access_expiry_minutes is defined %}
-                    <CacheAccessExpiry>{{open_banking.gateway.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+                {% if financial_services.gateway.cache.cache_access_expiry_minutes is defined %}
+                    <CacheAccessExpiry>{{financial_services.gateway.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
                 {% endif %}
-                {% if open_banking.gateway.cache.cache_modified_expiry_minutes is defined %}
-                    <CacheModifiedExpiry>{{open_banking.gateway.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+                {% if financial_services.gateway.cache.cache_modified_expiry_minutes is defined %}
+                    <CacheModifiedExpiry>{{financial_services.gateway.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
                 {% endif %}
             </GatewayCache>
         </Cache>
     </Gateway>
+    {% if financial_services.publisher_url is defined %}
+    <PublisherURL>{{financial_services.publisher_url}}</PublisherURL>
+    {% else %}
+    <PublisherURL>https://localhost:9443</PublisherURL>
+    {% endif %}
     <HTTPConnectionPool>
-        {% if open_banking.http_connection_pool.max_connections is defined %}
-        <MaxConnections>{{open_banking.http_connection_pool.max_connections}}</MaxConnections>
+        {% if financial_services.http_connection_pool.max_connections is defined %}
+        <MaxConnections>{{financial_services.http_connection_pool.max_connections}}</MaxConnections>
         {% endif %}
-        {% if open_banking.http_connection_pool.max_connections_per_route is defined %}
-        <MaxConnectionsPerRoute>{{open_banking.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
+        {% if financial_services.http_connection_pool.max_connections_per_route is defined %}
+        <MaxConnectionsPerRoute>{{financial_services.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
         {% endif %}
     </HTTPConnectionPool>
 </Server>

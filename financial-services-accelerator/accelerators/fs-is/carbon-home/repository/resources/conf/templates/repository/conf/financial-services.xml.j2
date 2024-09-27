@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
+    <Common>
+        <Cache>
+            {% if financial_services.common.cache.cache_access_expiry_minutes is defined %}
+            <CacheAccessExpiry>{{financial_services.common.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+            {% else %}
+            <CacheAccessExpiry>60</CacheAccessExpiry>
+            {% endif %}
+            {% if financial_services.common.cache.cache_modified_expiry_minutes is defined %}
+            <CacheModifiedExpiry>{{financial_services.common.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+            {% else %}
+            <CacheModifiedExpiry>60</CacheModifiedExpiry>
+            {% endif %}
+        </Cache>
+    </Common>
+    <JDBCPersistenceManager>
+        <DataSource>
+            <!-- Include a data source name (jndiConfigName) from the set of data
+                sources defined in master-datasources.xml -->
+            {% if financial_services.jdbc_persistence_manager.data_source is defined %}
+            <Name>jdbc/{{financial_services.jdbc_persistence_manager.data_source.name}}</Name>
+            {% else %}
+            <Name>jdbc/WSO2FS_DB</Name>
+        {% endif %}
+        </DataSource>
+        {% if financial_services.jdbc_persistence_manager.connection_verification_timeout is defined %}
+        <ConnectionVerificationTimeout>{{financial_services.jdbc_persistence_manager.connection_verification_timeout}}</ConnectionVerificationTimeout>
+        {% else %}
+        <ConnectionVerificationTimeout>1</ConnectionVerificationTimeout>
+        {% endif %}
+    </JDBCPersistenceManager>
+    <Consent>
+        {% if financial_services.consent.manage.handler is defined %}
+        <ManageHandler>{{financial_services.consent.manage.handler}}</ManageHandler>
+        {% else %}
+        <ManageHandler>org..wso2.financial.services.accelerator.consent.extensions.manage.impl.DefaultConsentManageHandler</ManageHandler>
+        {% endif %}
+        <AuthorizeSteps>
+            <Retrieve>
+                {% if financial_services.consent.authorize_steps.retrieve is defined %}
+                    {% for step in financial_services.consent.authorize_steps.retrieve %}
+                    <Step class="{{step.class}}"
+                          priority="{{step.priority}}"/>
+                    {% endfor %}
+                {% else %}
+                <Step class="org..wso2.financial.services.accelerator.consent.extensions.authorize.impl.DefaultConsentRetrievalStep" priority="2"/>
+                {% endif %}
+            </Retrieve>
+            <Persist>
+                {% if financial_services.consent.authorize_steps.persist is defined %}
+                    {% for step in financial_services.consent.authorize_steps.persist %}
+                    <Step class="{{step.class}}"
+                          priority="{{step.priority}}"/>
+                    {% endfor %}
+                {% else %}
+                <Step class="org..wso2.financial.services.accelerator.consent.extensions.authorize.impl.DefaultConsentPersistStep" priority="1"/>
+                {% endif %}
+            </Persist>
+        </AuthorizeSteps
+        <Validation>
+            {% if financial_services.consent.validation.validator is defined %}
+            <Validator>{{financial_services.consent.validation.validator}}</Validator>
+            {% else %}
+            <Validator>org..wso2.financial.services.accelerator.consent.extensions.validate.impl.DefaultConsentValidator</Validator>
+            {% endif %}
+
+            {% if financial_services.consent.validation.signature.alias is defined %}
+            <RequestSignatureAlias>{{financial_services.consent.validation.signature.alias}}</RequestSignatureAlias>
+            {% else %}
+            <RequestSignatureAlias>wso2carbon</RequestSignatureAlias>
+            {% endif %}
+
+            {% if financial_services.consent.validation.jwt.payload.enabled is defined %}
+            <JWTPayloadValidation>{{financial_services.consent.validation.jwt.payload.enabled}}</JWTPayloadValidation>
+            {% else %}
+            <JWTPayloadValidation>true</JWTPayloadValidation>
+            {% endif %}
+        </Validation>
+        {% if financial_services.consent.admin.handler is defined %}
+        <AdminHandler>{{financial_services.consent.admin.handler}}</AdminHandler>
+        {% else %}
+        <AdminHandler>org..wso2.financial.services.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
+        {% endif %}
+
+        <ConsentAPICredentials>
+            {% if financial_services.consent.api_credentials.username is defined %}
+                <Username>{{financial_services.consent.api_credentials.username}}</Username>
+            {% else %}
+                <Username>admin@wso2.com</Username>
+            {% endif %}
+            {% if financial_services.consent.api_credentials.password is defined %}
+                <Password>{{financial_services.consent.api_credentials.password}}</Password>
+            {% else %}
+                <Password>wso2123</Password>
+            {% endif %}
+        </ConsentAPICredentials>
+        <Portal>
+            <ClientCredentials>
+                {% if financial_services.consent.portal.client_credentials.client_id is defined %}
+                    <ClientId>{{financial_services.consent.portal.client_credentials.client_id}}</ClientId>
+                {% else %}
+                    <ClientId>consent_management_portal_client_id</ClientId>
+                {% endif %}
+                {% if financial_services.consent.portal.client_credentials.client_secret is defined %}
+                    <ClientSecret>{{financial_services.consent.portal.client_credentials.client_secret}}</ClientSecret>
+                {% else %}
+                    <ClientSecret>consent_management_portal_client_secret</ClientSecret>
+                {% endif %}
+            </ClientCredentials>
+            <Params>
+                {% if financial_services.consent.portal.params.identity_server_base_url is defined %}
+                    <IdentityServerBaseUrl>{{financial_services.consent.portal.params.identity_server_base_url}}</IdentityServerBaseUrl>
+                {% else %}
+                    <IdentityServerBaseUrl>https://localhost:9446</IdentityServerBaseUrl>
+                {% endif %}
+                {% if financial_services.consent.portal.params.api_manager_server_base_url is defined %}
+                    <ApiManagerServerBaseUrl>{{financial_services.consent.portal.params.api_manager_server_base_url}}</ApiManagerServerBaseUrl>
+                {% else %}
+                    <ApiManagerServerBaseUrl>https://localhost:8243</ApiManagerServerBaseUrl>
+                {% endif %}
+            </Params>
+        </Portal>
+        <Payments>
+            {% if financial_services.consent.preserve_consent_link.enable is defined %}
+            <MaximumInstructedAmount>{{financial_services.consent.preserve_consent_link.enable}}</MaximumInstructedAmount>
+            {% else %}
+            <MaximumInstructedAmount>1000</MaximumInstructedAmount>
+            {% endif %}
+        </Payments>
+        <Idempotency>
+            {% if financial_services.consent.idempotency.enabled is defined %}
+                <Enabled>{{financial_services.consent.idempotency.enabled}}</Enabled>
+            {% else %}
+                <IsEnabled>false</IsEnabled>
+            {% endif %}
+
+            {% if financial_services.consent.idempotency.allowed_time_duration is defined %}
+                <AllowedTimeDuration>{{financial_services.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
+            {% else %}
+                <AllowedTimeDuration>1440</AllowedTimeDuration>
+            {% endif %}
+        </Idempotency>
+        {% if financial_services.consent.preserve_consent_link.enable is defined %}
+        <PreserveConsentLink>{{financial_services.consent.preserve_consent_link.enable}}</PreserveConsentLink>
+        {% else %}
+        <PreserveConsentLink>false</PreserveConsentLink>
+        {% endif %}
+    </Consent>
+    <Identity>
+        <AuthenticationWebApp>
+            {% if financial_services.identity.authentication_webapp.servlet_extension is defined %}
+            <ServletExtension>
+                {{financial_services.identity.authentication_webapp.servlet_extension}}
+            </ServletExtension>
+            {% else %}
+            <ServletExtension>
+                org..wso2.financial.services.accelerator.consent.extensions.authservlet.impl.OFSDefaultAuthServletImpl
+            </ServletExtension>
+            {% endif %}
+        </AuthenticationWebApp>
+        {% if financial_services.identity.consent_id_claim_name is defined %}
+        <ConsentIDClaimName>{{financial_services.identity.consent_id_claim_name}}</ConsentIDClaimName>
+        {% else %}
+        <ConsentIDClaimName>consent_id</ConsentIDClaimName>
+        {% endif %}
+        <Extensions>
+            {% if financial_services.identity.extensions.request_object_validator is defined %}
+            <RequestObjectValidator>{{financial_services.identity.extensions.request_object_validator}}</RequestObjectValidator>
+            {% else %}
+            <RequestObjectValidator>org..wso2.financial.services.accelerator.identity.auth.extensions.request.validator.OBRequestObjectValidator</RequestObjectValidator>
+            {% endif %}
+            {% if financial_services.identity.extensions.response_type_handler is defined %}
+            <ResponseTypeHandler>{{financial_services.identity.extensions.response_type_handler}}</ResponseTypeHandler>
+            {% else %}
+            <ResponseTypeHandler>org..wso2.financial.services.accelerator.identity.auth.extensions.response.handler.impl.OBDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
+            {% endif %}
+            {% if financial_services.identity.extensions.claim_provider is defined %}
+            <ClaimProvider>{{financial_services.identity.extensions.claim_provider}}</ClaimProvider>
+            {% else %}
+            <ClaimProvider>org..wso2.financial.services.accelerator.identity.claims.OBDefaultClaimProvider</ClaimProvider>
+            {% endif %}
+        </Extensions>
+        <TokenSubject>
+            {% if financial_services.identity.token.remove_user_store_domain_from_subject is defined %}
+                 <RemoveUserStoreDomainFromSubject>{{financial_services.identity.token.remove_user_store_domain_from_subject}}</RemoveUserStoreDomainFromSubject>
+            {% else %}
+                 <RemoveUserStoreDomainFromSubject>false</RemoveUserStoreDomainFromSubject>
+            {% endif %}
+            {% if financial_services.identity.token.remove_tenant_domain_from_subject is defined %}
+                 <RemoveTenantDomainFromSubject>{{financial_services.identity.token.remove_tenant_domain_from_subject}}</RemoveTenantDomainFromSubject>
+            {% else %}
+                 <RemoveTenantDomainFromSubject>false</RemoveTenantDomainFromSubject>
+            {% endif %}
+        </TokenSubject>
+    </Identity>
+    <HTTPConnectionPool>
+        {% if financial_services.http_connection_pool.max_connections is defined %}
+        <MaxConnections>{{financial_services.http_connection_pool.max_connections}}</MaxConnections>
+        {% endif %}
+        {% if financial_services.http_connection_pool.max_connections_per_route is defined %}
+        <MaxConnectionsPerRoute>{{financial_services.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
+        {% endif %}
+    </HTTPConnectionPool>
+</Server>

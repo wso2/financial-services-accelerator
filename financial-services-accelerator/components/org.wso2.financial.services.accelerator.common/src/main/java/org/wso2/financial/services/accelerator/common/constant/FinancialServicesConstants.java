@@ -32,8 +32,8 @@ public class FinancialServicesConstants {
     public static final String DCR_CONFIG_TAG = "DCR";
     public static final String COMMON_IDENTITY_CACHE_ACCESS_EXPIRY = "Common.Identity.Cache.CacheAccessExpiry";
     public static final String COMMON_IDENTITY_CACHE_MODIFY_EXPIRY = "Common.Identity.Cache.CacheModifiedExpiry";
-    public static final String DCR_JWKS_CONNECTION_TIMEOUT = "DCR.JWKS-Retriever.ConnectionTimeout";
-    public static final String DCR_JWKS_READ_TIMEOUT = "DCR.JWKS-Retriever.ReadTimeout";
+    public static final String JWKS_CONNECTION_TIMEOUT = "JWKS-Retriever.ConnectionTimeout";
+    public static final String JWKS_READ_TIMEOUT = "JWKS-Retriever.ReadTimeout";
     public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_PROPERTY_NAME =
             "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyName";
     public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX =

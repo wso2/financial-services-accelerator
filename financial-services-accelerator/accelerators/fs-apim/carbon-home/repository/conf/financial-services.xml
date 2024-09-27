@@ -18,12 +18,18 @@
  -->
 
 <Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
+    <Common>
+        <Cache>
+            <CacheAccessExpiry>60</CacheAccessExpiry>
+            <CacheModifiedExpiry>60</CacheModifiedExpiry>
+        </Cache>
+    </Common>
     <Gateway>
         <RequestRouter>org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
         <FinancialServicesGatewayExecutors>
 
         </FinancialServicesGatewayExecutors>
-        <ConsentValidationEndpoint>https://localhost:9446/api/openbanking/consent/validate</ConsentValidationEndpoint>
+        <ConsentValidationEndpoint>https://localhost:9446/api/fs/consent/validate</ConsentValidationEndpoint>
         <Cache>
             <GatewayCache>
                 <CacheAccessExpiry>60</CacheAccessExpiry>
