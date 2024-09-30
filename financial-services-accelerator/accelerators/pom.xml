@@ -33,7 +33,7 @@
     <url>http://wso2.org</url>
 
     <modules>
-        <module>ob-apim</module>
-        <module>ob-is</module>
+        <module>fs-apim</module>
+        <module>fs-is</module>
     </modules>
 </project>

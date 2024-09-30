@@ -91,9 +91,9 @@ public class GatewayUtils {
                         .getConfigurations()
                         .get(FinancialServicesConstants.PUBLISHER_HOSTNAME).toString();
 
-        String publisherAPIURL = publisherHostName.endsWith("/") ?
+        String publisherAPIURL = publisherHostName.endsWith(GatewayConstants.SLASH) ?
                 publisherHostName + GatewayConstants.PUBLISHER_API_PATH + apiId + GatewayConstants.SWAGGER_ENDPOINT :
-                publisherHostName + "/" + GatewayConstants.PUBLISHER_API_PATH + apiId +
+                publisherHostName + GatewayConstants.SLASH + GatewayConstants.PUBLISHER_API_PATH + apiId +
                         GatewayConstants.SWAGGER_ENDPOINT;
         try {
             URIBuilder uriBuilder = new URIBuilder(publisherAPIURL);
@@ -119,8 +119,8 @@ public class GatewayUtils {
      */
     public static String getAPIMgtConfig(String key) {
 
-        return GatewayDataHolder.getInstance()
-                .getApiManagerConfigurationService().getAPIManagerConfiguration().getFirstProperty(key);
+        return GatewayDataHolder.getInstance().getApiManagerConfigurationService()
+                .getAPIManagerConfiguration().getFirstProperty(key);
     }
 
     /**
@@ -132,13 +132,15 @@ public class GatewayUtils {
      */
     public static String getBasicAuthHeader(String username, String password) {
 
-        byte[] authHeader = Base64.getEncoder().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+        byte[] authHeader = Base64.getEncoder().encode((username + GatewayConstants.COLON + password)
+                .getBytes(StandardCharsets.UTF_8));
         return GatewayConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
     }
 
     public static String getTextPayload(String payload) {
 
-        return XML.toJSONObject(payload).getJSONObject("soapenv:Body").getJSONObject("text").getString("content");
+        return XML.toJSONObject(payload).getJSONObject(GatewayConstants.SOAP_BODY)
+                .getJSONObject(GatewayConstants.SOAP_BODY_TEXT).getString(GatewayConstants.SOAP_BODY_CONTENT);
 
     }
 
@@ -147,7 +149,7 @@ public class GatewayUtils {
      *
      * @param contentType - contentType
      * @param httpMethod - httpMethod
-     * @return
+     * @return true if the request is eligible
      */
     public static boolean isEligibleRequest(String contentType, String httpMethod) {
 
@@ -163,7 +165,7 @@ public class GatewayUtils {
      *
      * @param contentType - contentType
      * @param httpMethod - httpMethod
-     * @return
+     * @return true if the response is eligible
      */
     public static boolean isEligibleResponse(String contentType, String httpMethod) {
 

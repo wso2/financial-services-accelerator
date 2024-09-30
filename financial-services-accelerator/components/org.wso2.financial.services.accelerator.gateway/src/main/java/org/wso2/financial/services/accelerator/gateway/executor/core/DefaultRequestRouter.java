@@ -43,11 +43,11 @@ public class DefaultRequestRouter extends AbstractRequestRouter {
             //add support for consent management portal APIs
             requestContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
                     GatewayConstants.API_TYPE_CONSENT);
-            return this.getExecutorMap().get("Consent");
-        } else if (requestContext.getMsgInfo().getResource().contains("/register")) {
-            return this.getExecutorMap().get("DCR");
+            return this.getExecutorMap().get(GatewayConstants.EXECUTOR_TYPE_CONSENT);
+        } else if (requestContext.getMsgInfo().getResource().contains(GatewayConstants.DCR_PATH)) {
+            return this.getExecutorMap().get(GatewayConstants.EXECUTOR_TYPE_DCR);
         } else {
-            return this.getExecutorMap().get("Default");
+            return this.getExecutorMap().get(GatewayConstants.EXECUTOR_TYPE_DEFAULT);
         }
     }
 
@@ -59,14 +59,14 @@ public class DefaultRequestRouter extends AbstractRequestRouter {
                 return EMPTY_LIST;
             } else if (GatewayConstants.API_TYPE_CONSENT
                     .equals(responseContext.getContextProps().get(GatewayConstants.API_TYPE_CUSTOM_PROP))) {
-                return this.getExecutorMap().get("Consent");
+                return this.getExecutorMap().get(GatewayConstants.EXECUTOR_TYPE_CONSENT);
             }
         }
 
-        if (responseContext.getMsgInfo().getResource().contains("/register")) {
-            return this.getExecutorMap().get("DCR");
+        if (responseContext.getMsgInfo().getResource().contains(GatewayConstants.DCR_PATH)) {
+            return this.getExecutorMap().get(GatewayConstants.EXECUTOR_TYPE_DCR);
         } else {
-            return this.getExecutorMap().get("Default");
+            return this.getExecutorMap().get(GatewayConstants.EXECUTOR_TYPE_DEFAULT);
         }
     }
 }

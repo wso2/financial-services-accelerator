@@ -41,45 +41,45 @@ public class FSAPIResponseContext extends ResponseContextDTO {
 
     private static final Log log = LogFactory.getLog(FSAPIResponseContext.class);
     private ResponseContextDTO responseContextDTO;
-    private Map<String, String> contextProps;
+    private Map<String, Object> contextProps;
     private String responsePayload;
     private String modifiedPayload;
     private Map<String, String> addedHeaders;
     private boolean isError;
     private ArrayList<FSExecutorError> errors;
-    private Map<String, Object> analyticsData;
 
-    public FSAPIResponseContext(ResponseContextDTO responseContextDTO, Map<String, String> contextProps,
-                                Map<String, Object> analyticsData) {
+    public FSAPIResponseContext(ResponseContextDTO responseContextDTO, Map<String, Object> contextProps) {
 
         this.responseContextDTO = responseContextDTO;
         this.contextProps = contextProps;
         this.errors = new ArrayList<>();
-        this.analyticsData = analyticsData;
         this.addedHeaders = new HashMap<>();
+
         if (responseContextDTO.getMsgInfo().getHeaders().get(GatewayConstants.CONTENT_TYPE_TAG) != null) {
             String contentType = responseContextDTO.getMsgInfo().getHeaders().get(GatewayConstants.CONTENT_TYPE_TAG);
             String httpMethod = responseContextDTO.getMsgInfo().getHttpMethod();
             String errorMessage = "Request Content-Type header does not match any allowed types";
-            if (contentType.startsWith(GatewayConstants.JWT_CONTENT_TYPE)) {
+            if (contentType.startsWith(GatewayConstants.JWT_CONTENT_TYPE) || contentType.startsWith(GatewayConstants
+                    .JOSE_CONTENT_TYPE)) {
                 try {
                     this.responsePayload = GatewayUtils.getTextPayload(responseContextDTO.getMsgInfo()
                             .getPayloadHandler().consumeAsString());
                 } catch (Exception e) {
                     log.error(String.format("Failed to read the text payload from response. %s",
                             e.getMessage().replaceAll("\n\r", "")));
-                    handleContentTypeErrors(FinancialServicesErrorCodes.INVALID_CONTENT_TYPE, errorMessage);
+                    handleContentTypeErrors(errorMessage);
                 }
             } else if (GatewayUtils.isEligibleResponse(contentType, httpMethod) &&
                     HttpStatus.SC_NO_CONTENT != responseContextDTO.getStatusCode()) {
                 try {
                     this.responsePayload = responseContextDTO.getMsgInfo().getPayloadHandler().consumeAsString();
                     if (contentType.contains(GatewayConstants.JSON_CONTENT_TYPE) &&
-                            this.responsePayload.contains("soapenv:Body")) {
+                            this.responsePayload.contains(GatewayConstants.SOAP_BODY)) {
                         JSONObject soapPayload = XML.toJSONObject(responseContextDTO.getMsgInfo().getPayloadHandler()
-                                .consumeAsString()).getJSONObject("soapenv:Body");
+                                .consumeAsString()).getJSONObject(GatewayConstants.SOAP_BODY);
                         if (soapPayload.has("jsonObject")) {
-                            this.responsePayload = soapPayload.getJSONObject("jsonObject").toString();
+                            this.responsePayload = soapPayload.getJSONObject(GatewayConstants.SOAP_JSON_OBJECT)
+                                    .toString();
                         } else {
                             this.responsePayload = null;
                         }
@@ -87,7 +87,7 @@ public class FSAPIResponseContext extends ResponseContextDTO {
                 } catch (Exception e) {
                     log.error(String.format("Failed to read the payload from response. %s",
                             e.getMessage().replaceAll("\n\r", "")));
-                    handleContentTypeErrors(FinancialServicesErrorCodes.INVALID_CONTENT_TYPE, errorMessage);
+                    handleContentTypeErrors(errorMessage);
                 }
             } else {
                 this.responsePayload = null;
@@ -115,12 +115,12 @@ public class FSAPIResponseContext extends ResponseContextDTO {
         this.addedHeaders = addedHeaders;
     }
 
-    public Map<String, String> getContextProps() {
+    public Map<String, Object> getContextProps() {
 
         return contextProps;
     }
 
-    public void setContextProps(Map<String, String> contextProps) {
+    public void setContextProps(Map<String, Object> contextProps) {
 
         this.contextProps = contextProps;
     }
@@ -144,16 +144,6 @@ public class FSAPIResponseContext extends ResponseContextDTO {
             ArrayList<FSExecutorError> errors) {
 
         this.errors = errors;
-    }
-
-    public Map<String, Object> getAnalyticsData() {
-
-        return analyticsData;
-    }
-
-    public void setAnalyticsData(Map<String, Object> analyticsData) {
-
-        this.analyticsData = analyticsData;
     }
 
     @Override
@@ -184,14 +174,14 @@ public class FSAPIResponseContext extends ResponseContextDTO {
         this.contextProps.put(key, value);
     }
 
-    public String getContextProperty(String key) {
+    public Object getContextProperty(String key) {
 
         return this.contextProps.get(key);
     }
 
-    private void handleContentTypeErrors(String errorCode, String errorMessage) {
-        FSExecutorError error = new FSExecutorError(errorCode, errorMessage, errorMessage,
-                FinancialServicesErrorCodes.UNSUPPORTED_MEDIA_TYPE_CODE);
+    private void handleContentTypeErrors(String errorMessage) {
+        FSExecutorError error = new FSExecutorError(FinancialServicesErrorCodes.INVALID_CONTENT_TYPE, errorMessage,
+                errorMessage, FinancialServicesErrorCodes.UNSUPPORTED_MEDIA_TYPE_CODE);
 
         this.isError = true;
         this.errors.add(error);

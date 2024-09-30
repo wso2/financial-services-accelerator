@@ -195,8 +195,7 @@
                             org.json;version="${org.json.version.range}",
                             org.wso2.carbon.apimgt.common.gateway.*;version="${org.wso2.carbon.apimgt.version.range}",
                             org.wso2.carbon.apimgt.impl;version="${org.wso2.carbon.apimgt.version.range}",
-                            org.wso2 .financial.services.accelerator.common.*;version="${project.version}",
-                            *
+                            org.wso2.financial.services.accelerator.common.*;version="${project.version}"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.gateway.internal,

@@ -39,7 +39,6 @@ public class GatewayDataHolder {
     private static volatile CloseableHttpClient httpClient;
     private static volatile GatewayCache gatewayCache;
     private FinancialServicesConfigurationService financialServicesConfigurationService;
-    private Map<String, Object> configurations;
     private int gatewayCacheAccessExpiry;
     private int gatewayCacheModifiedExpiry;
     private APIManagerConfigurationService apiManagerConfigurationService;
@@ -95,7 +94,7 @@ public class GatewayDataHolder {
 
         this.financialServicesConfigurationService = financialServicesConfigurationService;
         if (financialServicesConfigurationService != null) {
-            this.configurations = financialServicesConfigurationService.getConfigurations();
+            Map<String, Object> configurations = financialServicesConfigurationService.getConfigurations();
             setGatewayCacheAccessExpiry((String) configurations.get(FinancialServicesConstants.GATEWAY_CACHE_EXPIRY));
             setGatewayCacheModifiedExpiry((String) configurations
                     .get(FinancialServicesConstants.GATEWAY_CACHE_MODIFIED_EXPIRY));

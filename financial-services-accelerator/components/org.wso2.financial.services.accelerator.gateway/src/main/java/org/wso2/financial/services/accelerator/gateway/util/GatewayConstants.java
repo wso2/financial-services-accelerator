@@ -32,6 +32,12 @@ public class GatewayConstants {
     public static final String JOSE_CONTENT_TYPE = "application/jose";
     public static final String APPLICATION_XML_CONTENT_TYPE = "application/xml";
     public static final String TEXT_XML_CONTENT_TYPE = "text/xml";
+    public static final String SOAP_BODY = "soapenv:Body";
+    public static final String SOAP_BODY_TEXT = "text";
+    public static final String SOAP_BODY_CONTENT = "content";
+    public static final String SOAP_JSON_OBJECT = "jsonObject";
+    public static final String COLON = ":";
+    public static final String SLASH = "/";
     public static final String POST_HTTP_METHOD = "POST";
     public static final String PUT_HTTP_METHOD = "PUT";
     public static final String GET_HTTP_METHOD = "GET";
@@ -44,6 +50,10 @@ public class GatewayConstants {
     public static final String API_TYPE_CONSENT = "consent";
     public static final String API_TYPE_NON_REGULATORY = "non-regulatory";
     public static final String API_TYPE_CUSTOM_PROP = "x-wso2-api-type";
+    public static final String EXECUTOR_TYPE_CONSENT = "Consent";
+    public static final String EXECUTOR_TYPE_DCR = "DCR";
+    public static final String EXECUTOR_TYPE_DEFAULT = "Default";
+    public static final String DCR_PATH = "/register";
     public static final String CONTEXT_PROP_CACHE_KEY = "_contextProp";
     public static final String ANALYTICS_PROP_CACHE_KEY = "_analyticsData";
     public static final String ERROR_STATUS_PROP = "errorStatusCode";

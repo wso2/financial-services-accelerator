@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.cert.X509Certificate;
 
 /**
  * Open Banking executor request context.
@@ -49,44 +48,25 @@ public class FSAPIRequestContext extends RequestContextDTO {
 
     private static final Log log = LogFactory.getLog(FSAPIRequestContext.class);
     private final RequestContextDTO requestContextDTO;
-    private Map<String, String> contextProps;
+    private Map<String, Object> contextProps;
     private String modifiedPayload;
     private String requestPayload;
     private Map<String, String> addedHeaders;
     private boolean isError;
     private ArrayList<FSExecutorError> errors;
     private String consentId;
-    private Map<String, Object> analyticsData;
     private OpenAPI openAPI;
 
-    public FSAPIRequestContext(RequestContextDTO requestContextDTO,
-                               Map<String, String> contextProps, Map<String, Object> analyticsData) {
+    public FSAPIRequestContext(RequestContextDTO requestContextDTO, Map<String, Object> contextProps) {
 
         this.requestContextDTO = requestContextDTO;
         this.contextProps = contextProps;
         this.addedHeaders = new HashMap<>();
         this.errors = new ArrayList<>();
-        this.contextProps = new HashMap<>();
-        this.analyticsData = analyticsData;
 
-        Map<String, String> headers = requestContextDTO.getMsgInfo().getHeaders();
-        String authHeader = headers.get(GatewayConstants.AUTH_HEADER);
-        if (authHeader != null && !authHeader.isEmpty() &&
-                GatewayUtils.isValidJWTToken(authHeader.replace(GatewayConstants.BEARER_TAG, ""))) {
-            this.consentId = extractConsentID(authHeader);
-        }
+        this.consentId = extractConsentID(requestContextDTO);
+        this.openAPI = retrieveOpenAPI(requestContextDTO);
 
-        String apiId = requestContextDTO.getApiRequestInfo().getApiId();
-        Object cacheObject = GatewayDataHolder.getGatewayCache()
-                .getFromCache(GatewayCacheKey.of(apiId));
-        if (cacheObject == null) {
-            String swaggerDefinition = GatewayUtils.getSwaggerDefinition(apiId);
-            OpenAPIParser parser = new OpenAPIParser();
-            this.openAPI = parser.readContents(swaggerDefinition, null, null).getOpenAPI();
-            GatewayDataHolder.getGatewayCache().addToCache(GatewayCacheKey.of(apiId), this.openAPI);
-        } else {
-            this.openAPI = (OpenAPI) cacheObject;
-        }
         if (requestContextDTO.getMsgInfo().getHeaders().get(GatewayConstants.CONTENT_TYPE_TAG) != null) {
             String contentType = requestContextDTO.getMsgInfo().getHeaders().get(GatewayConstants.CONTENT_TYPE_TAG);
             String httpMethod = requestContextDTO.getMsgInfo().getHttpMethod();
@@ -99,7 +79,7 @@ public class FSAPIRequestContext extends RequestContextDTO {
                 } catch (Exception e) {
                     log.error(String.format("Failed to read the text payload from request. %s",
                             e.getMessage().replaceAll("\n\r", "")));
-                    handleContentTypeErrors(FinancialServicesErrorCodes.INVALID_CONTENT_TYPE, errorMessage);
+                    handleContentTypeErrors(errorMessage);
                 }
             } else if (GatewayUtils.isEligibleRequest(contentType, httpMethod)) {
                 try {
@@ -107,7 +87,7 @@ public class FSAPIRequestContext extends RequestContextDTO {
                 } catch (Exception e) {
                     log.error(String.format("Failed to read the payload from request. %s",
                             e.getMessage().replaceAll("\n\r", "")));
-                    handleContentTypeErrors(FinancialServicesErrorCodes.INVALID_CONTENT_TYPE, errorMessage);
+                    handleContentTypeErrors(errorMessage);
                 }
             } else {
                 this.requestPayload = null;
@@ -135,14 +115,24 @@ public class FSAPIRequestContext extends RequestContextDTO {
         this.addedHeaders = addedHeaders;
     }
 
-    public Map<String, String> getContextProps() {
+    public Map<String, Object> getContextProps() {
 
         return contextProps;
     }
 
-    public void setContextProps(Map<String, String> contextProps) {
+    public void setContextProps(Map<String, Object> contextProps) {
 
         this.contextProps = contextProps;
+    }
+
+    public void addContextProperty(String key, String value) {
+
+        this.contextProps.put(key, value);
+    }
+
+    public Object getContextProperty(String key) {
+
+        return this.contextProps.get(key);
     }
 
     public boolean isError() {
@@ -186,16 +176,6 @@ public class FSAPIRequestContext extends RequestContextDTO {
         this.openAPI = openAPI;
     }
 
-    public Map<String, Object> getAnalyticsData() {
-
-        return analyticsData;
-    }
-
-    public void setAnalyticsData(Map<String, Object> analyticsData) {
-
-        this.analyticsData = analyticsData;
-    }
-
     @Override
     public MsgInfoDTO getMsgInfo() {
 
@@ -208,11 +188,6 @@ public class FSAPIRequestContext extends RequestContextDTO {
         return requestContextDTO.getApiRequestInfo();
     }
 
-    @Override
-    public X509Certificate[] getClientCerts() {
-
-        return requestContextDTO.getClientCerts();
-    }
 
     @Override
     public Certificate[] getClientCertsLatest() {
@@ -224,43 +199,65 @@ public class FSAPIRequestContext extends RequestContextDTO {
         return requestPayload;
     }
 
-    private String extractConsentID(String jwtToken) {
+    /**
+     * Extract consent ID from the Auth header in the request context.
+     *
+     * @param requestContextDTO  Request context DTO
+     * @return consent ID
+     */
+    private String extractConsentID(RequestContextDTO requestContextDTO) {
 
-        String consentIdClaim = null;
-        try {
-            if (!jwtToken.contains(GatewayConstants.BASIC_TAG)) {
-                jwtToken = jwtToken.replace(GatewayConstants.BEARER_TAG, "");
-                JSONObject jwtClaims = GatewayUtils.decodeBase64(GatewayUtils.getPayloadFromJWT(jwtToken));
-                String consentIdClaimName =
-                        GatewayDataHolder.getInstance().getFinancialServicesConfigurationService().getConfigurations()
-                                .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
-                if (!jwtClaims.isNull(consentIdClaimName) &&
-                        !jwtClaims.getString(consentIdClaimName).isEmpty()) {
-                    consentIdClaim = jwtClaims.getString(consentIdClaimName);
+        Map<String, String> headers = requestContextDTO.getMsgInfo().getHeaders();
+        String authHeader = headers.get(GatewayConstants.AUTH_HEADER);
+        if (authHeader != null && !authHeader.isEmpty() &&
+                GatewayUtils.isValidJWTToken(authHeader.replace(GatewayConstants.BEARER_TAG, ""))) {
+            String consentIdClaim = null;
+            try {
+                if (!authHeader.contains(GatewayConstants.BASIC_TAG)) {
+                    authHeader = authHeader.replace(GatewayConstants.BEARER_TAG, "");
+                    JSONObject jwtClaims = GatewayUtils.decodeBase64(GatewayUtils.getPayloadFromJWT(authHeader));
+                    String consentIdClaimName = GatewayDataHolder.getInstance()
+                            .getFinancialServicesConfigurationService().getConfigurations()
+                                    .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
+                    if (!jwtClaims.isNull(consentIdClaimName) &&
+                            !jwtClaims.getString(consentIdClaimName).isEmpty()) {
+                        consentIdClaim = jwtClaims.getString(consentIdClaimName);
+                    }
                 }
+            } catch (UnsupportedEncodingException | JSONException | IllegalArgumentException e) {
+                log.error("Failed to retrieve the consent ID from JWT claims. %s", e);
             }
-        } catch (UnsupportedEncodingException | JSONException | IllegalArgumentException e) {
-            log.error("Failed to retrieve the consent ID from JWT claims. %s", e);
+            return consentIdClaim;
         }
-        return consentIdClaim;
+        return null;
     }
 
-    public void addContextProperty(String key, String value) {
+    /**
+     * Retrieve OpenAPI definition from the cache or from the publisher API.
+     *
+     * @param requestContextDTO  Request context DTO
+     * @return OpenAPI definition
+     */
+    private OpenAPI retrieveOpenAPI(RequestContextDTO requestContextDTO) {
 
-        this.contextProps.put(key, value);
+        String apiId = requestContextDTO.getApiRequestInfo().getApiId();
+        Object cacheObject = GatewayDataHolder.getGatewayCache()
+                .getFromCache(GatewayCacheKey.of(apiId));
+        if (cacheObject == null) {
+            String swaggerDefinition = GatewayUtils.getSwaggerDefinition(apiId);
+            OpenAPIParser parser = new OpenAPIParser();
+            OpenAPI openAPIDefinition =  parser.readContents(swaggerDefinition, null, null).getOpenAPI();
+            GatewayDataHolder.getGatewayCache().addToCache(GatewayCacheKey.of(apiId), openAPIDefinition);
+            return openAPIDefinition;
+        }
+        return (OpenAPI) cacheObject;
     }
 
-    public String getContextProperty(String key) {
-
-        return this.contextProps.get(key);
-    }
-
-    private void handleContentTypeErrors(String errorCode, String errorMessage) {
-        FSExecutorError error = new FSExecutorError(errorCode, errorMessage, errorMessage,
-                FinancialServicesErrorCodes.UNSUPPORTED_MEDIA_TYPE_CODE);
+    private void handleContentTypeErrors(String errorMessage) {
+        FSExecutorError error = new FSExecutorError(FinancialServicesErrorCodes.INVALID_CONTENT_TYPE, errorMessage,
+                errorMessage, FinancialServicesErrorCodes.UNSUPPORTED_MEDIA_TYPE_CODE);
 
         this.isError = true;
         this.errors.add(error);
     }
-
 }

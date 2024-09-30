@@ -26,7 +26,7 @@ import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolde
  */
 public class GatewayCache extends FinancialServicesBaseCache<GatewayCacheKey, Object> {
 
-    private static final String cacheName = "OPEN_BANKING_GATEWAY_CACHE";
+    private static final String cacheName = "FINANCIAL_SERVICES_GATEWAY_CACHE";
 
     private final Integer accessExpiryMinutes;
     private final Integer modifiedExpiryMinutes;

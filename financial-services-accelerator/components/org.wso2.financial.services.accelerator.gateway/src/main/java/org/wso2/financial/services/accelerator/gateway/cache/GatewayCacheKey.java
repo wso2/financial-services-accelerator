@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Cache Key for Open Banking Gateway cache.
+ * Cache Key for Financial Services Gateway cache.
  */
 public class GatewayCacheKey extends FinancialServicesBaseCacheKey implements Serializable {
 
