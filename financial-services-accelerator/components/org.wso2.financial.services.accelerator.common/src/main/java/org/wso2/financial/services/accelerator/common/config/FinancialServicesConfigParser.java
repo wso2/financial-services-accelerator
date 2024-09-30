@@ -475,13 +475,13 @@ public final class FinancialServicesConfigParser {
     public String getJWKSConnectionTimeOut() {
 
         Optional<String> source = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.DCR_JWKS_CONNECTION_TIMEOUT);
+                FinancialServicesConstants.JWKS_CONNECTION_TIMEOUT);
         return source.map(String::trim).orElse("3000");
     }
 
     public String getJWKSReadTimeOut() {
 
-        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.DCR_JWKS_READ_TIMEOUT);
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.JWKS_READ_TIMEOUT);
         return source.map(String::trim).orElse("3000");
     }
 

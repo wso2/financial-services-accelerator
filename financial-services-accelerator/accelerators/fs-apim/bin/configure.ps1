@@ -68,12 +68,12 @@ Function Find-Replace {
 
 # Get the root directory location of the accelerator. Which is <BASE_PRODUCT>/<ACCELERATOR>/
 Set-Location (Join-Path $PSScriptRoot ".\..\")
-$WSO2_OB_ACCELERATOR_HOME = (Get-Location).path
-Write-Output "[INFO] Accelerator Home : $WSO2_OB_ACCELERATOR_HOME"
+$WSO2_FS_ACCELERATOR_HOME = (Get-Location).path
+Write-Output "[INFO] Accelerator Home : $WSO2_FS_ACCELERATOR_HOME"
 
 # Get the root directory of the base product.
 if ($null -eq $WSO2_BASE_PRODUCT_HOME) {
-    Set-Location (Join-Path $WSO2_OB_ACCELERATOR_HOME ".\..\")
+    Set-Location (Join-Path $WSO2_FS_ACCELERATOR_HOME ".\..\")
     $WSO2_BASE_PRODUCT_HOME = (Get-Location).path
 }
 Write-Output "[INFO] Base Product Home : $WSO2_BASE_PRODUCT_HOME"
@@ -90,16 +90,16 @@ if (-NOT(Test-Path (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components")))
 }
 
 # Get the location of the configure.properties
-$CONFIG_PROPERTIES_PATH = Join-Path $WSO2_OB_ACCELERATOR_HOME "repository\conf\configure.properties"
+$CONFIG_PROPERTIES_PATH = Join-Path $WSO2_FS_ACCELERATOR_HOME "repository\conf\configure.properties"
 Write-Output "[INFO] configure.properties location : $CONFIG_PROPERTIES_PATH"
 
 # Load the variables in the configure.properties file
 $PROPERTIES = ConvertFrom-StringData (Get-Content $CONFIG_PROPERTIES_PATH -raw)
 
-$SELECTED_DEPLOYMENT_TOML_FILE = Join-Path $WSO2_OB_ACCELERATOR_HOME $PROPERTIES.'PRODUCT_CONF_PATH'
+$SELECTED_DEPLOYMENT_TOML_FILE = Join-Path $WSO2_FS_ACCELERATOR_HOME $PROPERTIES.'PRODUCT_CONF_PATH'
 Write-Output "[INFO] Selected deployment.toml location : $SELECTED_DEPLOYMENT_TOML_FILE"
 
-$DEPLOYMENT_TOML_FILE = Join-Path $WSO2_OB_ACCELERATOR_HOME "repository\resources\deployment.toml"
+$DEPLOYMENT_TOML_FILE = Join-Path $WSO2_FS_ACCELERATOR_HOME "repository\resources\deployment.toml"
 # Temporary copy the selected toml file so we can make changes to it.
 Copy-Item -Path $SELECTED_DEPLOYMENT_TOML_FILE $DEPLOYMENT_TOML_FILE
 Write-Output "[INFO] Temporary deployment.toml location : $DEPLOYMENT_TOML_FILE"
@@ -139,7 +139,6 @@ Function Set-Datasources
 Function Set-Hostnames {
     Find-Replace $DEPLOYMENT_TOML_FILE "APIM_HOSTNAME" "$( $PROPERTIES.'APIM_HOSTNAME' )"
     Find-Replace $DEPLOYMENT_TOML_FILE "IS_HOSTNAME" "$( $PROPERTIES.'IS_HOSTNAME' )"
-    Find-Replace $DEPLOYMENT_TOML_FILE "BI_HOSTNAME" "$( $PROPERTIES.'BI_HOSTNAME' )"
 }
 
 # A utility function to create a database.

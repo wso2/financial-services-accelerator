@@ -29,17 +29,17 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>wso2-financial-services-iam-accelerator</artifactId>
+    <artifactId>wso2-fsiam-accelerator</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Financial Services - Identity Server Accelerator Module</name>
     <url>http://wso2.org</url>
 
-
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${maven.clean.plugin.version}</version>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -54,19 +54,10 @@
                             <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
                             <excludes>
                                 <exclude>**/classmate-1.5.1.jar</exclude>
-                                <exclude>**/org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt-2.3.9.jar</exclude>
-                                <exclude>**/quartz_2.1.1.wso2v1.jar</exclude>
-                                <exclude>**/org.wso2.carbon.identity.application.authenticator.push-0.1.1.jar</exclude>
-                                <exclude>**/org.wso2.carbon.identity.application.authenticator.push.common-0.1.1.jar</exclude>
-                                <exclude>**/org.wso2.carbon.identity.application.authenticator.push.device.handler-0.1.1.jar</exclude>
                             </excludes>
                         </fileset>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/deployment/server/webapps/api/WEB-INF/lib</directory>
-                            <excludes>
-                                <exclude>**/org.wso2.carbon.identity.api.user.push.device.common-0.1.1.jar</exclude>
-                                <exclude>**/org.wso2.carbon.identity.api.user.push.device.handler.v1-0.1.1.jar</exclude>
-                            </excludes>
                         </fileset>
                     </filesets>
                 </configuration>
@@ -83,7 +74,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
+                <version>${maven.antrun.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>create-solution</id>
@@ -93,9 +84,9 @@
                                 <!-- Copying jars to dropins -->
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
-                                            dir="../../components/org.wso2.financial.services.accelerator.identity/target">
+                                            dir="../../components/org.wso2.financial.services.accelerator.identity.extensions/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.identity-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.financial.services.accelerator.identity.extensions-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
@@ -107,85 +98,30 @@
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
-                                            dir="../../components/consent-management/org.wso2.financial.services.accelerator.consent.mgt.service/target">
+                                            dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.service/target">
                                         <filename
                                                 regex="org.wso2.financial.services.accelerator.consent.service-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
-                                            dir="../../components/consent-management/org.wso2.financial.services.accelerator.consent.extensions/target">
+                                            dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.extensions/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.consent.extensions-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.financial.services.accelerator.consent.mgt.extensions-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
-                                            dir="../../components/consent-management/org.wso2.financial.services.accelerator.consent.mgt.dao/target">
+                                            dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.dao/target">
                                         <filename
                                                 regex="org.wso2.financial.services.accelerator.consent.dao-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
-                                    <fileset
-                                            dir="../../components/ob-throttler/org.wso2.financial.services.accelerator.throttler.dao/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.throttler.dao-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/ob-throttler/org.wso2.financial.services.accelerator.throttler.service/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.throttler.service-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/org.wso2.financial.services.accelerator.data.publisher/org.wso2.financial.services.accelerator.data.publisher.common/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.data.publisher.common-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/org.wso2.financial.services.accelerator.data.publisher/org.wso2.financial.services.accelerator.authentication.data.publisher/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.authentication.data.publisher-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <!-- Copying jars to carbon-home/lib -->
-                                <copy todir="${project.basedir}/carbon-home/lib/runtimes/cxf3" overwrite="true">
-                                    <fileset
-                                            dir="../../components/org.wso2.financial.services.accelerator.runtime/org.wso2.financial.services.accelerator.runtime.identity.authn.filter/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.runtime.identity.authn.filter-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
 
-                                <unzip src="../../internal-apis/internal-webapps/org.wso2.financial.services.accelerator.consent.endpoint/target/api#financialservices#consent.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#financialservices#consent/"/>
-                                <unzip src="../../internal-apis/internal-webapps/org.wso2.financial.services.accelerator.dcr.endpoint/target/api#financialservices#dynamic-client-registration.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#financialservices#dynamic-client-registration/"/>
-                                <unzip src="../../internal-apis/internal-webapps/org.wso2.financial.services.authentication.webapp/target/ob#authenticationendpoint.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/ob#authenticationendpoint/"/>
-                                <unzip src="../../internal-apis/internal-webapps/org.wso2.financial.services.accelerator.application.info.endpoint/target/api#financialservices#application.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#financialservices#application/"/>
-                                <unzip src="../../../react-apps/self-care-portal/target/consentmgr.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consentmgr/"/>
-                                <unzip src="../../internal-apis/internal-webapps/org.wso2.financial.services.accelerator.push.authorization.endpoint/target/api#financialservices#push-authorization.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#financialservices#push-authorization/"/>
-
-                                <copy todir="${project.basedir}/repository/resources/internal-apis/" overwrite="true">
-                                    <fileset dir="../../internal-apis/internal-swaggers">
-                                        <filename regex="\.*.yaml$"/>
-                                    </fileset>
-                                </copy>
-                                <copy overwrite="true" todir="${project.basedir}/carbon-home/repository/components/dropins">
-                                    <fileset dir="../../components/org.wso2.financial.services.accelerator.service.activator/target">
-                                        <filename regex="org.wso2.financial.services.accelerator.service.activator-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
+                                <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.consent.mgt.endpoint/target/api#fs#consent.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#fs#consent/"/>
+                                <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint/target/fs#authenticationendpoint.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/fs#authenticationendpoint/"/>
                             </target>
                         </configuration>
                         <goals>

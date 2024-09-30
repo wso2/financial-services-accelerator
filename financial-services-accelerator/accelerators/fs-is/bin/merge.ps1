@@ -43,12 +43,12 @@ Function Exit-Clean {
 
 # Get the root directory location of the accelerator. Which is <BASE_PRODUCT>/<ACCELERATOR>/
 Set-Location (Join-Path $PSScriptRoot ".\..\")
-$WSO2_OB_ACCELERATOR_HOME = (Get-Location).path
-Write-Output "[INFO] Accelerator Home : $WSO2_OB_ACCELERATOR_HOME"
+$WSO2_ACCELERATOR_HOME = (Get-Location).path
+Write-Output "[INFO] Accelerator Home : $WSO2_ACCELERATOR_HOME"
 
 # Get the root directory of the base product.
 if ($null -eq $WSO2_BASE_PRODUCT_HOME) {
-    Set-Location (Join-Path $WSO2_OB_ACCELERATOR_HOME ".\..\")
+    Set-Location (Join-Path $WSO2_ACCELERATOR_HOME ".\..\")
     $WSO2_BASE_PRODUCT_HOME = (Get-Location).path
 }
 Write-Output "[INFO] Base Product Home : $WSO2_BASE_PRODUCT_HOME"
@@ -65,17 +65,17 @@ if (-NOT(Test-Path (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components")))
 }
 
 # Remove old open-banking artifacts
-Write-Output "[INFO] Removing old open-banking artifacts..."
-Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\dropins") | Where-Object{$_.Name -Match "com.wso2.openbanking.accelerator.*"} | Remove-Item
-Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\lib") | Where-Object{$_.Name -Match "com.wso2.openbanking.accelerator.*"} | Remove-Item
-Write-Output "[INFO] All previous OB artifacts have been deleted!"
+Write-Output "[INFO] Removing old financial services artifacts..."
+Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\dropins") | Where-Object{$_.Name -Match "org.wso2.financial.services.accelerator.*"} | Remove-Item
+Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\lib") | Where-Object{$_.Name -Match "org.wso2.financial.services.accelerator.*"} | Remove-Item
+Write-Output "[INFO] All previous FS artifacts have been deleted!"
 
-# Copying all the new OB artifacts to the base product
-# Copy-Item -Force -Recurse -Verbose (Join-Path $WSO2_OB_ACCELERATOR_HOME "carbon-home\*") -Destination $WSO2_BASE_PRODUCT_HOME
+# Copying all the new FS artifacts to the base product
+# Copy-Item -Force -Recurse -Verbose (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home\*") -Destination $WSO2_BASE_PRODUCT_HOME
 # Using Robocopy.exe becuase powershell Copy-Item cmdlet doesn't do recursive copying after a certain number of subdirectories.
-Write-Output "[INFO] Copying new open-banking artifacts..."
-Robocopy.exe (Join-Path $WSO2_OB_ACCELERATOR_HOME "carbon-home") $WSO2_BASE_PRODUCT_HOME * /E /NFL /NDL /NJH /NJS /nc /ns /np
-Write-Output "[INFO] All the new OB artifacts has been copied!"
+Write-Output "[INFO] Copying new financial services artifacts..."
+Robocopy.exe (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home") $WSO2_BASE_PRODUCT_HOME * /E /NFL /NDL /NJH /NJS /nc /ns /np
+Write-Output "[INFO] All the new FS artifacts has been copied!"
 
 $WEB_APPS_PATH = (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\deployment\server\webapps")
 
@@ -117,8 +117,6 @@ if (Test-Path $CONSENTMGR_RUNTIME_JS_BACKUP_PATH -PathType Leaf) {
 }
 
 Remove-Item -LiteralPath $CONSENTMGR_PATH_ZIP -Force
-
-Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\dropins") | Where-Object{$_.Name -Match "org.wso2.carbon.identity.application.authentication.handler.identifier-*"} | Remove-Item
 
 Write-Output "[INFO] Completed!"
 

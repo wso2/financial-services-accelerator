@@ -141,7 +141,7 @@ public class FSConfigParserTests {
         String connectionTimeOut = FinancialServicesConfigParser.getInstance()
                 .getJWKSConnectionTimeOut();
 
-        Assert.assertEquals(connectionTimeOut, "1000");
+        Assert.assertEquals(connectionTimeOut, "3000");
     }
 
     @Test(priority = 13)

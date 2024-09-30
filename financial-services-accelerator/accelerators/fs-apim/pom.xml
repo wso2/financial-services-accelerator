@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>wso2-financial-services-am-accelerator</artifactId>
+    <artifactId>wso2-fsam-accelerator</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Financial Services - API Manager Accelerator Module</name>
     <url>http://wso2.org</url>
@@ -41,8 +41,9 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${maven.clean.plugin.version}</version>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -72,7 +73,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
+                <version>${maven.antrun.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>create-solution</id>
@@ -92,27 +93,6 @@
                                             dir="../../components/org.wso2.financial.services.accelerator.gateway/target">
                                         <filename
                                                 regex="org.wso2.financial.services.accelerator.gateway-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/org.wso2.financial.services.accelerator.data.publisher/org.wso2.financial.services.accelerator.data.publisher.common/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.data.publisher.common-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/org.wso2.financial.services.accelerator.keymanager/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.keymanager-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/deployment/server/webapps" overwrite="true">
-                                    <fileset
-                                            dir="../../internal-apis/internal-webapps/org.wso2.financial.services.accelerator.demo.backend/target">
-                                        <filename
-                                                regex="api#financialservices#backend.war$"/>
                                     </fileset>
                                 </copy>
                             </target>
@@ -144,6 +124,5 @@
 
         </plugins>
     </build>
-
 
 </project>
