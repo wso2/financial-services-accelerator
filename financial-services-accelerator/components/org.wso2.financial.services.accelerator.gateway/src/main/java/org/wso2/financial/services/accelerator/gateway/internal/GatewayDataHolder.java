@@ -110,8 +110,7 @@ public class GatewayDataHolder {
         return requestRouter;
     }
 
-    public void setRequestRouter(
-            AbstractRequestRouter requestRouter) {
+    public void setRequestRouter(AbstractRequestRouter requestRouter) {
 
         this.requestRouter = requestRouter;
     }

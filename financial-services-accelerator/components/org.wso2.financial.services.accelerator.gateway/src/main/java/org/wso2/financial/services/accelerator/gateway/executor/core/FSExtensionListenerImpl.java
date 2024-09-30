@@ -129,6 +129,12 @@ public class FSExtensionListenerImpl implements ExtensionListener {
         return responseDTOForResponse;
     }
 
+    /**
+     * Method to get response DTO for request path.
+     *
+     * @param fsapiRequestContext  API Request Context
+     * @return ExtensionResponseDTO Extension Response DTO
+     */
     protected ExtensionResponseDTO getResponseDTOForRequest(FSAPIRequestContext fsapiRequestContext) {
 
         ExtensionResponseDTO extensionResponseDTO = new ExtensionResponseDTO();
@@ -163,6 +169,12 @@ public class FSExtensionListenerImpl implements ExtensionListener {
         return extensionResponseDTO;
     }
 
+    /**
+     * Method to get response DTO for response path.
+     *
+     * @param fsapiResponseContext  API Response Context
+     * @return ExtensionResponseDTO Extension Response DTO
+     */
     protected ExtensionResponseDTO getResponseDTOForResponse(FSAPIResponseContext fsapiResponseContext) {
 
         ExtensionResponseDTO extensionResponseDTO = new ExtensionResponseDTO();

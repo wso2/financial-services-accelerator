@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Open Banking executor response context.
+ * Financial services executor response context.
  */
 public class FSAPIResponseContext extends ResponseContextDTO {
 
@@ -77,7 +77,7 @@ public class FSAPIResponseContext extends ResponseContextDTO {
                             this.responsePayload.contains(GatewayConstants.SOAP_BODY)) {
                         JSONObject soapPayload = XML.toJSONObject(responseContextDTO.getMsgInfo().getPayloadHandler()
                                 .consumeAsString()).getJSONObject(GatewayConstants.SOAP_BODY);
-                        if (soapPayload.has("jsonObject")) {
+                        if (soapPayload.has(GatewayConstants.SOAP_JSON_OBJECT)) {
                             this.responsePayload = soapPayload.getJSONObject(GatewayConstants.SOAP_JSON_OBJECT)
                                     .toString();
                         } else {

@@ -44,13 +44,13 @@ public class GatewayServiceComponent {
     @Activate
     protected void activate(ComponentContext context) {
 
-        log.debug("Open banking gateway component is activated ");
+        log.debug("Financial services gateway component is activated ");
     }
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
 
-        log.debug("Open banking gateway component is deactivated ");
+        log.debug("Financial services gateway component is deactivated ");
     }
 
     @Reference(

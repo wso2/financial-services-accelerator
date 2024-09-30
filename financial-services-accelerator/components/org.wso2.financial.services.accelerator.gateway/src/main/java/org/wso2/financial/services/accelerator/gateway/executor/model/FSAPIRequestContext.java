@@ -42,7 +42,7 @@ import java.util.Map;
 
 
 /**
- * Open Banking executor request context.
+ * Financial services executor request context.
  */
 public class FSAPIRequestContext extends RequestContextDTO {
 
