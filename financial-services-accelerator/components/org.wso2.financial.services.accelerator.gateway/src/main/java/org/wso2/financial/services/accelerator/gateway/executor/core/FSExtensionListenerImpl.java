@@ -68,7 +68,7 @@ public class FSExtensionListenerImpl implements ExtensionListener {
     @Generated(message = "Ignoring since the method has covered in other tests")
     public ExtensionResponseDTO postProcessRequest(RequestContextDTO requestContextDTO) {
 
-        Map<String, Object> contextProps = getPropertiesFromCache(requestContextDTO.getMsgInfo().getMessageId() +
+        Map<String, String> contextProps = getPropertiesFromCache(requestContextDTO.getMsgInfo().getMessageId() +
                 GatewayConstants.CONTEXT_PROP_CACHE_KEY);
 
         FSAPIRequestContext fsapiRequestContext = new FSAPIRequestContext(requestContextDTO, contextProps);
@@ -91,7 +91,7 @@ public class FSExtensionListenerImpl implements ExtensionListener {
     @Generated(message = "Ignoring since the method has covered in other tests")
     public ExtensionResponseDTO preProcessResponse(ResponseContextDTO responseContextDTO) {
 
-        Map<String, Object> contextProps = getPropertiesFromCache(responseContextDTO.getMsgInfo().getMessageId() +
+        Map<String, String> contextProps = getPropertiesFromCache(responseContextDTO.getMsgInfo().getMessageId() +
                 GatewayConstants.CONTEXT_PROP_CACHE_KEY);
         FSAPIResponseContext fsapiResponseContext = new FSAPIResponseContext(responseContextDTO, contextProps);
         for (FinancialServicesGatewayExecutor gatewayExecutor :
@@ -113,7 +113,7 @@ public class FSExtensionListenerImpl implements ExtensionListener {
     @Generated(message = "Ignoring since the method has covered in other tests")
     public ExtensionResponseDTO postProcessResponse(ResponseContextDTO responseContextDTO) {
 
-        Map<String, Object> contextProps = getPropertiesFromCache(responseContextDTO.getMsgInfo().getMessageId() +
+        Map<String, String> contextProps = getPropertiesFromCache(responseContextDTO.getMsgInfo().getMessageId() +
                 GatewayConstants.CONTEXT_PROP_CACHE_KEY);
         FSAPIResponseContext fsapiResponseContext = new FSAPIResponseContext(responseContextDTO, contextProps);
         for (FinancialServicesGatewayExecutor gatewayExecutor :
@@ -145,13 +145,13 @@ public class FSExtensionListenerImpl implements ExtensionListener {
             extensionResponseDTO.setStatusCode(statusCode);
             extensionResponseDTO.setResponseStatus(ExtensionResponseStatus.RETURN_ERROR.toString());
         } else if (fsapiRequestContext.getContextProps().containsKey(GatewayConstants.IS_RETURN_RESPONSE) &&
-                (boolean) (fsapiRequestContext.getContextProps().get(GatewayConstants.IS_RETURN_RESPONSE))) {
+                Boolean.parseBoolean(fsapiRequestContext.getContextProps().get(GatewayConstants.IS_RETURN_RESPONSE))) {
             Map<String, String> headers = fsapiRequestContext.getMsgInfo().getHeaders();
             headers.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
             fsapiRequestContext.getMsgInfo().setHeaders(headers);
             extensionResponseDTO.setHeaders(headers);
             if (fsapiRequestContext.getContextProps().containsKey(GatewayConstants.MODIFIED_STATUS)) {
-                extensionResponseDTO.setStatusCode((int) (fsapiRequestContext.getContextProps()
+                extensionResponseDTO.setStatusCode(Integer.parseInt(fsapiRequestContext.getContextProps()
                         .get(GatewayConstants.MODIFIED_STATUS)));
             }
             extensionResponseDTO.setResponseStatus(ExtensionResponseStatus.RETURN_ERROR.toString());
@@ -185,14 +185,14 @@ public class FSExtensionListenerImpl implements ExtensionListener {
             extensionResponseDTO.setStatusCode(statusCode);
             extensionResponseDTO.setResponseStatus(ExtensionResponseStatus.RETURN_ERROR.toString());
         } else if (fsapiResponseContext.getContextProps().containsKey(GatewayConstants.IS_RETURN_RESPONSE) &&
-                (boolean) (fsapiResponseContext.getContextProps().get(GatewayConstants.IS_RETURN_RESPONSE))) {
+                Boolean.parseBoolean(fsapiResponseContext.getContextProps().get(GatewayConstants.IS_RETURN_RESPONSE))) {
             Map<String, String> headers = fsapiResponseContext.getMsgInfo().getHeaders();
             headers.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
             fsapiResponseContext.getMsgInfo().setHeaders(headers);
             extensionResponseDTO.setHeaders(headers);
             if (fsapiResponseContext.getContextProps().containsKey(GatewayConstants.MODIFIED_STATUS)) {
-                extensionResponseDTO.setStatusCode((int) (fsapiResponseContext.getContextProps()
-                        .get(GatewayConstants.MODIFIED_STATUS)));
+                extensionResponseDTO.setStatusCode((Integer.parseInt(fsapiResponseContext.getContextProps()
+                        .get(GatewayConstants.MODIFIED_STATUS))));
             }
             extensionResponseDTO.setResponseStatus(ExtensionResponseStatus.RETURN_ERROR.toString());
         } else {
@@ -221,7 +221,7 @@ public class FSExtensionListenerImpl implements ExtensionListener {
      * @param key          unique cache key
      * @param contextProps properties to store
      */
-    private void setPropertiesToCache(String key, Map<String, Object> contextProps) {
+    private void setPropertiesToCache(String key, Map<String, String> contextProps) {
 
         GatewayDataHolder.getGatewayCache().addToCache(GatewayCacheKey.of(key), contextProps);
     }
@@ -232,9 +232,9 @@ public class FSExtensionListenerImpl implements ExtensionListener {
      * @param key unique cache key
      * @return context properties
      */
-    private Map<String, Object> getPropertiesFromCache(String key) {
+    private Map<String, String> getPropertiesFromCache(String key) {
         Object cachedObject = GatewayDataHolder.getGatewayCache().getFromCache(GatewayCacheKey.of(key));
-        return cachedObject == null ? new HashMap<>() : (Map<String, Object>) cachedObject;
+        return cachedObject == null ? new HashMap<>() : (Map<String, String>) cachedObject;
     }
 
     /**

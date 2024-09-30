@@ -124,7 +124,7 @@ public class GatewayUtils {
     }
 
     /**
-     * Method to obatain basic auth header.
+     * Method to obtain basic auth header.
      *
      * @param username Username of Auth header
      * @param password Password of Auth header
