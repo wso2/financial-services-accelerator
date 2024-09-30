@@ -15,7 +15,7 @@
  # specific language governing permissions and limitations
  # under the License.
 
-WSO2_OB_IS_HOME=$1
+WSO2_IS_HOME=$1
 
 # set accelerator home
 cd ../
@@ -23,15 +23,15 @@ ACCELERATOR_HOME=$(pwd)
 echo "Accelerator home is: ${ACCELERATOR_HOME}"
 
 # set product home
-if [ "${WSO2_OB_IS_HOME}" == "" ];
+if [ "${WSO2_IS_HOME}" == "" ];
   then
     cd ../
-    WSO2_OB_IS_HOME=$(pwd)
-    echo "Product home is: ${WSO2_OB_IS_HOME}"
+    WSO2_IS_HOME=$(pwd)
+    echo "Product home is: ${WSO2_IS_HOME}"
 fi
 
 # validate product home
-if [ ! -d "${WSO2_OB_IS_HOME}/repository/components" ]; then
+if [ ! -d "${WSO2_IS_HOME}/repository/components" ]; then
   echo -e "\n\aERROR:specified product path is not a valid carbon product path\n";
   exit 2;
 else
@@ -41,7 +41,7 @@ fi
 echo -e "================================================\n"
 
 # Setting path for webapps folder and consentmgr folder
-WEBAPPS_PATH=${WSO2_OB_IS_HOME}/repository/deployment/server/webapps
+WEBAPPS_PATH=${WSO2_IS_HOME}/repository/deployment/server/webapps
 CONSENTMGR_PATH=${WEBAPPS_PATH}/consentmgr
 
 # Checking if consent manager app exists
@@ -62,24 +62,21 @@ fi
 
 echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
-cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_OB_IS_HOME}"/
+cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_IS_HOME}"/
 
 # Updating consent manager app
 echo -e "\nUpdating Consentmgr webapp...\n"
 echo -e "\nWARNING: This will replace the current consentmgr web-app with the updated one\n"
 echo -e "\nMake sure to rebuild the web app if you have any customizations in the toolkit/src directory.\n"
-echo -e "\nPlease refer to the ReadMe file in ${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/self-care-portal-frontend\n"
+echo -e "\nPlease refer to the ReadMe file in ${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr/self-care-portal-frontend\n"
 
 echo -e "\nExtracting consentmgr.war\n"
 echo -e "================================================\n"
-unzip -q "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr.war" -d "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr"
-rm -f "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr.war"
+unzip -q "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr.war" -d "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr"
+rm -f "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr.war"
 
 # Restoring runtime-config.js
 if [ -f "${WEBAPPS_PATH}/runtime-config.js" ]; then
   mv -f ${WEBAPPS_PATH}/runtime-config.js ${CONSENTMGR_PATH}
   echo -e "Restoring backup runtime-config.js file complete!"
 fi
-
-find "${WSO2_OB_IS_HOME}"/repository/components/dropins -name "org.wso2.carbon.identity.application.authentication.handler.identifier-*" -exec rm -rf {} \;
-echo -e "\nComplete! \n"
