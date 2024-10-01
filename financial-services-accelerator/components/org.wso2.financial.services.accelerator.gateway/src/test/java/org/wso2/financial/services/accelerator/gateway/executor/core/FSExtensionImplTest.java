@@ -197,7 +197,7 @@ public class FSExtensionImplTest {
     @Test(priority = 1)
     public void testFlowWithReturnResponseTrue() {
 
-        Map<String, String> contextProps = new HashMap<>();
+        Map<String, Object> contextProps = new HashMap<>();
         contextProps.put(GatewayConstants.IS_RETURN_RESPONSE, "true");
         contextProps.put(GatewayConstants.MODIFIED_STATUS, String.valueOf(HttpStatus.SC_CREATED));
         MsgInfoDTO msgInfoDTO = new MsgInfoDTO();

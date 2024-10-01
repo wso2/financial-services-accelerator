@@ -41,14 +41,14 @@ public class FSAPIResponseContext extends ResponseContextDTO {
 
     private static final Log log = LogFactory.getLog(FSAPIResponseContext.class);
     private ResponseContextDTO responseContextDTO;
-    private Map<String, String> contextProps;
+    private Map<String, Object> contextProps;
     private String responsePayload;
     private String modifiedPayload;
     private Map<String, String> addedHeaders;
     private boolean isError;
     private ArrayList<FSExecutorError> errors;
 
-    public FSAPIResponseContext(ResponseContextDTO responseContextDTO, Map<String, String> contextProps) {
+    public FSAPIResponseContext(ResponseContextDTO responseContextDTO, Map<String, Object> contextProps) {
 
         this.responseContextDTO = responseContextDTO;
         this.contextProps = contextProps;
@@ -115,12 +115,12 @@ public class FSAPIResponseContext extends ResponseContextDTO {
         this.addedHeaders = addedHeaders;
     }
 
-    public Map<String, String> getContextProps() {
+    public Map<String, Object> getContextProps() {
 
         return contextProps;
     }
 
-    public void setContextProps(Map<String, String> contextProps) {
+    public void setContextProps(Map<String, Object> contextProps) {
 
         this.contextProps = contextProps;
     }

@@ -48,7 +48,7 @@ public class FSAPIRequestContext extends RequestContextDTO {
 
     private static final Log log = LogFactory.getLog(FSAPIRequestContext.class);
     private final RequestContextDTO requestContextDTO;
-    private Map<String, String> contextProps;
+    private Map<String, Object> contextProps;
     private String modifiedPayload;
     private String requestPayload;
     private Map<String, String> addedHeaders;
@@ -57,7 +57,7 @@ public class FSAPIRequestContext extends RequestContextDTO {
     private String consentId;
     private OpenAPI openAPI;
 
-    public FSAPIRequestContext(RequestContextDTO requestContextDTO, Map<String, String> contextProps) {
+    public FSAPIRequestContext(RequestContextDTO requestContextDTO, Map<String, Object> contextProps) {
 
         this.requestContextDTO = requestContextDTO;
         this.contextProps = contextProps;
@@ -115,12 +115,12 @@ public class FSAPIRequestContext extends RequestContextDTO {
         this.addedHeaders = addedHeaders;
     }
 
-    public Map<String, String> getContextProps() {
+    public Map<String, Object> getContextProps() {
 
         return contextProps;
     }
 
-    public void setContextProps(Map<String, String> contextProps) {
+    public void setContextProps(Map<String, Object> contextProps) {
 
         this.contextProps = contextProps;
     }

@@ -89,7 +89,7 @@ public class DefaultRequestRouterTest {
         MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
         msgInfoDTO.setResource("/anyAPIcall");
         Map<String, Object> extensions = new HashMap<>();
-        Map<String, String> contextProps = new HashMap<>();
+        Map<String, Object> contextProps = new HashMap<>();
         extensions.put(GatewayConstants.API_TYPE_CUSTOM_PROP, GatewayConstants.API_TYPE_NON_REGULATORY);
         contextProps.put(GatewayConstants.API_TYPE_CUSTOM_PROP, GatewayConstants.API_TYPE_NON_REGULATORY);
         openAPI.setExtensions(extensions);
@@ -109,7 +109,7 @@ public class DefaultRequestRouterTest {
         MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
         msgInfoDTO.setResource("/anyAPIcall");
         Map<String, Object> extensions = new HashMap<>();
-        Map<String, String> contextProps = new HashMap<>();
+        Map<String, Object> contextProps = new HashMap<>();
         extensions.put(GatewayConstants.API_TYPE_CUSTOM_PROP, GatewayConstants.API_TYPE_NON_REGULATORY);
         contextProps.put(GatewayConstants.API_TYPE_CUSTOM_PROP, "regulatory");
         openAPI.setExtensions(extensions);
