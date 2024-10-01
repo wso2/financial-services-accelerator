@@ -443,6 +443,11 @@
                 <artifactId>swagger-parser</artifactId>
                 <version>${swagger.parser.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
             <!--Base Products related dependencies-->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -593,6 +598,7 @@
         <apache.tomcat-catalina.version>9.0.11</apache.tomcat-catalina.version>
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
         <swagger.parser.version>2.0.24</swagger.parser.version>
+        <jjwt.version>0.12.6</jjwt.version>
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
