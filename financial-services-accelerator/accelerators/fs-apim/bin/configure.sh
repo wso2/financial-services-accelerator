@@ -126,8 +126,6 @@ create_mysql_database_tables() {
     echo "Database tables Created for: ${DB_AM_CONFIG}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_GOV} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_GOV}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_USER_STORE} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/mysql.sql";
-    echo "Database tables Created for: ${DB_USER_STORE}"
 };
 
 add_json_fault_sequence() {
