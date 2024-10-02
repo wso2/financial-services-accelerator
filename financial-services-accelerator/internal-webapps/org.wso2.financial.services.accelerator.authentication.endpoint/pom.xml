@@ -75,7 +75,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
+            <groupId>commons-io.wso2</groupId>
             <artifactId>commons-io</artifactId>
             <scope>provided</scope>
         </dependency>
