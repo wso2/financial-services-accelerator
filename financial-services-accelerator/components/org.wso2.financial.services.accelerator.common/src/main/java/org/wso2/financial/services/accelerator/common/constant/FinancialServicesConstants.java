@@ -82,5 +82,9 @@ public class FinancialServicesConstants {
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
     public static final String REMOVE_TENANT_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveTenantDomainFromSubject";
+    public static final String PUBLISHER_HOSTNAME = "PublisherURL";
+    public static final String REQUEST_ROUTER = "Gateway.RequestRouter";
+    public static final String GATEWAY_CACHE_EXPIRY = "Gateway.Cache.GatewayCache.CacheAccessExpiry";
+    public static final String GATEWAY_CACHE_MODIFIED_EXPIRY = "Gateway.Cache.GatewayCache.CacheModifiedExpiry";
 }
 

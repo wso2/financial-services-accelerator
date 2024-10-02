@@ -424,7 +424,7 @@
                 <version>${equinox.javax.servlet.version}</version>
             </dependency>
             <dependency>
-                <groupId>commons-io</groupId>
+                <groupId>commons-io.wso2</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
             </dependency>
@@ -437,6 +437,11 @@
                 <groupId>org.wso2.orbit.org.apache.oltu.oauth2</groupId>
                 <artifactId>oltu</artifactId>
                 <version>${oltu.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.parser.v3</groupId>
+                <artifactId>swagger-parser</artifactId>
+                <version>${swagger.parser.version}</version>
             </dependency>
             <!--Base Products related dependencies-->
             <dependency>
@@ -463,6 +468,22 @@
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.core</artifactId>
                 <version>${carbon.identity.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.apimgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
+                <version>${org.wso2.carbon.apimgt.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javassist</groupId>
+                        <artifactId>javassist</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.apimgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.common.gateway</artifactId>
+                <version>${org.wso2.carbon.apimgt.version}</version>
             </dependency>
             <!-- Accelerator Dependencies -->
             <dependency>
@@ -567,16 +588,19 @@
         <equinox.javax.servlet.version>3.0.0.v201112011016</equinox.javax.servlet.version>
         <orbit.version.commons.httpclient>4.5.13.wso2v1</orbit.version.commons.httpclient>
         <orbit.httpcore.version>4.3.3.wso2v1</orbit.httpcore.version>
-        <commons.io.version>2.7</commons.io.version>
+        <commons.io.version>2.15.1.wso2v1</commons.io.version>
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
         <apache.tomcat-catalina.version>9.0.11</apache.tomcat-catalina.version>
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
+        <swagger.parser.version>2.0.24</swagger.parser.version>
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
         <identity.inbound.auth.oauth.version>7.0.26</identity.inbound.auth.oauth.version>
-        <identity.inbound.auth.oauth.version.range>[7.0.26, 7.0.62)</identity.inbound.auth.oauth.version.range>
+        <identity.inbound.auth.oauth.version.range>[6.13.0, 7.0.62)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
+        <org.wso2.carbon.apimgt.version>9.29.120</org.wso2.carbon.apimgt.version>
+        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.29.121)</org.wso2.carbon.apimgt.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>
         <mockito.version>5.3.1</mockito.version>
@@ -585,12 +609,14 @@
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
         <!-- OSGi Version ranges -->
-        <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
-        <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
+        <osgi.framework.imp.pkg.version.range>[1.7.0, 4.0.0)</osgi.framework.imp.pkg.version.range>
+        <osgi.service.component.imp.pkg.version.range>[1.2.0, 4.0.0)</osgi.service.component.imp.pkg.version.range>
         <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
         <google.gson.version.range>[2.9,3)</google.gson.version.range>
         <commons-collections.version.range>[4.4.0, 5.0.0)</commons-collections.version.range>
         <axiom.osgi.version.range>[1.2.11, 2.0.0)</axiom.osgi.version.range>
-        <org.wso2.orbit.nimbus.version.range>[7.9.0, 8.0)</org.wso2.orbit.nimbus.version.range>
+        <org.wso2.orbit.nimbus.version.range>[7.9.0, 10.0)</org.wso2.orbit.nimbus.version.range>
+        <org.apache.commons.io.version.range>[2.15.1, 2.16.0)</org.apache.commons.io.version.range>
+        <org.json.version.range>[3.0.0, 4.0.0)</org.json.version.range>
     </properties>
 </project>
