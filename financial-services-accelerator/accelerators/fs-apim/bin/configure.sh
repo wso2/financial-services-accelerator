@@ -117,9 +117,6 @@ create_mysql_databases() {
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_GOV}; CREATE DATABASE ${DB_GOV};
     ALTER DATABASE ${DB_GOV} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
     echo "Database Created: ${DB_GOV}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_USER_STORE}; CREATE DATABASE ${DB_USER_STORE};
-    ALTER DATABASE ${DB_USER_STORE} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
-    echo "Database Created: ${DB_USER_STORE}"
 };
 
 create_mysql_database_tables() {

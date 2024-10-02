@@ -1,0 +1,351 @@
+[server]
+hostname = "IS_HOSTNAME"
+node_ip = "127.0.0.1"
+base_path = "https://$ref{server.hostname}:${carbon.management.port}"
+serverDetails = "WSO2 IS as KM 7.0.0"
+mode = "single"
+userAgent = "WSO2 IS as KM 7.0.0"
+offset = 3
+
+#================configs related to user-mgt.xml=============
+[super_admin]
+username = "admin@wso2.com"
+password = "wso2123"
+create_admin_account = true
+
+[realm_manager]
+data_source= "WSO2USER_DB"
+
+[user_store]
+type = "database_unique_id"
+class = "org.wso2.carbon.user.core.jdbc.UniqueIDJDBCUserStoreManager"
+
+[user_store.properties]
+UsernameJavaRegEx = "a-zA-Z0-9@._-{3,30}$"
+UsernameJavaScriptRegEx = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"
+SCIMEnabled = false
+IsBulkImportSupported = false
+LeadingOrTrailingSpaceAllowedInUserName = false
+UsernameWithEmailJavaScriptRegEx = "^[\\S]{3,30}$"
+
+[authorization_manager]
+class = "org.wso2.carbon.user.core.authorization.JDBCAuthorizationManager"
+
+[authorization_manager.properties]
+AdminRoleManagementPermissions = "/permission"
+AuthorizationCacheEnabled = true
+GetAllRolesOfUserEnabled = false
+
+#================configs related to master-datasources.xml=============
+# for api manager data
+[database.identity_db]
+url = "DB_IDENTITY_URL"
+username = "DB_USER"
+password = "DB_PASS"
+driver = "DB_DRIVER"
+
+[database.identity_db.pool_options]
+maxActive = "150"
+maxWait = "60000"
+minIdle ="5"
+testOnBorrow = true
+validationQuery="SELECT 1"
+#Use below for oracle
+#validationQuery="SELECT 1 FROM DUAL"
+validationInterval="30000"
+defaultAutoCommit=false
+commitOnReturn=true
+
+# for registry data
+[database.shared_db]
+url = "DB_GOV_URL"
+username = "DB_USER"
+password = "DB_PASS"
+driver = "DB_DRIVER"
+
+[database.shared_db.pool_options]
+maxActive = "150"
+maxWait = "60000"
+minIdle ="5"
+testOnBorrow = true
+validationQuery="SELECT 1"
+#Use below for oracle
+#validationQuery="SELECT 1 FROM DUAL"
+validationInterval="30000"
+defaultAutoCommit=false
+commitOnReturn=true
+
+# for km-config registry
+[database.config]
+url = "DB_IS_CONFIG_URL"
+username = "DB_USER"
+password = "DB_PASS"
+driver = "DB_DRIVER"
+
+[database.config.pool_options]
+maxActive = "150"
+maxWait = "60000"
+minIdle ="5"
+testOnBorrow = true
+validationQuery="SELECT 1"
+#Use below for oracle
+#validationQuery="SELECT 1 FROM DUAL"
+validationInterval="30000"
+defaultAutoCommit=false
+commitOnReturn=true
+
+# for user-mgt data
+[database.user]
+url = "DB_USER_STORE_URL"
+username = "DB_USER"
+password = "DB_PASS"
+driver = "DB_DRIVER"
+
+[database.user.pool_options]
+maxActive = "150"
+maxWait = "60000"
+minIdle ="5"
+testOnBorrow = true
+validationQuery="SELECT 1"
+#Use below for oracle
+#validationQuery="SELECT 1 FROM DUAL"
+validationInterval="30000"
+defaultAutoCommit=false
+commitOnReturn=true
+
+# for Financial Services  data
+[[datasource]]
+id="WSO2FS_DB"
+url = "DB_FS_STORE_URL"
+username = "DB_USER"
+password = "DB_PASS"
+driver = "DB_DRIVER"
+jmx_enable=false
+pool_options.maxActive = "150"
+pool_options.maxWait = "60000"
+pool_options.minIdle = "5"
+pool_options.testOnBorrow = true
+pool_options.validationQuery="SELECT 1"
+#Use below for oracle
+#validationQuery="SELECT 1 FROM DUAL"
+pool_options.validationInterval="30000"
+pool_options.defaultAutoCommit=false
+pool_options.commitOnReturn=truecommitOnReturn=true
+
+[keystore.primary]
+file_name = "wso2carbon.jks"
+password = "wso2carbon"
+type="JKS"
+
+[truststore]
+file_name="client-truststore.jks"
+password="wso2carbon"
+type="JKS"
+
+[tenant_mgt]
+enable_email_domain = true
+
+[account_recovery.endpoint.auth]
+hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
+
+[identity.auth_framework.endpoint]
+app_password= "dashboard"
+
+# The KeyStore which is used for encrypting/decrypting internal data. By default the primary keystore is used as the internal keystore.
+
+#[keystore.internal]
+#file_name = "$ref{keystore.primary.file_name}"
+#type = "$ref{keystore.primary.type}"
+#password = "$ref{keystore.primary.password}"
+#alias = "$ref{keystore.primary.alias}"
+#key_password = "$ref{keystore.primary.key_password}"
+
+# The KeyStore which is used for tls communication. By default the primary keystore is used as the tls keystore.
+
+#[keystore.tls]
+#file_name = "$ref{keystore.primary.file_name}"
+#type = "$ref{keystore.primary.type}"
+#password = "$ref{keystore.primary.password}"
+#alias = "$ref{keystore.primary.alias}"
+#key_password = "$ref{keystore.primary.key_password}"
+
+#Google reCAPTCHA settings.
+
+#[recaptcha]
+#enabled = true
+#api_url = "https://www.google.com/recaptcha/api.js"
+#verify_url = "https://www.google.com/recaptcha/api/siteverify"
+#site_key = ""
+#secret_key = ""
+
+# SMTP email sender settings.
+#[output_adapter.email]
+#from_address= "abcd@gmail.com"
+#username= "abcd"
+#password= "xxxx"
+#hostname= "smtp.gmail.com"
+#port= 587
+
+#================configs related to application-authentication.xml=============
+
+[authentication.endpoints]
+login_url = "https://IS_HOSTNAME:9446/authenticationendpoint/login.do"
+retry_url = "https://IS_HOSTNAME:9446/authenticationendpoint/retry.do"
+
+[authentication.endpoint.redirect_params]
+filter_policy = "include"
+remove_on_consume_from_api = "true"
+parameters = ["sessionDataKeyConsent","relyingParty", "authenticators", "authFailureMsg", "authFailure"]
+
+[authentication.authenticator.sms_otp.parameters]
+EnableAccountLockingForFailedAttempts = true
+BackupCode = false
+TokenExpiryTime = 60
+
+#================configs related to identity.xml=============
+[identity_data_source]
+skip_db_schema_creation = true
+
+[[resource.access_control]]
+allowed_auth_handlers = ["BasicAuthentication"]
+context = "(.*)/api/fs/consent/(.*)"
+http_method = "all"
+permissions = ["/permission/admin"]
+secure = "true"
+
+[[resource.access_control]]
+context = "(.*)/fs/authenticationendpoint/(.*)"
+http_method = "all"
+secure = "false"
+
+[[resource.access_control]]
+context="(.*)/scim2/Me"
+secure=true
+http_method="GET"
+cross_tenant=true
+permissions=[]
+scopes=[]
+
+[oauth]
+#drop_unregistered_scopes = false
+authorize_all_scopes = true
+
+[oauth.endpoints.v2]
+oauth2_consent_page = "${carbon.protocol}://localhost:${carbon.management.port}/fs/authenticationendpoint/oauth2_authz.do"
+oidc_consent_page = "${carbon.protocol}://localhost:${carbon.management.port}/fs/authenticationendpoint/oauth2_consent.do"
+
+[oauth.token_generation]
+access_token_type = "self_contained"
+
+[oauth.response_type]
+code.enable = false
+device.enable = true
+id_token.enable = true
+id_token_token.enable = false
+token.enable = true
+
+[[oauth.custom_response_type]]
+class = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSCodeResponseTypeHandlerExtension"
+name = "code"
+validator = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.validator.FSCodeResponseTypeValidator"
+
+[[oauth.custom_response_type]]
+class = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSHybridResponseTypeHandlerExtension"
+name = "code id_token"
+validator = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.validator.FSHybridResponseTypeValidator"
+
+[oauth.grant_type.refresh_token]
+enable = true
+grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSRefreshGrantHandler"
+
+[oauth.grant_type.authorization_code]
+enable = true
+grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSAuthorizationCodeGrantHandler"
+
+[oauth.grant_type.password]
+enable = true
+grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSPasswordGrantHandler"
+
+[oauth.grant_type.client_credentials]
+enable = true
+grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSClientCredentialsGrantHandler"
+
+[oauth.oidc.extensions]
+claim_callback_handler = "org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultOIDCClaimsCallbackHandler"
+request_object_validator = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidationExtension"
+
+[oauth.mutualtls]
+client_certificate_header = "x-wso2-mutual-auth-cert"
+
+[oauth.jwks_endpoint]
+read_timeout = 5000
+
+[application_mgt]
+enable_role_validation = true
+
+#================configs related to financial-services.xml=============
+[[financial_services.jdbc_persistence_manager]]
+data_source.name = "WSO2FS_DB"
+connection_verification_timeout=1
+
+#================consent management==============
+[financial_services.consent.manage]
+handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler"
+
+[[financial_services.consent.authorize_steps.retrieve]]
+class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"
+priority = 1
+
+[[financial_services.consent.authorize_steps.persist]]
+class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentPersistStep"
+priority = 1
+
+[[financial_services.consent.validation]]
+validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.DefaultConsentValidato"
+signature.alias="wso2carbon"
+jwt.payload.enabled=true
+
+[financial_services.consent.admin]
+handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler"
+
+[financial_services.consent.api_credentials]
+username="$ref{super_admin.username}"
+password="$ref{super_admin.password}"
+
+[financial_services.consent.portal.client_credentials]
+client_id="consent_management_portal_client_id"
+client_secret="consent_management_portal_client_secret"
+
+[financial_services.consent.portal.params]
+identity_server_base_url="https://localhost:9446"
+api_manager_server_base_url="https://localhost:8243"
+
+[financial_services.consent.payments]
+max_instructed_amount=100
+
+[[financial_services.consent.idempotency]]
+enabled=false
+allowed_time_duration=1440
+
+[financial_services.consent.preserve_consent_link]
+enabled=false
+
+[financial_services.identity]
+consent_id_claim_name="consent_id"
+
+[financial_services.identity.authentication_webapp]
+servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
+
+[financial_services.identity.extensions]
+request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
+response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
+claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
+
+[financial_services.identity.token]
+remove_user_store_domain_from_subject=false
+remove_tenant_domain_from_subject=false
+
+#===================for Connection pool====================
+[financial_services.http_connection_pool]
+max_connections = 2000
+max_connections_per_route = 1500
