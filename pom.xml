@@ -605,8 +605,8 @@
         <identity.inbound.auth.oauth.version>7.0.26</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.oauth.version.range>[6.13.0, 7.0.62)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
-        <org.wso2.carbon.apimgt.version>9.29.120</org.wso2.carbon.apimgt.version>
-        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.29.121)</org.wso2.carbon.apimgt.version.range>
+        <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>
+        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.30.100)</org.wso2.carbon.apimgt.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>
         <mockito.version>5.3.1</mockito.version>

@@ -39,7 +39,7 @@
         <RequestRouter>org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
         {% endif %}
         <FinancialServicesGatewayExecutors>
-            {% for type in financial_services.gateway.openbanking_gateway_executors.type %}
+            {% for type in financial_services.gateway.gateway_executors.type %}
                 <{{type.name}}>
                     {% for executor in type.executors %}
                        <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
