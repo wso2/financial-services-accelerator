@@ -7,6 +7,9 @@ mode = "single"
 userAgent = "WSO2 IS as KM 7.0.0"
 offset = 3
 
+[tenant_mgt]
+enable_email_domain = true
+
 #================configs related to user-mgt.xml=============
 [super_admin]
 username = "admin@wso2.com"
@@ -130,7 +133,7 @@ pool_options.validationQuery="SELECT 1"
 #validationQuery="SELECT 1 FROM DUAL"
 pool_options.validationInterval="30000"
 pool_options.defaultAutoCommit=false
-pool_options.commitOnReturn=truecommitOnReturn=true
+pool_options.commitOnReturn=true
 
 [keystore.primary]
 file_name = "wso2carbon.jks"

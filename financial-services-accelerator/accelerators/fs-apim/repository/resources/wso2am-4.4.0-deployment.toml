@@ -201,6 +201,7 @@ enable_lightweight_apikey_generation = true
 #key_validation_handler_type = "default"
 #key_validation_handler_type = "custom"
 #key_validation_handler_impl = "org.wso2.carbon.apimgt.keymgt.handlers.DefaultKeyValidationHandler"
+allow_subscription_validation_disabling = false
 
 #[apim.idp]
 #server_url = "https://localhost:${mgt.transport.https.port}"
@@ -222,7 +223,7 @@ enable_lightweight_apikey_generation = true
 
 [apim.oauth_config]
 enable_outbound_auth_header = false
-white_listed_scopes = ["^device_.*", "openid", "^OB_.*", "^TIME_.*"]
+white_listed_scopes = ["^device_.*", "openid", "^FS_.*", "^TIME_.*"]
 #auth_header = "Authorization"
 #revoke_endpoint = "https://localhost:${https.nio.port}/revoke"
 #enable_token_encryption = false
