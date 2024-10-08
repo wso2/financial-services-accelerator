@@ -201,7 +201,7 @@ enable_lightweight_apikey_generation = true
 #key_validation_handler_type = "default"
 #key_validation_handler_type = "custom"
 #key_validation_handler_impl = "org.wso2.carbon.apimgt.keymgt.handlers.DefaultKeyValidationHandler"
-allow_subscription_validation_disabling = false
+allow_subscription_validation_disabling = true
 
 #[apim.idp]
 #server_url = "https://localhost:${mgt.transport.https.port}"
@@ -222,7 +222,7 @@ allow_subscription_validation_disabling = false
 #use_sha256_hash = false
 
 [apim.oauth_config]
-enable_outbound_auth_header = false
+enable_outbound_auth_header = true
 white_listed_scopes = ["^device_.*", "openid", "^FS_.*", "^TIME_.*"]
 #auth_header = "Authorization"
 #revoke_endpoint = "https://localhost:${https.nio.port}/revoke"
@@ -390,10 +390,6 @@ iat_validity_period = "1h"
 #service_username = "admin"
 #service_password = "admin"
 
-#[[apim.extension.listener]]
-#type = "AUTHENTICATION"
-#class = "com.wso2.openbanking.accelerator.gateway.executor.core.OBExtensionListenerImpl"
-
 #================configs related to financial-services.xml=============
 [financial_services]
 publisher_url="https://localhost:9443"
@@ -402,7 +398,7 @@ publisher_url="https://localhost:9443"
 request_router="org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter"
 
 [financial_services.gateway.consent.validation]
-endpoint="https://localhost:9446/api/fs/consent/validate"
+endpoint="https://IS_HOSTNAME:9446/api/fs/consent/validate"
 
 [financial_services.gateway.cache]
 cache_access_expiry_minutes=60
