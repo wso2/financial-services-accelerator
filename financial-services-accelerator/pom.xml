@@ -30,7 +30,6 @@
     <name>WSO2 Financial Services Accelerator</name>
     <artifactId>financial-services-accelerator</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-SNAPSHOT</version>
 
     <modules>
         <module>components/org.wso2.financial.services.accelerator.common</module>
@@ -41,5 +40,6 @@
         <module>components/org.wso2.financial.services.accelerator.gateway</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint</module>
+        <module>internal-webapps/org.wso2.financial.services.accelerator.demo.backend</module>
     </modules>
 </project>
