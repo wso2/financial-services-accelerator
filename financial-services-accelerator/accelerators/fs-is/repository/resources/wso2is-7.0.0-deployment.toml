@@ -321,7 +321,7 @@ identity_server_base_url="https://localhost:9446"
 api_manager_server_base_url="https://localhost:8243"
 
 [financial_services.consent.payments]
-max_instructed_amount=100
+max_instructed_amount=1000
 
 [[financial_services.consent.idempotency]]
 enabled=false
