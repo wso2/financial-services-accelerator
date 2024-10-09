@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -51,9 +51,9 @@
     </jaxrs:server>
 
 
-    <bean id="accServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.AccountService"/>
-    <bean id="fundsConfServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.FundsConfirmationService"/>
-    <bean id="paymentServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.PaymentService"/>
-    <bean id="vrpServiceBean" class="com.wso2.openbanking.accelerator.demo.backend.services.VrpService"/>
+    <bean id="accServiceBean" class="org.wso2.financial.services.accelerator.demo.backend.services.AccountService"/>
+    <bean id="fundsConfServiceBean" class="org.wso2.financial.services.accelerator.demo.backend.services.FundsConfirmationService"/>
+    <bean id="paymentServiceBean" class="org.wso2.financial.services.accelerator.demo.backend.services.PaymentService"/>
+    <bean id="vrpServiceBean" class="org.wso2.financial.services.accelerator.demo.backend.services.VrpService"/>
 
 </beans>
