@@ -145,9 +145,6 @@ file_name="client-truststore.jks"
 password="wso2carbon"
 type="JKS"
 
-[tenant_mgt]
-enable_email_domain = true
-
 [account_recovery.endpoint.auth]
 hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
 
@@ -230,7 +227,7 @@ permissions=[]
 scopes=[]
 
 [oauth]
-#drop_unregistered_scopes = false
+drop_unregistered_scopes = false
 authorize_all_scopes = true
 
 [oauth.endpoints.v2]
