@@ -25,7 +25,7 @@ import com.wso2.openbanking.accelerator.data.publisher.common.DataPublisherPool;
 import com.wso2.openbanking.accelerator.data.publisher.common.EventQueue;
 import com.wso2.openbanking.accelerator.data.publisher.common.OpenBankingDataPublisher;
 import com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants;
-import org.apache.tomcat.dbcp.pool2.impl.GenericObjectPoolConfig;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.util.Map;
 
