@@ -18,9 +18,9 @@
 
 package com.wso2.openbanking.accelerator.data.publisher.common;
 
-import org.apache.tomcat.dbcp.pool2.BasePooledObjectFactory;
-import org.apache.tomcat.dbcp.pool2.PooledObject;
-import org.apache.tomcat.dbcp.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * Data Publisher Factory class.
