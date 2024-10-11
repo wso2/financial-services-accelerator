@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.gateway.internal;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
+import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -28,6 +29,7 @@ import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.gateway.cache.GatewayCache;
 import org.wso2.financial.services.accelerator.gateway.executor.core.AbstractRequestRouter;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -43,6 +45,10 @@ public class GatewayDataHolder {
     private int gatewayCacheModifiedExpiry;
     private APIManagerConfigurationService apiManagerConfigurationService;
     private AbstractRequestRouter requestRouter;
+    private String keyStoreLocation;
+    private char[] keyStorePassword;
+    private String keyAlias;
+    private String keyPassword;
 
     private GatewayDataHolder() {
 
@@ -133,6 +139,55 @@ public class GatewayDataHolder {
     public void setGatewayCacheModifiedExpiry(String expTime) {
 
         this.gatewayCacheModifiedExpiry = expTime == null ? 60 : Integer.parseInt(expTime);
+    }
+
+    public String getKeyStoreLocation() {
+
+        return keyStoreLocation == null ? ServerConfiguration.getInstance()
+                .getFirstProperty(FinancialServicesConstants.KEYSTORE_LOCATION_TAG) : keyStoreLocation;
+    }
+
+    public void setKeyStoreLocation(String keyStoreLocation) {
+
+        this.keyStoreLocation = keyStoreLocation;
+    }
+
+    public char[] getKeyStorePassword() {
+
+        if (this.keyStorePassword == null) {
+            this.keyStorePassword = ServerConfiguration.getInstance()
+                    .getFirstProperty(FinancialServicesConstants.KEYSTORE_PASSWORD_TAG).toCharArray();
+        }
+        return Arrays.copyOf(this.keyStorePassword, this.keyStorePassword.length);
+    }
+
+    public void setKeyStorePassword(char[] keyStorePassword) {
+
+        if (keyStorePassword != null) {
+            this.keyStorePassword = Arrays.copyOf(keyStorePassword, keyStorePassword.length);
+        }
+    }
+
+    public String getKeyAlias() {
+
+        return keyAlias == null ? ServerConfiguration.getInstance()
+                .getFirstProperty(FinancialServicesConstants.SIGNING_ALIAS_TAG) : keyAlias;
+    }
+
+    public void setKeyAlias(String keyAlias) {
+
+        this.keyAlias = keyAlias;
+    }
+
+    public String getKeyPassword() {
+
+        return keyPassword == null ? ServerConfiguration.getInstance()
+                .getFirstProperty(FinancialServicesConstants.SIGNING_KEY_PASSWORD) : keyPassword;
+    }
+
+    public void setKeyPassword(String keyPassword) {
+
+        this.keyPassword = keyPassword;
     }
 
     public void setApiManagerConfiguration(APIManagerConfigurationService apiManagerConfigurationService) {
