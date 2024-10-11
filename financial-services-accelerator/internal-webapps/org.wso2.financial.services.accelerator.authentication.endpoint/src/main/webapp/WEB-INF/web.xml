@@ -41,7 +41,7 @@
 
     <context-param>
         <param-name>retrievalBaseURL</param-name>
-        <param-value>https://localhost:9443/api/fs/consent/authorize/retrieve</param-value>
+        <param-value>https://localhost:9446/api/fs/consent/authorize/retrieve</param-value>
     </context-param>
 
     <context-param>
@@ -63,7 +63,7 @@
 
     <context-param>
         <param-name>persistenceBaseURL</param-name>
-        <param-value>https://localhost:9443/api/fs/consent/authorize/persist</param-value>
+        <param-value>https://localhost:9446/api/fs/consent/authorize/persist</param-value>
     </context-param>
 
     <!-- 3 -->

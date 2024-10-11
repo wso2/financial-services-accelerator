@@ -579,7 +579,7 @@
         <jackson.databinding.version>2.16.1</jackson.databinding.version>
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <swagger-jaxrs.version>1.6.1</swagger-jaxrs.version>
-        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+        <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <spring-web.version>5.1.2.RELEASE</spring-web.version>
         <spring-web-test.version>2.5</spring-web-test.version>
         <org.apache.cxf.version>3.3.7</org.apache.cxf.version>

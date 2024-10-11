@@ -100,7 +100,7 @@
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.service/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.consent.service-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.financial.services.accelerator.consent.mgt.service-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
@@ -114,7 +114,7 @@
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.dao/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.consent.dao-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.financial.services.accelerator.consent.mgt.dao-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
 

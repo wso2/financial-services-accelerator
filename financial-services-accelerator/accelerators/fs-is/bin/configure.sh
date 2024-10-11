@@ -50,7 +50,7 @@ configure_datasources() {
     if [ "${DB_TYPE}" == "mysql" ]
         then
             # IS
-            sed -i -e 's|DB_APIMGT_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_APIMGT}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
+            sed -i -e 's|DB_IDENTITY_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_IDENTITY}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_IS_CONFIG_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_IS_CONFIG}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_GOV_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_GOV}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_USER_STORE_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_USER_STORE}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
@@ -61,7 +61,7 @@ configure_datasources() {
 
         else
             # IS
-            sed -i -e 's|DB_APIMGT_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_APIMGT}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
+            sed -i -e 's|DB_IDENTITY_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_IDENTITY}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_IS_CONFIG_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_IS_CONFIG}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_GOV_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_GOV}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_USER_STORE_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_USER_STORE}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
@@ -89,32 +89,44 @@ create_databases() {
             echo -e "\nCreate database tables"
             echo -e "================================================\n"
             create_mysql_database_tables;
+
+            echo -e "\nAlter SP_METADATA table VALUE field size (temporary)"
+            echo -e "=======================================================================\n"
+            mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "ALTER TABLE ${DB_IDENTITY}.SP_METADATA MODIFY VALUE VARCHAR(4096)";
         else
             echo -e "\nAssume MSSQL/Oracle databases have already created manually"
+            echo -e "\nUpdate idn_req_object_reference table foreign keys (temporary)"
+            echo -e "=======================================================================\n"
+            sed -i -e 's|FOREIGN KEY (CONSUMER_KEY_ID) REFERENCES IDN_OAUTH_CONSUMER_APPS(ID) ON DELETE CASCADE ,|FOREIGN KEY (CONSUMER_KEY_ID) REFERENCES IDN_OAUTH_CONSUMER_APPS(ID),|g' ${WSO2_APIM_HOME}/dbscripts/identity/mssql.sql
+            sed -i -e 's|FOREIGN KEY (TOKEN_ID) REFERENCES IDN_OAUTH2_ACCESS_TOKEN(TOKEN_ID),|FOREIGN KEY (TOKEN_ID) REFERENCES IDN_OAUTH2_ACCESS_TOKEN(TOKEN_ID) ON DELETE CASCADE,|g' ${WSO2_APIM_HOME}/dbscripts/identity/mssql.sql
+
     fi
 }
 
 create_mysql_databases() {
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_IDENTITY}; CREATE DATABASE ${DB_IDENTITY};
+    ALTER DATABASE ${DB_IDENTITY} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
+    echo "Database Created: ${DB_IDENTITY}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_IS_CONFIG}; CREATE DATABASE ${DB_IS_CONFIG};
     ALTER DATABASE ${DB_IS_CONFIG} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
     echo "Database Created: ${DB_IS_CONFIG}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_FS_STORE}; CREATE DATABASE ${DB_FS_STORE};
     ALTER DATABASE ${DB_FS_STORE} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
     echo "Database Created: ${DB_FS_STORE}"
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_USER_STORE}; CREATE DATABASE ${DB_USER_STORE};
+    ALTER DATABASE ${DB_USER_STORE} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
+    echo "Database Created: ${DB_USER_STORE}"
 };
 
 create_mysql_database_tables() {
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_IDENTITY} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/identity/mysql.sql";
+    echo "Database tables Created for: ${DB_APIMGT}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_IS_CONFIG} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_IS_CONFIG}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_FS_STORE} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/financial-services/consent/mysql.sql";
     echo "Database tables Created for: ${DB_FS_STORE}"
-};
-
-configure_iskm_connector() {
-    wget https://apim.docs.wso2.com/en/3.2.0/assets/attachments/administer/${ISKM_CONNECTOR}.zip
-    unzip "${ISKM_CONNECTOR}.zip"
-    cp ${ISKM_CONNECTOR_FOLDER}/dropins/* ${WSO2_IS_HOME}/repository/components/dropins/
-    cp ${ISKM_CONNECTOR_FOLDER}/webapps/* ${WSO2_IS_HOME}/repository/deployment/server/webapps
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_USER_STORE} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/mysql.sql";
+    echo "Database tables Created for: ${DB_USER_STORE}"
 };
 
 echo -e "\nReplace hostnames \n"
