@@ -70,5 +70,9 @@
     "moduleNameMapper": {
       "overrideConfig": "<rootDir>/public/overrides/overrideConfig.js"
     }
+  },
+  "engines": {
+    "node": ">=18.16.0",
+    "npm": ">=9.7.0"
   }
 }
