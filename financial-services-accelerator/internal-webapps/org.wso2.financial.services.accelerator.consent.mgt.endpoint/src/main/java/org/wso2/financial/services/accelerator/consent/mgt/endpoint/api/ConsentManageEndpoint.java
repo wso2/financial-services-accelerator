@@ -129,7 +129,7 @@ public class ConsentManageEndpoint {
                                  @Context UriInfo uriInfo) {
 
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
+                null, uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
         consentManageHandler.handleDelete(consentManageData);
@@ -165,8 +165,8 @@ public class ConsentManageEndpoint {
                                 @Context UriInfo uriInfo) {
 
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
-                uriInfo.getPathParameters().getFirst("s"), request, response);
+                uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"),
+                request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
         consentManageHandler.handlePatch(consentManageData);
         return sendResponse(consentManageData);

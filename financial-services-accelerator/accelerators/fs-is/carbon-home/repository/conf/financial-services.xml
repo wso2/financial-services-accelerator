@@ -18,12 +18,6 @@
  -->
 
 <Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
-    <Common>
-        <Cache>
-            <CacheAccessExpiry>60</CacheAccessExpiry>
-            <CacheModifiedExpiry>60</CacheModifiedExpiry>
-        </Cache>
-    </Common>
     <JDBCPersistenceManager>
         <DataSource>
             <Name>jdbc/WSO2FS_DB</Name>
@@ -47,8 +41,8 @@
         </Validation>
         <AdminHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
         <ConsentAPICredentials>
-            <Username>admin</Username>
-            <Password>admin</Password>
+            <Username>admin@wso2.com</Username>
+            <Password>wso2123</Password>
         </ConsentAPICredentials>
         <Payments>
             <MaximumInstructedAmount>1000</MaximumInstructedAmount>
