@@ -6,8 +6,8 @@ base_path = "${carbon.protocol}://${carbon.host}:${carbon.management.port}"
 server_role = "default"
 
 [super_admin]
-username = "admin@wso2.com"
-password = "wso2123"
+username = "admin"
+password = "admin"
 create_admin_account = true
 
 [realm_manager]
@@ -17,21 +17,21 @@ data_source= "WSO2UM_DB"
 type = "database_unique_id"
 class = "org.wso2.carbon.user.core.jdbc.UniqueIDJDBCUserStoreManager"
 
-[user_store.properties]
-UsernameJavaRegEx = "a-zA-Z0-9@._-{3,30}$"
-UsernameJavaScriptRegEx = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"
-SCIMEnabled = false
-IsBulkImportSupported = false
-LeadingOrTrailingSpaceAllowedInUserName = false
-UsernameWithEmailJavaScriptRegEx = "^[\\S]{3,30}$"
+#[user_store.properties]
+#UsernameJavaRegEx = "a-zA-Z0-9@._-{3,30}$"
+#UsernameJavaScriptRegEx = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"
+#SCIMEnabled = false
+#IsBulkImportSupported = false
+#LeadingOrTrailingSpaceAllowedInUserName = false
+#UsernameWithEmailJavaScriptRegEx = "^[\\S]{3,30}$"
 
-[authorization_manager]
-class = "org.wso2.carbon.user.core.authorization.JDBCAuthorizationManager"
+#[authorization_manager]
+#lass = "org.wso2.carbon.user.core.authorization.JDBCAuthorizationManager"
 
-[authorization_manager.properties]
-AdminRoleManagementPermissions = "/permission"
-AuthorizationCacheEnabled = true
-GetAllRolesOfUserEnabled = false
+#[authorization_manager.properties]
+#AdminRoleManagementPermissions = "/permission"
+#AuthorizationCacheEnabled = true
+#GetAllRolesOfUserEnabled = false
 
 #================configs related to master-datasources.xml=============
 # for api manager data
@@ -194,8 +194,8 @@ token = ""
 [apim.key_manager]
 enable_lightweight_apikey_generation = true
 #service_url = "https://localhost:${mgt.transport.https.port}/services/"
-#username = "$ref{super_admin.username}"
-#password = "$ref{super_admin.password}"
+username = "admin@wso2.com"
+password = "wso2123"
 #pool.init_idle_capacity = 50
 #pool.max_idle = 100
 #key_validation_handler_type = "default"
@@ -347,7 +347,6 @@ HostnameVerifier = "AllowAll"
 HttpsProtocols = "TLSv1.2"
 PreferredCiphers = "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
-
 [[event_handler]]
 name="userPostSelfRegistration"
 subscriptions=["POST_ADD_USER"]
@@ -390,6 +389,20 @@ iat_validity_period = "1h"
 #service_username = "admin"
 #service_password = "admin"
 
+#[apimgt.mutual_ssl]
+#enable_certificate_chain_validation = true
+
+[transport.passthru_https.listener.cert_revocation_validation]
+enable = true
+allow_cert_expiry_validation = true
+allow_full_cert_chain_validation = false
+cache_delay = 1000
+cache_size = 1024
+
+[[apim.extension.listener]]
+class = "org.wso2.financial.services.accelerator.gateway.executor.core.FSExtensionListenerImpl"
+type = "AUTHENTICATION"
+
 #================configs related to financial-services.xml=============
 [financial_services]
 publisher_url="https://localhost:9443"
@@ -408,3 +421,6 @@ cache_modified_expiry_minutes=60
 [financial_services.http_connection_pool]
 max_connections = 2000
 max_connections_per_route = 1500
+
+[financial_services.identity]
+consent_id_claim_name = "consent_id"
