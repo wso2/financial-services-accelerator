@@ -26,12 +26,11 @@ import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
-import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
@@ -83,12 +82,12 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         //User Validation
-        String userIdFromToken = resolveUsernameFromUserId(consentValidateData.getUserId());
+        String userIdFromToken = ConsentExtensionUtils.resolveUsernameFromUserId(consentValidateData.getUserId());
         boolean userIdMatching = false;
         ArrayList<AuthorizationResource> authResources = consentValidateData.getComprehensiveConsent()
                 .getAuthorizationResources();
         for (AuthorizationResource resource : authResources) {
-            if (userIdFromToken.contains(resource.getUserID())) {
+            if (userIdFromToken.equals(resource.getUserID())) {
                 userIdMatching = true;
                 break;
             }
@@ -397,26 +396,5 @@ public class DefaultConsentValidator implements ConsentValidator {
             log.error("Error occurred while comparing the JSON Objects", e);
             return false;
         }
-    }
-
-    /**
-     * Method to resolve username from user ID.
-     *
-     * @param userID   User ID
-     * @return Username
-     */
-    private String resolveUsernameFromUserId(String userID) {
-        String username = null;
-        try {
-            if (userID.contains(ConsentExtensionConstants.TENANT_DOMAIN)) {
-                username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN,
-                        userID.split("@")[0]);
-            } else {
-                username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN, userID);
-            }
-        } catch (UserStoreException e) {
-            return null;
-        }
-        return username;
     }
 }
