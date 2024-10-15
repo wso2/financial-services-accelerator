@@ -20,11 +20,12 @@ package org.wso2.financial.services.accelerator.gateway.executor.impl.consent;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
@@ -32,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesErrorCodes;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.gateway.executor.core.FinancialServicesGatewayExecutor;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIRequestContext;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
@@ -227,8 +229,8 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
     protected String generateJWT(String payload) {
 
         return Jwts.builder()
-                .content(payload)
-                .signWith(getJWTSigningKey())
+                .setPayload(payload)
+                .signWith(SignatureAlgorithm.RS512, getJWTSigningKey())
                 .compact();
     }
 
@@ -251,7 +253,7 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
         String userName = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
         String password = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
         httpPost.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
-        HttpResponse response = GatewayDataHolder.getHttpClient().execute(httpPost);
+        CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost);
         InputStream in = response.getEntity().getContent();
         return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
     }

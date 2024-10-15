@@ -26,6 +26,8 @@ import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -81,7 +83,7 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         //User Validation
-        String userIdFromToken = consentValidateData.getUserId();
+        String userIdFromToken = resolveUsernameFromUserId(consentValidateData.getUserId());
         boolean userIdMatching = false;
         ArrayList<AuthorizationResource> authResources = consentValidateData.getComprehensiveConsent()
                 .getAuthorizationResources();
@@ -164,8 +166,8 @@ public class DefaultConsentValidator implements ConsentValidator {
             log.error(PERMISSION_MISMATCH_ERROR);
             consentValidationResult.setValid(false);
             consentValidationResult.setErrorMessage(PERMISSION_MISMATCH_ERROR);
-            consentValidationResult.setErrorCode(ResponseStatus.UNAUTHORIZED.getReasonPhrase());
-            consentValidationResult.setHttpCode(401);
+            consentValidationResult.setErrorCode(ResponseStatus.FORBIDDEN.getReasonPhrase());
+            consentValidationResult.setHttpCode(403);
             return;
         }
 
@@ -395,5 +397,26 @@ public class DefaultConsentValidator implements ConsentValidator {
             log.error("Error occurred while comparing the JSON Objects", e);
             return false;
         }
+    }
+
+    /**
+     * Method to resolve username from user ID.
+     *
+     * @param userID   User ID
+     * @return Username
+     */
+    private String resolveUsernameFromUserId(String userID) {
+        String username = null;
+        try {
+            if (userID.contains(ConsentExtensionConstants.TENANT_DOMAIN)) {
+                username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN,
+                        userID.split("@")[0]);
+            } else {
+                username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN, userID);
+            }
+        } catch (UserStoreException e) {
+            return null;
+        }
+        return username;
     }
 }

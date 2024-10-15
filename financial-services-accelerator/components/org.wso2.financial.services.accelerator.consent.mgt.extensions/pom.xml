@@ -203,6 +203,7 @@
                             com.fasterxml.jackson.core;version="${jackson.databinding.version}",
                             org.owasp.encoder;version="${encoder.wso2.version}"
                         </Import-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.consent.mgt.extensions.internal,
                             org.wso2.financial.services.accelerator.consent.mgt.extensions.*;version="${project.version}",

@@ -43,12 +43,16 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.swagger.parser.v3</groupId>
+            <groupId>org.wso2.orbit.io.swagger.v3</groupId>
             <artifactId>swagger-parser</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io.wso2</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
@@ -77,10 +81,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-testng</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
         </dependency>
     </dependencies>
 
@@ -212,14 +212,17 @@
                             org.osgi.framework; version="${osgi.framework.imp.pkg.version.range}",
                             org.osgi.service.component; version="${osgi.service.component.imp.pkg.version.range}",
                             org.apache.commons.io;version="${org.apache.commons.io.version.range}",
-                            io.swagger.parser.*;version="${swagger.parser.version}",
+                            io.swagger.parser.*; version="${swagger.parser.v3.version}",
+                            io.swagger.v3.*; version="${swagger.parser.v3.version}",
                             org.apache.commons.logging;version="${commons.logging.version}",
                             org.apache.http.*;version="${orbit.httpcore.version}",
                             org.json;version="${org.json.version.range}",
                             org.wso2.carbon.apimgt.common.gateway.*;version="${org.wso2.carbon.apimgt.version.range}",
                             org.wso2.carbon.apimgt.impl;version="${org.wso2.carbon.apimgt.version.range}",
-                            org.wso2.financial.services.accelerator.common.*;version="${project.version}"
+                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",
+                            io.jsonwebtoken;version="${jjwt.version.range}"
                         </Import-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.gateway.internal,
                             org.wso2.financial.services.accelerator.gateway.*;version="${project.version}",

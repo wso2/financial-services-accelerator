@@ -23,7 +23,7 @@
     <property name="Authorization" scope="transport" action="remove"/>
     <!-- Replace the  <AUTH_HEADER_VALUE> with Base64 encoded "username:password" value.
     i.e Base64(username:password) -->
-    <property name="Authorization" value="YWRtaW5Ad3NvMi5jb206d3NvMjEyMw==" scope="transport"/>
+    <property name="Authorization" value="Basic YWRtaW5Ad3NvMi5jb206d3NvMjEyMw==" scope="transport"/>
     
     <filter regex=".*\/account-access-consents.*" source="$ctx:endpointURI">
         <then>
@@ -31,7 +31,7 @@
             <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
         </then>
         <else>
-            <header name="To" value="https://localhost:9443/api/openbanking/backend/services/accounts/accountservice" />
+            <header name="To" value="https://localhost:9443/api/fs/backend/services/accounts/accountservice" />
         </else>
     </filter>
 </sequence>

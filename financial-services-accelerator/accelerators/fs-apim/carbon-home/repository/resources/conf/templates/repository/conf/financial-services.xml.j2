@@ -76,4 +76,11 @@
         <MaxConnectionsPerRoute>{{financial_services.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
         {% endif %}
     </HTTPConnectionPool>
+    <Identity>
+        {% if financial_services.identity.consent_id_claim_name is defined %}
+        <ConsentIDClaimName>{{financial_services.identity.consent_id_claim_name}}</ConsentIDClaimName>
+        {% else %}
+        <ConsentIDClaimName>consent_id</ConsentIDClaimName>
+        {% endif %}
+    </Identity>
 </Server>
