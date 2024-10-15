@@ -18,20 +18,6 @@
  -->
 
 <Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
-    <Common>
-        <Cache>
-            {% if financial_services.common.cache.cache_access_expiry_minutes is defined %}
-            <CacheAccessExpiry>{{financial_services.common.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
-            {% else %}
-            <CacheAccessExpiry>60</CacheAccessExpiry>
-            {% endif %}
-            {% if financial_services.common.cache.cache_modified_expiry_minutes is defined %}
-            <CacheModifiedExpiry>{{financial_services.common.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
-            {% else %}
-            <CacheModifiedExpiry>60</CacheModifiedExpiry>
-            {% endif %}
-        </Cache>
-    </Common>
     <JDBCPersistenceManager>
         <DataSource>
             <!-- Include a data source name (jndiConfigName) from the set of data
@@ -52,7 +38,7 @@
         {% if financial_services.consent.manage.handler is defined %}
         <ManageHandler>{{financial_services.consent.manage.handler}}</ManageHandler>
         {% else %}
-        <ManageHandler>org..wso2.financial.services.accelerator.consent.extensions.manage.impl.DefaultConsentManageHandler</ManageHandler>
+        <ManageHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler</ManageHandler>
         {% endif %}
         <AuthorizeSteps>
             <Retrieve>
@@ -62,7 +48,7 @@
                           priority="{{step.priority}}"/>
                     {% endfor %}
                 {% else %}
-                <Step class="org..wso2.financial.services.accelerator.consent.extensions.authorize.impl.DefaultConsentRetrievalStep" priority="2"/>
+                <Step class="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep" priority="2"/>
                 {% endif %}
             </Retrieve>
             <Persist>
@@ -72,15 +58,15 @@
                           priority="{{step.priority}}"/>
                     {% endfor %}
                 {% else %}
-                <Step class="org..wso2.financial.services.accelerator.consent.extensions.authorize.impl.DefaultConsentPersistStep" priority="1"/>
+                <Step class="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentPersistStep" priority="1"/>
                 {% endif %}
             </Persist>
-        </AuthorizeSteps
+        </AuthorizeSteps>
         <Validation>
             {% if financial_services.consent.validation.validator is defined %}
             <Validator>{{financial_services.consent.validation.validator}}</Validator>
             {% else %}
-            <Validator>org..wso2.financial.services.accelerator.consent.extensions.validate.impl.DefaultConsentValidator</Validator>
+            <Validator>org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.DefaultConsentValidator</Validator>
             {% endif %}
 
             {% if financial_services.consent.validation.signature.alias is defined %}
@@ -98,7 +84,7 @@
         {% if financial_services.consent.admin.handler is defined %}
         <AdminHandler>{{financial_services.consent.admin.handler}}</AdminHandler>
         {% else %}
-        <AdminHandler>org..wso2.financial.services.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
+        <AdminHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
         {% endif %}
 
         <ConsentAPICredentials>
@@ -140,8 +126,8 @@
             </Params>
         </Portal>
         <Payments>
-            {% if financial_services.consent.preserve_consent_link.enable is defined %}
-            <MaximumInstructedAmount>{{financial_services.consent.preserve_consent_link.enable}}</MaximumInstructedAmount>
+            {% if financial_services.consent.payments.max_instructed_amount is defined %}
+            <MaximumInstructedAmount>{{financial_services.consent.payments.max_instructed_amount}}</MaximumInstructedAmount>
             {% else %}
             <MaximumInstructedAmount>1000</MaximumInstructedAmount>
             {% endif %}
@@ -173,7 +159,7 @@
             </ServletExtension>
             {% else %}
             <ServletExtension>
-                org..wso2.financial.services.accelerator.consent.extensions.authservlet.impl.OFSDefaultAuthServletImpl
+                org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl
             </ServletExtension>
             {% endif %}
         </AuthenticationWebApp>
@@ -186,17 +172,17 @@
             {% if financial_services.identity.extensions.request_object_validator is defined %}
             <RequestObjectValidator>{{financial_services.identity.extensions.request_object_validator}}</RequestObjectValidator>
             {% else %}
-            <RequestObjectValidator>org..wso2.financial.services.accelerator.identity.auth.extensions.request.validator.OBRequestObjectValidator</RequestObjectValidator>
+            <RequestObjectValidator>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator</RequestObjectValidator>
             {% endif %}
             {% if financial_services.identity.extensions.response_type_handler is defined %}
             <ResponseTypeHandler>{{financial_services.identity.extensions.response_type_handler}}</ResponseTypeHandler>
             {% else %}
-            <ResponseTypeHandler>org..wso2.financial.services.accelerator.identity.auth.extensions.response.handler.impl.OBDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
+            <ResponseTypeHandler>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
             {% endif %}
             {% if financial_services.identity.extensions.claim_provider is defined %}
             <ClaimProvider>{{financial_services.identity.extensions.claim_provider}}</ClaimProvider>
             {% else %}
-            <ClaimProvider>org..wso2.financial.services.accelerator.identity.claims.OBDefaultClaimProvider</ClaimProvider>
+            <ClaimProvider>org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider</ClaimProvider>
             {% endif %}
         </Extensions>
         <TokenSubject>
@@ -215,9 +201,13 @@
     <HTTPConnectionPool>
         {% if financial_services.http_connection_pool.max_connections is defined %}
         <MaxConnections>{{financial_services.http_connection_pool.max_connections}}</MaxConnections>
+        {% else %}
+         <MaxConnections>1000</MaxConnections>
         {% endif %}
         {% if financial_services.http_connection_pool.max_connections_per_route is defined %}
         <MaxConnectionsPerRoute>{{financial_services.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
+        {% else %}
+         <MaxConnectionsPerRoute>1000</MaxConnectionsPerRoute>
         {% endif %}
     </HTTPConnectionPool>
 </Server>
