@@ -59,7 +59,6 @@ public class OAuthCallbackServlet extends HttpServlet {
             if (StringUtils.isEmpty(code)) {
                 LOG.debug("Logout callback request received. Invalidating cookies.");
                 oAuthService.removeAllCookiesFromRequest(req, resp);
-                redirectUrl  += "/logout";
             } else {
                 LOG.debug("Authorization callback request received");
                 final String clientKey = Utils.getParameter(Constants.CONFIGURED_CLIENT_ID);
