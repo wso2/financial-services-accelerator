@@ -69,7 +69,7 @@ public class AccountService {
                 "    ]\n" +
                 "  },\n" +
                 "  \"Links\": {\n" +
-                "    \"Self\": \"https://api.alphabank.com/open-banking/v3.0/accounts/" + accountId +
+                "    \"Self\": \"https://api.alphabank.com/open-banking/v4.0/accounts/" + accountId +
                 "\"\n" +
                 "  },\n" +
                 "  \"Meta\": {\n" +
@@ -133,7 +133,7 @@ public class AccountService {
                 "    ]\n" +
                 "  },\n" +
                 "  \"Links\": {\n" +
-                "    \"Self\": \"https://api.alphabank.com/open-banking/v3.0/accounts/" + accountId +
+                "    \"Self\": \"https://api.alphabank.com/open-banking/v4.0/accounts/" + accountId +
                 "/transactions/\"\n" +
                 "  },\n" +
                 "  \"Meta\": {\n" +
@@ -187,7 +187,7 @@ public class AccountService {
                 "    ]\n" +
                 "  },\n" +
                 "  \"Links\": {\n" +
-                "    \"Self\": \"https://api.alphabank.com/open-banking/v3.0/accounts/" + accountId +
+                "    \"Self\": \"https://api.alphabank.com/open-banking/v4.0/accounts/" + accountId +
                 "/balances/\"\n" +
                 "  },\n" +
                 "  \"Meta\": {\n" +

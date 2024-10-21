@@ -70,7 +70,7 @@ public class FundsConfirmationService {
                 "    }\n" +
                 "  },\n" +
                 "  \"Links\": {\n" +
-                "    \"Self\": \"https://api.alphabank.com/open-banking/v3.0/funds-confirmations/836403\"\n" +
+                "    \"Self\": \"https://api.alphabank.com/open-banking/v4.0/funds-confirmations/836403\"\n" +
                 "  },\n" +
                 "  \"Meta\": {\n" +
                 "  }\n" +
