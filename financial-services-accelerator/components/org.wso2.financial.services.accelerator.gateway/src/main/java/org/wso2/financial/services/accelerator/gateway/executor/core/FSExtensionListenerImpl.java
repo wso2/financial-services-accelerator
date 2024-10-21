@@ -140,8 +140,8 @@ public class FSExtensionListenerImpl implements ExtensionListener {
         ExtensionResponseDTO extensionResponseDTO = new ExtensionResponseDTO();
         if (fsapiRequestContext.isError()) {
             int statusCode = (!fsapiRequestContext.getContextProps().containsKey(GatewayConstants.ERROR_STATUS_PROP)) ?
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR :
-                    (int) (fsapiRequestContext.getContextProperty(GatewayConstants.ERROR_STATUS_PROP));
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR : Integer.parseInt(fsapiRequestContext
+                    .getContextProperty(GatewayConstants.ERROR_STATUS_PROP).toString());
             extensionResponseDTO.setStatusCode(statusCode);
             extensionResponseDTO.setResponseStatus(ExtensionResponseStatus.RETURN_ERROR.toString());
         } else if (fsapiRequestContext.getContextProps().containsKey(GatewayConstants.IS_RETURN_RESPONSE) &&
@@ -181,8 +181,8 @@ public class FSExtensionListenerImpl implements ExtensionListener {
         ExtensionResponseDTO extensionResponseDTO = new ExtensionResponseDTO();
         if (fsapiResponseContext.isError()) {
             int statusCode = (!fsapiResponseContext.getContextProps().containsKey(GatewayConstants.ERROR_STATUS_PROP)) ?
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR :
-                    (int) (fsapiResponseContext.getContextProperty(GatewayConstants.ERROR_STATUS_PROP));
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR : Integer.parseInt(fsapiResponseContext
+                    .getContextProperty(GatewayConstants.ERROR_STATUS_PROP).toString());
             extensionResponseDTO.setStatusCode(statusCode);
             extensionResponseDTO.setResponseStatus(ExtensionResponseStatus.RETURN_ERROR.toString());
         } else if (fsapiResponseContext.getContextProps().containsKey(GatewayConstants.IS_RETURN_RESPONSE) &&

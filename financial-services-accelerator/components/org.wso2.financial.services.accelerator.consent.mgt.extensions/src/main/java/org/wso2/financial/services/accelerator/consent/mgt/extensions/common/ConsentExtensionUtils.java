@@ -148,11 +148,18 @@ public class ConsentExtensionUtils {
      */
     @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
     public static String resolveUsernameFromUserId(String userID) {
+
+        if (!startsWithUUID(userID)) {
+            // If the user ID is not starting with a UUID that means request has sent the username,
+            // return the same user ID as the username.
+            return userID;
+        }
+
         String username = null;
         try {
             if (userID.contains(ConsentExtensionConstants.TENANT_DOMAIN)) {
                 username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN,
-                        userID.split("@")[0]);
+                        userID.split("@" + ConsentExtensionConstants.TENANT_DOMAIN)[0]);
             } else {
                 username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN, userID);
             }
@@ -160,5 +167,10 @@ public class ConsentExtensionUtils {
             return null;
         }
         return username;
+    }
+
+    public static boolean startsWithUUID(String input) {
+        Pattern uuidPattern = Pattern.compile("^" + ConsentExtensionConstants.UUID_REGEX + ".*$");
+        return uuidPattern.matcher(input).matches();
     }
 }
