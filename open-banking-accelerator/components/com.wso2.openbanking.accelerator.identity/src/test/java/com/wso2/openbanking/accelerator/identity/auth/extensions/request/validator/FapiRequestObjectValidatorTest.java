@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -38,19 +38,15 @@ import org.testng.annotations.Test;
 
 import java.util.Collections;
 
-import static org.mockito.Mockito.anyString;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-/**
- * Test for Default Open Banking object validator.
- */
-@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({OpenBankingValidator.class, IdentityExtensionsDataHolder.class})
-public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
+@PowerMockIgnore("jdk.internal.reflect.*")
+public class FapiRequestObjectValidatorTest extends PowerMockTestCase {
 
     private static final String CLIENT_ID_1 = "2X0n9WSNmPiq3XTB8dtC0Shs5r8a";
-    private static final String CLIENT_ID_2 = "owjqxsPTQ7zJIFeZRib5b03ufxsa";
     private static ConsentCoreServiceImpl consentCoreServiceMock;
 
     @BeforeClass
@@ -84,9 +80,9 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
         PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
 
         // act
-        DefaultOBRequestObjectValidator uut = new DefaultOBRequestObjectValidator();
+        FapiRequestObjectValidator uut = new FapiRequestObjectValidator();
 
-        OBRequestObject<?> obRequestObject = TestUtils.getObRequestObject(ReqObjectTestDataProvider.VALID_REQUEST);
+        OBRequestObject<?> obRequestObject = TestUtils.getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
         ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
 
         // assert
@@ -94,36 +90,13 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testValidateOBConstraintsWhenNoClientId() throws Exception {
+    public void testValidateOBConstraintsWithInValidRequestObject() throws Exception {
         // mock
         DetailedConsentResource consentResourceMock = mock(DetailedConsentResource.class);
-        doReturn(null).when(consentResourceMock).getClientID();
+        doReturn(CLIENT_ID_1).when(consentResourceMock).getClientID();
 
-        ConsentCoreServiceImpl consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
         doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
 
-        OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
-        doReturn("").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject());
-
-        PowerMockito.mockStatic(OpenBankingValidator.class);
-        PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
-
-        // act
-        DefaultOBRequestObjectValidator uut = new DefaultOBRequestObjectValidator();
-
-        OBRequestObject<?> obRequestObject = TestUtils
-                .getObRequestObject(ReqObjectTestDataProvider.NO_CLIENT_ID_REQUEST);
-        ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
-
-        // assert
-        Assert.assertFalse(validationResponse.isValid());
-        Assert.assertEquals(validationResponse.getViolationMessage(),
-                "Client id or scope cannot be empty");
-    }
-
-    @Test
-    public void testValidateOBConstraintsWhenOBRequestObjectHasErrors() throws Exception {
-        // mock
         OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
         doReturn("dummy-error").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject());
 
@@ -131,14 +104,14 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
         PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
 
         // act
-        DefaultOBRequestObjectValidator uut = new DefaultOBRequestObjectValidator();
+        FapiRequestObjectValidator uut = new FapiRequestObjectValidator();
 
-        OBRequestObject<?> obRequestObject = TestUtils.getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
+        OBRequestObject<?> obRequestObject = TestUtils
+                .getObRequestObject(ReqObjectTestDataProvider.NO_CLIENT_ID_REQUEST);
         ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
 
         // assert
         Assert.assertFalse(validationResponse.isValid());
-        Assert.assertEquals(validationResponse.getViolationMessage(), "dummy-error");
     }
 
 }

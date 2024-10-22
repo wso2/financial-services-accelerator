@@ -75,7 +75,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         } catch (ConsentManagementException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Exception occured while persisting consent");
+                    "Exception occurred while persisting consent");
         }
     }
 
@@ -113,7 +113,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         String consentStatus;
 
         if (consentPersistData.getApproval()) {
-            consentStatus = ConsentExtensionConstants.AUTHORIZED_STATUS;
+            consentStatus = ConsentExtensionConstants.AUTHORISED_STATUS;
         } else {
             consentStatus = ConsentExtensionConstants.REJECTED_STATUS;
         }

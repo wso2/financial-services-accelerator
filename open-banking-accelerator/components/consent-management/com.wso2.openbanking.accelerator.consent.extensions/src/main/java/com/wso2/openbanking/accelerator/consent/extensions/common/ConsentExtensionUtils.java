@@ -402,7 +402,7 @@ public class ConsentExtensionUtils {
     public static String getConsentStatus(String defaultStatus) {
 
         switch (defaultStatus) {
-            case ConsentExtensionConstants.AUTHORIZED_STATUS:
+            case ConsentExtensionConstants.AUTHORISED_STATUS:
                 return ConsentExtensionConstants.OB_AUTHORIZED_STATUS;
             case ConsentExtensionConstants.REVOKED_STATUS:
                 return ConsentExtensionConstants.OB_REVOKED_STATUS;
@@ -413,5 +413,25 @@ public class ConsentExtensionUtils {
             default:
                 return ConsentExtensionConstants.OB_AWAITING_AUTH_STATUS;
         }
+    }
+
+    /**
+     * Get dummy accounts.
+     *
+     * @return Dummy accounts as a JSON array.
+     */
+    public static JSONArray getDummyAccounts() {
+        JSONArray accountsJSON = new JSONArray();
+        JSONObject accountOne = new JSONObject();
+        accountOne.appendField("account_id", "12345");
+        accountOne.appendField("display_name", "Salary Saver Account");
+
+        JSONObject accountTwo = new JSONObject();
+        accountTwo.appendField("account_id", "67890");
+        accountTwo.appendField("display_name", "Max Bonus Account");
+
+        accountsJSON.add(accountOne);
+        accountsJSON.add(accountTwo);
+        return accountsJSON;
     }
 }

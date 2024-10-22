@@ -47,6 +47,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -573,6 +574,16 @@ public class OBConsentMgtDAOTests {
         return ConsentMgtDAOTestData.DataProviders.CONSENT_MAPPING_STATUS_UPDATE_DATA_HOLDER;
     }
 
+    @DataProvider(name = "updateConsentMappingPermissionDataProvider")
+    public Object[][] updateConsentMappingPermissionData() {
+
+        /*
+         * mappingId
+         * newMappingPermission
+         */
+        return ConsentMgtDAOTestData.DataProviders.CONSENT_MAPPING_PERMISSION_UPDATE_DATA_HOLDER;
+    }
+
     @Test (dataProvider = "updateConsentMappingStatusDataProvider")
     public void testUpdateConsentMappingStatus(String newMappingStatus) throws Exception {
 
@@ -611,6 +622,22 @@ public class OBConsentMgtDAOTests {
                     newMappingStatus);
         }
         Assert.assertTrue(isConsentMappingStatusUpdated);
+    }
+
+    @Test (dataProvider = "updateConsentMappingPermissionDataProvider")
+    public void testUpdateConsentMappingPermission(String mappingId, String newMappingPermission) throws Exception {
+
+        boolean isConsentMappingPermissionUpdated;
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+
+            Map<String, String> map = new HashMap<>();
+            map.put(mappingId, newMappingPermission);
+
+            isConsentMappingPermissionUpdated = consentCoreDAO.updateConsentMappingPermission(connection,
+                    map);
+        }
+        Assert.assertTrue(isConsentMappingPermissionUpdated);
     }
 
     @Test (expectedExceptions = OBConsentDataUpdationException.class)

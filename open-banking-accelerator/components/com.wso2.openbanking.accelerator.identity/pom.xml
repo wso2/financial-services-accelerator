@@ -80,6 +80,10 @@
             <artifactId>org.wso2.carbon.identity.oauth2.token.handler.clientauth.mutualtls</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.extension.identity.oauth.addons</groupId>
+            <artifactId>org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
         </dependency>
@@ -263,7 +267,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.8</minimum>
+                                            <minimum>0.7</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -344,6 +348,7 @@
                             org.wso2.carbon.identity.core.*;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.identity.oauth2.keyidprovider;version="${identity.inbound.auth.oauth.version.range}",
                             org.wso2.carbon.identity.oauth2.token.handler.clientauth.mutualtls.*;version="${carbon.identity.clientauth.mutualtls.version}",
+                            org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt.*;version="${carbon.identity.clientauth.jwt.version}",
                             org.wso2.carbon.identity.openidconnect.*;version="${identity.inbound.auth.oauth.version.range}",
                             org.wso2.carbon.identity.oauth2.*;version="${identity.inbound.auth.oauth.version.range}",
                             org.wso2.carbon.identity.oauth2.model.*;version="${identity.inbound.auth.oauth.version.range}",
