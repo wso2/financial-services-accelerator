@@ -17,8 +17,7 @@
  */
 
 export const common = {
-    footerContent: "WSO2 Open Banking | " + new Date().getFullYear(),
-    complaintHandleLinkText: "Complaint handling and resolution",
+    footerContent: "WSO2 Open Banking | " + new Date().getFullYear()
 };
 
 export const keyDateTypes = {
