@@ -41,6 +41,64 @@ public class AccountService {
     // Suppression reason - False Positive : This endpoint is a demo endpoint that is not exposed in production
     // Suppressed warning count - 1
     @GET
+    @Path("/accounts")
+    @Produces("application/json; charset=utf-8")
+    public Response getAccounts(@HeaderParam("x-fapi-interaction-id") String xFapiInteractionId,
+                                @HeaderParam("Account-Request-Information") String accountRequestInfo) {
+
+        String finalRespose = "{\n" +
+                "  \"Data\": {\n" +
+                "    \"Account\": [\n" +
+                "      {\n" +
+                "        \"AccountId\": \"30080012343456\",\n" +
+                "        \"Status\": \"Enabled\",\n" +
+                "        \"StatusUpdateDateTime\": \"2020-04-16T06:06:06+00:00\",\n" +
+                "        \"Currency\": \"GBP\",\n" +
+                "        \"AccountType\": \"Personal\",\n" +
+                "        \"AccountSubType\": \"CurrentAccount\",\n" +
+                "        \"Nickname\": \"Bills\",\n" +
+                "        \"OpeningDate\": \"2020-01-16T06:06:06+00:00\",\n" +
+                "        \"MaturityDate\": \"2025-04-16T06:06:06+00:00\",\n" +
+                "        \"Account\": [{\n" +
+                "          \"SchemeName\": \"SortCodeAccountNumber\",\n" +
+                "          \"Identification\": \"30080012343456\",\n" +
+                "          \"Name\": \"Mr Kevin\",\n" +
+                "          \"SecondaryIdentification\": \"00021\"\n" +
+                "        }]\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"AccountId\": \"30080098763459\",\n" +
+                "        \"Status\": \"Enabled\",\n" +
+                "        \"StatusUpdateDateTime\": \"2020-04-16T06:06:06+00:00\",\n" +
+                "        \"Currency\": \"GBP\",\n" +
+                "        \"AccountType\": \"Personal\",\n" +
+                "        \"AccountSubType\": \"CurrentAccount\",\n" +
+                "        \"Nickname\": \"Bills\",\n" +
+                "        \"OpeningDate\": \"2020-01-16T06:06:06+00:00\",\n" +
+                "        \"MaturityDate\": \"2025-04-16T06:06:06+00:00\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  },\n" +
+                "  \"Links\": {\n" +
+                "    \"Self\": \"https://api.alphabank.com/open-banking/v4.0/accounts\"\n" +
+                "  },\n" +
+                "  \"Meta\": {\n" +
+                "    \"TotalPages\": 1\n" +
+                "  }\n" +
+                "}";
+
+        if (xFapiInteractionId == null) {
+            xFapiInteractionId = UUID.randomUUID().toString();
+        }
+        return Response.status(200).entity(finalRespose)
+                .header("x-fapi-interaction-id", xFapiInteractionId).build();
+    }
+
+    @SuppressFBWarnings("JAXRS_ENDPOINT")
+    // Suppressed content - Endpoint
+    // Suppression reason - False Positive : This endpoint is a demo endpoint that is not exposed in production
+    // Suppressed warning count - 1
+    @GET
     @Path("/accounts/{AccountId}")
     @Produces("application/json; charset=utf-8")
     public Response getOneAccount(@PathParam("AccountId") String accountId,
