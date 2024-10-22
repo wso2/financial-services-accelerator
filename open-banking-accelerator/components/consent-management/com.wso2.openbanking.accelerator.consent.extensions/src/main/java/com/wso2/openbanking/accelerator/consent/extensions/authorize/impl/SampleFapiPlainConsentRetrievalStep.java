@@ -30,6 +30,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
@@ -85,7 +86,7 @@ public class SampleFapiPlainConsentRetrievalStep implements ConsentRetrievalStep
 
         JSONObject jsonElementPermissions = new JSONObject();
         jsonElementPermissions.appendField(ConsentExtensionConstants.TITLE, ConsentExtensionConstants.PERMISSIONS);
-        jsonElementPermissions.appendField(ConsentExtensionConstants.DATA, permissions);
+        jsonElementPermissions.appendField(StringUtils.lowerCase(ConsentExtensionConstants.DATA), permissions);
 
         consentDataJSON.add(jsonElementPermissions);
 
