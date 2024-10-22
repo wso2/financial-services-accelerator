@@ -21,6 +21,7 @@ package com.wso2.open.banking.application.info.endpoint.api.impl;
 import com.wso2.open.banking.application.info.endpoint.api.ApplicationInformationApi;
 import com.wso2.open.banking.application.info.endpoint.api.data.MetaDataDAOImpl;
 import com.wso2.open.banking.application.info.endpoint.api.utils.MappingUtil;
+import com.wso2.open.banking.application.info.endpoint.model.ApplicationBulkMetadataSuccessDTO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,7 +111,14 @@ public class ApplicationInformationApiServiceImpl implements ApplicationInformat
 
         List<String> clientIdList = metaDataDAOImpl.getAllDistinctClientIds();
 
-        return getBulkApplicationMetadata(clientIdList);
+        if (!clientIdList.isEmpty()) {
+            return getBulkApplicationMetadata(clientIdList);
+        }
+
+        // Responding with an empty ApplicationBulkMetadataSuccessDTO when no data is available
+        return Response.ok()
+                .entity(new ApplicationBulkMetadataSuccessDTO())
+                .build();
     }
 
 
