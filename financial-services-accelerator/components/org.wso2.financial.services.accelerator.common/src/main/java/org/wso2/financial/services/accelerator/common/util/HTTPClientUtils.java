@@ -89,6 +89,35 @@ public class HTTPClientUtils {
     }
 
     /**
+     * Get closeable https client to send realtime event notifications.
+     *
+     * @return Closeable https client
+     * @throws FinancialServicesException FinancialServicesException exception
+     */
+    @Generated(message = "Ignoring since method contains no logics")
+    public static CloseableHttpClient getRealtimeEventNotificationHttpsClient() throws FinancialServicesException {
+
+        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                .register(HTTPS_PROTOCOL, sslsf)
+                .build();
+
+        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
+                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
+                new PoolingHttpClientConnectionManager();
+
+        // configuring default maximum connections
+        connectionManager.setMaxTotal(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationMaxRetries() + 1);
+        connectionManager.setDefaultMaxPerRoute(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationMaxRetries() + 1);
+
+        return HttpClients.custom().setConnectionManager(connectionManager).build();
+    }
+
+    /**
      * create a SSL Connection Socket Factory.
      *
      * @return SSLConnectionSocketFactory

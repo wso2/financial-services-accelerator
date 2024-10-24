@@ -210,4 +210,102 @@
          <MaxConnectionsPerRoute>1000</MaxConnectionsPerRoute>
         {% endif %}
     </HTTPConnectionPool>
+    <EventNotifications>
+        <NotificationGeneration>
+            {% if financial_services.event.notifications.event_notification_generator is defined %}
+            <NotificationGenerator>{{financial_services.event.notifications.event_notification_generator}}</NotificationGenerator>
+            {% else %}
+            <NotificationGenerator>com.wso2.openbanking.accelerator.event.notifications.service.service.DefaultEventNotificationGenerator</NotificationGenerator>
+            {% endif %}
+            {% if financial_services.event.notifications.token_issuer is defined %}
+            <TokenIssuer>{{financial_services.event.notifications.token_issuer}}</TokenIssuer>
+            {% else %}
+            <TokenIssuer>www.wso2.com</TokenIssuer>
+            {% endif %}
+            {% if financial_services.event.notifications.number_of_sets_to_return %}
+            <NumberOfSetsToReturn>{{financial_services.event.notifications.number_of_sets_to_return}}</NumberOfSetsToReturn>
+            {% else %}
+             <NumberOfSetsToReturn>5</NumberOfSetsToReturn>
+            {% endif %}
+        </NotificationGeneration>
+        {% if financial_services.event.notifications.event_creation_handler is defined %}
+        <EventCreationHandler>{{financial_services.event.notifications.event_creation_handler}}</EventCreationHandler>
+        {% else %}
+        <EventCreationHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler</EventCreationHandler>
+        {% endif %}
+        {% if financial_services.event.notifications.event_polling_handler is defined %}
+        <EventPollingHandler>{{financial_services.event.notifications.event_polling_handler}}</EventPollingHandler>
+        {% else %}
+        <EventPollingHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler</EventPollingHandler>
+        {% endif %}
+        {% if financial_services.event.notifications.event_subscription_handler is defined %}
+        <EventSubscriptionHandler>{{financial_services.event.notifications.event_subscription_handler}}</EventSubscriptionHandler>
+        {% else %}
+        <EventSubscriptionHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
+        {% endif %}
+        <PollingResponseParams>
+            {% if financial_services.event.notifications.set_sub_claim_included is defined%}
+            <IsSubClaimAvailable>{{financial_services.event.notifications.set_sub_claim_included}}</IsSubClaimAvailable>
+            {% else %}
+            <IsSubClaimAvailable>true</IsSubClaimAvailable>
+            {% endif %}
+            {% if financial_services.event.notifications.set_txn_claim_included is defined %}
+            <IsTxnClaimAvailable>{{financial_services.event.notifications.set_txn_claim_included}}</IsTxnClaimAvailable>
+            {% else %}
+            <IsTxnClaimAvailable>true</IsTxnClaimAvailable>
+            {% endif %}
+            {% if financial_services.event.notifications.set_toe_cliam_included is defined %}
+            <IsToeClaimAvailable>{{financial_services.event.notifications.set_toe_cliam_included}}</IsToeClaimAvailable>
+            {% else %}
+            <IsToeClaimAvailable>true</IsToeClaimAvailable>
+            {% endif %}
+        </PollingResponseParams>
+        <Realtime>
+            {% if financial_services.event.notifications.realtime.enable is defined %}
+            <Enable>{{financial_services.event.notifications.realtime.enable}}</Enable>
+            {% else %}
+            <Enable>false</Enable>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.periodic_cron_expression is defined %}
+            <PeriodicCronExpression>{{financial_services.event.notifications.realtime.periodic_cron_expression}}</PeriodicCronExpression>
+            {% else %}
+            <PeriodicCronExpression>0 0/1 0 ? * * *</PeriodicCronExpression>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.request_timeout is defined %}
+            <TimeoutInSeconds>{{financial_services.event.notifications.realtime.request_timeout}}</TimeoutInSeconds>
+            {% else %}
+            <TimeoutInSeconds>60</TimeoutInSeconds>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.maximum_retry_count is defined %}
+            <MaxRetries>{{financial_services.event.notifications.realtime.maximum_retry_count}}</MaxRetries>
+            {% else %}
+            <MaxRetries>5</MaxRetries>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.initial_retry_waiting_time is defined %}
+            <InitialBackoffTimeInSeconds>{{financial_services.event.notifications.realtime.initial_retry_waiting_time}}</InitialBackoffTimeInSeconds>
+            {% else %}
+            <InitialBackoffTimeInSeconds>60</InitialBackoffTimeInSeconds>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.retry_function is defined %}
+            <BackoffFunction>{{financial_services.event.notifications.realtime.retry_function}}</BackoffFunction>
+            {% else %}
+            <BackoffFunction>EX</BackoffFunction>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.circuit_breaker_open_timeout is defined %}
+            <CircuitBreakerOpenTimeoutInSeconds>{{financial_services.event.notifications.realtime.circuit_breaker_open_timeout}}</CircuitBreakerOpenTimeoutInSeconds>
+            {% else %}
+            <CircuitBreakerOpenTimeoutInSeconds>600</CircuitBreakerOpenTimeoutInSeconds>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.thread_pool_size is defined %}
+            <EventNotificationThreadPoolSize>{{financial_services.event.notifications.realtime.thread_pool_size}}</EventNotificationThreadPoolSize>
+            {% else %}
+            <EventNotificationThreadPoolSize>20</EventNotificationThreadPoolSize>
+            {% endif %}
+            {% if financial_services.event.notifications.realtime.event_notification_request_generator is defined %}
+            <RequestGenerator>{{financial_services.event.notifications.realtime.event_notification_request_generator}}</RequestGenerator>
+            {% else %}
+            <RequestGenerator>com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
+            {% endif %}
+        </RealtimeEventNotification>
+    </OBEventNotifications>
 </Server>

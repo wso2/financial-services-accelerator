@@ -384,6 +384,11 @@
                 <version>${jackson.databinding.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.databinding.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring-web.version}</version>
@@ -442,6 +447,11 @@
                 <groupId>io.swagger.parser.v3</groupId>
                 <artifactId>swagger-parser</artifactId>
                 <version>${swagger.parser.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
             </dependency>
             <!--Base Products related dependencies-->
             <dependency>
@@ -504,6 +514,11 @@
             <dependency>
                 <groupId>org.wso2.financial.services.accelerator</groupId>
                 <artifactId>org.wso2.financial.services.accelerator.consent.mgt.extensions</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.identity.extensions</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Test Dependencies -->
@@ -593,6 +608,7 @@
         <apache.tomcat-catalina.version>9.0.11</apache.tomcat-catalina.version>
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
         <swagger.parser.version>2.0.24</swagger.parser.version>
+        <quartz.version>2.3.2</quartz.version>
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
