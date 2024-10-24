@@ -422,6 +422,9 @@ name = "Default"
 [[financial_services.gateway.gateway_executors.type.executors]]
 name = "org.wso2.financial.services.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 1
+[[financial_services.gateway.gateway_executors.type.executors]]
+name = "org.wso2.financial.services.accelerator.gateway.executor.impl.error.handling.DefaultErrorHandlingExecutor"
+priority = 1000
 
 [financial_services.gateway.consent.validation]
 endpoint="https://IS_HOSTNAME:9446/api/fs/consent/validate"

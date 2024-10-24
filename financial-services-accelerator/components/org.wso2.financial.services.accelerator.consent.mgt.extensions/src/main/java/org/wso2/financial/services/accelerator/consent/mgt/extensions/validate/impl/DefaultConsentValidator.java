@@ -166,7 +166,7 @@ public class DefaultConsentValidator implements ConsentValidator {
             consentValidationResult.setValid(false);
             consentValidationResult.setErrorMessage(PERMISSION_MISMATCH_ERROR);
             consentValidationResult.setErrorCode(ResponseStatus.FORBIDDEN.getReasonPhrase());
-            consentValidationResult.setHttpCode(403);
+            consentValidationResult.setHttpCode(HttpStatus.SC_FORBIDDEN);
             return;
         }
 
@@ -185,8 +185,8 @@ public class DefaultConsentValidator implements ConsentValidator {
             log.error(CONSENT_EXPIRED_ERROR);
             consentValidationResult.setValid(false);
             consentValidationResult.setErrorMessage(CONSENT_EXPIRED_ERROR);
-            consentValidationResult.setErrorCode(ResponseStatus.UNAUTHORIZED.getReasonPhrase());
-            consentValidationResult.setHttpCode(HttpStatus.SC_UNAUTHORIZED);
+            consentValidationResult.setErrorCode(ResponseStatus.BAD_REQUEST.getReasonPhrase());
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
             return;
         }
         consentValidationResult.setValid(true);

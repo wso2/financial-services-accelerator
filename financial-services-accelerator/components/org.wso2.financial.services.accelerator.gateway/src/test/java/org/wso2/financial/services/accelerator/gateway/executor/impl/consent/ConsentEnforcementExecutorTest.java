@@ -56,7 +56,7 @@ import java.util.UUID;
 /**
  * Test for enforcement executor.
  */
-public class TestEnforcementExecutor {
+public class ConsentEnforcementExecutorTest {
 
     private static ConsentEnforcementExecutor consentEnforcementExecutor;
     private static MockedStatic<HTTPClientUtils> httpClientUtilsMockedStatic;

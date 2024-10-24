@@ -140,7 +140,6 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
             String errorCode = jsonResponse.get(ERROR_CODE).toString();
             String errorMessage = jsonResponse.get(ERROR_MESSAGE).toString();
             String httpCode = jsonResponse.get(HTTP_CODE).toString();
-            fsapiRequestContext.setError(true);
             handleError(fsapiRequestContext, errorCode, errorMessage, httpCode);
             return;
         } else if (!jsonResponse.isNull(MODIFIED_PAYLOAD)) {

@@ -312,9 +312,9 @@ public class DefaultConsentValidatorTest {
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 
         Assert.assertFalse(consentValidationResultMock.isValid());
-        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.UNAUTHORIZED.getReasonPhrase());
+        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.BAD_REQUEST.getReasonPhrase());
         Assert.assertEquals(consentValidationResultMock.getErrorMessage(), "Provided consent is expired");
-        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_UNAUTHORIZED);
+        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
     @Test
