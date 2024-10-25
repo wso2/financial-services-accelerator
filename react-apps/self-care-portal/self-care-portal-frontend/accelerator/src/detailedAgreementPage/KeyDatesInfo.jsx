@@ -90,6 +90,13 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                     valueFromConsent = "N/A";
                 } else if (valueParameterKey === "receipt.Data.Initiation.InstructedAmount") {
                     valueFromConsent = `${valueFromConsent.Amount} ${valueFromConsent.Currency}`;
+                } else if (valueParameterKey === "consentAttributes.sharing_duration_value") {
+                    const intValue = parseInt(valueFromConsent, 10);
+                    if (intValue >= 0 && intValue <= 86400) {
+                        valueFromConsent = "OnceOff";
+                    } else {
+                        valueFromConsent = "Ongoing";
+                    }
                 }
 
                 return (
