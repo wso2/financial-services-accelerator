@@ -45,14 +45,14 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                 return (
                     <>
                         <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{moment(timestamp).format(keyDate.dateFormat)}</p>
+                        <li className="infoItem">{(timestamp !== 0)? moment(timestamp).format(keyDate.dateFormat) : "N/A"}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
                         <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
+                        <li className="infoItem"></li>
                     </>
                 )
             }
@@ -69,15 +69,14 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                 return (
                     <>
                         <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{moment(fromTime).format(keyDate.dateFormat)} -
-                            {moment(toTime).format(keyDate.dateFormat)}</p>
+                        <li className="infoItem">{moment(fromTime).format(keyDate.dateFormat)} - {(toTime !== 0)?moment(toTime).format(keyDate.dateFormat):"N/A"}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
                         <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
+                        <li className="infoItem"></li>
                     </>
                 )
             }
@@ -102,14 +101,14 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                 return (
                     <>
                         <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{valueFromConsent}</p>
+                        <li className="infoItem">{valueFromConsent}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
                         <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
+                        <li className="infoItem"></li>
                     </>
                 )
             }
@@ -117,7 +116,7 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
             return (
                 <>
                     <h6>{keyDate.title}</h6>
-                    <p className="infoItem">{keyDate.text}</p>
+                    <li className="infoItem">{keyDate.text}</li>
                 </>
             )
         }
