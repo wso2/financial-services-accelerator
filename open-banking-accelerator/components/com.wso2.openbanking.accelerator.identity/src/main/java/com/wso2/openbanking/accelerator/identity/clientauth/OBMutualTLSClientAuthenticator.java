@@ -18,8 +18,7 @@
 
 package com.wso2.openbanking.accelerator.identity.clientauth;
 
-import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -48,32 +47,27 @@ public class OBMutualTLSClientAuthenticator extends MutualTLSClientAuthenticator
     public boolean canAuthenticate(HttpServletRequest request, Map<String, List> bodyParams,
                                    OAuthClientAuthnContext oAuthClientAuthnContext) {
 
-        try {
-            String clientId = oAuthClientAuthnContext.getClientId();
-            if (StringUtils.isEmpty(clientId)) {
-                clientId = (super.getClientId(request, bodyParams, oAuthClientAuthnContext) == null
-                        && request.getParameter("client_id") != null) ? request.getParameter("client_id") :
-                        super.getClientId(request, bodyParams, oAuthClientAuthnContext);
-            }
-            if ((IdentityCommonUtil.getRegulatoryFromSPMetaData(clientId))) {
-                if (new IdentityCommonHelper().isMTLSAuthentication(request)) {
-                    log.debug("Client ID and a valid certificate was found in the request attribute hence returning " +
-                            "true.");
-                    return true;
-                } else {
-                    log.debug("Mutual TLS authenticator cannot handle this request. Client id is not available in " +
-                            "body params or valid certificate not found in request attributes.");
-                    return false;
-                }
-            } else {
-                return super.canAuthenticate(request, bodyParams, oAuthClientAuthnContext);
-            }
-        } catch (OpenBankingException | OAuthClientAuthnException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Mutual TLS authenticator cannot handle this request. " + e.getMessage());
-            }
+        // Look for client assertion in request parameters.
+        String clientAssertion = request.getParameter(IdentityCommonConstants.OAUTH_JWT_ASSERTION);
+        if (StringUtils.isNotEmpty(clientAssertion)) {
+            log.debug("Request cannot be handled by OBMutualTLSClientAuthenticator");
             return false;
         }
+
+        // Look for client assertion in bodyParams map.
+        if (bodyParams != null) {
+            List<?> clientAssertionList = bodyParams.get(IdentityCommonConstants.OAUTH_JWT_ASSERTION);
+            if (clientAssertionList != null && !clientAssertionList.isEmpty() && clientAssertionList.get(0) != null) {
+                String bodyParamsClientAssertion = clientAssertionList.get(0).toString();
+                if (StringUtils.isNotEmpty(bodyParamsClientAssertion)) {
+                    log.debug("Client assertion found in body parameters. Request cannot be handled by " +
+                            "OBMutualTLSClientAuthenticator.");
+                    return false;
+                }
+            }
+        }
+
+        return super.canAuthenticate(request, bodyParams, oAuthClientAuthnContext);
     }
 
     @Override

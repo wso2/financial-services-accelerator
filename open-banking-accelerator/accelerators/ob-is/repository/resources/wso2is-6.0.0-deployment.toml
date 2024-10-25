@@ -209,11 +209,31 @@ password = "${admin.password}"
 'header.X-WSO2-KEY-MANAGER' = "WSO2-IS"
 
 [[event_listener]]
+id = "ob_private_key_jwt_authenticator"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.accelerator.identity.clientauth.jwt.OBPrivateKeyJWTClientAuthenticator"
+order = "897"
+enable = true
+
+[event_listener.properties]
+ParEndpointAlias = "https://IS_HOSTNAME:9446/api/openbanking/push-authorization/par"
+
+[event.default_listener.mutual_tls_authenticator]
+enable = false
+
+[[event_listener]]
+id = "ob_mutual_tls_authenticator"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.accelerator.identity.clientauth.OBMutualTLSClientAuthenticator"
+order = "898"
+enable = true
+
+[[event_listener]]
 id = "private_key_jwt_authenticator"
 type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
 name = "org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt.PrivateKeyJWTClientAuthenticator"
 order = "899"
-
+enable = false
 
 [oauth.grant_type]
 iwa_ntlm.enable = false
@@ -280,10 +300,9 @@ allowed_auth_handlers = ["BasicAuthentication"]
 
 [[resource.access_control]]
 context = "(.*)/api/openbanking/push-authorization/(.*)"
-secure="true"
+secure="false"
 http_method="all"
 permissions=["/permission/admin"]
-allowed_auth_handlers = ["BasicAuthentication"]
 
 [[resource.access_control]]
 context = "(.*)/api/openbanking/event-notifications/(.*)"
@@ -318,15 +337,8 @@ custom_webapps = ["/keymanager-operations/"]
 [oauth.mutualtls]
 client_certificate_header = "x-wso2-mutual-auth-cert"
 
-[event.default_listener.mutual_tls_authenticator]
-enable = false
-
-[[event_listener]]
-id = "ob_mutual_tls_authenticator"
-type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
-name = "com.wso2.openbanking.accelerator.identity.clientauth.OBMutualTLSClientAuthenticator"
-order = "26"
-enable = true
+[oauth.oidc.id_token]
+signature_algorithm = "SHA256withPS"
 
 [oauth.token.validation]
 include_validation_context_as_jwt_in_reponse = "true"
@@ -391,8 +403,8 @@ connection_verification_timeout=1
 #=======================dcr configs======================
 [open_banking.dcr]
 validator = "com.wso2.openbanking.accelerator.identity.dcr.validation.DefaultRegistrationValidatorImpl"
-jwks_url_sandbox = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9b5usDpbNtmxDcTzs7GzKp.jwks"
-jwks_url_production = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9b5usDpbNtmxDcTzs7GzKp.jwks"
+jwks_url_sandbox = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/0015800001HQQrZAAX.jwks"
+jwks_url_production = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/0015800001HQQrZAAX.jwks"
 applicationupdater = "com.wso2.openbanking.accelerator.identity.listener.application.ApplicationUpdaterImpl"
 use_softwareIdForAppName = true
 append_registration_attributes_in_response = false
@@ -550,9 +562,19 @@ priority = 1
 class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.DefaultConsentRetrievalStep"
 priority = 2
 
+# Remove the DefaultConsentRetrievalStep and uncomment the SampleFapiPlainConsentRetrievalStep for FAPI Plain flow
+#[[open_banking.consent.authorize_steps.retrieve]]
+#class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.SampleFapiPlainConsentRetrievalStep"
+#priority = 2
+
 [[open_banking.consent.authorize_steps.persist]]
 class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.DefaultConsentPersistStep"
 priority = 1
+
+# Remove the DefaultConsentPersistStep and uncomment the SampleFapiPlainConsentPersistStep for FAPI Plain flow
+#[[open_banking.consent.authorize_steps.persist]]
+#class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.SampleFapiPlainConsentPersistStep"
+#priority = 1
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.accelerator.consent.extensions.manage.impl.DefaultConsentManageHandler"
@@ -593,6 +615,8 @@ api_manager_server_base_url="https://localhost:8243"
 
 [open_banking.identity.extensions]
 request_object_validator="com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.DefaultOBRequestObjectValidator"
+# Use the FapiRequestObjectValidator for FAPI plain flow validations
+#request_object_validator="com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.FapiRequestObjectValidator"
 push_auth_request_validator="com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.PushAuthRequestValidator"
 
 [open_banking.identity.application_information_webapp]

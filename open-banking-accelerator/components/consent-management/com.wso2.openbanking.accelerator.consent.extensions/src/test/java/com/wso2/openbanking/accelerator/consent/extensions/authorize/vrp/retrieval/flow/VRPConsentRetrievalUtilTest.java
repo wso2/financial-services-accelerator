@@ -183,13 +183,13 @@ public class VRPConsentRetrievalUtilTest extends PowerMockTestCase {
         Mockito.doReturn(true).when(consentDataMock).isRegulatory();
         Mockito.doReturn(request).when(consentDataMock).getSpQueryParams();
 
-        Mockito.doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(consentResourceMock).getCurrentStatus();
+        Mockito.doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(consentResourceMock).getCurrentStatus();
         Mockito.doReturn(ConsentExtensionConstants.ACCOUNTS).when(consentResourceMock).getConsentType();
         Mockito.doReturn(ConsentAuthorizeTestConstants.VALID_INITIATION_OBJECT).when(consentResourceMock)
                 .getReceipt();
         Mockito.doReturn(consentResourceMock).when(consentCoreServiceMock)
                 .getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        Mockito.doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(authorizationResourceMock)
+        Mockito.doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(authorizationResourceMock)
                 .getAuthorizationStatus();
         authResources.add(authorizationResourceMock);
         Mockito.doReturn(authResources).when(consentCoreServiceMock)

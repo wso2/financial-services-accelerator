@@ -63,6 +63,7 @@ public class OBHybridResponseTypeValidator extends TokenValidator {
             this.notAllowedParams.add(IdentityCommonConstants.REQUEST);
             openIdScope = IdentityCommonUtil.decodeRequestObjectAndGetKey(request, OAuth.OAUTH_SCOPE);
         } else {
+            this.requiredParams = new ArrayList(Arrays.asList(IdentityCommonConstants.REQUEST));
             openIdScope = request.getParameter(OAuth.OAUTH_SCOPE);
         }
 

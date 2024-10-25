@@ -47,7 +47,7 @@ public class PaymentFundsConfirmationPayloadValidator {
                                                         DetailedConsentResource detailedConsentResource) {
 
         //Consent Status Validation
-        if (!ConsentExtensionConstants.AUTHORIZED_STATUS
+        if (!ConsentExtensionConstants.AUTHORISED_STATUS
                 .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
             consentValidationResult.setErrorMessage(ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_CONSENT_STATUS);

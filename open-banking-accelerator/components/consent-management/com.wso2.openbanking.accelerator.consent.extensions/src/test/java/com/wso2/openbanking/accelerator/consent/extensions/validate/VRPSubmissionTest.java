@@ -154,7 +154,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -192,7 +192,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -278,7 +278,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -321,7 +321,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -363,7 +363,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -413,7 +413,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -456,7 +456,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -499,7 +499,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -543,7 +543,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -587,7 +587,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -618,7 +618,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -661,7 +661,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -706,7 +706,7 @@ public class VRPSubmissionTest {
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_DEBTOR_ACC).when(detailedConsentResourceMock)
                 .getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -750,7 +750,7 @@ public class VRPSubmissionTest {
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION_WITHOUT_CREDITOR_ACC).when(detailedConsentResourceMock).
                 getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -793,7 +793,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -824,7 +824,7 @@ public class VRPSubmissionTest {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
         doReturn(ConsentValidateTestConstants.VRP_INITIATION).when(detailedConsentResourceMock).getReceipt();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
 
         doReturn(getVRPConsentAttributes()).when(detailedConsentResourceMock).getConsentAttributes();
         doReturn(ConsentValidateTestConstants.CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
@@ -865,7 +865,7 @@ public class VRPSubmissionTest {
         doReturn(ConsentValidateTestConstants.CLIENT_ID).when(detailedConsentResourceMock).getClientID();
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(ConsentExtensionConstants.VRP).when(detailedConsentResourceMock).getConsentType();
-        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(ConsentExtensionConstants.AUTHORISED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
         doReturn(ConsentValidateTestConstants.INVALID_CONSENT_ID).when(detailedConsentResourceMock).getConsentID();
         doReturn(ConsentExtensionTestConstants.VALID_INITIATION_OBJECT).when(detailedConsentResourceMock)
                 .getReceipt();

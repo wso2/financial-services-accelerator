@@ -48,12 +48,18 @@
     <test name="auth-extensions-test">
         <classes>
             <class name="com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.DefaultOBRequestObjectValidatorTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.FapiRequestObjectValidatorTest"/>
             <class name="com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.RequestObjectValidatorTest"/>
         </classes>
     </test>
     <test name="ob-mutual-client-authenticator">
         <classes>
             <class name="com.wso2.openbanking.accelerator.identity.clientauth.OBMutualTLSClientAuthenticatorTest"/>
+        </classes>
+    </test>
+    <test name="ob-pvt-key-jwt-client-authenticator">
+        <classes>
+            <class name="com.wso2.openbanking.accelerator.identity.clientauth.jwt.OBPrivateKeyJWTClientAuthenticatorTest"/>
         </classes>
     </test>
     <test name="ob-oidc-claims-callback-handler">
