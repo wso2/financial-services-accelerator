@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -52,28 +53,36 @@ public class ConsentException extends RuntimeException {
                 errorMessage, null);
     }
 
+    public ConsentException(ResponseStatus status, JSONObject payload) {
+
+        this.status = status;
+        this.payload = payload;
+    }
+
     /**
      * This method is created to send error redirects in the authorization flow. The parameter validations are done
      * in compliance with the OAuth2 and OIDC specifications.
      *
-     * @param errorRedirectURI REQUIRED The base URI which the redirect should go to.
+     * @param errorURI         REQUIRED The base URI which the redirect should go to.
      * @param error            REQUIRED The error code of the error. Should be a supported value in OAuth2/OIDC
      * @param errorDescription OPTIONAL The description of the error.
      * @param state            REQUIRED if a "state" parameter was present in the client authorization request.
      */
-    public ConsentException(URI errorRedirectURI, AuthErrorCode error, String errorDescription, String state) {
+    public ConsentException(URI errorURI, AuthErrorCode error, String errorDescription, String state) {
 
-        if (errorRedirectURI != null && error != null) {
+        if (errorURI != null && error != null) {
             //add 302 as error code since this will be a redirect
+            errorRedirectURI = errorURI;
             this.status = ResponseStatus.FOUND;
-            this.payload = createDefaultErrorObject(errorRedirectURI, error.toString(), errorDescription, state);
+            this.payload = createDefaultErrorObject(errorURI, error.toString(), errorDescription, state);
         }
     }
 
     public JSONObject createDefaultErrorObject(URI redirectURI, String errorCode, String errorMessage, String state) {
 
         JSONObject error = new JSONObject();
-        error.put(ConsentExtensionConstants.ERROR, errorCode);
+        error.put(ConsentExtensionConstants.ERROR_CODE, errorCode);
+        error.put(ConsentExtensionConstants.ERROR_MSG, "Consent Management Error");
         error.put(ConsentExtensionConstants.ERROR_DESCRIPTION, errorMessage);
         if (state != null) {
             error.put(ConsentExtensionConstants.STATE, state);
@@ -81,7 +90,13 @@ public class ConsentException extends RuntimeException {
         if (redirectURI != null) {
             error.put(ConsentExtensionConstants.REDIRECT_URI, redirectURI.toString());
         }
-        return error;
+
+        JSONArray errorList = new JSONArray();
+        errorList.put(error);
+
+        JSONObject errorObj = new JSONObject();
+        errorObj.put(ConsentExtensionConstants.ERRORS, errorList);
+        return errorObj;
     }
 
     public JSONObject getPayload() {

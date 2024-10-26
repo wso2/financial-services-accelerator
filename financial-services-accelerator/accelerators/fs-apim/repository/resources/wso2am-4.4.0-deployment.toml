@@ -427,7 +427,7 @@ name = "org.wso2.financial.services.accelerator.gateway.executor.impl.error.hand
 priority = 1000
 
 [financial_services.gateway.consent.validation]
-endpoint="https://IS_HOSTNAME:9446/api/fs/consent/validate"
+endpoint="https://IS_HOSTNAME:9446/api/fs/consent/validate/validate"
 
 [financial_services.gateway.cache]
 cache_access_expiry_minutes=60
