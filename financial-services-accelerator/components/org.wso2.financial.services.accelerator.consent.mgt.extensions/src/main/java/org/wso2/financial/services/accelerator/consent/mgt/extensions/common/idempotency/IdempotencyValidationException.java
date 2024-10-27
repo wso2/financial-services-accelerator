@@ -16,14 +16,14 @@
  * under the License.
  */
 
-package com.wso2.openbanking.accelerator.consent.extensions.common.idempotency;
+package org.wso2.financial.services.accelerator.consent.mgt.extensions.common.idempotency;
 
-import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 
 /**
  * Used for handling exceptions in Idempotency Validation.
  */
-public class IdempotencyValidationException extends OpenBankingException {
+public class IdempotencyValidationException extends ConsentManagementException {
 
     public IdempotencyValidationException(String message) {
         super(message);
