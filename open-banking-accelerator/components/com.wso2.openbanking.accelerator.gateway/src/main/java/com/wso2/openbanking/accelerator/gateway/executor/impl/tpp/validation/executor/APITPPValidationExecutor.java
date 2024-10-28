@@ -23,6 +23,8 @@ import com.wso2.openbanking.accelerator.common.exception.CertificateValidationEx
 import com.wso2.openbanking.accelerator.common.exception.TPPValidationException;
 import com.wso2.openbanking.accelerator.common.model.PSD2RoleEnum;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
+import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
@@ -111,6 +113,8 @@ public class APITPPValidationExecutor implements OpenBankingGatewayExecutor {
                     final Map<String, List<String>> allowedScopes = GatewayDataHolder.getInstance()
                             .getOpenBankingConfigurationService().getAllowedScopes();
 
+                    CertificateContent certContent = CertificateContentExtractor.extract(transportCert.get());
+                    List<String> certRoles = certContent.getPspRoles();
                     List<PSD2RoleEnum> requiredPSD2Roles = getRolesFromScopes(allowedScopes, scopes);
 
                     if (requiredPSD2Roles.isEmpty()) {
@@ -118,7 +122,8 @@ public class APITPPValidationExecutor implements OpenBankingGatewayExecutor {
                                 "continue with TPP validation");
                     }
 
-                    if (CertValidationService.getInstance().validateTppRoles(transportCert.get(), requiredPSD2Roles)) {
+                    if (CertValidationService.getInstance().validateTppRoles(transportCert.get(), requiredPSD2Roles,
+                            certRoles)) {
                         log.debug("TPP validation service returned a success response");
                     } else {
                         log.error("TPP validation service returned invalid TPP status");

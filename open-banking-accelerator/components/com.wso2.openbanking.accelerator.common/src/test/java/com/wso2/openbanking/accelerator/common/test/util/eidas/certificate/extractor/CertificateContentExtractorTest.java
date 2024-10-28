@@ -52,6 +52,19 @@ public class CertificateContentExtractorTest {
     }
 
     @Test
+    public void testExtractPSD2RoleFromCert() throws Exception {
+
+        X509Certificate cert = CommonTestUtil.parseTransportCert(CommonTestUtil.EIDAS_CERT).orElse(null);
+
+        CertificateContent extract = CertificateContentExtractor.extract(cert);
+
+        Assert.assertTrue(extract.getPsd2Roles().size() == 3);
+        Assert.assertTrue(extract.getPspRoles().contains("AISP"));
+        Assert.assertTrue(extract.getPspRoles().contains("PISP"));
+        Assert.assertTrue(extract.getPspRoles().contains("CBPII"));
+    }
+
+    @Test
     public void testExtractInvalidCertificate() throws CertificateException {
 
         X509Certificate cert = CommonTestUtil

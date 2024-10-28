@@ -180,8 +180,8 @@ public class CertValidationServiceTest {
     @Test(description = "when cert roles and scope roles are equal, then return true")
     public void testIsRequiredRolesMatchWithValidScopes() throws Exception {
         boolean isValid = WhiteboxImpl.invokeMethod(this.certValidationService,
-                "isRequiredRolesMatchWithScopes", eidasPeerCertificate,
-                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP));
+                "isRequiredRolesMatchWithScopes",
+                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP), Arrays.asList("AISP", "PISP"));
 
         Assert.assertTrue(isValid);
     }
@@ -190,8 +190,9 @@ public class CertValidationServiceTest {
     expectedExceptions = {TPPValidationException.class})
     public void testIsRequiredRolesMatchWithInvalidScopes() throws Exception {
         WhiteboxImpl.invokeMethod(this.certValidationService,
-                "isRequiredRolesMatchWithScopes", eidasPeerCertificate,
-                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP, PSD2RoleEnum.ASPSP));
+                "isRequiredRolesMatchWithScopes",
+                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP, PSD2RoleEnum.ASPSP),
+                Arrays.asList("abc", "def", "ghi"));
     }
 
     @Test(description = "When tpp certificate and roles are valid, then should return true")
@@ -217,7 +218,7 @@ public class CertValidationServiceTest {
                 .thenReturn(tppValidationCache);
 
         Assert.assertTrue(certValidationService.validateTppRoles(eidasPeerCertificate,
-                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP)));
+                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP), Arrays.asList("AISP", "PISP")));
     }
 
     @Test(description = "When role is failing, then should return false ")
@@ -247,7 +248,7 @@ public class CertValidationServiceTest {
                 .thenReturn(tppValidationCache);
 
         Assert.assertFalse(certValidationService.validateTppRoles(eidasPeerCertificate,
-                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP)));
+                Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP), Arrays.asList("AISP", "PISP")));
     }
 
     @Test(description = "When TPPValidationImpl path configuration is empty, then should throw TPPValidationException",
@@ -261,7 +262,8 @@ public class CertValidationServiceTest {
                 .thenReturn(tppCertValidatorDataHolder);
 
         Assert.assertFalse(certValidationService
-                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP)));
+                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP),
+                        Arrays.asList("AISP", "PISP")));
     }
 
     @Test(description = "When TPPValidationImpl path configuration is invalid, then throw TPPValidationException",
@@ -276,7 +278,8 @@ public class CertValidationServiceTest {
                 .thenReturn(tppCertValidatorDataHolder);
 
         Assert.assertFalse(certValidationService
-                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP)));
+                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP),
+                        Arrays.asList("AISP", "PISP")));
     }
 
     @Test(description = "When tpp certificate and roles are valid, then should return true")
@@ -290,7 +293,8 @@ public class CertValidationServiceTest {
                 .thenReturn(tppCertValidatorDataHolder);
 
         Assert.assertTrue(certValidationService
-                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP)));
+                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP),
+                        Arrays.asList("AISP", "PISP")));
     }
 
     @Test(description = "When both tppValidationEnabled and psd2RoleValidationEnabled are false, " +
@@ -304,7 +308,8 @@ public class CertValidationServiceTest {
                 .thenReturn(tppCertValidatorDataHolder);
 
         Assert.assertTrue(certValidationService
-                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP)));
+                .validateTppRoles(eidasPeerCertificate, Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP),
+                        Arrays.asList("AISP", "PISP")));
     }
 
     @Test(description = "when valid certificate and roles provided, then return true")
@@ -312,7 +317,8 @@ public class CertValidationServiceTest {
         List<PSD2RoleEnum> requiredPSD2Roles = Arrays.asList(PSD2RoleEnum.AISP, PSD2RoleEnum.PISP);
 
         boolean isValid = WhiteboxImpl.invokeMethod(this.certValidationService,
-                "isRequiredRolesMatchWithScopes", eidasPeerCertificate, requiredPSD2Roles);
+                "isRequiredRolesMatchWithScopes", requiredPSD2Roles,
+                Arrays.asList("AISP", "PISP"));
 
         Assert.assertTrue(isValid);
     }
@@ -321,7 +327,8 @@ public class CertValidationServiceTest {
             expectedExceptions = {TPPValidationException.class})
     public void testIsRequiredRolesMatchWithScopesWithInvalidRoles() throws Exception {
         WhiteboxImpl.invokeMethod(this.certValidationService,
-                "isRequiredRolesMatchWithScopes", eidasPeerCertificate, Collections.singletonList(PSD2RoleEnum.ASPSP));
+                "isRequiredRolesMatchWithScopes",
+                Collections.singletonList(PSD2RoleEnum.ASPSP), Arrays.asList("abc"));
     }
 
     @Test(description = "when valid certificate provided, then should return GOOD revocation status")

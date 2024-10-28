@@ -22,8 +22,6 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
 import com.wso2.openbanking.accelerator.common.exception.TPPValidationException;
 import com.wso2.openbanking.accelerator.common.model.PSD2RoleEnum;
-import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
-import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
 import com.wso2.openbanking.accelerator.gateway.cache.GatewayCacheKey;
 import com.wso2.openbanking.accelerator.gateway.cache.TppValidationCache;
 import com.wso2.openbanking.accelerator.gateway.executor.model.RevocationStatus;
@@ -160,7 +158,8 @@ public class CertValidationService {
         }
     }
 
-    public boolean validateTppRoles(X509Certificate tppCertificate, List<PSD2RoleEnum> requiredPSD2Roles)
+    public boolean validateTppRoles(X509Certificate tppCertificate, List<PSD2RoleEnum> requiredPSD2Roles,
+                                    List<String> certRoles)
             throws TPPValidationException, CertificateValidationException {
 
         if (TPPCertValidatorDataHolder.getInstance().isTppValidationEnabled()) {
@@ -201,7 +200,7 @@ public class CertValidationService {
                         "class implementation is empty");
             }
         } else if (TPPCertValidatorDataHolder.getInstance().isPsd2RoleValidationEnabled()) {
-            return isRequiredRolesMatchWithScopes(tppCertificate, requiredPSD2Roles);
+            return isRequiredRolesMatchWithScopes(requiredPSD2Roles, certRoles);
         } else {
             throw new TPPValidationException("Both TPP validation and PSD2 role validation services are disabled");
         }
@@ -211,26 +210,22 @@ public class CertValidationService {
     /**
      * Validate whether the psd2 roles match with the scopes.
      *
-     * @param tppCertificate    eidas certificate with roles
      * @param requiredPSD2Roles client requested roles
      * @return true if all required values are present in the certificate
      */
-    private boolean isRequiredRolesMatchWithScopes(X509Certificate tppCertificate
-            , List<PSD2RoleEnum> requiredPSD2Roles) throws CertificateValidationException, TPPValidationException {
-
-
-        // Extract the certContent from the eidas certificate (i.e. roles, authorization number, etc)
-        CertificateContent certContent = CertificateContentExtractor.extract(tppCertificate);
+    private boolean isRequiredRolesMatchWithScopes(
+            List<PSD2RoleEnum> requiredPSD2Roles, List<String> certRoles)
+            throws TPPValidationException {
 
         if (log.isDebugEnabled()) {
             log.debug("The TPP is requesting roles: " + requiredPSD2Roles);
             log.debug("Provided PSD2 eIDAS certificate" +
-                    " contains the role: " + certContent.getPspRoles());
+                    " contains the role: " + certRoles);
         }
 
         // Validate whether the eIDAS certificate contains the required roles that matches with the token scopes.
         for (PSD2RoleEnum requiredRole : requiredPSD2Roles) {
-            if (!certContent.getPspRoles().contains(requiredRole.name())) {
+            if (!certRoles.contains(requiredRole.name())) {
                 // Return false if any one of the roles that are bound to the scope is not present in the PSD2
                 // role list of the client eIDAS certificate.
                 final String errorMsg = "The PSD2 eIDAS certificate does not contain the required role "

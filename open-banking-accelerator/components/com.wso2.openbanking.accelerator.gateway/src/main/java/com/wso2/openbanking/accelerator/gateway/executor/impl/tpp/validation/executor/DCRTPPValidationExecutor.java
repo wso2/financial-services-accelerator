@@ -24,6 +24,8 @@ import com.wso2.openbanking.accelerator.common.exception.TPPValidationException;
 import com.wso2.openbanking.accelerator.common.model.PSD2RoleEnum;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
+import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
+import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
@@ -50,6 +52,7 @@ import java.util.Optional;
  * TPP validation handler used to validate the TPP status using external validation services
  * for DCR API requests.
  */
+@Deprecated
 public class DCRTPPValidationExecutor implements OpenBankingGatewayExecutor {
 
     private static final String BODY = "body";
@@ -86,6 +89,10 @@ public class DCRTPPValidationExecutor implements OpenBankingGatewayExecutor {
                         return;
                     }
 
+                    CertificateContent certContent = CertificateContentExtractor.extract(transportCert.get());
+                    /* Getting PSD2 roles here because UK SSA contains the roles in AISP, PISP, CBPII, etc format.
+                       This class will be moved to the UK Toolkit in the future. */
+                    List<String> certRoles = certContent.getPsd2Roles();
                     String softwareStatement = getSSAFromPayload(obapiRequestContext.getRequestPayload());
                     List<PSD2RoleEnum> requiredPSD2Roles = getRolesFromSSA(softwareStatement);
 
@@ -94,7 +101,8 @@ public class DCRTPPValidationExecutor implements OpenBankingGatewayExecutor {
                                 "continue with TPP validation");
                     }
 
-                    if (CertValidationService.getInstance().validateTppRoles(transportCert.get(), requiredPSD2Roles)) {
+                    if (CertValidationService.getInstance().validateTppRoles(transportCert.get(), requiredPSD2Roles,
+                            certRoles)) {
                         log.debug("TPP validation service returned a success response");
                     } else {
                         log.error("TPP validation service returned invalid TPP status");
