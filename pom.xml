@@ -374,6 +374,11 @@
                 <version>${javax.ws.rs-api.version}</version>
             </dependency>
             <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>jsr311-api</artifactId>
+                <version>${javax.ws.rs.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-core</artifactId>
                 <version>${org.apache.cxf.version}</version>
@@ -580,6 +585,7 @@
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <swagger-jaxrs.version>1.6.1</swagger-jaxrs.version>
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
+        <javax.ws.rs.version>1.1.1</javax.ws.rs.version>
         <spring-web.version>5.1.2.RELEASE</spring-web.version>
         <spring-web-test.version>2.5</spring-web-test.version>
         <org.apache.cxf.version>3.3.7</org.apache.cxf.version>
