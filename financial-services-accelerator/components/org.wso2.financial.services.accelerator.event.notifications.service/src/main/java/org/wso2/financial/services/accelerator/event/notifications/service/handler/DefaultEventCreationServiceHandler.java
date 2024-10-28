@@ -24,11 +24,11 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventCreationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.NotificationCreationDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventCreationResponse;
-import org.wso2.financial.services.accelerator.event.notifications.service.EventCreationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 /**

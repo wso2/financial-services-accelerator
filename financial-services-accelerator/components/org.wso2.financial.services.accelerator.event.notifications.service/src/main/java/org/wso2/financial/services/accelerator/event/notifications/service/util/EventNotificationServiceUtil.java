@@ -31,11 +31,11 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationGenerator;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventNotificationErrorDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler;
-import org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationGenerator;
 
 import java.util.Optional;
 

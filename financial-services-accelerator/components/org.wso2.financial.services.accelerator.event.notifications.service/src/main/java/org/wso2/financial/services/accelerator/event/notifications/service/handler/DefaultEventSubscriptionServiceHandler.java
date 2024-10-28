@@ -22,12 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventSubscriptionDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscription;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscriptionResponse;
-import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 import java.util.ArrayList;

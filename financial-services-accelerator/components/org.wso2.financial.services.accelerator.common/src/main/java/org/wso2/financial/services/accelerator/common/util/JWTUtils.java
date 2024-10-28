@@ -205,6 +205,7 @@ public class JWTUtils {
      *                                  parsable JWT
      *
      */
+    @Generated(message = "Excluding from code coverage as it require external call")
     public static SignedJWT getSignedJWT(String jwtString) throws ParseException {
 
         if (isValidJWSFormat(jwtString)) {
@@ -384,6 +385,7 @@ public class JWTUtils {
      * @param privateKey The private key for the JWT to be signed with
      * @return String signed JWT
      */
+    @Generated(message = "Excluding from code coverage as it require external call")
     public static String generateJWT(String payload, Key privateKey) {
 
         if (privateKey == null || payload == null) {
