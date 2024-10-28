@@ -215,7 +215,7 @@
             {% if financial_services.event.notifications.event_notification_generator is defined %}
             <NotificationGenerator>{{financial_services.event.notifications.event_notification_generator}}</NotificationGenerator>
             {% else %}
-            <NotificationGenerator>com.wso2.openbanking.accelerator.event.notifications.service.service.DefaultEventNotificationGenerator</NotificationGenerator>
+            <NotificationGenerator>org.wso2.financial.services.accelerator.event.notifications.service.DefaultEventNotificationGenerator</NotificationGenerator>
             {% endif %}
             {% if financial_services.event.notifications.token_issuer is defined %}
             <TokenIssuer>{{financial_services.event.notifications.token_issuer}}</TokenIssuer>
@@ -231,17 +231,17 @@
         {% if financial_services.event.notifications.event_creation_handler is defined %}
         <EventCreationHandler>{{financial_services.event.notifications.event_creation_handler}}</EventCreationHandler>
         {% else %}
-        <EventCreationHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler</EventCreationHandler>
+        <EventCreationHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler</EventCreationHandler>
         {% endif %}
         {% if financial_services.event.notifications.event_polling_handler is defined %}
         <EventPollingHandler>{{financial_services.event.notifications.event_polling_handler}}</EventPollingHandler>
         {% else %}
-        <EventPollingHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler</EventPollingHandler>
+        <EventPollingHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler</EventPollingHandler>
         {% endif %}
         {% if financial_services.event.notifications.event_subscription_handler is defined %}
         <EventSubscriptionHandler>{{financial_services.event.notifications.event_subscription_handler}}</EventSubscriptionHandler>
         {% else %}
-        <EventSubscriptionHandler>com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
+        <EventSubscriptionHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
         {% endif %}
         <PollingResponseParams>
             {% if financial_services.event.notifications.set_sub_claim_included is defined%}
@@ -304,8 +304,8 @@
             {% if financial_services.event.notifications.realtime.event_notification_request_generator is defined %}
             <RequestGenerator>{{financial_services.event.notifications.realtime.event_notification_request_generator}}</RequestGenerator>
             {% else %}
-            <RequestGenerator>com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
+            <RequestGenerator>org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
             {% endif %}
         </RealtimeEventNotification>
-    </OBEventNotifications>
+    </EventNotifications>
 </Server>

@@ -27,7 +27,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.dto.E
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscription;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscriptionResponse;
-import org.wso2.financial.services.accelerator.event.notifications.service.service.EventSubscriptionService;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 import java.util.ArrayList;

@@ -718,7 +718,7 @@ public final class FinancialServicesConfigParser {
      *
      * @return integer fix size to set the Thread Pool size in the real-time event notification sender
      */
-    public int getEventNotificationThreadpoolSize() {
+    public int getEventNotificationThreadPoolSize() {
 
         Optional<String> config = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.EVENT_NOTIFICATION_THREAD_POOL_SIZE);

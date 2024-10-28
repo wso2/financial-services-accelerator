@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.event.notifications.service.service;
+package org.wso2.financial.services.accelerator.event.notifications.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.logging.Log;

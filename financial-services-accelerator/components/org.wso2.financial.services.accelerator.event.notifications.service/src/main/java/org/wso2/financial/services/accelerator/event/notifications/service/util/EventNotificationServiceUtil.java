@@ -35,7 +35,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.const
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventNotificationErrorDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler;
-import org.wso2.financial.services.accelerator.event.notifications.service.service.EventNotificationGenerator;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationGenerator;
 
 import java.util.Optional;
 

@@ -31,7 +31,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.model
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventPolling;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventPollingResponse;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.NotificationError;
-import org.wso2.financial.services.accelerator.event.notifications.service.service.EventPollingService;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventPollingService;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 import java.util.Locale;

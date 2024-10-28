@@ -160,69 +160,30 @@
         </KeyManagerAdditionalProperties>
     </KeyManager>
 
-    <FSEventNotifications>
-        <TokenIssuer>www.wso2.com</TokenIssuer>
-        <NumberOfSetsToReturn>5</NumberOfSetsToReturn>
+    <EventNotifications>
+        <NotificationGeneration>
+            <NotificationGenerator>org.wso2.financial.services.accelerator.event.notifications.service.DefaultEventNotificationGenerator</NotificationGenerator>
+            <TokenIssuer>www.wso2.com</TokenIssuer>
+            <NumberOfSetsToReturn>5</NumberOfSetsToReturn>
+        </NotificationGeneration>
         <EventCreationHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler</EventCreationHandler>
         <EventPollingHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler</EventPollingHandler>
-        <NotificationGenerator>org.wso2.financial.services.accelerator.event.notifications.service.service.DefaultEventNotificationGenerator</NotificationGenerator>
         <EventSubscriptionHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
         <PollingResponseParams>
-            <IsSubClaimAvailable>true</IsSubClaimAvailable>
-            <IsTxnClaimAvailable>true</IsTxnClaimAvailable>
-            <IsToeClaimAvailable>true</IsToeClaimAvailable>
+            <IsSubClaimAvailable>false</IsSubClaimAvailable>
+            <IsTxnClaimAvailable>false</IsTxnClaimAvailable>
+            <IsToeClaimAvailable>false</IsToeClaimAvailable>
         </PollingResponseParams>
-    </FSEventNotifications>
-
-    <JwsSignatureConfiguration>
-        <SignatureValidation>
+        <Realtime>
             <Enable>false</Enable>
-            <AllowedAlgorithms>
-                <Algorithm>PS256</Algorithm>
-                <Algorithm>ES256</Algorithm>
-            </AllowedAlgorithms>
-        </SignatureValidation>
-        <ResponseSigning>
-            <Enable>false</Enable>
-            <AllowedAlgorithms>
-                <Algorithm>PS256</Algorithm>
-                <Algorithm>ES256</Algorithm>
-            </AllowedAlgorithms>
-        </ResponseSigning>
-    </JwsSignatureConfiguration>
-
-    <FSIdentityRetriever>
-        <Server>
-            <SigningCertificateAlias>wso2carbon</SigningCertificateAlias>
-            <SandboxSigningCertificateAlias>wso2carbon-sandbox</SandboxSigningCertificateAlias>
-            <SigningCertificateKid>1234</SigningCertificateKid>
-            <SandboxCertificateKid>5678</SandboxCertificateKid>
-        </Server>
-        <JWKSRetriever>
-            <SizeLimit>51200</SizeLimit>
-            <ConnectionTimeout>2000</ConnectionTimeout>
-            <ReadTimeout>2000</ReadTimeout>
-        </JWKSRetriever>
-    </FSIdentityRetriever>
-
-    <Event>
-        <QueueSize></QueueSize>
-        <WorkerThreadCount></WorkerThreadCount>
-        <EventExecutors>
-            <Executor class="org.wso2.financial.services.accelerator.common.test.CustomEventExecutor1" priority="1"/>
-            <Executor class="org.wso2.financial.services.accelerator.common.test.CustomEventExecutor2" priority="2"/>
-        </EventExecutors>
-    </Event>
-
-    <RealtimeEventNotification>
-        <Enable>true</Enable>
-        <PeriodicCronExpression>0 0/1 0 ? * * *</PeriodicCronExpression>
-        <TimeoutInSeconds>60</TimeoutInSeconds>
-        <MaxRetries>5</MaxRetries>
-        <InitialBackoffTimeInSeconds>60</InitialBackoffTimeInSeconds>
-        <BackoffFunction>EX</BackoffFunction>
-        <CircuitBreakerOpenTimeoutInSeconds>600</CircuitBreakerOpenTimeoutInSeconds>
-        <EventNotificationThreadPoolSize>20</EventNotificationThreadPoolSize>
-        <RequestGenerator>org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
-    </RealtimeEventNotification>
+            <PeriodicCronExpression>0 0/1 0 ? * * *</PeriodicCronExpression>
+            <TimeoutInSeconds>60</TimeoutInSeconds>
+            <MaxRetries>5</MaxRetries>
+            <InitialBackoffTimeInSeconds>60</InitialBackoffTimeInSeconds>
+            <BackoffFunction>EX</BackoffFunction>
+            <CircuitBreakerOpenTimeoutInSeconds>600</CircuitBreakerOpenTimeoutInSeconds>
+            <EventNotificationThreadPoolSize>20</EventNotificationThreadPoolSize>
+            <RequestGenerator>org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
+        </Realtime>
+    </EventNotifications>
 </Server>

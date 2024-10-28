@@ -28,7 +28,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.const
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.NotificationCreationDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventCreationResponse;
-import org.wso2.financial.services.accelerator.event.notifications.service.service.EventCreationService;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventCreationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 /**

@@ -37,6 +37,6 @@
         <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>
     </Match>
     <Match>
-        <Class name="org.wso2.financial.services.accelerator.event.notifications.service.service.EventPollingService"/>
+        <Class name="org.wso2.financial.services.accelerator.event.notifications.service.EventPollingService"/>
     </Match>
 </FindBugsFilter>

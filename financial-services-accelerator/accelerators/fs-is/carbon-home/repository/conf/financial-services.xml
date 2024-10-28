@@ -82,4 +82,31 @@
         <MaxConnections>2000</MaxConnections>
         <MaxConnectionsPerRoute>1500</MaxConnectionsPerRoute>
     </HTTPConnectionPool>
+    <EventNotifications>
+        <NotificationGeneration>
+            <NotificationGenerator>org.wso2.financial.services.accelerator.event.notifications.service.DefaultEventNotificationGenerator</NotificationGenerator>
+            <TokenIssuer>www.wso2.com</TokenIssuer>
+            <NumberOfSetsToReturn>5</NumberOfSetsToReturn>
+        </NotificationGeneration>
+        <EventCreationHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler</EventCreationHandler>
+        <EventPollingHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler</EventPollingHandler>
+        <EventSubscriptionHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
+        <PollingResponseParams>
+            <IsSubClaimAvailable>true</IsSubClaimAvailable>
+            <IsTxnClaimAvailable>{{financial_services.event.notifications.set_txn_claim_included}}</IsTxnClaimAvailable>
+            <IsTxnClaimAvailable>true</IsTxnClaimAvailable>
+            <IsToeClaimAvailable>true</IsToeClaimAvailable>
+        </PollingResponseParams>
+        <Realtime>
+            <Enable>false</Enable>
+            <PeriodicCronExpression>0 0/1 0 ? * * *</PeriodicCronExpression>
+            <TimeoutInSeconds>60</TimeoutInSeconds>
+            <MaxRetries>5</MaxRetries>
+            <InitialBackoffTimeInSeconds>60</InitialBackoffTimeInSeconds>
+            <BackoffFunction>EX</BackoffFunction>
+            <CircuitBreakerOpenTimeoutInSeconds>600</CircuitBreakerOpenTimeoutInSeconds>
+            <EventNotificationThreadPoolSize>20</EventNotificationThreadPoolSize>
+            <RequestGenerator>org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
+        </Realtime>
+    </EventNotifications>
 </Server>
