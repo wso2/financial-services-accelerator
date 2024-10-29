@@ -42,55 +42,55 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
     /**
      * Method to handle pre request.
      *
-     * @param fsapiRequestContext FS request context object
+     * @param fsApiRequestContext FS request context object
      */
     @Override
-    public void preProcessRequest(FSAPIRequestContext fsapiRequestContext) {
+    public void preProcessRequest(FSAPIRequestContext fsApiRequestContext) {
 
-        handleRequestError(fsapiRequestContext);
+        handleRequestError(fsApiRequestContext);
 
     }
 
     /**
      * Method to handle post request.
      *
-     * @param fsapiRequestContext FS request context object
+     * @param fsApiRequestContext FS request context object
      */
     @Override
-    public void postProcessRequest(FSAPIRequestContext fsapiRequestContext) {
+    public void postProcessRequest(FSAPIRequestContext fsApiRequestContext) {
 
-        handleRequestError(fsapiRequestContext);
+        handleRequestError(fsApiRequestContext);
     }
 
     /**
      * Method to handle pre response.
      *
-     * @param fsapiResponseContext FS response context object
+     * @param fsApiResponseContext FS response context object
      */
     @Override
-    public void preProcessResponse(FSAPIResponseContext fsapiResponseContext) {
+    public void preProcessResponse(FSAPIResponseContext fsApiResponseContext) {
 
-        handleResponseError(fsapiResponseContext);
+        handleResponseError(fsApiResponseContext);
     }
 
     /**
      * Method to handle post response.
      *
-     * @param fsapiResponseContext FS response context object
+     * @param fsApiResponseContext FS response context object
      */
     @Override
-    public void postProcessResponse(FSAPIResponseContext fsapiResponseContext) {
+    public void postProcessResponse(FSAPIResponseContext fsApiResponseContext) {
 
-        handleResponseError(fsapiResponseContext);
+        handleResponseError(fsApiResponseContext);
     }
 
-    private void handleRequestError(FSAPIRequestContext fsapiRequestContext) {
+    private void handleRequestError(FSAPIRequestContext fsApiRequestContext) {
 
-        if (!fsapiRequestContext.isError()) {
+        if (!fsApiRequestContext.isError()) {
             return;
         }
         JSONObject payload = new JSONObject();
-        ArrayList<FSExecutorError> errors = fsapiRequestContext.getErrors();
+        ArrayList<FSExecutorError> errors = fsApiRequestContext.getErrors();
         JSONArray errorList = getErrorJSON(errors);
         HashSet<String> statusCodes = new HashSet<>();
 
@@ -100,31 +100,31 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
 
         payload.put(ERRORS_TAG, errorList);
         if (errorList.length() != 0) {
-            fsapiRequestContext.setModifiedPayload(payload.toString());
-            Map<String, String> addedHeaders = fsapiRequestContext.getAddedHeaders();
+            fsApiRequestContext.setModifiedPayload(payload.toString());
+            Map<String, String> addedHeaders = fsApiRequestContext.getAddedHeaders();
             addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
-            fsapiRequestContext.setAddedHeaders(addedHeaders);
+            fsApiRequestContext.setAddedHeaders(addedHeaders);
         }
         int statusCode;
-        if (fsapiRequestContext.getContextProps().containsKey(GatewayConstants.ERROR_STATUS_PROP)) {
-            statusCode = Integer.parseInt(fsapiRequestContext
+        if (fsApiRequestContext.getContextProps().containsKey(GatewayConstants.ERROR_STATUS_PROP)) {
+            statusCode = Integer.parseInt(fsApiRequestContext
                     .getContextProperty(GatewayConstants.ERROR_STATUS_PROP).toString());
         } else if (isAnyClientErrors(statusCodes)) {
             statusCode = HttpStatus.SC_BAD_REQUEST;
         } else {
             statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
         }
-        fsapiRequestContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP,
+        fsApiRequestContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP,
                 String.valueOf(statusCode));
     }
 
-    private void handleResponseError(FSAPIResponseContext fsapiResponseContext) {
+    private void handleResponseError(FSAPIResponseContext fsApiResponseContext) {
 
-        if (!fsapiResponseContext.isError()) {
+        if (!fsApiResponseContext.isError()) {
             return;
         }
         JSONObject payload = new JSONObject();
-        ArrayList<FSExecutorError> errors = fsapiResponseContext.getErrors();
+        ArrayList<FSExecutorError> errors = fsApiResponseContext.getErrors();
         JSONArray errorList = getErrorJSON(errors);
         HashSet<String> statusCodes = new HashSet<>();
 
@@ -133,20 +133,20 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
         }
 
         payload.put(ERRORS_TAG, errorList);
-        fsapiResponseContext.setModifiedPayload(payload.toString());
-        Map<String, String> addedHeaders = fsapiResponseContext.getAddedHeaders();
+        fsApiResponseContext.setModifiedPayload(payload.toString());
+        Map<String, String> addedHeaders = fsApiResponseContext.getAddedHeaders();
         addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
-        fsapiResponseContext.setAddedHeaders(addedHeaders);
+        fsApiResponseContext.setAddedHeaders(addedHeaders);
         int statusCode;
-        if (fsapiResponseContext.getContextProps().containsKey(GatewayConstants.ERROR_STATUS_PROP)) {
-            statusCode = Integer.parseInt(fsapiResponseContext
+        if (fsApiResponseContext.getContextProps().containsKey(GatewayConstants.ERROR_STATUS_PROP)) {
+            statusCode = Integer.parseInt(fsApiResponseContext
                     .getContextProperty(GatewayConstants.ERROR_STATUS_PROP).toString());
         } else if (isAnyClientErrors(statusCodes)) {
             statusCode = HttpStatus.SC_BAD_REQUEST;
         } else {
             statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
         }
-        fsapiResponseContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP,
+        fsApiResponseContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP,
                 String.valueOf(statusCode));
     }
 

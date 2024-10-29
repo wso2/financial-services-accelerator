@@ -87,42 +87,42 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
     /**
      * Method to handle request.
      *
-     * @param fsapiRequestContext FS request context object
+     * @param fsApiRequestContext FS request context object
      */
     @Generated(message = "Unit testable components are covered")
     @Override
-    public void preProcessRequest(FSAPIRequestContext fsapiRequestContext) {
+    public void preProcessRequest(FSAPIRequestContext fsApiRequestContext) {
 
     }
 
     /**
      * Method to handle post request.
      *
-     * @param fsapiRequestContext FS request context object
+     * @param fsApiRequestContext FS request context object
      */
     @Override
-    public void postProcessRequest(FSAPIRequestContext fsapiRequestContext) {
+    public void postProcessRequest(FSAPIRequestContext fsApiRequestContext) {
         // Consent ID is required for consent enforcement. If the consent ID is null, we are assume this is a
         // pre-consent creation call. Therefore consent enforcement is not required.
-        if (fsapiRequestContext.isError() || fsapiRequestContext.getConsentId() == null) {
+        if (fsApiRequestContext.isError() || fsApiRequestContext.getConsentId() == null) {
             return;
         }
 
-        Map<String, String> requestHeaders = fsapiRequestContext.getMsgInfo().getHeaders();
+        Map<String, String> requestHeaders = fsApiRequestContext.getMsgInfo().getHeaders();
         Map<String, Object> additionalParams = new HashMap<>();
-        additionalParams.put(ELECTED_RESOURCE_TAG, fsapiRequestContext.getMsgInfo().getElectedResource());
-        additionalParams.put(CONSENT_ID_TAG, fsapiRequestContext.getConsentId());
-        additionalParams.put(USER_ID_TAG, fsapiRequestContext.getApiRequestInfo().getUsername());
-        additionalParams.put(CLIENT_ID_TAG, fsapiRequestContext.getApiRequestInfo().getConsumerKey());
-        additionalParams.put(RESOURCE_PARAMS, getResourceParamMap(fsapiRequestContext));
+        additionalParams.put(ELECTED_RESOURCE_TAG, fsApiRequestContext.getMsgInfo().getElectedResource());
+        additionalParams.put(CONSENT_ID_TAG, fsApiRequestContext.getConsentId());
+        additionalParams.put(USER_ID_TAG, fsApiRequestContext.getApiRequestInfo().getUsername());
+        additionalParams.put(CLIENT_ID_TAG, fsApiRequestContext.getApiRequestInfo().getConsumerKey());
+        additionalParams.put(RESOURCE_PARAMS, getResourceParamMap(fsApiRequestContext));
 
         JSONObject validationRequest;
-        if (StringUtils.isNotBlank(fsapiRequestContext.getModifiedPayload())) {
+        if (StringUtils.isNotBlank(fsApiRequestContext.getModifiedPayload())) {
             validationRequest = createValidationRequestPayload(requestHeaders,
-                    fsapiRequestContext.getModifiedPayload(), additionalParams);
+                    fsApiRequestContext.getModifiedPayload(), additionalParams);
         } else {
             validationRequest = createValidationRequestPayload(requestHeaders,
-                    fsapiRequestContext.getRequestPayload(), additionalParams);
+                    fsApiRequestContext.getRequestPayload(), additionalParams);
         }
         String enforcementJWTPayload = generateJWT(validationRequest.toString());
         JSONObject jsonResponse;
@@ -130,7 +130,7 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
             String response = invokeConsentValidationService(enforcementJWTPayload);
             jsonResponse = new JSONObject(response);
         } catch (IOException | FinancialServicesException e) {
-            handleError(fsapiRequestContext, FinancialServicesErrorCodes.CONSENT_VALIDATION_REQUEST_FAILURE,
+            handleError(fsApiRequestContext, FinancialServicesErrorCodes.CONSENT_VALIDATION_REQUEST_FAILURE,
                     e.getMessage(), FinancialServicesErrorCodes.SERVER_ERROR_CODE);
             return;
         }
@@ -140,18 +140,18 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
             String errorCode = jsonResponse.get(ERROR_CODE).toString();
             String errorMessage = jsonResponse.get(ERROR_MESSAGE).toString();
             String httpCode = jsonResponse.get(HTTP_CODE).toString();
-            handleError(fsapiRequestContext, errorCode, errorMessage, httpCode);
+            handleError(fsApiRequestContext, errorCode, errorMessage, httpCode);
             return;
         } else if (!jsonResponse.isNull(MODIFIED_PAYLOAD)) {
             Object modifiedPayloadObj = jsonResponse.get(MODIFIED_PAYLOAD);
             if (modifiedPayloadObj != null) {
-                fsapiRequestContext.setModifiedPayload(modifiedPayloadObj.toString());
+                fsApiRequestContext.setModifiedPayload(modifiedPayloadObj.toString());
             }
         } else if (!jsonResponse.isNull(CONSENT_INFO)) {
             Object consentInformationObj = jsonResponse.get(CONSENT_INFO);
             if (consentInformationObj != null) {
                 requestHeaders.put(INFO_HEADER_TAG, consentInformationObj.toString());
-                fsapiRequestContext.setAddedHeaders(requestHeaders);
+                fsApiRequestContext.setAddedHeaders(requestHeaders);
             }
         }
     }
@@ -159,20 +159,20 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
     /**
      * Method to handle response.
      *
-     * @param fsapiResponseContext FS response context object
+     * @param fsApiResponseContext FS response context object
      */
     @Override
-    public void preProcessResponse(FSAPIResponseContext fsapiResponseContext) {
+    public void preProcessResponse(FSAPIResponseContext fsApiResponseContext) {
 
     }
 
     /**
      * Method to handle post response.
      *
-     * @param fsapiResponseContext FS response context object
+     * @param fsApiResponseContext FS response context object
      */
     @Override
-    public void postProcessResponse(FSAPIResponseContext fsapiResponseContext) {
+    public void postProcessResponse(FSAPIResponseContext fsApiResponseContext) {
 
     }
 
@@ -260,19 +260,19 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
     /**
      * Method to handle errors.
      *
-     * @param fsapiRequestContext API Context
+     * @param fsApiRequestContext API Context
      * @param errorCode           Error Code
      * @param errorMessage        Error Message
      * @param httpCode            HTTP status code ( in 4XX range)
      */
-    protected void handleError(FSAPIRequestContext fsapiRequestContext, String errorCode, String errorMessage,
+    protected void handleError(FSAPIRequestContext fsApiRequestContext, String errorCode, String errorMessage,
                                String httpCode) {
 
-        fsapiRequestContext.setError(true);
-        ArrayList<FSExecutorError> errors = fsapiRequestContext.getErrors();
+        fsApiRequestContext.setError(true);
+        ArrayList<FSExecutorError> errors = fsApiRequestContext.getErrors();
         errors.add(new FSExecutorError(errorCode, ERROR_TITLE, errorMessage, httpCode));
-        fsapiRequestContext.setErrors(errors);
-        fsapiRequestContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP, httpCode);
+        fsApiRequestContext.setErrors(errors);
+        fsApiRequestContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP, httpCode);
     }
 
     /**
@@ -302,16 +302,16 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
     /**
      * Method to construct resource parameter map to invoke the validation service.
      *
-     * @param fsapiRequestContext FS request context object
+     * @param fsApiRequestContext FS request context object
      * @return A Map containing resource path(ex: /aisp/accounts/{AccountId}?queryParam=urlEncodedQueryParamValue),
      * http method and context(ex: /open-banking/v3.1/aisp)
      */
-    private Map<String, String> getResourceParamMap(FSAPIRequestContext fsapiRequestContext) {
+    private Map<String, String> getResourceParamMap(FSAPIRequestContext fsApiRequestContext) {
 
         Map<String, String> resourceMap = new HashMap<>();
-        resourceMap.put(RESOURCE_TAG, fsapiRequestContext.getMsgInfo().getResource());
-        resourceMap.put(HTTP_METHOD, fsapiRequestContext.getMsgInfo().getHttpMethod());
-        resourceMap.put(CONTEXT_TAG, fsapiRequestContext.getApiRequestInfo().getContext());
+        resourceMap.put(RESOURCE_TAG, fsApiRequestContext.getMsgInfo().getResource());
+        resourceMap.put(HTTP_METHOD, fsApiRequestContext.getMsgInfo().getHttpMethod());
+        resourceMap.put(CONTEXT_TAG, fsApiRequestContext.getApiRequestInfo().getContext());
 
         return resourceMap;
     }
