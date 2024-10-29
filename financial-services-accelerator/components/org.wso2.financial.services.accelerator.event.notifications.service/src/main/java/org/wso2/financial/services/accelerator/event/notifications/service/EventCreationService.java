@@ -21,7 +21,6 @@ package org.wso2.financial.services.accelerator.event.notifications.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
-import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.financial.services.accelerator.common.util.DatabaseUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dao.EventNotificationDAO;
@@ -34,6 +33,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.persi
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This is the event creation service class.
@@ -107,7 +107,7 @@ public class EventCreationService {
     private Notification getNotification(NotificationCreationDTO notificationCreationDTO) {
 
         Notification notification = new Notification();
-        notification.setNotificationId(UUIDGenerator.generateUUID());
+        notification.setNotificationId(UUID.randomUUID().toString());
         notification.setClientId(notificationCreationDTO.getClientId());
         notification.setResourceId(notificationCreationDTO.getResourceId());
         notification.setStatus(EventNotificationConstants.OPEN);

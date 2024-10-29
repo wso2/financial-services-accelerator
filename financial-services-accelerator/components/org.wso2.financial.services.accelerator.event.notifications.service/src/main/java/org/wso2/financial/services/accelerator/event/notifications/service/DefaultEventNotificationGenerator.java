@@ -21,7 +21,6 @@ package org.wso2.financial.services.accelerator.event.notifications.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
@@ -33,6 +32,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.util.
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Default Event Notification Response Generator Class.
@@ -51,7 +51,7 @@ public class DefaultEventNotificationGenerator implements EventNotificationGener
         Long currentTime = Instant.now().getEpochSecond();
 
         //generate transaction Identifier
-        String transactionIdentifier = UUIDGenerator.generateUUID();
+        String transactionIdentifier = UUID.randomUUID().toString();
 
         notificationResponse.setIss(FinancialServicesConfigParser.getInstance().getEventNotificationTokenIssuer());
         notificationResponse.setIat(currentTime);
