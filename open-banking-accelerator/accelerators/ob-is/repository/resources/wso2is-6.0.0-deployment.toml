@@ -549,6 +549,9 @@ url_pattern = "/oauth2/authorize*"
 name = "TokenFilter"
 class = "com.wso2.openbanking.accelerator.identity.token.TokenFilter"
 
+[tomcat.filter.init_params]
+isTransportCertificateMandatory = true
+
 [[tomcat.filter_mapping]]
 name = "TokenFilter"
 url_pattern = "/token"

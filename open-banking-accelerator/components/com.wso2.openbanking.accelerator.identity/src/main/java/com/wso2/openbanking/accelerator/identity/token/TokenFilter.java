@@ -64,6 +64,7 @@ public class TokenFilter implements Filter {
     private static DefaultTokenFilter defaultTokenFilter;
     private String clientId = null;
     private static List<OBIdentityFilterValidator> validators = new ArrayList<>();
+    private boolean isTransportCertMandatory;
 
     private static final String BASIC_AUTH_ERROR_MSG = "Unable to find client id in the request. " +
             "Invalid Authorization header found.";
@@ -73,6 +74,15 @@ public class TokenFilter implements Filter {
     public void init(FilterConfig filterConfig) {
 
         ServletContext context = filterConfig.getServletContext();
+
+        String isTransportCertMandatoryConf = filterConfig.getInitParameter("isTransportCertificateMandatory");
+        if (isTransportCertMandatoryConf == null) {
+            // By default, mandating the transport certificate
+            isTransportCertMandatory = true;
+        } else {
+            isTransportCertMandatory = Boolean.parseBoolean(isTransportCertMandatoryConf);
+        }
+
         context.log("TokenFilter initialized");
     }
 
@@ -130,6 +140,11 @@ public class TokenFilter implements Filter {
             ServletException, IOException, CertificateEncodingException {
 
         if (request instanceof HttpServletRequest) {
+
+            if (!isTransportCertMandatory) {
+                return request;
+            }
+
             Object certAttribute = request.getAttribute(IdentityCommonConstants.JAVAX_SERVLET_REQUEST_CERTIFICATE);
             String x509Certificate = ((HttpServletRequest) request).getHeader(IdentityCommonUtil.getMTLSAuthHeader());
             if (new IdentityCommonHelper().isTransportCertAsHeaderEnabled() && x509Certificate != null) {

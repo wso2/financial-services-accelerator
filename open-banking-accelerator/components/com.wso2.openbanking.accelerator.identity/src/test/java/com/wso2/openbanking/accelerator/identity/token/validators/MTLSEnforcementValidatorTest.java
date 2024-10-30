@@ -38,6 +38,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,12 +124,17 @@ public class MTLSEnforcementValidatorTest extends PowerMockTestCase {
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
         PowerMockito.when(IdentityCommonUtil.getCertificateFromAttribute(cert)).thenReturn(cert);
 
+        Field privateField = TokenFilter.class.getDeclaredField(TestConstants.IS_TRANSPORT_CERT_MANDATORY_FIELD_NAME);
+        privateField.setAccessible(true);
+        privateField.set(filter, true);
+
         filter.doFilter(request, response, filterChain);
         assertEquals(response.getStatus(), HttpServletResponse.SC_OK);
     }
 
     @Test(description = "Test whether the certificate header is present")
-    public void noCertificateHeaderValidation() throws IOException, OpenBankingException, ServletException {
+    public void noCertificateHeaderValidation() throws IOException, OpenBankingException, ServletException,
+            NoSuchFieldException, IllegalAccessException {
         Map<String, Object> configMap = new HashMap<>();
         PowerMockito.mockStatic(IdentityCommonUtil.class);
         configMap.put(IdentityCommonConstants.ENABLE_TRANSPORT_CERT_AS_HEADER, true);
@@ -148,6 +154,10 @@ public class MTLSEnforcementValidatorTest extends PowerMockTestCase {
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
 
+        Field privateField = TokenFilter.class.getDeclaredField(TestConstants.IS_TRANSPORT_CERT_MANDATORY_FIELD_NAME);
+        privateField.setAccessible(true);
+        privateField.set(filter, true);
+
         filter.doFilter(request, response, filterChain);
         Map<String, String> responseMap = TestUtil.getResponse(response.getOutputStream());
         assertEquals(response.getStatus(), HttpStatus.SC_BAD_REQUEST);
@@ -159,7 +169,8 @@ public class MTLSEnforcementValidatorTest extends PowerMockTestCase {
 
 
     @Test(description = "Test the certificate in attribute is passed as a header")
-    public void certificateIsPresentInAttributeTest() throws IOException, OpenBankingException, ServletException {
+    public void certificateIsPresentInAttributeTest() throws IOException, OpenBankingException, ServletException,
+            NoSuchFieldException, IllegalAccessException {
         MTLSEnforcementValidator mtlsEnforcementValidator = Mockito.spy(MTLSEnforcementValidator.class);
         PowerMockito.mockStatic(IdentityCommonUtil.class);
 
@@ -183,12 +194,17 @@ public class MTLSEnforcementValidatorTest extends PowerMockTestCase {
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
         PowerMockito.when(IdentityCommonUtil.getCertificateFromAttribute(cert)).thenReturn(cert);
 
+        Field privateField = TokenFilter.class.getDeclaredField(TestConstants.IS_TRANSPORT_CERT_MANDATORY_FIELD_NAME);
+        privateField.setAccessible(true);
+        privateField.set(filter, true);
+
         filter.doFilter(request, response, filterChain);
         assertEquals(response.getStatus(), HttpServletResponse.SC_OK);
     }
 
     @Test(description = "Test whether the certificate attribute is valid")
-    public void invalidCertificateHeaderValidation() throws IOException, OpenBankingException, ServletException {
+    public void invalidCertificateHeaderValidation() throws IOException, OpenBankingException, ServletException,
+            NoSuchFieldException, IllegalAccessException {
         Map<String, Object> configMap = new HashMap<>();
         PowerMockito.mockStatic(IdentityCommonUtil.class);
         configMap.put(IdentityCommonConstants.ENABLE_TRANSPORT_CERT_AS_HEADER, true);
@@ -208,6 +224,10 @@ public class MTLSEnforcementValidatorTest extends PowerMockTestCase {
         Mockito.doReturn(validators).when(filter).getValidators();
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
+
+        Field privateField = TokenFilter.class.getDeclaredField(TestConstants.IS_TRANSPORT_CERT_MANDATORY_FIELD_NAME);
+        privateField.setAccessible(true);
+        privateField.set(filter, true);
 
         filter.doFilter(request, response, filterChain);
         Map<String, String> responseMap = TestUtil.getResponse(response.getOutputStream());
