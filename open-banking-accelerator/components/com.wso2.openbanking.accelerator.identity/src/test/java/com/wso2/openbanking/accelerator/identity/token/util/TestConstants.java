@@ -22,6 +22,7 @@ package com.wso2.openbanking.accelerator.identity.token.util;
  * Test constants.
  */
 public class TestConstants {
+    public static final String IS_TRANSPORT_CERT_MANDATORY_FIELD_NAME = "isTransportCertMandatory";
     public static final String TARGET_STREAM = "targetStream";
     public static final String CERTIFICATE_HEADER = "x-wso2-mutual-auth-cert";
     public static final String EXPIRED_CERTIFICATE_CONTENT = "-----BEGIN CERTIFICATE-----" +

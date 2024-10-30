@@ -40,6 +40,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -106,7 +107,8 @@ public class TokenFilterTest extends PowerMockTestCase {
     }
 
     @Test(description = "Test the certificate in context/header is mandated")
-    public void noCertificateTest() throws IOException, OpenBankingException, ServletException {
+    public void noCertificateTest() throws IOException, OpenBankingException, ServletException, NoSuchFieldException,
+            IllegalAccessException {
 
         Map<String, Object> configMap = new HashMap<>();
         PowerMockito.mockStatic(IdentityCommonUtil.class);
@@ -120,6 +122,11 @@ public class TokenFilterTest extends PowerMockTestCase {
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader())
                 .thenReturn(IdentityCommonConstants.CERTIFICATE_HEADER);
+
+        Field privateField = TokenFilter.class.getDeclaredField(TestConstants.IS_TRANSPORT_CERT_MANDATORY_FIELD_NAME);
+        privateField.setAccessible(true);
+        privateField.set(filter, true);
+
         filter.doFilter(request, response, filterChain);
         Map<String, String> responseMap = TestUtil.getResponse(response.getOutputStream());
         assertEquals(response.getStatus(), HttpStatus.SC_BAD_REQUEST);
@@ -129,7 +136,8 @@ public class TokenFilterTest extends PowerMockTestCase {
     }
 
     @Test(description = "Test the certificate in attribute is present if config is disabled")
-    public void certificateIsNotPresentInAttributeTest() throws IOException, OpenBankingException, ServletException {
+    public void certificateIsNotPresentInAttributeTest() throws IOException, OpenBankingException, ServletException,
+            NoSuchFieldException, IllegalAccessException {
 
         Map<String, Object> configMap = new HashMap<>();
         PowerMockito.mockStatic(IdentityCommonUtil.class);
@@ -144,6 +152,11 @@ public class TokenFilterTest extends PowerMockTestCase {
         Mockito.doReturn(new DefaultTokenFilter()).when(filter).getDefaultTokenFilter();
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
+
+        Field privateField = TokenFilter.class.getDeclaredField(TestConstants.IS_TRANSPORT_CERT_MANDATORY_FIELD_NAME);
+        privateField.setAccessible(true);
+        privateField.set(filter, true);
+
         filter.doFilter(request, response, filterChain);
         Map<String, String> responseMap = TestUtil.getResponse(response.getOutputStream());
         assertEquals(response.getStatus(), HttpStatus.SC_BAD_REQUEST);
