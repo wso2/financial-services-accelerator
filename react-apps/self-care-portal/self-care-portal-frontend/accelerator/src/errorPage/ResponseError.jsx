@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import base64url from "base64url";
+import {decode as base64_decode } from 'base-64';
 import wso2Logo from "../images/wso2Logo.png";
 
 export const ResponseError = (error = {}) => {
@@ -32,8 +32,8 @@ export const ResponseError = (error = {}) => {
     description = url.searchParams.get("description");
 
     if (message && description) {
-      message = base64url.decode(message);
-      description = base64url.decode(description);
+      message = base64_decode(message);
+      description = base64_decode(description);
     } else {
       message = "Redirecting Failed!";
       description =
