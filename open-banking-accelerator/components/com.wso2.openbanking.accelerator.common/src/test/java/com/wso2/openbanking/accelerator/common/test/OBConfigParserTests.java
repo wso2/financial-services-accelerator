@@ -467,4 +467,13 @@ public class OBConfigParserTests {
 
         Assert.assertEquals(className, "com.wso2.openbanking.accelerator.keymanager.OBKeyManagerImpl");
     }
+
+    @Test(priority = 36)
+    public void testNbfClaimMandatory() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
+        OpenBankingConfigParser openBankingConfigParser = OpenBankingConfigParser.getInstance(dummyConfigFile);
+
+        boolean nbfClaimMandatory = openBankingConfigParser.isNbfClaimMandatory();
+        Assert.assertTrue(nbfClaimMandatory);
+    }
 }

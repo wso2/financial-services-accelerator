@@ -18,7 +18,6 @@
 
 package com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations;
 
-import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.constants.PushAuthRequestConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,14 +58,6 @@ public class ExpirationValidator implements ConstraintValidator<ValidExpiration,
                 long timeStampSkewMillis = OAuthServerConfiguration.getInstance().getTimeStampSkewInSeconds() * 1000;
                 long expirationTimeInMillis = expirationDate.getTime();
                 long currentTimeInMillis = System.currentTimeMillis();
-                // exp parameter should not be over 1 hour in the future.
-                if ((expirationTimeInMillis - (currentTimeInMillis + timeStampSkewMillis)) >
-                        PushAuthRequestConstants.ONE_HOUR_IN_MILLIS) {
-                    errorMessage = "exp parameter in the request object is over 1 hour in the future";
-                    log.debug(errorMessage);
-                    IdentityCommonUtil.setCustomErrorMessage(constraintValidatorContext, errorMessage);
-                    return false;
-                }
                 // exp parameter should not be in the past.
                 if ((currentTimeInMillis + timeStampSkewMillis) > expirationTimeInMillis) {
                     errorMessage = "Request object expired";

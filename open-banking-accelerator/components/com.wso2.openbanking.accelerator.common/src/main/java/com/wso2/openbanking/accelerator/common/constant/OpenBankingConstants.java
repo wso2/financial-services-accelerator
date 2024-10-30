@@ -268,5 +268,7 @@ public class OpenBankingConstants {
     public static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
     public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
     public static final String DOT_SEPARATOR = ".";
+    public static final String MANDATE_NBF_CLAIM = "Identity.RequestObject.MandateNBF";
+
 }
 

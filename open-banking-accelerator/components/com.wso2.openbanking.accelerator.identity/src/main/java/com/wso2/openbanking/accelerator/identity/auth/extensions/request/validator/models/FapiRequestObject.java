@@ -21,7 +21,7 @@ package com.wso2.openbanking.accelerator.identity.auth.extensions.request.valida
 import com.wso2.openbanking.accelerator.common.validator.annotation.RequiredParameter;
 import com.wso2.openbanking.accelerator.common.validator.annotation.RequiredParameters;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations.ValidExpiration;
-import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations.ValidNotBefore;
+import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations.ValidNbfExpClaims;
 
 /**
  * Model class for FAPI request object.
@@ -32,12 +32,10 @@ import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validat
         @RequiredParameter(param = "claimsSet.claims.nonce",
                 message = "nonce parameter is missing in the request object"),
         @RequiredParameter(param = "claimsSet.claims.exp",
-                message = "exp parameter is missing in the request object"),
-        @RequiredParameter(param = "claimsSet.claims.nbf",
-                message = "nbf parameter is missing in the request object")
+                message = "exp parameter is missing in the request object")
 })
 @ValidExpiration(expiration = "claimsSet.claims.exp")
-@ValidNotBefore(notBefore = "claimsSet.claims.nbf")
+@ValidNbfExpClaims(notBefore = "claimsSet.claims.nbf", expiration = "claimsSet.claims.exp")
 public class FapiRequestObject extends OBRequestObject {
 
     private static final long serialVersionUID = -83973857804232423L;

@@ -622,6 +622,10 @@ request_object_validator="com.wso2.openbanking.accelerator.identity.auth.extensi
 #request_object_validator="com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.FapiRequestObjectValidator"
 push_auth_request_validator="com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.PushAuthRequestValidator"
 
+# Use mandate_nbf_claim=true For FAPI plain flow validations
+#[open_banking.identity.request_object]
+#mandate_nbf_claim=true
+
 [open_banking.identity.application_information_webapp]
 sp_metadata_filter="com.wso2.openbanking.accelerator.identity.sp.metadata.extension.impl.DefaultSPMetadataFilter"
 
