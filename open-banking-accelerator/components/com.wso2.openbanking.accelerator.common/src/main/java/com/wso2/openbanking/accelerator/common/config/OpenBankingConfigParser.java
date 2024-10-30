@@ -1480,4 +1480,13 @@ public class OpenBankingConfigParser {
                 (String) getConfigElementFromKey(OpenBankingConstants.IDEMPOTENCY_ALLOWED_TIME);
     }
 
+    /**
+     * Method to get mandate/optional nbf configuration for FAPI 1 Advance backward compatibility.
+     * @return isNbfClaimMandatory
+     */
+    public boolean isNbfClaimMandatory() {
+        return getConfigElementFromKey(OpenBankingConstants.MANDATE_NBF_CLAIM) == null || Boolean.parseBoolean(((String)
+                getConfigElementFromKey(OpenBankingConstants.MANDATE_NBF_CLAIM)).trim());
+    }
+
 }

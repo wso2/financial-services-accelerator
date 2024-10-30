@@ -79,6 +79,13 @@
                 <ResponseTypeHandler>com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.impl.OBDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
             {% endif %}
         </Extensions>
+        <RequestObject>
+            {% if open_banking.identity.request_object.mandate_nbf_claim is defined %}
+                <MandateNBF>{{open_banking.identity.request_object.mandate_nbf_claim}}</MandateNBF>
+            {% else %}
+                <MandateNBF>true</MandateNBF>
+            {% endif %}
+        </RequestObject>
         <Filters>
             {% if open_banking.identity.filters.token_filter is defined %}
             <TokenFilter>{{open_banking.identity.filters.token_filter}}</TokenFilter>

@@ -34,8 +34,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(ElementType.TYPE)
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {NotBeforeValidator.class})
-public @interface ValidNotBefore {
+@Constraint(validatedBy = {NbfExpClaimsValidator.class})
+public @interface ValidNbfExpClaims {
 
     String message() default "Invalid not before claim";
 
@@ -44,4 +44,6 @@ public @interface ValidNotBefore {
     Class<? extends Payload>[] payload() default {};
 
     String notBefore() default "nbf";
+
+    String expiration() default "exp";
 }

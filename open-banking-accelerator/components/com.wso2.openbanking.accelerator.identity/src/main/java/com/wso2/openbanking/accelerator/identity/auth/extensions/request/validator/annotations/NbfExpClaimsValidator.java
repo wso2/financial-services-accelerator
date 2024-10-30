@@ -18,6 +18,7 @@
 
 package com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.constants.PushAuthRequestConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.commons.beanutils.BeanUtils;
@@ -36,15 +37,17 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * To validate if the not before claim provided is valid.
  */
-public class NotBeforeValidator implements ConstraintValidator<ValidNotBefore, Object> {
+public class NbfExpClaimsValidator implements ConstraintValidator<ValidNbfExpClaims, Object> {
 
+    private static Log log = LogFactory.getLog(NbfExpClaimsValidator.class);
     private String notBeforeXPath;
-    private static Log log = LogFactory.getLog(NotBeforeValidator.class);
+    private String expirationXPath;
 
     @Override
-    public void initialize(ValidNotBefore constraintAnnotation) {
+    public void initialize(ValidNbfExpClaims constraintAnnotation) {
 
         this.notBeforeXPath = constraintAnnotation.notBefore();
+        this.expirationXPath = constraintAnnotation.expiration();
     }
 
     @Override
@@ -53,6 +56,7 @@ public class NotBeforeValidator implements ConstraintValidator<ValidNotBefore, O
         String errorMessage;
         try {
             final String nbfClaimInDateTimeFormat = BeanUtils.getProperty(object, notBeforeXPath);
+            final String expClaimInDateTimeFormat = BeanUtils.getProperty(object, expirationXPath);
 
             if (StringUtils.isNotBlank(nbfClaimInDateTimeFormat)) {
                 Date notBeforeDate = IdentityCommonUtil.parseStringToDate(nbfClaimInDateTimeFormat);
@@ -74,7 +78,22 @@ public class NotBeforeValidator implements ConstraintValidator<ValidNotBefore, O
                     IdentityCommonUtil.setCustomErrorMessage(constraintValidatorContext, errorMessage);
                     return false;
                 }
+
+                // exp time should not be older than 1 hour from nbf time.
+                Date expirationDate = IdentityCommonUtil.parseStringToDate(expClaimInDateTimeFormat);
+                long expirationTimeInMillis = expirationDate.getTime();
+                if ((expirationTimeInMillis - notBeforeTimeInMillis) > PushAuthRequestConstants.ONE_HOUR_IN_MILLIS) {
+                    errorMessage = "Request Object expiry time is too far in the future than not before time.";
+                    log.debug(errorMessage);
+                    IdentityCommonUtil.setCustomErrorMessage(constraintValidatorContext, errorMessage);
+                    return false;
+                }
+
             } else {
+                if (!OpenBankingConfigParser.getInstance().isNbfClaimMandatory()) {
+                    // This config added to preserve backward compatibility when moving from FAPI ID2 to FAPI 1 Advance.
+                    return true;
+                }
                 errorMessage = "nbf parameter is missing in the request object";
                 log.debug(errorMessage);
                 IdentityCommonUtil.setCustomErrorMessage(constraintValidatorContext,
