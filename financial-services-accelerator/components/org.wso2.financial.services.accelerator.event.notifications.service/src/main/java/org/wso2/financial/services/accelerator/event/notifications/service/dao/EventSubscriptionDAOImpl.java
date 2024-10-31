@@ -126,9 +126,7 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
                             eventTypes.add(eventType);
                         }
                     }
-                    if (!eventTypes.isEmpty()) {
-                        retrievedSubscription.setEventTypes(eventTypes);
-                    }
+                    retrievedSubscription.setEventTypes(eventTypes);
                 } else {
                     log.error("No event notification subscription found for the given subscription id.");
                     throw new FSEventNotificationException(
@@ -171,9 +169,7 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
                                 break;
                             }
                         }
-                        if (!eventTypes.isEmpty()) {
-                            eventSubscription.setEventTypes(eventTypes);
-                        }
+                        eventSubscription.setEventTypes(eventTypes);
                         retrievedSubscriptions.add(eventSubscription);
                     }
                     log.debug("Retrieved the event notification subscriptions successfully.");
@@ -216,9 +212,7 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
                                 break;
                             }
                         }
-                        if (!eventTypes.isEmpty()) {
-                            eventSubscription.setEventTypes(eventTypes);
-                        }
+                        eventSubscription.setEventTypes(eventTypes);
                         retrievedSubscriptions.add(eventSubscription);
                     }
                     log.debug("Retrieved the event notification subscriptions successfully.");
