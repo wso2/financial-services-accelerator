@@ -384,6 +384,11 @@
                 <version>${jackson.databinding.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.databinding.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring-web.version}</version>
@@ -506,6 +511,16 @@
                 <artifactId>org.wso2.financial.services.accelerator.consent.mgt.extensions</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.identity.extensions</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.event.notifications.service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- Test Dependencies -->
             <dependency>
                 <groupId>org.testng</groupId>
@@ -580,9 +595,9 @@
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <swagger-jaxrs.version>1.6.1</swagger-jaxrs.version>
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
-        <spring-web.version>5.1.2.RELEASE</spring-web.version>
+        <spring-web.version>5.3.39-wso2v1</spring-web.version>
         <spring-web-test.version>2.5</spring-web-test.version>
-        <org.apache.cxf.version>3.3.7</org.apache.cxf.version>
+        <org.apache.cxf.version>3.5.9</org.apache.cxf.version>
         <jstl.version>1.2</jstl.version>
         <org.slf4j.verison>1.7.21</org.slf4j.verison>
         <equinox.javax.servlet.version>3.0.0.v201112011016</equinox.javax.servlet.version>

@@ -41,5 +41,6 @@
         <module>components/org.wso2.financial.services.accelerator.gateway</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint</module>
+        <module>internal-webapps/org.wso2.financial.services.accelerator.event.notifications.endpoint</module>
     </modules>
 </project>
