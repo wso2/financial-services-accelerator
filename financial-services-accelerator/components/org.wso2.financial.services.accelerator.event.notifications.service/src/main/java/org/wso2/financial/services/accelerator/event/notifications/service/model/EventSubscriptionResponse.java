@@ -23,16 +23,16 @@ package org.wso2.financial.services.accelerator.event.notifications.service.mode
  */
 public class EventSubscriptionResponse {
 
-    private int status;
+    private int responseStatus;
     private Object responseBody;
-    private Object errorResponse;
 
-    public int getStatus() {
-        return status;
+
+    public int getResponseStatus() {
+        return responseStatus;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setResponseStatus(int responseStatus) {
+        this.responseStatus = responseStatus;
     }
 
     public Object getResponseBody() {
@@ -41,14 +41,6 @@ public class EventSubscriptionResponse {
 
     public void setResponseBody(Object responseBody) {
         this.responseBody = responseBody;
-    }
-
-    public Object getErrorResponse() {
-        return errorResponse;
-    }
-
-    public void setErrorResponse(Object errorResponse) {
-        this.errorResponse = errorResponse;
     }
 
 }

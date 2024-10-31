@@ -24,6 +24,7 @@ import java.util.List;
  * This is the Event Subscription Model.
  */
 public class EventSubscription {
+
     private String subscriptionId = null;
     private String clientId = null;
     private String callbackUrl = null;

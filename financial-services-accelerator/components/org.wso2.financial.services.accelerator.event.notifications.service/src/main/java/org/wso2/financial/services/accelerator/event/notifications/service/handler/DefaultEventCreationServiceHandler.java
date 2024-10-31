@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.event.notifications.service.hand
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -49,12 +50,12 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
      * @param notificationCreationDTO  Notification details DTO
      * @return EventCreationResponse   Response after event creation
      */
-    public EventCreationResponse publishEvent(NotificationCreationDTO notificationCreationDTO) {
+    public EventCreationResponse publishEvent(NotificationCreationDTO notificationCreationDTO)
+            throws FSEventNotificationException {
 
         //validate if the resourceID is existing
         ConsentResource consentResource = null;
         ConsentCoreServiceImpl consentCoreService = EventNotificationServiceUtil.getConsentCoreServiceImpl();
-        EventCreationResponse eventCreationResponse = new EventCreationResponse();
 
         try {
             consentResource = consentCoreService.getConsent(notificationCreationDTO.getResourceId(),
@@ -65,11 +66,10 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
                         consentResource.getConsentID().replaceAll("[\r\n]", ""));
             }
         } catch (ConsentManagementException e) {
-            log.error("Consent Management Exception when validating the consent resource", e);
-            eventCreationResponse.setErrorResponse(String.format("A resource was not found for the resource " +
-                            "id : '%s' in the database. ", notificationCreationDTO.getResourceId()));
-            eventCreationResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
-            return eventCreationResponse;
+            String errorMsg = String.format("A resource was not found for the resource id : '%s' in the database. ",
+                    notificationCreationDTO.getResourceId().replaceAll("[\r\n]", ""));
+            log.error(errorMsg, e);
+            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
         }
 
         //validate if the clientID is existing
@@ -77,12 +77,10 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
             EventNotificationServiceUtil.validateClientId(notificationCreationDTO.getClientId());
 
         } catch (FSEventNotificationException e) {
-            log.error("Invalid client ID", e);
-            eventCreationResponse.setErrorResponse(String.format("A client was not found" +
-                            " for the client id : '%s' in the database. ",
-                    notificationCreationDTO.getClientId().replaceAll("[\r\n]", "")));
-            eventCreationResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
-            return eventCreationResponse;
+            String errorMsg = String.format("A client was not found" + " for the client id : '%s' in the database. ",
+                    notificationCreationDTO.getClientId().replaceAll("[\r\n]", ""));
+            log.error(errorMsg, e);
+            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
         }
 
         String registrationResponse = "";
@@ -90,16 +88,16 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
             registrationResponse = eventCreationService.publishEventNotification(notificationCreationDTO);
             JSONObject responseJSON = new JSONObject();
             responseJSON.put(EventNotificationConstants.NOTIFICATIONS_ID, registrationResponse);
+
+            EventCreationResponse eventCreationResponse = new EventCreationResponse();
             eventCreationResponse.setStatus(EventNotificationConstants.CREATED);
             eventCreationResponse.setResponseBody(responseJSON);
             return eventCreationResponse;
 
         } catch (FSEventNotificationException e) {
             log.error("FS Event Notification Creation error", e);
+            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, "FS Event Notification Creation error",
+                    e);
         }
-
-        eventCreationResponse.setStatus(EventNotificationConstants.BAD_REQUEST);
-        eventCreationResponse.setErrorResponse("Error in event creation request payload");
-        return eventCreationResponse;
     }
 }

@@ -33,9 +33,7 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationGenerator;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
-import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventNotificationErrorDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
-import org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler;
 
 import java.util.Optional;
 
@@ -143,25 +141,16 @@ public class EventNotificationServiceUtil {
     }
 
     /**
-     * Get the default event creation service handler.
-     *
-     * @return DefaultEventCreationServiceHandler
-     */
-    public static DefaultEventCreationServiceHandler getDefaultEventCreationServiceHandler() {
-        return new DefaultEventCreationServiceHandler();
-    }
-
-    /**
      * Method to map Event subscription Service error to API response.
      *
      * @param error             Error code
      * @param errorDescription  Error description
-     * @return EventNotificationErrorDTO
+     * @return String error response
      */
-    public static EventNotificationErrorDTO getErrorDTO(String error, String errorDescription) {
-        EventNotificationErrorDTO eventNotificationErrorDTO = new EventNotificationErrorDTO();
-        eventNotificationErrorDTO.setError(error);
-        eventNotificationErrorDTO.setErrorDescription(errorDescription);
-        return eventNotificationErrorDTO;
+    public static String getErrorDTO(String error, String errorDescription) {
+        JSONObject eventNotificationError = new JSONObject();
+        eventNotificationError.put(EventNotificationConstants.ERROR_FIELD, error);
+        eventNotificationError.put(EventNotificationConstants.ERROR_DESCRIPTION_FIELD, errorDescription);
+        return eventNotificationError.toString();
     }
 }

@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.NotificationCreationDTO;
+import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventCreationResponse;
 
 /**
@@ -32,7 +33,9 @@ public interface EventCreationServiceHandler {
      * method that is used to persist data into the FS_NOTIFICATION and FS_NOTIFICATION_EVENT tables.
      * @param notificationCreationDTO Notification details DTO
      * @return For successful request the API will return a JSON with the notificationID
+     * @throws FSEventNotificationException Exception when creating event
      */
-    EventCreationResponse publishEvent(NotificationCreationDTO notificationCreationDTO);
+    EventCreationResponse publishEvent(NotificationCreationDTO notificationCreationDTO)
+            throws FSEventNotificationException;
 
 }

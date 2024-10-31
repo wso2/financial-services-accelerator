@@ -25,11 +25,32 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
  */
 public class FSEventNotificationException extends FinancialServicesException {
 
+    private int status;
+
     public FSEventNotificationException(String message) {
         super(message);
     }
 
+    public FSEventNotificationException(int status, String message) {
+
+        super(message);
+        this.status = status;
+    }
+    public FSEventNotificationException(int status, String message, Throwable e) {
+
+        super(message, e);
+        this.status = status;
+    }
+
     public FSEventNotificationException(String message, Throwable e) {
         super(message, e);
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

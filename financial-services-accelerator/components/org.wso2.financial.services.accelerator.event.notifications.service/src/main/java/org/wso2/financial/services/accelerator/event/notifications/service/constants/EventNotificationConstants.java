@@ -24,7 +24,7 @@ package org.wso2.financial.services.accelerator.event.notifications.service.cons
 public class EventNotificationConstants {
 
     //Service level constants
-    public static final String X_WSO2_CLIENT_ID = "x-wso2-client_id";
+    public static final String X_WSO2_CLIENT_ID = "x-wso2-client-id";
 
     //Event Notification Status
     public static final String ACK = "ACK";
@@ -53,12 +53,14 @@ public class EventNotificationConstants {
     public static final String REQUEST = "REQUEST";
 
     //Error Constants
+    public static final String ERROR_FIELD = "error";
+    public static final String ERROR_DESCRIPTION_FIELD = "error_description";
     public static final String INVALID_REQUEST = "invalid_request";
     public static final String EVENT_NOTIFICATION_CREATION_ERROR = "Error occurred while saving event " +
             "notifications in the  database";
     public static final String MISSING_REQ_PAYLOAD = "No request payload found";
-    public static final String MISSING_HEADER_PARAM_CLIENT_ID = "Missing header x-wso2-client_id";
-    public static final String MISSING_HEADER_PARAM_RESOURCE_ID = "Missing header x-wso2-resource_id";
+    public static final String MISSING_HEADER_PARAM_CLIENT_ID = "Missing header x-wso2-client-id";
+    public static final String MISSING_HEADER_PARAM_RESOURCE_ID = "Missing header x-wso2-resource-id";
     public static final String ERROR_IN_EVENT_POLLING_REQUEST = "Error in event polling request";
     public static final String INVALID_CHARS_IN_HEADER_ERROR = "Invalid characters found in the request headers";
 
@@ -77,7 +79,8 @@ public class EventNotificationConstants {
     public static final String SUBSCRIPTION_ID_PARAM = "subscriptionId";
     public static final String CALLBACK_URL_PARAM = "callbackUrl";
     public static final String VERSION_PARAM = "version";
-    public static final String EVENT_TYPE_PARAM = "eventTypes";
+    public static final String EVENT_TYPES_PARAM = "eventTypes";
+    public static final String EVENT_TYPE_PARAM = "eventType";
     public static final String DATA_PARAM = "data";
 
     public static final String DB_ERROR_UPDATING = "Database error while updating notification with ID : " +

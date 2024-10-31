@@ -27,13 +27,13 @@ public class EventCreationResponse {
 
     private String status;
     private JSONObject responseBody;
-    private String errorResponse;
+    private JSONObject errorResponse;
 
-    public String getErrorResponse() {
+    public JSONObject getErrorResponse() {
         return errorResponse;
     }
 
-    public void setErrorResponse(String errorResponse) {
+    public void setErrorResponse(JSONObject errorResponse) {
         this.errorResponse = errorResponse;
     }
 

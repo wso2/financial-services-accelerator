@@ -18,9 +18,8 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
-import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventSubscriptionDTO;
-import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscription;
+import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscriptionResponse;
 
 /**
@@ -37,8 +36,10 @@ public interface EventSubscriptionServiceHandler {
      *
      * @param eventSubscriptionRequestDto The request DTO that contains the subscription details.
      * @return For successful request the API will return a JSON with the subscriptionId
+     * @throws FSEventNotificationException Exception when creating event subscription.
      */
-    EventSubscriptionResponse createEventSubscription(EventSubscriptionDTO eventSubscriptionRequestDto);
+    EventSubscriptionResponse createEventSubscription(EventSubscriptionDTO eventSubscriptionRequestDto)
+            throws FSEventNotificationException;
 
     /**
      * This method is used to retrieve an event subscription by its subscription ID.
@@ -46,16 +47,19 @@ public interface EventSubscriptionServiceHandler {
      * @param clientId The client ID of the subscription.
      * @param subscriptionId The subscription ID of the subscription.
      * @return For successful request the API will return a JSON with the retrieved Subscription.
+     * @throws FSEventNotificationException Exception when retrieving event subscription.
      */
-    EventSubscriptionResponse getEventSubscription(String clientId, String subscriptionId);
+    EventSubscriptionResponse getEventSubscription(String clientId, String subscriptionId)
+            throws FSEventNotificationException;
 
     /**
      * This method is used to retrieve all event subscriptions of a client.
      *
      * @param clientId The client ID of the subscription.
      * @return For successful request the API will return a JSON with the retrieved Subscriptions.
+     * @throws FSEventNotificationException Exception when retrieving event subscriptions.
      */
-    EventSubscriptionResponse getAllEventSubscriptions(String clientId);
+    EventSubscriptionResponse getAllEventSubscriptions(String clientId) throws FSEventNotificationException;
 
     /**
      * This method is used to retrieve all event subscriptions by event type.
@@ -63,16 +67,20 @@ public interface EventSubscriptionServiceHandler {
      * @param clientId The client ID of the subscription.
      * @param eventType The event type that needs to be subscribed by the retrieving subscriptions.
      * @return For successful request the API will return a JSON with the retrieved Subscriptions.
+     * @throws FSEventNotificationException Exception when retrieving event subscriptions.
      */
-    EventSubscriptionResponse getEventSubscriptionsByEventType(String clientId, String eventType);
+    EventSubscriptionResponse getEventSubscriptionsByEventType(String clientId, String eventType)
+            throws FSEventNotificationException;
 
     /**
      * This method is used to update an event subscription.
      *
      * @param eventSubscriptionUpdateRequestDto The request DTO that contains the updating subscription details.
      * @return For successful request the API will return a JSON with the updated Subscription.
+     * @throws FSEventNotificationException Exception when updating event subscription.
      */
-    EventSubscriptionResponse updateEventSubscription(EventSubscriptionDTO eventSubscriptionUpdateRequestDto);
+    EventSubscriptionResponse updateEventSubscription(EventSubscriptionDTO eventSubscriptionUpdateRequestDto)
+            throws FSEventNotificationException;
 
     /**
      * This method is used to delete an event subscription.
@@ -80,15 +88,9 @@ public interface EventSubscriptionServiceHandler {
      * @param clientId The client ID of the subscription.
      * @param subscriptionId The subscription ID of the subscription.
      * @return For successful request the API will an OK response.
+     * @throws FSEventNotificationException Exception when deleting event subscription.
      */
-    EventSubscriptionResponse deleteEventSubscription(String clientId, String subscriptionId);
-
-    /**
-     * This method is used to create the response JSON object from the event subscription model.
-     *
-     * @param eventSubscription The event subscription model.
-     * @return JSONObject
-     */
-    JSONObject mapSubscriptionModelToResponseJson(EventSubscription eventSubscription);
+    EventSubscriptionResponse deleteEventSubscription(String clientId, String subscriptionId)
+            throws FSEventNotificationException;
 
 }
