@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.event.notifications.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.util.DatabaseUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dao.EventNotificationDAO;
@@ -29,6 +30,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.excep
 import org.wso2.financial.services.accelerator.event.notifications.service.model.Notification;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.NotificationEvent;
 import org.wso2.financial.services.accelerator.event.notifications.service.persistence.EventNotificationStoreInitializer;
+import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.EventNotificationProducerService;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -64,11 +66,10 @@ public class EventCreationService {
             eventResponse = eventCreationDAO.persistEventNotification(connection, notification, eventsList);
             DatabaseUtils.commitTransaction(connection);
 
-            //TODO:
             // Check whether the real time event notification is enabled.
-//            if (FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled()) {
-//                new Thread(new EventNotificationProducerService(notification, eventsList)).start();
-//            }
+            if (FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled()) {
+                new Thread(new EventNotificationProducerService(notification, eventsList)).start();
+            }
             return eventResponse;
         } catch (FSEventNotificationException e) {
             DatabaseUtils.rollbackTransaction(connection);

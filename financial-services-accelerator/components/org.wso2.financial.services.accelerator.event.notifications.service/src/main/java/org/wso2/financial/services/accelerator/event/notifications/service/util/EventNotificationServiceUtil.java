@@ -32,8 +32,10 @@ import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtil
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationGenerator;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
+import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationRequestGenerator;
 
 import java.util.Optional;
 
@@ -62,15 +64,12 @@ public class EventNotificationServiceUtil {
      *
      * @return RealtimeEventNotificationRequestGenerator
      */
-    //TODO
-//    public static RealtimeEventNotificationRequestGenerator getRealtimeEventNotificationRequestGenerator() {
-//
-//        RealtimeEventNotificationRequestGenerator realtimeEventNotificationRequestGenerator =
-//                (RealtimeEventNotificationRequestGenerator) FinancialServicesUtils
-//                        .getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
-//                        getRealtimeEventNotificationRequestGenerator());
-//        return realtimeEventNotificationRequestGenerator;
-//    }
+    public static RealtimeEventNotificationRequestGenerator getRealtimeEventNotificationRequestGenerator() {
+
+        return (RealtimeEventNotificationRequestGenerator) FinancialServicesUtils
+                .getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
+                getRealtimeEventNotificationRequestGenerator());
+    }
 
     /**
      * Method to modify event notification payload with custom eventValues.
@@ -152,5 +151,9 @@ public class EventNotificationServiceUtil {
         eventNotificationError.put(EventNotificationConstants.ERROR_FIELD, error);
         eventNotificationError.put(EventNotificationConstants.ERROR_DESCRIPTION_FIELD, errorDescription);
         return eventNotificationError.toString();
+    }
+
+    public static EventSubscriptionService getEventSubscriptionService() {
+        return new EventSubscriptionService();
     }
 }

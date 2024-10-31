@@ -21,6 +21,9 @@ package org.wso2.financial.services.accelerator.event.notifications.service.inte
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
+import org.wso2.financial.services.accelerator.event.notifications.service.model.RealtimeEventNotification;
+
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Data holder for Open Banking Event Notifications.
@@ -28,12 +31,11 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 public class EventNotificationDataHolder {
     private static Log log = LogFactory.getLog(EventNotificationDataHolder.class);
     private static volatile EventNotificationDataHolder instance;
-//    private volatile LinkedBlockingQueue<RealtimeEventNotification> realtimeEventNotificationQueue;
+    private volatile LinkedBlockingQueue<RealtimeEventNotification> realtimeEventNotificationQueue;
     private FinancialServicesConfigurationService configService;
 
     private EventNotificationDataHolder() {
-        //TODO
-//        this.realtimeEventNotificationQueue = new LinkedBlockingQueue<>();
+        this.realtimeEventNotificationQueue = new LinkedBlockingQueue<>();
     }
 
     /**
@@ -52,9 +54,9 @@ public class EventNotificationDataHolder {
         return instance;
     }
 
-//    public LinkedBlockingQueue<RealtimeEventNotification> getRealtimeEventNotificationQueue() {
-//        return realtimeEventNotificationQueue;
-//    }
+    public LinkedBlockingQueue<RealtimeEventNotification> getRealtimeEventNotificationQueue() {
+        return realtimeEventNotificationQueue;
+    }
 
     public FinancialServicesConfigurationService getFinancialServicesConfigurationService() {
 
@@ -67,7 +69,7 @@ public class EventNotificationDataHolder {
         this.configService = configService;
     }
 
-//    public void setRealtimeEventNotificationQueue(LinkedBlockingQueue<RealtimeEventNotification> queue) {
-//        this.realtimeEventNotificationQueue = queue;
-//    }
+    public void setRealtimeEventNotificationQueue(LinkedBlockingQueue<RealtimeEventNotification> queue) {
+        this.realtimeEventNotificationQueue = queue;
+    }
 }

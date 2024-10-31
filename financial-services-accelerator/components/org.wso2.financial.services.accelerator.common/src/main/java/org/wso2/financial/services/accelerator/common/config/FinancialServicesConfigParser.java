@@ -734,8 +734,8 @@ public final class FinancialServicesConfigParser {
 
         Optional<String> source = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.EVENT_NOTIFICATION_GENERATOR);
-        return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications." +
-                "service.service.DefaultEventNotificationGenerator");
+        return source.map(String::trim).orElse("org.wso2.financial.services.accelerator.event.notifications" +
+                ".service.DefaultEventNotificationGenerator");
     }
 
     /**
@@ -747,8 +747,8 @@ public final class FinancialServicesConfigParser {
 
         Optional<String> source = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR);
-        return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications.service." +
-                "realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
+        return source.map(String::trim).orElse("org.wso2.financial.services.accelerator.event.notifications" +
+                ".service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
     }
 
 }
