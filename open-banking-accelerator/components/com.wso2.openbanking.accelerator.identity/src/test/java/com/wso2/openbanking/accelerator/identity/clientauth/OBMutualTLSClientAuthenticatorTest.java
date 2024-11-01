@@ -54,7 +54,7 @@ import static org.testng.Assert.assertTrue;
  * Test for Open Banking mutual TLS client authenticator.
  */
 @PowerMockIgnore("jdk.internal.reflect.*")
-@PrepareForTest({IdentityCommonUtil.class, MutualTLSUtil.class})
+@PrepareForTest({IdentityCommonUtil.class, MutualTLSUtil.class, IdentityUtil.class})
 public class OBMutualTLSClientAuthenticatorTest extends PowerMockTestCase {
 
     MockHttpServletResponse response;
@@ -77,6 +77,7 @@ public class OBMutualTLSClientAuthenticatorTest extends PowerMockTestCase {
     @Test(description = "Test whether can authenticate is engaged for mtls request")
     public void canAuthenticateTest() throws OpenBankingException {
         PowerMockito.mockStatic(IdentityCommonUtil.class);
+        PowerMockito.mockStatic(IdentityUtil.class);
         Map<String, List> bodyParams = new HashMap<>();
         clientAuthnContext.setClientId("");
         bodyParams.put("client_id", Collections.singletonList("test"));
@@ -86,7 +87,8 @@ public class OBMutualTLSClientAuthenticatorTest extends PowerMockTestCase {
         request.setParameter(IdentityCommonConstants.CLIENT_ID, "test");
         request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_CONTENT);
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
-        PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
+        PowerMockito.when(IdentityUtil.getProperty(IdentityCommonConstants.MTLS_AUTH_HEADER))
+                .thenReturn(TestConstants.CERTIFICATE_HEADER);
 
         boolean response = authenticator.canAuthenticate(request, bodyParams, clientAuthnContext);
         assertTrue(response);
@@ -100,23 +102,24 @@ public class OBMutualTLSClientAuthenticatorTest extends PowerMockTestCase {
         request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_CONTENT);
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
-        boolean response = authenticator.canAuthenticate(request, null, clientAuthnContext);
+        boolean response = authenticator.canAuthenticate(request, new HashMap<>(), clientAuthnContext);
         assertFalse(response);
     }
 
     @Test(description = "Test whether can authenticate is not engaged when request has invalid certificate")
     public void canAuthenticateInvalidCertTest() throws OpenBankingException {
         PowerMockito.mockStatic(IdentityCommonUtil.class);
+        PowerMockito.mockStatic(IdentityUtil.class);
         OBMutualTLSClientAuthenticator authenticator = Mockito.spy(OBMutualTLSClientAuthenticator.class);
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
-        PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
-        request.setParameter(IdentityCommonConstants.CLIENT_ID, "test");
+        PowerMockito.when(IdentityUtil.getProperty(IdentityCommonConstants.MTLS_AUTH_HEADER))
+                .thenReturn(TestConstants.CERTIFICATE_HEADER);
+
+        Map<String, List> bodyParams = new HashMap<>();
+        bodyParams.put("client_id", Collections.singletonList("test"));
+
         request.addHeader(TestConstants.CERTIFICATE_HEADER, "test");
-        try {
-            authenticator.canAuthenticate(request, null, clientAuthnContext);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Transport certificate passed through the request not valid");
-        }
+        assertFalse(authenticator.canAuthenticate(request, bodyParams, clientAuthnContext));
     }
 
     @Test(description = "Test whether can authenticate is not engaged when request does not have a cert header")
@@ -125,9 +128,81 @@ public class OBMutualTLSClientAuthenticatorTest extends PowerMockTestCase {
         OBMutualTLSClientAuthenticator authenticator = Mockito.spy(OBMutualTLSClientAuthenticator.class);
         PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
         PowerMockito.when(IdentityCommonUtil.getMTLSAuthHeader()).thenReturn(TestConstants.CERTIFICATE_HEADER);
-        request.setParameter(IdentityCommonConstants.CLIENT_ID, "test");
-        boolean response = authenticator.canAuthenticate(request, null, clientAuthnContext);
+
+        Map<String, List> bodyParams = new HashMap<>();
+        bodyParams.put("client_id", Collections.singletonList("test"));
+
+        boolean response = authenticator.canAuthenticate(request, bodyParams, clientAuthnContext);
         assertFalse(response);
+    }
+
+    @Test(description = "Test whether can authenticate is not engaged when request parameters contain a " +
+            "client assertion")
+    public void canAuthenticateWithRequestParamClientAssertionTest() throws OpenBankingException {
+
+        PowerMockito.mockStatic(IdentityCommonUtil.class);
+        PowerMockito.mockStatic(IdentityUtil.class);
+        Map<String, List> bodyParams = new HashMap<>();
+        clientAuthnContext.setClientId("");
+        bodyParams.put(IdentityCommonConstants.CLIENT_ID, Collections.singletonList("test"));
+
+        OBMutualTLSClientAuthenticator authenticator = Mockito.spy(OBMutualTLSClientAuthenticator.class);
+
+        request.setParameter(IdentityCommonConstants.CLIENT_ID, "test");
+        request.setParameter(IdentityCommonConstants.OAUTH_JWT_ASSERTION, "test");
+        request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_CONTENT);
+        PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
+        PowerMockito.when(IdentityUtil.getProperty(IdentityCommonConstants.MTLS_AUTH_HEADER))
+                .thenReturn(TestConstants.CERTIFICATE_HEADER);
+
+        boolean response = authenticator.canAuthenticate(request, bodyParams, clientAuthnContext);
+        assertFalse(response);
+    }
+
+    @Test(description = "Test whether can authenticate is not engaged when request body parameters map contain a " +
+            "client assertion")
+    public void canAuthenticateWithBodyParamMapClientAssertionTest() throws OpenBankingException {
+
+        PowerMockito.mockStatic(IdentityCommonUtil.class);
+        PowerMockito.mockStatic(IdentityUtil.class);
+        Map<String, List> bodyParams = new HashMap<>();
+        clientAuthnContext.setClientId("");
+        bodyParams.put(IdentityCommonConstants.CLIENT_ID, Collections.singletonList("test"));
+        bodyParams.put(IdentityCommonConstants.OAUTH_JWT_ASSERTION, Collections.singletonList("test"));
+
+        OBMutualTLSClientAuthenticator authenticator = Mockito.spy(OBMutualTLSClientAuthenticator.class);
+
+        request.setParameter(IdentityCommonConstants.CLIENT_ID, "test");
+        request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_CONTENT);
+        PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
+        PowerMockito.when(IdentityUtil.getProperty(IdentityCommonConstants.MTLS_AUTH_HEADER))
+                .thenReturn(TestConstants.CERTIFICATE_HEADER);
+
+        boolean response = authenticator.canAuthenticate(request, bodyParams, clientAuthnContext);
+        assertFalse(response);
+    }
+
+    @Test(description = "Test whether can authenticate is engaged when there is no client assertion in request and" +
+            "request body parameters map contain an empty client assertion")
+    public void canAuthenticateWithBodyParamMapEmptyClientAssertionTest() throws OpenBankingException {
+
+        PowerMockito.mockStatic(IdentityCommonUtil.class);
+        PowerMockito.mockStatic(IdentityUtil.class);
+        Map<String, List> bodyParams = new HashMap<>();
+        clientAuthnContext.setClientId("");
+        bodyParams.put(IdentityCommonConstants.CLIENT_ID, Collections.singletonList("test"));
+        bodyParams.put(IdentityCommonConstants.OAUTH_JWT_ASSERTION, Collections.singletonList(""));
+
+        OBMutualTLSClientAuthenticator authenticator = Mockito.spy(OBMutualTLSClientAuthenticator.class);
+
+        request.setParameter(IdentityCommonConstants.CLIENT_ID, "test");
+        request.addHeader(TestConstants.CERTIFICATE_HEADER, TestConstants.CERTIFICATE_CONTENT);
+        PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("test")).thenReturn(true);
+        PowerMockito.when(IdentityUtil.getProperty(IdentityCommonConstants.MTLS_AUTH_HEADER))
+                .thenReturn(TestConstants.CERTIFICATE_HEADER);
+
+        boolean response = authenticator.canAuthenticate(request, bodyParams, clientAuthnContext);
+        assertTrue(response);
     }
 
     @Test(description = "Test whether obtaining JWKS endpoint of the SP is succesful")

@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.model.HttpRequestHeader;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.DefaultOIDCClaimsCallbackHandler;
@@ -89,6 +90,64 @@ public class OBDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
             throw new IdentityOAuth2Exception(e.getMessage(), e);
         }
         return super.handleCustomClaims(jwtClaimsSetBuilder, tokenReqMessageContext);
+    }
+
+    @Override
+    public JWTClaimsSet handleCustomClaims(JWTClaimsSet.Builder jwtClaimsSet, OAuthAuthzReqMessageContext
+            authzReqMessageContext) throws IdentityOAuth2Exception {
+        try {
+            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(
+                    authzReqMessageContext.getAuthorizationReqDTO().getConsumerKey())) {
+                Map<String, Object> claims = new HashMap<>();
+                JWTClaimsSet claimsSet = getJwtClaimsFromSuperClass(jwtClaimsSet, authzReqMessageContext);
+                if (claimsSet != null) {
+                    for (Map.Entry<String, Object> claimEntry : claimsSet.getClaims().entrySet()) {
+                        claims.put(claimEntry.getKey(), claimEntry.getValue());
+                    }
+                }
+                updateSubClaim(authzReqMessageContext, claims);
+                for (Map.Entry<String, Object> claimEntry : claims.entrySet()) {
+                    jwtClaimsSet.claim(claimEntry.getKey(), claimEntry.getValue());
+                }
+                return jwtClaimsSet.build();
+            }
+        } catch (OpenBankingException e) {
+            throw new IdentityOAuth2Exception(e.getMessage(), e);
+        }
+        return getJwtClaimsFromSuperClass(jwtClaimsSet, authzReqMessageContext);
+    }
+
+    /**
+     * Update the subject claim of the JWT claims set base on below configurations.
+     * 1. open_banking.identity.token.remove_tenant_domain_from_subject
+     * 2. open_banking.identity.token.remove_user_store_domain_from_subject
+     *
+     * @param authzReqMessageContext token request message context
+     * @param claims                 user claims in OIDC dialect as a map
+     */
+    private void updateSubClaim(OAuthAuthzReqMessageContext authzReqMessageContext, Map<String, Object> claims) {
+
+        Object removeTenantDomainConfig =
+                identityConfigurations.get(IdentityCommonConstants.REMOVE_TENANT_DOMAIN_FROM_SUBJECT);
+        boolean removeTenantDomain = removeTenantDomainConfig != null
+                && Boolean.parseBoolean(removeTenantDomainConfig.toString());
+
+        Object removeUserStoreDomainConfig =
+                identityConfigurations.get(IdentityCommonConstants.REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT);
+        boolean removeUserStoreDomain = removeUserStoreDomainConfig != null
+                && Boolean.parseBoolean(removeUserStoreDomainConfig.toString());
+
+        String subClaim = authzReqMessageContext.getAuthorizationReqDTO().getUser()
+                .getUsernameAsSubjectIdentifier(removeUserStoreDomain, removeTenantDomain);
+        claims.put("sub", subClaim);
+    }
+
+    @Generated(message = "Excluding from code coverage since it makes is used to return claims from the super class")
+    public JWTClaimsSet getJwtClaimsFromSuperClass(JWTClaimsSet.Builder jwtClaimsSetBuilder,
+                                                   OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext)
+            throws IdentityOAuth2Exception {
+
+        return super.handleCustomClaims(jwtClaimsSetBuilder, oAuthAuthzReqMessageContext);
     }
 
     @Generated(message = "Excluding from code coverage since it makes is used to return claims from the super class")

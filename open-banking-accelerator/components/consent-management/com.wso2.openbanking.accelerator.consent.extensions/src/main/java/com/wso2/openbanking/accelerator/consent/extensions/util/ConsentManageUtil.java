@@ -355,7 +355,7 @@ public class ConsentManageUtil {
                 }
 
                 //Revoke tokens related to the consent if the flag 'shouldRevokeTokens' is true.
-                shouldRevokeTokens = ConsentExtensionConstants.AUTHORIZED_STATUS
+                shouldRevokeTokens = ConsentExtensionConstants.AUTHORISED_STATUS
                         .equals(consentResource.getCurrentStatus());
 
                 boolean success = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()

@@ -37,6 +37,9 @@
                 sampleRequestObjectValidator
             </RequestObjectValidator>
         </Extensions>
+        <RequestObject>
+            <MandateNBF>true</MandateNBF>
+        </RequestObject>
         <AuthenticationWebApp>
             <ServletExtension>
                 sampleServletExtension

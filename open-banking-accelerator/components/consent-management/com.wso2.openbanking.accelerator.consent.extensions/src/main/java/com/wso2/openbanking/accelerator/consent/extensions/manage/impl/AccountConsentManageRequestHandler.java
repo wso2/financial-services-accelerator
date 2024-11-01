@@ -45,9 +45,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,10 +58,6 @@ public class AccountConsentManageRequestHandler implements ConsentManageRequestH
     private static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
     private static final String REVOKED_STATUS = "revoked";
-    private static final List<String> validPermissions = Arrays.asList(
-            "ReadAccountsDetail",
-            "ReadTransactionsDetail",
-            "ReadBalances");
     private static final String ACCOUNT_CONSENT_CREATE_PATH = "account-access-consents";
     private static final String CREATED_STATUS = "created";
     private static final String AUTH_TYPE_AUTHORIZATION = "authorization";
@@ -236,7 +230,7 @@ public class AccountConsentManageRequestHandler implements ConsentManageRequestH
                 return false;
             }
             String permissionString = (String) permission;
-            if (!validPermissions.contains(permissionString)) {
+            if (!ConsentExtensionConstants.VALID_PERMISSIONS.contains(permissionString)) {
                 return false;
             }
         }

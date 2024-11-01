@@ -67,9 +67,11 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,6 +80,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintValidatorContext;
 
 /**
  * Utility Class for Identity Open Banking.
@@ -123,7 +126,7 @@ public class IdentityCommonUtil {
     /**
      * Cache regulatory property if exists.
      *
-     * @param clientId clientId ClientId of the application
+     * @param clientId ClientId of the application
      * @return the regulatory property from cache if exists or from sp metadata
      * @throws OpenBankingException
      */
@@ -392,6 +395,8 @@ public class IdentityCommonUtil {
     public static String decodeRequestObjectAndGetKey(HttpServletRequest request, String key)
             throws OAuthProblemException {
 
+        String essentialClaims = null;
+
         if (request.getParameterMap().containsKey(IdentityCommonConstants.REQUEST_URI) &&
                 request.getParameter(IdentityCommonConstants.REQUEST_URI) != null) {
 
@@ -400,37 +405,67 @@ public class IdentityCommonUtil {
             String requestUriRef = requestUri[requestUri.length - 1];
             SessionDataCacheEntry valueFromCache = SessionDataCache.getInstance()
                     .getValueFromCache(new SessionDataCacheKey(requestUriRef));
-            if (valueFromCache != null) {
-                String essentialClaims = valueFromCache.getoAuth2Parameters().getEssentialClaims();
-                if (essentialClaims != null) {
-                    String[] essentialClaimsWithExpireTime = essentialClaims.split(":");
-                    essentialClaims = essentialClaimsWithExpireTime[0];
-                    essentialClaims = essentialClaims.split("\\.")[1];
-                    byte[] requestObject;
-                    try {
-                        requestObject = Base64.getDecoder().decode(essentialClaims);
-                    } catch (IllegalArgumentException e) {
 
-                        // Decode if the requestObject is base64-url encoded.
-                        requestObject = Base64.getUrlDecoder().decode(essentialClaims);
-                    }
-                    org.json.JSONObject
-                            requestObjectVal =
-                            new org.json.JSONObject(new String(requestObject, StandardCharsets.UTF_8));
-                    return requestObjectVal.has(key) ? requestObjectVal.getString(key) : null;
-                }
+            if (valueFromCache != null) {
+                essentialClaims = valueFromCache.getoAuth2Parameters().getEssentialClaims();
             } else {
                 throw OAuthProblemException.error("invalid_request_uri")
                         .description("Provided request URI is not valid");
             }
-        }
-        return null;
 
+        } else if (request.getParameterMap().containsKey(IdentityCommonConstants.REQUEST) &&
+                request.getParameter(IdentityCommonConstants.REQUEST) != null) {
+
+            essentialClaims = request.getParameter(IdentityCommonConstants.REQUEST);
+        }
+
+        if (essentialClaims != null) {
+            essentialClaims = essentialClaims.split("\\.")[1];
+            byte[] requestObject;
+
+            try {
+                requestObject = Base64.getDecoder().decode(essentialClaims);
+            } catch (IllegalArgumentException e) {
+                // Decode if the requestObject is base64-url encoded.
+                requestObject = Base64.getUrlDecoder().decode(essentialClaims);
+            }
+
+            org.json.JSONObject requestObjectVal =
+                    new org.json.JSONObject(new String(requestObject, StandardCharsets.UTF_8));
+            return requestObjectVal.has(key) ? requestObjectVal.getString(key) : null;
+        }
+
+        return null;
     }
 
     public static OAuthProblemException handleOAuthProblemException(String errorCode, String message, String state) {
 
         return OAuthProblemException.error(errorCode).description(message).state(state);
+    }
+
+    /**
+     * Method to set custom error message for constraint validator context.
+     *
+     * @param context ConstraintValidatorContext
+     * @param message Error message
+     */
+    public static void setCustomErrorMessage(ConstraintValidatorContext context, String message) {
+
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
+    }
+
+    /**
+     * Method to convert a string to a date object.
+     *
+     * @param dateString date and time in string format.
+     * @return Date object.
+     * @throws ParseException
+     */
+    public static Date parseStringToDate(String dateString) throws ParseException {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+        return dateFormat.parse(dateString);
     }
 
 }

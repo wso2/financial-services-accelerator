@@ -17,6 +17,9 @@
  */
 package com.wso2.openbanking.accelerator.consent.extensions.common;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Constant class for consent extension module.
  */
@@ -25,6 +28,7 @@ public class ConsentExtensionConstants {
     public static final String ERROR_URI_FRAGMENT = "#error=";
     public static final String ERROR_DESCRIPTION_PARAMETER = "&error_description=";
     public static final String STATE_PARAMETER = "&state=";
+    public static final String REQUEST_URI_PARAMETER = "request_uri=";
     public static final String PRESERVE_CONSENT = "Consent.PreserveConsentLink";
     public static final String SENSITIVE_DATA_MAP = "sensitiveDataMap";
     public static final String LOGGED_IN_USER = "loggedInUser";
@@ -48,6 +52,11 @@ public class ConsentExtensionConstants {
     public static final String ERRORS = "errors";
     public static final String PAYMENTS = "payments";
     public static final String VRP = "vrp";
+    public static final List<String> VALID_PERMISSIONS = Arrays.asList(
+            "ReadAccountsDetail",
+            "ReadTransactionsDetail",
+            "ReadBalances");
+    public static final String DEFAULT_PERMISSION = "ReadPersonalDetail";
 
     public static final String DATA = "Data";
     public static final String INITIATION = "Initiation";
@@ -106,7 +115,7 @@ public class ConsentExtensionConstants {
     public static final String[] CLAIM_FIELDS = new String[]{"userinfo", "id_token"};
     public static final String OPENBANKING_INTENT_ID = "openbanking_intent_id";
     public static final String VALUE = "value";
-    public static final String AUTHORIZED_STATUS = "authorised";
+    public static final String AUTHORISED_STATUS = "authorised";
     public static final String EXPIRATION_DATE = "ExpirationDateTime";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String INSTRUCTED_AMOUNT_TITLE = "Instructed Amount";

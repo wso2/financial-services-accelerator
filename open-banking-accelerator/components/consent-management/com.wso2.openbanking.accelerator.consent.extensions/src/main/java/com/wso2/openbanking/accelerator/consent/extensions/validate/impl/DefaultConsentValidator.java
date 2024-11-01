@@ -158,7 +158,7 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         //Consent Status Validation
-        if (!ConsentExtensionConstants.AUTHORIZED_STATUS
+        if (!ConsentExtensionConstants.AUTHORISED_STATUS
                 .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
             consentValidationResult.setErrorMessage(ErrorConstants.ACCOUNT_CONSENT_STATE_INVALID);
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_CONSENT_STATUS);
@@ -225,7 +225,7 @@ public class DefaultConsentValidator implements ConsentValidator {
                         consentValidationResult, detailedConsentResource);
                 return;
             } else {
-                if (!ConsentExtensionConstants.AUTHORIZED_STATUS
+                if (!ConsentExtensionConstants.AUTHORISED_STATUS
                         .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
                     log.error(ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
                     consentValidationResult.setErrorMessage(ErrorConstants.PAYMENT_CONSENT_STATE_INVALID);
@@ -337,7 +337,7 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         //Consent Status Validation
-        if (!ConsentExtensionConstants.AUTHORIZED_STATUS
+        if (!ConsentExtensionConstants.AUTHORISED_STATUS
                 .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
             consentValidationResult.setErrorMessage(ErrorConstants.COF_CONSENT_STATE_INVALID);
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_CONSENT_STATUS);
@@ -395,7 +395,7 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
 
-        if (!ConsentExtensionConstants.AUTHORIZED_STATUS
+        if (!ConsentExtensionConstants.AUTHORISED_STATUS
                 .equals(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
             log.error(ErrorConstants.VRP_CONSENT_STATUS_INVALID);
             consentValidationResult.setErrorMessage(ErrorConstants.VRP_CONSENT_STATUS_INVALID);
