@@ -29,6 +29,7 @@ import com.wso2.openbanking.accelerator.event.notifications.service.realtime.mod
 import com.wso2.openbanking.accelerator.event.notifications.service.service.EventNotificationGenerator;
 import com.wso2.openbanking.accelerator.event.notifications.service.service.EventPollingService;
 import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -58,7 +59,7 @@ public class EventNotificationProducerService implements Runnable {
         try {
             List<EventSubscription> subscriptionList = EventNotificationServiceUtil.getEventSubscriptionService()
                     .getEventSubscriptionsByClientId(notificationDTO.getClientId());
-            if (subscriptionList.isEmpty()) {
+            if (CollectionUtils.isEmpty(subscriptionList)) {
                 throw new OBEventNotificationException("No subscriptions found for the client ID: " +
                         notificationDTO.getClientId());
             }
