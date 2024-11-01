@@ -134,7 +134,9 @@ create_mysql_database_tables() {
 };
 
 add_json_fault_sequence() {
-  sed -i -e 's|</sequence>|\t<sequence key="jsonConverter"/>\n</sequence>|g' ${WSO2_OB_APIM_HOME}/repository/deployment/server/synapse-configs/default/sequences/_cors_request_handler_.xml
+    if ! grep -q '<sequence key="jsonConverter"/>' ${WSO2_OB_APIM_HOME}/repository/deployment/server/synapse-configs/default/sequences/_cors_request_handler_.xml; then
+    sed -i -e 's|</sequence>|\t<sequence key="jsonConverter"/>\n</sequence>|g' ${WSO2_OB_APIM_HOME}/repository/deployment/server/synapse-configs/default/sequences/_cors_request_handler_.xml
+    fi
 }
 
 echo -e "\nReplace hostnames \n"
