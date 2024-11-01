@@ -22,6 +22,7 @@ import com.nimbusds.jose.JOSEException;
 import com.wso2.openbanking.accelerator.event.notifications.service.dto.NotificationDTO;
 import com.wso2.openbanking.accelerator.event.notifications.service.exceptions.OBEventNotificationException;
 import com.wso2.openbanking.accelerator.event.notifications.service.internal.EventNotificationDataHolder;
+import com.wso2.openbanking.accelerator.event.notifications.service.model.EventSubscription;
 import com.wso2.openbanking.accelerator.event.notifications.service.model.Notification;
 import com.wso2.openbanking.accelerator.event.notifications.service.model.NotificationEvent;
 import com.wso2.openbanking.accelerator.event.notifications.service.realtime.model.RealtimeEventNotification;
@@ -33,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -52,26 +54,46 @@ public class EventNotificationProducerService implements Runnable {
 
     @Override
     public void run() {
-        String callbackUrl = EventNotificationServiceUtil.getCallbackURL(notificationDTO.getClientId());
-
-        LinkedBlockingQueue<RealtimeEventNotification> queue = EventNotificationDataHolder.getInstance().
-                getRealtimeEventNotificationQueue();
-        EventNotificationGenerator eventNotificationGenerator = EventNotificationServiceUtil.
-                getEventNotificationGenerator();
-        RealtimeEventNotification realtimeEventNotification = new RealtimeEventNotification();
-        realtimeEventNotification.setNotificationDTO(notificationDTO);
-        realtimeEventNotification.setCallbackUrl(callbackUrl);
 
         try {
-            Notification notification = eventNotificationGenerator.generateEventNotificationBody(
-                    notificationDTO, notificationEvents);
-            realtimeEventNotification.setEventSET(eventNotificationGenerator.generateEventNotification(
-                    Notification.getJsonNode(notification)));
+            List<EventSubscription> subscriptionList = EventNotificationServiceUtil.getEventSubscriptionService()
+                    .getEventSubscriptionsByClientId(notificationDTO.getClientId());
+            if (subscriptionList.isEmpty()) {
+                throw new OBEventNotificationException("No subscriptions found for the client ID: " +
+                        notificationDTO.getClientId());
+            }
 
-            queue.put(realtimeEventNotification); // put the notification into the queue
+            LinkedBlockingQueue<RealtimeEventNotification> queue = EventNotificationDataHolder.getInstance().
+                    getRealtimeEventNotificationQueue();
+            EventNotificationGenerator eventNotificationGenerator = EventNotificationServiceUtil.
+                    getEventNotificationGenerator();
+
+            for (EventSubscription subscription : subscriptionList) {
+
+                List<NotificationEvent> allowedEvents = new ArrayList<>();
+                notificationEvents.forEach(notificationEvent -> {
+                    if (subscription.getEventTypes().contains(notificationEvent.getEventType())) {
+                        allowedEvents.add(notificationEvent);
+                    }
+                });
+
+                if (!allowedEvents.isEmpty()) {
+                    RealtimeEventNotification realtimeEventNotification = new RealtimeEventNotification();
+                    realtimeEventNotification.setNotificationDTO(notificationDTO);
+                    realtimeEventNotification.setCallbackUrl(subscription.getCallbackUrl());
+
+                    Notification notification = eventNotificationGenerator.generateEventNotificationBody(
+                            notificationDTO, allowedEvents);
+                    realtimeEventNotification.setEventSET(eventNotificationGenerator
+                            .generateEventNotification(Notification.getJsonNode(notification)));
+
+                    queue.put(realtimeEventNotification); // put the notification into the queue
+                }
+            }
         } catch (InterruptedException e) {
             log.error("Error when adding the Realtime Notification with notification ID " +
-                    notificationDTO.getNotificationId() + " into the RealtimeEventNotification Queue", e);
+                    notificationDTO.getNotificationId().replaceAll("[\r\n]", "") +
+                    " into the RealtimeEventNotification Queue", e);
         } catch (OBEventNotificationException e) {
             log.error("Error when generating the event notification", e);
         } catch (IOException | JOSEException | IdentityOAuth2Exception e) {

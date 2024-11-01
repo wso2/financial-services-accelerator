@@ -157,7 +157,7 @@ public class RealtimeEventNotificationSenderService implements Runnable {
 
                 HttpResponse response = httpClient.execute(httpPost);
                 int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == HttpStatus.SC_OK) {
+                if (statusCode == HttpStatus.SC_ACCEPTED) {
                     if (log.isDebugEnabled()) {
                         log.debug("Real-time event notification with notificationId: " + notificationId
                                 + " sent successfully");

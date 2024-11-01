@@ -28,7 +28,9 @@ import com.wso2.openbanking.accelerator.event.notifications.service.model.Notifi
 import com.wso2.openbanking.accelerator.event.notifications.service.persistence.EventPollingStoreInitializer;
 import com.wso2.openbanking.accelerator.event.notifications.service.realtime.model.RealtimeEventNotification;
 import com.wso2.openbanking.accelerator.event.notifications.service.service.DefaultEventNotificationGenerator;
+import com.wso2.openbanking.accelerator.event.notifications.service.service.EventSubscriptionService;
 import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
+import com.wso2.openbanking.accelerator.event.notifications.service.utils.EventNotificationTestUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -55,6 +57,9 @@ public class RealtimeEventNotificationLoaderServiceTest extends PowerMockTestCas
     @Test
     public void testRun() throws OBEventNotificationException, InterruptedException {
         LinkedBlockingQueue<RealtimeEventNotification> eventQueue = new LinkedBlockingQueue<>();
+        EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
+        Mockito.when(eventSubscriptionService.getEventSubscriptionsByClientId(any()))
+                .thenReturn(EventNotificationTestUtils.getEventSubscrptionList());
 
         DefaultEventNotificationGenerator mockedEventNotificationGenerator =
                 Mockito.mock(DefaultEventNotificationGenerator.class);
@@ -66,6 +71,8 @@ public class RealtimeEventNotificationLoaderServiceTest extends PowerMockTestCas
                 mockedEventNotificationGenerator);
         PowerMockito.when(EventNotificationServiceUtil.getRealtimeEventNotificationRequestGenerator()).thenReturn(
                 mockedRealtimeEventNotificationRequestGenerator);
+        PowerMockito.when(EventNotificationServiceUtil.getEventSubscriptionService())
+                .thenReturn(eventSubscriptionService);
 
         EventNotificationDataHolder eventNotificationDataHolderMock = Mockito.mock(EventNotificationDataHolder.class);
         Mockito.when(eventNotificationDataHolderMock.getRealtimeEventNotificationQueue()).thenReturn(eventQueue);
