@@ -78,6 +78,7 @@ public class FSHybridResponseTypeValidatorTest {
         when(httpServletRequestMock.getParameter(IdentityCommonConstants.CLIENT_ID)).thenReturn("1234567");
         when(httpServletRequestMock.getParameter(IdentityCommonConstants.RESPONSE_TYPE)).thenReturn("code id_token");
         when(httpServletRequestMock.getParameter(IdentityCommonConstants.REDIRECT_URI)).thenReturn("abc.com");
+        when(httpServletRequestMock.getParameter(IdentityCommonConstants.REQUEST)).thenReturn("sample-request-object");
 
         FSHybridResponseTypeValidator uut = spy(new FSHybridResponseTypeValidator());
 
