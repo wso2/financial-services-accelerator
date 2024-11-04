@@ -74,6 +74,10 @@ public class RealtimeEventNotificationLoaderService implements Runnable {
                         }
                     });
 
+                    if (allowedEvents.isEmpty()) {
+                        continue;
+                    }
+
                     NotificationResponse responseNotification = eventNotificationGenerator.
                             generateEventNotificationBody(notification, allowedEvents);
                     RealtimeEventNotification realtimeEventNotification = new RealtimeEventNotification();

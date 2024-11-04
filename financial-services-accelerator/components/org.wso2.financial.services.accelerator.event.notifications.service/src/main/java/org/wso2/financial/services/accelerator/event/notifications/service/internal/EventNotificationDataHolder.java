@@ -20,7 +20,6 @@ package org.wso2.financial.services.accelerator.event.notifications.service.inte
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.RealtimeEventNotification;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,7 +31,6 @@ public class EventNotificationDataHolder {
     private static Log log = LogFactory.getLog(EventNotificationDataHolder.class);
     private static volatile EventNotificationDataHolder instance;
     private volatile LinkedBlockingQueue<RealtimeEventNotification> realtimeEventNotificationQueue;
-    private FinancialServicesConfigurationService configService;
 
     private EventNotificationDataHolder() {
         this.realtimeEventNotificationQueue = new LinkedBlockingQueue<>();
@@ -56,17 +54,6 @@ public class EventNotificationDataHolder {
 
     public LinkedBlockingQueue<RealtimeEventNotification> getRealtimeEventNotificationQueue() {
         return realtimeEventNotificationQueue;
-    }
-
-    public FinancialServicesConfigurationService getFinancialServicesConfigurationService() {
-
-        return configService;
-    }
-
-    public void setFinancialServicesConfigurationService(
-            FinancialServicesConfigurationService configService) {
-
-        this.configService = configService;
     }
 
     public void setRealtimeEventNotificationQueue(LinkedBlockingQueue<RealtimeEventNotification> queue) {

@@ -75,6 +75,11 @@ public class EventNotificationProducerService implements Runnable {
                         allowedEvents.add(notificationEvent);
                     }
                 });
+
+                if (allowedEvents.isEmpty()) {
+                    continue;
+                }
+
                 RealtimeEventNotification realtimeEventNotification = new RealtimeEventNotification();
                 realtimeEventNotification.setNotification(notification);
                 realtimeEventNotification.setCallbackUrl(subscription.getCallbackUrl());
