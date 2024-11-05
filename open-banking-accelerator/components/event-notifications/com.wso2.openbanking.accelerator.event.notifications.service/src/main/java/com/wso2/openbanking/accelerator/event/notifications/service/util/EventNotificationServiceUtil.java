@@ -29,6 +29,7 @@ import com.wso2.openbanking.accelerator.event.notifications.service.exceptions.O
 import com.wso2.openbanking.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler;
 import com.wso2.openbanking.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationRequestGenerator;
 import com.wso2.openbanking.accelerator.event.notifications.service.service.EventNotificationGenerator;
+import com.wso2.openbanking.accelerator.event.notifications.service.service.EventSubscriptionService;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -136,17 +137,6 @@ public class EventNotificationServiceUtil {
     }
 
     /**
-     * Get the callback URL of the TPP from the Subscription Object.
-     *
-     * @param clientID client ID of the TPP
-     * @return callback URL of the TPP
-     */
-    public static String getCallbackURL(String clientID) {
-
-        return "http://localhost:8080/sample-tpp-server";
-    }
-
-    /**
      * Get the default event creation service handler.
      *
      * @return DefaultEventCreationServiceHandler
@@ -167,5 +157,9 @@ public class EventNotificationServiceUtil {
         eventNotificationErrorDTO.setError(error);
         eventNotificationErrorDTO.setErrorDescription(errorDescription);
         return eventNotificationErrorDTO;
+    }
+
+    public static EventSubscriptionService getEventSubscriptionService() {
+        return new EventSubscriptionService();
     }
 }
