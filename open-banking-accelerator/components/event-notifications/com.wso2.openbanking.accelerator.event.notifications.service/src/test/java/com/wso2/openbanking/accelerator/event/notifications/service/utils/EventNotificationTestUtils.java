@@ -63,6 +63,23 @@ public class EventNotificationTestUtils {
 
         return notificationDTO;
     }
+
+    public static List<EventSubscription> getEventSubscrptionList() {
+        EventSubscription eventSubscription = new EventSubscription();
+        eventSubscription.setCallbackUrl(EventNotificationTestConstants.SAMPLE_CALLBACK_URL);
+        eventSubscription.setEventTypes(getSampleEventTypeList());
+        List<EventSubscription> eventSubscriptions = new ArrayList<>();
+        eventSubscriptions.add(eventSubscription);
+        return eventSubscriptions;
+    }
+
+    public static List<String> getSampleEventTypeList() {
+        List<String> eventsTypes = new ArrayList<>();
+        eventsTypes.add(EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPE_1);
+
+        return eventsTypes;
+    }
+
     public static List<NotificationEvent> getSampleNotificationsList() throws ParseException {
         List<NotificationEvent> eventsList = new ArrayList<NotificationEvent>();
         NotificationEvent notificationEvent = new NotificationEvent();

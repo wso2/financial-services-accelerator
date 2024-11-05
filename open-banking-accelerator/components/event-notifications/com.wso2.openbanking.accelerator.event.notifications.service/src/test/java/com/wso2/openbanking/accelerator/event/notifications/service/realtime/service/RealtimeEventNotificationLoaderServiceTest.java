@@ -28,7 +28,10 @@ import com.wso2.openbanking.accelerator.event.notifications.service.model.Notifi
 import com.wso2.openbanking.accelerator.event.notifications.service.persistence.EventPollingStoreInitializer;
 import com.wso2.openbanking.accelerator.event.notifications.service.realtime.model.RealtimeEventNotification;
 import com.wso2.openbanking.accelerator.event.notifications.service.service.DefaultEventNotificationGenerator;
+import com.wso2.openbanking.accelerator.event.notifications.service.service.EventSubscriptionService;
 import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
+import com.wso2.openbanking.accelerator.event.notifications.service.utils.EventNotificationTestUtils;
+import net.minidev.json.parser.ParseException;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -53,8 +56,12 @@ import static org.mockito.Mockito.doReturn;
         DefaultRealtimeEventNotificationRequestGenerator.class})
 public class RealtimeEventNotificationLoaderServiceTest extends PowerMockTestCase {
     @Test
-    public void testRun() throws OBEventNotificationException, InterruptedException {
+    public void testRun() throws OBEventNotificationException, InterruptedException, ParseException {
         LinkedBlockingQueue<RealtimeEventNotification> eventQueue = new LinkedBlockingQueue<>();
+
+        EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
+        Mockito.when(eventSubscriptionService.getEventSubscriptionsByClientId(any()))
+                .thenReturn(EventNotificationTestUtils.getEventSubscrptionList());
 
         DefaultEventNotificationGenerator mockedEventNotificationGenerator =
                 Mockito.mock(DefaultEventNotificationGenerator.class);
@@ -66,6 +73,8 @@ public class RealtimeEventNotificationLoaderServiceTest extends PowerMockTestCas
                 mockedEventNotificationGenerator);
         PowerMockito.when(EventNotificationServiceUtil.getRealtimeEventNotificationRequestGenerator()).thenReturn(
                 mockedRealtimeEventNotificationRequestGenerator);
+        PowerMockito.when(EventNotificationServiceUtil.getEventSubscriptionService())
+                .thenReturn(eventSubscriptionService);
 
         EventNotificationDataHolder eventNotificationDataHolderMock = Mockito.mock(EventNotificationDataHolder.class);
         Mockito.when(eventNotificationDataHolderMock.getRealtimeEventNotificationQueue()).thenReturn(eventQueue);
@@ -87,6 +96,8 @@ public class RealtimeEventNotificationLoaderServiceTest extends PowerMockTestCas
         AggregatedPollingDAOImpl mockAggregatedPollingDAOImpl = Mockito.mock(AggregatedPollingDAOImpl.class);
         doReturn(notifications).when(mockAggregatedPollingDAOImpl).getNotificationsByStatus(
                 EventNotificationConstants.OPEN);
+        doReturn(EventNotificationTestUtils.getSampleNotificationsList())
+                .when(mockAggregatedPollingDAOImpl).getEventsByNotificationID(any());
         PowerMockito.mockStatic(EventPollingStoreInitializer.class);
         PowerMockito.when(EventPollingStoreInitializer.getAggregatedPollingDAO())
                 .thenReturn(mockAggregatedPollingDAOImpl);
@@ -113,5 +124,4 @@ public class RealtimeEventNotificationLoaderServiceTest extends PowerMockTestCas
         Assert.assertEquals(notification1.getJsonPayload(), testPayload);
         Assert.assertEquals(notification2.getJsonPayload(), testPayload);
     }
-
 }
