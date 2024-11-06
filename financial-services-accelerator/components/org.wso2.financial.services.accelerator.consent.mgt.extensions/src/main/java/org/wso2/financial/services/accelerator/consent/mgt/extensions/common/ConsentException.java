@@ -78,12 +78,13 @@ public class ConsentException extends RuntimeException {
         }
     }
 
-    public JSONObject createDefaultErrorObject(URI redirectURI, String errorCode, String errorMessage, String state) {
+    public JSONObject createDefaultErrorObject(URI redirectURI, String errorCode, String errorDescription,
+                                               String state) {
 
         JSONObject error = new JSONObject();
         error.put(ConsentExtensionConstants.ERROR_CODE, errorCode);
         error.put(ConsentExtensionConstants.ERROR_MSG, "Consent Management Error");
-        error.put(ConsentExtensionConstants.ERROR_DESCRIPTION, errorMessage);
+        error.put(ConsentExtensionConstants.ERROR_DESCRIPTION, errorDescription);
         if (state != null) {
             error.put(ConsentExtensionConstants.STATE, state);
         }

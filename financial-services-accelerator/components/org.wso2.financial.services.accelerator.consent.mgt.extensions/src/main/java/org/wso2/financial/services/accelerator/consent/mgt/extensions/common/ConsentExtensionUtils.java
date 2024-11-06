@@ -164,6 +164,7 @@ public class ConsentExtensionUtils {
                 username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN, userID);
             }
         } catch (UserStoreException e) {
+            log.debug("Returning null since user ID is not found in the database");
             return null;
         }
         return username;

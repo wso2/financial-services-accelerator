@@ -417,12 +417,12 @@ publisher_url="https://localhost:9443"
 request_router="org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter"
 
 #============executors=========================
-[[financial_services.gateway.gateway_executors.type]]
-name = "Default"
-[[financial_services.gateway.gateway_executors.type.executors]]
+[[financial_services.gateway.executors]]
+type = "Default"
+[[financial_services.gateway.executors.executor]]
 name = "org.wso2.financial.services.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 1
-[[financial_services.gateway.gateway_executors.type.executors]]
+[[financial_services.gateway.executors.executor]]
 name = "org.wso2.financial.services.accelerator.gateway.executor.impl.error.handling.DefaultErrorHandlingExecutor"
 priority = 1000
 

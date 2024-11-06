@@ -69,6 +69,7 @@ public class ConsentManageUtils {
             // From date is equal or earlier than To date
             return toDate.isEqual(fromDate) || toDate.isAfter(fromDate);
         } catch (DateTimeParseException e) {
+            log.debug("Returning false since datetime cannot be parsed");
             return false;
         }
     }

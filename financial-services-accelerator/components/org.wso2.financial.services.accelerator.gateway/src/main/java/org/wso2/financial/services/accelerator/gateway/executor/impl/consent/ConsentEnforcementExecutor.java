@@ -135,7 +135,7 @@ public class ConsentEnforcementExecutor implements FinancialServicesGatewayExecu
             return;
         }
 
-        boolean isValid = (boolean) jsonResponse.get(IS_VALID);
+        boolean isValid = jsonResponse.getBoolean(IS_VALID);
         if (!isValid) {
             String errorCode = jsonResponse.get(ERROR_CODE).toString();
             String errorMessage = jsonResponse.get(ERROR_MESSAGE).toString();

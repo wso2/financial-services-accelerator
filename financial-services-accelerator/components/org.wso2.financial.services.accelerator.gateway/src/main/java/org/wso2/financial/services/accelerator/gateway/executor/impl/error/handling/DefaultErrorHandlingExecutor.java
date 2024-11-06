@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Default Executor to handle gateway errors.
@@ -99,7 +100,7 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
         }
 
         payload.put(ERRORS_TAG, errorList);
-        if (errorList.length() != 0) {
+        if (!errorList.isEmpty()) {
             fsApiRequestContext.setModifiedPayload(payload.toString());
             Map<String, String> addedHeaders = fsApiRequestContext.getAddedHeaders();
             addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
@@ -155,27 +156,22 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
         JSONArray errorList = new JSONArray();
         for (FSExecutorError error : errors) {
             JSONObject errorObj = new JSONObject();
-            errorObj.put("code", error.getCode());
-            errorObj.put("message", error.getTitle());
-            errorObj.put("description", error.getMessage());
+            errorObj.put(GatewayConstants.CODE, error.getCode());
+            errorObj.put(GatewayConstants.MESSAGE, error.getTitle());
+            errorObj.put(GatewayConstants.DESCRIPTION, error.getMessage());
             Map<String, String> links = error.getLinks();
-            if (links != null && links.size() > 0) {
+            if (links != null && !links.isEmpty()) {
                 JSONObject linksObj = new JSONObject();
                 links.forEach(linksObj::put);
-                errorObj.put("Links", linksObj);
+                errorObj.put(GatewayConstants.LINKS, linksObj);
             }
             errorList.put(errorObj);
         }
         return errorList;
     }
 
-    private boolean isAnyClientErrors(HashSet<String> statusCodes) {
+    private boolean isAnyClientErrors(Set<String> statusCodes) {
 
-        for (String statusCode : statusCodes) {
-            if (statusCode.startsWith("4")) {
-                return true;
-            }
-        }
-        return false;
+        return statusCodes.stream().anyMatch(statusCode -> statusCode.startsWith("4"));
     }
 }
