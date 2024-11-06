@@ -103,6 +103,11 @@
             <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.event.notifications.service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.event.handler.notification</groupId>
+            <artifactId>org.wso2.carbon.identity.event.handler.notification</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

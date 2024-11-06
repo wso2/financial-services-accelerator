@@ -476,4 +476,32 @@ public class OBConfigParserTests {
         boolean nbfClaimMandatory = openBankingConfigParser.isNbfClaimMandatory();
         Assert.assertTrue(nbfClaimMandatory);
     }
+
+    @Test(priority = 37)
+    public void testCibaWebLinkConfigs() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
+        OpenBankingConfigParser openBankingConfigParser = OpenBankingConfigParser.getInstance(dummyConfigFile);
+
+        List<String> cibaWebLinkAllowedParams = openBankingConfigParser.getCibaWebLinkAllowedParams();
+        Assert.assertEquals(cibaWebLinkAllowedParams.size(), 6);
+        Assert.assertEquals(cibaWebLinkAllowedParams.get(0), "client_id");
+        Assert.assertEquals(openBankingConfigParser.getCibaWebLinkNotificationProvider(),
+                "com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink." +
+                        "notification.provider.SMSNotificationProvider");
+        Assert.assertEquals(openBankingConfigParser.getCibaAuthenticationRedirectEndpoint(),
+                "https://localhost:9446/authenticationendpoint/ciba.jsp");
+    }
+
+    @Test(priority = 38)
+    public void testCibaWebLinkSMSConfigs() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
+        OpenBankingConfigParser openBankingConfigParser = OpenBankingConfigParser.getInstance(dummyConfigFile);
+
+        String cibaWebLinkAllowedParams = openBankingConfigParser.getCibaWebLinkSMSNotificationServiceURL();
+        Assert.assertEquals(cibaWebLinkAllowedParams, "https://localhost:9446/sample/sms");
+        Map<String, String> headerMap = openBankingConfigParser.getCibaWebLinkSMSNotificationRequestHeaders();
+        Assert.assertEquals(headerMap.get("Authorization"), "abc");
+        Assert.assertEquals(headerMap.get("Accept"), "application/json");
+    }
+
 }

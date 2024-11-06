@@ -57,6 +57,7 @@ public class ConsentExtensionConstants {
             "ReadTransactionsDetail",
             "ReadBalances");
     public static final String DEFAULT_PERMISSION = "ReadPersonalDetail";
+    public static final String NONCE = "nonce";
 
     public static final String DATA = "Data";
     public static final String INITIATION = "Initiation";

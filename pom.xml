@@ -393,6 +393,25 @@
                 <version>${carbon.identity.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.identity.event.handler.notification</groupId>
+                <artifactId>org.wso2.carbon.identity.event.handler.notification</artifactId>
+                <version>${identity.event.handler.notification.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-log4j2</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.application.auth.basic</groupId>
                 <artifactId>org.wso2.carbon.identity.application.authenticator.basicauth</artifactId>
                 <version>${carbon.identity.application.authenticator.version}</version>
@@ -824,7 +843,8 @@
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <com.h3xstream.findsecbugs.version>1.12.0</com.h3xstream.findsecbugs.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
-        
+        <identity.event.handler.notification.version>1.7.7</identity.event.handler.notification.version>
+
         <!-- OSGi Version ranges -->
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>

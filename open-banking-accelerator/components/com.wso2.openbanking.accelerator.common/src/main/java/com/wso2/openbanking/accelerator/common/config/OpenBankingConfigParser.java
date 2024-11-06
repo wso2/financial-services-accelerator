@@ -1489,4 +1489,97 @@ public class OpenBankingConfigParser {
                 getConfigElementFromKey(OpenBankingConstants.MANDATE_NBF_CLAIM)).trim());
     }
 
+    /**
+     * Method to get the CIBA authentication redirect endpoint configuration.
+     *
+     * @return ciba redirect endpoint
+     */
+    public String getCibaAuthenticationRedirectEndpoint() {
+        return getConfigElementFromKey(OpenBankingConstants.CIBA_AUTHENTICATION_REDIRECT_ENDPOINT) == null ?
+                "" : ((String) getConfigElementFromKey(
+                OpenBankingConstants.CIBA_AUTHENTICATION_REDIRECT_ENDPOINT)).trim();
+    }
+
+    /**
+     * Method to get the CIBA web link allowed parameters.
+     *
+     * @return list of allowed parameters
+     */
+    public List<String> getCibaWebLinkAllowedParams() {
+
+        List<String> allowedParamsList = new ArrayList<>();
+        Object configElementFromKey = getConfigElementFromKey(OpenBankingConstants.CIBA_WEB_LINK_ALLOWED_PARAMETERS);
+        if (configElementFromKey instanceof List) {
+            allowedParamsList = (List<String>) configElementFromKey;
+        } else {
+            allowedParamsList.add(configElementFromKey.toString());
+        }
+        return allowedParamsList;
+    }
+
+    /**
+     * Method to get the CIBA notification Provider
+     *
+     * @return CIBA notification Provider
+     */
+    public String getCibaWebLinkNotificationProvider() {
+
+        return getConfigElementFromKey(OpenBankingConstants.CIBA_NOTIFICATION_PROVIDER) == null ?
+                "" : ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_NOTIFICATION_PROVIDER)).trim();
+    }
+
+    /**
+     * Method to get the CIBA SMS notification service URL
+     *
+     * @return sms service URL
+     */
+    public String getCibaWebLinkSMSNotificationServiceURL() {
+
+        return getConfigElementFromKey(OpenBankingConstants.CIBA_WEB_LINK_NOTIFICATION_SMS_SERVICE_URL) == null ?
+                "" : ((String) getConfigElementFromKey(
+                OpenBankingConstants.CIBA_WEB_LINK_NOTIFICATION_SMS_SERVICE_URL)).trim();
+    }
+
+    /**
+     * Method to get the CIBA web link SMS notification request headers
+     *
+     * @return A map of header name and values
+     */
+    public Map<String, String> getCibaWebLinkSMSNotificationRequestHeaders() {
+
+        Map<String, String> headersMap = new HashMap<>();
+        OMElement identityElement = rootElement.getFirstChildWithName(
+                new QName(OpenBankingConstants.OB_CONFIG_QNAME, OpenBankingConstants.IDENTITY_CONFIG_TAG));
+
+        if (identityElement != null) {
+            OMElement cibaElement = identityElement.getFirstChildWithName(
+                    new QName(OpenBankingConstants.OB_CONFIG_QNAME, OpenBankingConstants.CIBA_CONFIG_TAG));
+
+            if (cibaElement != null) {
+                OMElement authWebLinkElement = cibaElement.getFirstChildWithName(
+                        new QName(OpenBankingConstants.OB_CONFIG_QNAME, OpenBankingConstants.AUTH_WEB_LINK_CONFIG_TAG));
+
+                if (authWebLinkElement != null) {
+                    OMElement smsElement = authWebLinkElement.getFirstChildWithName(
+                            new QName(OpenBankingConstants.OB_CONFIG_QNAME, OpenBankingConstants.SMS_CONFIG_TAG));
+
+                    if (smsElement != null) {
+                        OMElement headersElement = smsElement.getFirstChildWithName(
+                                new QName(OpenBankingConstants.OB_CONFIG_QNAME,
+                                        OpenBankingConstants.HEADERS_CONFIG_TAG));
+                        if (headersElement != null) {
+                            Iterator headerElements = headersElement.getChildElements();
+                            while (headerElements.hasNext()) {
+                                OMElement headerElement = (OMElement) headerElements.next();
+                                String headerName = headerElement.getAttributeValue(new QName("name"));
+                                String headerValue = headerElement.getAttributeValue(new QName("value"));
+                                headersMap.put(headerName, headerValue);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return headersMap;
+    }
 }

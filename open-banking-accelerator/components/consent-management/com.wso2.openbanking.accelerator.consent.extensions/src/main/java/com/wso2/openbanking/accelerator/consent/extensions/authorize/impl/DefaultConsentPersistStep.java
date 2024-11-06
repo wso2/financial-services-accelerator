@@ -26,6 +26,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -48,6 +49,12 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
 
         try {
+
+            if (ConsentExtensionUtils.isCibaWebAuthLinkFlow(consentPersistData.getConsentData())) {
+                // Skipping execution for CIBA web auth link flows.
+                return;
+            }
+
             ConsentData consentData = consentPersistData.getConsentData();
             ConsentResource consentResource;
 
