@@ -29,6 +29,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
+import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationLoaderService;
+import org.wso2.financial.services.accelerator.event.notifications.service.realtime.util.activator.PeriodicalEventNotificationConsumerJobActivator;
 
 /**
  * The Component class for activating event notification osgi service.
@@ -52,9 +54,8 @@ public class EventNotificationComponent {
              * Initialize the quartz job for consuming the realtime event notifications
              * Initialize the thread for producing the open state realtime event notifications
              */
-            //TODO:
-//            new Thread(new RealtimeEventNotificationLoaderService()).start();
-//            new PeriodicalEventNotificationConsumerJobActivator().activate();
+            new Thread(new RealtimeEventNotificationLoaderService()).start();
+            new PeriodicalEventNotificationConsumerJobActivator().activate();
         }
     }
 

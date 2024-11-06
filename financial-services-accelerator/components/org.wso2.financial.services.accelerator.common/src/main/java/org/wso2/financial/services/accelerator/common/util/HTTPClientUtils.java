@@ -89,13 +89,13 @@ public class HTTPClientUtils {
     }
 
     /**
-     * Get closeable https client to send realtime event notifications.
+     * Get closeable https client with given max Total and max per route values.
      *
      * @return Closeable https client
      * @throws FinancialServicesException FinancialServicesException exception
      */
-    @Generated(message = "Ignoring since method contains no logics")
-    public static CloseableHttpClient getRealtimeEventNotificationHttpsClient() throws FinancialServicesException {
+    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
+    public static CloseableHttpClient getHttpsClient(int maxTotal, int maxPerRoute) throws FinancialServicesException {
 
         SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
 
@@ -109,10 +109,8 @@ public class HTTPClientUtils {
                 new PoolingHttpClientConnectionManager();
 
         // configuring default maximum connections
-        connectionManager.setMaxTotal(FinancialServicesConfigParser.getInstance()
-                .getRealtimeEventNotificationMaxRetries() + 1);
-        connectionManager.setDefaultMaxPerRoute(FinancialServicesConfigParser.getInstance()
-                .getRealtimeEventNotificationMaxRetries() + 1);
+        connectionManager.setMaxTotal(maxTotal);
+        connectionManager.setDefaultMaxPerRoute(maxPerRoute);
 
         return HttpClients.custom().setConnectionManager(connectionManager).build();
     }
