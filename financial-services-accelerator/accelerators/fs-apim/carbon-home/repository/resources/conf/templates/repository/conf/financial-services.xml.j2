@@ -25,12 +25,12 @@
         <RequestRouter>org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
         {% endif %}
         <FinancialServicesGatewayExecutors>
-            {% for executor in financial_services.gateway.executors %}
-                <{{executor.type}}>
-                    {% for executor in executor.executor %}
+            {% for executors in financial_services.gateway.executors %}
+                <{{executors.type}}>
+                    {% for executor in executors.executor %}
                        <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
                         {% endfor %}
-                 </{{type.name}}>
+                 </{{executors.type}}>
             {% endfor %}
         </FinancialServicesGatewayExecutors>
         {% if financial_services.gateway.consent.validation.endpoint is defined %}
