@@ -33,6 +33,8 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.oauth.ciba.dao.CibaDAOFactory;
 import org.wso2.carbon.identity.oauth.ciba.dao.CibaMgtDAO;
+import org.wso2.carbon.identity.oauth.ciba.exceptions.CibaCoreException;
+import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
@@ -111,6 +114,82 @@ public class OBCibaResponseTypeHandlerTest extends PowerMockTestCase {
         CibaMgtDAO cibaMgtDAO = mock(CibaMgtDAO.class);
         doReturn(cibaMgtDAO).when(cibaDAOFactory).getCibaAuthMgtDAO();
         doReturn("authCode").when(cibaMgtDAO).getCibaAuthCodeKey(anyString());
+        obCibaResponseTypeHandler.issue(oAuthAuthzReqMessageContext);
+
+    }
+
+    @Test(expectedExceptions = IdentityOAuth2Exception.class)
+    public void obCibaResponseTypeHandlerInValidCallbackTest() throws Exception {
+
+        PowerMockito.when(OpenBankingConfigParser.getInstance().getCibaAuthenticationRedirectEndpoint())
+                .thenReturn("");
+        OBCibaResponseTypeHandler obCibaResponseTypeHandler = new OBCibaResponseTypeHandler();
+        OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext = mock(OAuthAuthzReqMessageContext.class);
+        AuthenticatedUser cibaAuthenticatedUser = mock(AuthenticatedUser.class);
+        OAuth2AuthorizeReqDTO authorizationReqDTO = mock(OAuth2AuthorizeReqDTO.class);
+        doReturn(authorizationReqDTO).when(oAuthAuthzReqMessageContext).getAuthorizationReqDTO();
+        doReturn(cibaAuthenticatedUser).when(authorizationReqDTO).getUser();
+        ArrayList<Object> consentIds = new ArrayList<>();
+        consentIds.add("test1");
+        doReturn(consentIds).when(consentCoreServiceMock)
+                .getConsentIdByConsentAttributeNameAndValue(anyString(), anyString());
+        DetailedConsentResource consentResourceMock = mock(DetailedConsentResource.class);
+        doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
+        doReturn("authorised").when(consentResourceMock).getCurrentStatus();
+
+        CibaMgtDAO cibaMgtDAO = mock(CibaMgtDAO.class);
+        doReturn(cibaMgtDAO).when(cibaDAOFactory).getCibaAuthMgtDAO();
+        doReturn("authCode").when(cibaMgtDAO).getCibaAuthCodeKey(anyString());
+        obCibaResponseTypeHandler.issue(oAuthAuthzReqMessageContext);
+
+    }
+
+    @Test(expectedExceptions = IdentityOAuth2Exception.class)
+    public void obCibaResponseTypeHandlerInValidTest() throws Exception {
+
+        PowerMockito.when(OpenBankingConfigParser.getInstance().getCibaAuthenticationRedirectEndpoint())
+                .thenReturn("test");
+        OBCibaResponseTypeHandler obCibaResponseTypeHandler = new OBCibaResponseTypeHandler();
+        OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext = mock(OAuthAuthzReqMessageContext.class);
+        AuthenticatedUser cibaAuthenticatedUser = mock(AuthenticatedUser.class);
+        OAuth2AuthorizeReqDTO authorizationReqDTO = mock(OAuth2AuthorizeReqDTO.class);
+        doReturn(authorizationReqDTO).when(oAuthAuthzReqMessageContext).getAuthorizationReqDTO();
+        doReturn(cibaAuthenticatedUser).when(authorizationReqDTO).getUser();
+        ArrayList<Object> consentIds = new ArrayList<>();
+        consentIds.add("test1");
+        doReturn(consentIds).when(consentCoreServiceMock)
+                .getConsentIdByConsentAttributeNameAndValue(anyString(), anyString());
+        DetailedConsentResource consentResourceMock = mock(DetailedConsentResource.class);
+        doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
+        doReturn("authorised").when(consentResourceMock).getCurrentStatus();
+
+        CibaMgtDAO cibaMgtDAO = mock(CibaMgtDAO.class);
+        doReturn(cibaMgtDAO).when(cibaDAOFactory).getCibaAuthMgtDAO();
+        doThrow(new CibaCoreException("")).when(cibaMgtDAO).getCibaAuthCodeKey(anyString());
+        obCibaResponseTypeHandler.issue(oAuthAuthzReqMessageContext);
+
+    }
+
+    @Test(expectedExceptions = IdentityOAuth2Exception.class)
+    public void obCibaResponseTypeHandlerConsentManagementErrorTest() throws Exception {
+
+        PowerMockito.when(OpenBankingConfigParser.getInstance().getCibaAuthenticationRedirectEndpoint())
+                .thenReturn("test");
+        OBCibaResponseTypeHandler obCibaResponseTypeHandler = new OBCibaResponseTypeHandler();
+        OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext = mock(OAuthAuthzReqMessageContext.class);
+        AuthenticatedUser cibaAuthenticatedUser = mock(AuthenticatedUser.class);
+        OAuth2AuthorizeReqDTO authorizationReqDTO = mock(OAuth2AuthorizeReqDTO.class);
+        doReturn(authorizationReqDTO).when(oAuthAuthzReqMessageContext).getAuthorizationReqDTO();
+        doReturn(cibaAuthenticatedUser).when(authorizationReqDTO).getUser();
+        ArrayList<Object> consentIds = new ArrayList<>();
+        consentIds.add("test1");
+        doReturn(consentIds).when(consentCoreServiceMock)
+                .getConsentIdByConsentAttributeNameAndValue(anyString(), anyString());
+        DetailedConsentResource consentResourceMock = mock(DetailedConsentResource.class);
+        doThrow(new ConsentManagementException("")).when(consentCoreServiceMock).getDetailedConsent(anyString());
+        doReturn("authorised").when(consentResourceMock).getCurrentStatus();
+        CibaMgtDAO cibaMgtDAO = mock(CibaMgtDAO.class);
+        doReturn(cibaMgtDAO).when(cibaDAOFactory).getCibaAuthMgtDAO();
         obCibaResponseTypeHandler.issue(oAuthAuthzReqMessageContext);
 
     }

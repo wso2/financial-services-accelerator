@@ -19,6 +19,7 @@
 
 package com.wso2.openbanking.accelerator.identity.auth.extensions.response.validator;
 
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.wso2.carbon.identity.oauth.ciba.handlers.CibaResponseTypeValidator;
 
@@ -27,9 +28,11 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Validates authorize responses with cibaAuthCode as response type.
  */
+@Generated(message = "Ignoring since method do not contain a logic")
 public class OBCibaResponseTypeValidator extends CibaResponseTypeValidator {
 
     @Override
+    @Generated(message = "Ignoring since method do not contain a logic")
     public void validateContentType(HttpServletRequest request) throws OAuthProblemException {
         // Overriding content type validation
         // This is for browser flow with cibaAuthCode response type. (Web-Auth link scenario)
