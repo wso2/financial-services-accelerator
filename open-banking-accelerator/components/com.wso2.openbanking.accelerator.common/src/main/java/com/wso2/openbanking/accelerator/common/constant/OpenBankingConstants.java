@@ -270,5 +270,33 @@ public class OpenBankingConstants {
     public static final String DOT_SEPARATOR = ".";
     public static final String MANDATE_NBF_CLAIM = "Identity.RequestObject.MandateNBF";
 
+    // CIBA Constants
+    public static final String CIBA_AUTHENTICATION_REDIRECT_ENDPOINT =
+            "Identity.CIBA.AuthWebLink.AuthenticationRedirectEndpoint";
+    public static final String CIBA_WEB_LINK_ALLOWED_PARAMETERS =
+            "Identity.CIBA.AuthWebLink.AllowedAuthURLParams.Value";
+    public static final String CIBA_NOTIFICATION_PROVIDER = "Identity.CIBA.AuthWebLink.NotificationProvider";
+    public static final String AUTH_REQ_ID = "auth_req_id";
+    public static final String CIBA_WEB_AUTH_LINK_PARAM = "ciba_web_auth_link";
+    public static final String CIBA_AUTH_CODE_RESPONSE_TYPE = "cibaAuthCode";
+
+    // CIBA SMS Constants
+    public static final String CIBA_WEB_LINK_NOTIFICATION_SMS_SERVICE_URL =
+            "Identity.CIBA.AuthWebLink.SMS.SMSUrl";
+    public static final String IDENTITY_CONFIG_TAG = "Identity";
+    public static final String CIBA_CONFIG_TAG = "CIBA";
+    public static final String AUTH_WEB_LINK_CONFIG_TAG = "AuthWebLink";
+    public static final String SMS_CONFIG_TAG = "SMS";
+    public static final String HEADERS_CONFIG_TAG = "Headers";
+
+    // Accelerator default consent statuses
+    public static final String AUTHORISED_STATUS = "authorised";
+    public static final String REJECTED_STATUS = "rejected";
+    public static final String AWAITING_AUTHORISATION_STATUS = "awaitingAuthorisation";
+    public static final String AWAITING_FURTHER_AUTHORISATION_STATUS = "awaitingFurtherAuthorisation";
+    public static final String CREATED_AUTHORISATION_RESOURCE_STATE = "created";
+    public static final String MULTI_AUTH_AUTHORISATION_TYPE = "multi-authorization";
+    public static final String CARBON_SUPER_TENANT_DOMAIN = "@carbon.super";
+
 }
 

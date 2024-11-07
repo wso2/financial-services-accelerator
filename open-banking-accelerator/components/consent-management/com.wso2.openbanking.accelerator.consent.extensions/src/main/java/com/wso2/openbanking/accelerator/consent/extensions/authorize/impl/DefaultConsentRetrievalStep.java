@@ -18,12 +18,14 @@
 
 package com.wso2.openbanking.accelerator.consent.extensions.authorize.impl;
 
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.utils.ConsentRetrievalUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
@@ -34,6 +36,8 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
 
 /**
  * Consent retrieval step default implementation.
@@ -67,7 +71,9 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             }
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
 
-            if (!consentResource.getCurrentStatus().equals(ConsentExtensionConstants.AWAITING_AUTH_STATUS)) {
+            if (!(consentResource.getCurrentStatus().equals(OpenBankingConstants.AWAITING_AUTHORISATION_STATUS) ||
+                    consentResource.getCurrentStatus().equals(
+                            OpenBankingConstants.AWAITING_FURTHER_AUTHORISATION_STATUS))) {
                 log.error("Consent not in authorizable state");
                 //Currently throwing error as 400 response. Developer also have the option of appending a field IS_ERROR
                 // to the jsonObject and showing it to the user in the webapp. If so, the IS_ERROR have to be checked in
@@ -75,9 +81,18 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not in authorizable state");
             }
 
-            AuthorizationResource authorizationResource = ConsentExtensionsDataHolder.getInstance()
-                    .getConsentCoreService().searchAuthorizations(consentId).get(0);
-            if (!authorizationResource.getAuthorizationStatus().equals(ConsentExtensionConstants.CREATED_STATUS)) {
+            AuthorizationResource authorizationResource;
+
+            if (ConsentExtensionUtils.isCibaWebAuthLinkFlow(consentData)) {
+                ArrayList<AuthorizationResource> authorizationResources = ConsentExtensionsDataHolder.getInstance()
+                        .getConsentCoreService().searchAuthorizations(consentId, consentData.getUserId());
+                authorizationResource = authorizationResources.size() == 1 ? authorizationResources.get(0) : null;
+            } else {
+                authorizationResource = ConsentExtensionsDataHolder.getInstance()
+                        .getConsentCoreService().searchAuthorizations(consentId).get(0);
+            }
+
+            if (authorizationResource == null || !authorizationResource.getAuthorizationStatus().equals("created")) {
                 log.error("Authorization not in authorizable state");
                 //Currently throwing error as 400 response. Developer also have the option of appending a field IS_ERROR
                 // to the jsonObject and showing it to the user in the webapp. If so, the IS_ERROR have to be checked in

@@ -86,6 +86,7 @@
     <test name="response-handler-test">
         <classes>
             <class name="com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.ResponseTypeHandlerTest"/>
+            <class name="com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBCibaResponseTypeHandlerTest"/>
         </classes>
     </test>
     <test name="response-validator-test">

@@ -18,9 +18,15 @@
 
 package com.wso2.openbanking.accelerator.ciba;
 
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
+import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.identity.openidconnect.CIBARequestObjectValidatorImpl;
@@ -33,6 +39,8 @@ import java.text.ParseException;
  * request object.
  */
 public class OBCIBARequestObjectValidationExtension extends CIBARequestObjectValidatorImpl {
+
+    private static final Log log = LogFactory.getLog(OBCIBARequestObjectValidationExtension.class);
 
     /**
      * Validations related to clientId, response type, exp, redirect URL, mandatory params,
@@ -56,8 +64,30 @@ public class OBCIBARequestObjectValidationExtension extends CIBARequestObjectVal
         if (StringUtils.isEmpty(intent.getAsString(CIBAConstants.VALUE_TAG))) {
             throw new RequestObjectException(CIBAConstants.INVALID_REQUEST,  CIBAConstants.EMPTY_CONTENT_ERROR);
         }
-
+        if (!isAuthorizableConsent(intent.getAsString("value"))) {
+            throw new RequestObjectException(OAuth2ErrorCodes.INVALID_REQUEST,
+                    "Consent is not in authorizable state");
+        }
         return validateIAMConstraints(initialRequestObject, oAuth2Parameters);
+    }
+
+    private boolean isAuthorizableConsent(String consentId) throws RequestObjectException {
+        try {
+            DetailedConsentResource detailedConsent = IdentityExtensionsDataHolder.getInstance()
+                    .getConsentCoreService().getDetailedConsent(consentId);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Consent status for consent_id %s is %s",
+                        detailedConsent.getConsentID(), detailedConsent.getCurrentStatus()));
+            }
+            return OpenBankingConstants.AWAITING_AUTHORISATION_STATUS.equalsIgnoreCase(
+                    detailedConsent.getCurrentStatus()) ||
+                    OpenBankingConstants.AWAITING_FURTHER_AUTHORISATION_STATUS
+                            .equalsIgnoreCase(detailedConsent.getCurrentStatus());
+        } catch (ConsentManagementException e) {
+            log.error("Error occurred while fetching consent_id", e);
+            throw new RequestObjectException(OAuth2ErrorCodes.INVALID_REQUEST,
+                    "Error occurred while fetching consent_id", e);
+        }
     }
 
     /**

@@ -45,6 +45,27 @@
                 sampleServletExtension
             </ServletExtension>
         </AuthenticationWebApp>
+        <CIBA>
+            <AuthWebLink>
+                <AuthenticationRedirectEndpoint>https://localhost:9446/authenticationendpoint/ciba.jsp</AuthenticationRedirectEndpoint>
+                <AllowedAuthURLParams>
+                    <Value>client_id</Value>
+                    <Value>scope</Value>
+                    <Value>response_type</Value>
+                    <Value>nonce</Value>
+                    <Value>redirect_uri</Value>
+                    <Value>binding_message</Value>
+                </AllowedAuthURLParams>
+                <NotificationProvider>com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.notification.provider.SMSNotificationProvider</NotificationProvider>
+                <SMS>
+                    <SMSUrl>https://localhost:9446/sample/sms</SMSUrl>
+                    <Headers>
+                        <Header name="Authorization" value="abc"/>
+                        <Header name="Accept" value="application/json"/>
+                    </Headers>
+                </SMS>
+            </AuthWebLink>
+        </CIBA>
         <CIBAAuthenticationEndpointWebApp>
             <ServletExtension>
                 sampleCIBAServletExtension
