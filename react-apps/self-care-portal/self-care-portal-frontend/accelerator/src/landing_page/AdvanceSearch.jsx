@@ -223,8 +223,9 @@ export const AdvanceSearch = () => {
                             title="submit search"
                             onClick={() => {
                                 let userId = searchUser;
+                                let userIdList =[userId];
                                 if (userId.length > 0 && userId.indexOf(CONFIG.TENANT_DOMAIN) === -1) {
-                                    userId = userId + "@" + CONFIG.TENANT_DOMAIN;
+                                    userIdList.push(userId + "@" + CONFIG.TENANT_DOMAIN);
                                 }
                                 let search = {
                                     ...searchObj,
@@ -232,7 +233,7 @@ export const AdvanceSearch = () => {
                                     offset: 0,
                                     dateRange: dateRange,
                                     consentIDs: consentId,
-                                    userIDs: userId,
+                                    userIDs: userIdList,
                                     clientIDs: softwareId,
                                 }
                                 setContextSearchObject(search)
