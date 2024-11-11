@@ -38,7 +38,9 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.application.authentication.framework.util.FrameworkUtils;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenReqDTO;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.carbon.identity.oauth2.model.HttpRequestHeader;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 
@@ -64,7 +66,7 @@ public class OBDefaultOIDCClaimsCallbackHandlerTest {
     private OBDefaultOIDCClaimsCallbackHandler obDefaultOIDCClaimsCallbackHandler;
 
     @BeforeClass
-    public void beforeClass() {
+    public void beforeClass() throws OpenBankingException {
 
         Map<String, Object> configMap = new HashMap<>();
         configMap.put(IdentityCommonConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
@@ -74,6 +76,7 @@ public class OBDefaultOIDCClaimsCallbackHandlerTest {
 
         mockStatic(FrameworkUtils.class);
         mockStatic(IdentityCommonUtil.class);
+        PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("123")).thenReturn(true);
         when(FrameworkUtils.getMultiAttributeSeparator()).thenReturn(MULTI_ATTRIBUTE_SEPARATOR_DEFAULT);
         obDefaultOIDCClaimsCallbackHandler = Mockito.spy(OBDefaultOIDCClaimsCallbackHandler.class);
     }
@@ -142,5 +145,22 @@ public class OBDefaultOIDCClaimsCallbackHandlerTest {
         assertEquals("{x5t#S256=807-E8KgUMV6dRHTQi1_QYo5eyPvjmjbxCtunbFixV0}", jwtClaimsSet.getClaim(
                 "cnf").toString());
         assertEquals("aaa@gold.com", jwtClaimsSet.getClaim("sub"));
+
+        OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
+        OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext =
+                new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
+        oAuthAuthzReqMessageContext.setAuthorizationReqDTO(oAuth2AuthorizeReqDTO);
+
+        oAuth2AuthorizeReqDTO.setUser(authenticatedUser);
+
+        oAuth2AuthorizeReqDTO.setConsumerKey("123");
+        PowerMockito.when(jwtClaimsSetInitial.getClaims()).thenReturn(new SingletonMap("scope", "test"));
+        Mockito.doReturn(jwtClaimsSetInitial).when(obDefaultOIDCClaimsCallbackHandler)
+                .getJwtClaimsFromSuperClass(jwtClaimsSetBuilder, oAuthAuthzReqMessageContext);
+        JWTClaimsSet jwtClaimsSet2 = obDefaultOIDCClaimsCallbackHandler.handleCustomClaims(jwtClaimsSetBuilder,
+                oAuthAuthzReqMessageContext);
+
+        assertEquals("aaa@gold.com@carbon.super", jwtClaimsSet2.getClaim("sub"));
+
     }
 }

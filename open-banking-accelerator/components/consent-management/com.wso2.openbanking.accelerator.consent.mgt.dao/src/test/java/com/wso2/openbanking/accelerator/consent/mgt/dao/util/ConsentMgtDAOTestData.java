@@ -301,6 +301,18 @@ public class ConsentMgtDAOTestData {
         };
 
         /*
+         * mappingId
+         * newMappingPermission
+         */
+        public static final Object[][] CONSENT_MAPPING_PERMISSION_UPDATE_DATA_HOLDER = new Object[][] {
+
+                {
+                        SAMPLE_MAPPING_ID,
+                        SAMPLE_PERMISSION
+                }
+        };
+
+        /*
          * newAuthorizationStatus
          */
         public static final Object[][] CONSENT_AUTHORIZATION_STATUS_UPDATE_DATA_HOLDER = new Object[][] {

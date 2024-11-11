@@ -21,7 +21,7 @@
     <groupId>com.wso2.openbanking.accelerator</groupId>
     <artifactId>open-banking</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.12-SNAPSHOT</version>
+    <version>3.2.18-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -393,6 +393,25 @@
                 <version>${carbon.identity.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.identity.event.handler.notification</groupId>
+                <artifactId>org.wso2.carbon.identity.event.handler.notification</artifactId>
+                <version>${identity.event.handler.notification.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-log4j2</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.application.auth.basic</groupId>
                 <artifactId>org.wso2.carbon.identity.application.authenticator.basicauth</artifactId>
                 <version>${carbon.identity.application.authenticator.version}</version>
@@ -417,6 +436,11 @@
                 <groupId>org.wso2.carbon.extension.identity.oauth.addons</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth2.token.handler.clientauth.mutualtls</artifactId>
                 <version>${carbon.identity.clientauth.mutualtls.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.extension.identity.oauth.addons</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt</artifactId>
+                <version>${carbon.identity.clientauth.jwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
@@ -453,6 +477,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-dbcp</groupId>
@@ -755,6 +784,7 @@
         <axiom.wso2.version>1.2.11-wso2v16</axiom.wso2.version>
         <commons.logging.version>1.2</commons.logging.version>
         <commons-lang.version>3.4</commons-lang.version>
+        <commons-pool2.version>2.8.0</commons-pool2.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <commons.bean.utils.version>1.9.3</commons.bean.utils.version>
         <maven.bundle.plugin.version>3.2.0</maven.bundle.plugin.version>
@@ -773,6 +803,7 @@
         <carbon.identity.application.authenticator.version>6.3.11</carbon.identity.application.authenticator.version>
         <carbon.identity.version>5.19.32</carbon.identity.version>
         <carbon.identity.clientauth.mutualtls.version>2.3.5</carbon.identity.clientauth.mutualtls.version>
+        <carbon.identity.clientauth.jwt.version>2.3.11</carbon.identity.clientauth.jwt.version>
         <org.apache.cxf.version>3.3.7</org.apache.cxf.version>
         <jackson.databinding.version>2.12.0</jackson.databinding.version>
         <cxf-bundle-package.version>2.7.18</cxf-bundle-package.version>
@@ -812,7 +843,8 @@
         <oltu.version>1.0.0.wso2v3</oltu.version>
         <com.h3xstream.findsecbugs.version>1.12.0</com.h3xstream.findsecbugs.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
-        
+        <identity.event.handler.notification.version>1.7.7</identity.event.handler.notification.version>
+
         <!-- OSGi Version ranges -->
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>

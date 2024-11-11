@@ -79,6 +79,13 @@
                 <ResponseTypeHandler>com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.impl.OBDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
             {% endif %}
         </Extensions>
+        <RequestObject>
+            {% if open_banking.identity.request_object.mandate_nbf_claim is defined %}
+                <MandateNBF>{{open_banking.identity.request_object.mandate_nbf_claim}}</MandateNBF>
+            {% else %}
+                <MandateNBF>true</MandateNBF>
+            {% endif %}
+        </RequestObject>
         <Filters>
             {% if open_banking.identity.filters.token_filter is defined %}
             <TokenFilter>{{open_banking.identity.filters.token_filter}}</TokenFilter>
@@ -145,6 +152,47 @@
                 </ServletExtension>
             {% endif %}
         </CIBAAuthenticationEndpointWebApp>
+        <CIBA>
+            <AuthWebLink>
+                {% if open_banking.identity.ciba.auth_web_link.redirect_endpoint is defined %}
+                    <AuthenticationRedirectEndpoint>{{open_banking.identity.ciba.auth_web_link.redirect_endpoint}}</AuthenticationRedirectEndpoint>
+                {% else %}
+                    <AuthenticationRedirectEndpoint>${carbon.protocol}://${carbon.host}:${carbon.management.port}/authenticationendpoint/ciba.jsp</AuthenticationRedirectEndpoint>
+                {% endif %}
+                <AllowedAuthURLParams>
+                    {% if open_banking.identity.ciba.auth_web_link.allowed_auth_url_parameters is defined %}
+                        {% for value in open_banking.identity.ciba.auth_web_link.allowed_auth_url_parameters %}
+                            <Value>{{value}}</Value>
+                        {% endfor %}
+                    {% else %}
+                        <Value>client_id</Value>
+                        <Value>scope</Value>
+                        <Value>response_type</Value>
+                        <Value>nonce</Value>
+                        <Value>redirect_uri</Value>
+                        <Value>binding_message</Value>
+                    {% endif %}
+                </AllowedAuthURLParams>
+                {% if open_banking.identity.ciba.auth_web_link.notification_provider is defined %}
+                    <NotificationProvider>{{open_banking.identity.ciba.auth_web_link.notification_provider}}</NotificationProvider>
+                {% else %}
+                    <NotificationProvider>com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.notification.provider.SMSNotificationProvider</NotificationProvider>
+                {% endif %}
+
+                <SMS>
+                    {% if open_banking.identity.ciba.auth_web_link.sms_notification.sms_url is defined %}
+                        <SMSUrl>{{open_banking.identity.ciba.auth_web_link.sms_notification.sms_url}}</SMSUrl>
+                    {% else %}
+                        <SMSUrl>${carbon.protocol}://${carbon.host}:${carbon.management.port}/sample/sms</SMSUrl>
+                    {% endif %}
+                    <Headers>
+                        {% for header in open_banking.identity.ciba.auth_web_link.sms_notification.header %}
+                            <Header name="{{header.name}}" value="{{header.value}}"/>
+                        {% endfor %}
+                    </Headers>
+                </SMS>
+            </AuthWebLink>
+        </CIBA>
         <AuthenticationWebApp>
             {% if open_banking.identity.authentication_webapp.servlet_extension is defined %}
                 <ServletExtension>

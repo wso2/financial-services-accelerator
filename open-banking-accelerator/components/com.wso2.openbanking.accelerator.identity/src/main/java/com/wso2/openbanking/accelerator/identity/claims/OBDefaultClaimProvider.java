@@ -41,15 +41,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.wso2.carbon.identity.openidconnect.model.Constants.JWT_PART_DELIMITER;
-import static org.wso2.carbon.identity.openidconnect.model.Constants.NUMBER_OF_PARTS_IN_JWE;
-
 /**
  * Default OB specific claim provider implementation.
  */
 public class OBDefaultClaimProvider extends OBClaimProvider {
 
     private static final Log log = LogFactory.getLog(OBDefaultClaimProvider.class);
+    private static final String S_HASH_CLAIM = "s_hash";
 
     @Override
     public Map<String, Object> getAdditionalClaims(OAuthAuthzReqMessageContext authAuthzReqMessageContext,
@@ -57,26 +55,21 @@ public class OBDefaultClaimProvider extends OBClaimProvider {
             throws IdentityOAuth2Exception {
 
         Map<String, Object> claims = new HashMap<>();
-        String[] cachedRequests = null;
         final String sessionDataKey = authAuthzReqMessageContext.getAuthorizationReqDTO().getSessionDataKey();
-        if (StringUtils.isNotBlank(sessionDataKey)) {
-            cachedRequests = SessionDataCache.getInstance()
-                    .getValueFromCache(new SessionDataCacheKey(sessionDataKey)).getParamMap().get("request");
-        }
-        if (cachedRequests != null && !(cachedRequests[0].split(JWT_PART_DELIMITER).length == NUMBER_OF_PARTS_IN_JWE)) {
-            JSONObject requestBody = getRequestBodyFromCache(cachedRequests);
 
-            /* State is an optional parameter, so the authorization server must successfully authenticate and
-             * must NOT return state nor s_hash. (FAPI1-ADV-5.2.2.1-5)
-             */
-            final String state = requestBody.getAsString(OAuthConstants.OAuth20Params.STATE);
-            if (StringUtils.isNotEmpty(state)) {
-                claims.put(IdentityCommonConstants.S_HASH, IdentityCommonUtil.getHashValue(state, null));
-            } else {
-                // state is empty, removing state from cache too
-                removeStateFromCache(sessionDataKey);
+        /* State is an optional parameter, so the authorization server must successfully authenticate and
+         * must NOT return state nor s_hash. (FAPI1-ADV-5.2.2.1-5)
+         */
+        String stateValue = SessionDataCache.getInstance().getValueFromCache(new SessionDataCacheKey(sessionDataKey))
+                .getoAuth2Parameters().getState();
+
+        if (stateValue != null) {
+            claims.put(S_HASH_CLAIM, IdentityCommonUtil.getHashValue(stateValue, null));
+            if (log.isDebugEnabled()) {
+                log.debug("S_HASH value created using given algorithm for state value:" + stateValue);
             }
         }
+
         final String responseType = authAuthzReqMessageContext.getAuthorizationReqDTO().getResponseType();
         avoidSettingATHash(responseType, authorizeRespDTO, claims);
 

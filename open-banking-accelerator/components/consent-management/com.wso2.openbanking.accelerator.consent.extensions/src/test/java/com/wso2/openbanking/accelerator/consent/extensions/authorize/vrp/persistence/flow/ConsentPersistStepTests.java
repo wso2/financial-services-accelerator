@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.Defaul
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentServiceUtil;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentAuthorizeTestConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.utils.ConsentExtensionTestUtils;
@@ -52,7 +53,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * Test class for Consent Persistence.
  */
-@PrepareForTest({OpenBankingConfigParser.class, ConsentServiceUtil.class})
+@PrepareForTest({OpenBankingConfigParser.class, ConsentServiceUtil.class, ConsentExtensionUtils.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
         "jdk.internal.reflect.*"})
 public class ConsentPersistStepTests {
@@ -109,6 +110,9 @@ public class ConsentPersistStepTests {
 
         PowerMockito.mockStatic(ConsentServiceUtil.class);
         when(ConsentServiceUtil.getConsentService()).thenReturn(consentCoreServiceMock);
+
+        PowerMockito.mockStatic(ConsentExtensionUtils.class);
+        when(ConsentExtensionUtils.isCibaWebAuthLinkFlow(Mockito.any())).thenReturn(false);
     }
 
     @Test(priority = 1, expectedExceptions = ConsentException.class)

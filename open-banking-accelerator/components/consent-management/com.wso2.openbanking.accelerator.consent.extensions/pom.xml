@@ -22,7 +22,7 @@
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
         <groupId>com.wso2.openbanking.accelerator</groupId>
-        <version>3.2.12-SNAPSHOT</version>
+        <version>3.2.18-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -102,6 +102,11 @@
         <dependency>
             <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.event.notifications.service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.event.handler.notification</groupId>
+            <artifactId>org.wso2.carbon.identity.event.handler.notification</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

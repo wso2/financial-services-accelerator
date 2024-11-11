@@ -20,7 +20,7 @@
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
         <groupId>com.wso2.openbanking.accelerator</groupId>
-        <version>3.2.12-SNAPSHOT</version>
+        <version>3.2.18-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -37,6 +37,10 @@
         <dependency>
             <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.spotbugs</groupId>
@@ -84,7 +88,7 @@
                             org.wso2.carbon.databridge.agent.*; version="${carbon.analytics.common.version.range}",
                             org.wso2.carbon.databridge.commons.*; version="${carbon.analytics.common.version.range}",
                             com.wso2.openbanking.accelerator.common.*; version="${project.version}",
-                            org.apache.tomcat.dbcp.pool2.*; version="${tomcat.catalina.version}"
+                            org.apache.commons.pool2.*; version="${commons-pool2.version}"
                         </Import-Package>
                         <Export-Package>
                             !com.wso2.openbanking.accelerator.data.publisher.common.internal,

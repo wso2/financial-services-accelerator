@@ -27,6 +27,8 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.builder.Cons
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.event.services.IdentityEventService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * Contains Data holder class for consent extensions.
@@ -37,11 +39,12 @@ public class ConsentExtensionsDataHolder {
     private static volatile ConsentExtensionsDataHolder instance;
     private OpenBankingConfigurationService openBankingConfigurationService;
     private ConsentCoreService consentCoreService;
-
+    private RealmService realmService;
     private ConsentStepsBuilder consentStepsBuilder;
     private ConsentAdminBuilder consentAdminBuilder;
     private ConsentManageBuilder consentManageBuilder;
     private ConsentValidateBuilder consentValidateBuilder;
+    private IdentityEventService identityEventService;
 
     // Prevent instantiation
     private ConsentExtensionsDataHolder() {}
@@ -131,5 +134,21 @@ public class ConsentExtensionsDataHolder {
 
     public void setConsentCoreService(ConsentCoreService consentCoreService) {
         this.consentCoreService = consentCoreService;
+    }
+
+    public IdentityEventService getIdentityEventService() {
+        return identityEventService;
+    }
+
+    public void setIdentityEventService(IdentityEventService identityEventService) {
+        this.identityEventService = identityEventService;
+    }
+
+    public RealmService getRealmService() {
+        return realmService;
+    }
+
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
     }
 }

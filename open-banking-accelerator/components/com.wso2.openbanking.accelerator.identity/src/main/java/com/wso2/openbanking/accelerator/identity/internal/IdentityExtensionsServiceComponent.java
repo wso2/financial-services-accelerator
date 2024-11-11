@@ -27,6 +27,7 @@ import com.wso2.openbanking.accelerator.identity.authenticator.OBIdentifierAuthe
 import com.wso2.openbanking.accelerator.identity.claims.OBClaimProvider;
 import com.wso2.openbanking.accelerator.identity.claims.RoleClaimProviderImpl;
 import com.wso2.openbanking.accelerator.identity.clientauth.OBMutualTLSClientAuthenticator;
+import com.wso2.openbanking.accelerator.identity.clientauth.jwt.OBPrivateKeyJWTClientAuthenticator;
 import com.wso2.openbanking.accelerator.identity.interceptor.OBIntrospectionDataProvider;
 import com.wso2.openbanking.accelerator.identity.keyidprovider.OBKeyIDProvider;
 import com.wso2.openbanking.accelerator.identity.listener.TokenRevocationListener;
@@ -76,6 +77,8 @@ public class IdentityExtensionsServiceComponent {
         bundleContext.registerService(ApplicationMgtListener.class, new OBApplicationManagementListener(), null);
         bundleContext.registerService(OAuthClientAuthenticator.class.getName(),
                 new OBMutualTLSClientAuthenticator(), null);
+        bundleContext.registerService(OAuthClientAuthenticator.class.getName(),
+                new OBPrivateKeyJWTClientAuthenticator(), null);
         bundleContext.registerService(ApplicationManagementService.class, ApplicationManagementService.getInstance(),
                 null);
         bundleContext.registerService(ClaimProvider.class.getName(), new OBClaimProvider(), null);

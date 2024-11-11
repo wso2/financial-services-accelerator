@@ -19,9 +19,11 @@
 package com.wso2.openbanking.accelerator.identity.auth.extensions.response.validator;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.oltu.oauth2.common.error.OAuthError;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.validators.AbstractValidator;
 
@@ -49,11 +51,15 @@ public class OBCodeResponseTypeValidator extends AbstractValidator<HttpServletRe
 
     @Override
     public void validateRequiredParameters(HttpServletRequest request) throws OAuthProblemException {
-        String responseType = request.getParameter("response_type");
-        String clientId = request.getParameter("client_id");
+        String responseType = request.getParameter(IdentityCommonConstants.RESPONSE_TYPE);
+        String clientId = request.getParameter(IdentityCommonConstants.CLIENT_ID);
+        String state = IdentityCommonUtil.decodeRequestObjectAndGetKey(request, IdentityCommonConstants.STATE);
         if (!isValidResponseType(clientId, responseType)) {
             log.error("Unsupported Response Type");
-            throw OAuthProblemException.error("Unsupported Response Type");
+            throw OAuthProblemException
+                    .error(OAuthError.CodeResponse.UNSUPPORTED_RESPONSE_TYPE)
+                    .description("Unsupported Response Type")
+                    .state(state);
         }
     }
 

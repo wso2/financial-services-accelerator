@@ -25,6 +25,7 @@ import com.wso2.openbanking.accelerator.event.notifications.service.internal.Eve
 import com.wso2.openbanking.accelerator.event.notifications.service.model.Notification;
 import com.wso2.openbanking.accelerator.event.notifications.service.realtime.model.RealtimeEventNotification;
 import com.wso2.openbanking.accelerator.event.notifications.service.service.DefaultEventNotificationGenerator;
+import com.wso2.openbanking.accelerator.event.notifications.service.service.EventSubscriptionService;
 import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 import com.wso2.openbanking.accelerator.event.notifications.service.utils.EventNotificationTestUtils;
 import net.minidev.json.parser.ParseException;
@@ -51,7 +52,10 @@ public class EventNotificationProducerServiceTests extends PowerMockTestCase {
     @Test
     public void testRun() throws OBEventNotificationException, ParseException, InterruptedException {
         LinkedBlockingQueue<RealtimeEventNotification> eventQueue = new LinkedBlockingQueue<>();
-        String callbackUrl = EventNotificationTestConstants.SAMPLE_CALLBACK_URL;
+
+        EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
+        Mockito.when(eventSubscriptionService.getEventSubscriptionsByClientId(any()))
+                .thenReturn(EventNotificationTestUtils.getEventSubscrptionList());
 
         DefaultEventNotificationGenerator mockedEventNotificationGenerator =
                 Mockito.mock(DefaultEventNotificationGenerator.class);
@@ -63,7 +67,8 @@ public class EventNotificationProducerServiceTests extends PowerMockTestCase {
                 mockedEventNotificationGenerator);
         PowerMockito.when(EventNotificationServiceUtil.getRealtimeEventNotificationRequestGenerator())
                 .thenReturn(mockedRealtimeEventNotificationRequestGenerator);
-        PowerMockito.when(EventNotificationServiceUtil.getCallbackURL(Mockito.any())).thenReturn(callbackUrl);
+        PowerMockito.when(EventNotificationServiceUtil.getEventSubscriptionService())
+                .thenReturn(eventSubscriptionService);
 
         EventNotificationDataHolder eventNotificationDataHolderMock = Mockito.mock(EventNotificationDataHolder.class);
         Mockito.when(eventNotificationDataHolderMock.getRealtimeEventNotificationQueue()).thenReturn(eventQueue);
@@ -94,6 +99,6 @@ public class EventNotificationProducerServiceTests extends PowerMockTestCase {
 
         Assert.assertEquals(notification.getJsonPayload(), testPayload);
         Assert.assertEquals(notification.getNotificationId(), EventNotificationTestConstants.SAMPLE_NOTIFICATION_ID);
-        Assert.assertEquals(notification.getCallbackUrl(), callbackUrl);
+        Assert.assertEquals(notification.getCallbackUrl(), EventNotificationTestConstants.SAMPLE_CALLBACK_URL);
     }
 }

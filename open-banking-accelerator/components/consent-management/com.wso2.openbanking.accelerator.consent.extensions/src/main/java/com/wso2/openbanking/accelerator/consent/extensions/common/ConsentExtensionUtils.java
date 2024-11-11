@@ -50,16 +50,20 @@ import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 
 import javax.servlet.http.HttpServletRequest;
+
+import static org.apache.oltu.oauth2.common.OAuth.OAUTH_RESPONSE_TYPE;
 
 /**
  * Util class for consent extensions.
@@ -402,7 +406,7 @@ public class ConsentExtensionUtils {
     public static String getConsentStatus(String defaultStatus) {
 
         switch (defaultStatus) {
-            case ConsentExtensionConstants.AUTHORIZED_STATUS:
+            case ConsentExtensionConstants.AUTHORISED_STATUS:
                 return ConsentExtensionConstants.OB_AUTHORIZED_STATUS;
             case ConsentExtensionConstants.REVOKED_STATUS:
                 return ConsentExtensionConstants.OB_REVOKED_STATUS;
@@ -413,5 +417,46 @@ public class ConsentExtensionUtils {
             default:
                 return ConsentExtensionConstants.OB_AWAITING_AUTH_STATUS;
         }
+    }
+
+    /**
+     * Get dummy accounts.
+     *
+     * @return Dummy accounts as a JSON array.
+     */
+    public static JSONArray getDummyAccounts() {
+        JSONArray accountsJSON = new JSONArray();
+        JSONObject accountOne = new JSONObject();
+        accountOne.appendField("account_id", "12345");
+        accountOne.appendField("display_name", "Salary Saver Account");
+
+        JSONObject accountTwo = new JSONObject();
+        accountTwo.appendField("account_id", "67890");
+        accountTwo.appendField("display_name", "Max Bonus Account");
+
+        accountsJSON.add(accountOne);
+        accountsJSON.add(accountTwo);
+        return accountsJSON;
+    }
+
+    /**
+     * Method to check if CIBA SMS web auth link based flow.
+     *
+     * @param consentData ConsentData
+     * @return Boolean
+     */
+    public static boolean isCibaWebAuthLinkFlow(ConsentData consentData) {
+        Optional<String> responseTypeParam = Arrays.stream(consentData.getSpQueryParams().split("&"))
+                .filter(e -> e.startsWith(OAUTH_RESPONSE_TYPE)).findFirst();
+        Optional<String> cibaWebAuthLinkParam = Arrays.stream(consentData.getSpQueryParams().split("&"))
+                .filter(e -> e.startsWith(OpenBankingConstants.CIBA_WEB_AUTH_LINK_PARAM)).findFirst();
+        String responseTypeValue = "";
+        boolean isCIBAWebLink = false;
+        if (responseTypeParam.isPresent() && cibaWebAuthLinkParam.isPresent()) {
+            responseTypeValue = responseTypeParam.get().split("=")[1];
+            isCIBAWebLink = Boolean.parseBoolean(cibaWebAuthLinkParam.get().split("=")[1]);
+
+        }
+        return responseTypeValue.equals(OpenBankingConstants.CIBA_AUTH_CODE_RESPONSE_TYPE) && isCIBAWebLink;
     }
 }

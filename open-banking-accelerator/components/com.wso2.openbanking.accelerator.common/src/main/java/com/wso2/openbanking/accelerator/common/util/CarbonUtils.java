@@ -71,7 +71,7 @@ public class CarbonUtils {
     @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
     public static String getCarbonPort() {
 
-        int offset = Integer.parseInt(ServerConfiguration.getInstance().getFirstProperty("Offset"));
+        int offset = Integer.parseInt(ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
         return String.valueOf(9443 + offset);
     }
 

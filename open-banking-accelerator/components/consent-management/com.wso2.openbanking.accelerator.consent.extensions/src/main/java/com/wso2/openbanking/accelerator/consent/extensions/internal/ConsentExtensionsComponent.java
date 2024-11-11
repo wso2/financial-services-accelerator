@@ -20,6 +20,8 @@ package com.wso2.openbanking.accelerator.consent.extensions.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
 import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.CIBAPushAuthenticator;
+import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.CIBAWebLinkAuthenticator;
+import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.notification.CIBAWebLinkNotificationHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionExporter;
 import com.wso2.openbanking.accelerator.consent.extensions.util.PeriodicalConsentJobActivator;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
@@ -33,6 +35,9 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.identity.application.authentication.framework.ApplicationAuthenticator;
+import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
+import org.wso2.carbon.identity.event.services.IdentityEventService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * The Component class for activating consent extensions osgi service.
@@ -56,8 +61,13 @@ public class ConsentExtensionsComponent {
             log.debug("Periodical Consent Status Updater Started");
         }
         CIBAPushAuthenticator authenticator = new CIBAPushAuthenticator();
+        CIBAWebLinkAuthenticator cibaWebLinkAuthenticator = new CIBAWebLinkAuthenticator();
         context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
                 authenticator, null);
+        context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
+                cibaWebLinkAuthenticator, null);
+        context.getBundleContext().registerService(AbstractEventHandler.class.getName(),
+                new CIBAWebLinkNotificationHandler(), null);
         if (log.isDebugEnabled()) {
             log.debug("CIBA Push authenticator bundle is activated");
         }
@@ -104,5 +114,40 @@ public class ConsentExtensionsComponent {
         log.debug("UnSetting the Consent Core Service");
         ConsentExtensionsDataHolder.getInstance().setConsentCoreService(null);
 
+    }
+
+    @Reference(
+            name = "EventMgtService",
+            service = IdentityEventService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetIdentityEventService"
+    )
+    protected void setIdentityEventService(IdentityEventService eventService) {
+        ConsentExtensionsDataHolder.getInstance().setIdentityEventService(eventService);
+    }
+
+    protected void unsetIdentityEventService(IdentityEventService eventService) {
+
+        ConsentExtensionsDataHolder.getInstance().setIdentityEventService(null);
+    }
+
+    @Reference(
+            name = "realm.service",
+            service = RealmService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetRealmService"
+    )
+    protected void setRealmService(RealmService realmService) {
+
+        log.debug("Setting the Realm Service");
+        ConsentExtensionsDataHolder.getInstance().setRealmService(realmService);
+    }
+
+    protected void unsetRealmService(RealmService realmService) {
+
+        log.debug("UnSetting the Realm Service");
+        ConsentExtensionsDataHolder.getInstance().setRealmService(null);
     }
 }

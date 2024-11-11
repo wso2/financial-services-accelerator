@@ -18,10 +18,6 @@
 
 package com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator;
 
-import com.nimbusds.jose.JOSEObject;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jwt.PlainJWT;
-import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -29,6 +25,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.OBRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.ValidationResponse;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
+import com.wso2.openbanking.accelerator.identity.utils.TestUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -38,10 +35,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
-import org.wso2.carbon.identity.openidconnect.model.RequestObject;
 
-import java.text.ParseException;
 import java.util.Collections;
 
 import static org.mockito.Mockito.anyString;
@@ -92,7 +86,7 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
         // act
         DefaultOBRequestObjectValidator uut = new DefaultOBRequestObjectValidator();
 
-        OBRequestObject<?> obRequestObject = getObRequestObject(ReqObjectTestDataProvider.VALID_REQUEST);
+        OBRequestObject<?> obRequestObject = TestUtils.getObRequestObject(ReqObjectTestDataProvider.VALID_REQUEST);
         ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
 
         // assert
@@ -117,7 +111,8 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
         // act
         DefaultOBRequestObjectValidator uut = new DefaultOBRequestObjectValidator();
 
-        OBRequestObject<?> obRequestObject = getObRequestObject(ReqObjectTestDataProvider.NO_CLIENT_ID_REQUEST);
+        OBRequestObject<?> obRequestObject = TestUtils
+                .getObRequestObject(ReqObjectTestDataProvider.NO_CLIENT_ID_REQUEST);
         ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
 
         // assert
@@ -138,24 +133,12 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
         // act
         DefaultOBRequestObjectValidator uut = new DefaultOBRequestObjectValidator();
 
-        OBRequestObject<?> obRequestObject = getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
+        OBRequestObject<?> obRequestObject = TestUtils.getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
         ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
 
         // assert
         Assert.assertFalse(validationResponse.isValid());
         Assert.assertEquals(validationResponse.getViolationMessage(), "dummy-error");
-    }
-
-    private OBRequestObject<?> getObRequestObject(String request) throws ParseException, RequestObjectException {
-
-        RequestObject requestObject = new RequestObject();
-        JOSEObject jwt = JOSEObject.parse(request);
-        if (jwt.getHeader().getAlgorithm() == null || jwt.getHeader().getAlgorithm().equals(JWSAlgorithm.NONE)) {
-            requestObject.setPlainJWT(PlainJWT.parse(request));
-        } else {
-            requestObject.setSignedJWT(SignedJWT.parse(request));
-        }
-        return new OBRequestObject<>(requestObject);
     }
 
 }
