@@ -86,6 +86,12 @@ public class FinancialServicesConstants {
     public static final String REQUEST_ROUTER = "Gateway.RequestRouter";
     public static final String GATEWAY_CACHE_EXPIRY = "Gateway.Cache.GatewayCache.CacheAccessExpiry";
     public static final String GATEWAY_CACHE_MODIFIED_EXPIRY = "Gateway.Cache.GatewayCache.CacheModifiedExpiry";
+    public static final String CONSENT_VALIDATION_ENDPOINT = "Gateway.ConsentValidationEndpoint";
+    public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";
+    public static final String KEYSTORE_PASSWORD_TAG = "Security.InternalKeyStore.Password";
+    public static final String SIGNING_ALIAS_TAG = "Security.InternalKeyStore.KeyAlias";
+    public static final String SIGNING_KEY_PASSWORD = "Security.InternalKeyStore.KeyPassword";
+
     //Event Notifications Constants
     public static final String EVENT_NOTIFICATION_GENERATOR = "EventNotifications.NotificationGeneration." +
             "NotificationGenerator";

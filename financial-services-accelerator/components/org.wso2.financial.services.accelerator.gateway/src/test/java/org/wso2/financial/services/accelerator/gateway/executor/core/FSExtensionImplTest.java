@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Test for open Banking extension implementation.
+ * Test for FS extension implementation.
  */
 public class FSExtensionImplTest {
 

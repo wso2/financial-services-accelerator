@@ -21,6 +21,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementRuntimeException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
@@ -136,5 +138,40 @@ public class ConsentExtensionUtils {
             //Throwing a runtime exception since we cannot proceed with invalid objects
             throw new ConsentManagementRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
+    }
+
+    /**
+     * Method to resolve username from user ID.
+     *
+     * @param userID   User ID
+     * @return Username
+     */
+    @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
+    public static String resolveUsernameFromUserId(String userID) {
+
+        if (!startsWithUUID(userID)) {
+            // If the user ID is not starting with a UUID that means request has sent the username,
+            // return the same user ID as the username.
+            return userID;
+        }
+
+        String username = null;
+        try {
+            if (userID.contains(ConsentExtensionConstants.TENANT_DOMAIN)) {
+                username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN,
+                        userID.split("@" + ConsentExtensionConstants.TENANT_DOMAIN)[0]);
+            } else {
+                username =  OAuth2Util.resolveUsernameFromUserId(ConsentExtensionConstants.TENANT_DOMAIN, userID);
+            }
+        } catch (UserStoreException e) {
+            log.debug("Returning null since user ID is not found in the database");
+            return null;
+        }
+        return username;
+    }
+
+    public static boolean startsWithUUID(String input) {
+        Pattern uuidPattern = Pattern.compile("^" + ConsentExtensionConstants.UUID_REGEX + ".*$");
+        return uuidPattern.matcher(input).matches();
     }
 }
