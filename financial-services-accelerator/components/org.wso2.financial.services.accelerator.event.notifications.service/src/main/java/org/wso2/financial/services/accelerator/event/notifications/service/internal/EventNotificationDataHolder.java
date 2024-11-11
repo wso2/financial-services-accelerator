@@ -61,4 +61,14 @@ public class EventNotificationDataHolder {
     public void setRealtimeEventNotificationQueue(LinkedBlockingQueue<RealtimeEventNotification> queue) {
         this.realtimeEventNotificationQueue = queue;
     }
+
+    public FinancialServicesConfigurationService getConfigService() {
+
+        return configService;
+    }
+
+    public void setConfigService(FinancialServicesConfigurationService configService) {
+
+        this.configService = configService;
+    }
 }
