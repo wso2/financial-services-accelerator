@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationGenerator;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
+import org.wso2.financial.services.accelerator.event.notifications.service.RealtimeNotificationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationRequestGenerator;
@@ -157,6 +158,10 @@ public class EventNotificationServiceUtil {
 
     public static EventSubscriptionService getEventSubscriptionService() {
         return new EventSubscriptionService();
+    }
+
+    public static RealtimeNotificationService getRealtimeNotificationService() {
+        return new RealtimeNotificationService();
     }
 
 }

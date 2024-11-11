@@ -40,7 +40,7 @@ public interface RealtimeEventNotificationRequestGenerator {
      * This method is to generate realtime event notification request headers. To generate custom values
      * for the body this method should be extended.
      *
-     * @return Map<String, String> headers
+     * @return Map of headers
      */
     Map<String, String> getAdditionalHeaders();
 }

@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.event.notifications.service.realtime.service;
 
 import com.nimbusds.jose.JOSEException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -57,7 +58,7 @@ public class EventNotificationProducerService implements Runnable {
         try {
             List<EventSubscription> subscriptionList = EventNotificationServiceUtil.getEventSubscriptionService()
                     .getEventSubscriptionsByClientId(notification.getClientId());
-            if (subscriptionList.isEmpty()) {
+            if (CollectionUtils.isEmpty(subscriptionList)) {
                 throw new FSEventNotificationException("No subscriptions found for the client ID: " +
                         notification.getClientId());
             }
@@ -76,20 +77,18 @@ public class EventNotificationProducerService implements Runnable {
                     }
                 });
 
-                if (allowedEvents.isEmpty()) {
-                    continue;
+                if (!allowedEvents.isEmpty()) {
+                    RealtimeEventNotification realtimeEventNotification = new RealtimeEventNotification();
+                    realtimeEventNotification.setNotification(notification);
+                    realtimeEventNotification.setCallbackUrl(subscription.getCallbackUrl());
+
+                    NotificationResponse notificationResponse = eventNotificationGenerator
+                            .generateEventNotificationBody(notification, allowedEvents);
+                    realtimeEventNotification.setSecurityEventToken(eventNotificationGenerator
+                            .generateEventNotification(NotificationResponse.getJsonNode(notificationResponse)));
+
+                    queue.put(realtimeEventNotification); // put the notification into the queue
                 }
-
-                RealtimeEventNotification realtimeEventNotification = new RealtimeEventNotification();
-                realtimeEventNotification.setNotification(notification);
-                realtimeEventNotification.setCallbackUrl(subscription.getCallbackUrl());
-
-                NotificationResponse notificationResponse = eventNotificationGenerator.generateEventNotificationBody(
-                        notification, allowedEvents);
-                realtimeEventNotification.setSecurityEventToken(eventNotificationGenerator.generateEventNotification(
-                        NotificationResponse.getJsonNode(notificationResponse)));
-
-                queue.put(realtimeEventNotification); // put the notification into the queue
             }
         } catch (InterruptedException e) {
             log.error("Error when adding the Realtime Notification with notification ID " +

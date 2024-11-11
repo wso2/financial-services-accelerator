@@ -44,14 +44,14 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class PeriodicalEventNotificationConsumerJobActivator {
 
     private static Log log = LogFactory.getLog(PeriodicalEventNotificationConsumerJobActivator.class);
-    private static final String PERIODIC_CRON_EXPRESSION = FinancialServicesConfigParser
-            .getInstance().getRealtimeEventNotificationSchedulerCronExpression().replaceAll("[\r\n]", "");
 
     public void activate() {
         int cronInSeconds = 60;
+        String periodicCronExpression = FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationSchedulerCronExpression().replaceAll("[\r\n]", "");
 
         try {
-            CronExpression cron = new CronExpression(PERIODIC_CRON_EXPRESSION);
+            CronExpression cron = new CronExpression(periodicCronExpression);
 
             Date nextValidTime = cron.getNextValidTimeAfter(new Date());
             Date secondValidTime = cron.getNextValidTimeAfter(nextValidTime);
@@ -60,7 +60,7 @@ public class PeriodicalEventNotificationConsumerJobActivator {
 
         } catch (ParseException e) {
             log.error("Error while parsing the event notification scheduler cron expression : "
-                    + PERIODIC_CRON_EXPRESSION, e);
+                    + periodicCronExpression, e);
         }
 
         JobDetail job = newJob(EventNotificationConsumerJob.class)
@@ -83,7 +83,7 @@ public class PeriodicalEventNotificationConsumerJobActivator {
 
             scheduler.scheduleJob(job, trigger);
             log.info("Periodical Realtime Event Notification sender Started with cron : "
-                    + PERIODIC_CRON_EXPRESSION);
+                    + periodicCronExpression);
         } catch (SchedulerException e) {
             log.error("Error while starting Periodical Realtime Event Notification sender", e);
         }

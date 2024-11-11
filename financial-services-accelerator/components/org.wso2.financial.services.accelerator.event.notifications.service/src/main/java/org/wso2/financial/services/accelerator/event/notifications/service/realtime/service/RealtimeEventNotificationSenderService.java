@@ -30,17 +30,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.util.DatabaseUtils;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
+import org.wso2.financial.services.accelerator.event.notifications.service.RealtimeNotificationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
-import org.wso2.financial.services.accelerator.event.notifications.service.dao.EventNotificationDAO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
-import org.wso2.financial.services.accelerator.event.notifications.service.persistence.EventNotificationStoreInitializer;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.Connection;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Map;
@@ -102,13 +99,12 @@ public class RealtimeEventNotificationSenderService implements Runnable {
      * @throws FSEventNotificationException
      */
     private void postWithRetry() throws FSEventNotificationException {
-        EventNotificationDAO pollingDAO =
-                EventNotificationStoreInitializer.getEventNotificationDAO();
+        RealtimeNotificationService realtimeNotificationService = EventNotificationServiceUtil
+                .getRealtimeNotificationService();
         int retryCount = 0;
         long backoffTimeMs = INITIAL_BACKOFF_TIME_IN_SECONDS * 1000L;
         boolean circuitBreakerOpen = false;
         LocalTime startTime = LocalTime.now();
-        Connection connection = DatabaseUtils.getDBConnection();
 
         while (retryCount <= MAX_RETRIES && !circuitBreakerOpen) {
             try {
@@ -170,8 +166,8 @@ public class RealtimeEventNotificationSenderService implements Runnable {
                         log.debug("Real-time event notification with notificationId: " +
                                 notificationId.replaceAll("[\r\n]", "") + " sent successfully");
                     }
-                    pollingDAO.updateNotificationStatusById(connection, notificationId, EventNotificationConstants.ACK);
-                    DatabaseUtils.commitTransaction(DatabaseUtils.getDBConnection());
+                    realtimeNotificationService.updateNotificationStatusById(notificationId,
+                            EventNotificationConstants.ACK);
                     return;
                 } else {
                     if (log.isDebugEnabled()) {
@@ -194,17 +190,14 @@ public class RealtimeEventNotificationSenderService implements Runnable {
 
                 // If the circuit breaker is opened or the maximum retry count is exceeded,
                 // the notification status will be updated as ERROR.
-                pollingDAO.updateNotificationStatusById(connection, notificationId, EventNotificationConstants.ERROR);
-                DatabaseUtils.commitTransaction(DatabaseUtils.getDBConnection());
+                realtimeNotificationService.updateNotificationStatusById(notificationId,
+                        EventNotificationConstants.ERROR);
             } catch (IOException | InterruptedException  e) {
                 log.error("Real-time event notification with notificationId: " +
                         notificationId.replaceAll("[\r\n]", "") + " sent failed", e);
             } catch (FSEventNotificationException e) {
                 log.error("Real-time event notification with notificationId: " +
                         notificationId.replaceAll("[\r\n]", "") + " sent failed", e);
-                DatabaseUtils.rollbackTransaction(DatabaseUtils.getDBConnection());
-            } finally {
-                DatabaseUtils.closeConnection(DatabaseUtils.getDBConnection());
             }
 
         }

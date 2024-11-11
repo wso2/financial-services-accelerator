@@ -23,14 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationLoaderService;
-import org.wso2.financial.services.accelerator.event.notifications.service.realtime.util.activator.PeriodicalEventNotificationConsumerJobActivator;
 
 /**
  * The Component class for activating event notification osgi service.
@@ -43,9 +37,7 @@ public class EventNotificationComponent {
 
     @Activate
     protected void activate(ComponentContext context) {
-        if (log.isDebugEnabled()) {
-            log.debug("Event Notification Service Component Activated");
-        }
+        log.debug("Event Notification Service Component Activated");
 
         // Check if realtime event notification enabled
         if (FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled()) {
@@ -54,48 +46,9 @@ public class EventNotificationComponent {
              * Initialize the quartz job for consuming the realtime event notifications
              * Initialize the thread for producing the open state realtime event notifications
              */
+            log.debug("Event Notification####");
             new Thread(new RealtimeEventNotificationLoaderService()).start();
-            new PeriodicalEventNotificationConsumerJobActivator().activate();
+//            new PeriodicalEventNotificationConsumerJobActivator().activate();
         }
-    }
-
-    /**
-     * Setters for the descendent OSGI services of the EventNotificationComponent.
-     * This is added to run the EventNotification OSGI component after the Common module
-     * @param configService OpenBankingConfigurationService
-     */
-    @Reference(
-            service = FinancialServicesConfigurationService.class,
-            cardinality = ReferenceCardinality.MANDATORY,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetConfigService"
-    )
-    public void setConfigService(FinancialServicesConfigurationService configService) {
-        EventNotificationDataHolder.getInstance().setFinancialServicesConfigurationService(configService);
-    }
-
-    public void unsetConfigService(FinancialServicesConfigurationService configService) {
-        EventNotificationDataHolder.getInstance().setFinancialServicesConfigurationService(null);
-    }
-
-    /**
-     * Setters for the descendent OSGI services of the EventNotificationComponent.
-     * This is added to run the EventNotification OSGI component after the OAuth2Service
-     */
-    @Reference(
-            service = OAuth2Service.class,
-            cardinality = ReferenceCardinality.MANDATORY,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetOAuth2Service"
-    )
-
-    /**
-     * Setters for the descendent OSGI services of the EventNotificationComponent.
-     * @param oAuth2Service OAuth2Service
-     */
-    public void setOAuth2Service(OAuth2Service oAuth2Service) {
-    }
-
-    public void unsetOAuth2Service(OAuth2Service oAuth2Service) {
     }
 }
