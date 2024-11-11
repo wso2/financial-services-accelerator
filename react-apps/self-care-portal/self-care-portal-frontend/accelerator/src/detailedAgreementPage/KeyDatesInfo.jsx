@@ -44,15 +44,15 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                 timestamp = getLongTimestampInMillis(timestamp);
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <li className="infoItem">{(timestamp !== 0)? moment(timestamp).format(keyDate.dateFormat) : "N/A"}</li>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue">{(timestamp !== 0)? moment(timestamp).format(keyDate.dateFormat) : "N/A"}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <li className="infoItem"></li>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue"></li>
                     </>
                 )
             }
@@ -68,15 +68,15 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
 
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <li className="infoItem">{moment(fromTime).format(keyDate.dateFormat)} - {(toTime !== 0)?moment(toTime).format(keyDate.dateFormat):"N/A"}</li>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue">{moment(fromTime).format(keyDate.dateFormat)} - {(toTime !== 0)?moment(toTime).format(keyDate.dateFormat):"N/A"}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <li className="infoItem"></li>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue"></li>
                     </>
                 )
             }
@@ -100,23 +100,23 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
 
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <li className="infoItem">{valueFromConsent}</li>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue">{valueFromConsent}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <li className="infoItem"></li>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue"></li>
                     </>
                 )
             }
         } else {
             return (
                 <>
-                    <h6>{keyDate.title}</h6>
-                    <li className="infoItem">{keyDate.text}</li>
+                    <h6 className="keyDateTitle">{keyDate.title}</h6>
+                    <li className="infoItem keyDateValue">{keyDate.text}</li>
                 </>
             )
         }
