@@ -20,11 +20,15 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestUtil;
@@ -33,7 +37,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.m
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidationResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -46,11 +52,21 @@ public class DefaultConsentValidatorTest {
     DefaultConsentValidator validator = new DefaultConsentValidator();
     ConsentValidateData consentValidateDataMock;
     ConsentValidationResult consentValidationResultMock;
+    MockedStatic<ConsentExtensionUtils> extensionsUtilMockedStatic;
 
     @BeforeClass
     public void beforeTest() {
         consentValidateDataMock = mock(ConsentValidateData.class);
         consentValidationResultMock = spy(ConsentValidationResult.class);
+
+        extensionsUtilMockedStatic = Mockito.mockStatic(ConsentExtensionUtils.class);
+        extensionsUtilMockedStatic.when(() -> ConsentExtensionUtils.resolveUsernameFromUserId(anyString()))
+                .thenReturn(TestConstants.SAMPLE_USER_ID);
+    }
+
+    @AfterClass
+    public void afterTest() {
+        extensionsUtilMockedStatic.close();
     }
 
     @Test
@@ -98,12 +114,16 @@ public class DefaultConsentValidatorTest {
     public void testValidateWithUserIdMismatch() {
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
-        ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
-                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_AUTH_ID);
+        AuthorizationResource authorizationResource = new AuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
+                "admin", TestConstants.SAMPLE_AUTHORIZATION_STATUS,
+                TestConstants.SAMPLE_AUTH_TYPE, System.currentTimeMillis() / 1000);
+        authorizationResource.setAuthorizationID(TestConstants.SAMPLE_AUTH_ID);
+
+        ArrayList<AuthorizationResource> authResources = new ArrayList<>(List.of(authorizationResource));
         doReturn(authResources).when(consentResource).getAuthorizationResources();
 
         doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
-        doReturn("admin").when(consentValidateDataMock).getUserId();
+        doReturn("admin@wso2.com").when(consentValidateDataMock).getUserId();
 
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 
@@ -242,10 +262,10 @@ public class DefaultConsentValidatorTest {
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 
         Assert.assertFalse(consentValidationResultMock.isValid());
-        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.UNAUTHORIZED.getReasonPhrase());
+        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.FORBIDDEN.getReasonPhrase());
         Assert.assertEquals(consentValidationResultMock.getErrorMessage(), "Permission mismatch. " +
                 "Consent does not contain necessary permissions");
-        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_UNAUTHORIZED);
+        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_FORBIDDEN);
     }
 
     @Test
@@ -292,9 +312,9 @@ public class DefaultConsentValidatorTest {
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 
         Assert.assertFalse(consentValidationResultMock.isValid());
-        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.UNAUTHORIZED.getReasonPhrase());
+        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.BAD_REQUEST.getReasonPhrase());
         Assert.assertEquals(consentValidationResultMock.getErrorMessage(), "Provided consent is expired");
-        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_UNAUTHORIZED);
+        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
     @Test

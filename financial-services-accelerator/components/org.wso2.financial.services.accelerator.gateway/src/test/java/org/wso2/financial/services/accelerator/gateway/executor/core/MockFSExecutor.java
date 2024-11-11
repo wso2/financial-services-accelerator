@@ -23,9 +23,9 @@ import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIReque
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
 
 /**
- * Mock Open banking executor for testing.
+ * Mock FS executor for testing.
  */
-public class MockOBExecutor implements FinancialServicesGatewayExecutor {
+public class MockFSExecutor implements FinancialServicesGatewayExecutor {
 
     @Override
     public void preProcessRequest(FSAPIRequestContext fsapiRequestContext) {

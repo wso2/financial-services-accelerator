@@ -283,6 +283,9 @@ read_timeout = 5000
 [application_mgt]
 enable_role_validation = true
 
+[transport.https.properties]
+maxHttpHeaderSize = "65536"
+
 #================configs related to financial-services.xml=============
 [[financial_services.jdbc_persistence_manager]]
 data_source.name = "WSO2FS_DB"
