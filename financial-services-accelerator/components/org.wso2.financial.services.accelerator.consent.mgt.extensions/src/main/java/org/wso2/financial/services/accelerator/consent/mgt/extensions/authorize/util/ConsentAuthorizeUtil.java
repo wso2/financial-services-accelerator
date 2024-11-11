@@ -448,14 +448,13 @@ public class ConsentAuthorizeUtil {
 
         JSONArray accountsJSON = new JSONArray();
         JSONObject accountOne = new JSONObject();
-        accountOne.put("account_id", "12345");
+        accountOne.put("account_id", "30080012343456");
         accountOne.put("display_name", "Salary Saver Account");
 
         accountsJSON.put(accountOne);
 
         JSONObject accountTwo = new JSONObject();
-        accountTwo.put("account_id", "67890");
-        accountTwo.put("account_id", "67890");
+        accountTwo.put("account_id", "30080098763459");
         accountTwo.put("display_name", "Max Bonus Account");
 
         accountsJSON.put(accountTwo);
