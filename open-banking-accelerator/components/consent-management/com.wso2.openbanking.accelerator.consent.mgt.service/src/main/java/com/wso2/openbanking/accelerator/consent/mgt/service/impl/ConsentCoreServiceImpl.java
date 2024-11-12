@@ -367,7 +367,10 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                                 " is not a member of the consent user list");
                         throw new ConsentManagementException(errorMsg);
                     }
-                    revokeTokens(retrievedDetailedConsentResource, userID);
+
+                    for (String user : consentUserIDSet) {
+                        revokeTokens(retrievedDetailedConsentResource, user);
+                    }
                 }
 
                 ArrayList<ConsentMappingResource> consentMappingResources = retrievedDetailedConsentResource

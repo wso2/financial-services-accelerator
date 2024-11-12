@@ -45,6 +45,8 @@ public class OAuthCallbackServlet extends HttpServlet {
     private static final long serialVersionUID = -1253188744670051774L;
     private static final Log LOG = LogFactory.getLog(OAuthCallbackServlet.class);
     private static final String CODE = "code";
+    private static final String ERROR = "error";
+    private static final String ERROR_DESCRIPTION = "error_description";
 
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
     @Override
@@ -68,6 +70,14 @@ public class OAuthCallbackServlet extends HttpServlet {
                         .sendAccessTokenRequest(iamBaseUrl, clientKey, clientSecret, code);
                 // add cookies to response
                 oAuthService.generateCookiesFromTokens(tokenResponse, req, resp);
+            }
+            if ("access_denied".equals(req.getParameter(ERROR))) {
+                LOG.debug("User denied the consent. Error: " + req.getParameter(ERROR) +
+                        "Error Description:" + req.getParameter(ERROR_DESCRIPTION));
+                SCPError error = new SCPError(req.getParameter(ERROR), req.getParameter(ERROR_DESCRIPTION));
+                final String errorUrlFormat = iamBaseUrl + "/consentmgr/error?message=%s&description=%s";
+                Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
+                return;
             }
             LOG.debug("Redirecting to frontend application: " + redirectUrl);
             resp.sendRedirect(redirectUrl);

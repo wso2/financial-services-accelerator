@@ -66,7 +66,10 @@ export const Nav = (user) => {
                   className="navUserImage"
                   rounded
                 />
-                <span className="dropdown-userId">{user.email}</span>
+                <span className="dropdown-userId">{
+                    (user.email && user.email.indexOf("@" + CONFIG.TENANT_DOMAIN) !== -1) ?
+                    user.email.replace("@" + CONFIG.TENANT_DOMAIN, "") : user.email
+                }</span>
               </span>
             }
           >
