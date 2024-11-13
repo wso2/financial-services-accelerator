@@ -2584,7 +2584,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 // Filter tokens by consent ID claim
                 if (Arrays.asList(accessTokenDO.getScope()).contains(consentIdClaim +
                         detailedConsentResource.getConsentID())) {
-                    activeTokens.add(accessTokenDO.getAccessToken());
+                    activeTokens.add(accessTokenDO.getRefreshToken());
                 }
             }
 
