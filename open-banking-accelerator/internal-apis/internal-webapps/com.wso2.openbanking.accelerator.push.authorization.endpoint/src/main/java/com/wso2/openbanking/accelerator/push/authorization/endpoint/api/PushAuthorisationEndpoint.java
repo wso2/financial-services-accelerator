@@ -95,16 +95,6 @@ public class PushAuthorisationEndpoint {
         OAuthClientAuthnContext clientAuthnContext = (OAuthClientAuthnContext)
                 request.getAttribute(CLIENT_AUTHENTICATION_CONTEXT);
 
-        // Check if the client authentication is successful
-        if (!clientAuthnContext.isAuthenticated()) {
-            // create error response
-            PushAuthErrorResponse errorResponse = pushAuthRequestValidator
-                    .createErrorResponse(HttpServletResponse.SC_UNAUTHORIZED,
-                            clientAuthnContext.getErrorCode(), clientAuthnContext.getErrorMessage());
-            return Response.status(errorResponse.getHttpStatusCode())
-                    .entity(errorResponse.getPayload()).build();
-        }
-
         try {
             paramMap = pushAuthRequestValidator.validateParams(request, (Map<String, List<String>>) parameterMap);
         } catch (PushAuthRequestValidatorException exception) {
@@ -113,7 +103,17 @@ public class PushAuthorisationEndpoint {
                     .createErrorResponse(exception.getHttpStatusCode(), exception.getErrorCode(),
                             exception.getErrorDescription());
             return Response.status(errorResponse.getHttpStatusCode() != 0 ?
-                    errorResponse.getHttpStatusCode() : exception.getHttpStatusCode())
+                            errorResponse.getHttpStatusCode() : exception.getHttpStatusCode())
+                    .entity(errorResponse.getPayload()).build();
+        }
+
+        // Check if the client authentication is successful
+        if (!clientAuthnContext.isAuthenticated()) {
+            // create error response
+            PushAuthErrorResponse errorResponse = pushAuthRequestValidator
+                    .createErrorResponse(HttpServletResponse.SC_UNAUTHORIZED,
+                            clientAuthnContext.getErrorCode(), clientAuthnContext.getErrorMessage());
+            return Response.status(errorResponse.getHttpStatusCode())
                     .entity(errorResponse.getPayload()).build();
         }
 
