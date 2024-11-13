@@ -45,6 +45,12 @@ import java.util.Map;
         groups = AttributeChecks.class)
 public class RegistrationRequest {
 
+    @SerializedName("iat")
+    private String iat;
+
+    @SerializedName("exp")
+    private String exp;
+
     @SerializedName("aud")
     private String aud;
 
@@ -362,5 +368,21 @@ public class RegistrationRequest {
 
     public void setJwksURI(String jwksURI) {
         this.jwksURI = jwksURI;
+    }
+
+    public String getIat() {
+        return iat;
+    }
+
+    public void setIat(String iat) {
+        this.iat = iat;
+    }
+
+    public String getExp() {
+        return exp;
+    }
+
+    public void setExp(String exp) {
+        this.exp = exp;
     }
 }

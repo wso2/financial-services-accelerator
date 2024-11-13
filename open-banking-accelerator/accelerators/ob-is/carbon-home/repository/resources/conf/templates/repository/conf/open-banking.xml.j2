@@ -522,6 +522,27 @@
        <RegistrationClientURI>https://localhost:8243/open-banking/0.1/register/</RegistrationClientURI>
        {% endif %}
        <RegistrationRequestParams>
+            <Iat>
+                {% if open_banking.dcr.registration.iat.required is defined %}
+                <Required>{{open_banking.dcr.registration.iat.required}}</Required>
+                {% else %}
+                <Required>false</Required>
+                {% endif %}
+            </Iat>
+            <Exp>
+                {% if open_banking.dcr.registration.exp.required is defined %}
+                <Required>{{open_banking.dcr.registration.exp.required}}</Required>
+                {% else %}
+                <Required>false</Required>
+                {% endif %}
+            </Exp>
+            <Jti>
+                {% if open_banking.dcr.registration.jti.required is defined %}
+                <Required>{{open_banking.dcr.registration.jti.required}}</Required>
+                {% else %}
+                <Required>false</Required>
+                {% endif %}
+            </Jti>
             <SoftwareEnvironmentIdentification>
                 {% if open_banking.dcr.registration.software_environment_identification.ssa_property_name is defined %}
                     <PropertyName>{{open_banking.dcr.registration.software_environment_identification.ssa_property_name}}</PropertyName>
