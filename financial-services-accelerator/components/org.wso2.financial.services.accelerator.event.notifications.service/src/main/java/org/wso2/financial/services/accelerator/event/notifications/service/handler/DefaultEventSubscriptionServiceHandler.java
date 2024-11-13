@@ -70,7 +70,7 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
            return eventSubscriptionResponse;
        } catch (FSEventNotificationException e) {
            log.error("Error occurred while creating event subscription", e);
-           throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, e.getMessage(), e);
+           throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
        }
    }
 
@@ -204,7 +204,7 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             return eventSubscriptionResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while updating event subscription", e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, e.getMessage(), e);
+            throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 
@@ -234,7 +234,7 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             return eventSubscriptionResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while deleting event subscription", e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, e.getMessage(), e);
+            throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 

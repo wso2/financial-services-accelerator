@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,17 +70,6 @@ public class EventNotificationServiceUtil {
 //                        getRealtimeEventNotificationRequestGenerator());
 //        return realtimeEventNotificationRequestGenerator;
 //    }
-
-    /**
-     * Method to modify event notification payload with custom eventValues.
-     *
-     * @param jsonNode Json Node to convert
-     * @return String eventNotificationPayload
-     */
-    public static String getCustomNotificationPayload(JsonNode jsonNode) {
-
-        return jsonNode.toString();
-    }
 
     /**
      * Method to get event JSON from eventInformation payload string.

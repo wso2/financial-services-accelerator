@@ -28,7 +28,6 @@ import org.wso2.financial.services.accelerator.event.notifications.service.excep
 import org.wso2.financial.services.accelerator.event.notifications.service.model.Notification;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.NotificationEvent;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.NotificationResponse;
-import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 import java.time.Instant;
 import java.util.List;
@@ -67,9 +66,8 @@ public class DefaultEventNotificationGenerator implements EventNotificationGener
     @Generated(message = "Excluded from tests as using a util method from a different package")
     public String generateEventNotification(JsonNode jsonNode) throws FSEventNotificationException {
 
-        String payload = EventNotificationServiceUtil.getCustomNotificationPayload(jsonNode);
         try {
-            return JWTUtils.signJWTWithDefaultKey(payload);
+            return JWTUtils.signJWTWithDefaultKey(jsonNode.toString());
         } catch (Exception e) {
             log.error("Error while signing the JWT token", e);
             throw new FSEventNotificationException("Error while signing the JWT token", e);
