@@ -81,8 +81,8 @@ public class SMSNotificationProvider implements NotificationProvider {
             setHeaders(httpPost);
             CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
-            if (httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK ||
-                    httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+            if (!(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK ||
+                    httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)) {
                 String error = String.format("Error while invoking rest api : %s %s",
                         httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
                 throw new OpenBankingException(error);
