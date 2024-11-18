@@ -222,13 +222,18 @@ export const AdvanceSearch = () => {
                             className="sBorder"
                             title="submit search"
                             onClick={() => {
+                                let userId = searchUser;
+                                let userIdList = [userId];
+                                if (userId.length > 0 && userId.indexOf(CONFIG.TENANT_DOMAIN) === -1) {
+                                    userIdList.push(userId + "@" + CONFIG.TENANT_DOMAIN);
+                                }
                                 let search = {
                                     ...searchObj,
                                     limit: searchLimit,
                                     offset: 0,
                                     dateRange: dateRange,
                                     consentIDs: consentId,
-                                    userIDs: searchUser,
+                                    userIDs: userIdList,
                                     clientIDs: softwareId,
                                 }
                                 setContextSearchObject(search)

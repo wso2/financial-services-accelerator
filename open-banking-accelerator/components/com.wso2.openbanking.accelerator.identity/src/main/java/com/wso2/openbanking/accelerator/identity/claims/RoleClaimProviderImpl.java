@@ -51,7 +51,8 @@ public class RoleClaimProviderImpl implements ClaimProvider {
     private static final String USER_ROLE = "user_role";
     private static final String OPENID_SCOPE = "openid";
     private static final String CUSTOMER_CARE_OFFICER = "customerCareOfficer";
-    private static final String CUSTOMER_CARE_OFFICER_ROLE = "Internal/CustomerCareOfficerRole";
+    private static final String INTERNAL_CUSTOMER_CARE_OFFICER_ROLE = "Internal/CustomerCareOfficerRole";
+    private static final String INTERNAL_CUSTOMER_CARE_OFFICER = "Internal/CustomerCareOfficer";
     private static final String CUSTOMER_CARE_OFFICER_SCOPE = "consents:read_all";
 
     @Generated(message = "Do not contain logics")
@@ -86,7 +87,8 @@ public class RoleClaimProviderImpl implements ClaimProvider {
                 UserStoreManager userStoreManager = realmService.getTenantUserRealm(tenantId).getUserStoreManager();
 
                 String[] roles = userStoreManager.getRoleListOfUser(userId);
-                if (ArrayUtils.contains(roles, CUSTOMER_CARE_OFFICER_ROLE)) {
+                if (ArrayUtils.contains(roles, INTERNAL_CUSTOMER_CARE_OFFICER_ROLE) || ArrayUtils.contains(roles,
+                        INTERNAL_CUSTOMER_CARE_OFFICER)) {
                     claims.put(USER_ROLE, CUSTOMER_CARE_OFFICER);
                 }
             } catch (IdentityRuntimeException e) {

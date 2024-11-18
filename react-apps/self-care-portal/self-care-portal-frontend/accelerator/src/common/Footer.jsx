@@ -28,7 +28,6 @@ export const Footer = () => {
     return(
         <Container className = "Footer">
             <Col className = "footerCol">
-                <Row className = "footerText"><a href = "#" className = "complaintText">{common.complaintHandleLinkText}</a></Row> 
                 <Row className = "footerText">{common.footerContent}</Row> 
             </Col>
         </Container>
