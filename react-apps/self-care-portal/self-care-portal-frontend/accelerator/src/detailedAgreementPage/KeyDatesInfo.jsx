@@ -44,15 +44,15 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                 timestamp = getLongTimestampInMillis(timestamp);
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{moment(timestamp).format(keyDate.dateFormat)}</p>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue">{(timestamp !== 0)? moment(timestamp).format(keyDate.dateFormat) : "N/A"}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue"></li>
                     </>
                 )
             }
@@ -68,16 +68,15 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
 
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{moment(fromTime).format(keyDate.dateFormat)} -
-                            {moment(toTime).format(keyDate.dateFormat)}</p>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue">{moment(fromTime).format(keyDate.dateFormat)} - {(toTime !== 0)?moment(toTime).format(keyDate.dateFormat):"N/A"}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue"></li>
                     </>
                 )
             }
@@ -90,27 +89,34 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                     valueFromConsent = "N/A";
                 } else if (valueParameterKey === "receipt.Data.Initiation.InstructedAmount") {
                     valueFromConsent = `${valueFromConsent.Amount} ${valueFromConsent.Currency}`;
+                } else if (valueParameterKey === "consentAttributes.sharing_duration_value") {
+                    const intValue = parseInt(valueFromConsent, 10);
+                    if (intValue >= 0 && intValue <= 86400) {
+                        valueFromConsent = "OnceOff";
+                    } else {
+                        valueFromConsent = "Ongoing";
+                    }
                 }
 
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem">{valueFromConsent}</p>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue">{valueFromConsent}</li>
                     </>
                 )
             } catch (e) {
                 return (
                     <>
-                        <h6>{keyDate.title}</h6>
-                        <p className="infoItem"></p>
+                        <h6 className="keyDateTitle">{keyDate.title}</h6>
+                        <li className="infoItem keyDateValue"></li>
                     </>
                 )
             }
         } else {
             return (
                 <>
-                    <h6>{keyDate.title}</h6>
-                    <p className="infoItem">{keyDate.text}</p>
+                    <h6 className="keyDateTitle">{keyDate.title}</h6>
+                    <li className="infoItem keyDateValue">{keyDate.text}</li>
                 </>
             )
         }
