@@ -49,11 +49,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * ApimReqHandlerServlet.
+ * ApimReqHandlerServlet
  * <p>
- * This interrupts the requests, adds auth header, and forward requests to API Manager.
+ * This interrupts the requests, adds auth header, and forward requests to API Manager
  */
-@WebServlet(name = "ApimReqHandlerServlet", urlPatterns = {"/scp/admin/search", "/scp/admin/revoke"})
+@WebServlet(name = "ApimReqHandlerServlet", urlPatterns = {"/scp/admin/*"})
 public class ApimReqHandlerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7385252581004845440L;
@@ -87,7 +87,7 @@ public class ApimReqHandlerServlet extends HttpServlet {
 
                     final String apimBaseUrl = Utils.getParameter(Constants.APIM_BASE_URL);
                     HttpUriRequest request = Utils
-                            .getHttpUriRequest(apimBaseUrl, req.getMethod(), req.getQueryString());
+                            .getHttpUriRequest(apimBaseUrl, req.getMethod(), req.getRequestURI(), req.getQueryString());
 
                     // generating header
                     Map<String, String> headers = new HashMap<>();
@@ -111,7 +111,7 @@ public class ApimReqHandlerServlet extends HttpServlet {
                 if (optAccessToken.isPresent()) {
                     final String apimBaseUrl = Utils.getParameter(Constants.APIM_BASE_URL);
                     HttpUriRequest request = Utils
-                            .getHttpUriRequest(apimBaseUrl, req.getMethod(), req.getQueryString());
+                            .getHttpUriRequest(apimBaseUrl, req.getMethod(), req.getRequestURI(), req.getQueryString());
 
                     // add existing req headers to new request
                     Map<String, String> headers = Collections.list(req.getHeaderNames())

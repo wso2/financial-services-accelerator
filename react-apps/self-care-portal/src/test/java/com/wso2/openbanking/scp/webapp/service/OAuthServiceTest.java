@@ -40,11 +40,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Test for OAuth service.
- */
-@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({Utils.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class OAuthServiceTest extends PowerMockTestCase {
 
     private static final String IAM_BASE_URL = "http://localhost:9446";

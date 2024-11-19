@@ -56,10 +56,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.wso2.openbanking.scp.webapp.util.Constants.PREFIX_CONSENT_MANAGER;
+import static com.wso2.openbanking.scp.webapp.util.Constants.PREFIX_OB_CONSENT;
+
 /**
- * Utils.
+ * Utils
  * <p>
- * Contains utility methods used by self-care portal web application.
+ * Contains utility methods used by self-care portal web application
  */
 public class Utils {
     private static final Log LOG = LogFactory.getLog(Utils.class);
@@ -125,12 +128,17 @@ public class Utils {
         throw new TokenGenerationException("Invalid response received for token request");
     }
 
-    public static HttpUriRequest getHttpUriRequest(String apimBaseUrl, String requestMethod, String queryParams) {
+    public static HttpUriRequest getHttpUriRequest(String apimBaseUrl, String requestMethod, String requestURI,
+                                                   String queryParams) {
+
+        final String uri = apimBaseUrl + requestURI.replaceFirst(PREFIX_CONSENT_MANAGER, PREFIX_OB_CONSENT)
+                + "?" + queryParams;
+
         switch (requestMethod) {
             case HttpDelete.METHOD_NAME:
-                return new HttpDelete(apimBaseUrl + Constants.PATH_APIM_CONSENT_REVOKE_V1 + "?" + queryParams);
+                return new HttpDelete(uri);
             default:
-                return new HttpGet(apimBaseUrl + Constants.PATH_APIM_CONSENT_SEARCH_V1 + "?" + queryParams);
+                return new HttpGet(uri);
         }
     }
 

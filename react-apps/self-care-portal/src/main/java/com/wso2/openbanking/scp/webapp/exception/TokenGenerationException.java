@@ -19,7 +19,7 @@
 package com.wso2.openbanking.scp.webapp.exception;
 
 /**
- * TokenGenerationException.
+ * TokenGenerationException
  *
  * Throws if errors occurred during the request forwarding process
  */

@@ -19,7 +19,7 @@
 package com.wso2.openbanking.scp.webapp.util;
 
 /**
- * Constants required for scp webapp.
+ * Constants required for scp webapp
  */
 public class Constants {
 
@@ -62,6 +62,6 @@ public class Constants {
     public static final String PATH_LOGOUT = "/oidc/logout";
     public static final String PATH_CALLBACK = "/consentmgr/scp_oauth2_callback";
     public static final String PATH_AUTHORIZE = "/oauth2/authorize";
-    public static final String PATH_APIM_CONSENT_SEARCH_V1 = "/ob_consent/v1/admin/search";
-    public static final String PATH_APIM_CONSENT_REVOKE_V1 = "/ob_consent/v1/admin/revoke";
+    public static final String PREFIX_CONSENT_MANAGER = "/consentmgr/scp";
+    public static final String PREFIX_OB_CONSENT = "/ob_consent/v1";
 }
