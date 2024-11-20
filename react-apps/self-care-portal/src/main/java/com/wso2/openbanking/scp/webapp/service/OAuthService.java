@@ -48,9 +48,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * OAuthService.
+ * OAuthService
  * <p>
- * This specifies service methods to use in oauth2 flow.
+ * This specifies service methods to use in oauth2 flow
  */
 public class OAuthService {
 

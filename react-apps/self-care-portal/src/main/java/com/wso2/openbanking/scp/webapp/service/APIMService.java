@@ -39,9 +39,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * APIMService.
+ * APIMService
  * <p>
- * Contains methods to process requests that are forwarding to APIM.
+ * Contains methods to process requests that are forwarding to APIM
  */
 public class APIMService implements Serializable {
     private static final long serialVersionUID = -1968486857447834419L;

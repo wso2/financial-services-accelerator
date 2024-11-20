@@ -52,11 +52,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Test for utils.
- */
-@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest(HTTPClientUtils.class)
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class UtilsTest extends PowerMockTestCase {
 
 
@@ -177,9 +174,11 @@ public class UtilsTest extends PowerMockTestCase {
     @Test
     public void testGetHttpUriRequest() {
         Assert.assertTrue(Utils
-                .getHttpUriRequest(REQUEST_URL, "GET", "?query=query") instanceof HttpGet);
+                .getHttpUriRequest(REQUEST_URL, "GET", "/consentmgr/scp/admin/search",
+                        "?query=query") instanceof HttpGet);
         Assert.assertTrue(Utils
-                .getHttpUriRequest(REQUEST_URL, "DELETE", "?query=query") instanceof HttpDelete);
+                .getHttpUriRequest(REQUEST_URL, "DELETE", "/consentmgr/scp/admin/revoke",
+                        "?query=query") instanceof HttpDelete);
     }
 
     @Test
