@@ -36,6 +36,7 @@ import com.wso2.openbanking.accelerator.identity.token.TokenFilter;
 import com.wso2.openbanking.accelerator.identity.token.validators.OBIdentityFilterValidator;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.throttler.service.OBThrottleService;
+import org.apache.commons.lang3.StringUtils;
 import org.wso2.carbon.identity.application.authentication.framework.JsFunctionRegistry;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
@@ -54,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.wso2.openbanking.accelerator.common.util.OpenBankingUtils.getClassInstanceFromFQN;
+import static com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants.PUSH_AUTH_REQUEST_URL;
 import static com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants.PUSH_AUTH_REQUEST_VALIDATOR;
 import static com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants.REQUEST_VALIDATOR;
 import static com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants.RESPONSE_HANDLER;
@@ -77,6 +79,7 @@ public class IdentityExtensionsDataHolder {
     private IntrospectionDataProvider introspectionDataProvider;
     private OBRequestObjectValidator obRequestObjectValidator;
     private PushAuthRequestValidator pushAuthRequestValidator;
+    private String pushAuthRequestUrl;
     private KeyStore trustStore = null;
     private OBResponseTypeHandler obResponseTypeHandler;
     private AbstractApplicationUpdater abstractApplicationUpdater;
@@ -217,6 +220,9 @@ public class IdentityExtensionsDataHolder {
                 .getConfigurations().get("IdentityCache.CacheAccessExpiry"));
         setIdentityCacheModifiedExpiry((String) openBankingConfigurationService
                 .getConfigurations().get("IdentityCache.CacheModifiedExpiry"));
+        this.pushAuthRequestUrl = openBankingConfigurationService
+                .getConfigurations().get(PUSH_AUTH_REQUEST_URL) != null ? openBankingConfigurationService
+                .getConfigurations().get(PUSH_AUTH_REQUEST_URL).toString() : StringUtils.EMPTY;
 
         Map<String, String> authenticationWorkers = openBankingConfigurationService.getAuthenticationWorkers();
         authenticationWorkers.forEach((key, value) ->
@@ -311,6 +317,14 @@ public class IdentityExtensionsDataHolder {
     public void setPushAuthRequestValidator(PushAuthRequestValidator pushAuthRequestValidator) {
 
         this.pushAuthRequestValidator = pushAuthRequestValidator;
+    }
+
+    public String getPushAuthRequestUrl() {
+        return pushAuthRequestUrl;
+    }
+
+    public void setPushAuthRequestUrl(String pushAuthRequestUrl) {
+        this.pushAuthRequestUrl = pushAuthRequestUrl;
     }
 
     public void setDcrRegistrationConfigMap(Map<String, Map<String, Object>> dcrRegConfigMap) {

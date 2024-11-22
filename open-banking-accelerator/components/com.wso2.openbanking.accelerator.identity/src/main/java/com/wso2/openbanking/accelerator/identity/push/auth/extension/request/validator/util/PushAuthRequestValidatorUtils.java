@@ -88,6 +88,8 @@ public class PushAuthRequestValidatorUtils {
     private static final String OIDC_IDP_ENTITY_ID = "IdPEntityId";
     private static final String OAUTH2_TOKEN_EP_URL = "OAuth2TokenEPUrl";
     private static final String OIDC_ID_TOKEN_ISSUER_ID = "OAuth.OpenIDConnect.IDTokenIssuerID";
+    private static final IdentityExtensionsDataHolder identityExtensionsDataHolder = IdentityExtensionsDataHolder
+            .getInstance();
     private static final ArrayList<String> ALLOWED_FORM_BODY_PARAMS = new ArrayList<String>() {
         {
             add("client_id");
@@ -121,7 +123,7 @@ public class PushAuthRequestValidatorUtils {
         boolean isValid = false;
         if (algorithm != null && StringUtils.isNotBlank((String) algorithm)) {
             List<String> allowedAlgorithmsList = new ArrayList<>();
-            Object allowedAlgorithms = IdentityExtensionsDataHolder.getInstance()
+            Object allowedAlgorithms = identityExtensionsDataHolder
                     .getConfigurationMap().get(OpenBankingConstants.SIGNATURE_ALGORITHMS);
             if (allowedAlgorithms instanceof List) {
                 allowedAlgorithmsList = (List<String>) allowedAlgorithms;
@@ -562,6 +564,12 @@ public class PushAuthRequestValidatorUtils {
             URL parEpUrl = new URL(residentIdPUrl, IdentityCommonConstants.PAR_ENDPOINT);
             // add PAR EP URL as a valid "aud" value
             validAudUrls.add(parEpUrl.toString());
+
+            /* If a PAR endpoint URL is configured, add it to the valid audience list.
+               This addresses the scenario of PAR request URL is different form the resident IDP URL */
+            if (StringUtils.isNotBlank(identityExtensionsDataHolder.getPushAuthRequestUrl())) {
+                validAudUrls.add(identityExtensionsDataHolder.getPushAuthRequestUrl());
+            }
         } catch (MalformedURLException exception) {
             log.error("Error occurred while deriving PAR endpoint URL.", exception);
             throw new PushAuthRequestValidatorException(HttpStatus.SC_INTERNAL_SERVER_ERROR,

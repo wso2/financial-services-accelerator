@@ -69,6 +69,7 @@ public class IdentityCommonConstants {
     public static final String IDENTITY_PROVIDER_STEP = "SCA.IdpStep";
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String PUSH_AUTH_REQUEST_VALIDATOR = "Identity.Extensions.PushAuthRequestValidator";
+    public static final String PUSH_AUTH_REQUEST_URL = "Identity.Extensions.PushAuthRequestUrl";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
     public static final String ENABLE_TRANSPORT_CERT_AS_HEADER = "Identity.ClientTransportCertAsHeaderEnabled";
     public static final String ENABLE_SUBJECT_AS_PPID = "Identity.EnableSubjectPPID";
