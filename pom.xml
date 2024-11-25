@@ -43,6 +43,7 @@
             <modules>
                 <module>financial-services-accelerator</module>
                 <module>react-apps</module>
+                <module>integration-test-framework</module>
             </modules>
             <build>
                 <plugins>
