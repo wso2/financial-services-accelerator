@@ -566,7 +566,7 @@ public class PushAuthRequestValidatorUtils {
             validAudUrls.add(parEpUrl.toString());
 
             /* If a PAR endpoint URL is configured, add it to the valid audience list.
-               This addresses the scenario of PAR request URL is different form the resident IDP URL */
+               This addresses the scenario of PAR request URL domain is different form the resident IDP URL domain */
             if (StringUtils.isNotBlank(identityExtensionsDataHolder.getPushAuthRequestUrl())) {
                 validAudUrls.add(identityExtensionsDataHolder.getPushAuthRequestUrl());
             }
