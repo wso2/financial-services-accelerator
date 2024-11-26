@@ -275,7 +275,9 @@ public class OpenBankingConstants {
             "Identity.CIBA.AuthWebLink.AuthenticationRedirectEndpoint";
     public static final String CIBA_WEB_LINK_ALLOWED_PARAMETERS =
             "Identity.CIBA.AuthWebLink.AllowedAuthURLParams.Value";
-    public static final String CIBA_NOTIFICATION_PROVIDER = "Identity.CIBA.AuthWebLink.NotificationProvider";
+    public static final String CIBA_WEBLINK_NOTIFICATION_PROVIDER = "Identity.CIBA.AuthWebLink.NotificationProvider";
+    public static final String CIBA_WEBLINK_AUTHENTICATOR_EXTENSION =
+            "Identity.CIBA.AuthWebLink.AuthenticatorExtension";
     public static final String AUTH_REQ_ID = "auth_req_id";
     public static final String CIBA_WEB_AUTH_LINK_PARAM = "ciba_web_auth_link";
     public static final String CIBA_AUTH_CODE_RESPONSE_TYPE = "cibaAuthCode";

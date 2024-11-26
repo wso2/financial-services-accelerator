@@ -19,16 +19,10 @@
 package com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink;
 
 
-import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
-import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
-import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
-import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.CIBAPushAuthenticatorConstants;
+import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
-import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
-import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.extension.identity.helper.FederatedAuthenticatorUtil;
@@ -43,13 +37,9 @@ import org.wso2.carbon.identity.event.IdentityEventException;
 import org.wso2.carbon.identity.event.event.Event;
 import org.wso2.carbon.user.api.UserStoreException;
 
-import java.text.ParseException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,9 +51,7 @@ public class CIBAWebLinkAuthenticator extends AbstractApplicationAuthenticator
         implements FederatedApplicationAuthenticator {
 
     private static final Log log = LogFactory.getLog(CIBAWebLinkAuthenticator.class);
-    private static final ConsentCoreService consentCoreService =
-            ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
-    private static final String AUTHORIZE_URL_PATH = "/oauth2/authorize?";
+    private static CIBAWebLinkAuthenticatorExtensionInterface authenticatorExtension;
 
     @Override
     protected void initiateAuthenticationRequest(HttpServletRequest request, HttpServletResponse response,
@@ -109,62 +97,10 @@ public class CIBAWebLinkAuthenticator extends AbstractApplicationAuthenticator
      */
     protected void createAuthResourcesForUsers(List<AuthenticatedUser> authenticatedUsers,
                                                AuthenticationContext context) throws AuthenticationFailedException {
-
-        try {
-            // Extract consentId
-            Optional<String> requestObject = Arrays.stream(context.getQueryParams().split("&"))
-                    .filter(e -> e.startsWith(CIBAWebLinkAuthenticatorConstants.REQUEST_OBJECT)).findFirst()
-                    .map(e -> e.split("=")[1]);
-
-            if (requestObject.isPresent()) {
-                SignedJWT signedJWT = SignedJWT.parse(requestObject.get());
-                JSONObject claims = (JSONObject) signedJWT.getJWTClaimsSet()
-                        .getClaim(CIBAWebLinkAuthenticatorConstants.CLAIMS);
-                JSONObject userinfo = (JSONObject) claims.get(CIBAWebLinkAuthenticatorConstants.USER_INFO);
-                JSONObject openBankingIntentId =
-                        (JSONObject) userinfo.get(CIBAWebLinkAuthenticatorConstants.OPEN_BANKING_INTENT_ID);
-                String consentId = (String) openBankingIntentId.get(CIBAWebLinkAuthenticatorConstants.VALUE);
-
-                // Extract usernames
-                List<String> usernames = authenticatedUsers.stream()
-                        .map(AuthenticatedUser::getUserName)
-                        .map(username -> username.endsWith(OpenBankingConstants.CARBON_SUPER_TENANT_DOMAIN) ?
-                                username : username + OpenBankingConstants.CARBON_SUPER_TENANT_DOMAIN)
-                        .collect(Collectors.toList());
-
-                List<AuthorizationResource> consentAuthResources =
-                        consentCoreService.searchAuthorizations(consentId);
-                if (consentAuthResources.size() == 1 && consentAuthResources.get(0).getAuthorizationStatus()
-                        .equals(OpenBankingConstants.CREATED_AUTHORISATION_RESOURCE_STATE)) {
-                    // Scenario : Initiated consent with default auth resources binding.
-                    consentCoreService.updateAuthorizationUser(consentAuthResources.get(0).getAuthorizationID(),
-                            usernames.get(0));
-                    for (int i = 1; i < usernames.size(); i++) {
-                        AuthorizationResource userAuthResource = new AuthorizationResource(consentId,
-                                usernames.get(i), OpenBankingConstants.CREATED_AUTHORISATION_RESOURCE_STATE,
-                                OpenBankingConstants.MULTI_AUTH_AUTHORISATION_TYPE, System.currentTimeMillis());
-                        consentCoreService.createConsentAuthorization(userAuthResource);
-                    }
-                } else if (consentAuthResources.size() == authenticatedUsers.size()) {
-                    for (AuthorizationResource authorizationResource : consentAuthResources) {
-                        if (!usernames.contains(authorizationResource.getUserID())) {
-                            log.error("No matching authorisation resources found for the given consent.");
-                            throw new AuthenticationFailedException("No matching authorisation resources found for the "
-                                    + "given consent.");
-                        }
-                    }
-                } else {
-                    log.error("Authorisation resources partially exists for the given consent.");
-                    throw new AuthenticationFailedException("Authorisation resources partially exists for the " +
-                            "given consent.");
-                }
-            } else {
-                throw new AuthenticationFailedException("Could not extract request object from the request.");
-            }
-        } catch (ConsentManagementException | ParseException e) {
-            log.error("Error occurred while persisting authorisation resources", e);
-            throw new AuthenticationFailedException("Error occurred while persisting authorisation resources", e);
+        if (authenticatorExtension == null) {
+            authenticatorExtension = getCIBAWebLinkAuthenticatorExtension();
         }
+        authenticatorExtension.createAuthResourcesForUsers(authenticatedUsers, context);
     }
 
     /**
@@ -190,14 +126,12 @@ public class CIBAWebLinkAuthenticator extends AbstractApplicationAuthenticator
      * @param request HttpServletRequest
      * @return list of users
      */
-    protected List<AuthenticatedUser> getAuthenticatedUsers(HttpServletRequest request) {
-
-        List<AuthenticatedUser> users = Arrays.stream(request.getParameter(CIBAPushAuthenticatorConstants.LOGIN_HINT)
-                        .split(","))
-                .map(String::trim)
-                .map(AuthenticatedUser::createLocalAuthenticatedUserFromSubjectIdentifier)
-                .collect(Collectors.toList());
-        return users;
+    protected List<AuthenticatedUser> getAuthenticatedUsers(HttpServletRequest request)
+            throws AuthenticationFailedException {
+        if (authenticatorExtension == null) {
+            authenticatorExtension = getCIBAWebLinkAuthenticatorExtension();
+        }
+        return authenticatorExtension.getAuthenticatedUsers(request);
     }
 
     /**
@@ -207,35 +141,12 @@ public class CIBAWebLinkAuthenticator extends AbstractApplicationAuthenticator
      * @param user    authenticated user.
      * @return Auth web link for authenticated user.
      */
-    protected String generateWebAuthLink(AuthenticationContext context, AuthenticatedUser user) {
-
-        List<String> allowedParams = OpenBankingConfigParser.getInstance().getCibaWebLinkAllowedParams();
-        List<String> paramList = Arrays.stream(context.getQueryParams().split("&")).filter(e -> {
-            for (String allowedParam : allowedParams) {
-                if (e.startsWith(allowedParam)) {
-                    return true;
-                }
-            }
-            return false;
-        }).collect(Collectors.toList());
-
-        // Rename `request_object` query params to `request` param.
-        List<String> requestObjectList = Arrays.stream(context.getQueryParams().split("&"))
-                .filter(e -> e.startsWith("request_object")).collect(Collectors.toList());
-        String requestObject = requestObjectList.get(0).split("=")[1];
-        paramList.add("request=" + requestObject);
-        paramList.add(OpenBankingConstants.CIBA_WEB_AUTH_LINK_PARAM + "=true");
-        paramList.add("login_hint=" + user.getUserName());
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(CarbonUtils.getCarbonServerUrl()).append(AUTHORIZE_URL_PATH);
-        for (String param : paramList) {
-            builder.append(param).append("&");
+    protected String generateWebAuthLink(AuthenticationContext context, AuthenticatedUser user)
+            throws AuthenticationFailedException {
+        if (authenticatorExtension == null) {
+            authenticatorExtension = getCIBAWebLinkAuthenticatorExtension();
         }
-        if (log.isDebugEnabled()) {
-            log.debug(builder.toString());
-        }
-        return builder.toString();
+        return authenticatorExtension.generateWebAuthLink(context, user);
     }
 
 
@@ -264,5 +175,10 @@ public class CIBAWebLinkAuthenticator extends AbstractApplicationAuthenticator
     @Override
     public String getFriendlyName() {
         return CIBAWebLinkAuthenticatorConstants.AUTHENTICATOR_FRIENDLY_NAME;
+    }
+
+    private static CIBAWebLinkAuthenticatorExtensionInterface getCIBAWebLinkAuthenticatorExtension() {
+        return (CIBAWebLinkAuthenticatorExtensionInterface) OpenBankingUtils.getClassInstanceFromFQN(
+                OpenBankingConfigParser.getInstance().getCIBAWebLinkAuthenticatorExtension());
     }
 }

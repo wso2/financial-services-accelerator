@@ -1524,8 +1524,19 @@ public class OpenBankingConfigParser {
      */
     public String getCibaWebLinkNotificationProvider() {
 
-        return getConfigElementFromKey(OpenBankingConstants.CIBA_NOTIFICATION_PROVIDER) == null ?
-                "" : ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_NOTIFICATION_PROVIDER)).trim();
+        return getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_NOTIFICATION_PROVIDER) == null ?
+                "" : ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_NOTIFICATION_PROVIDER)).trim();
+    }
+
+    /**
+     * Method to get the CIBA WebLink Authenticator Extension
+     *
+     * @return Class name for CIBA WebLink Authenticator Extension
+     */
+    public String getCIBAWebLinkAuthenticatorExtension() {
+
+        return getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_AUTHENTICATOR_EXTENSION) == null ? "" :
+                ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_AUTHENTICATOR_EXTENSION)).trim();
     }
 
     /**

@@ -32,5 +32,6 @@ public class CIBAWebLinkAuthenticatorConstants {
     public static final String VALUE = "value";
     public static final String USER_INFO = "userinfo";
     public static final String CLAIMS = "claims";
+    public static final String AUTHORIZE_URL_PATH = "/oauth2/authorize?";
 
 }
