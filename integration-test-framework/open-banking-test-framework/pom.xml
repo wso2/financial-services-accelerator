@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.wso2</groupId>
             <artifactId>bfsi-test-framework</artifactId>
-            <version>${com.wso2.test.bfsi.version}</version>
+            <version>${org.wso2.test.bfsi.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -165,7 +165,7 @@
     </build>
 
     <properties>
-        <com.wso2.test.bfsi.version>4.0.0-SNAPSHOT</com.wso2.test.bfsi.version>
+        <org.wso2.test.bfsi.version>4.0.0-SNAPSHOT</org.wso2.test.bfsi.version>
     </properties>
 
 </project>
