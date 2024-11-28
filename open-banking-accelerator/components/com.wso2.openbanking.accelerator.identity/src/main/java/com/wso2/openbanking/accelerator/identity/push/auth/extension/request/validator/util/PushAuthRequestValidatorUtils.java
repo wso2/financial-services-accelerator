@@ -59,8 +59,6 @@ import org.wso2.carbon.idp.mgt.IdentityProviderManagementException;
 import org.wso2.carbon.idp.mgt.IdentityProviderManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.Key;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
