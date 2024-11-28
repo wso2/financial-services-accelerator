@@ -555,19 +555,6 @@ public class PushAuthRequestValidatorUtils {
 
         // add IdPEntityID or the "issuer" as a valid "aud" value
         validAudUrls.add(residentIdpAlias);
-
-        try {
-            URL residentIdPUrl = new URL(residentIdpAlias);
-            // derive PAR EP URL from the residentIdP base URL
-            URL parEpUrl = new URL(residentIdPUrl, IdentityCommonConstants.PAR_ENDPOINT);
-            // add PAR EP URL as a valid "aud" value
-            validAudUrls.add(parEpUrl.toString());
-        } catch (MalformedURLException exception) {
-            log.error("Error occurred while deriving PAR endpoint URL.", exception);
-            throw new PushAuthRequestValidatorException(HttpStatus.SC_INTERNAL_SERVER_ERROR,
-                    OAuth2ErrorCodes.SERVER_ERROR, "Server Error while deriving PAR endpoint URL.", exception);
-        }
-
         return validAudUrls;
     }
 
