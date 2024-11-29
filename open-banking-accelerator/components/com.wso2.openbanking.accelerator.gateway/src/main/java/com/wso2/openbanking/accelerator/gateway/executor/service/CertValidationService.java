@@ -212,24 +212,24 @@ public class CertValidationService {
      * Validate whether the psd2 roles match with the scopes.
      *
      * @param tppCertificate    eidas certificate with roles
-     * @param requiredPSD2Roles client requested roles
+     * @param requiredRoles client requested roles
      * @return true if all required values are present in the certificate
      */
     private boolean isRequiredRolesMatchWithScopes(X509Certificate tppCertificate
-            , List<PSD2RoleEnum> requiredPSD2Roles) throws CertificateValidationException, TPPValidationException {
+            , List<PSD2RoleEnum> requiredRoles) throws CertificateValidationException, TPPValidationException {
 
 
         // Extract the certContent from the eidas certificate (i.e. roles, authorization number, etc)
         CertificateContent certContent = CertificateContentExtractor.extract(tppCertificate);
 
         if (log.isDebugEnabled()) {
-            log.debug("The TPP is requesting roles: " + requiredPSD2Roles);
+            log.debug("The TPP is requesting roles: " + requiredRoles);
             log.debug("Provided PSD2 eIDAS certificate" +
                     " contains the role: " + certContent.getPspRoles());
         }
 
         // Validate whether the eIDAS certificate contains the required roles that matches with the token scopes.
-        for (PSD2RoleEnum requiredRole : requiredPSD2Roles) {
+        for (PSD2RoleEnum requiredRole : requiredRoles) {
             if (!(certContent.getPspRoles().contains(requiredRole.name())
                     || certContent.getPsd2Roles().contains(requiredRole.name()))) {
                 // Return false if any one of the roles that are bound to the scope is not present in the PSD2
