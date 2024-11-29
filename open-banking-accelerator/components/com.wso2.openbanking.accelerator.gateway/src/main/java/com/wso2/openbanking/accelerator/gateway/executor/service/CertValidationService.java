@@ -230,7 +230,8 @@ public class CertValidationService {
 
         // Validate whether the eIDAS certificate contains the required roles that matches with the token scopes.
         for (PSD2RoleEnum requiredRole : requiredPSD2Roles) {
-            if (!certContent.getPspRoles().contains(requiredRole.name())) {
+            if (!(certContent.getPspRoles().contains(requiredRole.name())
+                    || certContent.getPsd2Roles().contains(requiredRole.name()))) {
                 // Return false if any one of the roles that are bound to the scope is not present in the PSD2
                 // role list of the client eIDAS certificate.
                 final String errorMsg = "The PSD2 eIDAS certificate does not contain the required role "
