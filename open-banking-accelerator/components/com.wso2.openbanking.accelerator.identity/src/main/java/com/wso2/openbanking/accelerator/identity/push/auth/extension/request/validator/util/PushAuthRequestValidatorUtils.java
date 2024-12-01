@@ -217,6 +217,13 @@ public class PushAuthRequestValidatorUtils {
             List<String> requestedScopes = Arrays.asList(requestBodyJson.getAsString(PushAuthRequestConstants.SCOPE)
                     .split("\\s+"));
 
+            if (!requestedScopes.contains(OAuthConstants.Scope.OPENID)) {
+                log.error("Invalid scope: openid scope not present");
+                throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                        PushAuthRequestConstants.INVALID_REQUEST,
+                        "Invalid scope: openid scope not present");
+            }
+
             List<String> allowedScopes;
             try {
                 allowedScopes = Arrays.asList(new IdentityCommonHelper()
