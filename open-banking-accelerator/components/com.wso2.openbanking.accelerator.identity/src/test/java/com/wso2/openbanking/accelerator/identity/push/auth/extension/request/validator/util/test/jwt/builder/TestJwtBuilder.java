@@ -60,6 +60,7 @@ public class TestJwtBuilder {
     private static String audience = "https://localhost:9443/oauth2/token";
     private static String scope = "bank:accounts.basic:read bank:transactions:read " +
             "common:customer.detail:read openid";
+    private static String scopeWithoutOpenId = "accounts payments";
     private static String redirectUri = "https://www.google.com/redirects/redirect1";
     private static String state = "0pN0NBTHcv";
     private static String codeChallenge = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM";
@@ -86,6 +87,19 @@ public class TestJwtBuilder {
     public static String getValidSignedJWT() throws Exception {
         JWTClaimsSet claimsSet = getValidJWTClaimsSetBuilder().build();
         SignedJWT signedJWT = getSignedJWT(JWSAlgorithm.PS256, claimsSet);
+        return signedJWT.serialize();
+    }
+
+    /**
+     * This method is used to get a valid signed JWT without the openid scope.
+     *
+     * @return String
+     * @throws Exception if an error occurs
+     */
+    public static String getValidSignedJWTWithoutOpenIdScope() throws Exception {
+        JWTClaimsSet.Builder builder = getValidJWTClaimsSetBuilder();
+        JWTClaimsSet claimSet = builder.claim(TestJwtBuilderConstants.SCOPE, scopeWithoutOpenId).build();
+        SignedJWT signedJWT = getSignedJWT(JWSAlgorithm.PS256, claimSet);
         return signedJWT.serialize();
     }
 
