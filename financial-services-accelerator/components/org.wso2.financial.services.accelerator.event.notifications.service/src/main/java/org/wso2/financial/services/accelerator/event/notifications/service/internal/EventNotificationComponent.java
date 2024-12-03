@@ -41,9 +41,7 @@ public class EventNotificationComponent {
 
     @Activate
     protected void activate(ComponentContext context) {
-        if (log.isDebugEnabled()) {
-            log.debug("Event Notification Service Component Activated");
-        }
+        log.debug("Event Notification Service Component Activated");
 
         // Check if realtime event notification enabled
         if (FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled()) {
