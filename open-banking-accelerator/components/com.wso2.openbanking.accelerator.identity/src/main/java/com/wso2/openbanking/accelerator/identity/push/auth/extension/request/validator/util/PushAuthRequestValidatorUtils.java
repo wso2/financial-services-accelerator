@@ -59,8 +59,6 @@ import org.wso2.carbon.idp.mgt.IdentityProviderManagementException;
 import org.wso2.carbon.idp.mgt.IdentityProviderManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.Key;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
@@ -555,19 +553,6 @@ public class PushAuthRequestValidatorUtils {
 
         // add IdPEntityID or the "issuer" as a valid "aud" value
         validAudUrls.add(residentIdpAlias);
-
-        try {
-            URL residentIdPUrl = new URL(residentIdpAlias);
-            // derive PAR EP URL from the residentIdP base URL
-            URL parEpUrl = new URL(residentIdPUrl, IdentityCommonConstants.PAR_ENDPOINT);
-            // add PAR EP URL as a valid "aud" value
-            validAudUrls.add(parEpUrl.toString());
-        } catch (MalformedURLException exception) {
-            log.error("Error occurred while deriving PAR endpoint URL.", exception);
-            throw new PushAuthRequestValidatorException(HttpStatus.SC_INTERNAL_SERVER_ERROR,
-                    OAuth2ErrorCodes.SERVER_ERROR, "Server Error while deriving PAR endpoint URL.", exception);
-        }
-
         return validAudUrls;
     }
 
