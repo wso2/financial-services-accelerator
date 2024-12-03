@@ -105,9 +105,7 @@ public class CIBAConsentPersistStep implements ConsentPersistStep {
             currentConsentAttributes = ConsentExtensionsDataHolder.getInstance()
                     .getConsentCoreService().getConsentAttributes(consentResource.getConsentID());
         } catch (ConsentManagementException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Error while retrieving consent attributes.", e);
-            }
+            log.debug("Error while retrieving consent attributes.", e);
         }
         // Remove if existing aut_req_id is already in attributes.
         if (currentConsentAttributes != null &&
