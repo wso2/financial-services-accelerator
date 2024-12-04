@@ -47,13 +47,10 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
+                            <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
                             <excludes>
                                 <exclude>**/jjwt-0.9.1.jar</exclude>
                             </excludes>
-                        </fileset>
-                        <fileset>
-                            <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
                         </fileset>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/deployment/server/webapps</directory>
@@ -95,6 +92,8 @@
                                                 regex="org.wso2.financial.services.accelerator.gateway-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+                                <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.demo.backend/target/api#fs#backend.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#fs#backend/"/>
                             </target>
                         </configuration>
                         <goals>

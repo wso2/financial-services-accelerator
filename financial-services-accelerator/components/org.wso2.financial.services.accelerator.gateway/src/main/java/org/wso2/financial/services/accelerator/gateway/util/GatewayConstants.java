@@ -59,4 +59,8 @@ public class GatewayConstants {
     public static final String ERROR_STATUS_PROP = "errorStatusCode";
     public static final String IS_RETURN_RESPONSE = "isReturnResponse";
     public static final String MODIFIED_STATUS = "ModifiedStatus";
+    public static final String CODE = "code";
+    public static final String MESSAGE = "message";
+    public static final String DESCRIPTION = "description";
+    public static final String LINKS = "links";
 }

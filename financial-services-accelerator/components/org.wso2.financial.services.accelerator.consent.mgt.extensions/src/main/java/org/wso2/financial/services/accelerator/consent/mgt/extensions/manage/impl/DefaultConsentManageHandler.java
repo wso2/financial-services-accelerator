@@ -197,10 +197,11 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                             ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR);
                 }
 
-                if (ConsentExtensionConstants.REVOKED_STATUS.equals(consentResource.getCurrentStatus())) {
-                    log.error("Consent already in revoked state");
+                if (ConsentExtensionConstants.REVOKED_STATUS.equals(consentResource.getCurrentStatus()) ||
+                        ConsentExtensionConstants.REJECTED_STATUS.equals(consentResource.getCurrentStatus())) {
+                    log.error("Consent is already in revoked or rejected state");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            "Consent already in revoked state");
+                            "Consent is already in revoked or rejected state");
                 }
 
                 //Revoke tokens related to the consent if the flag 'shouldRevokeTokens' is true.

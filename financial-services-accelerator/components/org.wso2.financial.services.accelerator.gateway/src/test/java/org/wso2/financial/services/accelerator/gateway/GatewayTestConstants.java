@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 public class GatewayTestConstants {
 
     public static final String VALID_EXECUTOR_CLASS =
-            "org.wso2.financial.services.accelerator.gateway.executor.core.MockOBExecutor";
+            "org.wso2.financial.services.accelerator.gateway.executor.core.MockFSExecutor";
     public static final Map<Integer, String> VALID_EXECUTOR_MAP = Stream.of(
                     new AbstractMap.SimpleImmutableEntry<>(1, VALID_EXECUTOR_CLASS))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

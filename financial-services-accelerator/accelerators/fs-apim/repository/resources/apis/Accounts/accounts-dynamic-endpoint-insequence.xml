@@ -27,11 +27,11 @@
     
     <filter regex=".*\/account-access-consents.*" source="$ctx:endpointURI">
         <then>
-            <header name="To" value="https://localhost:9446/api/openbanking/consent/manage" />
+            <header name="To" value="https://localhost:9446/api/fs/consent/manage" />
             <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
         </then>
         <else>
-            <header name="To" value="https://localhost:9443/api/openbanking/backend/services/accounts/accountservice" />
+            <header name="To" value="https://localhost:9443/api/fs/backend/services/accounts/accountservice" />
         </else>
     </filter>
 </sequence>

@@ -47,7 +47,7 @@ public class EventNotificationComponent {
 
         // Check if realtime event notification enabled
         if (FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled()) {
-            log.debug("Event Notification####");
+            log.info("Realtime Event Notification Service Activated");
             new Thread(new RealtimeEventNotificationLoaderService()).start();
             new PeriodicalEventNotificationConsumerJobActivator().activate();
         }

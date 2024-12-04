@@ -30,6 +30,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
@@ -81,12 +82,12 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         //User Validation
-        String userIdFromToken = consentValidateData.getUserId();
+        String userIdFromToken = ConsentExtensionUtils.resolveUsernameFromUserId(consentValidateData.getUserId());
         boolean userIdMatching = false;
         ArrayList<AuthorizationResource> authResources = consentValidateData.getComprehensiveConsent()
                 .getAuthorizationResources();
         for (AuthorizationResource resource : authResources) {
-            if (userIdFromToken.contains(resource.getUserID())) {
+            if (userIdFromToken.equals(resource.getUserID())) {
                 userIdMatching = true;
                 break;
             }
@@ -164,8 +165,8 @@ public class DefaultConsentValidator implements ConsentValidator {
             log.error(PERMISSION_MISMATCH_ERROR);
             consentValidationResult.setValid(false);
             consentValidationResult.setErrorMessage(PERMISSION_MISMATCH_ERROR);
-            consentValidationResult.setErrorCode(ResponseStatus.UNAUTHORIZED.getReasonPhrase());
-            consentValidationResult.setHttpCode(401);
+            consentValidationResult.setErrorCode(ResponseStatus.FORBIDDEN.getReasonPhrase());
+            consentValidationResult.setHttpCode(HttpStatus.SC_FORBIDDEN);
             return;
         }
 
@@ -184,8 +185,8 @@ public class DefaultConsentValidator implements ConsentValidator {
             log.error(CONSENT_EXPIRED_ERROR);
             consentValidationResult.setValid(false);
             consentValidationResult.setErrorMessage(CONSENT_EXPIRED_ERROR);
-            consentValidationResult.setErrorCode(ResponseStatus.UNAUTHORIZED.getReasonPhrase());
-            consentValidationResult.setHttpCode(HttpStatus.SC_UNAUTHORIZED);
+            consentValidationResult.setErrorCode(ResponseStatus.BAD_REQUEST.getReasonPhrase());
+            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
             return;
         }
         consentValidationResult.setValid(true);
