@@ -117,10 +117,9 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
         try (PreparedStatement getEventSubscriptionBySubscriptionIdStatement = connection.prepareStatement(sql)) {
             getEventSubscriptionBySubscriptionIdStatement.setString(1, subscriptionId);
             try (ResultSet resultSet = getEventSubscriptionBySubscriptionIdStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    mapResultSetToEventSubscription(retrievedSubscription, resultSet);
-                    resultSet.beforeFirst(); // Reset the cursor position to the beginning of the result set.
+                if (resultSet.isBeforeFirst()) {
                     while (resultSet.next()) {
+                        mapResultSetToEventSubscription(retrievedSubscription, resultSet);
                         String eventType = resultSet.getString(EventNotificationConstants.EVENT_TYPE);
                         if (eventType != null) {
                             eventTypes.add(eventType);
@@ -149,7 +148,8 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
         List<EventSubscription> retrievedSubscriptions = new ArrayList<>();
 
         final String sql = sqlStatements.getEventSubscriptionsByClientIdQuery();
-        try (PreparedStatement getEventSubscriptionsByClientIdStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement getEventSubscriptionsByClientIdStatement =
+                     connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             getEventSubscriptionsByClientIdStatement.setString(1, clientId);
             try (ResultSet resultSet = getEventSubscriptionsByClientIdStatement.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
@@ -192,7 +192,7 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
 
         final String sql = sqlStatements.getEventSubscriptionsByEventTypeQuery();
         try (PreparedStatement getEventSubscriptionsByClientIdAndEventTypeStatement =
-                     connection.prepareStatement(sql)) {
+                     connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             getEventSubscriptionsByClientIdAndEventTypeStatement.setString(1, eventType);
             try (ResultSet resultSet = getEventSubscriptionsByClientIdAndEventTypeStatement.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
