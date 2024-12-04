@@ -67,6 +67,7 @@ public class RealtimeNotificationService {
             DatabaseUtils.rollbackTransaction(connection);
             throw new FSEventNotificationException(EventNotificationConstants.ERROR_STORING_EVENT_SUBSCRIPTION, e);
         } finally {
+            log.debug(EventNotificationConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
             DatabaseUtils.closeConnection(connection);
         }
     }
@@ -100,6 +101,7 @@ public class RealtimeNotificationService {
             DatabaseUtils.rollbackTransaction(connection);
             throw new FSEventNotificationException(EventNotificationConstants.ERROR_STORING_EVENT_SUBSCRIPTION, e);
         } finally {
+            log.debug(EventNotificationConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
             DatabaseUtils.closeConnection(connection);
         }
     }
@@ -133,6 +135,7 @@ public class RealtimeNotificationService {
             DatabaseUtils.rollbackTransaction(connection);
             throw new FSEventNotificationException(e.getMessage(), e);
         } finally {
+            log.debug(EventNotificationConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
             DatabaseUtils.closeConnection(connection);
         }
     }

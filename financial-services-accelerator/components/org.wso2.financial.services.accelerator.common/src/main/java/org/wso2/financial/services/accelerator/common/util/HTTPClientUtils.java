@@ -66,7 +66,7 @@ public class HTTPClientUtils {
      * @return Closeable https client
      * @throws FinancialServicesException FinancialServicesException exception
      */
-    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
+    @Generated(message = "Ignoring since method contains no logics")
     public static CloseableHttpClient getHttpsClient() throws FinancialServicesException {
 
         SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
@@ -94,7 +94,7 @@ public class HTTPClientUtils {
      * @return Closeable https client
      * @throws FinancialServicesException FinancialServicesException exception
      */
-    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
+    @Generated(message = "Ignoring since method contains no logics")
     public static CloseableHttpClient getHttpsClient(int maxTotal, int maxPerRoute) throws FinancialServicesException {
 
         SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();

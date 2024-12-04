@@ -199,8 +199,6 @@ public class RealtimeEventNotificationSenderService implements Runnable {
                 log.error("Real-time event notification with notificationId: " +
                         notificationId.replaceAll("[\r\n]", "") + " sent failed", e);
             }
-
         }
-
     }
 }

@@ -48,6 +48,7 @@ public class EventNotificationProducerService implements Runnable {
 
     public EventNotificationProducerService(
             Notification notification, List<NotificationEvent> notificationEvents) {
+
         this.notification = notification;
         this.notificationEvents = notificationEvents;
     }

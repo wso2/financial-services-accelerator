@@ -66,7 +66,6 @@ public class EventCreationService {
             eventResponse = eventCreationDAO.persistEventNotification(connection, notification, eventsList);
             DatabaseUtils.commitTransaction(connection);
 
-            //TODO:
             if (FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled()) {
                 new Thread(new EventNotificationProducerService(notification, eventsList)).start();
             }

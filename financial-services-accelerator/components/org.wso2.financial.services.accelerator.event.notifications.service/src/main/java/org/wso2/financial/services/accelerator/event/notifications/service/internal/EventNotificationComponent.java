@@ -39,15 +39,21 @@ import org.wso2.financial.services.accelerator.event.notifications.service.realt
     name = "org.wso2.financial.services.accelerator.event.notifications.service.internal.EventNotificationComponent",
     immediate = true)
 public class EventNotificationComponent {
+
     private static final Log log = LogFactory.getLog(EventNotificationComponent.class);
 
     @Activate
     protected void activate(ComponentContext context) throws Exception {
-        log.info("Event Notification Service Component Activated");
+        log.debug("Event Notification Service Component Activated");
 
         // Check if realtime event notification enabled
         if (FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled()) {
-            log.info("Realtime Event Notification Service Activated");
+            /*
+             * Initialize the blocking queue for storing the realtime event notifications
+             * Initialize the quartz job for consuming the realtime event notifications
+             * Initialize the thread for producing the open state realtime event notifications
+             */
+            log.debug("Realtime Event Notification Service Activated");
             new Thread(new RealtimeEventNotificationLoaderService()).start();
             new PeriodicalEventNotificationConsumerJobActivator().activate();
         }
@@ -56,6 +62,7 @@ public class EventNotificationComponent {
     /**
      * Setters for the descendent OSGI services of the EventNotificationComponent.
      * This is added to run the EventNotification OSGI component after the Common module
+     * @param configurationService FinancialServicesConfigurationService
      */
     @Reference(
             service = FinancialServicesConfigurationService.class,
@@ -81,7 +88,6 @@ public class EventNotificationComponent {
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetOAuth2Service"
     )
-
     public void setOAuth2Service(OAuth2Service oAuth2Service) {
     }
 
