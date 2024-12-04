@@ -26,6 +26,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
@@ -34,6 +35,7 @@ import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.val
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.exception.PushAuthRequestValidatorException;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -217,17 +219,32 @@ public class PushAuthRequestValidatorUtils {
             List<String> requestedScopes = Arrays.asList(requestBodyJson.getAsString(PushAuthRequestConstants.SCOPE)
                     .split("\\s+"));
 
+            boolean isRegulatory;
             List<String> allowedScopes;
             try {
+                String clientId = requestBodyJson.getAsString(PushAuthRequestConstants.CLIENT_ID);
+                isRegulatory = IdentityCommonUtil.getRegulatoryFromSPMetaData(clientId);
                 allowedScopes = Arrays.asList(new IdentityCommonHelper()
-                        .getAppPropertyFromSPMetaData(requestBodyJson.getAsString(PushAuthRequestConstants.CLIENT_ID),
-                                IdentityCommonConstants.SCOPE).split("\\s+"));
+                        .getAppPropertyFromSPMetaData(clientId, IdentityCommonConstants.SCOPE).split("\\s+"));
             } catch (OpenBankingException e) {
                 log.error("Error while retrieving sp meta data", e);
                 throw new PushAuthRequestValidatorException(HttpStatus.SC_INTERNAL_SERVER_ERROR,
                         PushAuthRequestConstants.SERVER_ERROR, "Error while retrieving sp meta data", e);
             }
 
+            boolean isOpenIdScopeMandatoryForRegulatoryApps = OpenBankingConfigParser.getInstance()
+                    .isOpenIdScopeMandatoryForRegulatoryApps();
+            if (isRegulatory && isOpenIdScopeMandatoryForRegulatoryApps) {
+                if (!requestedScopes.contains(OAuthConstants.Scope.OPENID)) {
+                    log.error("Invalid scope: openid scope not present");
+                    throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                            PushAuthRequestConstants.INVALID_REQUEST,
+                            "Invalid scope: openid scope not present");
+                }
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+            // ignore unsupported scopes as per the OpenID standards
             for (String scope : requestedScopes) {
                 if (!allowedScopes.contains(scope)) {
                     log.error("Invalid scopes in the request");
