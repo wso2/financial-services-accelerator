@@ -91,5 +91,31 @@ public class FinancialServicesConstants {
     public static final String KEYSTORE_PASSWORD_TAG = "Security.InternalKeyStore.Password";
     public static final String SIGNING_ALIAS_TAG = "Security.InternalKeyStore.KeyAlias";
     public static final String SIGNING_KEY_PASSWORD = "Security.InternalKeyStore.KeyPassword";
+
+    //Event Notifications Constants
+    public static final String EVENT_NOTIFICATION_GENERATOR = "EventNotifications.NotificationGeneration." +
+            "NotificationGenerator";
+    public static final String TOKEN_ISSUER = "EventNotifications.NotificationGeneration.TokenIssuer";
+    public static final String MAX_SETS_TO_RETURN = "EventNotifications.NotificationGeneration.NumberOfSetsToReturn";
+    public static final String SIGNING_ALIAS = "EventNotifications.SigningAlias";
+    public static final String IS_SUB_CLAIM_INCLUDED = "EventNotifications.PollingResponseParams.IsSubClaimAvailable";
+    public static final String IS_TXN_CLAIM_INCLUDED = "EventNotifications.PollingResponseParams.IsTxnClaimAvailable";
+    public static final String IS_TOE_CLAIM_INCLUDED = "EventNotifications.PollingResponseParams.IsToeClaimAvailable";
+    public static final String EVENT_CREATION_HANDLER = "EventNotifications.EventCreationHandler";
+    public static final String EVENT_POLLING_HANDLER = "EventNotifications.EventPollingHandler";
+    public static final String EVENT_SUBSCRIPTION_HANDLER = "EventNotifications.EventSubscriptionHandler";
+    public static final String REALTIME_EVENT_NOTIFICATION_ENABLED = "EventNotifications.Realtime.Enable";
+    public static final String PERIODIC_CRON_EXPRESSION = "EventNotifications.Realtime.PeriodicCronExpression";
+    public static final String TIMEOUT_IN_SECONDS = "EventNotifications.Realtime.TimeoutInSeconds";
+    public static final String MAX_RETRIES = "EventNotifications.Realtime.MaxRetries";
+    public static final String INITIAL_BACKOFF_TIME_IN_SECONDS =
+            "EventNotifications.Realtime.InitialBackoffTimeInSeconds";
+    public static final String BACKOFF_FUNCTION = "EventNotifications.Realtime.BackoffFunction";
+    public static final String CIRCUIT_BREAKER_OPEN_TIMEOUT_IN_SECONDS =
+            "EventNotifications.Realtime.CircuitBreakerOpenTimeoutInSeconds";
+    public static final String EVENT_NOTIFICATION_THREAD_POOL_SIZE =
+            "EventNotifications.Realtime.EventNotificationThreadPoolSize";
+    public static final String REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR =
+            "EventNotifications.Realtime.RequestGenerator";
 }
 

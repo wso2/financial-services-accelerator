@@ -203,4 +203,103 @@ public class FSConfigParserTests {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance().getConsentValidationConfig());
     }
+
+    @Test(priority = 24)
+    public void testGetEventNotificationTokenIssuer() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance().getEventNotificationTokenIssuer());
+    }
+
+    @Test(priority = 25)
+    public void testGetNumberOfSetsToReturn() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getNumberOfSetsToReturn(), 5);
+    }
+
+    @Test(priority = 26)
+    public void testIsSubClaimIncluded() {
+
+        Assert.assertFalse(FinancialServicesConfigParser.getInstance().isSubClaimIncluded());
+    }
+
+    @Test(priority = 27)
+    public void testIsToeClaimIncluded() {
+
+        Assert.assertFalse(FinancialServicesConfigParser.getInstance().isToeClaimIncluded());
+    }
+
+    @Test(priority = 28)
+    public void testIsTxnClaimIncluded() {
+
+        Assert.assertFalse(FinancialServicesConfigParser.getInstance().isTxnClaimIncluded());
+    }
+
+    @Test(priority = 29)
+    public void testIsRealtimeEventNotificationEnabled() {
+
+        Assert.assertFalse(FinancialServicesConfigParser.getInstance().isRealtimeEventNotificationEnabled());
+    }
+
+    @Test(priority = 30)
+    public void testGetRealtimeEventNotificationSchedulerCronExpression() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationSchedulerCronExpression());
+    }
+
+    @Test(priority = 31)
+    public void testGetRealtimeEventNotificationTimeoutInSeconds() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationTimeoutInSeconds(), 60);
+    }
+
+    @Test(priority = 32)
+    public void testGetRealtimeEventNotificationMaxRetries() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationMaxRetries(), 5);
+    }
+
+    @Test(priority = 33)
+    public void testGetRealtimeEventNotificationInitialBackoffTimeInSeconds() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationInitialBackoffTimeInSeconds(), 60);
+    }
+
+    @Test(priority = 34)
+    public void testGetRealtimeEventNotificationBackoffFunction() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationBackoffFunction());
+    }
+
+    @Test(priority = 35)
+    public void testGetRealtimeEventNotificationCircuitBreakerOpenTimeoutInSeconds() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationCircuitBreakerOpenTimeoutInSeconds(), 600);
+    }
+    @Test(priority = 36)
+    public void testGetEventNotificationThreadPoolSize() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getEventNotificationThreadPoolSize(), 20);
+    }
+
+    @Test(priority = 37)
+    public void testGetEventNotificationGenerator() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getEventNotificationGenerator());
+    }
+
+    @Test(priority = 38)
+    public void testGetRealtimeEventNotificationRequestGenerator() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getRealtimeEventNotificationRequestGenerator());
+    }
+
 }
