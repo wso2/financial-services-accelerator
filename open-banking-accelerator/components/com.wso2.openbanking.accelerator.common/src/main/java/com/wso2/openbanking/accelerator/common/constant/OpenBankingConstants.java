@@ -155,6 +155,8 @@ public class OpenBankingConstants {
     public static final String CONNECTION_POOL_MAX_CONNECTIONS_PER_ROUTE = "HTTPConnectionPool.MaxConnectionsPerRoute";
     public static final String PUSH_AUTH_EXPIRY_TIME = "PushAuthorisation.ExpiryTime";
     public static final String PUSH_AUTH_REQUEST_URI_SUBSTRING = "PushAuthorisation.RequestUriSubString";
+    public static final String PUSH_AUTH_MANDATE_OPENID_SCOPE_FOR_REGULATORY_APPS = "PushAuthorisation" +
+            ".MandateOpenidScopeForRegulatoryApps";
 
     public static final String CONSENT_PERIODICAL_EXPIRATION_CRON = "Consent.PeriodicalExpiration.CronValue";
     public static final String STATUS_FOR_EXPIRED_CONSENT = "Consent.PeriodicalExpiration.ExpiredConsentStatusValue";

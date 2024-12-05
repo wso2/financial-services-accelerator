@@ -1021,6 +1021,11 @@
     {% else %}
         <RequestUriSubString>ietf:params:oauth:request_uri</RequestUriSubString>
     {% endif %}
+    {% if open_banking.push_authorisation.mandate_openid_scope_for_regulatory_apps is defined %}
+        <MandateOpenidScopeForRegulatoryApps>{{open_banking.push_authorisation.mandate_openid_scope_for_regulatory_apps}}</MandateOpenidScopeForRegulatoryApps>
+    {% else %}
+        <MandateOpenidScopeForRegulatoryApps>true</MandateOpenidScopeForRegulatoryApps>
+    {% endif %}
     </PushAuthorisation>
     <ServiceActivator>
         <Subscribers>

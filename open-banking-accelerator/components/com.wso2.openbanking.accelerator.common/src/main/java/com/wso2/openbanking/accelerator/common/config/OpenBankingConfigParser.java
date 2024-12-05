@@ -1490,6 +1490,16 @@ public class OpenBankingConfigParser {
     }
 
     /**
+     * Method to get mandate/optional openid scope for regulatory apps.
+     * @return isOpenIdScopeMandatoryForRegulatoryApps
+     */
+    public boolean isOpenIdScopeMandatoryForRegulatoryApps() {
+        return getConfigElementFromKey(OpenBankingConstants.PUSH_AUTH_MANDATE_OPENID_SCOPE_FOR_REGULATORY_APPS) == null
+                || Boolean.parseBoolean(((String) getConfigElementFromKey(OpenBankingConstants
+                        .PUSH_AUTH_MANDATE_OPENID_SCOPE_FOR_REGULATORY_APPS)).trim());
+    }
+
+    /**
      * Method to get the CIBA authentication redirect endpoint configuration.
      *
      * @return ciba redirect endpoint
