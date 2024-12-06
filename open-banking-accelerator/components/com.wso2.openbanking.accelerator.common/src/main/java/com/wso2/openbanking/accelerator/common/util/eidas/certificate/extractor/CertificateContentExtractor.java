@@ -66,12 +66,17 @@ public class CertificateContentExtractor {
         PSPRoles pspRoles = psd2QcType.getPspRoles();
         List<PSPRole> rolesArray = pspRoles.getRoles();
 
+        // Roles as defined in the certificate (PSP_AI, PSP_PI, etc)
         List<String> roles = new ArrayList<>();
+        // Relative PSD2 role names (AISP, PISP, etc)
+        List<String> psd2Roles = new ArrayList<>();
 
         for (PSPRole pspRole : rolesArray) {
-            roles.add(pspRole.getPsd2RoleName());
+            roles.add(pspRole.getPspRoleName());
+            psd2Roles.add(pspRole.getPsd2RoleName());
         }
         tppCertData.setPspRoles(roles);
+        tppCertData.setPsd2Roles(psd2Roles);
 
         tppCertData.setNcaName(psd2QcType.getnCAName().getString());
         tppCertData.setNcaId(psd2QcType.getnCAId().getString());
