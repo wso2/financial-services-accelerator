@@ -80,8 +80,6 @@ public class EventNotificationConstants {
     public static final String CALLBACK_URL_PARAM = "callbackUrl";
     public static final String VERSION_PARAM = "version";
     public static final String EVENT_TYPES_PARAM = "eventTypes";
-    public static final String EVENT_TYPE_PARAM = "eventType";
-    public static final String DATA_PARAM = "data";
 
     public static final String DB_ERROR_UPDATING = "Database error while updating notification with ID : " +
             "'%s' in the database. ";
