@@ -197,8 +197,6 @@
                             org.apache.commons.lang3;version="${commons-lang3.version}",
                             org.apache.commons.logging;version="${commons.logging.version}",
                             org.json;version="${org.json.version}",
-<!--                            org.quartz.*;version="${quartz.version}",-->
-<!--                            com.nimbusds.jose;version="${org.wso2.orbit.nimbus.version.range}",-->
                             com.fasterxml.jackson.annotation;version="${jackson.databinding.version}",
                             com.fasterxml.jackson.databind;version="${jackson.databinding.version}",
                             com.nimbusds.jose;version="${org.wso2.orbit.nimbus.version.range}",
@@ -206,9 +204,7 @@
                             org.wso2.carbon.identity.oauth2.*;version="${identity.inbound.auth.oauth.version.range}",
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",
-                            org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",
-<!--                            org.apache.commons.collections4;version="${commons-collections.version}",-->
-<!--                            org.apache.http.*;version="${orbit.httpcore.version}"-->
+                            org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}"
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Export-Package>

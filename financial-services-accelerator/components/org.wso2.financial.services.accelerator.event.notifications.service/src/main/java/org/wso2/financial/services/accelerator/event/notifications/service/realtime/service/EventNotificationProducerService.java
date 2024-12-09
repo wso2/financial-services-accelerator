@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.event.notifications.service.real
 
 import com.nimbusds.jose.JOSEException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -78,7 +79,7 @@ public class EventNotificationProducerService implements Runnable {
                     }
                 });
 
-                if (!allowedEvents.isEmpty()) {
+                if (!allowedEvents.isEmpty() && StringUtils.isNotEmpty(subscription.getCallbackUrl())) {
                     RealtimeEventNotification realtimeEventNotification = new RealtimeEventNotification();
                     realtimeEventNotification.setNotification(notification);
                     realtimeEventNotification.setCallbackUrl(subscription.getCallbackUrl());
