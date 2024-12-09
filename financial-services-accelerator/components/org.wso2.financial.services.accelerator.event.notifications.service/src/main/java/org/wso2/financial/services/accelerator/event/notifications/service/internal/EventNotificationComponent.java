@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -29,6 +29,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
+import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationLoaderService;
+import org.wso2.financial.services.accelerator.event.notifications.service.realtime.util.activator.PeriodicalEventNotificationConsumerJobActivator;
 
 /**
  * The Component class for activating event notification osgi service.
@@ -37,10 +39,11 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
     name = "org.wso2.financial.services.accelerator.event.notifications.service.internal.EventNotificationComponent",
     immediate = true)
 public class EventNotificationComponent {
-    private static Log log = LogFactory.getLog(EventNotificationComponent.class);
+
+    private static final Log log = LogFactory.getLog(EventNotificationComponent.class);
 
     @Activate
-    protected void activate(ComponentContext context) {
+    protected void activate(ComponentContext context) throws Exception {
         log.debug("Event Notification Service Component Activated");
 
         // Check if realtime event notification enabled
@@ -50,16 +53,16 @@ public class EventNotificationComponent {
              * Initialize the quartz job for consuming the realtime event notifications
              * Initialize the thread for producing the open state realtime event notifications
              */
-            //TODO:
-//            new Thread(new RealtimeEventNotificationLoaderService()).start();
-//            new PeriodicalEventNotificationConsumerJobActivator().activate();
+            log.debug("Realtime Event Notification Service Activated");
+            new Thread(new RealtimeEventNotificationLoaderService()).start();
+            new PeriodicalEventNotificationConsumerJobActivator().activate();
         }
     }
 
     /**
      * Setters for the descendent OSGI services of the EventNotificationComponent.
      * This is added to run the EventNotification OSGI component after the Common module
-     * @param configService OpenBankingConfigurationService
+     * @param configurationService FinancialServicesConfigurationService
      */
     @Reference(
             service = FinancialServicesConfigurationService.class,
@@ -67,12 +70,12 @@ public class EventNotificationComponent {
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetConfigService"
     )
-    public void setConfigService(FinancialServicesConfigurationService configService) {
-        EventNotificationDataHolder.getInstance().setFinancialServicesConfigurationService(configService);
+    public void setConfigService(FinancialServicesConfigurationService configurationService) {
+        EventNotificationDataHolder.getInstance().setConfigService(configurationService);
     }
 
-    public void unsetConfigService(FinancialServicesConfigurationService configService) {
-        EventNotificationDataHolder.getInstance().setFinancialServicesConfigurationService(null);
+    public void unsetConfigService(FinancialServicesConfigurationService configurationService) {
+        EventNotificationDataHolder.getInstance().setConfigService(null);
     }
 
     /**
@@ -85,11 +88,6 @@ public class EventNotificationComponent {
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetOAuth2Service"
     )
-
-    /**
-     * Setters for the descendent OSGI services of the EventNotificationComponent.
-     * @param oAuth2Service OAuth2Service
-     */
     public void setOAuth2Service(OAuth2Service oAuth2Service) {
     }
 
