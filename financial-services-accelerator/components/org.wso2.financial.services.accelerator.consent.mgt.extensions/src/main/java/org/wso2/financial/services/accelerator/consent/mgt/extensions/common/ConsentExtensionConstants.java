@@ -24,6 +24,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 public class ConsentExtensionConstants {
 
     //Common Constants
+    public static final String TENANT_DOMAIN = "carbon.super";
     public static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
     public static final String ACCOUNTS = "accounts";
@@ -92,8 +93,10 @@ public class ConsentExtensionConstants {
     public static final String COF_ACCOUNT = "cofAccount";
     public static final String PRIMARY = "primary";
     public static final String ACCOUNT_IDS = "accountIds";
-    public static final String ERROR = "error";
-    public static final String ERROR_DESCRIPTION = "error_description";
+    public static final String ERRORS = "errors";
+    public static final String ERROR_CODE = "code";
+    public static final String ERROR_MSG = "message";
+    public static final String ERROR_DESCRIPTION = "description";
     public static final String STATE = "state";
     public static final String REDIRECT_URI = "redirect_uri";
     //Consent Admin Handler Constants

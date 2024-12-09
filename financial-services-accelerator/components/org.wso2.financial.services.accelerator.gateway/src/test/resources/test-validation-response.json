@@ -1,0 +1,12 @@
+{
+    "isValid": true,
+    "errorCode": "",
+    "errorMessage": "",
+    "httpCode": "",
+    "modifiedPayload": {
+        "key": "value"
+    },
+    "consentInformation": {
+        "key": "value"
+    }
+}

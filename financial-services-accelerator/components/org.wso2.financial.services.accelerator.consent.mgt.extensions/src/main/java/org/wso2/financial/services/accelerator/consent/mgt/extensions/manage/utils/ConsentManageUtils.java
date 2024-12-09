@@ -66,9 +66,10 @@ public class ConsentManageUtils {
             OffsetDateTime fromDate = OffsetDateTime.parse(fromDateVal);
             OffsetDateTime toDate = OffsetDateTime.parse(toDateVal);
 
-            // From date is earlier than To date
-            return toDate.isAfter(fromDate);
+            // From date is equal or earlier than To date
+            return toDate.isEqual(fromDate) || toDate.isAfter(fromDate);
         } catch (DateTimeParseException e) {
+            log.debug("Returning false since datetime cannot be parsed");
             return false;
         }
     }

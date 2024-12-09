@@ -25,12 +25,12 @@
         <RequestRouter>org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
         {% endif %}
         <FinancialServicesGatewayExecutors>
-            {% for type in financial_services.gateway.openbanking_gateway_executors.type %}
-                <{{type.name}}>
-                    {% for executor in type.executors %}
+            {% for executors in financial_services.gateway.executors %}
+                <{{executors.type}}>
+                    {% for executor in executors.executor %}
                        <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
                         {% endfor %}
-                 </{{type.name}}>
+                 </{{executors.type}}>
             {% endfor %}
         </FinancialServicesGatewayExecutors>
         {% if financial_services.gateway.consent.validation.endpoint is defined %}
@@ -62,4 +62,11 @@
         <MaxConnectionsPerRoute>{{financial_services.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
         {% endif %}
     </HTTPConnectionPool>
+    <Identity>
+        {% if financial_services.identity.consent_id_claim_name is defined %}
+        <ConsentIDClaimName>{{financial_services.identity.consent_id_claim_name}}</ConsentIDClaimName>
+        {% else %}
+        <ConsentIDClaimName>consent_id</ConsentIDClaimName>
+        {% endif %}
+    </Identity>
 </Server>
