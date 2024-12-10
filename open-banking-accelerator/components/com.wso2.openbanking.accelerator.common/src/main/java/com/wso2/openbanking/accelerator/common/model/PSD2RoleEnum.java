@@ -23,7 +23,11 @@ package com.wso2.openbanking.accelerator.common.model;
  */
 public enum PSD2RoleEnum {
 
-    AISP("aisp"), PISP("pisp"), CBPII("cbpii"), ASPSP("aspsp"), PSP_AI("psp_ai"),
+    AISP("aisp"), 
+    PISP("pisp"), 
+    CBPII("cbpii"), 
+    ASPSP("aspsp"), 
+    PSP_AI("psp_ai"),
     PSP_PI("psp_pi"), PSP_IC("psp_ic"), PSP_AS("psp_as");
 
     private String value;
