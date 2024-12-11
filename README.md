@@ -16,21 +16,21 @@
  ~ under the License.
  -->
 
-# WSO2 Financial Services Accelerator
+# WSO2 Open Banking Accelerator
 
-Financial Services Accelerator a collection of technologies that increases the speed and reduces the complexity of adopting open banking compliance.
+Open Banking Accelerator a collection of technologies that increases the speed and reduces the complexity of adopting open banking compliance.
 
 ### Building from the source
 
-If you want to build Financial Services Accelerator from the source code:
+If you want to build Open Banking Accelerator from the source code:
 
 1. Install Java8 or above.
 1. Install [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above.
 1. Install [MySQL](https://dev.mysql.com/doc/refman/5.5/en/windows-installation.html).
-1. To get the Financial Services Accelerator from [this repository](https://github.com/wso2/financial-services-accelerator.git), click **Clone or download**.
+1. To get the Open Banking Accelerator from [this repository](https://github.com/wso2/financial-services-accelerator.git), click **Clone or download**.
     * To **clone the solution**, copy the URL and execute the following command in a command prompt.
-      `git clone <the copiedURL>`
-    * To **download the pack**, click **Download ZIP** and unzip the downloaded file.
+      `git clone <the copiedURL>`. After cloning, checkout to the **3.0.0** branch.
+    * To **download the pack**, select the branch **3.0.0** first, then click **Download ZIP** and unzip the downloaded file.
 1. Navigate to the downloaded solution using a command prompt and run the Maven command.
 
    |  Command | Description                                                                                                                                                                      |
@@ -61,7 +61,7 @@ Please refer the following READ.ME files to run the products.
 
 ### Reporting Issues
 
-We encourage you to report issues, documentation faults, and feature requests regarding the Financial Services Accelerator through the [WSO2 Financial Services Accelerator Issue Tracker](https://github.com/wso2/financial-services-accelerator/issues).
+We encourage you to report issues, documentation faults, and feature requests regarding the Open Banking Accelerator through the [WSO2 Open Banking Accelerator Issue Tracker](https://github.com/wso2/financial-services-accelerator/issues).
 
 ### License
 
