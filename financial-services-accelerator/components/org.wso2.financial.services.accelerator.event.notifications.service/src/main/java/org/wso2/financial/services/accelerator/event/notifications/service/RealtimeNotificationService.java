@@ -114,7 +114,8 @@ public class RealtimeNotificationService {
      * @param notificationStatus Notification status to update
      * @throws FSEventNotificationException  Exception when updating notification status by ID
      */
-    public void updateNotificationStatusById(String notificationId, String notificationStatus)
+    public void updateNotificationStatusById(String notificationId,
+                                             EventNotificationConstants.EventNotificationStatusEnum notificationStatus)
             throws FSEventNotificationException {
 
         Connection connection = DatabaseUtils.getDBConnection();
@@ -123,7 +124,8 @@ public class RealtimeNotificationService {
 
         try {
             //update the stored event notification
-            eventNotificationDAO.updateNotificationStatusById(connection, notificationId, notificationStatus);
+            eventNotificationDAO.updateNotificationStatusById(connection, notificationId,
+                    notificationStatus.toString());
 
             log.debug("Event Notification updated successfully.");
             DatabaseUtils.commitTransaction(connection);

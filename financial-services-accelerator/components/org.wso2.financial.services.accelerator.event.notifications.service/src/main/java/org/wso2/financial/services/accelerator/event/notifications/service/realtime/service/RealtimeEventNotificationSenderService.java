@@ -167,7 +167,7 @@ public class RealtimeEventNotificationSenderService implements Runnable {
                                 notificationId.replaceAll("[\r\n]", "") + " sent successfully");
                     }
                     realtimeNotificationService.updateNotificationStatusById(notificationId,
-                            EventNotificationConstants.ACK);
+                            EventNotificationConstants.EventNotificationStatusEnum.ACK);
                     return;
                 } else {
                     if (log.isDebugEnabled()) {
@@ -191,11 +191,8 @@ public class RealtimeEventNotificationSenderService implements Runnable {
                 // If the circuit breaker is opened or the maximum retry count is exceeded,
                 // the notification status will be updated as ERROR.
                 realtimeNotificationService.updateNotificationStatusById(notificationId,
-                        EventNotificationConstants.ERROR);
-            } catch (IOException | InterruptedException  e) {
-                log.error("Real-time event notification with notificationId: " +
-                        notificationId.replaceAll("[\r\n]", "") + " sent failed", e);
-            } catch (FSEventNotificationException e) {
+                        EventNotificationConstants.EventNotificationStatusEnum.ERROR);
+            } catch (IOException | InterruptedException | FSEventNotificationException  e) {
                 log.error("Real-time event notification with notificationId: " +
                         notificationId.replaceAll("[\r\n]", "") + " sent failed", e);
             }
