@@ -373,8 +373,14 @@ public class JWTUtils {
      */
     public static String signJWTWithDefaultKey(String body) throws Exception {
         KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(-1234);
-        Key privateKey = keyStoreManager.getDefaultPrivateKey();
-        return generateJWT(body, privateKey);
+        KeyStore primaryKeyStore = keyStoreManager.getPrimaryKeyStore();
+        if (primaryKeyStore != null) {
+            Key privateKey = keyStoreManager.getDefaultPrivateKey();
+            return generateJWT(body, privateKey);
+        } else {
+            throw new FinancialServicesRuntimeException("Error while retrieving the Primary Keystore");
+        }
+
     }
 
     /**
