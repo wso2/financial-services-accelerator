@@ -30,6 +30,12 @@
                 <CacheModifiedExpiry>60</CacheModifiedExpiry>
             </GatewayCache>
         </Cache>
+        <DCR>
+            <RequestJWTValidation>true</RequestJWTValidation>
+            <JWKSEndpointName>software_jwks_endpoint</JWKSEndpointName>
+            <SSAClientName>software_client_name</SSAClientName>
+            <UseSoftwareIdAsAppName>true</UseSoftwareIdAsAppName>
+        </DCR>
     </Gateway>
     <PublisherURL>https://localhost:9443</PublisherURL>
     <HTTPConnectionPool>

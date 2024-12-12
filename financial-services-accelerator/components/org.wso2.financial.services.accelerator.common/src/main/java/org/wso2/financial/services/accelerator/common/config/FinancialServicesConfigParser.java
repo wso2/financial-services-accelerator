@@ -36,12 +36,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
@@ -63,8 +61,6 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Object> configuration = new HashMap<>();
     private final Map<String, Map<Integer, String>> fsExecutors = new HashMap<>();
     private final Map<String, Map<Integer, String>> authorizeSteps = new HashMap<>();
-    private final Map<String, List<String>> allowedScopes = new HashMap<>();
-    private final Map<String, List<String>> allowedAPIs = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;
@@ -132,8 +128,6 @@ public final class FinancialServicesConfigParser {
             readChildElements(rootElement, nameStack);
             buildFSExecutors();
             buildConsentAuthSteps();
-            buildAllowedScopes();
-            buildAllowedSubscriptions();
         } catch (IOException | XMLStreamException | OMException e) {
             throw new FinancialServicesRuntimeException("Error occurred while building configuration from " +
                     "financial-services.xml", e);
@@ -297,74 +291,6 @@ public final class FinancialServicesConfigParser {
         }
     }
 
-    private void buildAllowedScopes() {
-        OMElement gatewayElement = rootElement.getFirstChildWithName(
-                new QName(FinancialServicesConstants.FS_CONFIG_QNAME, FinancialServicesConstants.GATEWAY_CONFIG_TAG));
-
-        if (gatewayElement != null) {
-            OMElement tppManagementElement = gatewayElement.getFirstChildWithName(
-                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
-                            FinancialServicesConstants.TPP_MANAGEMENT_CONFIG_TAG));
-
-            if (tppManagementElement != null) {
-                OMElement allowedScopesElement = tppManagementElement.getFirstChildWithName(new QName(
-                        FinancialServicesConstants.FS_CONFIG_QNAME,
-                        FinancialServicesConstants.ALLOWED_SCOPES_CONFIG_TAG));
-
-                // obtaining each scope under allowed scopes
-                Iterator environmentIterator = allowedScopesElement
-                        .getChildrenWithLocalName(FinancialServicesConstants.SCOPE_CONFIG_TAG);
-
-                while (environmentIterator.hasNext()) {
-                    OMElement scopeElem = (OMElement) environmentIterator.next();
-                    String scopeName = scopeElem.getAttributeValue(new QName("name"));
-                    String rolesStr = scopeElem.getAttributeValue(new QName("roles"));
-                    if (StringUtils.isNotEmpty(rolesStr)) {
-                        List<String> rolesList = Arrays.stream(rolesStr.split(","))
-                                .map(String::trim)
-                                .collect(Collectors.toList());
-                        allowedScopes.put(scopeName, rolesList);
-                    }
-                }
-            }
-        }
-    }
-
-    private void buildAllowedSubscriptions() {
-
-        OMElement dcrElement = rootElement.getFirstChildWithName(
-                new QName(FinancialServicesConstants.FS_CONFIG_QNAME, FinancialServicesConstants.DCR_CONFIG_TAG));
-
-        if (dcrElement != null) {
-            OMElement regulatoryAPIs = dcrElement.getFirstChildWithName(
-                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
-                            FinancialServicesConstants.REGULATORY_API_NAMES));
-
-            if (regulatoryAPIs != null) {
-
-                // obtaining each regulatory API under allowed regulatory APIs
-                Iterator environmentIterator = regulatoryAPIs
-                        .getChildrenWithLocalName(FinancialServicesConstants.REGULATORY_API);
-
-                while (environmentIterator.hasNext()) {
-                    OMElement regulatoryAPIElem = (OMElement) environmentIterator.next();
-                    String regulatoryAPIName = regulatoryAPIElem.getAttributeValue(new QName(
-                            FinancialServicesConstants.API_NAME));
-                    String rolesStr = regulatoryAPIElem.getAttributeValue(new QName(
-                            FinancialServicesConstants.API_ROLE));
-                    if (StringUtils.isNotEmpty(rolesStr)) {
-                        List<String> rolesList = Arrays.stream(rolesStr.split(","))
-                                .map(String::trim)
-                                .collect(Collectors.toList());
-                        allowedAPIs.put(regulatoryAPIName, rolesList);
-                    } else {
-                        allowedAPIs.put(regulatoryAPIName, Collections.emptyList());
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Method to obtain config key from stack.
      *
@@ -438,14 +364,6 @@ public final class FinancialServicesConfigParser {
     public Map<String, Map<Integer, String>> getConsentAuthorizeSteps() {
 
         return Collections.unmodifiableMap(authorizeSteps);
-    }
-
-    public Map<String, List<String>> getAllowedScopes() {
-        return Collections.unmodifiableMap(allowedScopes);
-    }
-
-    public Map<String, List<String>> getAllowedAPIs() {
-        return Collections.unmodifiableMap(allowedAPIs);
     }
 
     public String getDataSourceName() {

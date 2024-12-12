@@ -48,6 +48,28 @@
                 {% endif %}
             </GatewayCache>
         </Cache>
+         <DCR>
+            {% if financial_services.gateway.dcr.isRequestJWT is defined %}
+            <RequestJWTValidation>{{financial_services.gateway.dcr.isRequestJWT}}</RequestJWTValidation>
+            {% else %}
+            <RequestJWTValidation>true</RequestJWTValidation>
+            {% endif %}
+            {% if financial_services.gateway.dcr.jwks_endpoint_name is defined %}
+            <JWKSEndpointName>{{financial_services.gateway.dcr.jwks_endpoint_name}}</JWKSEndpointName>
+            {% else %}
+            <JWKSEndpointName>software_jwks_endpoint</JWKSEndpointName>
+            {% endif %}
+            {% if financial_services.gateway.dcr.ssa_client_name is defined %}
+            <SSAClientName>{{financial_services.gateway.dcr.ssa_client_name}}</SSAClientName>
+            {% else %}
+            <SSAClientName>software_client_name</SSAClientName>
+            {% endif %}
+            {% if financial_services.gateway.dcr.use_softwareId_for_appName is defined %}
+            <UseSoftwareIdAsAppName>{{financial_services.gateway.dcr.use_softwareId_for_appName}}</UseSoftwareIdAsAppName>
+            {% else %}
+            <UseSoftwareIdAsAppName>true</UseSoftwareIdAsAppName>
+            {% endif %}
+        </DCR>
     </Gateway>
     {% if financial_services.publisher_url is defined %}
     <PublisherURL>{{financial_services.publisher_url}}</PublisherURL>
