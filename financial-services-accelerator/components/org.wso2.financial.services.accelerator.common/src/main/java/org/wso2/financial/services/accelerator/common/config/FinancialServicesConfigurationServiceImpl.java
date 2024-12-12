@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.common.config;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,15 +43,5 @@ public class FinancialServicesConfigurationServiceImpl implements FinancialServi
     public Map<String, Map<Integer, String>> getAuthorizeSteps() {
 
         return configParser.getConsentAuthorizeSteps();
-    }
-
-    @Override
-    public Map<String, List<String>> getAllowedScopes() {
-        return configParser.getAllowedScopes();
-    }
-
-    @Override
-    public Map<String, List<String>> getAllowedAPIs() {
-        return configParser.getAllowedAPIs();
     }
 }
