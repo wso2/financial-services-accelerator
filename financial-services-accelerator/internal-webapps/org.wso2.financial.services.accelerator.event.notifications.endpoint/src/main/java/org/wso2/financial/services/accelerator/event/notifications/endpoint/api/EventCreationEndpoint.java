@@ -52,9 +52,19 @@ import javax.ws.rs.core.Response;
 public class EventCreationEndpoint {
 
     private static final Log log = LogFactory.getLog(EventCreationEndpoint.class);
-    private static final EventCreationServiceHandler eventCreationServiceHandler = EventNotificationUtils.
-            getEventNotificationCreationServiceHandler();
+    private final EventCreationServiceHandler eventCreationServiceHandler;
     private static final String specialChars = "!@#$%&*()'+,./:;<=>?[]^_`{|}";
+    private static final String illegalChars = "\\\\r|\\\\n|\\r|\\n|\\[|]| ";
+
+    public EventCreationEndpoint() {
+
+        eventCreationServiceHandler = EventNotificationUtils.getEventNotificationCreationServiceHandler();
+    }
+
+    public EventCreationEndpoint(EventCreationServiceHandler handler) {
+
+        eventCreationServiceHandler = handler;
+    }
 
     /**
      * This API will be used to create events.
@@ -82,7 +92,7 @@ public class EventCreationEndpoint {
             if (!parameterMap.isEmpty() && parameterMap.containsKey(EventNotificationEndPointConstants.REQUEST)) {
 
                 requestData = parameterMap.get(EventNotificationEndPointConstants.REQUEST).
-                        toString().replaceAll("\\\\r|\\\\n|\\r|\\n|\\[|]| ", StringUtils.EMPTY);
+                        toString().replaceAll(illegalChars, StringUtils.EMPTY);
 
                 byte[] decodedBytes = Base64.getDecoder().decode(requestData);
                 String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
@@ -124,9 +134,8 @@ public class EventCreationEndpoint {
             }
 
             //set events to notificationCreationDTO
-            JSONObject finalNotificationEvents = notificationEvents;
             notificationEvents.keySet().forEach(eventName -> {
-                JSONObject eventInformation = (JSONObject) finalNotificationEvents.get(eventName);
+                JSONObject eventInformation = notificationEvents.getJSONObject(eventName);
                 notificationCreationDTO.setEventPayload(eventName, eventInformation);
             });
 
@@ -142,6 +151,7 @@ public class EventCreationEndpoint {
                     .getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
                             EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
         } catch (FSEventNotificationException e) {
+            log.error(EventNotificationEndPointConstants.EVENT_CREATION_ERROR_RESPONSE, e);
             return Response.status(e.getStatus()).entity(EventNotificationServiceUtil
                     .getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST,
                             e.getMessage())).build();

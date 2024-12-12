@@ -40,6 +40,10 @@ public class EventNotificationUtils {
 
     private static final Log log = LogFactory.getLog(EventNotificationUtils.class);
 
+    private EventNotificationUtils() {
+
+    }
+
     /**
      * This method is to get the event creation service handler as per the config.
      * @return EventCreationServiceHandler

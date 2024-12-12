@@ -58,8 +58,17 @@ import javax.ws.rs.core.UriInfo;
 public class EventSubscriptionEndpoint {
     private static final Log log = LogFactory.getLog(EventSubscriptionEndpoint.class);
 
-    private static final EventSubscriptionServiceHandler eventSubscriptionServiceHandler = EventSubscriptionUtils.
-            getEventSubscriptionServiceHandler();
+    private final EventSubscriptionServiceHandler eventSubscriptionServiceHandler;
+
+    public EventSubscriptionEndpoint() {
+
+        eventSubscriptionServiceHandler = EventSubscriptionUtils.getEventSubscriptionServiceHandler();
+    }
+
+    public EventSubscriptionEndpoint(EventSubscriptionServiceHandler handler) {
+
+        eventSubscriptionServiceHandler = handler;
+    }
 
     /**
      * Register an Event Notification Subscription.

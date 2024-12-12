@@ -36,6 +36,10 @@ import javax.ws.rs.core.Response;
  */
 public class EventSubscriptionUtils {
 
+    private EventSubscriptionUtils() {
+
+    }
+
     /**
      * Extract string payload from request object.
      */

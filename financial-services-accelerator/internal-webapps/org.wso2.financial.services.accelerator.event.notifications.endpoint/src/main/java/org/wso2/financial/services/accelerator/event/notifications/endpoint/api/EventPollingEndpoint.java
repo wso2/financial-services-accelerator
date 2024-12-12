@@ -58,9 +58,18 @@ import javax.ws.rs.core.Response;
 @Path("/events")
 public class EventPollingEndpoint {
 
-    private static final Log log = LogFactory.getLog(EventCreationEndpoint.class);
-    private static final EventPollingServiceHandler eventPollingServiceHandler = EventNotificationUtils.
-            getEventPollingServiceHandler();
+    private static final Log log = LogFactory.getLog(EventPollingEndpoint.class);
+    private EventPollingServiceHandler eventPollingServiceHandler;
+
+    public EventPollingEndpoint() {
+
+        eventPollingServiceHandler = EventNotificationUtils.getEventPollingServiceHandler();
+    }
+
+    public EventPollingEndpoint(EventPollingServiceHandler handler) {
+
+        eventPollingServiceHandler = handler;
+    }
 
     /**
      * Retrieve Event Notifications Using Aggregated Polling.
