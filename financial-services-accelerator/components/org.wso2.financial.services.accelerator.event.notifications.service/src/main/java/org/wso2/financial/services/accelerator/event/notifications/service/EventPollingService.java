@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is the event polling service.
+ * Event polling service.
  */
 public class EventPollingService {
 
