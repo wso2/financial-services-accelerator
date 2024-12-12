@@ -219,6 +219,13 @@ http_method = "all"
 secure = "false"
 
 [[resource.access_control]]
+allowed_auth_handlers = ["BasicAuthentication"]
+context = "(.*)/api/fs/event-notifications/(.*)"
+http_method = "all"
+permissions = ["/permission/admin"]
+secure = "true"
+
+[[resource.access_control]]
 context="(.*)/scim2/Me"
 secure=true
 http_method="GET"

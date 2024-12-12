@@ -43,6 +43,7 @@
             <modules>
                 <module>financial-services-accelerator</module>
                 <module>react-apps</module>
+                <module>integration-test-framework</module>
             </modules>
             <build>
                 <plugins>
@@ -386,11 +387,6 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.databinding.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.databinding.version}</version>
             </dependency>
             <dependency>

@@ -18,6 +18,10 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.constants;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * Event Notification Constants.
  */
@@ -30,6 +34,40 @@ public class EventNotificationConstants {
     public static final String ACK = "ACK";
     public static final String ERROR = "ERR";
     public static final String OPEN = "OPEN";
+
+    /**
+     * Specifies the Schema Names of Debtor Account.
+     */
+    public enum EventNotificationStatusEnum {
+
+        ACK("ACK"),
+
+        ERROR("ERR"),
+
+        OPEN("OPEN");
+
+        private final String value;
+
+        EventNotificationStatusEnum(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        public static EventNotificationStatusEnum fromValue(String text) {
+
+            List<EventNotificationStatusEnum> valueList = Arrays.asList(EventNotificationStatusEnum.values());
+            Optional<EventNotificationStatusEnum> accountOpt = valueList
+                    .stream()
+                    .filter(i -> String.valueOf(i.value).equals(text))
+                    .findAny();
+
+            return accountOpt.orElse(null);
+        }
+    }
 
     //Response Status
     public static final String NOT_FOUND = "NOTFOUND";

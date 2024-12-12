@@ -33,7 +33,7 @@ import java.sql.Connection;
 import java.util.List;
 
 /**
- * This is the event subscription service class.
+ * Event subscription service class.
  */
 public class EventSubscriptionService {
     private static final Log log = LogFactory.getLog(EventSubscriptionService.class);
