@@ -601,4 +601,154 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse("");
     }
 
+    //Event notifications configurations.
+    public String getEventNotificationTokenIssuer() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.TOKEN_ISSUER);
+        return source.map(String::trim).orElse("www.wso2.com");
+    }
+
+    public int getNumberOfSetsToReturn() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.MAX_SETS_TO_RETURN);
+        return config.map(Integer::parseInt).orElse(5);
+    }
+
+    public boolean isSubClaimIncluded() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_SUB_CLAIM_INCLUDED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    public boolean isToeClaimIncluded() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_TOE_CLAIM_INCLUDED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    public boolean isTxnClaimIncluded() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_TXN_CLAIM_INCLUDED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to determine real-time event notification feature is enabled or not from the configurations.
+     *
+     * @return boolean value indicating the state
+     */
+    public boolean isRealtimeEventNotificationEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get periodic Cron expression config for realtime event notifications scheduler.
+     *
+     * @return String Cron expression to trigger the Cron job for real-time event notification
+     */
+    public String getRealtimeEventNotificationSchedulerCronExpression() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.PERIODIC_CRON_EXPRESSION);
+        return source.map(String::trim).orElse("0 0/1 0 ? * * *");
+    }
+
+    /**
+     * Method to get TIMEOUT_IN_SECONDS config for realtime event notifications.
+     *
+     * @return integer timeout for the HTTP Client's POST requests
+     */
+    public int getRealtimeEventNotificationTimeoutInSeconds() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.TIMEOUT_IN_SECONDS);
+        return config.map(Integer::parseInt).orElse(60);
+    }
+
+    /**
+     * Method to get MAX_RETRIES config for realtime event notifications.
+     *
+     * @return integer maximum number of retries to the retry policy in real-time notification sender
+     */
+    public int getRealtimeEventNotificationMaxRetries() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.MAX_RETRIES);
+        return config.map(Integer::parseInt).orElse(5);
+    }
+
+    /**
+     * Method to get INITIAL_BACKOFF_TIME_IN_SECONDS config for realtime event notifications.
+     *
+     * @return integer start waiting time for the retry policy before the first retry
+     */
+    public int getRealtimeEventNotificationInitialBackoffTimeInSeconds() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.INITIAL_BACKOFF_TIME_IN_SECONDS);
+        return config.map(Integer::parseInt).orElse(60);
+    }
+
+    /**
+     * Method to get BACKOFF_FUNCTION config for realtime event notifications.
+     * Function name should be "EX", "CONSTANT" or "LINEAR".
+     *
+     * @return string indicating the retry function
+     */
+    public String getRealtimeEventNotificationBackoffFunction() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.BACKOFF_FUNCTION);
+        return source.map(String::trim).orElse("EX");
+    }
+
+    /**
+     * Method to get CIRCUIT_BREAKER_OPEN_TIMEOUT_IN_SECONDS config for realtime event notifications.
+     *
+     * @return integer timeout to break the retrying process and make that notification as ERR
+     */
+    public int getRealtimeEventNotificationCircuitBreakerOpenTimeoutInSeconds() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CIRCUIT_BREAKER_OPEN_TIMEOUT_IN_SECONDS);
+        return config.map(Integer::parseInt).orElse(600);
+    }
+
+    /**
+     * Method to get EVENT_NOTIFICATION_THREAD_POOL_SIZE config for realtime event notifications.
+     *
+     * @return integer fix size to set the Thread Pool size in the real-time event notification sender
+     */
+    public int getEventNotificationThreadPoolSize() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.EVENT_NOTIFICATION_THREAD_POOL_SIZE);
+        return config.map(Integer::parseInt).orElse(20);
+    }
+
+    /**
+     * Method to get EVENT_NOTIFICATION_GENERATOR config for event notifications.
+     *
+     * @return String class name of the event notification generator to generate the event notification payload
+     */
+    public String getEventNotificationGenerator() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.EVENT_NOTIFICATION_GENERATOR);
+        return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications." +
+                "service.service.DefaultEventNotificationGenerator");
+    }
+
+    /**
+     * Method to get REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR config for realtime event notifications.
+     *
+     * @return String class path of the realtime event notification payload generator
+     */
+    public String getRealtimeEventNotificationRequestGenerator() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR);
+        return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications.service." +
+                "realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
+    }
+
 }

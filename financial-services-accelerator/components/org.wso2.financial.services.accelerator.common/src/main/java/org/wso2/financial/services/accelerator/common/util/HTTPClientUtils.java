@@ -66,7 +66,7 @@ public class HTTPClientUtils {
      * @return Closeable https client
      * @throws FinancialServicesException FinancialServicesException exception
      */
-    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
+    @Generated(message = "Ignoring since method contains no logics")
     public static CloseableHttpClient getHttpsClient() throws FinancialServicesException {
 
         SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
@@ -84,6 +84,33 @@ public class HTTPClientUtils {
         connectionManager.setMaxTotal(FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections());
         connectionManager.setDefaultMaxPerRoute(FinancialServicesConfigParser.getInstance()
                 .getConnectionPoolMaxConnectionsPerRoute());
+
+        return HttpClients.custom().setConnectionManager(connectionManager).build();
+    }
+
+    /**
+     * Get closeable https client with given max Total and max per route values.
+     *
+     * @return Closeable https client
+     * @throws FinancialServicesException FinancialServicesException exception
+     */
+    @Generated(message = "Ignoring since method contains no logics")
+    public static CloseableHttpClient getHttpsClient(int maxTotal, int maxPerRoute) throws FinancialServicesException {
+
+        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                .register(HTTPS_PROTOCOL, sslsf)
+                .build();
+
+        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
+                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
+                new PoolingHttpClientConnectionManager();
+
+        // configuring default maximum connections
+        connectionManager.setMaxTotal(maxTotal);
+        connectionManager.setDefaultMaxPerRoute(maxPerRoute);
 
         return HttpClients.custom().setConnectionManager(connectionManager).build();
     }

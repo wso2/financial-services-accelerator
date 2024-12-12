@@ -20,8 +20,11 @@ package org.wso2.financial.services.accelerator.common.util;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.BadJOSEException;
@@ -31,6 +34,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jose.proc.SimpleSecurityContext;
 import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
@@ -39,10 +43,12 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.internal.FinancialServicesCommonDataHolder;
 
 import java.io.FileInputStream;
@@ -50,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -57,6 +64,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -197,6 +205,7 @@ public class JWTUtils {
      *                                  parsable JWT
      *
      */
+    @Generated(message = "Excluding from code coverage as it require external call")
     public static SignedJWT getSignedJWT(String jwtString) throws ParseException {
 
         if (isValidJWSFormat(jwtString)) {
@@ -352,5 +361,58 @@ public class JWTUtils {
             }
         }
         return FinancialServicesCommonDataHolder.getInstance().getTrustStore();
+    }
+
+    /**
+     * Sign a string body using the carbon default key pair.
+     * Skipped in unit tests since @KeystoreManager cannot be mocked
+     *
+     * @param body the body that needs to be signed as a string
+     * @return string value of the signed JWT
+     * @throws Exception error if the tenant is invalid
+     */
+    public static String signJWTWithDefaultKey(String body) throws Exception {
+        KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(-1234);
+        KeyStore primaryKeyStore = keyStoreManager.getPrimaryKeyStore();
+        if (primaryKeyStore != null) {
+            Key privateKey = keyStoreManager.getDefaultPrivateKey();
+            return generateJWT(body, privateKey);
+        } else {
+            throw new FinancialServicesRuntimeException("Error while retrieving the Primary Keystore");
+        }
+
+    }
+
+    /**
+     * Util method to generate JWT using a payload and a private key. RS256 is the
+     * algorithm used
+     *
+     * @param payload    The payload body to be signed
+     * @param privateKey The private key for the JWT to be signed with
+     * @return String signed JWT
+     */
+    @Generated(message = "Excluding from code coverage as it require external call")
+    public static String generateJWT(String payload, Key privateKey) {
+
+        if (privateKey == null || payload == null) {
+            log.debug("Null value passed for payload or key. Cannot generate JWT");
+            throw new FinancialServicesRuntimeException("Payload and key cannot be null");
+        }
+
+        if (!(privateKey instanceof RSAPrivateKey)) {
+            throw new FinancialServicesRuntimeException("Private key should be an instance of RSAPrivateKey");
+        }
+
+        JWSSigner signer = new RSASSASigner((RSAPrivateKey) privateKey);
+        JWSHeader.Builder headerBuilder = new JWSHeader.Builder(JWSAlgorithm.RS256);
+
+        SignedJWT signedJWT = null;
+        try {
+            signedJWT = new SignedJWT(headerBuilder.build(), JWTClaimsSet.parse(payload));
+            signedJWT.sign(signer);
+        } catch (ParseException | JOSEException e) {
+            throw new FinancialServicesRuntimeException("Error occurred while signing JWT");
+        }
+        return signedJWT.serialize();
     }
 }
