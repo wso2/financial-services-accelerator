@@ -39,7 +39,6 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,19 +90,17 @@ public class JWTUtils {
      * @return json object containing requested jwt part
      * @throws ParseException if an error occurs while parsing the jwt
      */
-    public static JSONObject decodeRequestJWT(String jwtToken, String jwtPart) throws ParseException {
-
-        JSONObject jsonObject = new JSONObject();
+    public static String decodeRequestJWT(String jwtToken, String jwtPart) throws ParseException {
 
         JWSObject plainObject = JWSObject.parse(jwtToken);
 
-        if ("head".equals(jwtPart)) {
-            jsonObject = plainObject.getHeader().toJSONObject();
-        } else if ("body".equals(jwtPart)) {
-            jsonObject = plainObject.getPayload().toJSONObject();
+        if (FinancialServicesConstants.JWT_HEAD.equals(jwtPart)) {
+            return plainObject.getHeader().toString();
+        } else if (FinancialServicesConstants.JWT_BODY.equals(jwtPart)) {
+            return plainObject.getPayload().toString();
         }
 
-        return jsonObject;
+        return StringUtils.EMPTY;
 
     }
 
@@ -121,7 +118,7 @@ public class JWTUtils {
      *                               object
      */
     @Generated(message = "Excluding from code coverage since can not call this method due to external https call")
-    public static boolean validateJWTSignature(String jwtString, String jwksUri, String algorithm)
+    public static JWTClaimsSet validateJWTSignature(String jwtString, String jwksUri, String algorithm)
             throws ParseException, BadJOSEException, JOSEException, MalformedURLException {
 
         int defaultConnectionTimeout = 3000;
@@ -155,8 +152,7 @@ public class JWTUtils {
         jwtProcessor.setJWSKeySelector(keySelector);
         // Process the token, set optional context parameters.
         SimpleSecurityContext securityContext = new SimpleSecurityContext();
-        jwtProcessor.process((SignedJWT) jwt, securityContext);
-        return true;
+        return jwtProcessor.process((SignedJWT) jwt, securityContext);
     }
 
     /**

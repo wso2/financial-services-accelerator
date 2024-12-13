@@ -426,12 +426,27 @@ priority = 1
 name = "org.wso2.financial.services.accelerator.gateway.executor.impl.error.handling.DefaultErrorHandlingExecutor"
 priority = 1000
 
+[[financial_services.gateway.executors]]
+type = "DCR"
+[[financial_services.gateway.executors.executor]]
+name = "org.wso2.financial.services.accelerator.gateway.executor.impl.dcr.DCRExecutor"
+priority = 1
+[[financial_services.gateway.executors.executor]]
+name = "org.wso2.financial.services.accelerator.gateway.executor.impl.error.handling.DefaultErrorHandlingExecutor"
+priority = 1000
+
 [financial_services.gateway.consent.validation]
 endpoint="https://IS_HOSTNAME:9446/api/fs/consent/validate/validate"
 
 [financial_services.gateway.cache]
 cache_access_expiry_minutes=60
 cache_modified_expiry_minutes=60
+
+[financial_services.gateway.dcr]
+isRequestJWT= true
+jwks_endpoint_name= "software_jwks_endpoint"
+ssa_client_name= "software_client_name"
+use_softwareId_for_appName= true
 
 #===================for Connection pool====================
 [financial_services.http_connection_pool]

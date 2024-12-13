@@ -18,11 +18,10 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
-import com.nimbusds.jose.JWSObject;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -98,8 +97,8 @@ public class FinancialServicesUtils {
             return FinancialServicesConstants.PRODUCTION;
         }
 
-        final JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement,
-                FinancialServicesConstants.JWT_BODY);
+        String decodedSSA = JWTUtils.decodeRequestJWT(softwareStatement, FinancialServicesConstants.JWT_BODY);
+        final JSONObject softwareStatementBody = new JSONObject(decodedSSA);
         // Retrieve the SSA property name used for software environment identification
         final String sandboxEnvIdentificationPropertyName = FinancialServicesConfigParser.getInstance()
                 .getSoftwareEnvIdentificationSSAPropertyName();
@@ -107,7 +106,7 @@ public class FinancialServicesUtils {
         final String sandboxEnvIdentificationValue = FinancialServicesConfigParser.getInstance()
                 .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
         return sandboxEnvIdentificationValue.equals(softwareStatementBody
-                .getAsString(sandboxEnvIdentificationPropertyName))
+                .getString(sandboxEnvIdentificationPropertyName))
                         ? FinancialServicesConstants.SANDBOX
                         : FinancialServicesConstants.PRODUCTION;
     }
@@ -146,25 +145,5 @@ public class FinancialServicesUtils {
             throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
                     "provider for clientId: " + clientId, e);
         }
-    }
-
-    /**
-     * Decode request JWT.
-     *
-     * @param jwtToken jwt sent by the tpp
-     * @param jwtPart  expected jwt part (header, body)
-     * @return json object containing requested jwt part
-     * @throws java.text.ParseException if an error occurs while parsing the jwt
-     */
-    public static JSONObject decodeRequestJWT(String jwtToken, String jwtPart) throws java.text.ParseException {
-
-        JWSObject plainObject = JWSObject.parse(jwtToken);
-
-        if (FinancialServicesConstants.JWT_HEAD.equals(jwtPart)) {
-            return plainObject.getHeader().toJSONObject();
-        } else if (FinancialServicesConstants.JWT_BODY.equals(jwtPart)) {
-            return plainObject.getPayload().toJSONObject();
-        }
-        return null;
     }
 }

@@ -115,7 +115,7 @@ public class ConsentValidationEndpoint {
             try {
                 JWTUtils.validateJWTSignatureWithPublicKey(payload, requestSignatureAlias);
                 String decodedRequest = JWTUtils.decodeRequestJWT(payload, ConsentExtensionConstants.BODY) != null
-                        ? JWTUtils.decodeRequestJWT(payload, ConsentExtensionConstants.BODY).toJSONString()
+                        ? JWTUtils.decodeRequestJWT(payload, ConsentExtensionConstants.BODY)
                         : null;
                 if (Objects.nonNull(decodedRequest)) {
                     requestData = new JSONObject(decodedRequest);

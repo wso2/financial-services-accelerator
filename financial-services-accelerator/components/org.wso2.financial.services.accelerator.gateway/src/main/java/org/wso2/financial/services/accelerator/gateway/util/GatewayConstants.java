@@ -63,4 +63,19 @@ public class GatewayConstants {
     public static final String MESSAGE = "message";
     public static final String DESCRIPTION = "description";
     public static final String LINKS = "links";
+    public static final String IAT = "iat";
+    public static final String EXP = "exp";
+    public static final String AUD = "aud";
+    public static final String CLIENT_NAME = "client_name";
+    public static final String JWKS_URI = "jwks_uri";
+    public static final String TOKEN_TYPE = "token_type_extension";
+    public static final String APP_OWNER = "ext_application_owner";
+    public static final String REQUIRE_SIGNED_OBJ = "require_signed_request_object";
+    public static final String TLS_CLIENT_CERT_ACCESS_TOKENS = "tls_client_certificate_bound_access_tokens";
+    public static final String JWT = "JWT";
+    public static final String SOFTWARE_STATEMENT = "software_statement";
+    public static final String SOFTWARE_ID = "software_id";
+    public static final String DISALLOWED_CHARS_PATTERN = "([~!#$;%^&*+={}\\s\\|\\\\<>\\\"\\'\\/,\\]\\[\\(\\)])";
+    public static final String SUBSTITUTE_STRING = "_";
+    public static final int ABBREVIATED_STRING_LENGTH = 70;
 }

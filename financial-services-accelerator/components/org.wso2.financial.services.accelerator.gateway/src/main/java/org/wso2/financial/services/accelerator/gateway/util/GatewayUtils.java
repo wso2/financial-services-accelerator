@@ -18,30 +18,50 @@
 
 package org.wso2.financial.services.accelerator.gateway.util;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.proc.BadJOSEException;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import io.swagger.parser.OpenAPIParser;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
+import org.wso2.carbon.apimgt.common.gateway.dto.RequestContextDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.JWTUtils;
+import org.wso2.financial.services.accelerator.gateway.cache.GatewayCacheKey;
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Base64;
+import java.util.Map;
 
 /**
  * Utility methods used in gateway modules.
  */
 public class GatewayUtils {
+
+    private static final Map<String, Object> configs = GatewayDataHolder.getInstance()
+            .getFinancialServicesConfigurationService().getConfigurations();
+
+    private GatewayUtils() {
+
+    }
 
     /**
      * Method to check whether the given string is a valid JWT token.
@@ -109,6 +129,28 @@ public class GatewayUtils {
         } catch (IOException | FinancialServicesException | URISyntaxException e) {
             throw new FinancialServicesRuntimeException("Failed to retrieve swagger definition from API", e);
         }
+    }
+
+    /**
+     * Retrieve OpenAPI definition from the cache or from the publisher API.
+     *
+     * @param requestContextDTO  Request context DTO
+     * @return OpenAPI definition
+     */
+    @Generated(message = "Excluding from unit tests since it includes cache initialization")
+    public static OpenAPI retrieveOpenAPI(RequestContextDTO requestContextDTO) {
+
+        String apiId = requestContextDTO.getApiRequestInfo().getApiId();
+        Object cacheObject = GatewayDataHolder.getGatewayCache()
+                .getFromCache(GatewayCacheKey.of(apiId));
+        if (cacheObject == null) {
+            String swaggerDefinition = GatewayUtils.getSwaggerDefinition(apiId);
+            OpenAPIParser parser = new OpenAPIParser();
+            OpenAPI openAPIDefinition =  parser.readContents(swaggerDefinition, null, null).getOpenAPI();
+            GatewayDataHolder.getGatewayCache().addToCache(GatewayCacheKey.of(apiId), openAPIDefinition);
+            return openAPIDefinition;
+        }
+        return (OpenAPI) cacheObject;
     }
 
     /**
@@ -187,5 +229,80 @@ public class GatewayUtils {
     public static String getPayloadFromJWT(String jwtString) {
 
         return jwtString.split("\\.")[1];
+    }
+
+    @Generated(message = "Excluding from unit tests since there is an external http call")
+    public static JWTClaimsSet validateRequestSignature(String payload, JSONObject decodedSSA)
+            throws ParseException, JOSEException, BadJOSEException, MalformedURLException {
+
+        String jwksEndpointName = configs.get(FinancialServicesConstants.JWKS_ENDPOINT_NAME).toString();
+        //validate request signature
+        String jwksEndpoint = decodedSSA.getString(jwksEndpointName);
+        SignedJWT signedJWT = SignedJWT.parse(payload);
+        String alg = signedJWT.getHeader().getAlgorithm().getName();
+        return JWTUtils.validateJWTSignature(payload, jwksEndpoint, alg);
+    }
+
+    /**
+     * Convert the given JWT claims set to a JSON string.
+     *
+     * @param jwtClaimsSet The JWT claims set.
+     *
+     * @return The JSON string.
+     */
+    public static String constructIsDcrPayload(JWTClaimsSet jwtClaimsSet, JSONObject decodedSSA) {
+
+        JSONObject jsonObject = new JSONObject(jwtClaimsSet.getClaims());
+
+        // Convert the iat and exp claims into seconds
+        if (jwtClaimsSet.getIssueTime() != null) {
+            jsonObject.put(GatewayConstants.IAT, jwtClaimsSet.getIssueTime().getTime() / 1000);
+        }
+        if (jwtClaimsSet.getExpirationTime() != null) {
+            jsonObject.put(GatewayConstants.EXP, jwtClaimsSet.getExpirationTime().getTime() / 1000);
+        }
+
+        jsonObject.put(GatewayConstants.CLIENT_NAME, getApplicationName(jwtClaimsSet, decodedSSA));
+        jsonObject.put(GatewayConstants.JWKS_URI, decodedSSA.getString(configs
+                .get(FinancialServicesConstants.JWKS_ENDPOINT_NAME).toString()));
+        jsonObject.put(GatewayConstants.TOKEN_TYPE, GatewayConstants.JWT);
+        jsonObject.put(GatewayConstants.REQUIRE_SIGNED_OBJ, true);
+        jsonObject.put(GatewayConstants.TLS_CLIENT_CERT_ACCESS_TOKENS, true);
+
+        return jsonObject.toString();
+    }
+
+    /**
+     * Retrieves the application name from the registration request.
+     *
+     * @param request     registration or update request
+     * @param decodedSSA  Decoded SSA
+     * @return The application name
+     */
+    public static String getApplicationName(JWTClaimsSet request, JSONObject decodedSSA) {
+        boolean useSoftwareIdAsAppName = Boolean.parseBoolean(configs
+                .get(FinancialServicesConstants.DCR_USE_SOFTWAREID_AS_APPNAME).toString());
+        if (useSoftwareIdAsAppName) {
+            // If the request does not contain a software statement, get the software Id directly from the request
+            if (request.getClaims().containsKey(GatewayConstants.SOFTWARE_STATEMENT)) {
+                return decodedSSA.getString(GatewayConstants.SOFTWARE_ID);
+            }
+
+            return request.getClaims().get(GatewayConstants.SOFTWARE_ID).toString();
+        }
+        return getSafeApplicationName(decodedSSA
+                .getString(configs.get(FinancialServicesConstants.SSA_CLIENT_NAME).toString()));
+    }
+
+    public static String getSafeApplicationName(String applicationName) {
+
+        if (StringUtils.isEmpty(applicationName)) {
+            throw new IllegalArgumentException("Application name should be a valid string");
+        }
+
+        String sanitizedInput = applicationName.trim().replaceAll(GatewayConstants.DISALLOWED_CHARS_PATTERN,
+                GatewayConstants.SUBSTITUTE_STRING);
+        return StringUtils.abbreviate(sanitizedInput, GatewayConstants.ABBREVIATED_STRING_LENGTH);
+
     }
 }

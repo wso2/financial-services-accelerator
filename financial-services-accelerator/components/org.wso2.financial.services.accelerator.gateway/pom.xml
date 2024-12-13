@@ -143,6 +143,7 @@
                         <exclude>**/*APIRequestContext.class</exclude>
                         <exclude>**/*APIResponseContext.class</exclude>
                         <exclude>**/*ExecutorError.class</exclude>
+                        <exclude>**/*Exception.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

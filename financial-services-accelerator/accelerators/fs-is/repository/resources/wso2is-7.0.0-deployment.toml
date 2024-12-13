@@ -277,6 +277,18 @@ grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.gra
 enable = true
 grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSClientCredentialsGrantHandler"
 
+[oauth.dcr]
+enable_fapi_enforcement=true
+
+[oauth.oidc]
+id_token.signature_algorithm="PS256"
+
+[oauth.oidc.token_endpoint]
+signing_algorithms=["PS256","ES256"]
+
+[oauth.oidc.user_info]
+jwt_signature_algorithm="PS256"
+
 [oauth.oidc.extensions]
 claim_callback_handler = "org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultOIDCClaimsCallbackHandler"
 request_object_validator = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidationExtension"
@@ -290,8 +302,14 @@ read_timeout = 5000
 [application_mgt]
 enable_role_validation = true
 
+[role_mgt]
+allow_system_prefix_for_role = true
+
 [transport.https.properties]
 maxHttpHeaderSize = "65536"
+
+[transport.https.sslHostConfig.properties]
+ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
 #================configs related to financial-services.xml=============
 [[financial_services.jdbc_persistence_manager]]
@@ -359,3 +377,25 @@ remove_tenant_domain_from_subject=false
 [financial_services.http_connection_pool]
 max_connections = 2000
 max_connections_per_route = 1500
+
+[financial_services.event.notifications]
+event_notification_generator="org.wso2.financial.services.accelerator.event.notifications.service.DefaultEventNotificationGenerator"
+token_issuer="www.wso2org.com"
+number_of_sets_to_return=5
+event_creation_handler="org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandler"
+event_polling_handler="org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandler"
+event_subscription_handler="org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler"
+set_sub_claim_included=true
+set_txn_claim_included=true
+set_toe_cliam_included=true
+
+[financial_services.event.notifications.realtime]
+enable=false
+periodic_cron_expression="0 0/1 0 ? * * *"
+request_timeout=60
+maximum_retry_count=5
+initial_retry_waiting_time=60
+retry_function="EX"
+circuit_breaker_open_timeout=500
+pool_size=20
+event_notification_request_generator="org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator"

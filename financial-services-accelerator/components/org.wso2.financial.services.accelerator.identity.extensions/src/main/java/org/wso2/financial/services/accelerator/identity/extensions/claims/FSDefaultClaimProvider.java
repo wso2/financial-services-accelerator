@@ -18,10 +18,10 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
@@ -31,7 +31,7 @@ import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -69,7 +69,7 @@ public class FSDefaultClaimProvider extends FSClaimProvider {
             /* State is an optional parameter, so the authorization server must successfully authenticate and
              * must NOT return state nor s_hash. (FAPI1-ADV-5.2.2.1-5)
              */
-            final String state = requestBody.getAsString(OAuthConstants.OAuth20Params.STATE);
+            final String state = requestBody.getString(OAuthConstants.OAuth20Params.STATE);
             if (StringUtils.isNotEmpty(state)) {
                 claims.put(IdentityCommonConstants.S_HASH, IdentityCommonUtils.getHashValue(state, null));
             } else {
@@ -120,7 +120,7 @@ public class FSDefaultClaimProvider extends FSClaimProvider {
 
         try {
             if (cachedRequests.length > 0) {
-                return FinancialServicesUtils.decodeRequestJWT(cachedRequests[0], "body");
+                return new JSONObject(JWTUtils.decodeRequestJWT(cachedRequests[0], "body"));
             }
         } catch (ParseException e) {
             log.error("Exception occurred when decoding request. Caused by, ", e);

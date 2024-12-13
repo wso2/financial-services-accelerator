@@ -90,6 +90,10 @@ public class GatewayDataHolder {
         return gatewayCache;
     }
 
+    public void setGatewayCache(GatewayCache cache) {
+        gatewayCache = cache;
+    }
+
     public FinancialServicesConfigurationService getFinancialServicesConfigurationService() {
 
         return financialServicesConfigurationService;
