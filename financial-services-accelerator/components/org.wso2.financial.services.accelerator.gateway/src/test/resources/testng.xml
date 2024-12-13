@@ -24,6 +24,7 @@
             <class name="org.wso2.financial.services.accelerator.gateway.executor.core.FSExtensionImplTest"/>
             <class name="org.wso2.financial.services.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutorTest" />
             <class name="org.wso2.financial.services.accelerator.gateway.executor.impl.error.handling.DefaultErrorHandlingExecutorTest" />
+            <class name="org.wso2.financial.services.accelerator.gateway.executor.impl.dcr.DCRExecutorTest" />
             <class name="org.wso2.financial.services.accelerator.gateway.util.GatewayUtilsTest"/>
         </classes>
     </test>

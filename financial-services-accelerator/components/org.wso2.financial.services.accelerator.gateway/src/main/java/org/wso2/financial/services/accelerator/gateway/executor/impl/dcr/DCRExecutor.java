@@ -21,22 +21,19 @@ package org.wso2.financial.services.accelerator.gateway.executor.impl.dcr;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesErrorCodes;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.gateway.executor.core.FinancialServicesGatewayExecutor;
-import org.wso2.financial.services.accelerator.gateway.executor.exception.FSExecutorException;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIRequestContext;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSExecutorError;
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 import org.wso2.financial.services.accelerator.gateway.util.GatewayConstants;
+import org.wso2.financial.services.accelerator.gateway.util.GatewayUtils;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -77,9 +74,9 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
 
                         //Check whether decodedRequest is null
                         if (decodedRequest == null) {
-                            throw new FSExecutorException("invalid_client_metadata",
-                                    FinancialServicesErrorCodes.BAD_REQUEST_CODE,
+                            handleBadRequestError(fsapiRequestContext,
                                     "Provided jwt is malformed and cannot be decoded");
+                            return;
                         }
 
                         JSONObject decodedRequestObj = new JSONObject(decodedRequest);
@@ -91,17 +88,16 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
                                     .getString(GatewayConstants.SOFTWARE_STATEMENT), "body");
                             decodedSSA = new JSONObject(ssa);
                         } else {
-                            //Throwing an exception whn SSA is not found
-                            throw new FSExecutorException("invalid_client_metadata",
-                                    FinancialServicesErrorCodes.BAD_REQUEST_CODE,
+                            handleBadRequestError(fsapiRequestContext,
                                     "Required parameter software statement cannot be null");
+                            return;
                         }
-                        JWTClaimsSet requestClaims = validateRequestSignature(payload, decodedSSA);
-                        String isDcrPayload = constructIsDcrPayload(requestClaims, decodedSSA);
+                        JWTClaimsSet requestClaims = GatewayUtils.validateRequestSignature(payload, decodedSSA);
+                        String isDcrPayload = GatewayUtils.constructIsDcrPayload(requestClaims, decodedSSA);
 
                         fsapiRequestContext.setModifiedPayload(isDcrPayload);
                         Map<String, String> requestHeaders = fsapiRequestContext.getMsgInfo().getHeaders();
-                        requestHeaders.remove("Content-Type");
+                        requestHeaders.remove(GatewayConstants.CONTENT_TYPE_TAG);
                         Map<String, String> addedHeaders = fsapiRequestContext.getAddedHeaders();
                         addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
                         fsapiRequestContext.setAddedHeaders(addedHeaders);
@@ -119,23 +115,23 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
             } catch (JOSEException | MalformedURLException e) {
                 log.error("Error occurred while validating the signature", e);
                 handleBadRequestError(fsapiRequestContext, "Invalid request signature");
-            } catch (FSExecutorException e) {
-                log.error("Error occurred while validating the signature", e);
-                handleBadRequestError(fsapiRequestContext, e.getErrorPayload());
             }
         }
     }
 
+    @Generated(message = "Excluding since nothing implemented")
     @Override
     public void postProcessRequest(FSAPIRequestContext fsapiRequestContext) {
 
     }
 
+    @Generated(message = "Excluding since nothing implemented")
     @Override
     public void preProcessResponse(FSAPIResponseContext fsapiResponseContext) {
 
     }
 
+    @Generated(message = "Excluding since nothing implemented")
     @Override
     public void postProcessResponse(FSAPIResponseContext fsapiResponseContext) {
 
@@ -150,82 +146,5 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
         executorErrors.add(error);
         fsapiRequestContext.setError(true);
         fsapiRequestContext.setErrors(executorErrors);
-
-    }
-
-    @Generated(message = "Excluding from unit tests since there is an external http call")
-    private JWTClaimsSet validateRequestSignature(String payload, JSONObject decodedSSA)
-            throws ParseException, JOSEException, BadJOSEException, MalformedURLException,
-            FSExecutorException {
-
-        String jwksEndpointName = configs.get(FinancialServicesConstants.JWKS_ENDPOINT_NAME).toString();
-        //validate request signature
-        String jwksEndpoint = decodedSSA.getString(jwksEndpointName);
-        SignedJWT signedJWT = SignedJWT.parse(payload);
-        String alg = signedJWT.getHeader().getAlgorithm().getName();
-        return JWTUtils.validateJWTSignature(payload, jwksEndpoint, alg);
-    }
-
-    /**
-     * Convert the given JWT claims set to a JSON string.
-     *
-     * @param jwtClaimsSet The JWT claims set.
-     *
-     * @return The JSON string.
-     */
-    @SuppressWarnings("unchecked")
-    public static String constructIsDcrPayload(JWTClaimsSet jwtClaimsSet, JSONObject decodedSSA) {
-
-        JSONObject jsonObject = new JSONObject(jwtClaimsSet.getClaims());
-
-        // Convert the iat and exp claims into seconds
-        if (jwtClaimsSet.getIssueTime() != null) {
-            jsonObject.put(GatewayConstants.IAT, jwtClaimsSet.getIssueTime().getTime() / 1000);
-        }
-        if (jwtClaimsSet.getExpirationTime() != null) {
-            jsonObject.put(GatewayConstants.EXP, jwtClaimsSet.getExpirationTime().getTime() / 1000);
-        }
-
-        jsonObject.put(GatewayConstants.CLIENT_NAME, getApplicationName(jwtClaimsSet, decodedSSA));
-        jsonObject.put(GatewayConstants.JWKS_URI, decodedSSA.getString(configs
-                .get(FinancialServicesConstants.JWKS_ENDPOINT_NAME).toString()));
-        jsonObject.put(GatewayConstants.TOKEN_TYPE, GatewayConstants.JWT);
-        jsonObject.put(GatewayConstants.REQUIRE_SIGNED_OBJ, true);
-        jsonObject.put(GatewayConstants.TLS_CLIENT_CERT_ACCESS_TOKENS, true);
-
-        return jsonObject.toString();
-    }
-
-    /**
-     * Retrieves the application name from the registration request.
-     *
-     * @param request     registration or update request
-     * @param decodedSSA  Decoded SSA
-     * @return The application name
-     */
-    public static String getApplicationName(JWTClaimsSet request, JSONObject decodedSSA) {
-        boolean useSoftwareIdAsAppName = Boolean.parseBoolean(configs
-                .get(FinancialServicesConstants.DCR_USE_SOFTWAREID_AS_APPNAME).toString());
-        if (useSoftwareIdAsAppName) {
-            // If the request does not contain a software statement, get the software Id directly from the request
-            if (StringUtils.isEmpty(request.getClaims().get(GatewayConstants.SOFTWARE_STATEMENT).toString())) {
-                return request.getClaims().get(GatewayConstants.SOFTWARE_STATEMENT).toString();
-            }
-            return decodedSSA.getString(GatewayConstants.SOFTWARE_ID);
-        }
-        return getSafeApplicationName(decodedSSA
-                .getString(configs.get(FinancialServicesConstants.SSA_CLIENT_NAME).toString()));
-    }
-
-    public static String getSafeApplicationName(String applicationName) {
-
-        if (StringUtils.isEmpty(applicationName)) {
-            throw new IllegalArgumentException("Application name should be a valid string");
-        }
-
-        String sanitizedInput = applicationName.trim().replaceAll(GatewayConstants.DISALLOWED_CHARS_PATTERN,
-                GatewayConstants.SUBSTITUTE_STRING);
-        return StringUtils.abbreviate(sanitizedInput, GatewayConstants.ABBREVIATED_STRING_LENGTH);
-
     }
 }
