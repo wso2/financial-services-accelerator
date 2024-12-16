@@ -142,7 +142,7 @@ public class OBDefaultOIDCClaimsCallbackHandlerTest {
 
 
         assertEquals("123", jwtClaimsSet.getClaim("consent_id"));
-        assertEquals("{x5t#S256=807-E8KgUMV6dRHTQi1_QYo5eyPvjmjbxCtunbFixV0}", jwtClaimsSet.getClaim(
+        assertEquals("{x5t#S256=eAXfSDsYCrY9BjjC3r4PDXoRiA8ukzgNDDvgcECTPIQ}", jwtClaimsSet.getClaim(
                 "cnf").toString());
         assertEquals("aaa@gold.com", jwtClaimsSet.getClaim("sub"));
 
