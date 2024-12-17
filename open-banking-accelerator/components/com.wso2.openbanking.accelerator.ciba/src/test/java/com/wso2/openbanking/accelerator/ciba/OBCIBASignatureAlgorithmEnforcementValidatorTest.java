@@ -49,7 +49,6 @@ import static org.testng.Assert.assertEquals;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({IdentityCommonUtil.class, OAuthServerConfiguration.class})
-@Deprecated
 public class OBCIBASignatureAlgorithmEnforcementValidatorTest extends PowerMockTestCase {
 
 

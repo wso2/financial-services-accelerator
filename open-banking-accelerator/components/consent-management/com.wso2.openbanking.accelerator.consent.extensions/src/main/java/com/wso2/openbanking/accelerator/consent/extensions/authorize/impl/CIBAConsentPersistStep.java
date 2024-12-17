@@ -43,7 +43,6 @@ import java.util.Optional;
 /**
  * Consent persistence step for CIBA flow.
  */
-@Deprecated
 public class CIBAConsentPersistStep implements ConsentPersistStep {
 
     private static final Log log = LogFactory.getLog(CIBAConsentPersistStep.class);
