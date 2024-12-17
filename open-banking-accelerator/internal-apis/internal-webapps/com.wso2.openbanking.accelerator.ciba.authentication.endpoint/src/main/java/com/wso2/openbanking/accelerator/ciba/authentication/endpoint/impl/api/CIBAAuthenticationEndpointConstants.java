@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.ciba.authentication.endpoint.impl.api;
 /**
  * Constants for CIBA authentication endpoint.
  */
+@Deprecated
 public class CIBAAuthenticationEndpointConstants {
 
     // request related constants

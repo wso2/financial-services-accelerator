@@ -23,6 +23,7 @@ import net.minidev.json.JSONObject;
 /**
  * The interface to extend CIBA push servlet consent persistence data.
  */
+@Deprecated
 public interface CIBAAuthenticationEndpointInterface {
 
     /**

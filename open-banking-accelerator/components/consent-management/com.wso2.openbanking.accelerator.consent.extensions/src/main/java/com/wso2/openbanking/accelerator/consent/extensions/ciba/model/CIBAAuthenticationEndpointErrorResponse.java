@@ -23,6 +23,7 @@ import net.minidev.json.JSONObject;
 /**
  * CIBA authentication endpoint error response.
  */
+@Deprecated
 public class CIBAAuthenticationEndpointErrorResponse {
 
     private int httpStatusCode = 0;
