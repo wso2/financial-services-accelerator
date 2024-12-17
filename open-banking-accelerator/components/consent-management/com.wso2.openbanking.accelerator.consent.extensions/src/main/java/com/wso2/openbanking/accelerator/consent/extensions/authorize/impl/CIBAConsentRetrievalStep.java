@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Consent retrieval step for CIBA flow.
  */
-@Deprecated
 public class CIBAConsentRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(CIBAConsentRetrievalStep.class);

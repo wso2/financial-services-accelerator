@@ -38,7 +38,6 @@ import java.text.ParseException;
  * The extension of RequestObjectValidatorImpl to enforce Open Banking specific validations of the
  * request object.
  */
-@Deprecated
 public class OBCIBARequestObjectValidationExtension extends CIBARequestObjectValidatorImpl {
 
     private static final Log log = LogFactory.getLog(OBCIBARequestObjectValidationExtension.class);
