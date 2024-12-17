@@ -24,6 +24,7 @@ import net.minidev.json.JSONObject;
 /**
  * Implementation to extend CIBA push servlet consent persistence data.
  */
+@Deprecated
 public class CIBAAuthenticationEndpointDefaultImpl implements CIBAAuthenticationEndpointInterface {
 
     @Override

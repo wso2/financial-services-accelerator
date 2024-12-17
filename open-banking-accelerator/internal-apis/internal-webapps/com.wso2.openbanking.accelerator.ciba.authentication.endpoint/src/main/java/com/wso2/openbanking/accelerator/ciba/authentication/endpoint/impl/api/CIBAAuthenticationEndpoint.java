@@ -93,6 +93,7 @@ import static com.wso2.openbanking.accelerator.consent.extensions.ciba.authentic
 /**
  * Implementation class for the CIBA authentication endpoint API.
  */
+@Deprecated
 @Path("/")
 public class CIBAAuthenticationEndpoint {
 

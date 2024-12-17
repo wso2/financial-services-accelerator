@@ -70,6 +70,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * CIBA Push Authenticator for sending push notifications to authentication device.
  */
+@Deprecated
 public class CIBAPushAuthenticator extends PushAuthenticator {
 
     private static final Log log = LogFactory.getLog(CIBAPushAuthenticator.class);

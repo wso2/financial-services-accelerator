@@ -23,6 +23,7 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 /**
  * Exception for CIBA authentication endpoint.
  */
+@Deprecated
 public class CIBAAuthenticationEndpointException extends OpenBankingException {
 
     private String errorDescription;
