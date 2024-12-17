@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator;
 /**
  * CIBA Push Authenticator Constants.
  */
+@Deprecated
 public class CIBAPushAuthenticatorConstants {
 
     public static final String AUTHENTICATOR_NAME = "ciba";

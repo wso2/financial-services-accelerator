@@ -68,6 +68,7 @@ import static org.testng.Assert.assertTrue;
 /**
  * Test class for CIBAPushAuthenticator.
  */
+@Deprecated
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({SessionDataCache.class, AuthenticationContextCache.class, ConsentExtensionUtils.class,
         ConsentCache.class, ConsentData.class, IdentityCommonUtil.class, FrameworkUtils.class,

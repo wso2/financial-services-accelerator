@@ -1,0 +1,255 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.wso2.openbanking.accelerator:com.wso2.openbanking.accelerator.common:bundle:3.2.27-SNAPSHOT
+[WARNING] 'build.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin com.github.spotbugs:spotbugs-maven-plugin @ line 259, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] --< com.wso2.openbanking.accelerator:com.wso2.openbanking.accelerator.common >--
+[INFO] Building WSO2 Open Banking - Common component 3.2.27-SNAPSHOT
+[INFO] -------------------------------[ bundle ]-------------------------------
+[WARNING] The artifact org.hibernate:hibernate-validator:jar:6.0.20.Final has been relocated to org.hibernate.validator:hibernate-validator:jar:6.0.20.Final
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ com.wso2.openbanking.accelerator.common ---
+[WARNING] The artifact org.hibernate:hibernate-validator:jar:6.0.20.Final has been relocated to org.hibernate.validator:hibernate-validator:jar:6.0.20.Final
+[INFO] com.wso2.openbanking.accelerator:com.wso2.openbanking.accelerator.common:bundle:3.2.27-SNAPSHOT
+[INFO] +- org.wso2.orbit.org.bouncycastle:bcpkix-jdk18on:jar:1.78.1.wso2v1:compile
+[INFO] |  +- org.bouncycastle:bcpkix-jdk18on:jar:1.78.1:compile
+[INFO] |  \- org.bouncycastle:bcutil-jdk18on:jar:1.78.1:compile
+[INFO] +- org.wso2.orbit.org.bouncycastle:bcprov-jdk18on:jar:1.78.1.wso2v1:compile
+[INFO] |  \- org.bouncycastle:bcprov-jdk18on:jar:1.78.1:compile
+[INFO] +- org.apache.ws.commons.axiom.wso2:axiom:jar:1.2.11-wso2v16:compile
+[INFO] |  +- org.apache.geronimo.specs.wso2:geronimo-stax-api_1.0_spec:jar:1.0.1.wso2v2:compile
+[INFO] |  |  \- org.apache.geronimo.specs:geronimo-stax-api_1.0_spec:jar:1.0.1:compile
+[INFO] |  +- org.codehaus.woodstox:woodstox-core-asl:jar:4.2.0:compile
+[INFO] |  \- org.codehaus.woodstox:stax2-api:jar:3.1.4:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- org.wso2.securevault:org.wso2.securevault:jar:1.1.3:compile
+[INFO] |  +- org.apache.ws.commons.axiom:axiom-api:jar:1.2.11:compile
+[INFO] |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  +- org.apache.geronimo.specs:geronimo-javamail_1.4_spec:jar:1.6:compile
+[INFO] |  |  \- jaxen:jaxen:jar:1.1.1:compile
+[INFO] |  +- org.apache.ws.commons.axiom:axiom-impl:jar:1.2.11:compile
+[INFO] |  |  \- org.codehaus.woodstox:wstx-asl:jar:3.2.9:compile
+[INFO] |  +- jline:jline:jar:0.9.94:compile
+[INFO] |  +- org.ops4j.pax.logging:pax-logging-api:jar:1.10.1:compile
+[INFO] |  +- commons-cli:commons-cli:jar:1.0:compile
+[INFO] |  |  \- commons-lang:commons-lang:jar:1.0:compile
+[INFO] |  +- commons-io:commons-io:jar:2.0:compile
+[INFO] |  \- commons-codec:commons-codec:jar:1.2:compile
+[INFO] +- org.wso2.carbon.identity.inbound.auth.oauth2:org.wso2.carbon.identity.oauth:jar:6.4.111:compile
+[INFO] |  +- org.apache.tomcat:tomcat-coyote:jar:9.0.21:compile
+[INFO] |  |  +- org.apache.tomcat:tomcat-servlet-api:jar:9.0.21:compile
+[INFO] |  |  +- org.apache.tomcat:tomcat-jni:jar:9.0.21:compile
+[INFO] |  |  +- org.apache.tomcat:tomcat-juli:jar:9.0.21:compile
+[INFO] |  |  \- org.apache.tomcat:tomcat-util:jar:9.0.21:compile
+[INFO] |  +- commons-lang.wso2:commons-lang:jar:2.6.0.wso2v1:compile
+[INFO] |  +- org.wso2.carbon:javax.cache.wso2:jar:4.6.0:compile
+[INFO] |  |  +- org.apache.geronimo.specs:geronimo-jta_1.1_spec:jar:1.1:compile
+[INFO] |  |  \- org.wso2.carbon:org.wso2.carbon.base:jar:4.6.0:compile
+[INFO] |  |     \- org.wso2.carbon:org.wso2.carbon.securevault:jar:4.6.0:compile
+[INFO] |  +- commons-codec.wso2:commons-codec:jar:1.4.0.wso2v1:compile
+[INFO] |  +- com.google.gdata.wso2:gdata-core:jar:1.47.0.wso2v1:compile
+[INFO] |  +- org.apache.axis2.wso2:axis2:jar:1.6.1-wso2v38:compile
+[INFO] |  +- org.wso2.carbon:org.wso2.carbon.utils:jar:4.6.0:compile
+[INFO] |  |  +- org.wso2.carbon:org.wso2.carbon.user.api:jar:4.6.0:compile
+[INFO] |  |  +- org.wso2.carbon:org.wso2.carbon.bootstrap:jar:4.6.0:compile
+[INFO] |  |  |  \- wrapper:wrapper:jar:3.2.3:compile
+[INFO] |  |  +- org.ops4j.pax.logging:pax-logging-log4j2:jar:1.11.3:compile
+[INFO] |  |  |  +- org.osgi:osgi.core:jar:6.0.0:compile
+[INFO] |  |  |  \- org.osgi:osgi.cmpn:jar:6.0.0:compile
+[INFO] |  |  +- org.wso2.carbon:org.wso2.carbon.queuing:jar:4.6.0:compile
+[INFO] |  |  +- org.igniterealtime.smack.wso2:smack:jar:3.0.4.wso2v1:compile
+[INFO] |  |  +- org.igniterealtime.smack.wso2:smackx:jar:3.0.4.wso2v1:compile
+[INFO] |  |  +- xerces.wso2:xercesImpl:jar:2.8.1.wso2v2:compile
+[INFO] |  |  +- org.wso2.orbit.commons-fileupload:commons-fileupload:jar:1.3.3.wso2v1:compile
+[INFO] |  |  +- org.apache.ant.wso2:ant:jar:1.7.0.wso2v1:compile
+[INFO] |  |  +- org.eclipse.equinox:javax.servlet:jar:3.0.0.v201112011016:compile
+[INFO] |  |  +- org.wso2.orbit.commons-httpclient:commons-httpclient:jar:3.1.0.wso2v6:compile
+[INFO] |  |  \- org.wso2.carbon:org.wso2.carbon.registry.api:jar:4.6.0:compile
+[INFO] |  +- org.wso2.carbon:org.wso2.carbon.user.core:jar:4.6.0:compile
+[INFO] |  |  +- commons-dbcp.wso2:commons-dbcp:jar:1.4.0.wso2v1:compile
+[INFO] |  |  \- org.wso2.orbit.org.apache.tomcat:jdbc-pool:jar:9.0.16.wso2v1:compile
+[INFO] |  +- org.wso2.carbon:org.wso2.carbon.registry.core:jar:4.6.0:compile
+[INFO] |  |  +- commons-io.wso2:commons-io:jar:2.4.0.wso2v1:compile
+[INFO] |  |  +- net.sourceforge.findbugs:annotations:jar:1.3.2:compile
+[INFO] |  |  +- org.apache.ws.commons.schema.wso2:XmlSchema:jar:1.4.7.wso2v6:compile
+[INFO] |  |  +- org.wso2.carbon:org.wso2.carbon.registry.xboot:jar:4.6.0:compile
+[INFO] |  |  +- org.compass-project.wso2:compass:jar:2.0.1.wso2v2:compile
+[INFO] |  |  +- org.apache.abdera.wso2:abdera:jar:1.0.0.wso2v3:compile
+[INFO] |  |  +- commons-pool.wso2:commons-pool:jar:1.5.6.wso2v1:compile
+[INFO] |  |  |  \- commons-pool:commons-pool:jar:1.5.6:compile
+[INFO] |  |  \- org.apache.felix:org.apache.felix.scr.ds-annotations:jar:1.2.10:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.event:jar:5.18.144:compile
+[INFO] |  |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.testutil:jar:5.18.144:compile
+[INFO] |  |  |  +- org.apache.logging.log4j:log4j-api:jar:2.12.0:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-core:jar:2.12.0:compile
+[INFO] |  |  \- org.apache.axis2.transport:axis2-transport-mail:jar:2.0.0-wso2v42:compile
+[INFO] |  |     +- javax.mail:mail:jar:1.4.1:compile
+[INFO] |  |     |  \- javax.activation:activation:jar:1.1:compile
+[INFO] |  |     +- org.apache.axis2:axis2-transport-base:jar:1.6.1-wso2v40:compile
+[INFO] |  |     +- org.apache.axis2:axis2-kernel:jar:1.6.1-wso2v40:compile
+[INFO] |  |     |  +- org.apache.geronimo.specs:geronimo-ws-metadata_2.0_spec:jar:1.1.2:compile
+[INFO] |  |     |  +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] |  |     |  +- wsdl4j:wsdl4j:jar:1.6.2:compile
+[INFO] |  |     |  +- org.apache.neethi:neethi:jar:2.0.4:compile
+[INFO] |  |     |  +- org.apache.woden:woden-api:jar:1.0M9:compile
+[INFO] |  |     |  |  \- org.apache.ws.commons.schema:XmlSchema:jar:1.4.7:compile
+[INFO] |  |     |  +- org.apache.woden:woden-impl-dom:jar:1.0M9:compile
+[INFO] |  |     |  |  \- org.apache.woden:woden-impl-commons:jar:1.0M9:compile
+[INFO] |  |     |  \- javax.ws.rs:jsr311-api:jar:1.1.1:compile
+[INFO] |  |     \- org.wso2.orbit.javax.activation:activation:jar:1.1.1.wso2v2:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.core:jar:5.19.32:compile
+[INFO] |  |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.base:jar:5.19.32:compile
+[INFO] |  |  +- org.wso2.carbon.commons:org.wso2.carbon.tenant.common:jar:4.7.18:compile
+[INFO] |  |  |  \- org.apache.commons:commons-lang3:jar:3.4:compile
+[INFO] |  |  +- org.slf4j:slf4j-simple:jar:1.7.21:compile
+[INFO] |  |  \- ua.parser.wso2:ua-parser:jar:1.3.0.wso2v2:compile
+[INFO] |  +- org.wso2.orbit.org.apache.oltu.oauth2:oltu:jar:1.0.0.wso2v3:compile
+[INFO] |  +- org.wso2.carbon.identity.inbound.auth.oauth2:org.wso2.carbon.identity.oauth.common:jar:6.4.111:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.idp.mgt:jar:5.18.144:compile
+[INFO] |  |  \- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.role.mgt.core:jar:5.18.144:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.application.common:jar:5.18.187:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.entitlement:jar:5.18.144:compile
+[INFO] |  |  +- org.wso2.balana:org.wso2.balana:jar:1.2.4:compile
+[INFO] |  |  |  \- org.wso2.balana:org.wso2.balana.utils:jar:1.2.4:compile
+[INFO] |  |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.authenticator.thrift:jar:5.18.144:compile
+[INFO] |  |  |  \- org.wso2.carbon:org.wso2.carbon.core.services:jar:4.6.1-alpha3:compile
+[INFO] |  |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.entitlement.common:jar:5.18.144:compile
+[INFO] |  |  |  \- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.entitlement.stub:jar:5.18.144:compile
+[INFO] |  |  |     \- org.apache.axis2.wso2:axis2-client:jar:1.6.1-wso2v40:compile
+[INFO] |  |  |        +- org.apache.axis2.wso2:axis2-json:jar:1.6.1-wso2v40:compile
+[INFO] |  |  |        \- org.apache.woden.wso2:woden:jar:1.0.0.M8-wso2v1:compile
+[INFO] |  |  +- libthrift.wso2:libthrift:jar:0.12.0.wso2v1:compile
+[INFO] |  |  |  \- org.apache.thrift:libthrift:jar:0.12.0:compile
+[INFO] |  |  |     +- org.apache.httpcomponents:httpclient:jar:4.5.6:compile
+[INFO] |  |  |     \- org.apache.httpcomponents:httpcore:jar:4.4.1:compile
+[INFO] |  |  +- org.apache.santuario:xmlsec:jar:1.5.2:compile
+[INFO] |  |  \- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.notification.mgt:jar:5.18.144:compile
+[INFO] |  +- org.wso2.carbon.identity.saml.common:org.wso2.carbon.identity.saml.common.util:jar:1.0.3:compile
+[INFO] |  |  +- org.apache.ws.security.wso2:wss4j:jar:1.5.11-wso2v18:compile
+[INFO] |  |  \- com.google.guava:guava:jar:27.0.1-jre:compile
+[INFO] |  |     +- com.google.guava:failureaccess:jar:1.0.1:compile
+[INFO] |  |     +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile
+[INFO] |  |     +- org.checkerframework:checker-qual:jar:2.5.2:compile
+[INFO] |  |     +- com.google.errorprone:error_prone_annotations:jar:2.2.0:compile
+[INFO] |  |     +- com.google.j2objc:j2objc-annotations:jar:1.1:compile
+[INFO] |  |     \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17:compile
+[INFO] |  +- org.wso2.orbit.com.github.dblock.waffle:waffle-jna:jar:1.6.wso2v6:compile
+[INFO] |  +- org.wso2.carbon:org.wso2.carbon.core.common:jar:4.6.0:compile
+[INFO] |  +- javax.servlet:servlet-api:jar:2.5:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.application.authentication.framework:jar:5.19.32:compile
+[INFO] |  |  +- org.wso2.carbon:org.wso2.carbon.ui:jar:4.6.2-m4:compile
+[INFO] |  |  |  +- org.apache.tiles.wso2:tiles-jsp:jar:2.0.5.wso2v1:compile
+[INFO] |  |  |  +- org.wso2.carbon:org.wso2.carbon.authenticator.proxy:jar:4.6.2-m4:compile
+[INFO] |  |  |  |  \- org.wso2.carbon:org.wso2.carbon.authenticator.stub:jar:4.6.2-m4:compile
+[INFO] |  |  |  +- org.wso2.carbon:org.wso2.carbon.tomcat:jar:4.6.2-m4:compile
+[INFO] |  |  |  |  \- org.wso2.eclipse.equinox:org.eclipse.equinox.common:jar:3.8.0.v20160509-1230:compile
+[INFO] |  |  |  +- org.eclipse.equinox:org.eclipse.equinox.http.servlet:jar:1.1.400.v20130418-1354:compile
+[INFO] |  |  |  +- org.eclipse.equinox:javax.servlet.jsp:jar:2.2.0.v201112011158:compile
+[INFO] |  |  |  +- org.wso2.carbon:org.wso2.carbon.core.commons.stub:jar:4.6.2-m4:compile
+[INFO] |  |  |  +- org.wso2.orbit.org.owasp.encoder:encoder:jar:1.2.0.wso2v1:compile
+[INFO] |  |  |  \- org.wso2.orbit.org.apache.tomcat:tomcat:jar:9.0.34.wso2v1:compile
+[INFO] |  |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.user.profile:jar:5.19.32:compile
+[INFO] |  |  +- org.wso2.orbit.org.apache.httpcomponents:httpclient:jar:4.3.6.wso2v2:compile
+[INFO] |  |  \- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.functions.library.mgt:jar:5.19.32:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.user.store.configuration:jar:5.18.144:compile
+[INFO] |  |  +- org.wso2.carbon:org.wso2.carbon.ndatasource.core:jar:4.6.1-alpha3:compile
+[INFO] |  |  |  \- org.wso2.carbon:org.wso2.carbon.ndatasource.common:jar:4.6.1-alpha3:compile
+[INFO] |  |  \- org.wso2.carbon:org.wso2.carbon.ndatasource.rdbms:jar:4.6.1-alpha3:compile
+[INFO] |  +- org.wso2.orbit.joda-time:joda-time:jar:2.9.4.wso2v1:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.claim.metadata.mgt:jar:5.18.144:compile
+[INFO] |  +- org.wso2.orbit.javax.xml.bind:jaxb-api:jar:2.3.1.wso2v1:compile
+[INFO] |  +- org.wso2.orbit.org.opensaml:opensaml:jar:3.3.1.wso2v2:compile
+[INFO] |  |  \- org.cryptacular:cryptacular:jar:1.1.3:runtime
+[INFO] |  |     \- org.bouncycastle:bcprov-jdk15on:jar:1.59:runtime
+[INFO] |  +- com.google.code.findbugs:annotations:jar:3.0.1:compile
+[INFO] |  |  +- net.jcip:jcip-annotations:jar:1.0:compile
+[INFO] |  |  \- com.google.code.findbugs:jsr305:jar:3.0.1:compile
+[INFO] |  \- org.wso2.carbon.utils:org.wso2.carbon.database.utils:jar:2.0.11:compile
+[INFO] |     +- org.slf4j:slf4j-api:jar:1.6.1:compile
+[INFO] |     \- commons-dbcp:commons-dbcp:jar:1.4:compile
+[INFO] +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.application.mgt:jar:5.18.187:compile
+[INFO] |  +- org.wso2.orbit.commons-collections:commons-collections:jar:3.2.2.wso2v1:compile
+[INFO] |  +- org.wso2.orbit.commons-codec:commons-codec:jar:1.14.0.wso2v1:compile
+[INFO] |  +- org.json.wso2:json:jar:3.0.0.wso2v1:compile
+[INFO] |  |  \- org.json:json:jar:20140107:compile
+[INFO] |  +- org.wso2.carbon.consent.mgt:org.wso2.carbon.consent.mgt.core:jar:2.2.10:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.security.mgt:jar:5.18.187:compile
+[INFO] |  |  \- backport-util-concurrent.wso2:backport-util-concurrent:jar:3.1.0.wso2v1:compile
+[INFO] |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.user.mgt:jar:5.18.187:compile
+[INFO] |  |  +- org.wso2.carbon.identity.framework:org.wso2.carbon.user.mgt.common:jar:5.18.187:compile
+[INFO] |  |  +- au.com.bytecode.opencsv.wso2:opencsv:jar:1.8.wso2v1:compile
+[INFO] |  |  +- org.wso2.orbit.org.apache.poi:poi-scratchpad:jar:3.17.0.wso2v1:compile
+[INFO] |  |  |  \- org.apache.poi:poi-scratchpad:jar:3.17:compile
+[INFO] |  |  |     \- org.apache.poi:poi:jar:3.17:compile
+[INFO] |  |  |        \- org.apache.commons:commons-collections4:jar:4.1:compile
+[INFO] |  |  \- org.wso2.orbit.org.apache.poi:poi-ooxml:jar:3.17.0.wso2v1:compile
+[INFO] |  \- org.jacoco:org.jacoco.agent:jar:runtime:0.8.6:compile
+[INFO] +- org.hibernate.validator:hibernate-validator:jar:6.0.20.Final:compile
+[INFO] |  +- javax.validation:validation-api:jar:2.0.1.Final:compile
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.3.2.Final:compile
+[INFO] |  \- com.fasterxml:classmate:jar:1.3.4:compile
+[INFO] +- commons-beanutils:commons-beanutils:jar:1.9.3:compile
+[INFO] |  \- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] +- org.wso2.eclipse.osgi:org.eclipse.osgi.services:jar:3.5.100.v20160504-1419:compile
+[INFO] +- org.eclipse.osgi:org.eclipse.osgi:jar:3.9.1.v20130814-1242:compile
+[INFO] +- org.wso2.carbon:org.wso2.carbon.core:jar:4.6.0:compile
+[INFO] |  +- org.eclipse.platform:org.eclipse.osgi:jar:3.14.0:compile
+[INFO] |  +- org.eclipse.equinox:org.eclipse.equinox.http.helper:jar:1.1.0.wso2v1:compile
+[INFO] |  |  \- org.eclipse.osgi:org.eclipse.osgi.services:jar:3.3.0.v20110513:compile
+[INFO] |  +- org.wso2.carbon.crypto:org.wso2.carbon.crypto.api:jar:1.1.2:compile
+[INFO] |  +- org.wso2.orbit.org.apache.neethi:neethi:jar:2.0.4.wso2v5:compile
+[INFO] |  +- org.apache.httpcomponents.wso2:httpcore:jar:4.3.3.wso2v1:compile
+[INFO] |  +- com.google.code.gson:gson:jar:2.8.5:compile
+[INFO] |  +- org.apache.tomcat:tomcat-catalina-ha:jar:9.0.31:compile
+[INFO] |  |  +- org.apache.tomcat:tomcat-tribes:jar:9.0.31:compile
+[INFO] |  |  +- org.apache.tomcat:tomcat-catalina:jar:9.0.11:compile
+[INFO] |  |  |  +- org.apache.tomcat:tomcat-jsp-api:jar:9.0.11:compile
+[INFO] |  |  |  |  \- org.apache.tomcat:tomcat-el-api:jar:9.0.11:compile
+[INFO] |  |  |  +- org.apache.tomcat:tomcat-annotations-api:jar:9.0.11:compile
+[INFO] |  |  |  +- org.apache.tomcat:tomcat-api:jar:9.0.11:compile
+[INFO] |  |  |  \- org.apache.tomcat:tomcat-jaspic-api:jar:9.0.11:compile
+[INFO] |  |  \- org.apache.tomcat:tomcat-util-scan:jar:9.0.31:compile
+[INFO] |  +- wsdl4j.wso2:wsdl4j:jar:1.6.2.wso2v4:compile
+[INFO] |  +- org.osgi:org.osgi.service.component.annotations:jar:1.3.0:compile
+[INFO] |  +- org.osgi:org.osgi.annotation:jar:6.0.0:compile
+[INFO] |  \- org.osgi:org.osgi.service.metatype.annotations:jar:1.3.0:compile
+[INFO] +- org.testng:testng:jar:7.3.0:test
+[INFO] |  +- com.beust:jcommander:jar:1.78:test
+[INFO] |  +- org.apache.ant:ant:jar:1.10.3:compile
+[INFO] |  |  \- org.apache.ant:ant-launcher:jar:1.10.3:compile
+[INFO] |  +- junit:junit:jar:4.12:compile
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.3:compile
+[INFO] |  +- com.google.inject:guice:jar:no_aop:4.2.2:test
+[INFO] |  |  +- javax.inject:javax.inject:jar:1:test
+[INFO] |  |  \- aopalliance:aopalliance:jar:1.0:test
+[INFO] |  \- org.yaml:snakeyaml:jar:1.21:test
+[INFO] +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO] +- org.powermock:powermock-module-testng:jar:1.7.1:test
+[INFO] |  +- org.powermock:powermock-core:jar:1.7.1:test
+[INFO] |  |  +- org.powermock:powermock-reflect:jar:1.7.1:test
+[INFO] |  |  \- org.javassist:javassist:jar:3.21.0-GA:test
+[INFO] |  \- org.powermock:powermock-module-testng-common:jar:1.7.1:test
+[INFO] +- org.powermock:powermock-api-mockito:jar:1.7.1:test
+[INFO] |  +- org.powermock:powermock-api-mockito-common:jar:1.7.1:test
+[INFO] |  |  \- org.powermock:powermock-api-support:jar:1.7.1:test
+[INFO] |  \- org.mockito:mockito-core:jar:1.10.19:test
+[INFO] |     \- org.objenesis:objenesis:jar:2.1:test
+[INFO] +- io.jsonwebtoken:jjwt:jar:0.9.1:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-databind:jar:2.12.0:compile
+[INFO] |     +- com.fasterxml.jackson.core:jackson-annotations:jar:2.12.0:compile
+[INFO] |     \- com.fasterxml.jackson.core:jackson-core:jar:2.12.0:compile
+[INFO] +- org.wso2.orbit.com.nimbusds:nimbus-jose-jwt:jar:7.3.0.wso2v1:compile
+[INFO] \- net.minidev:json-smart:jar:2.3:compile
+[INFO]    \- net.minidev:accessors-smart:jar:1.2:compile
+[INFO]       \- org.ow2.asm:asm:jar:5.0.4:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.209 s
+[INFO] Finished at: 2024-12-16T12:39:37+05:30
+[INFO] ------------------------------------------------------------------------
