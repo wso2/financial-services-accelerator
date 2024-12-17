@@ -31,7 +31,6 @@ import java.util.Arrays;
 /**
  * OB specific CIBA grant handler.
  */
-@Deprecated
 public class OBCibaGrantHandler extends CibaGrantHandler {
 
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
