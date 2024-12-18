@@ -43,7 +43,6 @@ import static org.mockito.Mockito.when;
 /**
  * Test class for OBCIBARequestObjectValidationExtension.
  */
-@Deprecated
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({JWTClaimsSet.class, OAuth2Parameters.class, RequestObject.class, JSONObject.class,
         IdentityExtensionsDataHolder.class})

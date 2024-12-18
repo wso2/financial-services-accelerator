@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * CIBA Signature Algorithm Enforcer class
  */
-@Deprecated
 public class OBCIBASignatureAlgorithmEnforcementValidator extends SignatureAlgorithmEnforcementValidator {
 
     /**

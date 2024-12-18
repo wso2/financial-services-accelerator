@@ -21,7 +21,6 @@ package com.wso2.openbanking.accelerator.ciba;
 /**
  * CIBA Test Constants class.
  */
-@Deprecated
 public class CIBAConstants {
 
     public static final String INVALID_REQUEST = "invalid_request";

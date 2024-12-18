@@ -885,18 +885,6 @@ public class OpenBankingConfigParser {
                 ((String) getConfigElementFromKey(OpenBankingConstants.AUTH_SERVLET_EXTENSION)).trim();
     }
 
-    /**
-     * Gets the configured CIBA servlet extention implementation.
-     *
-     * @deprecated will be removed in the future versions when moving to newer ciba implementation.
-     * @return
-     */
-    @Deprecated
-    public String getCibaServletExtension() {
-        return getConfigElementFromKey(OpenBankingConstants.CIBA_SERVLET_EXTENSION) == null ? "" :
-                ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_SERVLET_EXTENSION)).trim();
-    }
-
     public String getJWKSConnectionTimeOut() {
 
         return getConfigElementFromKey(OpenBankingConstants.DCR_JWKS_CONNECTION_TIMEOUT) == null ? "3000" :
