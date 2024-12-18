@@ -141,17 +141,6 @@
             </IdentityCache>
         </Cache>
 
-        <CIBAAuthenticationEndpointWebApp>
-            {% if open_banking.identity.ciba_webapp.servlet_extension is defined %}
-                <ServletExtension>
-                    {{open_banking.identity.ciba_webapp.servlet_extension}}
-                </ServletExtension>
-            {% else %}
-                <ServletExtension>
-                    com.wso2.openbanking.accelerator.consent.extensions.ciba.impl.CIBAAuthenticationEndpointDefaultImpl
-                </ServletExtension>
-            {% endif %}
-        </CIBAAuthenticationEndpointWebApp>
         <CIBA>
             <AuthWebLink>
                 {% if open_banking.identity.ciba.auth_web_link.redirect_endpoint is defined %}

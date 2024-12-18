@@ -196,16 +196,6 @@ public class OBConfigParserTests {
         Assert.assertEquals(authServletExtension, "sampleServletExtension");
     }
 
-    @Test (priority = 11)
-    public void testGetEmptyCibaServletExtension() {
-
-        String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
-        String authServletExtension = OpenBankingConfigParser.getInstance(dummyConfigFile)
-                .getCibaServletExtension();
-
-        Assert.assertEquals(authServletExtension, "sampleCIBAServletExtension");
-    }
-
     @Test (priority = 12)
     public void testGetJWKSConnectionTimeout() {
 
