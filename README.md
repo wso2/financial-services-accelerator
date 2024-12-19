@@ -18,7 +18,7 @@
 
 # WSO2 Open Banking Accelerator
 
-Open Banking Accelerator a collection of technologies that increases the speed and reduces the complexity of adopting open banking compliance.
+[Open Banking Accelerator](https://ob.docs.wso2.com/en/latest/) a collection of technologies that increases the speed and reduces the complexity of adopting open banking compliance.
 
 ### Building from the source
 
@@ -26,7 +26,6 @@ If you want to build Open Banking Accelerator from the source code:
 
 1. Install Java8 or above.
 1. Install [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above.
-1. Install [MySQL](https://dev.mysql.com/doc/refman/5.5/en/windows-installation.html).
 1. To get the Open Banking Accelerator from [this repository](https://github.com/wso2/financial-services-accelerator.git), click **Clone or download**.
     * To **clone the solution**, copy the URL and execute the following command in a command prompt.
       `git clone <the copiedURL>`. After cloning, checkout to the **3.0.0** branch.
@@ -48,15 +47,15 @@ If you want to build Open Banking Accelerator from the source code:
 | ```Business Intelligence Accelerator``` | `/open-banking-accelerator/accelerators/ob-bi/target`   |
 
 
-### Running the products
+### Installing and Running OB Accelerators
 
 Please refer the following READ.ME files to run the products.
 
-| Product                            | Instructions Path                         |
-|:-----------------------------------|:------------------------------------------|
-| ```Identity Server```              | `/wso2-obiam-accelerator-3.0.0/README.md` |
-| ```API Manager```                  | `/wso2-obam-accelerator-3.0.0/README.md`  |
-| ```Business Intelligence Server``` | `/wso2-obbi-accelerator-3.0.0/README.md`  |
+| Product                                        | Instructions Path                         |
+|:-----------------------------------------------|:------------------------------------------|
+| ```Identity Server Accelerator```              | `/wso2-obiam-accelerator-3.0.0/README.md` |
+| ```API Manager Accelerator```                  | `/wso2-obam-accelerator-3.0.0/README.md`  |
+| ```Business Intelligence Server Accelerator``` | `/wso2-obbi-accelerator-3.0.0/README.md`  |
 
 
 ### Reporting Issues
