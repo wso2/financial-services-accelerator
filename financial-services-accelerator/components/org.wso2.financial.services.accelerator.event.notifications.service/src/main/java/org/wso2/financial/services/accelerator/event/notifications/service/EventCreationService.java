@@ -55,6 +55,21 @@ public class EventCreationService {
     public String publishEventNotification(NotificationCreationDTO notificationCreationDTO)
             throws FSEventNotificationException {
 
+        if (notificationCreationDTO.getClientId() == null) {
+            log.error("Mandatory field client id is null");
+            throw new FSEventNotificationException("Mandatory field client id is null");
+        }
+
+        if (notificationCreationDTO.getResourceId() == null) {
+            log.error("Mandatory field resource id is null");
+            throw new FSEventNotificationException("Mandatory field resource id is null");
+        }
+
+        if (notificationCreationDTO.getEventPayload() == null) {
+            log.error("Mandatory field payload is null");
+            throw new FSEventNotificationException("Mandatory field payload is null");
+        }
+
         Connection connection = DatabaseUtils.getDBConnection();
         Notification notification = getNotification(notificationCreationDTO);
         ArrayList<NotificationEvent> eventsList = getEvents(notificationCreationDTO.getEventPayload());
