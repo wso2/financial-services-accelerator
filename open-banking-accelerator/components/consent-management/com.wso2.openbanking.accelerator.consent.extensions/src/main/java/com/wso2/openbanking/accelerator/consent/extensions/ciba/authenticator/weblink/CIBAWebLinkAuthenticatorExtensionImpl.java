@@ -39,7 +39,6 @@ public class CIBAWebLinkAuthenticatorExtensionImpl implements CIBAWebLinkAuthent
     private static final Log log = LogFactory.getLog(CIBAWebLinkAuthenticatorExtensionImpl.class);
     private static final ConsentCoreService consentCoreService =
             ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
-    public static final String LOGIN_HINT = "login_hint";
 
     /**
      * Method to identify the user/users involved in the authentication.
@@ -50,7 +49,7 @@ public class CIBAWebLinkAuthenticatorExtensionImpl implements CIBAWebLinkAuthent
     @Override
     public List<AuthenticatedUser> getAuthenticatedUsers(HttpServletRequest request) {
 
-        return Arrays.stream(request.getParameter(LOGIN_HINT)
+        return Arrays.stream(request.getParameter(CIBAWebLinkAuthenticatorConstants.LOGIN_HINT)
                         .split(","))
                 .map(String::trim)
                 .map(AuthenticatedUser::createLocalAuthenticatedUserFromSubjectIdentifier)
