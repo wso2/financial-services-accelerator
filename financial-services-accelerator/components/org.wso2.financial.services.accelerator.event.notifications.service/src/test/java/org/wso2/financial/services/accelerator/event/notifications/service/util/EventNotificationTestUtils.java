@@ -313,4 +313,21 @@ public class EventNotificationTestUtils {
         }
         return null;
     }
+
+    public static List<Notification> getNotificationList() {
+
+        Notification notificationDTO1 = new Notification();
+        notificationDTO1.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
+        notificationDTO1.setNotificationId(EventNotificationTestConstants.SAMPLE_NOTIFICATION_ID);
+
+        Notification notificationDTO2 = new Notification();
+        notificationDTO2.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID_2);
+        notificationDTO2.setNotificationId(EventNotificationTestConstants.SAMPLE_NOTIFICATION_ID_2);
+
+        List<Notification> notifications = new ArrayList<>();
+        notifications.add(notificationDTO1);
+        notifications.add(notificationDTO2);
+
+        return notifications;
+    }
 }

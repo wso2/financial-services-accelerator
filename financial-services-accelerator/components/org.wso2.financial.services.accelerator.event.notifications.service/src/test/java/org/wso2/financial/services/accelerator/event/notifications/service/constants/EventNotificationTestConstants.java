@@ -18,8 +18,7 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.constants;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,8 +64,7 @@ public class EventNotificationTestConstants {
     public static final String SAMPLE_CALLBACK_URL = "https://localhost:8080/callback";
 
     public static final JSONObject SAMPLE_NOTIFICATION_PAYLOAD =
-            (JSONObject) JSONValue.parse(
-                    "{\"notificationId\": " + SAMPLE_NOTIFICATION_ID + ", \"SET\": " + SAMPLE_SET + "}");
+            new JSONObject("{\"notificationId\": " + SAMPLE_NOTIFICATION_ID + ", \"SET\": " + SAMPLE_SET + "}");
 
     public static final String SAMPLE_SPEC_VERSION = "3.1";
     public static final List<String> SAMPLE_NOTIFICATION_EVENT_TYPES = Arrays.asList(SAMPLE_NOTIFICATION_EVENT_TYPE_1,

@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationGenerator;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.internal.EventNotificationDataHolder;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscription;
@@ -46,20 +47,27 @@ public class EventNotificationProducerService implements Runnable {
     private static final Log log = LogFactory.getLog(EventNotificationProducerService.class);
     private final Notification notification;
     private final List<NotificationEvent> notificationEvents;
+    private EventSubscriptionService eventSubscriptionService;
 
     public EventNotificationProducerService(
             Notification notification, List<NotificationEvent> notificationEvents) {
 
         this.notification = notification;
         this.notificationEvents = notificationEvents;
+
+        this.eventSubscriptionService = new EventSubscriptionService();
+    }
+
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        this.eventSubscriptionService = eventSubscriptionService;
     }
 
     @Override
     public void run() {
 
         try {
-            List<EventSubscription> subscriptionList = EventNotificationServiceUtil.getEventSubscriptionService()
-                    .getEventSubscriptionsByClientId(notification.getClientId());
+            List<EventSubscription> subscriptionList = eventSubscriptionService.getEventSubscriptionsByClientId(
+                    notification.getClientId());
             if (CollectionUtils.isEmpty(subscriptionList)) {
                 throw new FSEventNotificationException("No subscriptions found for the client ID: " +
                         notification.getClientId());
