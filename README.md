@@ -16,7 +16,7 @@
  ~ under the License.
  -->
 
-# WSO2 Financial Services Accelerator
+# WSO2 Financial Services Accelerator 
 
 Financial Services Accelerator is a collection of technologies that increases the speed and reduces the complexity of adopting open banking compliance.
 
