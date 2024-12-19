@@ -26,7 +26,6 @@ If you want to build Financial Services Accelerator from the source code:
 
 1. Install Java8 or above.
 1. Install [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above.
-1. Install [MySQL](https://dev.mysql.com/doc/refman/5.5/en/windows-installation.html).
 1. To get the Financial Services Accelerator from [this repository](https://github.com/wso2/financial-services-accelerator.git), click **Clone or download**.
     * To **clone the solution**, copy the URL and execute the following command in a command prompt.
       `git clone <the copiedURL>`. After cloning, checkout to the **main** branch.
@@ -46,14 +45,14 @@ If you want to build Financial Services Accelerator from the source code:
 | ```Identity Server Accelerator```       | `/financial-services-accelerator/accelerators/fs-is/target` |
 | ```API Manager Accelerator```           | `/financial-services-accelerator/accelerators/fs-apim/target`     |
 
-### Running the products
+### Installing and Running OB Accelerators
 
 Please refer the following READ.ME files to run the products.
 
-| Product                            | Instructions Path                          |
-|:-----------------------------------|:-------------------------------------------|
-| ```Identity Server```              | `/wso2-fs-iam-accelerator-4.0.0/README.md` |
-| ```API Manager```                  | `/wso2-fs-am-accelerator-4.0.0/README.md`  |
+| Product                           | Instructions Path                          |
+|:----------------------------------|:-------------------------------------------|
+| ```Identity Server Accelerator``` | `/wso2-fs-iam-accelerator-4.0.0/README.md` |
+| ```API Manager Accelerator```     | `/wso2-fs-am-accelerator-4.0.0/README.md`  |
 
 ### Reporting Issues
 
