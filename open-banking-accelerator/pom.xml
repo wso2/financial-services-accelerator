@@ -45,7 +45,6 @@
         <module>components/ob-throttler/com.wso2.openbanking.accelerator.throttler.service</module>
         <module>components/event-notifications/com.wso2.openbanking.accelerator.event.notifications.service</module>
         <module>components/account-metadata/com.wso2.openbanking.accelerator.account.metadata.service</module>
-        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.ciba.authentication.endpoint</module>
         <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.consent.endpoint</module>
         <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.dcr.endpoint</module>
         <module>internal-apis/internal-webapps/com.wso2.openbanking.authentication.webapp</module>
