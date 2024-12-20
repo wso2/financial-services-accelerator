@@ -43,6 +43,7 @@
             <modules>
                 <module>open-banking-accelerator</module>
                 <module>react-apps</module>
+                <module>open-banking-accelerator/accelerators</module>
             </modules>
             <build>
                 <plugins>
