@@ -25,7 +25,7 @@
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
         <groupId>com.wso2.openbanking.accelerator</groupId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.2.29-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>com.wso2.openbanking.accelerator.ciba</artifactId>
