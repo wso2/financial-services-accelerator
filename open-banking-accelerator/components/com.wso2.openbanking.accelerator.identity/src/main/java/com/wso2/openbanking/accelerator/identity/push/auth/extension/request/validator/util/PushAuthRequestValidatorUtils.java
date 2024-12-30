@@ -210,6 +210,19 @@ public class PushAuthRequestValidatorUtils {
     }
 
     /**
+     * Validates the client ID parameter to verify if the parameter is available and not null.
+     */
+    public static void validateClientId(JSONObject requestBodyJson) throws PushAuthRequestValidatorException {
+
+        if (StringUtils.isBlank(requestBodyJson.getAsString(PushAuthRequestConstants.CLIENT_ID))) {
+            log.error("Mandatory parameter client_id, not found in the request");
+            throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                    PushAuthRequestConstants.INVALID_REQUEST_OBJECT,
+                    "Mandatory parameter client_id, not found in the request");
+        }
+    }
+
+    /**
      * Validates the scope parameter to verify only allowed scopes for the application are passed in the request.
      */
     public static void validateScope(JSONObject requestBodyJson) throws PushAuthRequestValidatorException {
