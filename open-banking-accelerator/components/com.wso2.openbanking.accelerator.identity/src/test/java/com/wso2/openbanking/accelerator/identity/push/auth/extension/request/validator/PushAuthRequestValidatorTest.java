@@ -453,6 +453,7 @@ class PushAuthRequestValidatorInvalidClientMock extends PushAuthRequestValidator
 
         OAuth2ClientValidationResponseDTO oAuth2ClientValidationResponseDTO = new OAuth2ClientValidationResponseDTO();
         oAuth2ClientValidationResponseDTO.setValidClient(false);
+        oAuth2ClientValidationResponseDTO.setErrorMsg("Invalid client");
         return oAuth2ClientValidationResponseDTO;
     }
 }
