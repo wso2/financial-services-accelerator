@@ -223,7 +223,7 @@ export const AdvanceSearch = () => {
                             title="submit search"
                             onClick={() => {
                                 let userId = searchUser;
-                                let userIdList = [userId];
+                                let userIdList = [];
                                 if (userId.length > 0 && userId.indexOf(CONFIG.TENANT_DOMAIN) === -1) {
                                     userIdList.push(userId + "@" + CONFIG.TENANT_DOMAIN);
                                 }
