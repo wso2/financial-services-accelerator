@@ -16,16 +16,14 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.wso2.openbanking.accelerator</groupId>
         <artifactId>open-banking-accelerator-modules</artifactId>
-        <version>3.2.30-SNAPSHOT</version>
+        <version>3.2.30</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -81,38 +79,28 @@
                             <target>
                                 <!-- Copying jars to dropins -->
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.accelerator.common/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.accelerator.common-(\d.*?)\.jar$"/>
+                                    <fileset dir="../../components/com.wso2.openbanking.accelerator.common/target">
+                                        <filename regex="com.wso2.openbanking.accelerator.common-(\d.*?)\.jar$" />
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.accelerator.gateway/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.accelerator.gateway-(\d.*?)\.jar$"/>
+                                    <fileset dir="../../components/com.wso2.openbanking.accelerator.gateway/target">
+                                        <filename regex="com.wso2.openbanking.accelerator.gateway-(\d.*?)\.jar$" />
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.accelerator.data.publisher/com.wso2.openbanking.accelerator.data.publisher.common/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.accelerator.data.publisher.common-(\d.*?)\.jar$"/>
+                                    <fileset dir="../../components/com.wso2.openbanking.accelerator.data.publisher/com.wso2.openbanking.accelerator.data.publisher.common/target">
+                                        <filename regex="com.wso2.openbanking.accelerator.data.publisher.common-(\d.*?)\.jar$" />
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.accelerator.keymanager/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.accelerator.keymanager-(\d.*?)\.jar$"/>
+                                    <fileset dir="../../components/com.wso2.openbanking.accelerator.keymanager/target">
+                                        <filename regex="com.wso2.openbanking.accelerator.keymanager-(\d.*?)\.jar$" />
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/deployment/server/webapps" overwrite="true">
-                                    <fileset
-                                            dir="../../internal-apis/internal-webapps/com.wso2.openbanking.accelerator.demo.backend/target">
-                                        <filename
-                                                regex="api#openbanking#backend.war$"/>
+                                    <fileset dir="../../internal-apis/internal-webapps/com.wso2.openbanking.accelerator.demo.backend/target">
+                                        <filename regex="api#openbanking#backend.war$" />
                                     </fileset>
                                 </copy>
                             </target>
