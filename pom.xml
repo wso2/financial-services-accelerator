@@ -67,18 +67,10 @@
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
+                        <artifactId>maven-clean-plugin</artifactId>
                         <configuration>
-                            <excludes>**/*.zip</excludes>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
