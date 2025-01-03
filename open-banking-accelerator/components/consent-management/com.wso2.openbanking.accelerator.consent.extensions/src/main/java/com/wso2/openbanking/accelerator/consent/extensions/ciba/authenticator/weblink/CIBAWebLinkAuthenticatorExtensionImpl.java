@@ -13,7 +13,6 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
-import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.CIBAPushAuthenticatorConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
@@ -50,7 +49,7 @@ public class CIBAWebLinkAuthenticatorExtensionImpl implements CIBAWebLinkAuthent
     @Override
     public List<AuthenticatedUser> getAuthenticatedUsers(HttpServletRequest request) {
 
-        return Arrays.stream(request.getParameter(CIBAPushAuthenticatorConstants.LOGIN_HINT)
+        return Arrays.stream(request.getParameter(CIBAWebLinkAuthenticatorConstants.LOGIN_HINT)
                         .split(","))
                 .map(String::trim)
                 .map(AuthenticatedUser::createLocalAuthenticatedUserFromSubjectIdentifier)

@@ -19,7 +19,6 @@
 package com.wso2.openbanking.accelerator.consent.extensions.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
-import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.CIBAPushAuthenticator;
 import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.CIBAWebLinkAuthenticator;
 import com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.notification.CIBAWebLinkNotificationHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionExporter;
@@ -60,10 +59,7 @@ public class ConsentExtensionsComponent {
         if (log.isDebugEnabled()) {
             log.debug("Periodical Consent Status Updater Started");
         }
-        CIBAPushAuthenticator authenticator = new CIBAPushAuthenticator();
         CIBAWebLinkAuthenticator cibaWebLinkAuthenticator = new CIBAWebLinkAuthenticator();
-        context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
-                authenticator, null);
         context.getBundleContext().registerService(ApplicationAuthenticator.class.getName(),
                 cibaWebLinkAuthenticator, null);
         context.getBundleContext().registerService(AbstractEventHandler.class.getName(),
