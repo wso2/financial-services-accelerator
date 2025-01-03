@@ -110,4 +110,6 @@ public class IdentityCommonConstants {
     public static final String OAUTH2_INVALID_CLIENT_MESSAGE = "invalid_client";
     public static final String OAUTH2_INVALID_REQUEST_MESSAGE = "invalid_request";
     public static final String OAUTH2_INTERNAL_SERVER_ERROR = "server_error";
+    public static final String CALLBACK_NOT_MATCH = "callback.not.match";
+    public static final String APPLICATION_NOT_FOUND = "application.not.found";
 }
