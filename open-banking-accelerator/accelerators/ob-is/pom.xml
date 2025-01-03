@@ -62,11 +62,7 @@
                             </excludes>
                         </fileset>
                         <fileset>
-                            <directory>${project.basedir}/carbon-home/repository/deployment/server/webapps/api/WEB-INF/lib</directory>
-                            <excludes>
-                                <exclude>**/org.wso2.carbon.identity.api.user.push.device.common-0.1.1.jar</exclude>
-                                <exclude>**/org.wso2.carbon.identity.api.user.push.device.handler.v1-0.1.1.jar</exclude>
-                            </excludes>
+                            <directory>${project.basedir}/carbon-home/repository/components/webapps</directory>
                         </fileset>
                     </filesets>
                 </configuration>
