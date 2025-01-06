@@ -67,4 +67,4 @@ node_modules/
 **/dist/
 **/package-lock.json
 
-
+integration-test-suite/accelerator-test-framework/src/main/resources/TestConfiguration.xml

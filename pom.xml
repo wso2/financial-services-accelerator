@@ -85,23 +85,17 @@
             </properties>
         </profile>
         <profile>
-            <id>open-banking-test-suite</id>
+            <id>test-suite</id>
             <activation>
                 <property>
                     <name>profile</name>
-                    <value>open-banking-test-suite</value>
+                    <value>test-suite</value>
                 </property>
             </activation>
-        </profile>
-        <profile>
-            <id>integration-test-suite</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>profile</name>
-                    <value>integration-test-suite</value>
-                </property>
-            </activation>
+            <modules>
+                <module>integration-test-framework</module>
+                <module>integration-test-suite</module>
+            </modules>
         </profile>
     </profiles>
 
