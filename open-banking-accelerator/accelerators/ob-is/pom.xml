@@ -52,7 +52,7 @@
                             <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
                             <excludes>
                                 <exclude>**/classmate-1.5.1.jar</exclude>
-                                <exclude>**/org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt-2.3.9.jar</exclude>
+                                <exclude>**/org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt-2.3.11.jar</exclude>
                                 <exclude>**/quartz_2.1.1.wso2v1.jar</exclude>
                                 <exclude>**/org.wso2.carbon.identity.application.authenticator.push-0.1.1.jar</exclude>
                                 <exclude>**/org.wso2.carbon.identity.application.authenticator.push.common-0.1.1.jar</exclude>
