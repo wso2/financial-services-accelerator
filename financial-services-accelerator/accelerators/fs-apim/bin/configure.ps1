@@ -142,7 +142,7 @@ Function Set-Hostnames {
 }
 
 # A function to replace the admin credentials in the temp deployment.toml with their actual values from configure.properties
-Function Set-Admin-Credentials {
+Function Set-AdminCredentials {
     Find-Replace $DEPLOYMENT_TOML_FILE "APIM_ADMIN_USERNAME" "$( $PROPERTIES.'APIM_ADMIN_USERNAME' )"
     Find-Replace $DEPLOYMENT_TOML_FILE "APIM_ADMIN_PASSWORD" "$( $PROPERTIES.'APIM_ADMIN_PASSWORD' )"
     Find-Replace $DEPLOYMENT_TOML_FILE "APIM_ADMIN_NAME" "$( $PROPERTIES.'APIM_ADMIN_NAME' )"
@@ -233,7 +233,7 @@ Write-Output "[INFO] Hostnames configurations completed!"
 
 Write-Output "============================================"
 Write-Output "[INFO] Configuring the admin credentials..."
-Set-Admin-Credentials
+Set-AdminCredentials
 Write-Output "[INFO] Admin credentials configurations completed!"
 
 Write-Output "============================================"
