@@ -223,7 +223,7 @@ export const AdvanceSearch = () => {
                             title="submit search"
                             onClick={() => {
                                 let modifiedSearchUser = searchUser;
-                                f (searchUser.length > 0 && !searchUser.includes(CONFIG.TENANT_DOMAIN)) {
+                                if (searchUser.length > 0 && !searchUser.includes(CONFIG.TENANT_DOMAIN)) {
                                     modifiedSearchUser = searchUser + "@" + CONFIG.TENANT_DOMAIN;
                                 }
                                 let search = {
