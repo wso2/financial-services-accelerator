@@ -78,4 +78,7 @@ public class GatewayConstants {
     public static final String DISALLOWED_CHARS_PATTERN = "([~!#$;%^&*+={}\\s\\|\\\\<>\\\"\\'\\/,\\]\\[\\(\\)])";
     public static final String SUBSTITUTE_STRING = "_";
     public static final int ABBREVIATED_STRING_LENGTH = 70;
+    public static final String USERNAME = "userName";
+    public static final String PASSWORD = "password";
+    public static final String IAM_HOSTNAME = "IAM_Hostname";
 }

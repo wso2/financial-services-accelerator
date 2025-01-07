@@ -19,8 +19,11 @@
 package org.wso2.financial.services.accelerator.gateway.internal;
 
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.base.ServerConfiguration;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -28,8 +31,10 @@ import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtil
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.gateway.cache.GatewayCache;
 import org.wso2.financial.services.accelerator.gateway.executor.core.AbstractRequestRouter;
+import org.wso2.financial.services.accelerator.gateway.util.GatewayConstants;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -49,6 +54,7 @@ public class GatewayDataHolder {
     private char[] keyStorePassword;
     private String keyAlias;
     private String keyPassword;
+    private Map<String, Object> urlMap;
 
     private GatewayDataHolder() {
 
@@ -112,6 +118,7 @@ public class GatewayDataHolder {
                     .getClassInstanceFromFQN(configurations.get(FinancialServicesConstants.REQUEST_ROUTER).toString());
             configuredRequestRouter.build();
             this.setRequestRouter(configuredRequestRouter);
+            this.urlMap = constructURLMap();
         }
     }
 
@@ -202,5 +209,36 @@ public class GatewayDataHolder {
     public APIManagerConfigurationService getApiManagerConfigurationService() {
 
         return apiManagerConfigurationService;
+    }
+
+    public Map<String, Object> getUrlMap() {
+
+        return urlMap;
+    }
+
+    public void setUrlMap(Map<String, Object> configurations) {
+
+        this.urlMap = configurations;
+    }
+
+    private Map<String, Object> constructURLMap() {
+
+        Map<String, Object> urlMap = new HashMap<>();
+        //get admin credentials
+        APIManagerConfiguration config = apiManagerConfigurationService.getAPIManagerConfiguration();
+
+        String adminUsername = config.getFirstProperty(APIConstants.API_KEY_VALIDATOR_USERNAME);
+        urlMap.put(GatewayConstants.USERNAME, adminUsername);
+
+        char[] adminPassword = config.getFirstProperty(APIConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
+        urlMap.put(GatewayConstants.PASSWORD, adminPassword);
+
+        String iamHostName = GatewayDataHolder.getInstance()
+                .getApiManagerConfigurationService().getAPIManagerConfiguration()
+                .getFirstProperty("APIKeyValidator.ServerURL").split("/services")[0];
+
+        urlMap.put(GatewayConstants.IAM_HOSTNAME, iamHostName);
+
+        return urlMap;
     }
 }

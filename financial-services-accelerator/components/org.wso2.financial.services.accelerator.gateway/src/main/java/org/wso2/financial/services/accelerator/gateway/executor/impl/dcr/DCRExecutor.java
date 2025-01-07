@@ -135,6 +135,10 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
     @Override
     public void postProcessResponse(FSAPIResponseContext fsapiResponseContext) {
 
+        if (fsapiResponseContext.isError()) {
+            return;
+        }
+
     }
 
     private void handleBadRequestError(FSAPIRequestContext fsapiRequestContext, String message) {
