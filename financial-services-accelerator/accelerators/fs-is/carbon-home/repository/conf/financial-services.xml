@@ -41,7 +41,7 @@
         </Validation>
         <AdminHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
         <ConsentAPICredentials>
-            <Username>admin@wso2.com</Username>
+            <Username>is_admin@wso2.com</Username>
             <Password>wso2123</Password>
         </ConsentAPICredentials>
         <Payments>
