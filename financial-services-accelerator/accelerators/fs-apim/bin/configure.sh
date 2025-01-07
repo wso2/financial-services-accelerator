@@ -137,6 +137,12 @@ echo -e "================================================\n"
 sed -i -e 's|APIM_HOSTNAME|'${APIM_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 sed -i -e 's|IS_HOSTNAME|'${IS_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 
+echo -e "\nReplace admin credentials \n"
+echo -e "================================================\n"
+sed -i -e 's|APIM_ADMIN_USERNAME|'${APIM_ADMIN_USERNAME}'|g' ${DEPLOYMENT_TOML_FILE}
+sed -i -e 's|APIM_ADMIN_PASSWORD|'${APIM_ADMIN_PASSWORD}'|g' ${DEPLOYMENT_TOML_FILE}
+sed -i -e 's|APIM_ADMIN_NAME|'${APIM_ADMIN_NAME}'|g' ${DEPLOYMENT_TOML_FILE}
+
 echo -e "\nConfigure datasources \n"
 echo -e "================================================\n"
 configure_datasources;
