@@ -30,6 +30,8 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +44,8 @@ import java.util.Optional;
  * Consent persistence step for CIBA flow.
  */
 public class CIBAConsentPersistStep implements ConsentPersistStep {
+
+    private static final Log log = LogFactory.getLog(CIBAConsentPersistStep.class);
 
     @Override
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
@@ -96,10 +100,16 @@ public class CIBAConsentPersistStep implements ConsentPersistStep {
     private static void removeExistingAuthReqIdAttribute(ConsentResource consentResource)
             throws ConsentManagementException {
 
-        ConsentAttributes currentConsentAttributes = ConsentExtensionsDataHolder.getInstance()
-                .getConsentCoreService().getConsentAttributes(consentResource.getConsentID());
+        ConsentAttributes currentConsentAttributes = null;
+        try {
+            currentConsentAttributes = ConsentExtensionsDataHolder.getInstance()
+                    .getConsentCoreService().getConsentAttributes(consentResource.getConsentID());
+        } catch (ConsentManagementException e) {
+            log.debug("Error while retrieving consent attributes.", e);
+        }
         // Remove if existing aut_req_id is already in attributes.
-        if (currentConsentAttributes.getConsentAttributes().containsKey(OpenBankingConstants.AUTH_REQ_ID)) {
+        if (currentConsentAttributes != null &&
+                currentConsentAttributes.getConsentAttributes().containsKey(OpenBankingConstants.AUTH_REQ_ID)) {
             ArrayList<String> toRemoveAttributes = new ArrayList<>();
             toRemoveAttributes.add(OpenBankingConstants.AUTH_REQ_ID);
             ConsentExtensionsDataHolder.getInstance().getConsentCoreService().deleteConsentAttributes(

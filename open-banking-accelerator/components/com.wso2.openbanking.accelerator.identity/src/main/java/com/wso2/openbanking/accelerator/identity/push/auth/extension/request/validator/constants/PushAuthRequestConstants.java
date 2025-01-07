@@ -38,6 +38,7 @@ public class PushAuthRequestConstants {
     public static final String SERVER_ERROR = "server_error";
     public static final String INVALID_REQUEST = "invalid_request";
     public static final String INVALID_REQUEST_OBJECT = "invalid_request_object";
+    public static final String INVALID_CLIENT = "invalid_client";
 
     // custom jwt body constants
     public static final String DECODED_JWT_BODY = "decodedJWTBody";

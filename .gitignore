@@ -68,4 +68,9 @@ node_modules/
 **/dist/
 **/package-lock.json
 
-
+api#openbanking#application
+api#openbanking#consent
+api#openbanking#dynamic-client-registration
+api#openbanking#push-authorization
+ob#authenticationendpoint
+consentmgr

@@ -18,6 +18,7 @@
 
 package com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.ServiceProviderUtils;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
@@ -25,6 +26,7 @@ import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.val
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.exception.PushAuthRequestValidatorException;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.model.PushAuthErrorResponse;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.test.jwt.builder.TestJwtBuilder;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import net.minidev.json.JSONObject;
 import org.junit.Assert;
 import org.mockito.Mockito;
@@ -64,9 +66,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * Test for push authorization request validator.
  */
-@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({IdentityExtensionsDataHolder.class, OAuth2Util.class, OAuthServerConfiguration.class,
-        IdentityUtil.class, ServiceProviderUtils.class})
+        IdentityUtil.class, ServiceProviderUtils.class, IdentityCommonUtil.class, OpenBankingConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class PushAuthRequestValidatorTest extends PowerMockTestCase {
 
     private Map<String, List<String>> parameterMap;
@@ -102,9 +104,12 @@ public class PushAuthRequestValidatorTest extends PowerMockTestCase {
 
         IdentityExtensionsDataHolder identityExtensionsDataHolderMock = mock(IdentityExtensionsDataHolder.class);
         ApplicationManagementService applicationManagementServiceMock = mock(ApplicationManagementService.class);
+        OpenBankingConfigParser openBankingConfigParserMock = mock(OpenBankingConfigParser.class);
 
         mockStatic(IdentityExtensionsDataHolder.class);
         mockStatic(ServiceProviderUtils.class);
+        mockStatic(IdentityCommonUtil.class);
+        mockStatic(OpenBankingConfigParser.class);
         when(IdentityExtensionsDataHolder.getInstance()).thenReturn(identityExtensionsDataHolderMock);
         when(identityExtensionsDataHolderMock.getConfigurationMap()).thenReturn(configMap);
         when(identityExtensionsDataHolderMock.getApplicationManagementService())
@@ -112,6 +117,10 @@ public class PushAuthRequestValidatorTest extends PowerMockTestCase {
         when(ServiceProviderUtils.getSpTenantDomain(Mockito.anyString())).thenReturn("dummyTenantDomain");
         when(applicationManagementServiceMock.getServiceProviderByClientId(Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyString())).thenReturn(serviceProviderMock);
+        when(IdentityCommonUtil.getRegulatoryFromSPMetaData(Mockito.anyString())).thenReturn(true);
+        when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
+        when(openBankingConfigParserMock.isOpenIdScopeMandatoryForRegulatoryApps())
+                .thenReturn(true);
 
         OAuthServerConfiguration oAuthServerConfigurationMock = mock(OAuthServerConfiguration.class);
         mockStatic(OAuthServerConfiguration.class);
@@ -200,6 +209,34 @@ public class PushAuthRequestValidatorTest extends PowerMockTestCase {
         parameterMap.put("request",
                 Arrays.asList(TestJwtBuilder.getValidSignedJWT()));
         PushAuthRequestValidatorMockClass pushAuthRequestValidatorMockClass = new PushAuthRequestValidatorMockClass();
+
+        pushAuthRequestValidatorMockClass.validateParams(httpServletRequestMock, parameterMap);
+    }
+
+    @Test(expectedExceptions = PushAuthRequestValidatorException.class)
+    public void validateScopeParameterWithoutOpenIdScopeForRegulatoryApps() throws Exception {
+
+        parameterMap.put("request",
+                Arrays.asList(TestJwtBuilder.getValidSignedJWTWithoutOpenIdScope()));
+        PushAuthRequestValidatorMockClass pushAuthRequestValidatorMockClass = new PushAuthRequestValidatorMockClass();
+
+        pushAuthRequestValidatorMockClass.validateParams(httpServletRequestMock, parameterMap);
+    }
+
+    @Test
+    public void validateScopeParameterWithoutOpenIdScopeForNonRegulatoryApps() throws Exception {
+
+        // remove previous invalid parameters
+        parameterMap.remove("request_uri");
+
+        when(IdentityCommonUtil.getRegulatoryFromSPMetaData(Mockito.anyString())).thenReturn(false);
+
+        parameterMap.put("request",
+                Arrays.asList(TestJwtBuilder.getValidSignedJWTWithoutOpenIdScope()));
+        PushAuthRequestValidatorMockClass pushAuthRequestValidatorMockClass = new PushAuthRequestValidatorMockClass();
+
+        ServiceProviderProperty[] serviceProviderProperties = serviceProviderMock.getSpProperties();
+        serviceProviderProperties[0].setValue("accounts payments openid");
 
         pushAuthRequestValidatorMockClass.validateParams(httpServletRequestMock, parameterMap);
     }
@@ -416,6 +453,7 @@ class PushAuthRequestValidatorInvalidClientMock extends PushAuthRequestValidator
 
         OAuth2ClientValidationResponseDTO oAuth2ClientValidationResponseDTO = new OAuth2ClientValidationResponseDTO();
         oAuth2ClientValidationResponseDTO.setValidClient(false);
+        oAuth2ClientValidationResponseDTO.setErrorMsg("Invalid client");
         return oAuth2ClientValidationResponseDTO;
     }
 }

@@ -885,11 +885,6 @@ public class OpenBankingConfigParser {
                 ((String) getConfigElementFromKey(OpenBankingConstants.AUTH_SERVLET_EXTENSION)).trim();
     }
 
-    public String getCibaServletExtension() {
-        return getConfigElementFromKey(OpenBankingConstants.CIBA_SERVLET_EXTENSION) == null ? "" :
-                ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_SERVLET_EXTENSION)).trim();
-    }
-
     public String getJWKSConnectionTimeOut() {
 
         return getConfigElementFromKey(OpenBankingConstants.DCR_JWKS_CONNECTION_TIMEOUT) == null ? "3000" :
@@ -1490,6 +1485,16 @@ public class OpenBankingConfigParser {
     }
 
     /**
+     * Method to get mandate/optional openid scope for regulatory apps.
+     * @return isOpenIdScopeMandatoryForRegulatoryApps
+     */
+    public boolean isOpenIdScopeMandatoryForRegulatoryApps() {
+        return getConfigElementFromKey(OpenBankingConstants.PUSH_AUTH_MANDATE_OPENID_SCOPE_FOR_REGULATORY_APPS) == null
+                || Boolean.parseBoolean(((String) getConfigElementFromKey(OpenBankingConstants
+                        .PUSH_AUTH_MANDATE_OPENID_SCOPE_FOR_REGULATORY_APPS)).trim());
+    }
+
+    /**
      * Method to get the CIBA authentication redirect endpoint configuration.
      *
      * @return ciba redirect endpoint
@@ -1524,8 +1529,19 @@ public class OpenBankingConfigParser {
      */
     public String getCibaWebLinkNotificationProvider() {
 
-        return getConfigElementFromKey(OpenBankingConstants.CIBA_NOTIFICATION_PROVIDER) == null ?
-                "" : ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_NOTIFICATION_PROVIDER)).trim();
+        return getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_NOTIFICATION_PROVIDER) == null ?
+                "" : ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_NOTIFICATION_PROVIDER)).trim();
+    }
+
+    /**
+     * Method to get the CIBA WebLink Authenticator Extension
+     *
+     * @return Class name for CIBA WebLink Authenticator Extension
+     */
+    public String getCIBAWebLinkAuthenticatorExtension() {
+
+        return getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_AUTHENTICATOR_EXTENSION) == null ? "" :
+                ((String) getConfigElementFromKey(OpenBankingConstants.CIBA_WEBLINK_AUTHENTICATOR_EXTENSION)).trim();
     }
 
     /**
