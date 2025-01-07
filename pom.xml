@@ -21,7 +21,7 @@
     <groupId>com.wso2.openbanking.accelerator</groupId>
     <artifactId>open-banking</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.25-SNAPSHOT</version>
+    <version>3.2.32-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -43,6 +43,7 @@
             <modules>
                 <module>open-banking-accelerator</module>
                 <module>react-apps</module>
+                <module>open-banking-accelerator/accelerators</module>
             </modules>
             <build>
                 <plugins>
@@ -63,6 +64,13 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

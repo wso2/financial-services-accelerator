@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.val
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.exception.PushAuthRequestValidatorException;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.model.PushAuthErrorResponse;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -120,16 +121,29 @@ public class PushAuthRequestValidator {
             if (requestBodyJson != null && requestHeaderJson != null) {
 
                 validateRedirectUri(requestBodyJson);
+                validateClientId(requestBodyJson);
 
                 // validate client id and redirect uri
                 OAuth2ClientValidationResponseDTO oAuth2ClientValidationResponseDTO =
                         getClientValidationInfo(requestBodyJson);
 
                 if (!oAuth2ClientValidationResponseDTO.isValidClient()) {
-                    log.error(oAuth2ClientValidationResponseDTO.getErrorMsg());
-                    throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
-                            PushAuthRequestConstants.INVALID_REQUEST,
-                            oAuth2ClientValidationResponseDTO.getErrorMsg());
+                    log.error(oAuth2ClientValidationResponseDTO.getErrorMsg().replaceAll("[\r\n]" , ""));
+
+                    String errMsg = oAuth2ClientValidationResponseDTO.getErrorMsg();
+                    if (IdentityCommonConstants.APPLICATION_NOT_FOUND.equalsIgnoreCase(errMsg)) {
+                        throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                                PushAuthRequestConstants.INVALID_CLIENT,
+                                "The client_id in the request object is different from the authenticated client.");
+                    } else if (IdentityCommonConstants.CALLBACK_NOT_MATCH.equalsIgnoreCase(errMsg)) {
+                        throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                                PushAuthRequestConstants.INVALID_REQUEST_OBJECT,
+                                "Registered callback does not match with the provided url.");
+                    } else {
+                        throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                                PushAuthRequestConstants.INVALID_REQUEST,
+                                errMsg);
+                    }
                 }
                 validateSignatureAlgorithm(requestHeaderJson
                         .get(PushAuthRequestConstants.ALG_HEADER));
@@ -181,6 +195,17 @@ public class PushAuthRequestValidator {
             throws PushAuthRequestValidatorException {
 
         PushAuthRequestValidatorUtils.validateRedirectUri(requestBodyJson);
+    }
+
+    /**
+     * Extend this method to validate the client ID of the request object.
+     * @param requestBodyJson request object
+     * @throws PushAuthRequestValidatorException if validation fails
+     */
+    public void validateClientId(JSONObject requestBodyJson)
+            throws PushAuthRequestValidatorException {
+
+        PushAuthRequestValidatorUtils.validateClientId(requestBodyJson);
     }
 
     /**

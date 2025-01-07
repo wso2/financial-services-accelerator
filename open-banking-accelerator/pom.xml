@@ -23,14 +23,13 @@
     <parent>
         <groupId>com.wso2.openbanking.accelerator</groupId>
         <artifactId>open-banking</artifactId>
-        <version>3.2.25-SNAPSHOT</version>
+        <version>3.2.32-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>WSO2 Open Banking Accelerator</name>
     <artifactId>open-banking-accelerator</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.25-SNAPSHOT</version>
 
     <modules>
         <module>components/com.wso2.openbanking.accelerator.common</module>
@@ -46,7 +45,6 @@
         <module>components/ob-throttler/com.wso2.openbanking.accelerator.throttler.service</module>
         <module>components/event-notifications/com.wso2.openbanking.accelerator.event.notifications.service</module>
         <module>components/account-metadata/com.wso2.openbanking.accelerator.account.metadata.service</module>
-        <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.ciba.authentication.endpoint</module>
         <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.consent.endpoint</module>
         <module>internal-apis/internal-webapps/com.wso2.openbanking.accelerator.dcr.endpoint</module>
         <module>internal-apis/internal-webapps/com.wso2.openbanking.authentication.webapp</module>

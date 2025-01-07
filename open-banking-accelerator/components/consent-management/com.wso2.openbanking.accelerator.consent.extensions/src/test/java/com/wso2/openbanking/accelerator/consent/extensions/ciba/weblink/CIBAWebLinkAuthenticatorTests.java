@@ -75,6 +75,9 @@ public class CIBAWebLinkAuthenticatorTests extends PowerMockTestCase {
 
         consentCoreServiceImpl = Mockito.mock(ConsentCoreServiceImpl.class);
         openBankingConfigParser = Mockito.mock(OpenBankingConfigParser.class);
+        PowerMockito.when(openBankingConfigParser.getCIBAWebLinkAuthenticatorExtension()).thenReturn(
+                "com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink" +
+                        ".CIBAWebLinkAuthenticatorExtensionImpl");
     }
 
     @BeforeClass

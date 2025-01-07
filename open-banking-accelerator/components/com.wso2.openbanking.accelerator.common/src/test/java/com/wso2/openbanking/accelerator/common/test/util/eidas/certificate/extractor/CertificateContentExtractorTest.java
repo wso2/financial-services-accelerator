@@ -42,13 +42,27 @@ public class CertificateContentExtractorTest {
         CertificateContent extract = CertificateContentExtractor.extract(cert);
 
         Assert.assertTrue(extract.getPspRoles().size() == 3);
-        Assert.assertTrue(extract.getPspRoles().contains("AISP"));
-        Assert.assertTrue(extract.getPspRoles().contains("PISP"));
-        Assert.assertTrue(extract.getPspRoles().contains("CBPII"));
+        Assert.assertTrue(extract.getPspRoles().contains("PSP_AI"));
+        Assert.assertTrue(extract.getPspRoles().contains("PSP_PI"));
+        Assert.assertTrue(extract.getPspRoles().contains("PSP_IC"));
         Assert.assertTrue(extract.getPspAuthorisationNumber().equals("PSDDE-BAFIN-123456"));
         Assert.assertTrue(extract.getName().equals("www.hanseaticbank.de"));
         Assert.assertTrue(extract.getNcaName().equals("Federal Financial Supervisory Authority"));
         Assert.assertTrue(extract.getNcaId().equals("DE-BAFIN"));
+    }
+
+    @Test
+    public void testExtractPSD2RoleFromCert() throws Exception {
+
+        X509Certificate cert =
+                CommonTestUtil.parseTransportCert(CommonTestUtil.EIDAS_CERT).orElse(null);
+
+        CertificateContent extract = CertificateContentExtractor.extract(cert);
+
+        Assert.assertTrue(extract.getPsd2Roles().size() == 3);
+        Assert.assertTrue(extract.getPsd2Roles().contains("AISP"));
+        Assert.assertTrue(extract.getPsd2Roles().contains("PISP"));
+        Assert.assertTrue(extract.getPsd2Roles().contains("CBPII"));
     }
 
     @Test

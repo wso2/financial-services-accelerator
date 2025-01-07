@@ -141,17 +141,6 @@
             </IdentityCache>
         </Cache>
 
-        <CIBAAuthenticationEndpointWebApp>
-            {% if open_banking.identity.ciba_webapp.servlet_extension is defined %}
-                <ServletExtension>
-                    {{open_banking.identity.ciba_webapp.servlet_extension}}
-                </ServletExtension>
-            {% else %}
-                <ServletExtension>
-                    com.wso2.openbanking.accelerator.consent.extensions.ciba.impl.CIBAAuthenticationEndpointDefaultImpl
-                </ServletExtension>
-            {% endif %}
-        </CIBAAuthenticationEndpointWebApp>
         <CIBA>
             <AuthWebLink>
                 {% if open_banking.identity.ciba.auth_web_link.redirect_endpoint is defined %}
@@ -178,7 +167,11 @@
                 {% else %}
                     <NotificationProvider>com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.notification.provider.SMSNotificationProvider</NotificationProvider>
                 {% endif %}
-
+                {% if open_banking.identity.ciba.auth_web_link.authenticator_extension is defined %}
+                    <AuthenticatorExtension>{{open_banking.identity.ciba.auth_web_link.authenticator_extension}}</AuthenticatorExtension>
+                {% else %}
+                    <AuthenticatorExtension>com.wso2.openbanking.accelerator.consent.extensions.ciba.authenticator.weblink.CIBAWebLinkAuthenticatorExtensionImpl</AuthenticatorExtension>
+                {% endif %}
                 <SMS>
                     {% if open_banking.identity.ciba.auth_web_link.sms_notification.sms_url is defined %}
                         <SMSUrl>{{open_banking.identity.ciba.auth_web_link.sms_notification.sms_url}}</SMSUrl>
@@ -1016,6 +1009,11 @@
         <RequestUriSubString>{{open_banking.push_authorisation.request_uri_sub_string}}</RequestUriSubString>
     {% else %}
         <RequestUriSubString>ietf:params:oauth:request_uri</RequestUriSubString>
+    {% endif %}
+    {% if open_banking.push_authorisation.mandate_openid_scope_for_regulatory_apps is defined %}
+        <MandateOpenidScopeForRegulatoryApps>{{open_banking.push_authorisation.mandate_openid_scope_for_regulatory_apps}}</MandateOpenidScopeForRegulatoryApps>
+    {% else %}
+        <MandateOpenidScopeForRegulatoryApps>true</MandateOpenidScopeForRegulatoryApps>
     {% endif %}
     </PushAuthorisation>
     <ServiceActivator>

@@ -27,6 +27,7 @@ import java.util.List;
 public class CertificateContent {
     private String pspAuthorisationNumber;
     private List<String> pspRoles;
+    private List<String> psd2Roles;
     private String name;
     private String ncaName;
     private String ncaId;
@@ -52,6 +53,14 @@ public class CertificateContent {
     public void setPspRoles(List<String> pspRoles) {
 
         this.pspRoles = pspRoles;
+    }
+
+    public List<String> getPsd2Roles() {
+        return psd2Roles;
+    }
+
+    public void setPsd2Roles(List<String> psd2Roles) {
+        this.psd2Roles = psd2Roles;
     }
 
     public String getName() {
