@@ -78,7 +78,8 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
         doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
 
         OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
-        doReturn("").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject());
+        doReturn("").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject(),
+                Mockito.anyObject());
 
         PowerMockito.mockStatic(OpenBankingValidator.class);
         PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
@@ -103,7 +104,8 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
         doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
 
         OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
-        doReturn("").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject());
+        doReturn("").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject(),
+                Mockito.anyObject());
 
         PowerMockito.mockStatic(OpenBankingValidator.class);
         PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
@@ -125,7 +127,8 @@ public class DefaultOBRequestObjectValidatorTest extends PowerMockTestCase {
     public void testValidateOBConstraintsWhenOBRequestObjectHasErrors() throws Exception {
         // mock
         OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
-        doReturn("dummy-error").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject());
+        doReturn("dummy-error").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject(),
+                Mockito.anyObject());
 
         PowerMockito.mockStatic(OpenBankingValidator.class);
         PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
