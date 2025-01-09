@@ -211,7 +211,7 @@ public interface ConsentCoreService {
     /**
      * This method is used to revoke existing consents for the given clientID, userID, consent type and status
      * combination. Also revokes the tokens related to the consents which are revoked if the flag
-     * 'shouldRevokeTokens' is true. If the userID is null then consents related to all the users are revoked.
+     * 'shouldRevokeTokens' is true.
      *
      * @param clientID ID of the client
      * @param userID ID of the user

@@ -435,6 +435,19 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         return true;
     }
 
+    /**
+     * This method is used to revoke existing consents for the given clientID, userID, consent type and status
+     * combination. Also revokes the tokens related to the consents which are revoked if the flag
+     * 'shouldRevokeTokens' is true. If the userID is null then consents related to all the users are revoked.
+     *
+     * @param clientID ID of the client
+     * @param userID ID of the user
+     * @param consentType consent type
+     * @param applicableStatusToRevoke the status that a consent should have for revoking
+     * @param revokedConsentStatus the status should be updated the consent with after revoking
+     * @return returns true if successful
+     * @throws ConsentManagementException thrown if an error occurs in the process
+     */
     @Override
     public boolean revokeExistingApplicableConsents(String clientID, String userID, String consentType,
                                                     String applicableStatusToRevoke,
