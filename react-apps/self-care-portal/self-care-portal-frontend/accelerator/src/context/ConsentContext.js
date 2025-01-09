@@ -19,6 +19,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { getConsentsFromAPI, getConsentsFromAPIForSearch } from '../api';
 import { UserContext } from './UserContext';
+import { getModifiedConsentData } from "../services/extendableUtils";
 
 export const ConsentContext = createContext();
 const ConsentContextProvider = (props) => {
@@ -75,7 +76,7 @@ const ConsentContextProvider = (props) => {
         getConsentsFromAPIForSearch(searchObj,user,appInfo)
             .then((response)=>{
                 setContextConsents(response.data)
-                setContextConsentsMetadata(response.data)
+                setContextConsentsMetadata(getModifiedConsentData(response.data))
             })
             .catch((error)=>{
                 setResponseError(error.response.data)

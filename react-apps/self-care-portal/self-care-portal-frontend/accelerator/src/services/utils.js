@@ -151,3 +151,11 @@ export function generatePDF(consent, applicationName, consentStatus) {
     pdf.text(20, 120, 'Accounts: ' + content03)
     pdf.save("consent.pdf");
 }
+
+export function userIdAdjustment(userId) {
+    if (userId.includes("@carbon.super")) {
+     return userId.replace("@carbon.super", "");
+    } else {
+        return userId;
+    }
+}
