@@ -37,6 +37,7 @@ import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
 import org.wso2.carbon.identity.oauth2.bean.OAuthClientAuthnContext;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -122,8 +123,9 @@ public class PushAuthorisationEndpoint {
             requestJWT = paramMap.get(REQUEST).toString();
         }
 
-        // Generate a urn with cryptographically strong pseudo random algorithm
-        String urn = RandomStringUtils.randomAlphanumeric(32);
+        // Generates a "secure" random string with 32 characters only using alphanumeric characters.
+        String urn = RandomStringUtils.random(32, 0, 0, true, true, null,
+                new SecureRandom());
 
         OpenBankingConfigurationService openBankingConfigurationService = getOBConfigService();
 
