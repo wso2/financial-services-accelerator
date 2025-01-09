@@ -73,7 +73,6 @@
                         </configuration>
                     </plugin>
                 </plugins>
-
             </build>
             <properties>
                 <npm.executable>npm</npm.executable>
