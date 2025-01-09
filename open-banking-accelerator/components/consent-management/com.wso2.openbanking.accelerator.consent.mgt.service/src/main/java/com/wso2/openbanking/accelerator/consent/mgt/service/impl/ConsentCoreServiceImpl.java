@@ -435,17 +435,30 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         return true;
     }
 
+    /**
+     * This method is used to revoke existing consents for the given clientID, userID, consent type and status
+     * combination. Also revokes the tokens related to the consents which are revoked if the flag
+     * 'shouldRevokeTokens' is true. If the userID is null then consents related to all the users are revoked.
+     *
+     * @param clientID ID of the client
+     * @param userID ID of the user
+     * @param consentType consent type
+     * @param applicableStatusToRevoke the status that a consent should have for revoking
+     * @param revokedConsentStatus the status should be updated the consent with after revoking
+     * @return returns true if successful
+     * @throws ConsentManagementException thrown if an error occurs in the process
+     */
     @Override
     public boolean revokeExistingApplicableConsents(String clientID, String userID, String consentType,
                                                     String applicableStatusToRevoke,
                                                     String revokedConsentStatus, boolean shouldRevokeTokens)
             throws ConsentManagementException {
 
-        if (StringUtils.isBlank(clientID) || StringUtils.isBlank(revokedConsentStatus) || StringUtils.isBlank(userID)
+        if (StringUtils.isBlank(clientID) || StringUtils.isBlank(revokedConsentStatus)
                 || StringUtils.isBlank(applicableStatusToRevoke) || StringUtils.isBlank(consentType)) {
-            log.error("Client ID, new consent status, consent type, user ID or applicable consent status to revoke is" +
+            log.error("Client ID, new consent status, consent type or applicable consent status to revoke is" +
                     " missing, cannot proceed");
-            throw new ConsentManagementException("Client ID, new consent status, consent type, user ID or applicable " +
+            throw new ConsentManagementException("Client ID, new consent status, consent type or applicable " +
                     "consent status to revoke is missing, cannot proceed");
         }
 
@@ -459,7 +472,11 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 ArrayList<String> clientIDsList = new ArrayList<>();
                 clientIDsList.add(clientID);
                 ArrayList<String> userIDsList = new ArrayList<>();
-                userIDsList.add(userID);
+
+                if (userID != null) {
+                    userIDsList.add(userID);
+                }
+
                 ArrayList<String> consentTypesList = new ArrayList<>();
                 consentTypesList.add(consentType);
                 ArrayList<String> consentStatusesList = new ArrayList<>();
@@ -484,21 +501,27 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     }
                     consentCoreDAO.updateConsentStatus(connection, resource.getConsentID(), revokedConsentStatus);
 
-                    if (shouldRevokeTokens) {
-                        revokeTokens(resource, userID);
-                    }
-
                     // Create an audit record for consent update
                     if (log.isDebugEnabled()) {
                         log.debug("Creating audit record for the status change of consent ID: "
                                 + resource.getConsentID().replaceAll("[\r\n]", ""));
                     }
-                    // Create an audit record execute state change listener
-                    HashMap<String, Object> consentDataMap = new HashMap<>();
-                    consentDataMap.put(ConsentCoreServiceConstants.DETAILED_CONSENT_RESOURCE, resource);
-                    postStateChange(connection, consentCoreDAO, resource.getConsentID(), userID,
-                            revokedConsentStatus, previousConsentStatus,
-                            ConsentCoreServiceConstants.CONSENT_REVOKE_REASON, resource.getClientID(), consentDataMap);
+
+                    for (AuthorizationResource authorizationResource : resource.getAuthorizationResources()) {
+                        String authResourceUserId = authorizationResource.getUserID();
+
+                        if (shouldRevokeTokens) {
+                            revokeTokens(resource, authResourceUserId);
+                        }
+
+                        // Create an audit record execute state change listener
+                        HashMap<String, Object> consentDataMap = new HashMap<>();
+                        consentDataMap.put(ConsentCoreServiceConstants.DETAILED_CONSENT_RESOURCE, resource);
+                        postStateChange(connection, consentCoreDAO, resource.getConsentID(), authResourceUserId,
+                                revokedConsentStatus, previousConsentStatus,
+                                ConsentCoreServiceConstants.CONSENT_REVOKE_REASON, resource.getClientID(),
+                                consentDataMap);
+                    }
 
                     // Extract account mapping IDs for retrieved applicable consents
                     if (log.isDebugEnabled()) {
