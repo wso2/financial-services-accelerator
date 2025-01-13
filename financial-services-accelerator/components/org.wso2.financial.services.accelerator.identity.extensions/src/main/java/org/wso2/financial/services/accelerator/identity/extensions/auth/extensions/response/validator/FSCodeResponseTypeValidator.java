@@ -74,7 +74,7 @@ public class FSCodeResponseTypeValidator extends AbstractValidator<HttpServletRe
     private boolean isValidResponseType(String clientId, String responseType) {
 
         try {
-            if (FinancialServicesUtils.isRegulatoryApp(clientId) && CODE.equals(responseType)) {
+            if (FinancialServicesUtils.isFapiConformantApp(clientId) && CODE.equals(responseType)) {
                 return false;
             }
         } catch (RequestObjectException e) {

@@ -187,7 +187,7 @@ public class ConsentAuthorizeEndpoint {
         consentData.setState(state);
 
         try {
-            consentData.setRegulatory(FinancialServicesUtils.isRegulatoryApp(clientId));
+            consentData.setRegulatory(FinancialServicesUtils.isFapiConformantApp(clientId));
         } catch (RequestObjectException e) {
             log.error("Error while getting regulatory data", e);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,

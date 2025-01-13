@@ -135,7 +135,7 @@ public class FinancialServicesUtils {
      * @throws RequestObjectException If an error occurs while checking the client ID
      */
     @Generated(message = "Excluding from code coverage since it requires a service call")
-    public static boolean isRegulatoryApp(String clientId) throws RequestObjectException {
+    public static boolean isFapiConformantApp(String clientId) throws RequestObjectException {
 
         try {
             return OAuth2Util.isFapiConformantApp(clientId);

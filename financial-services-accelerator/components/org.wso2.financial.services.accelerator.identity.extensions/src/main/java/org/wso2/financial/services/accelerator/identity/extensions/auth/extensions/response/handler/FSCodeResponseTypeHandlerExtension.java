@@ -86,6 +86,6 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
     @Generated(message = "Ignoring because it requires a service call")
     boolean isRegulatory(String clientId) throws RequestObjectException {
 
-        return FinancialServicesUtils.isRegulatoryApp(clientId);
+        return FinancialServicesUtils.isFapiConformantApp(clientId);
     }
 }

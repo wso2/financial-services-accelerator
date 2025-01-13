@@ -144,7 +144,7 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
             identityCommonUtilsMock.when(IdentityCommonUtils::getMTLSAuthHeader)
                     .thenReturn(TestConstants.CERTIFICATE_HEADER);
 
-            fsUtilMock.when(() -> FinancialServicesUtils.isRegulatoryApp(anyString())).thenReturn(true);
+            fsUtilMock.when(() -> FinancialServicesUtils.isFapiConformantApp(anyString())).thenReturn(true);
             frameworkUtilsMock.when(FrameworkUtils::getMultiAttributeSeparator)
                     .thenReturn(MULTI_ATTRIBUTE_SEPARATOR_DEFAULT);
             Base64URL base64URL = Base64URL.encode(TestConstants.CERTIFICATE_CONTENT);

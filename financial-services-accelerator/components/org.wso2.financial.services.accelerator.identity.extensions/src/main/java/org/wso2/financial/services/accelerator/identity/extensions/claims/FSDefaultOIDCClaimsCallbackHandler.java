@@ -59,7 +59,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
         /*  accessToken property check is done to omit the following claims getting bound to id_token
              The access token property is added to the ID token message context before this method is invoked. */
         try {
-            if (FinancialServicesUtils.isRegulatoryApp(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
+            if (FinancialServicesUtils.isFapiConformantApp(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
                     .getClientId())
                     && (tokenReqMessageContext.getProperty(IdentityCommonConstants.ACCESS_TOKEN) == null)) {
 
