@@ -32,6 +32,8 @@ import org.wso2.carbon.apimgt.common.gateway.dto.APIRequestInfoDTO;
 import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 import org.wso2.carbon.apimgt.common.gateway.dto.RequestContextDTO;
 import org.wso2.carbon.apimgt.common.gateway.extensionlistener.PayloadHandler;
+import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
@@ -73,6 +75,13 @@ public class DCRExecutorTest {
         configs.put(FinancialServicesConstants.GATEWAY_CACHE_MODIFIED_EXPIRY, "60");
         configs.put(FinancialServicesConstants.REQUEST_ROUTER,
                 "org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter");
+        configs.put(FinancialServicesConstants.SSA_CLIENT_NAME, "software_client_name");
+        APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
+        Mockito.when(apiManagerConfiguration.getFirstProperty(Mockito.anyString())).thenReturn("admin");
+        APIManagerConfigurationService apiManagerConfigurationService =
+                Mockito.mock(APIManagerConfigurationService.class);
+        Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        dataHolder.setApiManagerConfiguration(apiManagerConfigurationService);
         FinancialServicesConfigurationService financialServicesConfigurationService =
                 Mockito.mock(FinancialServicesConfigurationService.class);
         Mockito.when(financialServicesConfigurationService.getConfigurations()).thenReturn(configs);

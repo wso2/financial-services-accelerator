@@ -212,7 +212,6 @@
                         <Import-Package>
                             org.osgi.framework; version="${osgi.framework.imp.pkg.version.range}",
                             org.osgi.service.component; version="${osgi.service.component.imp.pkg.version.range}",
-                            org.apache.commons.io;version="${org.apache.commons.io.version.range}",
                             io.swagger.parser.*; version="${swagger.parser.v3.version}",
                             io.swagger.v3.*; version="${swagger.parser.v3.version}",
                             org.apache.commons.logging;version="${commons.logging.version}",

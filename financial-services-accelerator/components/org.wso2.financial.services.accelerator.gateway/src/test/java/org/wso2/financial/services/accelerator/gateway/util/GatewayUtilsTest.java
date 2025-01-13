@@ -24,6 +24,8 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.gateway.GatewayTestConstants;
@@ -50,6 +52,14 @@ public class GatewayUtilsTest {
         configs.put(FinancialServicesConstants.GATEWAY_CACHE_MODIFIED_EXPIRY, "60");
         configs.put(FinancialServicesConstants.REQUEST_ROUTER,
                 "org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter");
+        configs.put(FinancialServicesConstants.SSA_CLIENT_NAME, "software_client_name");
+
+        APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
+        Mockito.when(apiManagerConfiguration.getFirstProperty(Mockito.anyString())).thenReturn("admin");
+        APIManagerConfigurationService apimConfigurationService = Mockito.mock(APIManagerConfigurationService.class);
+        Mockito.when(apimConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        dataHolder.setApiManagerConfiguration(apimConfigurationService);
+
         FinancialServicesConfigurationService financialServicesConfigurationService =
                 Mockito.mock(FinancialServicesConfigurationService.class);
         Mockito.when(financialServicesConfigurationService.getConfigurations()).thenReturn(configs);

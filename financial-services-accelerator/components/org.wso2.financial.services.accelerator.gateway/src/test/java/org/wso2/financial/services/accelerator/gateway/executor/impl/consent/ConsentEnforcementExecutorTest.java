@@ -77,16 +77,17 @@ public class ConsentEnforcementExecutorTest {
         configs.put(FinancialServicesConstants.CONSENT_VALIDATION_ENDPOINT, "http://localhost:8080");
         configs.put(FinancialServicesConstants.REQUEST_ROUTER,
                 "org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter");
-        FinancialServicesConfigurationService financialServicesConfigurationService =
-                Mockito.mock(FinancialServicesConfigurationService.class);
-        Mockito.when(financialServicesConfigurationService.getConfigurations()).thenReturn(configs);
-        dataHolder.setFinancialServicesConfigurationService(financialServicesConfigurationService);
 
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfiguration.getFirstProperty(Mockito.anyString())).thenReturn("admin");
         APIManagerConfigurationService apimConfigurationService = Mockito.mock(APIManagerConfigurationService.class);
         Mockito.when(apimConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
         dataHolder.setApiManagerConfiguration(apimConfigurationService);
+
+        FinancialServicesConfigurationService financialServicesConfigurationService =
+                Mockito.mock(FinancialServicesConfigurationService.class);
+        Mockito.when(financialServicesConfigurationService.getConfigurations()).thenReturn(configs);
+        dataHolder.setFinancialServicesConfigurationService(financialServicesConfigurationService);
 
         File responseFile = new File("src/test/resources/test-validation-response.json");
         byte[] crlBytes = FileUtils.readFileToString(responseFile, String.valueOf(StandardCharsets.UTF_8))

@@ -120,7 +120,8 @@ create_mysql_databases() {
 
 create_mysql_database_tables() {
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_IDENTITY} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/identity/mysql.sql";
-    echo "Database tables Created for: ${DB_APIMGT}"
+    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_IDENTITY} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/consent/mysql.sql";
+    echo "Database tables Created for: ${DB_IDENTITY}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_IS_CONFIG} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_IS_CONFIG}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_FS_STORE} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/financial-services/consent/mysql.sql";

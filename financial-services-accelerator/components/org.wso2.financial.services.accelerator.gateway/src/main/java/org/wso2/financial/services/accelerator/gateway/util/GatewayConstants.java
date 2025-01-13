@@ -27,6 +27,7 @@ public class GatewayConstants {
     public static final String BEARER_TAG = "Bearer ";
     public static final String BASIC_TAG = "Basic ";
     public static final String CONTENT_TYPE_TAG = "Content-Type";
+    public static final String CONTENT_LENGTH = "Content-Length";
     public static final String JWT_CONTENT_TYPE = "application/jwt";
     public static final String JSON_CONTENT_TYPE = "application/json";
     public static final String JOSE_CONTENT_TYPE = "application/jose";
@@ -81,4 +82,10 @@ public class GatewayConstants {
     public static final String USERNAME = "userName";
     public static final String PASSWORD = "password";
     public static final String IAM_HOSTNAME = "IAM_Hostname";
+
+    //DCR attributes
+    public static final String REQUEST_PAYLOAD = "request_payload";
+    public static final String CLIENT_ID = "client_id";
+    public static final String CLIENT_SECRET = "client_secret";
+    public static final String CLIENT_ID_ISSUED_AT = "client_id_issued_at";
 }

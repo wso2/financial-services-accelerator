@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.gateway.util;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -39,6 +41,9 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.gateway.cache.GatewayCacheKey;
+import org.wso2.financial.services.accelerator.gateway.executor.impl.dcr.models.RegistrationRequest;
+import org.wso2.financial.services.accelerator.gateway.executor.impl.dcr.models.RegistrationResponse;
+import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 
 import java.io.IOException;
@@ -48,6 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 
@@ -252,24 +258,70 @@ public class GatewayUtils {
      */
     public static String constructIsDcrPayload(JWTClaimsSet jwtClaimsSet, JSONObject decodedSSA) {
 
-        JSONObject jsonObject = new JSONObject(jwtClaimsSet.getClaims());
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.toJsonTree(jwtClaimsSet.getClaims());
+        RegistrationRequest request = gson.fromJson(jsonElement, RegistrationRequest.class);
 
         // Convert the iat and exp claims into seconds
         if (jwtClaimsSet.getIssueTime() != null) {
-            jsonObject.put(GatewayConstants.IAT, jwtClaimsSet.getIssueTime().getTime() / 1000);
+            request.setIat(jwtClaimsSet.getIssueTime().getTime() / 1000);
         }
         if (jwtClaimsSet.getExpirationTime() != null) {
-            jsonObject.put(GatewayConstants.EXP, jwtClaimsSet.getExpirationTime().getTime() / 1000);
+            request.setExp(jwtClaimsSet.getExpirationTime().getTime() / 1000);
         }
 
-        jsonObject.put(GatewayConstants.CLIENT_NAME, getApplicationName(jwtClaimsSet, decodedSSA));
-        jsonObject.put(GatewayConstants.JWKS_URI, decodedSSA.getString(configs
+        request.setClientName(getApplicationName(jwtClaimsSet, decodedSSA));
+        request.setJwksURI(decodedSSA.getString(configs
                 .get(FinancialServicesConstants.JWKS_ENDPOINT_NAME).toString()));
-        jsonObject.put(GatewayConstants.TOKEN_TYPE, GatewayConstants.JWT);
-        jsonObject.put(GatewayConstants.REQUIRE_SIGNED_OBJ, true);
-        jsonObject.put(GatewayConstants.TLS_CLIENT_CERT_ACCESS_TOKENS, true);
+        request.setTokenType(GatewayConstants.JWT);
+        request.setRequireSignedReqObj(true);
+        request.setTlsClientCertBoundAccessTokens(true);
 
-        return jsonObject.toString();
+        return request.toString();
+    }
+
+    /**
+     * Method to construct DCR response from IS DCR response.
+     *
+     * @param fsapiResponseContext The response context
+     *
+     * @return The JSON string.
+     */
+    public static String constructDCRResponseForCreate(FSAPIResponseContext fsapiResponseContext) {
+
+        String requestPayload = fsapiResponseContext.getContextProperty(GatewayConstants.REQUEST_PAYLOAD).toString();
+        Gson gson = new Gson();
+        RegistrationResponse dcrResponse = gson.fromJson(requestPayload, RegistrationResponse.class);
+
+        String dcrISResponse = fsapiResponseContext.getResponsePayload();
+        JSONObject dcrISResponseObj = new JSONObject(dcrISResponse);
+
+        dcrResponse.setClientId(dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
+        dcrResponse.setClientSecret(dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
+        dcrResponse.setClientIdIssuedAt(Instant.now().getEpochSecond());
+
+        return dcrResponse.toString();
+    }
+
+    /**
+     * Method to construct DCR response from IS DCR response.
+     *
+     * @param fsapiResponseContext The response context
+     *
+     * @return The JSON string.
+     */
+    public static String constructDCRResponseForRetrieval(FSAPIResponseContext fsapiResponseContext) {
+
+        RegistrationResponse dcrResponse = new RegistrationResponse();
+
+        String dcrISResponse = fsapiResponseContext.getResponsePayload();
+        JSONObject dcrISResponseObj = new JSONObject(dcrISResponse);
+
+        dcrResponse.setClientId(dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
+        dcrResponse.setClientSecret(dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
+        dcrResponse.setClientIdIssuedAt(Instant.now().getEpochSecond());
+
+        return dcrResponse.toString();
     }
 
     /**
@@ -294,6 +346,12 @@ public class GatewayUtils {
                 .getString(configs.get(FinancialServicesConstants.SSA_CLIENT_NAME).toString()));
     }
 
+    /**
+     * Modify the application name to match IS conditions.
+     *
+     * @param applicationName  The application name
+     * @return The modified application name
+     */
     public static String getSafeApplicationName(String applicationName) {
 
         if (StringUtils.isEmpty(applicationName)) {

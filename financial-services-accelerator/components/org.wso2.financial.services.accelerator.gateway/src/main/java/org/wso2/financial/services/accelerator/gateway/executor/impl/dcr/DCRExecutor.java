@@ -23,8 +23,10 @@ import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesErrorCodes;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.gateway.executor.core.FinancialServicesGatewayExecutor;
@@ -38,6 +40,8 @@ import org.wso2.financial.services.accelerator.gateway.util.GatewayUtils;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.HttpMethod;
@@ -94,6 +98,8 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
                         }
                         JWTClaimsSet requestClaims = GatewayUtils.validateRequestSignature(payload, decodedSSA);
                         String isDcrPayload = GatewayUtils.constructIsDcrPayload(requestClaims, decodedSSA);
+                        fsapiRequestContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
+                                payload);
 
                         fsapiRequestContext.setModifiedPayload(isDcrPayload);
                         Map<String, String> requestHeaders = fsapiRequestContext.getMsgInfo().getHeaders();
@@ -123,6 +129,33 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
     @Override
     public void postProcessRequest(FSAPIRequestContext fsapiRequestContext) {
 
+        if (fsapiRequestContext.isError()) {
+            return;
+        }
+        String httpMethod = fsapiRequestContext.getMsgInfo().getHttpMethod();
+
+        // For DCR retrieval, update and delete requests, check whether the token is bound to the correct client id
+        if (HttpMethod.GET.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod) ||
+                HttpMethod.DELETE.equals(httpMethod)) {
+
+            String[] contextPathValues = fsapiRequestContext.getMsgInfo().getResource().split("/");
+            String clientIdSentInRequest = "";
+            List paramList = Arrays.asList(contextPathValues);
+            int count = paramList.size();
+            clientIdSentInRequest = paramList.stream().skip(count - 1).findFirst().get().toString();
+            String clientIdBoundToToken = fsapiRequestContext.getApiRequestInfo().getConsumerKey();
+
+            if (!clientIdSentInRequest.equals(clientIdBoundToToken)) {
+                fsapiRequestContext.setError(true);
+                fsapiRequestContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP,
+                        FinancialServicesErrorCodes.UNAUTHORIZED_CODE);
+                Map<String, String> requestHeaders = fsapiRequestContext.getMsgInfo().getHeaders();
+                requestHeaders.remove(GatewayConstants.CONTENT_TYPE_TAG);
+                requestHeaders.remove(GatewayConstants.CONTENT_LENGTH);
+                fsapiRequestContext.getMsgInfo().setHeaders(requestHeaders);
+                return;
+            }
+        }
     }
 
     @Generated(message = "Excluding since nothing implemented")
@@ -131,12 +164,31 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
 
     }
 
-    @Generated(message = "Excluding since nothing implemented")
+//    @Generated(message = "Excluding since nothing implemented")
     @Override
     public void postProcessResponse(FSAPIResponseContext fsapiResponseContext) {
 
         if (fsapiResponseContext.isError()) {
             return;
+        }
+
+        if ((HttpMethod.POST.equals(fsapiResponseContext.getMsgInfo().getHttpMethod()) &&
+                HttpStatus.SC_CREATED == fsapiResponseContext.getStatusCode()) ||
+                (HttpMethod.PUT.equals(fsapiResponseContext.getMsgInfo().getHttpMethod()) &&
+                        HttpStatus.SC_OK == fsapiResponseContext.getStatusCode())) {
+
+            //Constructing OB response payload from IS DCR response
+            String modifiedResponsePayload = GatewayUtils
+                    .constructDCRResponseForCreate(fsapiResponseContext);
+            fsapiResponseContext.setModifiedPayload(modifiedResponsePayload);
+        }
+
+        if (HttpMethod.GET.equals(fsapiResponseContext.getMsgInfo().getHttpMethod()) &&
+                HttpStatus.SC_OK == fsapiResponseContext.getStatusCode()) {
+            //Constructing OB response payload from IS DCR response
+            String modifiedResponsePayload = GatewayUtils
+                    .constructDCRResponseForRetrieval(fsapiResponseContext);
+            fsapiResponseContext.setModifiedPayload(modifiedResponsePayload);
         }
 
     }
