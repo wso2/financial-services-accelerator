@@ -34,9 +34,9 @@
     <name>FS Accelerator Test Modules</name>
 
     <modules>
-        <module>consent-management</module>
-        <module>token</module>
-        <module>gateway-integration</module>
+        <module>keymanager/test/consent-management</module>
+        <module>keymanager/test/token</module>
+        <module>integration/test/accounts</module>
     </modules>
 
     <dependencies>
