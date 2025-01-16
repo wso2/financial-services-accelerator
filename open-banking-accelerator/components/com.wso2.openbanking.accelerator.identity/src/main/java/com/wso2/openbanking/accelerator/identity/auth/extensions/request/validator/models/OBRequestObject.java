@@ -26,6 +26,8 @@ import com.wso2.openbanking.accelerator.common.validator.annotation.RequiredPara
 import com.wso2.openbanking.accelerator.common.validator.annotation.ValidAudience;
 import com.wso2.openbanking.accelerator.common.validator.annotation.ValidScopeFormat;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations.ValidSigningAlgorithm;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.AttributeChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.openidconnect.model.RequestObject;
 import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
@@ -40,13 +42,15 @@ import java.util.Map;
  */
 @RequiredParameters({
         @RequiredParameter(param = "signedJWT",
-                message = "Only Signed JWS is accepted for request object"),
+                message = "Only Signed JWS is accepted for request object", groups = MandatoryChecks.class),
         @RequiredParameter(param = "claimsSet.claims.aud",
-                message = "aud parameter is missing in the request object")
+                message = "aud parameter is missing in the request object", groups = MandatoryChecks.class)
 })
-@ValidScopeFormat(scope = "claimsSet.claims.scope")
-@ValidAudience(audience = "claimsSet.claims.aud", clientId = "claimsSet.claims.client_id")
-@ValidSigningAlgorithm(algorithm = "signedJWT.header.algorithm.name", clientId = "claimsSet.claims.client_id")
+@ValidScopeFormat(scope = "claimsSet.claims.scope", groups = AttributeChecks.class)
+@ValidAudience(audience = "claimsSet.claims.aud", clientId = "claimsSet.claims.client_id",
+        groups = AttributeChecks.class)
+@ValidSigningAlgorithm(algorithm = "signedJWT.header.algorithm.name", clientId = "claimsSet.claims.client_id",
+        groups = AttributeChecks.class)
 public class OBRequestObject<T extends OBRequestObject> extends RequestObject {
 
     // decorator object

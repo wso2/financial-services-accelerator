@@ -22,6 +22,7 @@ import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.FapiRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.OBRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.ValidationResponse;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationorder.ValidationOrder;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
@@ -38,7 +39,8 @@ public class FapiRequestObjectValidator extends DefaultOBRequestObjectValidator 
 
         if (superValidationResponse.isValid()) {
             FapiRequestObject fapiRequestObject = new FapiRequestObject(obRequestObject);
-            String violation = OpenBankingValidator.getInstance().getFirstViolation(fapiRequestObject);
+            String violation = OpenBankingValidator.getInstance().getFirstViolation(fapiRequestObject,
+                    ValidationOrder.class);
 
             if (StringUtils.isEmpty(violation)) {
                 return new ValidationResponse(true);

@@ -87,6 +87,45 @@ public class ReqObjectTestDataProvider {
             "0LE6jCVq_P6YrJvIbpZnMHL1wsgkJQzXoeu8HLN7kgwaYuUQesWIAWrFR26Ca7kcmRCmVqtj4Z2arhF2QQWtKUurrDYKcSxrQwZHRsQ" +
             "Zh76z6dULjhUfz7JQ5JIvtqooAA";
 
+    public static final String VALID_FAPI_REQUEST_OBJ = "eyJraWQiOiJjSVlvLTV6WDRPVFdacEhybW1pWkRWeEFDSk0iLCJhbGciOiJ" +
+            "QUzI1NiJ9.eyJhdWQiOiJodHRwczovL29iaWFtOjk0NDYvb2F1dGgyL3Rva2VuIiwibmJmIjoxNzM2MzE3NDg2LCJzY29wZSI6Im9wZ" +
+            "W5pZCBhY2NvdW50cyIsImNsYWltcyI6eyJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJjNTkyNzRm" +
+            "Yi1lZjRkLTRjNjktYTU0Yi1iM2EyYWU2MzljYjgiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsidmFsdWVzIjpbInVybjpvcGVuYmF" +
+            "ua2luZzpwc2QyOnNjYSIsInVybjpvcGVuYmFua2luZzpwc2QyOmNhIl0sImVzc2VudGlhbCI6dHJ1ZX19fSwiaXNzIjoiZjhaSkZCZz" +
+            "RkbXo4OGdmTFY1SGRDZnFFZnVvYSIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIGlkX3Rva2VuIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6L" +
+            "y9sb2NhbGhvc3QuZW1vYml4LmNvLnVrOjg0NDMvdGVzdC9hL3dzbzJjYXJib24vY2FsbGJhY2siLCJzdGF0ZSI6IkdheTMyTnBSdDAi" +
+            "LCJleHAiOjE3MzYzMTc3ODYsIm5vbmNlIjoiVEtBbXFaSFEwUSIsImNsaWVudF9pZCI6ImY4WkpGQmc0ZG16ODhnZkxWNUhkQ2ZxRWZ" +
+            "1b2EifQ.XFM8Gn3ZMduJGTifix-gulACNBDVEIiHUuNf52JJg1f_5cN6YrpEf8Y3-yumaZwQ4SdQJIUhMH5k9CP48fbezXKWLhIHxSy" +
+            "UEziZF49OY-y_JB8HHtrtD2t3kUogyRlEzJZiQPkvK_VNzvAQuZ7pes4m5yPZp1zE_smF-UlrOhFgm5KB_VNcVDzWa2WkdDiTllk5kl" +
+            "UjQ03yB4CVUlL2Y7pJMfXx6X-OZe81ovh4n-qB_Nksf_zFCV6o0r6RmXg-80-SXkYYVgmK7tqzvTM5J4bWyZ2qJi12egBThMgpZrkAZ" +
+            "LDh4JbfcjB2D8n97ECH_7rr3swniUi9n5pSBuHkaw";
+
+    public static final String FAPI_REQ_OBJ_WITHOUT_CLIENT_ID = "eyJraWQiOiJjSVlvLTV6WDRPVFdacEhybW1pWkRWeEFDSk0iLCJ" +
+            "hbGciOiJQUzI1NiJ9.eyJhdWQiOiJodHRwczovL29iaWFtOjk0NDYvb2F1dGgyL3Rva2VuIiwibmJmIjoxNzM2MzE3NDg2LCJzY29wZ" +
+            "SI6Im9wZW5pZCBhY2NvdW50cyIsImNsYWltcyI6eyJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJj" +
+            "NTkyNzRmYi1lZjRkLTRjNjktYTU0Yi1iM2EyYWU2MzljYjgiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsidmFsdWVzIjpbInVybjp" +
+            "vcGVuYmFua2luZzpwc2QyOnNjYSIsInVybjpvcGVuYmFua2luZzpwc2QyOmNhIl0sImVzc2VudGlhbCI6dHJ1ZX19fSwiaXNzIjoiZj" +
+            "haSkZCZzRkbXo4OGdmTFY1SGRDZnFFZnVvYSIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIGlkX3Rva2VuIiwicmVkaXJlY3RfdXJpIjoia" +
+            "HR0cHM6Ly9sb2NhbGhvc3QuZW1vYml4LmNvLnVrOjg0NDMvdGVzdC9hL3dzbzJjYXJib24vY2FsbGJhY2siLCJzdGF0ZSI6IkdheTMy" +
+            "TnBSdDAiLCJleHAiOjE3MzYzMTc3ODYsIm5vbmNlIjoiVEtBbXFaSFEwUSIsImNsaWVudF9pZCI6IiJ9.L-f1tTGNS_c2qJOunM7Wq7" +
+            "k51Fk9R1rR3xhRqjLjmEeQbv-Rc9MOnpxbWm1wE1_yLB3n9nKaMj9XdbGpFVCJAHrhxJSSMkhcI8RiyuXthaVFX1GymP5yxiSFUBy8G" +
+            "imp34gkhT1rkhaF4wnwR_nRZv-KVccoZYPUF8ez_fKzt5K30dDQKiT1AW7t8yMLzz2K0i7dRMs0m4cZZdHBk_ixPVx0IKlpRlg2YuPh" +
+            "rcFC1TlE4DCJyweebJbxiQbJeCyMvgTqURwigd5wbTanZ_FYyRSFDhkR-8PmpsH2UlytVg5zTxv_jRDqAkI3xcmIHCb6_aaajv6iGDF" +
+            "uyJqy1YvoNg";
+
+    public static final String FAP_REQ_OBJ_WITHOUT_EXP = "eyJraWQiOiJjSVlvLTV6WDRPVFdacEhybW1pWkRWeEFDSk0iLCJhbGciO" +
+            "iJQUzI1NiJ9.eyJhdWQiOiJodHRwczovL29iaWFtOjk0NDYvb2F1dGgyL3Rva2VuIiwibmJmIjoxNzM2MzEzMjQzLCJzY29wZSI6Im" +
+            "9wZW5pZCBhY2NvdW50cyIsImNsYWltcyI6eyJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiIzYThj" +
+            "ZWViYS04ZmJkLTQ2ZDYtOWVhZi0wZjgzNTI5MjRmMDkiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsidmFsdWVzIjpbInVybjpvcG" +
+            "VuYmFua2luZzpwc2QyOnNjYSIsInVybjpvcGVuYmFua2luZzpwc2QyOmNhIl0sImVzc2VudGlhbCI6dHJ1ZX19fSwiaXNzIjoidmpu" +
+            "QzlxX19Ha1BJYmpOU3pwbnNDMGRPa3U4YSIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIGlkX3Rva2VuIiwicmVkaXJlY3RfdXJpIjoiaH" +
+            "R0cHM6Ly9sb2NhbGhvc3QuZW1vYml4LmNvLnVrOjg0NDMvdGVzdC9hL3dzbzJjYXJib24vY2FsbGJhY2siLCJzdGF0ZSI6InN4UUtw" +
+            "ckRNWDEiLCJub25jZSI6IkNNRkVhUlZ6eUkiLCJjbGllbnRfaWQiOiJ2am5DOXFfX0drUEliak5TenBuc0MwZE9rdThhIn0.KchTgE" +
+            "eElHTYpM_1bHTqB-tZQXANSSS7A4zIQ3GYdnN_8MP_RxaCZ17HgQmZ8MxOpvIk2tzdRmo0OODmd21uEciC4j9Isf6vhQEZ1Tlnc0R1" +
+            "jtmEExjiX-OYkogan1_VjW5npdwhumDwN-GPSqutl0vQ8144x2XTXT0HnnkpE1TUT2lMtV019StXWNfgegSJ6Dnn7e8_aAvNPPAopA" +
+            "o9FBYG5nbxfetJRUH6-fbcaSwb4JOMhsb_DLFunYWgzBz1QYFCSOLEbj8zN7dIFEu7IG0ivGll1EkZMC_he99XHiL234RWX-NPI_dx" +
+            "Jpci0Wcn-SOyLwYGDU0ZpQVV48inSQ";
+
 
     @DataProvider(name = "dp-checkValidRequestObject")
     public Object[][] dpCheckValidRequestObject() throws ParseException, RequestObjectException {
