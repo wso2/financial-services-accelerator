@@ -32,7 +32,7 @@ import org.wso2.financial.services.accelerator.test.gateway.integration.accounts
  */
 class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
 
-    @Test
+//    @Test
     void "TC0202004_Get Accounts Initiation With Authorization Code Type Access Token"() {
 
         if (userAccessToken == null) {

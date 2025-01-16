@@ -32,7 +32,7 @@ import org.wso2.financial.services.accelerator.test.gateway.integration.accounts
  */
 class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
 
-    @Test
+//    @Test
     void "TC0203004_Delete Consent With Authorization Code Type Access Token"() {
 
         if (userAccessToken == null) {

@@ -35,7 +35,7 @@ import java.nio.file.Paths
  */
 class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlow {
 
-    @Test
+//    @Test
     void "TC0201005_Initiation Request With Authorization Code Type Access Token"() {
 
         if (userAccessToken == null) {

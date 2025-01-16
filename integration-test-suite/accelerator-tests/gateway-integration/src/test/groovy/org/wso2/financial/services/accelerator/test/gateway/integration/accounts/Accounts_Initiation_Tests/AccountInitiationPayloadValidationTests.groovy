@@ -26,6 +26,7 @@ import org.wso2.financial.services.accelerator.test.framework.constant.RequestPa
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 import org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AbstractAccountsFlow
 import org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountsDataProviders
+import org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountPayloads
 
 /**
  * Account Initiation Payload Validation Tests
