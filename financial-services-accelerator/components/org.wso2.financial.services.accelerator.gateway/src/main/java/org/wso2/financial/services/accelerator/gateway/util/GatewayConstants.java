@@ -67,6 +67,8 @@ public class GatewayConstants {
     public static final String IAT = "iat";
     public static final String EXP = "exp";
     public static final String AUD = "aud";
+    public static final String ISS = "iss";
+    public static final String JTI = "jti";
     public static final String CLIENT_NAME = "client_name";
     public static final String JWKS_URI = "jwks_uri";
     public static final String TOKEN_TYPE = "token_type_extension";
@@ -76,6 +78,15 @@ public class GatewayConstants {
     public static final String JWT = "JWT";
     public static final String SOFTWARE_STATEMENT = "software_statement";
     public static final String SOFTWARE_ID = "software_id";
+    public static final String TOKEN_EP_AUTH_SIG_ALG = "token_endpoint_auth_signing_alg";
+    public static final String GRANT_TYPES = "grant_types";
+    public static final String APP_TYPE = "application_type";
+    public static final String REDIRECT_URIS = "redirect_uris";
+    public static final String TOKEN_EP_AUTH_METHOD = "token_endpoint_auth_method";
+    public static final String SCOPE = "scope";
+    public static final String REQ_OBJ_SIG_ALG = "request_object_signing_alg";
+    public static final String RESPONSE_TYPES = "response_types";
+    public static final String ID_TOKEN_RES_ALG = "id_token_signed_response_alg";
     public static final String DISALLOWED_CHARS_PATTERN = "([~!#$;%^&*+={}\\s\\|\\\\<>\\\"\\'\\/,\\]\\[\\(\\)])";
     public static final String SUBSTITUTE_STRING = "_";
     public static final int ABBREVIATED_STRING_LENGTH = 70;

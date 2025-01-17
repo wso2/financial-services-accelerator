@@ -59,7 +59,8 @@ public class FSExtensionListenerImpl implements ExtensionListener {
         }
 
         if (!fsApiRequestContext.isError()) {
-            setPropertiesToCache(requestContextDTO.getMsgInfo().getMessageId(), fsApiRequestContext.getContextProps());
+            setPropertiesToCache(requestContextDTO.getMsgInfo().getMessageId() +
+                    GatewayConstants.CONTEXT_PROP_CACHE_KEY, fsApiRequestContext.getContextProps());
         }
         return getResponseDTOForRequest(fsApiRequestContext);
     }

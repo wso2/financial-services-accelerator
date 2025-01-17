@@ -18,8 +18,6 @@
 
 package org.wso2.financial.services.accelerator.gateway.util;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -41,8 +39,6 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.gateway.cache.GatewayCacheKey;
-import org.wso2.financial.services.accelerator.gateway.executor.impl.dcr.models.RegistrationRequest;
-import org.wso2.financial.services.accelerator.gateway.executor.impl.dcr.models.RegistrationResponse;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 
@@ -54,7 +50,9 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,6 +62,12 @@ public class GatewayUtils {
 
     private static final Map<String, Object> configs = GatewayDataHolder.getInstance()
             .getFinancialServicesConfigurationService().getConfigurations();
+
+    private static final List<String> dcrResponseParams = Arrays.asList(GatewayConstants.SOFTWARE_STATEMENT,
+            GatewayConstants.SOFTWARE_ID, GatewayConstants.TOKEN_EP_AUTH_SIG_ALG, GatewayConstants.GRANT_TYPES,
+            GatewayConstants.APP_TYPE, GatewayConstants.REDIRECT_URIS, GatewayConstants.TOKEN_EP_AUTH_METHOD,
+            GatewayConstants.SCOPE, GatewayConstants.REQ_OBJ_SIG_ALG, GatewayConstants.RESPONSE_TYPES,
+            GatewayConstants.ID_TOKEN_RES_ALG);
 
     private GatewayUtils() {
 
@@ -258,24 +262,22 @@ public class GatewayUtils {
      */
     public static String constructIsDcrPayload(JWTClaimsSet jwtClaimsSet, JSONObject decodedSSA) {
 
-        Gson gson = new Gson();
-        JsonElement jsonElement = gson.toJsonTree(jwtClaimsSet.getClaims());
-        RegistrationRequest request = gson.fromJson(jsonElement, RegistrationRequest.class);
+        JSONObject request = new JSONObject(jwtClaimsSet.getClaims());
 
         // Convert the iat and exp claims into seconds
         if (jwtClaimsSet.getIssueTime() != null) {
-            request.setIat(jwtClaimsSet.getIssueTime().getTime() / 1000);
+            request.put(GatewayConstants.IAT, jwtClaimsSet.getIssueTime().getTime() / 1000);
         }
         if (jwtClaimsSet.getExpirationTime() != null) {
-            request.setExp(jwtClaimsSet.getExpirationTime().getTime() / 1000);
+            request.put(GatewayConstants.EXP, jwtClaimsSet.getExpirationTime().getTime() / 1000);
         }
 
-        request.setClientName(getApplicationName(jwtClaimsSet, decodedSSA));
-        request.setJwksURI(decodedSSA.getString(configs
+        request.put(GatewayConstants.CLIENT_NAME, getApplicationName(jwtClaimsSet, decodedSSA));
+        request.put(GatewayConstants.JWKS_URI, decodedSSA.getString(configs
                 .get(FinancialServicesConstants.JWKS_ENDPOINT_NAME).toString()));
-        request.setTokenType(GatewayConstants.JWT);
-        request.setRequireSignedReqObj(true);
-        request.setTlsClientCertBoundAccessTokens(true);
+        request.put(GatewayConstants.TOKEN_TYPE, GatewayConstants.JWT);
+        request.put(GatewayConstants.REQUIRE_SIGNED_OBJ, true);
+        request.put(GatewayConstants.TLS_CLIENT_CERT_ACCESS_TOKENS, true);
 
         return request.toString();
     }
@@ -290,15 +292,20 @@ public class GatewayUtils {
     public static String constructDCRResponseForCreate(FSAPIResponseContext fsapiResponseContext) {
 
         String requestPayload = fsapiResponseContext.getContextProperty(GatewayConstants.REQUEST_PAYLOAD).toString();
-        Gson gson = new Gson();
-        RegistrationResponse dcrResponse = gson.fromJson(requestPayload, RegistrationResponse.class);
+        JSONObject dcrResponse = new JSONObject(requestPayload);
+
+        dcrResponse.remove(GatewayConstants.IAT);
+        dcrResponse.remove(GatewayConstants.EXP);
+        dcrResponse.remove(GatewayConstants.AUD);
+        dcrResponse.remove(GatewayConstants.JTI);
+        dcrResponse.remove(GatewayConstants.ISS);
 
         String dcrISResponse = fsapiResponseContext.getResponsePayload();
         JSONObject dcrISResponseObj = new JSONObject(dcrISResponse);
 
-        dcrResponse.setClientId(dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
-        dcrResponse.setClientSecret(dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
-        dcrResponse.setClientIdIssuedAt(Instant.now().getEpochSecond());
+        dcrResponse.put(GatewayConstants.CLIENT_ID, dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
+        dcrResponse.put(GatewayConstants.CLIENT_SECRET, dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
+        dcrResponse.put(GatewayConstants.CLIENT_ID_ISSUED_AT, Instant.now().getEpochSecond());
 
         return dcrResponse.toString();
     }
@@ -312,14 +319,17 @@ public class GatewayUtils {
      */
     public static String constructDCRResponseForRetrieval(FSAPIResponseContext fsapiResponseContext) {
 
-        RegistrationResponse dcrResponse = new RegistrationResponse();
+        JSONObject dcrResponse = new JSONObject();
 
         String dcrISResponse = fsapiResponseContext.getResponsePayload();
         JSONObject dcrISResponseObj = new JSONObject(dcrISResponse);
 
-        dcrResponse.setClientId(dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
-        dcrResponse.setClientSecret(dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
-        dcrResponse.setClientIdIssuedAt(Instant.now().getEpochSecond());
+        dcrResponse.put(GatewayConstants.CLIENT_ID, dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
+        dcrResponse.put(GatewayConstants.CLIENT_SECRET, dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
+
+        dcrResponseParams.stream().filter(dcrISResponseObj::has).forEach(param -> {
+            dcrResponse.put(param, dcrISResponseObj.get(param));
+        });
 
         return dcrResponse.toString();
     }

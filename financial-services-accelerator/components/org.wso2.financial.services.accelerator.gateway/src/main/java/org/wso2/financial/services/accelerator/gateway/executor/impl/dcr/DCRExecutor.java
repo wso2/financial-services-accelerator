@@ -99,7 +99,7 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
                         JWTClaimsSet requestClaims = GatewayUtils.validateRequestSignature(payload, decodedSSA);
                         String isDcrPayload = GatewayUtils.constructIsDcrPayload(requestClaims, decodedSSA);
                         fsapiRequestContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
-                                payload);
+                                String.valueOf(new JSONObject(requestClaims.getClaims())));
 
                         fsapiRequestContext.setModifiedPayload(isDcrPayload);
                         Map<String, String> requestHeaders = fsapiRequestContext.getMsgInfo().getHeaders();
