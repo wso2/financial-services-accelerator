@@ -197,4 +197,48 @@ public class GatewayTestConstants {
             "<soapenv:Body xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
             "<text xmlns=\"http://ws.apache.org/commons/ns/payload\">" + DCR_PAYLOAD + "</text>" +
             "</soapenv:Body>";
+
+    public static final String IS_DCR_RESPONSE = "{\n" +
+            " \"client_id\": \"DdcccB3LXGz0GqAu1jjrv06Swaga\",\n" +
+            " \"client_secret\": \"Ac3T9XUORQWe0NJvRhwrGlnQdRfyoei_HGIIsXwQlTwa\",\n" +
+            " \"client_secret_expires_at\": 0,\n" +
+            " \"redirect_uris\": [\n" +
+            "       \"https://www.google.com/redirects/redirect1\"\n" +
+            " ],\n" +
+            " \"grant_types\": [\n" +
+            "       \"authorization_code\",\n" +
+            "       \"client_credentials\",\n" +
+            "       \"refresh_token\"\n" +
+            " ],\n" +
+            " \"client_name\": \"WSO2 Open Banking TPP1\",\n" +
+            " \"ext_application_display_name\": null,\n" +
+            " \"ext_application_owner\": \"is_admin@wso2.com@carbon.super\",\n" +
+            " \"ext_application_token_lifetime\": 3600,\n" +
+            " \"ext_user_token_lifetime\": 3600,\n" +
+            " \"ext_refresh_token_lifetime\": 86400,\n" +
+            " \"ext_id_token_lifetime\": 3600,\n" +
+            " \"ext_pkce_mandatory\": false,\n" +
+            " \"ext_pkce_support_plain\": false,\n" +
+            " \"ext_public_client\": false,\n" +
+            " \"token_type_extension\": \"JWT\",\n" +
+            " \"ext_token_type\": \"JWT\",\n" +
+            " \"jwks_uri\": \"https://keystore.openbankingtest.org.uk/" +
+            "           0015800001HQQrZAAX/9ZzFFBxSLGEjPZogRAbvFd.jwks\",\n" +
+            " \"token_endpoint_auth_method\": \"private_key_jwt\",\n" +
+            " \"token_endpoint_auth_signing_alg\": \"PS256\",\n" +
+            " \"sector_identifier_uri\": null,\n" +
+            " \"id_token_signed_response_alg\": \"PS256\",\n" +
+            " \"id_token_encrypted_response_alg\": null,\n" +
+            " \"id_token_encrypted_response_enc\": null,\n" +
+            " \"request_object_signing_alg\": \"PS256\",\n" +
+            " \"tls_client_auth_subject_dn\": null,\n" +
+            " \"require_pushed_authorization_requests\": false,\n" +
+            " \"require_signed_request_object\": true,\n" +
+            " \"tls_client_certificate_bound_access_tokens\": true,\n" +
+            " \"subject_type\": \"public\",\n" +
+            " \"request_object_encryption_alg\": null,\n" +
+            " \"request_object_encryption_enc\": null,\n" +
+            " \"software_statement\":" + SSA + ",\n" +
+            " \"ext_allowed_audience\": \"application\" \n" +
+        "}";
 }

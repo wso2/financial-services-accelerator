@@ -146,14 +146,15 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
             String clientIdBoundToToken = fsapiRequestContext.getApiRequestInfo().getConsumerKey();
 
             if (!clientIdSentInRequest.equals(clientIdBoundToToken)) {
-                fsapiRequestContext.setError(true);
                 fsapiRequestContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP,
                         FinancialServicesErrorCodes.UNAUTHORIZED_CODE);
                 Map<String, String> requestHeaders = fsapiRequestContext.getMsgInfo().getHeaders();
                 requestHeaders.remove(GatewayConstants.CONTENT_TYPE_TAG);
                 requestHeaders.remove(GatewayConstants.CONTENT_LENGTH);
                 fsapiRequestContext.getMsgInfo().setHeaders(requestHeaders);
-                return;
+                log.error("Token is not bound to the client id sent in the request");
+                handleUnAuthorizedError(fsapiRequestContext,
+                        "Token is not bound to the client id sent in the request");
             }
         }
     }
@@ -164,7 +165,6 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
 
     }
 
-//    @Generated(message = "Excluding since nothing implemented")
     @Override
     public void postProcessResponse(FSAPIResponseContext fsapiResponseContext) {
 
@@ -198,6 +198,17 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
         //catch errors and set to context
         FSExecutorError error = new FSExecutorError("Bad request",
                 "invalid_client_metadata", message, "400");
+        ArrayList<FSExecutorError> executorErrors = fsapiRequestContext.getErrors();
+        executorErrors.add(error);
+        fsapiRequestContext.setError(true);
+        fsapiRequestContext.setErrors(executorErrors);
+    }
+
+    private void handleUnAuthorizedError(FSAPIRequestContext fsapiRequestContext, String message) {
+
+        //catch errors and set to context
+        FSExecutorError error = new FSExecutorError("Unauthorized",
+                "unauthorized_request", message, "401");
         ArrayList<FSExecutorError> executorErrors = fsapiRequestContext.getErrors();
         executorErrors.add(error);
         fsapiRequestContext.setError(true);

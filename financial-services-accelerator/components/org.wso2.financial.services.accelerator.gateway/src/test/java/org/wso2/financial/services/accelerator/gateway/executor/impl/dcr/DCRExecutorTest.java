@@ -22,6 +22,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.swagger.v3.oas.models.OpenAPI;
+import org.apache.http.HttpStatus;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.testng.Assert;
@@ -31,6 +32,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.common.gateway.dto.APIRequestInfoDTO;
 import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 import org.wso2.carbon.apimgt.common.gateway.dto.RequestContextDTO;
+import org.wso2.carbon.apimgt.common.gateway.dto.ResponseContextDTO;
 import org.wso2.carbon.apimgt.common.gateway.extensionlistener.PayloadHandler;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
@@ -39,6 +41,7 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.gateway.GatewayTestConstants;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIRequestContext;
+import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 import org.wso2.financial.services.accelerator.gateway.util.GatewayConstants;
 import org.wso2.financial.services.accelerator.gateway.util.GatewayUtils;
@@ -101,6 +104,10 @@ public class DCRExecutorTest {
                 .thenReturn("");
         gatewayUtilsMockedStatic.when(() -> GatewayUtils.retrieveOpenAPI(any()))
                 .thenReturn(new OpenAPI());
+        gatewayUtilsMockedStatic.when(() -> GatewayUtils.constructDCRResponseForCreate(any()))
+                .thenReturn(GatewayTestConstants.IS_DCR_RESPONSE);
+        gatewayUtilsMockedStatic.when(() -> GatewayUtils.constructDCRResponseForRetrieval(any()))
+                .thenReturn(GatewayTestConstants.IS_DCR_RESPONSE);
 
     }
 
@@ -423,5 +430,126 @@ public class DCRExecutorTest {
         dcrExecutor.preProcessRequest(fsapiRequestContext);
         Assert.assertNotNull(fsapiRequestContext.getErrors());
         Assert.assertFalse(fsapiRequestContext.getErrors().isEmpty());
+    }
+
+    @Test
+    public void testPostProcessResponseForCreate() {
+
+        dcrExecutor = Mockito.spy(DCRExecutor.class);
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+
+        PayloadHandler payloadHandler = new PayloadHandler() {
+            @Override
+            public String consumeAsString() throws Exception {
+                return GatewayTestConstants.IS_DCR_RESPONSE;
+            }
+
+            @Override
+            public InputStream consumeAsStream() throws Exception {
+                return null;
+            }
+        };
+
+        MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
+        msgInfoDTO.setHttpMethod(HttpMethod.POST);
+        msgInfoDTO.setHeaders(headers);
+        msgInfoDTO.setPayloadHandler(payloadHandler);
+
+        APIRequestInfoDTO apiRequestInfoDTO = new APIRequestInfoDTO();
+        apiRequestInfoDTO.setApiId("1234");
+
+        ResponseContextDTO responseContextDTO = new ResponseContextDTO();
+        responseContextDTO.setMsgInfo(msgInfoDTO);
+        responseContextDTO.setApiRequestInfo(apiRequestInfoDTO);
+        responseContextDTO.setStatusCode(HttpStatus.SC_CREATED);
+
+        FSAPIResponseContext fsapiResponseContext = new FSAPIResponseContext(responseContextDTO, new HashMap<>());
+        fsapiResponseContext.setStatusCode(HttpStatus.SC_CREATED);
+        fsapiResponseContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
+                GatewayTestConstants.DECODED_DCR_PAYLOAD);
+
+        dcrExecutor.postProcessResponse(fsapiResponseContext);
+    }
+
+    @Test
+    public void testPostProcessResponseForUpdate() {
+
+        dcrExecutor = Mockito.spy(DCRExecutor.class);
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+
+        PayloadHandler payloadHandler = new PayloadHandler() {
+            @Override
+            public String consumeAsString() throws Exception {
+                return GatewayTestConstants.IS_DCR_RESPONSE;
+            }
+
+            @Override
+            public InputStream consumeAsStream() throws Exception {
+                return null;
+            }
+        };
+
+        MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
+        msgInfoDTO.setHttpMethod(HttpMethod.PUT);
+        msgInfoDTO.setHeaders(headers);
+        msgInfoDTO.setPayloadHandler(payloadHandler);
+
+        APIRequestInfoDTO apiRequestInfoDTO = new APIRequestInfoDTO();
+        apiRequestInfoDTO.setApiId("1234");
+
+        ResponseContextDTO responseContextDTO = new ResponseContextDTO();
+        responseContextDTO.setMsgInfo(msgInfoDTO);
+        responseContextDTO.setApiRequestInfo(apiRequestInfoDTO);
+        responseContextDTO.setStatusCode(HttpStatus.SC_OK);
+
+        FSAPIResponseContext fsapiResponseContext = new FSAPIResponseContext(responseContextDTO, new HashMap<>());
+        fsapiResponseContext.setStatusCode(HttpStatus.SC_CREATED);
+        fsapiResponseContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
+                GatewayTestConstants.DECODED_DCR_PAYLOAD);
+
+        dcrExecutor.postProcessResponse(fsapiResponseContext);
+    }
+
+    @Test
+    public void testPostProcessResponseForRetrieval() {
+
+        dcrExecutor = Mockito.spy(DCRExecutor.class);
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+
+        PayloadHandler payloadHandler = new PayloadHandler() {
+            @Override
+            public String consumeAsString() throws Exception {
+                return GatewayTestConstants.IS_DCR_RESPONSE;
+            }
+
+            @Override
+            public InputStream consumeAsStream() throws Exception {
+                return null;
+            }
+        };
+
+        MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
+        msgInfoDTO.setHttpMethod(HttpMethod.GET);
+        msgInfoDTO.setHeaders(headers);
+        msgInfoDTO.setPayloadHandler(payloadHandler);
+
+        APIRequestInfoDTO apiRequestInfoDTO = new APIRequestInfoDTO();
+        apiRequestInfoDTO.setApiId("1234");
+
+        ResponseContextDTO responseContextDTO = new ResponseContextDTO();
+        responseContextDTO.setMsgInfo(msgInfoDTO);
+        responseContextDTO.setApiRequestInfo(apiRequestInfoDTO);
+        responseContextDTO.setStatusCode(HttpStatus.SC_OK);
+
+        FSAPIResponseContext fsapiResponseContext = new FSAPIResponseContext(responseContextDTO, new HashMap<>());
+        fsapiResponseContext.setStatusCode(HttpStatus.SC_CREATED);
+        fsapiResponseContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
+                GatewayTestConstants.DECODED_DCR_PAYLOAD);
+
+        dcrExecutor.postProcessResponse(fsapiResponseContext);
+        Assert.assertNotNull(fsapiResponseContext.getModifiedPayload());
     }
 }

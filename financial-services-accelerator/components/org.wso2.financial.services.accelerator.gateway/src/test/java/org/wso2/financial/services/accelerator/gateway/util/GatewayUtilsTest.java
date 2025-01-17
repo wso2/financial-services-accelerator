@@ -19,21 +19,30 @@
 package org.wso2.financial.services.accelerator.gateway.util;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.apimgt.common.gateway.dto.APIRequestInfoDTO;
+import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
+import org.wso2.carbon.apimgt.common.gateway.dto.ResponseContextDTO;
+import org.wso2.carbon.apimgt.common.gateway.extensionlistener.PayloadHandler;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.gateway.GatewayTestConstants;
+import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.ws.rs.HttpMethod;
 
 /**
  * Test class for Gateway utility methods.
@@ -190,5 +199,85 @@ public class GatewayUtilsTest {
         String appName = GatewayUtils.getSafeApplicationName("WSO2 Open Banking TPP2 (Sandbox)");
         Assert.assertNotNull(appName);
         Assert.assertEquals(appName, "WSO2_Open_Banking_TPP2__Sandbox_");
+    }
+
+    @Test
+    public void testConstructDCRResponseForCreate() {
+
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+
+        PayloadHandler payloadHandler = new PayloadHandler() {
+            @Override
+            public String consumeAsString() throws Exception {
+                return GatewayTestConstants.IS_DCR_RESPONSE;
+            }
+
+            @Override
+            public InputStream consumeAsStream() throws Exception {
+                return null;
+            }
+        };
+
+        MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
+        msgInfoDTO.setHttpMethod(HttpMethod.PUT);
+        msgInfoDTO.setHeaders(headers);
+        msgInfoDTO.setPayloadHandler(payloadHandler);
+
+        APIRequestInfoDTO apiRequestInfoDTO = new APIRequestInfoDTO();
+        apiRequestInfoDTO.setApiId("1234");
+
+        ResponseContextDTO responseContextDTO = new ResponseContextDTO();
+        responseContextDTO.setMsgInfo(msgInfoDTO);
+        responseContextDTO.setApiRequestInfo(apiRequestInfoDTO);
+        responseContextDTO.setStatusCode(HttpStatus.SC_OK);
+
+        FSAPIResponseContext fsapiResponseContext = new FSAPIResponseContext(responseContextDTO, new HashMap<>());
+        fsapiResponseContext.setStatusCode(HttpStatus.SC_CREATED);
+        fsapiResponseContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
+                GatewayTestConstants.DECODED_DCR_PAYLOAD);
+
+        String payload = GatewayUtils.constructDCRResponseForCreate(fsapiResponseContext);
+        Assert.assertNotNull(payload);
+    }
+
+    @Test
+    public void testConstructDCRResponseForRetrieval() {
+
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+
+        PayloadHandler payloadHandler = new PayloadHandler() {
+            @Override
+            public String consumeAsString() throws Exception {
+                return GatewayTestConstants.IS_DCR_RESPONSE;
+            }
+
+            @Override
+            public InputStream consumeAsStream() throws Exception {
+                return null;
+            }
+        };
+
+        MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
+        msgInfoDTO.setHttpMethod(HttpMethod.PUT);
+        msgInfoDTO.setHeaders(headers);
+        msgInfoDTO.setPayloadHandler(payloadHandler);
+
+        APIRequestInfoDTO apiRequestInfoDTO = new APIRequestInfoDTO();
+        apiRequestInfoDTO.setApiId("1234");
+
+        ResponseContextDTO responseContextDTO = new ResponseContextDTO();
+        responseContextDTO.setMsgInfo(msgInfoDTO);
+        responseContextDTO.setApiRequestInfo(apiRequestInfoDTO);
+        responseContextDTO.setStatusCode(HttpStatus.SC_OK);
+
+        FSAPIResponseContext fsapiResponseContext = new FSAPIResponseContext(responseContextDTO, new HashMap<>());
+        fsapiResponseContext.setStatusCode(HttpStatus.SC_CREATED);
+        fsapiResponseContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
+                GatewayTestConstants.DECODED_DCR_PAYLOAD);
+
+        String payload = GatewayUtils.constructDCRResponseForRetrieval(fsapiResponseContext);
+        Assert.assertNotNull(payload);
     }
 }
