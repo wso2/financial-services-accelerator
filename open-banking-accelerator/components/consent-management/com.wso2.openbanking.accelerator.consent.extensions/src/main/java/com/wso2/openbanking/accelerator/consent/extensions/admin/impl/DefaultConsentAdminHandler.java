@@ -53,6 +53,14 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     private static final Log log = LogFactory.getLog(DefaultConsentAdminHandler.class);
     private static final String AUTHORISED = "authorised";
     private static final String FETCH_FROM_RETENTION_DB_QUERY_PARAM = "fetchFromRetentionDatabase";
+    public static final String ACCOUNT_IDS_QUERY_PARAM_NAME = "accountIDs";
+    public static final String ACCOUNT_ID = "accountId";
+    public static final String DATA = "data";
+    public static final String TOTAL = "total";
+    public static final String COUNT = "count";
+    public static final String METADATA = "metadata";
+    public static final String CONSENT_MAPPING_RESOURCES = "consentMappingResources";
+
 
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
@@ -135,7 +143,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             for (DetailedConsentResource result : results) {
                 searchResults.add(ConsentExtensionUtils.detailedConsentToJSON(result));
             }
-            response.appendField("data", searchResults);
+            response.appendField(DATA, searchResults);
             count = searchResults.size();
             total = results.size();
         } catch (ConsentManagementException e) {
@@ -155,14 +163,46 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         }
 
         JSONObject metadata = new JSONObject();
-        metadata.appendField("count", count);
+        metadata.appendField(COUNT, count);
         metadata.appendField("offset", offset);
         metadata.appendField("limit", limit);
-        metadata.appendField("total", total);
+        metadata.appendField(TOTAL, total);
 
-        response.appendField("metadata", metadata);
+        response.appendField(METADATA, metadata);
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
+
+        // Filter consent data based on the accounts if accounts are available in the query params.
+        if (consentAdminData.getQueryParams().containsKey(ACCOUNT_IDS_QUERY_PARAM_NAME)) {
+            filterConsentsByAccount(consentAdminData);
+        }
+    }
+
+    /**
+     * Filter the consent data based on the accounts.
+     * @param consentAdminData Consent admin data.
+     */
+    public void filterConsentsByAccount(ConsentAdminData consentAdminData) {
+
+        ArrayList accounts = ((ArrayList) consentAdminData.getQueryParams().get(ACCOUNT_IDS_QUERY_PARAM_NAME));
+        if (accounts.size() > 0) {
+            JSONArray filteredConsentData = new JSONArray();
+            for (Object consentObj : (JSONArray) consentAdminData.getResponsePayload().get(DATA)) {
+                JSONObject consent = (JSONObject) consentObj;
+                JSONArray consentMappingResources = (JSONArray) consent.get(CONSENT_MAPPING_RESOURCES);
+                for (Object consentMappingResource : consentMappingResources) {
+                    JSONObject consentMappingResourceObject = (JSONObject) consentMappingResource;
+                    if (accounts.contains(consentMappingResourceObject.get(ACCOUNT_ID))) {
+                        filteredConsentData.add(consent);
+                        break;
+                    }
+                }
+            }
+            JSONObject responseMetadata = (JSONObject) consentAdminData.getResponsePayload().get(METADATA);
+            responseMetadata.put(TOTAL, filteredConsentData.size());
+            responseMetadata.put(COUNT, filteredConsentData.size());
+            consentAdminData.getResponsePayload().put(DATA, filteredConsentData);
+        }
     }
 
     private String validateAndGetQueryParam(Map queryParams, String key) {
@@ -262,7 +302,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         JSONObject metadata = new JSONObject();
         metadata.appendField("amendmentCount", count);
-        response.appendField("metadata", metadata);
+        response.appendField(METADATA, metadata);
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
     }
@@ -351,7 +391,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 statusAuditRecordJSON.appendField("previousStatus", statusAuditRecord.getPreviousStatus());
                 consentAuditRecords.add(statusAuditRecordJSON);
             }
-            response.appendField("data", consentAuditRecords);
+            response.appendField(DATA, consentAuditRecords);
             count = consentAuditRecords.size();
             total = results.size();
         } catch (ConsentManagementException e) {
@@ -372,11 +412,11 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         }
 
         JSONObject metadata = new JSONObject();
-        metadata.appendField("count", count);
+        metadata.appendField(COUNT, count);
         metadata.appendField("offset", offset);
         metadata.appendField("limit", limit);
-        metadata.appendField("total", total);
-        response.appendField("metadata", metadata);
+        metadata.appendField(TOTAL, total);
+        response.appendField(METADATA, metadata);
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
     }
