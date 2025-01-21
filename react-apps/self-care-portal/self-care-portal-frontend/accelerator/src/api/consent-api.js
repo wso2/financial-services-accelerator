@@ -110,6 +110,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
         "offset",
         "limit",
         "consentIDs",
+        "accountIDs",
         "userIDs",
         "clientIDs",
         "consentStatuses",

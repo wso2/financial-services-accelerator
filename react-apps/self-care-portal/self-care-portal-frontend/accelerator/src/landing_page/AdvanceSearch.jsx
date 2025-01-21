@@ -53,6 +53,7 @@ export const AdvanceSearch = () => {
     const [searchOffset, setSearchOffset] = useState(0);
     const [softwareId, setSoftwareId] = useState("");
     const [consentId, setConsentId] = useState("");
+    const [accountId, setAccountId] = useState("");
     const [dateRange, setDateRange] = useState("");
     const [searchUser, setSearchUser] = useState("");
     const [dateState, setDateState] = useState([
@@ -68,6 +69,7 @@ export const AdvanceSearch = () => {
         setSearchOffset(searchObj.offset);
         setDateRange(searchObj.dateRange);
         setConsentId(searchObj.consentIDs);
+        setAccountId(searchObj.accountIDs);
         setSearchUser(searchObj.userIDs);
         setSoftwareId(searchObj.clientIDs);
         setAdvanceSearchVisibility(!searchObj.hideAdvanceSearchOptions)
@@ -132,7 +134,7 @@ export const AdvanceSearch = () => {
                     </Col>
 
                     <Col>
-                        {/* Account Id */}
+                        {/* Consent Id */}
                         <input
                             type="text"
                             className="inputBox"
@@ -143,6 +145,20 @@ export const AdvanceSearch = () => {
                                 setConsentId(e.target.value);
                             }}
                             // onKeyDown={handleKeyDown}
+                        ></input>
+                    </Col>
+
+                    <Col>
+                        {/* Account Id */}
+                        <input
+                            type="text"
+                            className="inputBox"
+                            id="inputSearchAccount"
+                            placeholder="Account Id"
+                            value={accountId}
+                            onChange={(e) => {
+                                setAccountId(e.target.value);
+                            }}
                         ></input>
                     </Col>
 
@@ -232,6 +248,7 @@ export const AdvanceSearch = () => {
                                     offset: 0,
                                     dateRange: dateRange,
                                     consentIDs: consentId,
+                                    accountIDs: accountId,
                                     userIDs: modifiedSearchUser,
                                     clientIDs: softwareId,
                                 }
@@ -254,6 +271,7 @@ export const AdvanceSearch = () => {
                                     offset: 0,
                                     dateRange: "",
                                     consentIDs: "",
+                                    accountIDs: "",
                                     userIDs: "",
                                     clientIDs: "",
                                 }
