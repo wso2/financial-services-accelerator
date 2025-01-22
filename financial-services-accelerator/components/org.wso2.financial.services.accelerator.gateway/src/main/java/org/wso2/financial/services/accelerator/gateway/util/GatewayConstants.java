@@ -75,6 +75,7 @@ public class GatewayConstants {
     public static final String APP_OWNER = "ext_application_owner";
     public static final String REQUIRE_SIGNED_OBJ = "require_signed_request_object";
     public static final String TLS_CLIENT_CERT_ACCESS_TOKENS = "tls_client_certificate_bound_access_tokens";
+    public static final String APP_DISPLAY_NAME = "ext_application_display_name";
     public static final String JWT = "JWT";
     public static final String SOFTWARE_STATEMENT = "software_statement";
     public static final String SOFTWARE_ID = "software_id";

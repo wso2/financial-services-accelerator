@@ -271,12 +271,16 @@ public class GatewayUtils {
         if (jwtClaimsSet.getExpirationTime() != null) {
             request.put(GatewayConstants.EXP, jwtClaimsSet.getExpirationTime().getTime() / 1000);
         }
+        String appName =  getApplicationName(jwtClaimsSet, decodedSSA);
 
-        request.put(GatewayConstants.CLIENT_NAME, getApplicationName(jwtClaimsSet, decodedSSA));
+        request.put(GatewayConstants.CLIENT_NAME, appName);
         request.put(GatewayConstants.JWKS_URI, decodedSSA.getString(configs
                 .get(FinancialServicesConstants.JWKS_ENDPOINT_NAME).toString()));
         request.put(GatewayConstants.TOKEN_TYPE, GatewayConstants.JWT);
         request.put(GatewayConstants.REQUIRE_SIGNED_OBJ, true);
+        request.put(GatewayConstants.TLS_CLIENT_CERT_ACCESS_TOKENS, true);
+        request.put(GatewayConstants.APP_DISPLAY_NAME, getSafeApplicationName(decodedSSA
+                .getString(configs.get(FinancialServicesConstants.SSA_CLIENT_NAME).toString())));
         request.put(GatewayConstants.TLS_CLIENT_CERT_ACCESS_TOKENS, true);
 
         return request.toString();
