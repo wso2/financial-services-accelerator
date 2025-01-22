@@ -22,20 +22,23 @@ import com.wso2.openbanking.accelerator.common.validator.annotation.RequiredPara
 import com.wso2.openbanking.accelerator.common.validator.annotation.RequiredParameters;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations.ValidExpiration;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.annotations.ValidNbfExpClaims;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.AttributeChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
 
 /**
  * Model class for FAPI request object.
  */
 @RequiredParameters({
         @RequiredParameter(param = "claimsSet.claims.redirect_uri",
-                message = "Mandatory parameter redirect_uri, not found in the request"),
+                message = "Mandatory parameter redirect_uri, not found in the request", groups = MandatoryChecks.class),
         @RequiredParameter(param = "claimsSet.claims.nonce",
-                message = "nonce parameter is missing in the request object"),
+                message = "nonce parameter is missing in the request object", groups = MandatoryChecks.class),
         @RequiredParameter(param = "claimsSet.claims.exp",
-                message = "exp parameter is missing in the request object")
+                message = "exp parameter is missing in the request object", groups = MandatoryChecks.class)
 })
-@ValidExpiration(expiration = "claimsSet.claims.exp")
-@ValidNbfExpClaims(notBefore = "claimsSet.claims.nbf", expiration = "claimsSet.claims.exp")
+@ValidExpiration(expiration = "claimsSet.claims.exp", groups = AttributeChecks.class)
+@ValidNbfExpClaims(notBefore = "claimsSet.claims.nbf", expiration = "claimsSet.claims.exp",
+        groups = AttributeChecks.class)
 public class FapiRequestObject extends OBRequestObject {
 
     private static final long serialVersionUID = -83973857804232423L;

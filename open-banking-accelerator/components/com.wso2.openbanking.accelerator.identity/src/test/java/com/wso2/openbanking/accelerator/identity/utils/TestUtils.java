@@ -22,6 +22,7 @@ import com.nimbusds.jose.JOSEObject;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
+import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.FapiRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.OBRequestObject;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.openidconnect.model.RequestObject;
@@ -50,6 +51,20 @@ public class TestUtils {
             requestObject.setSignedJWT(SignedJWT.parse(request));
         }
         return new OBRequestObject<>(requestObject);
+    }
+
+    /**
+     * Get FAPI request object.
+     *
+     * @param request request
+     * @return FapiRequestObject
+     * @throws ParseException
+     * @throws RequestObjectException
+     */
+    public static FapiRequestObject getFapiRequestObject(String request) throws ParseException,
+            RequestObjectException {
+        OBRequestObject<?> requestObject = getObRequestObject(request);
+        return new FapiRequestObject(requestObject);
     }
 
 }

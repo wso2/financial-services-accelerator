@@ -22,7 +22,7 @@ import com.wso2.openbanking.accelerator.common.exception.ConsentManagementExcept
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.OBRequestObject;
+import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.FapiRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.ValidationResponse;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.identity.utils.TestUtils;
@@ -74,7 +74,8 @@ public class FapiRequestObjectValidatorTest extends PowerMockTestCase {
         doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
 
         OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
-        doReturn("").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject());
+        doReturn("").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject(),
+                Mockito.anyObject());
 
         PowerMockito.mockStatic(OpenBankingValidator.class);
         PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
@@ -82,7 +83,8 @@ public class FapiRequestObjectValidatorTest extends PowerMockTestCase {
         // act
         FapiRequestObjectValidator uut = new FapiRequestObjectValidator();
 
-        OBRequestObject<?> obRequestObject = TestUtils.getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
+        FapiRequestObject obRequestObject = TestUtils
+                .getFapiRequestObject(ReqObjectTestDataProvider.VALID_FAPI_REQUEST_OBJ);
         ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
 
         // assert
@@ -98,7 +100,8 @@ public class FapiRequestObjectValidatorTest extends PowerMockTestCase {
         doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
 
         OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
-        doReturn("dummy-error").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject());
+        doReturn("dummy-error").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject(),
+                Mockito.anyObject());
 
         PowerMockito.mockStatic(OpenBankingValidator.class);
         PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
@@ -106,8 +109,34 @@ public class FapiRequestObjectValidatorTest extends PowerMockTestCase {
         // act
         FapiRequestObjectValidator uut = new FapiRequestObjectValidator();
 
-        OBRequestObject<?> obRequestObject = TestUtils
-                .getObRequestObject(ReqObjectTestDataProvider.NO_CLIENT_ID_REQUEST);
+        FapiRequestObject obRequestObject = TestUtils
+                .getFapiRequestObject(ReqObjectTestDataProvider.FAPI_REQ_OBJ_WITHOUT_CLIENT_ID);
+        ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
+
+        // assert
+        Assert.assertFalse(validationResponse.isValid());
+    }
+
+    @Test
+    public void testValidateOBConstraintsWithoutExpInRequestObject() throws Exception {
+        // mock
+        DetailedConsentResource consentResourceMock = mock(DetailedConsentResource.class);
+        doReturn(CLIENT_ID_1).when(consentResourceMock).getClientID();
+
+        doReturn(consentResourceMock).when(consentCoreServiceMock).getDetailedConsent(anyString());
+
+        OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
+        doReturn("dummy-error").when(openBankingValidatorMock).getFirstViolation(Mockito.anyObject(),
+                Mockito.anyObject());
+
+        PowerMockito.mockStatic(OpenBankingValidator.class);
+        PowerMockito.when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
+
+        // act
+        FapiRequestObjectValidator uut = new FapiRequestObjectValidator();
+
+        FapiRequestObject obRequestObject = TestUtils
+                .getFapiRequestObject(ReqObjectTestDataProvider.FAP_REQ_OBJ_WITHOUT_EXP);
         ValidationResponse validationResponse = uut.validateOBConstraints(obRequestObject, Collections.emptyMap());
 
         // assert

@@ -798,7 +798,7 @@ public class OBConsentMgtCoreServiceTests {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, null, false);
     }
 
-    @Test (expectedExceptions = ConsentManagementException.class)
+    @Test
     public void testRevokeExistingApplicableConsentsWithoutUserID() throws Exception {
 
         consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,

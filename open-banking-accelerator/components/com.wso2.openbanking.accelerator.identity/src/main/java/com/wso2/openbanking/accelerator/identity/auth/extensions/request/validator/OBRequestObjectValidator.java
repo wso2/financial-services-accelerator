@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.identity.auth.extensions.request.valida
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.OBRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.ValidationResponse;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationorder.ValidationOrder;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
@@ -39,7 +40,7 @@ public class OBRequestObjectValidator {
      */
     public ValidationResponse validateOBConstraints(OBRequestObject obRequestObject, Map<String, Object> dataMap) {
 
-        String violation = OpenBankingValidator.getInstance().getFirstViolation(obRequestObject);
+        String violation = OpenBankingValidator.getInstance().getFirstViolation(obRequestObject, ValidationOrder.class);
 
         if (StringUtils.isEmpty(violation)) {
             return new ValidationResponse(true);
