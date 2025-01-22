@@ -62,7 +62,7 @@ const ConsentContextProvider = (props) => {
         setContextConsentsRequestLoadingStatus(true)
         getConsentsFromAPI(user,consentTypes)
             .then((response)=>{
-                setContextConsents(response.data)
+                setContextConsents(getModifiedConsentData(response.data))
                 setContextConsentsMetadata(response.data)
             })
             .catch((error)=>{
@@ -75,8 +75,8 @@ const ConsentContextProvider = (props) => {
         setContextConsentsRequestLoadingStatus(true)
         getConsentsFromAPIForSearch(searchObj,user,appInfo)
             .then((response)=>{
-                setContextConsents(response.data)
-                setContextConsentsMetadata(getModifiedConsentData(response.data))
+                setContextConsents(getModifiedConsentData(response.data))
+                setContextConsentsMetadata(response.data)
             })
             .catch((error)=>{
                 setResponseError(error.response.data)
