@@ -39,7 +39,9 @@ import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolde
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.HttpMethod;
@@ -63,6 +65,9 @@ public class GatewayUtilsTest {
                 "org.wso2.financial.services.accelerator.gateway.executor.core.DefaultRequestRouter");
         configs.put(FinancialServicesConstants.SSA_CLIENT_NAME, "software_client_name");
 
+        List<String> responseParams = new ArrayList<>();
+        responseParams.add("client_id");
+
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfiguration.getFirstProperty(Mockito.anyString())).thenReturn("admin");
         APIManagerConfigurationService apimConfigurationService = Mockito.mock(APIManagerConfigurationService.class);
@@ -72,6 +77,7 @@ public class GatewayUtilsTest {
         FinancialServicesConfigurationService financialServicesConfigurationService =
                 Mockito.mock(FinancialServicesConfigurationService.class);
         Mockito.when(financialServicesConfigurationService.getConfigurations()).thenReturn(configs);
+        Mockito.when(financialServicesConfigurationService.getDCRResponseParameters()).thenReturn(responseParams);
         dataHolder.setFinancialServicesConfigurationService(financialServicesConfigurationService);
     }
     @Test

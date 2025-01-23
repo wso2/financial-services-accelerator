@@ -35,7 +35,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.wso2.carbon.apimgt.common.gateway.dto.RequestContextDTO;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
@@ -68,8 +67,8 @@ public class GatewayUtils {
 
     private static final List<String> dcrListAttributes = Arrays.asList(GatewayConstants.GRANT_TYPES,
             GatewayConstants.REDIRECT_URIS, GatewayConstants.RESPONSE_TYPES);
-    private static final List<String> dcrResponseParams = FinancialServicesConfigParser.getInstance()
-            .getDCRResponseParameters();
+    private static final List<String> dcrResponseParams = GatewayDataHolder.getInstance()
+            .getFinancialServicesConfigurationService().getDCRResponseParameters();
 
     private GatewayUtils() {
 

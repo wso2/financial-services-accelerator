@@ -293,4 +293,18 @@ public class FSConfigParserTests {
                 .getRealtimeEventNotificationRequestGenerator());
     }
 
+    @Test(priority = 39)
+    public void testGetDCRParamsConfig() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getDCRParamsConfig());
+    }
+
+    @Test(priority = 40)
+    public void testGetDCRResponseParameters() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getDCRResponseParameters());
+    }
+
 }
