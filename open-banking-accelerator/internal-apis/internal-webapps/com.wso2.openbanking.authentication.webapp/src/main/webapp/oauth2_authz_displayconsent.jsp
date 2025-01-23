@@ -19,6 +19,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
@@ -26,14 +27,14 @@
 <jsp:include page="includes/consent_top.jsp"/>
 
 <%
-    String sessionDataKeyConsent = request.getParameter("sessionDataKeyConsent");
-    String accounts = request.getParameter("accountsArry[]");
-    String accounNames = request.getParameter("accNames");
-    String appName = request.getParameter("app");
-    String consentId = request.getParameter("id");
-    String userName = request.getParameter("user");
-    String[] accountList = accounNames.split(":");
-    String consentExpiryDate = request.getParameter("consent-expiry-date");
+    String sessionDataKeyConsent = Encode.forHtmlContent(request.getParameter("sessionDataKeyConsent"));
+    String accounts = Encode.forHtmlContent(request.getParameter("accountsArry[]"));
+    String accountNames = Encode.forHtmlContent(request.getParameter("accNames"));
+    String appName = Encode.forHtmlContent(request.getParameter("app"));
+    String consentId = Encode.forHtmlContent(request.getParameter("id"));
+    String userName = Encode.forHtmlContent(request.getParameter("user"));
+    String[] accountList = accountNames.split(":");
+    String consentExpiryDate = Encode.forHtmlContent(request.getParameter("consent-expiry-date"));
     String consentExpiry = consentExpiryDate.split("T")[0];
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     LocalDateTime now = LocalDateTime.now();
