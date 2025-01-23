@@ -21,19 +21,15 @@ package org.wso2.financial.services.accelerator.common.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 
 /**
  * Financial Services common utility class.
@@ -80,35 +76,6 @@ public class FinancialServicesUtils {
             // Throwing a runtime exception since we cannot proceed with invalid objects
             throw new FinancialServicesRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
-    }
-
-    /**
-     * Extract software_environment (SANDBOX or PRODUCTION) from SSA.
-     *
-     * @param softwareStatement software statement (jwt) extracted from request
-     *                          payload
-     * @return software_environment
-     * @throws ParseException if an error occurs while parsing the software
-     *                        statement
-     */
-    public static String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
-
-        if (StringUtils.isEmpty(softwareStatement)) {
-            return FinancialServicesConstants.PRODUCTION;
-        }
-
-        String decodedSSA = JWTUtils.decodeRequestJWT(softwareStatement, FinancialServicesConstants.JWT_BODY);
-        final JSONObject softwareStatementBody = new JSONObject(decodedSSA);
-        // Retrieve the SSA property name used for software environment identification
-        final String sandboxEnvIdentificationPropertyName = FinancialServicesConfigParser.getInstance()
-                .getSoftwareEnvIdentificationSSAPropertyName();
-        // Retrieve the expected value for the sandbox environment
-        final String sandboxEnvIdentificationValue = FinancialServicesConfigParser.getInstance()
-                .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
-        return sandboxEnvIdentificationValue.equals(softwareStatementBody
-                .getString(sandboxEnvIdentificationPropertyName))
-                        ? FinancialServicesConstants.SANDBOX
-                        : FinancialServicesConstants.PRODUCTION;
     }
 
     /**

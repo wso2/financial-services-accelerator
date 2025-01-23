@@ -33,10 +33,6 @@ public class FinancialServicesConstants {
     public static final String COMMON_IDENTITY_CACHE_MODIFY_EXPIRY = "Common.Identity.Cache.CacheModifiedExpiry";
     public static final String JWKS_CONNECTION_TIMEOUT = "JWKS-Retriever.ConnectionTimeout";
     public static final String JWKS_READ_TIMEOUT = "JWKS-Retriever.ReadTimeout";
-    public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_PROPERTY_NAME =
-            "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyName";
-    public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX =
-            "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyValueForSandbox";
     public static final String JDBC_PERSISTENCE_CONFIG = "JDBCPersistenceManager.DataSource.Name";
     public static final String DB_CONNECTION_VERIFICATION_TIMEOUT =
             "JDBCPersistenceManager.ConnectionVerificationTimeout";
@@ -69,6 +65,19 @@ public class FinancialServicesConstants {
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
     public static final String REMOVE_TENANT_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveTenantDomainFromSubject";
+    public static final String APP_REGISTRATION_TAG = "AppRegistration";
+    public static final String DCR_TAG = "DCR";
+    public static final String DCR_PARAMS_TAG = "Params";
+    public static final String DCR_PARAM_TAG = "Param";
+    public static final String DCR_PARAM_ALLOWED_VALUE_TAG = "AllowedValues";
+    public static final String DCR_PARAM_NAME_TAG = "Name";
+    public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
+    public static final String DCR_ADDITIONAL_PARAMS = "AppRegistration.DCR.AdditionalParams.Param";
+    public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
+            ".DisplayName";
+    public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
+    public static final String IDENTITY_PROVIDER_NAME = "AppRegistration.SCA.IdpName";
+    public static final String IDENTITY_PROVIDER_STEP = "AppRegistration.SCA.IdpStep";
     public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";
     public static final String KEYSTORE_PASSWORD_TAG = "Security.InternalKeyStore.Password";
     public static final String SIGNING_ALIAS_TAG = "Security.InternalKeyStore.KeyAlias";
@@ -83,6 +92,7 @@ public class FinancialServicesConstants {
     public static final String JWKS_ENDPOINT_NAME = "Gateway.DCR.JWKSEndpointName";
     public static final String SSA_CLIENT_NAME = "Gateway.DCR.SSAClientName";
     public static final String DCR_USE_SOFTWAREID_AS_APPNAME = "Gateway.DCR.UseSoftwareIdAsAppName";
+    public static final String DCR_RESPONSE_PARAMETERS = "Gateway.DCR.ResponseParams.Param";
 
     //Event Notifications Constants
     public static final String EVENT_NOTIFICATION_GENERATOR =

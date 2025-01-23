@@ -69,6 +69,11 @@
             {% else %}
             <UseSoftwareIdAsAppName>true</UseSoftwareIdAsAppName>
             {% endif %}
+            <ResponseParams>
+                {% for param in financial_services.gateway.dcr.response_params %}
+                    <Param>{{param}}</Param>
+                {% endfor %}
+            </ResponseParams>
         </DCR>
     </Gateway>
     {% if financial_services.publisher_url is defined %}

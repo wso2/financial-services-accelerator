@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.gateway.util;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -33,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.wso2.carbon.apimgt.common.gateway.dto.RequestContextDTO;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
@@ -63,11 +66,8 @@ public class GatewayUtils {
     private static final Map<String, Object> configs = GatewayDataHolder.getInstance()
             .getFinancialServicesConfigurationService().getConfigurations();
 
-    private static final List<String> dcrResponseParams = Arrays.asList(GatewayConstants.SOFTWARE_STATEMENT,
-            GatewayConstants.SOFTWARE_ID, GatewayConstants.TOKEN_EP_AUTH_SIG_ALG, GatewayConstants.GRANT_TYPES,
-            GatewayConstants.APP_TYPE, GatewayConstants.REDIRECT_URIS, GatewayConstants.TOKEN_EP_AUTH_METHOD,
-            GatewayConstants.SCOPE, GatewayConstants.REQ_OBJ_SIG_ALG, GatewayConstants.RESPONSE_TYPES,
-            GatewayConstants.ID_TOKEN_RES_ALG);
+    private static final List<String> dcrListAttributes = Arrays.asList(GatewayConstants.GRANT_TYPES,
+            GatewayConstants.REDIRECT_URIS, GatewayConstants.RESPONSE_TYPES);
 
     private GatewayUtils() {
 
@@ -305,10 +305,11 @@ public class GatewayUtils {
         dcrResponse.remove(GatewayConstants.ISS);
 
         String dcrISResponse = fsapiResponseContext.getResponsePayload();
-        JSONObject dcrISResponseObj = new JSONObject(dcrISResponse);
+        JsonObject dcrISResponseObj = JsonParser.parseString(dcrISResponse).getAsJsonObject();
 
-        dcrResponse.put(GatewayConstants.CLIENT_ID, dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
-        dcrResponse.put(GatewayConstants.CLIENT_SECRET, dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
+        dcrResponse.put(GatewayConstants.CLIENT_ID, dcrISResponseObj.get(GatewayConstants.CLIENT_ID).getAsString());
+        dcrResponse.put(GatewayConstants.CLIENT_SECRET, dcrISResponseObj.get(GatewayConstants.CLIENT_SECRET)
+                .getAsString());
         dcrResponse.put(GatewayConstants.CLIENT_ID_ISSUED_AT, Instant.now().getEpochSecond());
 
         return dcrResponse.toString();
@@ -326,13 +327,20 @@ public class GatewayUtils {
         JSONObject dcrResponse = new JSONObject();
 
         String dcrISResponse = fsapiResponseContext.getResponsePayload();
-        JSONObject dcrISResponseObj = new JSONObject(dcrISResponse);
+        JsonObject dcrISResponseObj = JsonParser.parseString(dcrISResponse).getAsJsonObject();
 
-        dcrResponse.put(GatewayConstants.CLIENT_ID, dcrISResponseObj.getString(GatewayConstants.CLIENT_ID));
-        dcrResponse.put(GatewayConstants.CLIENT_SECRET, dcrISResponseObj.getString(GatewayConstants.CLIENT_SECRET));
+        dcrResponse.put(GatewayConstants.CLIENT_ID, dcrISResponseObj.get(GatewayConstants.CLIENT_ID).getAsString());
+        dcrResponse.put(GatewayConstants.CLIENT_SECRET, dcrISResponseObj.get(GatewayConstants.CLIENT_SECRET)
+                .getAsString());
+
+        List<String> dcrResponseParams = FinancialServicesConfigParser.getInstance().getDCRResponseParameters();
 
         dcrResponseParams.stream().filter(dcrISResponseObj::has).forEach(param -> {
-            dcrResponse.put(param, dcrISResponseObj.get(param));
+            if (dcrListAttributes.contains(param)) {
+                dcrResponse.put(param, dcrISResponseObj.get(param).getAsJsonArray());
+            } else {
+                dcrResponse.put(param, dcrISResponseObj.get(param).getAsString());
+            }
         });
 
         return dcrResponse.toString();

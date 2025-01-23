@@ -115,12 +115,9 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
             } catch (ParseException e) {
                 log.error("Error occurred while decoding the provided jwt", e);
                 handleBadRequestError(fsapiRequestContext, "Malformed request JWT");
-            } catch (BadJOSEException e) {
+            } catch (BadJOSEException | JOSEException | MalformedURLException e) {
                 log.error("Error occurred while validating the signature", e);
                 handleBadRequestError(fsapiRequestContext, "Invalid request signature. " + e.getMessage());
-            } catch (JOSEException | MalformedURLException e) {
-                log.error("Error occurred while validating the signature", e);
-                handleBadRequestError(fsapiRequestContext, "Invalid request signature");
             }
         }
     }
