@@ -96,11 +96,15 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
                                     "Required parameter software statement cannot be null");
                             return;
                         }
+                        // Validate the request signature
                         JWTClaimsSet requestClaims = GatewayUtils.validateRequestSignature(payload, decodedSSA);
-                        String isDcrPayload = GatewayUtils.constructIsDcrPayload(requestClaims, decodedSSA);
+                        // Construct the IS DCR request payload
+                        String isDcrPayload = GatewayUtils.constructIsDcrRequestPayload(requestClaims, decodedSSA);
+                        // Add the request payload to the context to use in response processing
                         fsapiRequestContext.addContextProperty(GatewayConstants.REQUEST_PAYLOAD,
                                 String.valueOf(new JSONObject(requestClaims.getClaims())));
 
+                        // Set the modified payload to the context
                         fsapiRequestContext.setModifiedPayload(isDcrPayload);
                         Map<String, String> requestHeaders = fsapiRequestContext.getMsgInfo().getHeaders();
                         requestHeaders.remove(GatewayConstants.CONTENT_TYPE_TAG);
@@ -190,6 +194,12 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
 
     }
 
+    /**
+     * Method to handle bad request error.
+     *
+     * @param fsapiRequestContext  FSAPIRequestContext
+     * @param message              Error message
+     */
     private void handleBadRequestError(FSAPIRequestContext fsapiRequestContext, String message) {
 
         //catch errors and set to context
@@ -201,6 +211,12 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
         fsapiRequestContext.setErrors(executorErrors);
     }
 
+    /**
+     * Method to handle unauthorized error.
+     *
+     * @param fsapiRequestContext  FSAPIRequestContext
+     * @param message              Error message
+     */
     private void handleUnAuthorizedError(FSAPIRequestContext fsapiRequestContext, String message) {
 
         //catch errors and set to context

@@ -75,14 +75,12 @@ public class GatewayUtilsTest {
         dataHolder.setFinancialServicesConfigurationService(financialServicesConfigurationService);
     }
     @Test
-//            (priority = 1)
     public void testIsValidJWTToken() {
 
         Assert.assertTrue(GatewayUtils.isValidJWTToken(GatewayTestConstants.TEST_JWT));
     }
 
     @Test
-//            (priority = 2)
     public void testB64Encode() throws UnsupportedEncodingException {
 
         JSONObject payload = GatewayUtils.decodeBase64(GatewayTestConstants.B64_PAYLOAD);
@@ -92,7 +90,6 @@ public class GatewayUtilsTest {
     }
 
     @Test
-//            (priority = 3)
     public void testBasicAuthHeader() {
 
         Assert.assertEquals(GatewayUtils.getBasicAuthHeader("admin", "admin"),
@@ -100,14 +97,12 @@ public class GatewayUtilsTest {
     }
 
     @Test
-//            (priority = 4)
     public void testGetTextPayload() {
 
         Assert.assertEquals(GatewayUtils.getTextPayload(GatewayTestConstants.XML_PAYLOAD), "Test Content");
     }
 
     @Test
-//            (priority = 5)
     public void testIsEligibleRequest() {
 
         Assert.assertTrue(GatewayUtils.isEligibleRequest(GatewayConstants.JSON_CONTENT_TYPE,
@@ -125,7 +120,6 @@ public class GatewayUtilsTest {
     }
 
     @Test
-//            (priority = 6)
     public void testIsEligibleResponse() {
 
         Assert.assertTrue(GatewayUtils.isEligibleResponse(GatewayConstants.JSON_CONTENT_TYPE,
@@ -149,7 +143,6 @@ public class GatewayUtilsTest {
     }
 
     @Test
-//            (priority = 7)
     public void testJWTPayloadLoad() {
 
         Assert.assertEquals(GatewayUtils.getPayloadFromJWT(GatewayTestConstants.TEST_JWT),
@@ -162,7 +155,7 @@ public class GatewayUtilsTest {
         JWTClaimsSet jwtClaimsSet = Mockito.mock(JWTClaimsSet.class);
         Mockito.doReturn(GatewayTestConstants.DCR_CLAIMS).when(jwtClaimsSet).getClaims();
 
-        String payload = GatewayUtils.constructIsDcrPayload(jwtClaimsSet,
+        String payload = GatewayUtils.constructIsDcrRequestPayload(jwtClaimsSet,
                 new JSONObject(GatewayTestConstants.DECODED_DCR_PAYLOAD));
         JSONObject payloadObj = new JSONObject(payload);
 
