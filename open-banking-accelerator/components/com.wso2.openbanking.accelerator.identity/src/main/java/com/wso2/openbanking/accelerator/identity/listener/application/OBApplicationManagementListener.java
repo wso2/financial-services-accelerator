@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -104,12 +104,11 @@ public class OBApplicationManagementListener extends AbstractApplicationMgtListe
                         "true"));
             }
             serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
-            OAuthConsumerAppDTO oAuthConsumerAppDTO;
             OAuthAdminServiceImpl oAuthAdminService = identityExtensionsDataHolder.getOauthAdminService();
 
-            oAuthConsumerAppDTO = oAuthAdminService
+            OAuthConsumerAppDTO oAuthConsumerAppDTO = oAuthAdminService
                     .getOAuthApplicationDataByAppName(serviceProvider.getApplicationName());
-            oAuthConsumerAppDTO.setTokenType("JWT");
+
             LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig = serviceProvider
                     .getLocalAndOutBoundAuthenticationConfig();
 
