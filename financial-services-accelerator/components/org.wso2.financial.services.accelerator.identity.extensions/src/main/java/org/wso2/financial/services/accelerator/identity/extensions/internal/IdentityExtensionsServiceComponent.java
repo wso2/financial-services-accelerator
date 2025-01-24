@@ -28,13 +28,20 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
+import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
+import org.wso2.carbon.identity.application.mgt.listener.ApplicationMgtListener;
+import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
+import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImpl;
+import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.FSApplicationManagementListener;
+import org.wso2.financial.services.accelerator.identity.extensions.dcr.attribute.filter.FSAdditionalAttributeFilter;
 
 /**
  * Identity common data holder.
@@ -52,7 +59,11 @@ public class IdentityExtensionsServiceComponent {
 
         log.debug("Identity Extensions component activated.");
         BundleContext bundleContext = context.getBundleContext();
+        bundleContext.registerService(ApplicationMgtListener.class, new FSApplicationManagementListener(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
+        bundleContext.registerService(AdditionalAttributeFilter.class.getName(), new FSAdditionalAttributeFilter(),
+                null);
+
 
         log.debug("Registered FS related Identity services.");
     }
@@ -73,6 +84,42 @@ public class IdentityExtensionsServiceComponent {
 
         IdentityExtensionsDataHolder.getInstance().setApplicationManagementService(null);
     }
+
+    @Reference(
+            name = "AuthorizedAPIManagementService",
+            service = AuthorizedAPIManagementService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetAuthorizedAPIManagementService"
+    )
+    protected void setAuthorizedAPIManagementService(AuthorizedAPIManagementService mgtService) {
+
+        IdentityExtensionsDataHolder.getInstance().setAuthorizedAPIManagementService(mgtService);
+    }
+
+    protected void unsetAuthorizedAPIManagementService(AuthorizedAPIManagementService mgtService) {
+
+        IdentityExtensionsDataHolder.getInstance().setAuthorizedAPIManagementService(null);
+    }
+
+
+    @Reference(
+            name = "APIResourceManager",
+            service = APIResourceManager.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetAPIResourceManager"
+    )
+    protected void setAPIResourceManager(APIResourceManager mgtService) {
+
+        IdentityExtensionsDataHolder.getInstance().setApiResourceManager(mgtService);
+    }
+
+    protected void unsetAPIResourceManager(APIResourceManager mgtService) {
+
+        IdentityExtensionsDataHolder.getInstance().setApiResourceManager(null);
+    }
+
 
     @Reference(
             service = FinancialServicesConfigurationService.class,
@@ -140,6 +187,22 @@ public class IdentityExtensionsServiceComponent {
     protected void unsetRequestObjectService(RequestObjectService requestObjectService) {
 
         IdentityExtensionsDataHolder.getInstance().setRequestObjectService(null);
+    }
+
+    @Reference(
+            service = OAuthAdminServiceImpl.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetOauthAdminService"
+    )
+    protected void setOauthAdminService(OAuthAdminServiceImpl oauthAdminService) {
+
+        IdentityExtensionsDataHolder.getInstance().setOauthAdminService(oauthAdminService);
+    }
+
+    protected void unsetOauthAdminService(OAuthAdminServiceImpl oAuthAdminService) {
+
+        IdentityExtensionsDataHolder.getInstance().setOauthAdminService(null);
     }
 
     @Deactivate

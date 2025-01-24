@@ -476,6 +476,11 @@
                 <version>${identity.inbound.auth.oauth.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth.dcr</artifactId>
+                <version>${identity.inbound.auth.oauth.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.local.auth.api</groupId>
                 <artifactId>org.wso2.carbon.identity.local.auth.api.core</artifactId>
                 <version>${carbon.identity.local.auth.api.version}</version>
@@ -488,6 +493,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.core</artifactId>
+                <version>${carbon.identity.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.framework</groupId>
+                <artifactId>org.wso2.carbon.identity.api.resource.mgt</artifactId>
                 <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
@@ -628,9 +638,9 @@
         <swagger.parser.v3.version>2.1.22.wso2v1</swagger.parser.v3.version>
         <jjwt.version>0.9.1</jjwt.version>
         <!--Base Products related dependencies-->
-        <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
-        <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
-        <identity.inbound.auth.oauth.version>7.0.26</identity.inbound.auth.oauth.version>
+        <carbon.identity.framework.version>7.0.78</carbon.identity.framework.version>
+        <carbon.identity.framework.version.range>[7.0.78, 8.0.0)</carbon.identity.framework.version.range>
+        <identity.inbound.auth.oauth.version>7.0.26.27</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.oauth.version.range>[6.13.0, 7.0.62)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
         <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>
