@@ -161,6 +161,7 @@ public class GatewayUtils {
             GatewayDataHolder.getGatewayCache().addToCache(GatewayCacheKey.of(apiId), openAPIDefinition);
             return openAPIDefinition;
         }
+
         return (OpenAPI) cacheObject;
     }
 
@@ -267,6 +268,7 @@ public class GatewayUtils {
         String jwksEndpoint = decodedSSA.getString(jwksEndpointName);
         SignedJWT signedJWT = SignedJWT.parse(payload);
         String alg = signedJWT.getHeader().getAlgorithm().getName();
+
         return JWTUtils.validateJWTSignature(payload, jwksEndpoint, alg);
     }
 
@@ -277,7 +279,7 @@ public class GatewayUtils {
      *
      * @return The JSON string.
      */
-    public static String constructIsDcrRequestPayload(JWTClaimsSet jwtClaimsSet, JSONObject decodedSSA) {
+    public static String constructISDcrRequestPayload(JWTClaimsSet jwtClaimsSet, JSONObject decodedSSA) {
 
         JSONObject request = new JSONObject(jwtClaimsSet.getClaims());
 
@@ -413,6 +415,7 @@ public class GatewayUtils {
 
         String sanitizedInput = applicationName.trim().replaceAll(GatewayConstants.DISALLOWED_CHARS_PATTERN,
                 GatewayConstants.SUBSTITUTE_STRING);
+
         return StringUtils.abbreviate(sanitizedInput, GatewayConstants.ABBREVIATED_STRING_LENGTH);
 
     }

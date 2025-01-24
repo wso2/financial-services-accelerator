@@ -323,6 +323,7 @@ public final class FinancialServicesConfigParser {
         } else if (dcrResponseParamObj instanceof String) {
             dcrResponseParamList.add((String) dcrResponseParamObj);
         }
+
         return dcrResponseParamList;
     }
 

@@ -161,7 +161,7 @@ public class GatewayUtilsTest {
         JWTClaimsSet jwtClaimsSet = Mockito.mock(JWTClaimsSet.class);
         Mockito.doReturn(GatewayTestConstants.DCR_CLAIMS).when(jwtClaimsSet).getClaims();
 
-        String payload = GatewayUtils.constructIsDcrRequestPayload(jwtClaimsSet,
+        String payload = GatewayUtils.constructISDcrRequestPayload(jwtClaimsSet,
                 new JSONObject(GatewayTestConstants.DECODED_DCR_PAYLOAD));
         JSONObject payloadObj = new JSONObject(payload);
 
