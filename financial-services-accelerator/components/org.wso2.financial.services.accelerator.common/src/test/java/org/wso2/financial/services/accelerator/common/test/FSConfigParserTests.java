@@ -26,12 +26,9 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.util.CarbonUtils;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Test class for Config Parser functionality.
@@ -85,12 +82,6 @@ public class FSConfigParserTests {
         assertEquals(stepsConfig.get("Retrieve").get(1),
                 "org.wso2.financial.services.accelerator.common.test.CustomStep1");
 
-        Map<String, List<String>> apiMap = configParser.getAllowedAPIs();
-        List<String> roles = apiMap.get("DynamicClientRegistration");
-        Assert.assertNotNull(apiMap);
-        Assert.assertNotNull(apiMap.get("DynamicClientRegistration"));
-        assertNotNull(apiMap.get("AccountandTransactionAPI"));
-        assertTrue(roles.contains("AISP"));
     }
 
     @Test(priority = 5)
@@ -300,6 +291,20 @@ public class FSConfigParserTests {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getRealtimeEventNotificationRequestGenerator());
+    }
+
+    @Test(priority = 39)
+    public void testGetDCRParamsConfig() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getDCRParamsConfig());
+    }
+
+    @Test(priority = 40)
+    public void testGetDCRResponseParameters() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getDCRResponseParameters());
     }
 
 }

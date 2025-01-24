@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.gateway.executor.model;
 
-import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +28,6 @@ import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 import org.wso2.carbon.apimgt.common.gateway.dto.RequestContextDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesErrorCodes;
-import org.wso2.financial.services.accelerator.gateway.cache.GatewayCacheKey;
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 import org.wso2.financial.services.accelerator.gateway.util.GatewayConstants;
 import org.wso2.financial.services.accelerator.gateway.util.GatewayUtils;
@@ -39,7 +37,6 @@ import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * Financial services executor request context.
@@ -65,7 +62,7 @@ public class FSAPIRequestContext extends RequestContextDTO {
         this.errors = new ArrayList<>();
 
         this.consentId = extractConsentID(requestContextDTO);
-        this.openAPI = retrieveOpenAPI(requestContextDTO);
+        this.openAPI = GatewayUtils.retrieveOpenAPI(requestContextDTO);
 
         if (requestContextDTO.getMsgInfo().getHeaders().get(GatewayConstants.CONTENT_TYPE_TAG) != null) {
             String contentType = requestContextDTO.getMsgInfo().getHeaders().get(GatewayConstants.CONTENT_TYPE_TAG);
@@ -230,27 +227,6 @@ public class FSAPIRequestContext extends RequestContextDTO {
             return consentIdClaim;
         }
         return null;
-    }
-
-    /**
-     * Retrieve OpenAPI definition from the cache or from the publisher API.
-     *
-     * @param requestContextDTO  Request context DTO
-     * @return OpenAPI definition
-     */
-    private OpenAPI retrieveOpenAPI(RequestContextDTO requestContextDTO) {
-
-        String apiId = requestContextDTO.getApiRequestInfo().getApiId();
-        Object cacheObject = GatewayDataHolder.getGatewayCache()
-                .getFromCache(GatewayCacheKey.of(apiId));
-        if (cacheObject == null) {
-            String swaggerDefinition = GatewayUtils.getSwaggerDefinition(apiId);
-            OpenAPIParser parser = new OpenAPIParser();
-            OpenAPI openAPIDefinition =  parser.readContents(swaggerDefinition, null, null).getOpenAPI();
-            GatewayDataHolder.getGatewayCache().addToCache(GatewayCacheKey.of(apiId), openAPIDefinition);
-            return openAPIDefinition;
-        }
-        return (OpenAPI) cacheObject;
     }
 
     private void handleContentTypeErrors(String errorMessage) {

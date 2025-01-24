@@ -47,12 +47,14 @@ public class FinancialServicesConfigurationServiceImpl implements FinancialServi
     }
 
     @Override
-    public Map<String, List<String>> getAllowedScopes() {
-        return configParser.getAllowedScopes();
+    public Map<String, Map<String, Object>> getDCRParamsConfig() {
+
+        return configParser.getDCRParamsConfig();
     }
 
     @Override
-    public Map<String, List<String>> getAllowedAPIs() {
-        return configParser.getAllowedAPIs();
+    public List<String> getDCRResponseParameters() {
+
+        return configParser.getDCRResponseParameters();
     }
 }

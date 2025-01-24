@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,8 +62,7 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Object> configuration = new HashMap<>();
     private final Map<String, Map<Integer, String>> fsExecutors = new HashMap<>();
     private final Map<String, Map<Integer, String>> authorizeSteps = new HashMap<>();
-    private final Map<String, List<String>> allowedScopes = new HashMap<>();
-    private final Map<String, List<String>> allowedAPIs = new HashMap<>();
+    private final Map<String, Map<String, Object>> dcrParams = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;
@@ -132,8 +130,7 @@ public final class FinancialServicesConfigParser {
             readChildElements(rootElement, nameStack);
             buildFSExecutors();
             buildConsentAuthSteps();
-            buildAllowedScopes();
-            buildAllowedSubscriptions();
+            buildDCRConfigs();
         } catch (IOException | XMLStreamException | OMException e) {
             throw new FinancialServicesRuntimeException("Error occurred while building configuration from " +
                     "financial-services.xml", e);
@@ -257,6 +254,80 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
+     * Method to build DCR configurations.
+     */
+    private void buildDCRConfigs() {
+
+        OMElement appRegElement = rootElement.getFirstChildWithName(
+                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                        FinancialServicesConstants.APP_REGISTRATION_TAG));
+
+        if (appRegElement != null) {
+            OMElement dcrConfigs = appRegElement.getFirstChildWithName(
+                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                            FinancialServicesConstants.DCR_TAG));
+
+            if (dcrConfigs != null) {
+                OMElement dcrParamConfigs = dcrConfigs.getFirstChildWithName(
+                        new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                FinancialServicesConstants.DCR_PARAMS_TAG));
+                if (dcrParamConfigs != null) {
+                    Iterator dcrParamsElements = dcrParamConfigs.getChildElements();
+                    while (dcrParamsElements.hasNext()) {
+                        OMElement dcrParamsElement = (OMElement) dcrParamsElements.next();
+                        Iterator dcrParamIterator = dcrParamsElement.getChildElements();
+                        Map<String, Object> paramValues = new HashMap<>();
+                        String paramName = null;
+                        while (dcrParamIterator.hasNext()) {
+                            OMElement paramObj = (OMElement) dcrParamIterator.next();
+                            if (FinancialServicesConstants.DCR_PARAM_NAME_TAG.equals(paramObj.getLocalName())) {
+                                paramName = paramObj.getText();
+                            }
+                            if (FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG
+                                    .equals(paramObj.getLocalName())) {
+                                OMElement allowedValuesElement = dcrParamsElement.getFirstChildWithName(
+                                        new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                                FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG));
+
+                                List<String> values = new ArrayList<>();
+                                if (allowedValuesElement != null) {
+                                    Iterator allowedValues = allowedValuesElement.getChildElements();
+                                    while (allowedValues.hasNext()) {
+                                        OMElement value = (OMElement) allowedValues.next();
+                                        values.add(value.getText());
+                                    }
+                                    paramValues.put(paramObj.getLocalName(), values);
+                                }
+                            } else {
+                                paramValues.put(paramObj.getLocalName(), paramObj.getText());
+                            }
+                        }
+                        dcrParams.put(paramName,  paramValues);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the list of DCR response parameters.
+     *
+     * @return List of DCR response parameters.
+     */
+    public List<String> getDCRResponseParameters() {
+
+        Object dcrResponseParamObj = configuration.get(FinancialServicesConstants.DCR_RESPONSE_PARAMETERS);
+        List<String> dcrResponseParamList = new ArrayList<>();
+        if (dcrResponseParamObj instanceof ArrayList) {
+            dcrResponseParamList.addAll((ArrayList) dcrResponseParamObj);
+        } else if (dcrResponseParamObj instanceof String) {
+            dcrResponseParamList.add((String) dcrResponseParamObj);
+        }
+
+        return dcrResponseParamList;
+    }
+
+    /**
      * Method to read text configs from xml when root element is given.
      *
      * @param serverConfig XML root element object
@@ -294,74 +365,6 @@ public final class FinancialServicesConfigParser {
             }
             readChildElements(element, nameStack);
             nameStack.pop();
-        }
-    }
-
-    private void buildAllowedScopes() {
-        OMElement gatewayElement = rootElement.getFirstChildWithName(
-                new QName(FinancialServicesConstants.FS_CONFIG_QNAME, FinancialServicesConstants.GATEWAY_CONFIG_TAG));
-
-        if (gatewayElement != null) {
-            OMElement tppManagementElement = gatewayElement.getFirstChildWithName(
-                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
-                            FinancialServicesConstants.TPP_MANAGEMENT_CONFIG_TAG));
-
-            if (tppManagementElement != null) {
-                OMElement allowedScopesElement = tppManagementElement.getFirstChildWithName(new QName(
-                        FinancialServicesConstants.FS_CONFIG_QNAME,
-                        FinancialServicesConstants.ALLOWED_SCOPES_CONFIG_TAG));
-
-                // obtaining each scope under allowed scopes
-                Iterator environmentIterator = allowedScopesElement
-                        .getChildrenWithLocalName(FinancialServicesConstants.SCOPE_CONFIG_TAG);
-
-                while (environmentIterator.hasNext()) {
-                    OMElement scopeElem = (OMElement) environmentIterator.next();
-                    String scopeName = scopeElem.getAttributeValue(new QName("name"));
-                    String rolesStr = scopeElem.getAttributeValue(new QName("roles"));
-                    if (StringUtils.isNotEmpty(rolesStr)) {
-                        List<String> rolesList = Arrays.stream(rolesStr.split(","))
-                                .map(String::trim)
-                                .collect(Collectors.toList());
-                        allowedScopes.put(scopeName, rolesList);
-                    }
-                }
-            }
-        }
-    }
-
-    private void buildAllowedSubscriptions() {
-
-        OMElement dcrElement = rootElement.getFirstChildWithName(
-                new QName(FinancialServicesConstants.FS_CONFIG_QNAME, FinancialServicesConstants.DCR_CONFIG_TAG));
-
-        if (dcrElement != null) {
-            OMElement regulatoryAPIs = dcrElement.getFirstChildWithName(
-                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
-                            FinancialServicesConstants.REGULATORY_API_NAMES));
-
-            if (regulatoryAPIs != null) {
-
-                // obtaining each regulatory API under allowed regulatory APIs
-                Iterator environmentIterator = regulatoryAPIs
-                        .getChildrenWithLocalName(FinancialServicesConstants.REGULATORY_API);
-
-                while (environmentIterator.hasNext()) {
-                    OMElement regulatoryAPIElem = (OMElement) environmentIterator.next();
-                    String regulatoryAPIName = regulatoryAPIElem.getAttributeValue(new QName(
-                            FinancialServicesConstants.API_NAME));
-                    String rolesStr = regulatoryAPIElem.getAttributeValue(new QName(
-                            FinancialServicesConstants.API_ROLE));
-                    if (StringUtils.isNotEmpty(rolesStr)) {
-                        List<String> rolesList = Arrays.stream(rolesStr.split(","))
-                                .map(String::trim)
-                                .collect(Collectors.toList());
-                        allowedAPIs.put(regulatoryAPIName, rolesList);
-                    } else {
-                        allowedAPIs.put(regulatoryAPIName, Collections.emptyList());
-                    }
-                }
-            }
         }
     }
 
@@ -440,12 +443,9 @@ public final class FinancialServicesConfigParser {
         return Collections.unmodifiableMap(authorizeSteps);
     }
 
-    public Map<String, List<String>> getAllowedScopes() {
-        return Collections.unmodifiableMap(allowedScopes);
-    }
+    public Map<String, Map<String, Object>> getDCRParamsConfig() {
 
-    public Map<String, List<String>> getAllowedAPIs() {
-        return Collections.unmodifiableMap(allowedAPIs);
+        return Collections.unmodifiableMap(dcrParams);
     }
 
     public String getDataSourceName() {
@@ -532,29 +532,6 @@ public final class FinancialServicesConfigParser {
         return expiryTime.map(Integer::parseInt).orElse(60);
     }
 
-    /**
-     * Method to get software environment identification SSA property name.
-     *
-     * @return String software environment identification SSA property name.
-     */
-    public String getSoftwareEnvIdentificationSSAPropertyName() {
-
-        Optional<String> source = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_PROPERTY_NAME);
-        return source.map(String::trim).orElse(null);
-    }
-
-    /**
-     * Method to get software environment identification value for sandbox in SSA.
-     *
-     * @return String software environment identification value for sandbox.
-     */
-    public String getSoftwareEnvIdentificationSSAPropertyValueForSandbox() {
-
-        Optional<String> source = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_SANDBOX);
-        return source.map(String::trim).orElse(null);
-    }
 
     /**
      * Method to get the value Idempotency enable configuration.

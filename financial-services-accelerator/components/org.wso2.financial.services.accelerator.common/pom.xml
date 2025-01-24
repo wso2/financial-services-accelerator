@@ -88,8 +88,8 @@
             <artifactId>nimbus-jose-jwt</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.minidev</groupId>
-            <artifactId>json-smart</artifactId>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
         </dependency>
         <!-- Test Dependencies -->
         <dependency>
@@ -235,7 +235,7 @@
                             com.nimbusds.jose;version="${org.wso2.orbit.nimbus.version.range}",
                             com.nimbusds.jwt;version="${org.wso2.orbit.nimbus.version.range}",
                             javax.cache,
-                            net.minidev.json;version="${json-smart.version}",
+                            org.json;version="${org.json.version.range}",
                             org.apache.axiom.*;version="${axiom.osgi.version.range}",
                             org.apache.commons.lang3;version="${commons-lang3.version}",
                             org.apache.commons.logging;version="${commons.logging.version}",

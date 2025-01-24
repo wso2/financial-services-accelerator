@@ -18,8 +18,6 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
-import com.nimbusds.jose.JWSObject;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,13 +26,10 @@ import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientExcepti
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 
 /**
  * Financial Services common utility class.
@@ -84,35 +79,6 @@ public class FinancialServicesUtils {
     }
 
     /**
-     * Extract software_environment (SANDBOX or PRODUCTION) from SSA.
-     *
-     * @param softwareStatement software statement (jwt) extracted from request
-     *                          payload
-     * @return software_environment
-     * @throws ParseException if an error occurs while parsing the software
-     *                        statement
-     */
-    public static String getSoftwareEnvironmentFromSSA(String softwareStatement) throws ParseException {
-
-        if (StringUtils.isEmpty(softwareStatement)) {
-            return FinancialServicesConstants.PRODUCTION;
-        }
-
-        final JSONObject softwareStatementBody = JWTUtils.decodeRequestJWT(softwareStatement,
-                FinancialServicesConstants.JWT_BODY);
-        // Retrieve the SSA property name used for software environment identification
-        final String sandboxEnvIdentificationPropertyName = FinancialServicesConfigParser.getInstance()
-                .getSoftwareEnvIdentificationSSAPropertyName();
-        // Retrieve the expected value for the sandbox environment
-        final String sandboxEnvIdentificationValue = FinancialServicesConfigParser.getInstance()
-                .getSoftwareEnvIdentificationSSAPropertyValueForSandbox();
-        return sandboxEnvIdentificationValue.equals(softwareStatementBody
-                .getAsString(sandboxEnvIdentificationPropertyName))
-                        ? FinancialServicesConstants.SANDBOX
-                        : FinancialServicesConstants.PRODUCTION;
-    }
-
-    /**
      * Method to reduce string length.
      *
      * @param input     Input for dispute data
@@ -146,25 +112,5 @@ public class FinancialServicesUtils {
             throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
                     "provider for clientId: " + clientId, e);
         }
-    }
-
-    /**
-     * Decode request JWT.
-     *
-     * @param jwtToken jwt sent by the tpp
-     * @param jwtPart  expected jwt part (header, body)
-     * @return json object containing requested jwt part
-     * @throws java.text.ParseException if an error occurs while parsing the jwt
-     */
-    public static JSONObject decodeRequestJWT(String jwtToken, String jwtPart) throws java.text.ParseException {
-
-        JWSObject plainObject = JWSObject.parse(jwtToken);
-
-        if (FinancialServicesConstants.JWT_HEAD.equals(jwtPart)) {
-            return plainObject.getHeader().toJSONObject();
-        } else if (FinancialServicesConstants.JWT_BODY.equals(jwtPart)) {
-            return plainObject.getPayload().toJSONObject();
-        }
-        return null;
     }
 }

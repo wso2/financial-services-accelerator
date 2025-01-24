@@ -37,6 +37,37 @@
             </ServletExtension>
         </AuthenticationWebApp>
     </Identity>
+    <AppRegistration>
+        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
+        <SCA>
+            <PrimaryAuthenticator>
+                <Name>BasicAuthenticator</Name>
+                <DisplayName>basic</DisplayName>
+            </PrimaryAuthenticator>
+        </SCA>
+        <DCR>
+            <Params>
+                <Param>
+                    <Name>SoftwareId</Name>
+                    <Key>software_id</Key>
+                    <Required>true</Required>
+                    <AllowedValues>
+                    </AllowedValues>
+                    <IncludeInResponse>true</IncludeInResponse>
+                </Param>
+                <Param>
+                    <Name>Scope</Name>
+                    <Key>scope</Key>
+                    <Required>true</Required>
+                    <AllowedValues>
+                        <Value>accounts</Value>
+                        <Value>payments</Value>
+                    </AllowedValues>
+                    <IncludeInResponse>true</IncludeInResponse>
+                </Param>
+            </Params>
+        </DCR>
+    </AppRegistration>
 
     <Sample>
         <FSHandler>DummyValue</FSHandler>
@@ -122,24 +153,21 @@
         </ConsentAPICredentials>
     </Consent>
     <DCR>
-        <RegulatoryAPINames>
-            <API name = "DynamicClientRegistration"  roles = "AISP, PISP"/>
-            <API name = "AccountandTransactionAPI"  roles = "AISP"/>
-        </RegulatoryAPINames>
-        <RegistrationRequestParams>
-            <SoftwareEnvironmentIdentification>
-                <Required>true</Required>
-                <AllowedValues>
-                    <Value>Sample</Value>
-                </AllowedValues>
-                <PropertyName>software_environment</PropertyName>
-                <PropertyValueForSandbox>sandbox</PropertyValueForSandbox>
-            </SoftwareEnvironmentIdentification>
-        </RegistrationRequestParams>
-        <JWKS-Retriever>
-            <ConnectionTimeout>1000</ConnectionTimeout>
-            <ReadTimeout>3000</ReadTimeout>
-        </JWKS-Retriever>
+        <RequestJWTValidation>true</RequestJWTValidation>
+        <JWKSEndpointName>software_jwks_endpoint</JWKSEndpointName>
+        <SSAClientName>software_client_name</SSAClientName>
+        <UseSoftwareIdAsAppName>true</UseSoftwareIdAsAppName>
+        <ResponseParams>
+            <Param>software_statement</Param>
+            <Param>software_id</Param>
+            <Param>token_endpoint_auth_signing_alg</Param>
+            <Param>grant_types</Param>
+            <Param>scope</Param>
+            <Param>redirect_uris</Param>
+            <Param>request_object_signing_alg</Param>
+            <Param>token_endpoint_auth_method</Param>
+            <Param>id_token_signed_response_alg</Param>
+        </ResponseParams>
     </DCR>
     <HTTPConnectionPool>
         <MaxConnections>1000</MaxConnections>
