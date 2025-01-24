@@ -152,7 +152,7 @@ public class ConsentAuthorizeEndpoint {
 
         if ("false".equals(sensitiveDataMap.get(ConsentExtensionConstants.IS_ERROR))) {
             String loggedInUserId = (String) sensitiveDataMap.get("loggedInUser");
-            loggedInUser = OAuth2Util.resolveUsernameFromUserId("carbon.super", loggedInUserId);
+            loggedInUser = FinancialServicesUtils.resolveUsernameFromUserId(loggedInUserId);
             app = (String) sensitiveDataMap.get("application");
             spQueryParams = (String) sensitiveDataMap.get("spQueryParams");
             scopeString = (String) sensitiveDataMap.get("scope");

@@ -24,9 +24,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 public class ConsentExtensionConstants {
 
     //Common Constants
-    public static final String TENANT_DOMAIN = "carbon.super";
-    public static final String UUID_REGEX =
-            "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
     public static final String ACCOUNTS = "accounts";
     public static final String PAYMENTS = "payments";
     public static final String FUNDS_CONFIRMATIONS = "fundsconfirmations";

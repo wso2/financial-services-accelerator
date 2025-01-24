@@ -26,6 +26,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
@@ -52,21 +53,21 @@ public class DefaultConsentValidatorTest {
     DefaultConsentValidator validator = new DefaultConsentValidator();
     ConsentValidateData consentValidateDataMock;
     ConsentValidationResult consentValidationResultMock;
-    MockedStatic<ConsentExtensionUtils> extensionsUtilMockedStatic;
+    MockedStatic<FinancialServicesUtils> financialServicesUtilsMockedStatic;
 
     @BeforeClass
     public void beforeTest() {
         consentValidateDataMock = mock(ConsentValidateData.class);
         consentValidationResultMock = spy(ConsentValidationResult.class);
 
-        extensionsUtilMockedStatic = Mockito.mockStatic(ConsentExtensionUtils.class);
-        extensionsUtilMockedStatic.when(() -> ConsentExtensionUtils.resolveUsernameFromUserId(anyString()))
+        financialServicesUtilsMockedStatic = Mockito.mockStatic(FinancialServicesUtils.class);
+        financialServicesUtilsMockedStatic.when(() -> FinancialServicesUtils.resolveUsernameFromUserId(anyString()))
                 .thenReturn(TestConstants.SAMPLE_USER_ID);
     }
 
     @AfterClass
     public void afterTest() {
-        extensionsUtilMockedStatic.close();
+        financialServicesUtilsMockedStatic.close();
     }
 
     @Test
