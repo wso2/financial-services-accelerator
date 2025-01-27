@@ -27,8 +27,8 @@ export const App = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/consentmgr" exact component={Login} />
         <Route path="/consentmgr/error" exact component={ResponseError} />
+        <Login/>
       </Switch>
     </Router>
   );
