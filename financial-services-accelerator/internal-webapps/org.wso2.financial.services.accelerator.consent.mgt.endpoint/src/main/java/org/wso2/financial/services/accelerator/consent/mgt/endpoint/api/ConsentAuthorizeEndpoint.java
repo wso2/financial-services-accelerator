@@ -29,7 +29,6 @@ import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
-import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -152,7 +151,7 @@ public class ConsentAuthorizeEndpoint {
 
         if ("false".equals(sensitiveDataMap.get(ConsentExtensionConstants.IS_ERROR))) {
             String loggedInUserId = (String) sensitiveDataMap.get("loggedInUser");
-            loggedInUser = OAuth2Util.resolveUsernameFromUserId("carbon.super", loggedInUserId);
+            loggedInUser = FinancialServicesUtils.resolveUsernameFromUserId(loggedInUserId);
             app = (String) sensitiveDataMap.get("application");
             spQueryParams = (String) sensitiveDataMap.get("spQueryParams");
             scopeString = (String) sensitiveDataMap.get("scope");

@@ -126,4 +126,7 @@ public class FinancialServicesConstants {
     public static final String DOT_SEPARATOR = ".";
     public static final String PRODUCTION = "PRODUCTION";
     public static final String SANDBOX = "SANDBOX";
+    public static final String TENANT_DOMAIN = "carbon.super";
+    public static final String UUID_REGEX =
+            "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
 }
