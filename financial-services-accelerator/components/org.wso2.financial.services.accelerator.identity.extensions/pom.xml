@@ -239,8 +239,7 @@
                             org.wso2.carbon.identity.core.util;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.user.api;version="0",
                             com.google.gson;version="${google.gson.version.range}",
-                            org.json;version="${org.json.version.range}",
-                            *
+                            org.json;version="${org.json.version.range}"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.identity.extensions.internal,
