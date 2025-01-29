@@ -141,7 +141,7 @@ public class FinancialServicesUtils {
                 username =  OAuth2Util.resolveUsernameFromUserId(FinancialServicesConstants.TENANT_DOMAIN, userID);
             }
         } catch (UserStoreException e) {
-            log.debug("Returning null since user ID is not found in the database");
+            log.debug("Returning null since user ID is not found in the database", e);
             return null;
         }
         return username;
