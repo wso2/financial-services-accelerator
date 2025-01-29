@@ -26,10 +26,13 @@ import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientExcepti
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Pattern;
 
 /**
  * Financial Services common utility class.
@@ -112,5 +115,45 @@ public class FinancialServicesUtils {
             throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
                     "provider for clientId: " + clientId, e);
         }
+    }
+
+    /**
+     * Method to resolve username from user ID.
+     *
+     * @param userID   User ID
+     * @return Username
+     */
+    @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
+    public static String resolveUsernameFromUserId(String userID) {
+
+        if (!startsWithUUID(userID)) {
+            // If the user ID is not starting with a UUID that means request has sent the username,
+            // return the same user ID as the username.
+            return userID;
+        }
+
+        String username = null;
+        try {
+            if (userID.contains(FinancialServicesConstants.TENANT_DOMAIN)) {
+                username =  OAuth2Util.resolveUsernameFromUserId(FinancialServicesConstants.TENANT_DOMAIN,
+                        userID.split("@" + FinancialServicesConstants.TENANT_DOMAIN)[0]);
+            } else {
+                username =  OAuth2Util.resolveUsernameFromUserId(FinancialServicesConstants.TENANT_DOMAIN, userID);
+            }
+        } catch (UserStoreException e) {
+            log.debug("Returning null since user ID is not found in the database", e);
+            return null;
+        }
+        return username;
+    }
+
+    /**
+     * Method to check whether the input string starts with a UUID.
+     * @param input Input string
+     * @return  true if the input string starts with a UUID
+     */
+    public static boolean startsWithUUID(String input) {
+        Pattern uuidPattern = Pattern.compile("^" + FinancialServicesConstants.UUID_REGEX + ".*$");
+        return uuidPattern.matcher(input).matches();
     }
 }
