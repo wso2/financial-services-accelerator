@@ -19,6 +19,7 @@
 import React, { createContext, useState } from 'react';
 import {CONFIG} from "../config"
 import { specConfigurations } from '../specConfigs';
+import { consentTypes } from '../specConfigs';
 
 export const SearchObjectContext = createContext();
 
@@ -31,7 +32,7 @@ const SearchObjectContextProvider = (props) => {
         userIDs: "",
         clientIDs: "",
         consentStatuses: specConfigurations.status.authorised,
-        consentTypes: "accounts", // Accelerator only supporting the account consents type in SCP.
+        consentTypes: consentTypes[0].id, // Accelerator only supporting the account consents type in SCP.
         hideAdvanceSearchOptions: true
     });
 
