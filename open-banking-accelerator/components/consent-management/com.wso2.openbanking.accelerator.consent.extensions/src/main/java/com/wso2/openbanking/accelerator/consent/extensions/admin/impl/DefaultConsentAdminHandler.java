@@ -58,6 +58,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     public static final String DATA = "data";
     public static final String TOTAL = "total";
     public static final String COUNT = "count";
+    public static final String OFFSET = "offset";
+    public static final String LIMIT = "limit";
     public static final String METADATA = "metadata";
     public static final String CONSENT_MAPPING_RESOURCES = "consentMappingResources";
 
@@ -115,16 +117,16 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 log.error("Number format incorrect in search for parameter toTime. Ignoring parameter");
             }
         }
-        if (validateAndGetQueryParam(queryParams, "limit") != null) {
+        if (validateAndGetQueryParam(queryParams, LIMIT) != null) {
             try {
-                limit = Integer.parseInt(validateAndGetQueryParam(queryParams, "limit"));
+                limit = Integer.parseInt(validateAndGetQueryParam(queryParams, LIMIT));
             } catch (NumberFormatException e) {
                 log.error("Number format incorrect in search for parameter limit. Ignoring parameter");
             }
         }
-        if (validateAndGetQueryParam(queryParams, "offset") != null) {
+        if (validateAndGetQueryParam(queryParams, OFFSET) != null) {
             try {
-                offset = Integer.parseInt(validateAndGetQueryParam(queryParams, "offset"));
+                offset = Integer.parseInt(validateAndGetQueryParam(queryParams, OFFSET));
             } catch (NumberFormatException e) {
                 log.error("Number format incorrect in search for parameter offset. Ignoring parameter");
             }
@@ -164,8 +166,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         JSONObject metadata = new JSONObject();
         metadata.appendField(COUNT, count);
-        metadata.appendField("offset", offset);
-        metadata.appendField("limit", limit);
+        metadata.appendField(OFFSET, offset);
+        metadata.appendField(LIMIT, limit);
         metadata.appendField(TOTAL, total);
 
         response.appendField(METADATA, metadata);
@@ -354,16 +356,16 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             consentIDs = new ArrayList<>(Arrays.asList(validateAndGetQueryParam(queryParams, "consentIDs").
                     split(",")));
         }
-        if (validateAndGetQueryParam(queryParams, "limit") != null) {
+        if (validateAndGetQueryParam(queryParams, LIMIT) != null) {
             try {
-                limit = Integer.parseInt(validateAndGetQueryParam(queryParams, "limit"));
+                limit = Integer.parseInt(validateAndGetQueryParam(queryParams, LIMIT));
             } catch (NumberFormatException e) {
                 log.error("Number format incorrect in search for parameter limit. Ignoring parameter");
             }
         }
-        if (validateAndGetQueryParam(queryParams, "offset") != null) {
+        if (validateAndGetQueryParam(queryParams, OFFSET) != null) {
             try {
-                offset = Integer.parseInt(validateAndGetQueryParam(queryParams, "offset"));
+                offset = Integer.parseInt(validateAndGetQueryParam(queryParams, OFFSET));
             } catch (NumberFormatException e) {
                 log.error("Number format incorrect in search for parameter offset. Ignoring parameter");
             }
@@ -413,8 +415,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         JSONObject metadata = new JSONObject();
         metadata.appendField(COUNT, count);
-        metadata.appendField("offset", offset);
-        metadata.appendField("limit", limit);
+        metadata.appendField(OFFSET, offset);
+        metadata.appendField(LIMIT, limit);
         metadata.appendField(TOTAL, total);
         response.appendField(METADATA, metadata);
         consentAdminData.setResponseStatus(ResponseStatus.OK);
