@@ -239,13 +239,15 @@ public class ResponseTypeHandlerTest {
     @Test
     public void checkHandlerLogic()  {
 
-        OAuthAuthzReqMessageContext mock = mock(OAuthAuthzReqMessageContext.class);
-        when(mock.getRefreshTokenvalidityPeriod()).thenReturn(6666L);
-        when(mock.getApprovedScope()).thenReturn(new String[]{"1"});
+        OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
+        oAuth2AuthorizeReqDTO.setSessionDataKey("123");
+        OAuthAuthzReqMessageContext oAuthAuthzContext = new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
+        oAuthAuthzContext.setRefreshTokenvalidityPeriod(6666L);
+        oAuthAuthzContext.setApprovedScope(new String[]{"1"});
 
         FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
 
-        assertEquals(6666L, uut.updateRefreshTokenValidityPeriod(mock));
+        assertEquals(6666L, uut.updateRefreshTokenValidityPeriod(oAuthAuthzContext));
 
     }
 
@@ -254,12 +256,12 @@ public class ResponseTypeHandlerTest {
 
         try (MockedStatic<IdentityExtensionsDataHolder> identityDataHolderMock =
                      mockStatic(IdentityExtensionsDataHolder.class)) {
-            OAuthAuthzReqMessageContext mock = mock(OAuthAuthzReqMessageContext.class);
-            when(mock.getRefreshTokenvalidityPeriod()).thenReturn(6666L);
-            when(mock.getApprovedScope()).thenReturn(new String[]{"1"});
-            OAuth2AuthorizeReqDTO mockAuthReq = mock(OAuth2AuthorizeReqDTO.class);
-            when(mock.getAuthorizationReqDTO()).thenReturn(mockAuthReq);
-            when(mockAuthReq.getSessionDataKey()).thenReturn("123");
+
+            OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
+            oAuth2AuthorizeReqDTO.setSessionDataKey("123");
+            OAuthAuthzReqMessageContext oAuthAuthzContext = new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
+            oAuthAuthzContext.setRefreshTokenvalidityPeriod(6666L);
+            oAuthAuthzContext.setApprovedScope(new String[]{"1"});
 
             RequestedClaim claim = new RequestedClaim();
             claim.setName("openbanking_intent_id");
@@ -277,7 +279,7 @@ public class ResponseTypeHandlerTest {
                     .thenReturn(Map.of("Identity.ConsentIDClaimName", "consent_id"));
 
             FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
-            String[] result = uut.updateApprovedScopes(mock);
+            String[] result = uut.updateApprovedScopes(oAuthAuthzContext);
 
             assertEquals(2, result.length);
         }
@@ -288,12 +290,12 @@ public class ResponseTypeHandlerTest {
 
         try (MockedStatic<IdentityExtensionsDataHolder> identityDataHolderMock =
                      mockStatic(IdentityExtensionsDataHolder.class)) {
-            OAuthAuthzReqMessageContext mock = mock(OAuthAuthzReqMessageContext.class);
-            when(mock.getRefreshTokenvalidityPeriod()).thenReturn(6666L);
-            when(mock.getApprovedScope()).thenReturn(new String[]{"1"});
-            OAuth2AuthorizeReqDTO mockAuthReq = mock(OAuth2AuthorizeReqDTO.class);
-            when(mock.getAuthorizationReqDTO()).thenReturn(mockAuthReq);
-            when(mockAuthReq.getSessionDataKey()).thenReturn("123");
+
+            OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
+            oAuth2AuthorizeReqDTO.setSessionDataKey("123");
+            OAuthAuthzReqMessageContext oAuthAuthzContext = new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
+            oAuthAuthzContext.setRefreshTokenvalidityPeriod(6666L);
+            oAuthAuthzContext.setApprovedScope(new String[]{"1"});
 
             RequestedClaim claim = new RequestedClaim();
             claim.setName("validity");
@@ -309,7 +311,7 @@ public class ResponseTypeHandlerTest {
             identityDataHolderMock.when(IdentityExtensionsDataHolder::getInstance).thenReturn(dataHolder);
 
             FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
-            String[] result = uut.updateApprovedScopes(mock);
+            String[] result = uut.updateApprovedScopes(oAuthAuthzContext);
 
             assertEquals(1, result.length);
         }
@@ -318,15 +320,14 @@ public class ResponseTypeHandlerTest {
     @Test
     public void checkHandlerUpdateApprovedScopesForNullConsentId()  {
 
-        OAuthAuthzReqMessageContext mock = mock(OAuthAuthzReqMessageContext.class);
-        when(mock.getRefreshTokenvalidityPeriod()).thenReturn(6666L);
-        when(mock.getApprovedScope()).thenReturn(new String[]{"1"});
-        OAuth2AuthorizeReqDTO mockAuthReq = mock(OAuth2AuthorizeReqDTO.class);
-        when(mock.getAuthorizationReqDTO()).thenReturn(mockAuthReq);
-        when(mockAuthReq.getSessionDataKey()).thenReturn("123");
+        OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
+        oAuth2AuthorizeReqDTO.setSessionDataKey("123");
+        OAuthAuthzReqMessageContext oAuthAuthzContext = new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
+        oAuthAuthzContext.setRefreshTokenvalidityPeriod(6666L);
+        oAuthAuthzContext.setApprovedScope(new String[]{"1"});
 
         FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
-        String[] result = uut.updateApprovedScopes(mock);
+        String[] result = uut.updateApprovedScopes(oAuthAuthzContext);
 
         assertEquals(1, result.length);
 

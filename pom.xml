@@ -640,14 +640,14 @@
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.78</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.78, 8.0.0)</carbon.identity.framework.version.range>
-        <identity.inbound.auth.oauth.version>7.0.26.27</identity.inbound.auth.oauth.version>
-        <identity.inbound.auth.oauth.version.range>[6.13.0, 7.0.62)</identity.inbound.auth.oauth.version.range>
+        <identity.inbound.auth.oauth.version>7.0.229-SNAPSHOT</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.oauth.version.range>[7.0.62, 7.1.0)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
         <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>
         <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.30.100)</org.wso2.carbon.apimgt.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>
-        <mockito.version>5.3.1</mockito.version>
+        <mockito.version>5.15.2</mockito.version>
         <org.testng.version>7.10.1</org.testng.version>
         <mockito.testng.version>0.5.2</mockito.testng.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>

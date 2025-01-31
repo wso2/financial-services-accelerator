@@ -33,7 +33,6 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
 import org.wso2.carbon.identity.application.mgt.listener.ApplicationMgtListener;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
-import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
@@ -41,7 +40,6 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImpl;
 import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.FSApplicationManagementListener;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.attribute.filter.FSAdditionalAttributeFilter;
 
 /**
  * Identity common data holder.
@@ -61,9 +59,6 @@ public class IdentityExtensionsServiceComponent {
         BundleContext bundleContext = context.getBundleContext();
         bundleContext.registerService(ApplicationMgtListener.class, new FSApplicationManagementListener(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
-        bundleContext.registerService(AdditionalAttributeFilter.class.getName(), new FSAdditionalAttributeFilter(),
-                null);
-
 
         log.debug("Registered FS related Identity services.");
     }

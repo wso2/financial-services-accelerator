@@ -140,6 +140,7 @@
                         <exclude>**/*Component.class</exclude>
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*GrantHandler.class</exclude>
+                        <exclude>**/*FSRequestObject.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

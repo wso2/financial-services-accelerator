@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 /**
@@ -44,6 +45,7 @@ public class DCRUtils {
      * @throws IdentityOAuthAdminException When there is an error while retrieving OAuthConsumerAppDTO
      * @throws RequestObjectException When there is an error while retrieving Fapi compliant property
      */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
     public static boolean getFapiCompliantPropertyFromSP(ServiceProvider serviceProvider)
             throws IdentityOAuthAdminException, RequestObjectException {
 
@@ -58,6 +60,7 @@ public class DCRUtils {
      * @return OAuthConsumerAppDTO
      * @throws IdentityOAuthAdminException when there is an error
      */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
     public static OAuthConsumerAppDTO getOAuthConsumerAppDTO(String spApplicationName)
             throws IdentityOAuthAdminException {
 
