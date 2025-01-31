@@ -153,9 +153,6 @@ export function generatePDF(consent, applicationName, consentStatus) {
 }
 
 export function userIdAdjustment(userId) {
-    if (userId.includes("@carbon.super")) {
-     return userId.replace("@carbon.super", "");
-    } else {
-        return userId;
-    }
+
+    return userId.replace("@carbon.super", "");
 }
