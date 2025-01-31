@@ -154,5 +154,5 @@ export function generatePDF(consent, applicationName, consentStatus) {
 
 export function userIdAdjustment(userId) {
 
-    return userId.replace("@carbon.super", "");
+    return typeof userId === 'string' ? userId.replace("@carbon.super", "") : userId;
 }
