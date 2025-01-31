@@ -18,8 +18,10 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.internal;
 
-
+import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
+import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
+import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
@@ -29,6 +31,7 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
+import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.AbstractApplicationUpdater;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.Map;
@@ -40,14 +43,18 @@ public class IdentityExtensionsDataHolder {
 
     private static volatile IdentityExtensionsDataHolder instance;
     private static ApplicationManagementService applicationManagementService;
+    private static AuthorizedAPIManagementService authorizedAPIManagementService;
+    private static APIResourceManager apiResourceManager;
     private static FinancialServicesConfigurationService configurationService;
     private Map<String, Object> configurationMap;
+    private AbstractApplicationUpdater abstractApplicationUpdater;
     private FSRequestObjectValidator fsRequestObjectValidator;
     private FSResponseTypeHandler fsResponseTypeHandler;
     private static RealmService realmService;
     private static OAuth2Service oAuth2Service;
     private RequestObjectService requestObjectService;
     private ClaimProvider claimProvider;
+    private OAuthAdminServiceImpl oAuthAdminService;
 
     private IdentityExtensionsDataHolder() {
 
@@ -85,6 +92,46 @@ public class IdentityExtensionsDataHolder {
         IdentityExtensionsDataHolder.applicationManagementService = applicationManagementService;
     }
 
+    /**
+     * To get the instance of {@link AuthorizedAPIManagementService}.
+     *
+     * @return authorizedAPIManagementService
+     */
+    public AuthorizedAPIManagementService getAuthorizedAPIManagementService() {
+
+        return authorizedAPIManagementService;
+    }
+
+    /**
+     * To set the AuthorizedAPIManagementService.
+     *
+     * @param authorizedAPIManagementService instance of {@link AuthorizedAPIManagementService}
+     */
+    public void setAuthorizedAPIManagementService(AuthorizedAPIManagementService authorizedAPIManagementService) {
+
+        IdentityExtensionsDataHolder.authorizedAPIManagementService = authorizedAPIManagementService;
+    }
+
+    /**
+     * To get the the instance of {@link APIResourceManager}.
+     *
+     * @return apiResourceManager
+     */
+    public APIResourceManager getApiResourceManager() {
+
+        return apiResourceManager;
+    }
+
+    /**
+     * To set the APIResourceManager.
+     *
+     * @param apiResourceManager instance of {@link APIResourceManager}
+     */
+    public void setApiResourceManager(APIResourceManager apiResourceManager) {
+
+        IdentityExtensionsDataHolder.apiResourceManager = apiResourceManager;
+    }
+
     public FinancialServicesConfigurationService getOpenBankingConfigurationService() {
 
         return configurationService;
@@ -94,6 +141,9 @@ public class IdentityExtensionsDataHolder {
 
         IdentityExtensionsDataHolder.configurationService = configurationService;
         this.configurationMap = configurationService.getConfigurations();
+        abstractApplicationUpdater = (AbstractApplicationUpdater) IdentityCommonUtils.getClassInstanceFromFQN
+                (configurationService.getConfigurations().get(FinancialServicesConstants.POST_APPLICATION_LISTENER)
+                        .toString());
         fsRequestObjectValidator = (FSRequestObjectValidator) IdentityCommonUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.REQUEST_VALIDATOR).toString());
         fsResponseTypeHandler = (FSResponseTypeHandler) IdentityCommonUtils.getClassInstanceFromFQN(
@@ -111,6 +161,16 @@ public class IdentityExtensionsDataHolder {
     public Map<String, Object> getConfigurationMap() {
 
         return configurationMap;
+    }
+
+    public AbstractApplicationUpdater getAbstractApplicationUpdater() {
+
+        return abstractApplicationUpdater;
+    }
+
+    public void setAbstractApplicationUpdater(AbstractApplicationUpdater abstractApplicationUpdater) {
+
+        this.abstractApplicationUpdater = abstractApplicationUpdater;
     }
 
     public FSRequestObjectValidator getObRequestObjectValidator() {
@@ -177,5 +237,25 @@ public class IdentityExtensionsDataHolder {
     public void setRequestObjectService(RequestObjectService requestObjectService) {
 
         this.requestObjectService = requestObjectService;
+    }
+
+    /**
+     * To get the the instance of {@link OAuthAdminServiceImpl}.
+     *
+     * @return oauthAdminService
+     */
+    public OAuthAdminServiceImpl getOauthAdminService() {
+
+        return oAuthAdminService;
+    }
+
+    /**
+     * To set the OauthAdminService.
+     *
+     * @param oauthAdminService instance of {@link OAuthAdminServiceImpl}
+     */
+    public void setOauthAdminService(OAuthAdminServiceImpl oauthAdminService) {
+
+        this.oAuthAdminService = oauthAdminService;
     }
 }
