@@ -144,7 +144,6 @@ export const AdvanceSearch = () => {
                             onChange={(e) => {
                                 setConsentId(e.target.value);
                             }}
-                            // onKeyDown={handleKeyDown}
                         ></input>
                     </Col>
 
@@ -238,9 +237,9 @@ export const AdvanceSearch = () => {
                             className="sBorder"
                             title="submit search"
                             onClick={() => {
-                                let modifiedSearchUser = searchUser;
+                                let modifiedSearchUserId = searchUser;
                                 if (searchUser.length > 0 && !searchUser.includes(CONFIG.TENANT_DOMAIN)) {
-                                    modifiedSearchUser = searchUser + "@" + CONFIG.TENANT_DOMAIN;
+                                    modifiedSearchUserId = searchUser + "@" + CONFIG.TENANT_DOMAIN;
                                 }
                                 let search = {
                                     ...searchObj,
@@ -249,7 +248,7 @@ export const AdvanceSearch = () => {
                                     dateRange: dateRange,
                                     consentIDs: consentId,
                                     accountIDs: accountId,
-                                    userIDs: modifiedSearchUser,
+                                    userIDs: modifiedSearchUserId,
                                     clientIDs: softwareId,
                                 }
                                 setContextSearchObject(search)
