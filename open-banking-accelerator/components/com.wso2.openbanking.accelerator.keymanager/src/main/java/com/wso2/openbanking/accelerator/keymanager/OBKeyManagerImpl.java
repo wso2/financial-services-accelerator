@@ -201,6 +201,8 @@ public class OBKeyManagerImpl extends AMDefaultKeyManagerImpl implements OBKeyMa
             // Adding SP property to identify create request. Will be removed when setting up authenticators.
             additionalProperties.put("AppCreateRequest", "true");
         }
+        // This SP property makes the username the default subject identifier.
+        additionalProperties.put(OBKeyManagerConstants.USE_USER_ID_FOR_DEFAULT_SUBJECT, "false");
         doPreCreateApplication(oauthAppRequest, additionalProperties);
         OAuthApplicationInfo oAuthApplicationInfo = oauthAppRequest.getOAuthApplicationInfo();
         String username = (String) oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_USERNAME);
