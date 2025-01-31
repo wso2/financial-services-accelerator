@@ -151,3 +151,8 @@ export function generatePDF(consent, applicationName, consentStatus) {
     pdf.text(20, 120, 'Accounts: ' + content03)
     pdf.save("consent.pdf");
 }
+
+export function userIdAdjustment(userId) {
+
+    return typeof userId === 'string' ? userId.replace("@carbon.super", "") : userId;
+}

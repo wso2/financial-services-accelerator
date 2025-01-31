@@ -11,8 +11,7 @@
     background-color: rgba(8, 18, 71, 1);
     color: white;
     bottom: 0;
-    /* position: relative; */
-    position: relative;
+    position: fixed;
     height: 5.5rem;
     
     display: flex;

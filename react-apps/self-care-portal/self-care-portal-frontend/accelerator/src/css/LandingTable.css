@@ -39,10 +39,6 @@
   color: rgba(8, 18, 71, 1);
 }
 
-.table td::first-letter {
-  text-transform: uppercase;
-}
-
 #lbl {
   text-align: center;
   margin: 5px;

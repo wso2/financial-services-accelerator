@@ -29,6 +29,7 @@ import { Link } from "react-router-dom";
 import { logout } from "../login/logout.js";
 import { QRButton } from "../landing_page/Popup.jsx";
 import Popup from "reactjs-popup";
+import { userIdAdjustment } from "../services/utils.js";
 
 export const Nav = (user) => {
 
@@ -66,7 +67,7 @@ export const Nav = (user) => {
                   className="navUserImage"
                   rounded
                 />
-                <span className="dropdown-userId">{user.email}</span>
+                <span className="dropdown-userId">{userIdAdjustment(user.email)}</span>
               </span>
             }
           >

@@ -53,6 +53,7 @@ export const AdvanceSearch = () => {
     const [searchOffset, setSearchOffset] = useState(0);
     const [softwareId, setSoftwareId] = useState("");
     const [consentId, setConsentId] = useState("");
+    const [accountId, setAccountId] = useState("");
     const [dateRange, setDateRange] = useState("");
     const [searchUser, setSearchUser] = useState("");
     const [dateState, setDateState] = useState([
@@ -68,6 +69,7 @@ export const AdvanceSearch = () => {
         setSearchOffset(searchObj.offset);
         setDateRange(searchObj.dateRange);
         setConsentId(searchObj.consentIDs);
+        setAccountId(searchObj.accountIDs);
         setSearchUser(searchObj.userIDs);
         setSoftwareId(searchObj.clientIDs);
         setAdvanceSearchVisibility(!searchObj.hideAdvanceSearchOptions)
@@ -122,7 +124,7 @@ export const AdvanceSearch = () => {
                             type="text"
                             className="inputBox"
                             id="inputSearch"
-                            placeholder="Service Provider"
+                            placeholder="Software Product"
                             value={softwareId}
                             onChange={(e) => {
                                 // softwareId is converted to clientId in API call
@@ -132,7 +134,7 @@ export const AdvanceSearch = () => {
                     </Col>
 
                     <Col>
-                        {/* Account Id */}
+                        {/* Consent Id */}
                         <input
                             type="text"
                             className="inputBox"
@@ -142,7 +144,20 @@ export const AdvanceSearch = () => {
                             onChange={(e) => {
                                 setConsentId(e.target.value);
                             }}
-                            // onKeyDown={handleKeyDown}
+                        ></input>
+                    </Col>
+
+                    <Col>
+                        {/* Account Id */}
+                        <input
+                            type="text"
+                            className="inputBox"
+                            id="inputSearchAccount"
+                            placeholder="Account Id"
+                            value={accountId}
+                            onChange={(e) => {
+                                setAccountId(e.target.value);
+                            }}
                         ></input>
                     </Col>
 
@@ -222,10 +237,9 @@ export const AdvanceSearch = () => {
                             className="sBorder"
                             title="submit search"
                             onClick={() => {
-                                let userId = searchUser;
-                                let userIdList = [userId];
-                                if (userId.length > 0 && userId.indexOf(CONFIG.TENANT_DOMAIN) === -1) {
-                                    userIdList.push(userId + "@" + CONFIG.TENANT_DOMAIN);
+                                let modifiedSearchUserId = searchUser;
+                                if (searchUser.length > 0 && !searchUser.includes(CONFIG.TENANT_DOMAIN)) {
+                                    modifiedSearchUserId = searchUser + "@" + CONFIG.TENANT_DOMAIN;
                                 }
                                 let search = {
                                     ...searchObj,
@@ -233,7 +247,8 @@ export const AdvanceSearch = () => {
                                     offset: 0,
                                     dateRange: dateRange,
                                     consentIDs: consentId,
-                                    userIDs: userIdList,
+                                    accountIDs: accountId,
+                                    userIDs: modifiedSearchUserId,
                                     clientIDs: softwareId,
                                 }
                                 setContextSearchObject(search)
@@ -255,6 +270,7 @@ export const AdvanceSearch = () => {
                                     offset: 0,
                                     dateRange: "",
                                     consentIDs: "",
+                                    accountIDs: "",
                                     userIDs: "",
                                     clientIDs: "",
                                 }

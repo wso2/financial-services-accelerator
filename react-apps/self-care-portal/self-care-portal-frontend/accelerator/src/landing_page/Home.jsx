@@ -28,6 +28,7 @@ import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
 import { AppInfoContext } from "../context/AppInfoContext";
 import { HomeTile } from "./HomeTile.jsx";
+import { consentTypes } from '../specConfigs';
 
 export const Home = (user) => {
     const {currentContextUser} = useContext(UserContext); 
@@ -38,10 +39,10 @@ export const Home = (user) => {
     const error = currentContextUser.error;
     // Default consent type to view : accounts
     // We are only supporting the account consents in SCP.
-    const consentTypes = "accounts";
+    const consentType = consentTypes[0].id;
 
     useEffect(() => {
-        getContextConsents(user,consentTypes);
+        getContextConsents(user,consentType);
     }, [user]);
 
     useEffect(() => {
