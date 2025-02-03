@@ -26,11 +26,11 @@ import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
@@ -82,7 +82,7 @@ public class DefaultConsentValidator implements ConsentValidator {
         }
 
         //User Validation
-        String userIdFromToken = ConsentExtensionUtils.resolveUsernameFromUserId(consentValidateData.getUserId());
+        String userIdFromToken = FinancialServicesUtils.resolveUsernameFromUserId(consentValidateData.getUserId());
         boolean userIdMatching = false;
         ArrayList<AuthorizationResource> authResources = consentValidateData.getComprehensiveConsent()
                 .getAuthorizationResources();

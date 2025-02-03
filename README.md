@@ -22,32 +22,32 @@ Financial Services Accelerator is a collection of technologies that increases th
 
 ### Building from the source
 
-If you want to build Financial Services Accelerator from the source code:
+If you want to build the Financial Services Accelerator from the source code:
 
 1. Install Java8 or above.
-1. Install [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above.
-1. To get the Financial Services Accelerator from [this repository](https://github.com/wso2/financial-services-accelerator.git), click **Clone or download**.
+2. Install [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above.
+3. Get the Financial Services Accelerator from [this repository](https://github.com/wso2/financial-services-accelerator.git) by **cloning** or **downloading** the repository as a zip.
     * To **clone the solution**, copy the URL and execute the following command in a command prompt.
       `git clone <the copiedURL>`. After cloning, checkout to the **main** branch.
-    * To **download the pack**, select the branch **main** first, then click **Download ZIP** and unzip the downloaded file.
-1. Navigate to the downloaded solution using a command prompt and run the Maven command.
+    * To **download the repository**, select the **main** branch first, then click **Download ZIP** and unzip the downloaded file.
+4. Navigate to the cloned/downloaded repository using a command prompt and run the relevant Maven command:
 
-   |  Command | Description                                                                                                                                                                      |
-               | :--- |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-   | ```mvn install``` | This starts building the pack without cleaning the folders.                                                                                                                      |
-   | ```mvn clean install``` | This cleans the folders and starts building the solution pack from scratch.                                                                                                      |
-   | ```mvn clean install -P solution``` | This cleans the folders and starts building the solution pack from scratch. Finally creates the accelerator zip files containing the artifacts required to setup the deployment. |
+| Command                             | Description                                                                                                                                                                                                |
+|:------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```mvn install```                   | This starts building the repository without cleaning the folders.                                                                                                                                          |
+| ```mvn clean install```             | This cleans the folders and starts building the repository from scratch.                                                                                                                                   |
+| ```mvn clean install -P solution``` | This cleans the folders and starts building the repository and the accelerator packs from scratch, finally it creates the accelerator zip files containing the artifacts required to setup the deployment. |
 
-1. Once the build is created, navigate to the relevant folder to get the accelerator for each product.
+5. Once the packs are created, navigate to the relevant folder to get the accelerator for each product:
 
-| Product                                 | Toolkit Path                                                |
-      |:----------------------------------------|:------------------------------------------------------------|
-| ```Identity Server Accelerator```       | `/financial-services-accelerator/accelerators/fs-is/target` |
-| ```API Manager Accelerator```           | `/financial-services-accelerator/accelerators/fs-apim/target`     |
+| Product                                 | Toolkit Path                                                    |
+|:----------------------------------------|:----------------------------------------------------------------|
+| ```Identity Server Accelerator```       | `/financial-services-accelerator/accelerators/fs-is/target`     |
+| ```API Manager Accelerator```           | `/financial-services-accelerator/accelerators/fs-apim/target`   |
 
 ### Installing and Running OB Accelerators
 
-Please refer the following READ.ME files to run the products.
+Please refer the following README files to run the products:
 
 | Product                           | Instructions Path                          |
 |:----------------------------------|:-------------------------------------------|
