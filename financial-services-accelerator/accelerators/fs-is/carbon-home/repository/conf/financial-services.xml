@@ -78,6 +78,34 @@
             <RemoveTenantDomainFromSubject>true</RemoveTenantDomainFromSubject>
         </TokenSubject>
     </Identity>
+    <AppRegistration>
+        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
+        <SCA>
+            <PrimaryAuthenticator>
+                <Name>BasicAuthenticator</Name>
+                <DisplayName>basic</DisplayName>
+            </PrimaryAuthenticator>
+        </SCA>
+        <DCR>
+            <Params>
+                <Param>
+                    <Name>software_id</Name>
+                    <Required>true</Required>
+                    <AllowedValues></AllowedValues>
+                    <IncludeInResponse>true</IncludeInResponse>
+                </Param>
+                <Param>
+                    <Name>scope</Name>
+                    <Required>true</Required>
+                    <AllowedValues>
+                        <Value>openid</Value>
+                        <Value>profile</Value>
+                    </AllowedValues>
+                    <IncludeInResponse>true</IncludeInResponse>
+                </Param>
+            </Params>
+        </DCR>
+    </AppRegistration>
     <HTTPConnectionPool>
         <MaxConnections>2000</MaxConnections>
         <MaxConnectionsPerRoute>1500</MaxConnectionsPerRoute>
