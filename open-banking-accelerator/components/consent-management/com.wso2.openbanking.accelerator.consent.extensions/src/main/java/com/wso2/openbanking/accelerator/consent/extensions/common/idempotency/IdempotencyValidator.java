@@ -130,7 +130,7 @@ public class IdempotencyValidator {
      * @param idempotencyKeyValue      Idempotency Key value
      * @return  IdempotencyValidationResult
      */
-    private IdempotencyValidationResult validateIdempotencyWithoutPayload(ConsentManageData consentManageData,
+    protected IdempotencyValidationResult validateIdempotencyWithoutPayload(ConsentManageData consentManageData,
                                                                           String idempotencyKeyName,
                                                                           String idempotencyKeyValue)
             throws IdempotencyValidationException, IOException, ConsentManagementException {
