@@ -34,6 +34,7 @@ import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.identity.extensions.dcr.util.DCRUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 /**
  * Application listener.
@@ -54,8 +55,10 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
             throws IdentityApplicationManagementException {
 
         try {
+            // Set the allowed audience to ORGANIZATION to map the roles created while
+            // publishing the APIs to the application.
             AssociatedRolesConfig rolesConfig = new AssociatedRolesConfig();
-            rolesConfig.setAllowedAudience("ORGANIZATION");
+            rolesConfig.setAllowedAudience(IdentityCommonConstants.ORGANIZATION);
             serviceProvider.setAssociatedRolesConfig(rolesConfig);
 
             LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig = serviceProvider
@@ -77,18 +80,25 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
             throws IdentityApplicationManagementException {
 
         try {
+            // In IS 7.0 and upwards, scopes should be bind to the application via API Resources. When IS as a
+            // Key Manager is configured it will automatically create API resource binding the scopes in IS when
+            // publishing APIs in API Manager.
+
+            // Retrieve the API resource created while publishing the APIs in API Manager
             APIResourceManager resourceManager = IdentityExtensionsDataHolder.getInstance().getApiResourceManager();
-            APIResource apiResource = resourceManager.getAPIResourceByIdentifier("User-defined-oauth2-resource",
-                    tenantDomain);
+            APIResource apiResource = resourceManager
+                    .getAPIResourceByIdentifier(IdentityCommonConstants.USER_DEFINED_RESOURCE, tenantDomain);
             if (apiResource == null) {
                 return false;
             }
 
+            // Created authorized API object to store the API resource details
             AuthorizedAPI authorizedAPI = new AuthorizedAPI();
             authorizedAPI.setAPIId(apiResource.getId());
             authorizedAPI.setScopes(apiResource.getScopes());
-            authorizedAPI.setPolicyId("RBAC");
+            authorizedAPI.setPolicyId(IdentityCommonConstants.RBAC_POLICY);
 
+            // Add the authorized API to the application
             IdentityExtensionsDataHolder.getInstance().getAuthorizedAPIManagementService()
                     .addAuthorizedAPI(serviceProvider.getApplicationResourceId(), authorizedAPI, tenantDomain);
 
@@ -114,7 +124,6 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
         try {
             OAuthConsumerAppDTO oAuthConsumerAppDTO = DCRUtils
                     .getOAuthConsumerAppDTO(serviceProvider.getApplicationName());
-            oAuthConsumerAppDTO.setTokenType("JWT");
             LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig = serviceProvider
                     .getLocalAndOutBoundAuthenticationConfig();
 

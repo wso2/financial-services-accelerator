@@ -50,4 +50,7 @@ public class IdentityCommonConstants {
     public static final String SOFTWARE_STATEMENT = "software_statement";
     public static final String SOFTWARE_ID = "software_id";
     public static final String ISS = "iss";
+    public static final String ORGANIZATION = "ORGANIZATION";
+    public static final String USER_DEFINED_RESOURCE = "User-defined-oauth2-resource";
+    public static final String RBAC_POLICY = "RBAC";
 }
