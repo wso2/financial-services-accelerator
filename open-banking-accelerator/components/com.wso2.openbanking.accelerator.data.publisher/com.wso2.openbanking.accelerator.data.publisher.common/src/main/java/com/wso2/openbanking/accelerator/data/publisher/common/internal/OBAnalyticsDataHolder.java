@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -20,14 +20,18 @@ package com.wso2.openbanking.accelerator.data.publisher.common.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.data.publisher.common.DataPublisherFactory;
 import com.wso2.openbanking.accelerator.data.publisher.common.DataPublisherPool;
 import com.wso2.openbanking.accelerator.data.publisher.common.EventQueue;
+import com.wso2.openbanking.accelerator.data.publisher.common.OBThriftDataPublisher;
 import com.wso2.openbanking.accelerator.data.publisher.common.OpenBankingDataPublisher;
 import com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.util.Map;
+
+import static com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants.CUSTOM_DATA_PUBLISHING_CONFIG_TAG;
 
 /**
  * Data holder for Open Banking Analytics.
@@ -40,6 +44,7 @@ public class OBAnalyticsDataHolder {
     private DataPublisherPool<OpenBankingDataPublisher> pool;
     private int poolSize;
     private EventQueue eventQueue;
+    private OpenBankingDataPublisher openBankingDataPublisher;
 
     public static OBAnalyticsDataHolder getInstance() {
 
@@ -68,6 +73,7 @@ public class OBAnalyticsDataHolder {
 
         this.openBankingConfigurationService = openBankingConfigurationService;
         this.configurationMap = openBankingConfigurationService.getConfigurations();
+        this.setOpenBankingDataPublisher();
     }
 
     /**
@@ -114,4 +120,35 @@ public class OBAnalyticsDataHolder {
         this.eventQueue = eventQueue;
     }
 
+    private void setOpenBankingDataPublisher() {
+
+        if (this.configurationMap != null && this.configurationMap.get(CUSTOM_DATA_PUBLISHING_CONFIG_TAG) != null) {
+            this.setOpenBankingDataPublisher((OpenBankingDataPublisher) OpenBankingUtils
+                    .getClassInstanceFromFQN(this.configurationMap.get(CUSTOM_DATA_PUBLISHING_CONFIG_TAG).toString()));
+        }
+    }
+
+    /**
+     * Retrieves the {@link OpenBankingDataPublisher} instance.
+     * If it is not already initialized, a default implementation {@link OBThriftDataPublisher} is assigned.
+     *
+     * @return the {@code OpenBankingDataPublisher} instance
+     */
+    public OpenBankingDataPublisher getOpenBankingDataPublisher() {
+
+        if (this.openBankingDataPublisher == null) {
+            this.setOpenBankingDataPublisher(new OBThriftDataPublisher());
+        }
+        return this.openBankingDataPublisher;
+    }
+
+    /**
+     * Sets the {@link OpenBankingDataPublisher} instance.
+     *
+     * @param openBankingDataPublisher the {@code OpenBankingDataPublisher} instance to set
+     */
+    public void setOpenBankingDataPublisher(final OpenBankingDataPublisher openBankingDataPublisher) {
+
+        this.openBankingDataPublisher = openBankingDataPublisher;
+    }
 }

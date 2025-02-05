@@ -496,6 +496,7 @@ pool_size = 10
 queue_size = 32768
 worker_thread_count = 10
 pool_wait_time_Ms = 60000
+open_banking_data_publisher = "com.wso2.openbanking.accelerator.data.publisher.common.OBThriftDataPublisher"
 
 [open_banking.data_publishing.thrift]
 publishing_timeout = 2000
