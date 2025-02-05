@@ -80,6 +80,10 @@ export const DetailedAgreement = ({match}) => {
     });
 
     useEffect(() => {
+        setApplicationName(getDisplayName(appInfo, consent.clientId));
+    }, [appInfo]);
+
+    useEffect(() => {
         const matchedConsentId = match.params.id;
         let matchedConsent = consents.data.filter(
             (consent) => consent.consentId === matchedConsentId

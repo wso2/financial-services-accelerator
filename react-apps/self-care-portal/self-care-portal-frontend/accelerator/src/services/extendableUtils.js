@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,20 +16,7 @@
  * under the License.
  */
 
-import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./css/App.css";
-import { Login } from "./login/login.js";
-import { ResponseError } from "./errorPage/index.js";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+export function getModifiedConsentData(payload){
 
-export const App = () => {
-  return (
-    <Router>
-      <Switch>
-        <Route path="/consentmgr/error" exact component={ResponseError} />
-        <Login/>
-      </Switch>
-    </Router>
-  );
-};
+    return payload;
+}
