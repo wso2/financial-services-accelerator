@@ -104,12 +104,10 @@ public class OBApplicationManagementListener extends AbstractApplicationMgtListe
                         "true"));
             }
             serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
-            OAuthConsumerAppDTO oAuthConsumerAppDTO;
             OAuthAdminServiceImpl oAuthAdminService = identityExtensionsDataHolder.getOauthAdminService();
 
-            oAuthConsumerAppDTO = oAuthAdminService
+            OAuthConsumerAppDTO oAuthConsumerAppDTO = oAuthAdminService
                     .getOAuthApplicationDataByAppName(serviceProvider.getApplicationName());
-            oAuthConsumerAppDTO.setTokenType("JWT");
             LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig = serviceProvider
                     .getLocalAndOutBoundAuthenticationConfig();
 
