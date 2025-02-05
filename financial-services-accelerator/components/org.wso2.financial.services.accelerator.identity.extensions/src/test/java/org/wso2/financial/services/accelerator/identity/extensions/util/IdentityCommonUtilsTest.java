@@ -18,18 +18,50 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.api.resource.mgt.APIResourceMgtException;
+import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
+import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test class for IdentityCommonUtils.
  */
 public class IdentityCommonUtilsTest {
+
+    MockedStatic<IdentityExtensionsDataHolder> identityExtensionsDataHolderMockedStatic;
+
+    @BeforeClass
+    public void beforeClass() throws IdentityApplicationManagementException, IdentityOAuthAdminException,
+            APIResourceMgtException {
+
+        IdentityExtensionsDataHolder identityExtensionsDataHolder = IdentityExtensionsDataHolder.getInstance();
+        Map<String, Object> confMap = new HashMap<>();
+        confMap.put(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
+        identityExtensionsDataHolder.setConfigurationMap(confMap);
+
+        identityExtensionsDataHolderMockedStatic = Mockito.mockStatic(IdentityExtensionsDataHolder.class);
+        identityExtensionsDataHolderMockedStatic.when(IdentityExtensionsDataHolder::getInstance)
+                .thenReturn(identityExtensionsDataHolder);
+    }
+
+    @AfterClass
+    public void afterClass() {
+        identityExtensionsDataHolderMockedStatic.close();
+    }
 
     @Test
     public void testGetConsentIdFromScopes() {

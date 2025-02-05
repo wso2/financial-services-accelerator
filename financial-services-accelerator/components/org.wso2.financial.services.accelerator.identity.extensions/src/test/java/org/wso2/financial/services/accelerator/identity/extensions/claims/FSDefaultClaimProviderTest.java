@@ -68,14 +68,12 @@ public class FSDefaultClaimProviderTest {
                 doReturn(sessionDataCacheEntry).when(sessionDataCacheInstance).getValueFromCache(any());
                 sessionDataCache.when(SessionDataCache::getInstance).thenReturn(sessionDataCacheInstance);
 
-                OAuth2AuthorizeReqDTO authorizeReqDTO = mock(OAuth2AuthorizeReqDTO.class);
-                doReturn("1234").when(authorizeReqDTO).getSessionDataKey();
-                doReturn("code id-token").when(authorizeReqDTO).getResponseType();
+                OAuth2AuthorizeReqDTO authorizeReqDTO = new OAuth2AuthorizeReqDTO();
+                authorizeReqDTO.setSessionDataKey("1234");
+                authorizeReqDTO.setResponseType("code id-token");
 
-                OAuth2AuthorizeRespDTO authorizeRespDTO = mock(OAuth2AuthorizeRespDTO.class);
-
-                OAuthAuthzReqMessageContext authzReqMessageContext = mock(OAuthAuthzReqMessageContext.class);
-                doReturn(authorizeReqDTO).when(authzReqMessageContext).getAuthorizationReqDTO();
+                OAuth2AuthorizeRespDTO authorizeRespDTO = new OAuth2AuthorizeRespDTO();
+                OAuthAuthzReqMessageContext authzReqMessageContext = new OAuthAuthzReqMessageContext(authorizeReqDTO);
 
                 Map<String, Object> claims = fsDefaultClaimProvider
                         .getAdditionalClaims(authzReqMessageContext, authorizeRespDTO);

@@ -198,6 +198,52 @@
             {% endif %}
         </TokenSubject>
     </Identity>
+    <AppRegistration>
+        {% if financial_services.app_registration.applicationupdater is defined %}
+        <ApplicationUpdaterImpl>{{financial_services.app_registration.applicationupdater}}</ApplicationUpdaterImpl>
+        {% else %}
+        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
+        {% endif %}
+        <SCA>
+            <PrimaryAuthenticator>
+            {% if financial_services.app_registration.sca.primaryauth.name is defined %}
+                <Name>{{financial_services.app_registration.sca.primaryauth.name}}</Name>
+            {% else %}
+                <Name>BasicAuthenticator</Name>
+            {% endif %}
+            {% if financial_services.app_registration.sca.primaryauth.display is defined %}
+                <DisplayName>{{financial_services.app_registration.sca.primaryauth.display}}</DisplayName>
+            {% else %}
+                <DisplayName>basic</DisplayName>
+            {% endif %}
+            </PrimaryAuthenticator>
+            {% if financial_services.app_registration.sca.idp.name is defined %}
+            <IdpName>{{financial_services.app_registration.sca.idp.name}}</IdpName>
+            {% endif %}
+            {% if financial_services.app_registration.sca.idp.step is defined %}
+            <IdpStep>{{financial_services.app_registration.sca.idp.step}}</IdpStep>
+            {% endif %}
+        </SCA>
+        {% if financial_services.app_registration.dcr.params is defined %}
+        <DCR>
+            <Params>
+                {% for param in financial_services.app_registration.dcr.params %}
+                    <Param>
+                        <Name>{{param.name}}</Name>
+                        <Key>{{param.key}}</Key>
+                        <Required>{{param.required}}</Required>
+                        <AllowedValues>
+                            {% for value in param.allowed_values %}
+                            <Value>{{value}}</Value>
+                            {% endfor %}
+                        </AllowedValues>
+                        <IncludeInResponse>{{param.include_in_response}}</IncludeInResponse>
+                    </Param>
+                {% endfor %}
+            </Params>
+        </DCR>
+        {% endif %}
+    </AppRegistration>
     <HTTPConnectionPool>
         {% if financial_services.http_connection_pool.max_connections is defined %}
         <MaxConnections>{{financial_services.http_connection_pool.max_connections}}</MaxConnections>

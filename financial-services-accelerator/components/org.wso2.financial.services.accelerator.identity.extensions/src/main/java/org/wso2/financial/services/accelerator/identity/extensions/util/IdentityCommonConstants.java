@@ -39,11 +39,18 @@ public class IdentityCommonConstants {
     public static final String CERT_PREFIX = "x5t#";
     public static final String SPACE_SEPARATOR = " ";
     public static final String SCOPE = "scope";
-
     public static final String OPENID_SCOPE = "openid";
     public static final String S_HASH = "s_hash";
     public static final String CODE = "code";
     public static final String SUBJECT_CLAIM = "sub";
     public static final String CNF_CLAIM = "cnf";
     public static final String ACCESS_TOKEN = "accessToken";
+    public static final String CONDITIONAL_COMMON_AUTH_SCRIPT_FILE_NAME = "common.auth.script.js";
+    public static final String ARRAY_ELEMENT_SEPARATOR = "#";
+    public static final String SOFTWARE_STATEMENT = "software_statement";
+    public static final String SOFTWARE_ID = "software_id";
+    public static final String ISS = "iss";
+    public static final String ORGANIZATION = "ORGANIZATION";
+    public static final String USER_DEFINED_RESOURCE = "User-defined-oauth2-resource";
+    public static final String RBAC_POLICY = "RBAC";
 }

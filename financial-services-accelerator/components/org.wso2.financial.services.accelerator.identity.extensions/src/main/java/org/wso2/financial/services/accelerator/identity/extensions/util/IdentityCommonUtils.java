@@ -47,10 +47,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -281,5 +284,31 @@ public class IdentityCommonUtils {
         } catch (IdentityRuntimeException e) {
             throw new FinancialServicesException("Error retrieving tenant id for user: " + userId, e);
         }
+    }
+
+    /**
+     * Util method to generate SP meta data using service provider.
+     *
+     * @param serviceProvider The service provider
+     * @return SP meta data as a Map
+     */
+    public static Map<String, Object> getSpMetaData(ServiceProvider serviceProvider) {
+
+        Map<String, String> originalData = Arrays.stream(serviceProvider.getSpProperties())
+                .collect(Collectors.toMap(ServiceProviderProperty::getName, ServiceProviderProperty::getValue));
+
+        Map<String, Object> spMetaDataMap = new HashMap<>();
+
+        for (Map.Entry<String, String> data : originalData.entrySet()) {
+
+            if (data.getValue().contains(IdentityCommonConstants.ARRAY_ELEMENT_SEPARATOR)) {
+                ArrayList<String> dataList = new ArrayList<>(Arrays.asList(data.getValue()
+                        .split(IdentityCommonConstants.ARRAY_ELEMENT_SEPARATOR)));
+                spMetaDataMap.put(data.getKey(), dataList);
+            } else {
+                spMetaDataMap.put(data.getKey(), data.getValue());
+            }
+        }
+        return spMetaDataMap;
     }
 }
