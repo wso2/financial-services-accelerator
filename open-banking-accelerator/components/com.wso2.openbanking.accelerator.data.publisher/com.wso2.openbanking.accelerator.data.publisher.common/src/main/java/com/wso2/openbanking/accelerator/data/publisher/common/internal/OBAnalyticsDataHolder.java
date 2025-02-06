@@ -31,7 +31,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.util.Map;
 
-import static com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants.CUSTOM_DATA_PUBLISHING_CONFIG_TAG;
+import static com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants.DATA_PUBLISHING_CONFIG_TAG;
 
 /**
  * Data holder for Open Banking Analytics.
@@ -122,9 +122,9 @@ public class OBAnalyticsDataHolder {
 
     private void setOpenBankingDataPublisher() {
 
-        if (this.configurationMap != null && this.configurationMap.get(CUSTOM_DATA_PUBLISHING_CONFIG_TAG) != null) {
+        if (this.configurationMap != null && this.configurationMap.get(DATA_PUBLISHING_CONFIG_TAG) != null) {
             this.setOpenBankingDataPublisher((OpenBankingDataPublisher) OpenBankingUtils
-                    .getClassInstanceFromFQN(this.configurationMap.get(CUSTOM_DATA_PUBLISHING_CONFIG_TAG).toString()));
+                    .getClassInstanceFromFQN(this.configurationMap.get(DATA_PUBLISHING_CONFIG_TAG).toString()));
         }
     }
 
