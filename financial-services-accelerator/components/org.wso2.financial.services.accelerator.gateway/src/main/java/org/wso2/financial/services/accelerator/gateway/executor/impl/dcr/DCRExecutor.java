@@ -223,7 +223,7 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
 
         //catch errors and set to context
         FSExecutorError error = new FSExecutorError(errorCode,
-                "dcr_error", message, "400");
+                GatewayConstants.DCR_ERROR, message, FinancialServicesErrorCodes.BAD_REQUEST_CODE);
         ArrayList<FSExecutorError> executorErrors = fsapiRequestContext.getErrors();
         executorErrors.add(error);
         fsapiRequestContext.setError(true);
@@ -239,8 +239,8 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
     private void handleUnAuthorizedError(FSAPIRequestContext fsapiRequestContext, String message) {
 
         //catch errors and set to context
-        FSExecutorError error = new FSExecutorError("unauthorized_request",
-                "dcr_error", message, "401");
+        FSExecutorError error = new FSExecutorError(GatewayConstants.UNAUTHORIZED_REQUEST,
+                GatewayConstants.DCR_ERROR, message, FinancialServicesErrorCodes.UNAUTHORIZED_CODE);
         ArrayList<FSExecutorError> executorErrors = fsapiRequestContext.getErrors();
         executorErrors.add(error);
         fsapiRequestContext.setError(true);

@@ -99,7 +99,7 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
         }
 
         JSONObject payload = new JSONObject();
-        if (fsApiRequestContext.getMsgInfo().getElectedResource().contains("/register")) {
+        if (fsApiRequestContext.getMsgInfo().getElectedResource().contains(GatewayConstants.DCR_PATH)) {
             payload = getDCRErrorJSON(errors);
         } else {
             JSONArray errorList = getErrorJSON(errors);
@@ -138,7 +138,7 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
         }
 
         JSONObject payload = new JSONObject();
-        if (fsApiResponseContext.getMsgInfo().getElectedResource().contains("/register")) {
+        if (fsApiResponseContext.getMsgInfo().getElectedResource().contains(GatewayConstants.DCR_PATH)) {
             JSONObject errorList = getDCRErrorJSON(errors);
             payload.put(ERRORS_TAG, errorList);
         } else {
