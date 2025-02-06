@@ -301,6 +301,10 @@ public class GatewayUtils {
         request.put(GatewayConstants.APP_DISPLAY_NAME, getSafeApplicationName(decodedSSA
                 .getString(configs.get(FinancialServicesConstants.SSA_CLIENT_NAME).toString())));
         request.put(GatewayConstants.TLS_CLIENT_CERT_ACCESS_TOKENS, true);
+        if (request.has(GatewayConstants.TOKEN_EP_AUTH_METHOD) &&
+                GatewayConstants.PRIVATE_KEY_JWT.equals(request.getString(GatewayConstants.TOKEN_EP_AUTH_METHOD))) {
+            request.put(GatewayConstants.TOKEN_EP_ALLOW_REUSE_PVT_KEY_JWT, false);
+        }
 
         return request.toString();
     }

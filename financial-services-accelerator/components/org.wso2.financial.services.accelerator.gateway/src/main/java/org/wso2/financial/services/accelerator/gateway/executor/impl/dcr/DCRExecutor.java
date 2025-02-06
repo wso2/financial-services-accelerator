@@ -69,33 +69,49 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
 
         if (validateJWT) {
             String payload = fsapiRequestContext.getRequestPayload();
-            try {
-                String httpMethod = fsapiRequestContext.getMsgInfo().getHttpMethod();
-                if (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod)) {
-                    if (payload != null) {
-                        //decode request jwt
-                        String decodedRequest = JWTUtils.decodeRequestJWT(payload, "body");
+            String httpMethod = fsapiRequestContext.getMsgInfo().getHttpMethod();
+            if (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod)) {
+                if (payload != null) {
+                    //decode request jwt
+                    String decodedRequest = null;
+                    try {
+                        decodedRequest = JWTUtils.decodeRequestJWT(payload, FinancialServicesConstants.JWT_BODY);
+                    } catch (ParseException e) {
+                        log.error("Error occurred while decoding the provided jwt", e);
+                        handleBadRequestError(fsapiRequestContext, GatewayConstants.INVALID_REQUEST,
+                                "Malformed request JWT");
+                    }
 
-                        //Check whether decodedRequest is null
-                        if (decodedRequest == null) {
-                            handleBadRequestError(fsapiRequestContext,
-                                    "Provided jwt is malformed and cannot be decoded");
-                            return;
-                        }
+                    //Check whether decodedRequest is null
+                    if (decodedRequest == null) {
+                        handleBadRequestError(fsapiRequestContext, GatewayConstants.INVALID_REQUEST,
+                                "Provided jwt is malformed and cannot be decoded");
+                        return;
+                    }
 
-                        JSONObject decodedRequestObj = new JSONObject(decodedRequest);
-                        JSONObject decodedSSA;
-                        //Check whether the SSA exists and decode the SSA
-                        if (decodedRequestObj.has(GatewayConstants.SOFTWARE_STATEMENT) &&
-                                decodedRequestObj.getString(GatewayConstants.SOFTWARE_STATEMENT) != null) {
+                    JSONObject decodedRequestObj = new JSONObject(decodedRequest);
+                    JSONObject decodedSSA;
+                    //Check whether the SSA exists and decode the SSA
+                    if (decodedRequestObj.has(GatewayConstants.SOFTWARE_STATEMENT) &&
+                            decodedRequestObj.getString(GatewayConstants.SOFTWARE_STATEMENT) != null) {
+                        try {
                             String ssa = JWTUtils.decodeRequestJWT(decodedRequestObj
-                                    .getString(GatewayConstants.SOFTWARE_STATEMENT), "body");
+                                            .getString(GatewayConstants.SOFTWARE_STATEMENT),
+                                    FinancialServicesConstants.JWT_BODY);
                             decodedSSA = new JSONObject(ssa);
-                        } else {
-                            handleBadRequestError(fsapiRequestContext,
-                                    "Required parameter software statement cannot be null");
+                        } catch (ParseException e) {
+                            log.error("Error occurred while decoding the provided jwt", e);
+                            handleBadRequestError(fsapiRequestContext, GatewayConstants.INVALID_SSA,
+                                    "Malformed Software Statement JWT found");
                             return;
                         }
+                    } else {
+                        handleBadRequestError(fsapiRequestContext, GatewayConstants.INVALID_SSA,
+                                "Required parameter software statement cannot be null");
+                        return;
+                    }
+
+                    try {
                         // Validate the request signature
                         JWTClaimsSet requestClaims = GatewayUtils.validateRequestSignature(payload, decodedSSA);
                         // Construct the IS DCR request payload
@@ -112,16 +128,19 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
                         addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
                         fsapiRequestContext.setAddedHeaders(addedHeaders);
                         fsapiRequestContext.getMsgInfo().setHeaders(requestHeaders);
-                    } else {
-                        handleBadRequestError(fsapiRequestContext, "Malformed request found");
+                    } catch (BadJOSEException | JOSEException | MalformedURLException e) {
+                        log.error("Error occurred while validating the signature", e);
+                        handleBadRequestError(fsapiRequestContext, GatewayConstants.INVALID_REQUEST,
+                                "Invalid request signature. " + e.getMessage());
+                    } catch (ParseException e) {
+                        log.error("Error occurred while decoding the provided jwt", e);
+                        handleBadRequestError(fsapiRequestContext, GatewayConstants.INVALID_REQUEST,
+                                "Malformed request JWT");
                     }
+                } else {
+                    handleBadRequestError(fsapiRequestContext, GatewayConstants.INVALID_REQUEST,
+                            "Malformed request found");
                 }
-            } catch (ParseException e) {
-                log.error("Error occurred while decoding the provided jwt", e);
-                handleBadRequestError(fsapiRequestContext, "Malformed request JWT");
-            } catch (BadJOSEException | JOSEException | MalformedURLException e) {
-                log.error("Error occurred while validating the signature", e);
-                handleBadRequestError(fsapiRequestContext, "Invalid request signature. " + e.getMessage());
             }
         }
     }
@@ -200,11 +219,11 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
      * @param fsapiRequestContext  FSAPIRequestContext
      * @param message              Error message
      */
-    private void handleBadRequestError(FSAPIRequestContext fsapiRequestContext, String message) {
+    private void handleBadRequestError(FSAPIRequestContext fsapiRequestContext, String errorCode , String message) {
 
         //catch errors and set to context
-        FSExecutorError error = new FSExecutorError("Bad request",
-                "invalid_client_metadata", message, "400");
+        FSExecutorError error = new FSExecutorError(errorCode,
+                "dcr_error", message, "400");
         ArrayList<FSExecutorError> executorErrors = fsapiRequestContext.getErrors();
         executorErrors.add(error);
         fsapiRequestContext.setError(true);
@@ -220,8 +239,8 @@ public class DCRExecutor implements FinancialServicesGatewayExecutor {
     private void handleUnAuthorizedError(FSAPIRequestContext fsapiRequestContext, String message) {
 
         //catch errors and set to context
-        FSExecutorError error = new FSExecutorError("Unauthorized",
-                "unauthorized_request", message, "401");
+        FSExecutorError error = new FSExecutorError("unauthorized_request",
+                "dcr_error", message, "401");
         ArrayList<FSExecutorError> executorErrors = fsapiRequestContext.getErrors();
         executorErrors.add(error);
         fsapiRequestContext.setError(true);

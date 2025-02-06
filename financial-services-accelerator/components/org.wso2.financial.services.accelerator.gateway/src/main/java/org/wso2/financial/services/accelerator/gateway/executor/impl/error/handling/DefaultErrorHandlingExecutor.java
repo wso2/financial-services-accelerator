@@ -90,17 +90,22 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
         if (!fsApiRequestContext.isError()) {
             return;
         }
-        JSONObject payload = new JSONObject();
-        ArrayList<FSExecutorError> errors = fsApiRequestContext.getErrors();
-        JSONArray errorList = getErrorJSON(errors);
-        HashSet<String> statusCodes = new HashSet<>();
 
+        ArrayList<FSExecutorError> errors = fsApiRequestContext.getErrors();
+
+        HashSet<String> statusCodes = new HashSet<>();
         for (FSExecutorError error : errors) {
             statusCodes.add(error.getHttpStatusCode());
         }
 
-        payload.put(ERRORS_TAG, errorList);
-        if (!errorList.isEmpty()) {
+        JSONObject payload = new JSONObject();
+        if (fsApiRequestContext.getMsgInfo().getElectedResource().contains("/register")) {
+            payload = getDCRErrorJSON(errors);
+        } else {
+            JSONArray errorList = getErrorJSON(errors);
+            payload.put(ERRORS_TAG, errorList);
+        }
+        if (!errors.isEmpty()) {
             fsApiRequestContext.setModifiedPayload(payload.toString());
             Map<String, String> addedHeaders = fsApiRequestContext.getAddedHeaders();
             addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
@@ -124,20 +129,28 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
         if (!fsApiResponseContext.isError()) {
             return;
         }
-        JSONObject payload = new JSONObject();
-        ArrayList<FSExecutorError> errors = fsApiResponseContext.getErrors();
-        JSONArray errorList = getErrorJSON(errors);
-        HashSet<String> statusCodes = new HashSet<>();
 
+        ArrayList<FSExecutorError> errors = fsApiResponseContext.getErrors();
+
+        HashSet<String> statusCodes = new HashSet<>();
         for (FSExecutorError error : errors) {
             statusCodes.add(error.getHttpStatusCode());
         }
 
-        payload.put(ERRORS_TAG, errorList);
-        fsApiResponseContext.setModifiedPayload(payload.toString());
-        Map<String, String> addedHeaders = fsApiResponseContext.getAddedHeaders();
-        addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
-        fsApiResponseContext.setAddedHeaders(addedHeaders);
+        JSONObject payload = new JSONObject();
+        if (fsApiResponseContext.getMsgInfo().getElectedResource().contains("/register")) {
+            JSONObject errorList = getDCRErrorJSON(errors);
+            payload.put(ERRORS_TAG, errorList);
+        } else {
+            JSONArray errorList = getErrorJSON(errors);
+            payload.put(ERRORS_TAG, errorList);
+        }
+        if (!errors.isEmpty()) {
+            fsApiResponseContext.setModifiedPayload(payload.toString());
+            Map<String, String> addedHeaders = fsApiResponseContext.getAddedHeaders();
+            addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+            fsApiResponseContext.setAddedHeaders(addedHeaders);
+        }
         int statusCode;
         if (fsApiResponseContext.getContextProps().containsKey(GatewayConstants.ERROR_STATUS_PROP)) {
             statusCode = Integer.parseInt(fsApiResponseContext
@@ -168,6 +181,20 @@ public class DefaultErrorHandlingExecutor implements FinancialServicesGatewayExe
             errorList.put(errorObj);
         }
         return errorList;
+    }
+
+    /**
+     * Method to construct error JSON for DCR errors.
+     *
+     * @param errors  List of errors
+     * @return Error JSON object
+     */
+    private JSONObject getDCRErrorJSON(List<FSExecutorError> errors) {
+
+        JSONObject errorObj = new JSONObject();
+        errorObj.put(GatewayConstants.ERROR, errors.get(0).getCode());
+        errorObj.put(GatewayConstants.ERROR_DESCRIPTION, errors.get(0).getMessage());
+        return errorObj;
     }
 
     private boolean isAnyClientErrors(Set<String> statusCodes) {
