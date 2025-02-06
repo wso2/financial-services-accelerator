@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.gateway.executor.impl.error.hand
 
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
+import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIRequestContext;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIResponseContext;
 import org.wso2.financial.services.accelerator.gateway.executor.model.FSExecutorError;
@@ -45,6 +46,9 @@ public class DefaultErrorHandlingExecutorTest {
         Mockito.when(fsapiRequestContext.isError()).thenReturn(true);
         Mockito.when(fsapiRequestContext.getErrors()).thenReturn(getErrorList());
         Mockito.when(fsapiRequestContext.getContextProps()).thenReturn(contextProps);
+        MsgInfoDTO msgInfoDTO = Mockito.mock(MsgInfoDTO.class);
+        Mockito.when(msgInfoDTO.getElectedResource()).thenReturn("/accounts");
+        Mockito.when(fsapiRequestContext.getMsgInfo()).thenReturn(msgInfoDTO);
 
         DefaultErrorHandlingExecutor errorHandlingExecutor = Mockito.spy(DefaultErrorHandlingExecutor.class);
         errorHandlingExecutor.preProcessRequest(fsapiRequestContext);
@@ -58,6 +62,9 @@ public class DefaultErrorHandlingExecutorTest {
         Mockito.when(fsapiRequestContext.isError()).thenReturn(true);
         Mockito.when(fsapiRequestContext.getErrors()).thenReturn(getErrorList());
         Mockito.when(fsapiRequestContext.getContextProps()).thenReturn(contextProps);
+        MsgInfoDTO msgInfoDTO = Mockito.mock(MsgInfoDTO.class);
+        Mockito.when(msgInfoDTO.getElectedResource()).thenReturn("/accounts");
+        Mockito.when(fsapiRequestContext.getMsgInfo()).thenReturn(msgInfoDTO);
 
         DefaultErrorHandlingExecutor errorHandlingExecutor = Mockito.spy(DefaultErrorHandlingExecutor.class);
         errorHandlingExecutor.postProcessRequest(fsapiRequestContext);
@@ -71,6 +78,9 @@ public class DefaultErrorHandlingExecutorTest {
         Mockito.when(fsapiResponseContext.isError()).thenReturn(true);
         Mockito.when(fsapiResponseContext.getErrors()).thenReturn(getErrorList());
         Mockito.when(fsapiResponseContext.getContextProps()).thenReturn(contextProps);
+        MsgInfoDTO msgInfoDTO = Mockito.mock(MsgInfoDTO.class);
+        Mockito.when(msgInfoDTO.getElectedResource()).thenReturn("/accounts");
+        Mockito.when(fsapiResponseContext.getMsgInfo()).thenReturn(msgInfoDTO);
 
         DefaultErrorHandlingExecutor errorHandlingExecutor = Mockito.spy(DefaultErrorHandlingExecutor.class);
         errorHandlingExecutor.preProcessResponse(fsapiResponseContext);
@@ -84,6 +94,9 @@ public class DefaultErrorHandlingExecutorTest {
         Mockito.when(fsapiResponseContext.isError()).thenReturn(true);
         Mockito.when(fsapiResponseContext.getErrors()).thenReturn(getErrorList());
         Mockito.when(fsapiResponseContext.getContextProps()).thenReturn(contextProps);
+        MsgInfoDTO msgInfoDTO = Mockito.mock(MsgInfoDTO.class);
+        Mockito.when(msgInfoDTO.getElectedResource()).thenReturn("/accounts");
+        Mockito.when(fsapiResponseContext.getMsgInfo()).thenReturn(msgInfoDTO);
 
         DefaultErrorHandlingExecutor errorHandlingExecutor = Mockito.spy(DefaultErrorHandlingExecutor.class);
         errorHandlingExecutor.postProcessResponse(fsapiResponseContext);
