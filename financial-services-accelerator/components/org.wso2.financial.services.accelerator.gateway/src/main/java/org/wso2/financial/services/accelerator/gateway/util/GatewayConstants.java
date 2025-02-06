@@ -106,4 +106,6 @@ public class GatewayConstants {
     public static final String CLIENT_ID_ISSUED_AT = "client_id_issued_at";
     public static final String INVALID_REQUEST = "invalid_request";
     public static final String INVALID_SSA = "invalid_software_statement";
+    public static final String UNAUTHORIZED_REQUEST = "unauthorized_request";
+    public static final String DCR_ERROR = "Error occurred while processing the DCR request";
 }
