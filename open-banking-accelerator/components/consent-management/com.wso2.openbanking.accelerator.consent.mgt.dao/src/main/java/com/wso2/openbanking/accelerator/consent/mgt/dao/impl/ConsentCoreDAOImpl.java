@@ -1647,8 +1647,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     && StringUtils.isNotBlank(resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE))) {
                 // fetch attribute keys and values from group_concat
                 String[] attributeKeys = resultSet.getString(ConsentMgtDAOConstants.ATT_KEY).split(GROUP_BY_SEPARATOR);
-                String[] attributeValues = resultSet
-                        .getString(ConsentMgtDAOConstants.ATT_VALUE).split(GROUP_BY_SEPARATOR);
+                String[] attributeValues = ConsentDAOUtils
+                        .extractAttributeValues(resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE));
                 // check if all attribute keys has values
                 if (attributeKeys.length == attributeValues.length) {
                     for (int index = 0; index < attributeKeys.length; index++) {
