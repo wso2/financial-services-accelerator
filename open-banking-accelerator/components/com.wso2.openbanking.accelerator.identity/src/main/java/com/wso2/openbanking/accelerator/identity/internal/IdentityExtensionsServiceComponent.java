@@ -20,7 +20,6 @@ package com.wso2.openbanking.accelerator.identity.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
-import com.wso2.openbanking.accelerator.identity.app2app.App2AppAuthenticator;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.adaptive.function.OpenBankingAuthenticationWorkerFunction;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.adaptive.function.OpenBankingAuthenticationWorkerFunctionImpl;
 import com.wso2.openbanking.accelerator.identity.authenticator.OBIdentifierAuthenticator;
@@ -89,9 +88,11 @@ public class IdentityExtensionsServiceComponent {
                 new OBIdentifierAuthenticator(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
         bundleContext.registerService(OAuthEventInterceptor.class, new TokenRevocationListener(), null);
-        App2AppAuthenticator app2AppAuthenticator = new App2AppAuthenticator();
-        bundleContext.registerService(ApplicationAuthenticator.class.getName(),
-                app2AppAuthenticator, null);
+        //Todo: Uncomment this after fixing the issue with the App2App authenticator
+        // https://github.com/wso2/financial-services-accelerator/issues/323
+//        App2AppAuthenticator app2AppAuthenticator = new App2AppAuthenticator();
+//        bundleContext.registerService(ApplicationAuthenticator.class.getName(),
+//                app2AppAuthenticator, null);
 
         if (IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry() != null) {
             JsFunctionRegistry jsFunctionRegistry = IdentityExtensionsDataHolder.getInstance().getJsFunctionRegistry();
