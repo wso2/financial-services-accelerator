@@ -63,6 +63,8 @@ public class GatewayConstants {
     public static final String CODE = "code";
     public static final String MESSAGE = "message";
     public static final String DESCRIPTION = "description";
+    public static final String ERROR = "error";
+    public static final String ERROR_DESCRIPTION = "error_description";
     public static final String LINKS = "links";
     public static final String IAT = "iat";
     public static final String EXP = "exp";
@@ -75,6 +77,8 @@ public class GatewayConstants {
     public static final String APP_OWNER = "ext_application_owner";
     public static final String REQUIRE_SIGNED_OBJ = "require_signed_request_object";
     public static final String TLS_CLIENT_CERT_ACCESS_TOKENS = "tls_client_certificate_bound_access_tokens";
+    public static final String TOKEN_EP_ALLOW_REUSE_PVT_KEY_JWT = "token_endpoint_allow_reuse_pvt_key_jwt";
+    public static final String PRIVATE_KEY_JWT = "private_key_jwt";
     public static final String APP_DISPLAY_NAME = "ext_application_display_name";
     public static final String JWT = "JWT";
     public static final String SOFTWARE_STATEMENT = "software_statement";
@@ -100,4 +104,8 @@ public class GatewayConstants {
     public static final String CLIENT_ID = "client_id";
     public static final String CLIENT_SECRET = "client_secret";
     public static final String CLIENT_ID_ISSUED_AT = "client_id_issued_at";
+    public static final String INVALID_REQUEST = "invalid_request";
+    public static final String INVALID_SSA = "invalid_software_statement";
+    public static final String UNAUTHORIZED_REQUEST = "unauthorized_request";
+    public static final String DCR_ERROR = "Error occurred while processing the DCR request";
 }
