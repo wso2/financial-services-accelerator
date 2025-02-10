@@ -241,6 +241,29 @@
                     </Param>
                 {% endfor %}
             </Params>
+            <Validators>
+                {% for validator in financial_services.app_registration.dcr.validators.validator %}
+                <Validator>
+                    <Name>{{validator.name}}</Name>
+                    <Class>{{validator.class}}</Class>
+                    <Enable>{{validator.enable}}</Enable>
+                    <Priority>{{validator.priority}}</Priority>
+                    <AllowedValues>
+                        {% for value in validator.allowed_values %}
+                        <Value>{{value}}</Value>
+                        {% endfor %}
+                    </AllowedValues>
+                </Validator>
+                {% endfor %}
+            </Validators>
+            <JTICache>
+                {% if financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes is defined %}
+                <CacheAccessExpiry>{{financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+                {% endif %}
+                {% if financial_services.app_registration.dcr.jti_cache.cache_modified_expiry_minutes is defined %}
+                <CacheModifiedExpiry>{{financial_services.app_registration.dcr.jti_cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+                {% endif %}
+            </JTICache>
         </DCR>
         {% endif %}
     </AppRegistration>

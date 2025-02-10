@@ -132,7 +132,7 @@ public class IdentityExtensionsDataHolder {
         IdentityExtensionsDataHolder.apiResourceManager = apiResourceManager;
     }
 
-    public FinancialServicesConfigurationService getOpenBankingConfigurationService() {
+    public FinancialServicesConfigurationService getConfigurationService() {
 
         return configurationService;
     }

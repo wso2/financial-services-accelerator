@@ -53,4 +53,12 @@ public class IdentityCommonConstants {
     public static final String ORGANIZATION = "ORGANIZATION";
     public static final String USER_DEFINED_RESOURCE = "User-defined-oauth2-resource";
     public static final String RBAC_POLICY = "RBAC";
+    public static final String APPLICATION_TYPE = "application_type";
+    public static final String RESPONSE_TYPES = "response_types";
+    public static final String SSA_REDIRECT_URIS = "redirect_uris";;
+    public static final String SSA_LOGO_URI = "logo_uri";
+    public static final String SSA_POLICY_URI = "policy_uri";
+    public static final String SSA_TOS_URI = "tos_uri";
+    public static final String SSA_CLIENT_URI = "client_uri";
+    public static final String INVALID_CLIENT_METADATA = "invalid_client_metadata";
 }

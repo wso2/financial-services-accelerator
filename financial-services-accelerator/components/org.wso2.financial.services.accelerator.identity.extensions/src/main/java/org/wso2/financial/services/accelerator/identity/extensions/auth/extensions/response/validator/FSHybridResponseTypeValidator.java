@@ -61,8 +61,8 @@ public class FSHybridResponseTypeValidator extends TokenValidator {
 
         if (StringUtils.isBlank(openIdScope) || !isContainOIDCScope(openIdScope)) {
             String clientID = request.getParameter(OAuth.OAUTH_CLIENT_ID).replaceAll("[\r\n]", "");
-            String errorMsg = "Request with \'client_id\' = \'" + clientID +
-                    "\' has \'response_type\' for \'hybrid flow\'; but \'openid\' scope not found.";
+            String errorMsg = String.format("Request with \'client_id\' = \'%s\' has \'response_type\' for " +
+                    "\'hybrid flow\'; but \'openid\' scope not found.", clientID);
             log.error(errorMsg);
             throw OAuthProblemException.error(OAuthError.CodeResponse.INVALID_REQUEST)
                     .description(errorMsg);

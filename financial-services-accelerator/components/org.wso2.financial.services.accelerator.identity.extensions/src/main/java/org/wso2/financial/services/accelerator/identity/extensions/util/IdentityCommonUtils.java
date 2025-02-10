@@ -37,6 +37,8 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCache;
+import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 import java.io.ByteArrayInputStream;
@@ -76,7 +78,7 @@ public class IdentityCommonUtils {
         try {
             return Class.forName(classpath).getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
-            log.error("Class not found: " + classpath.replaceAll("[\r\n]", ""));
+            log.error(String.format("Class not found: %s",  classpath.replaceAll("[\r\n]", "")));
             throw new FinancialServicesRuntimeException("Cannot find the defined class", e);
         } catch (InstantiationException | InvocationTargetException |
                  NoSuchMethodException | IllegalAccessException e) {
@@ -310,5 +312,36 @@ public class IdentityCommonUtils {
             }
         }
         return spMetaDataMap;
+    }
+
+    /**
+     * Check whether the given jti value is replayed.
+     *
+     * @param jtiValue - jti value
+     * @return
+     */
+    public static boolean isJTIReplayed(String jtiValue) {
+
+        // Validate JTI. Continue if jti is not present in cache
+        if (getJtiFromCache(jtiValue) != null) {
+            return true;
+        }
+
+        // Add jti value to cache
+        JwtJtiCacheKey jtiCacheKey = JwtJtiCacheKey.of(jtiValue);
+        JwtJtiCache.getInstance().addToCache(jtiCacheKey, jtiValue);
+        return false;
+    }
+
+    /**
+     * Try to retrieve the given jti value from cache.
+     *
+     * @param jtiValue - jti value
+     * @return
+     */
+    public static String getJtiFromCache(String jtiValue) {
+
+        JwtJtiCacheKey cacheKey = JwtJtiCacheKey.of(jtiValue);
+        return JwtJtiCache.getInstance().getFromCache(cacheKey);
     }
 }
