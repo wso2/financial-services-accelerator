@@ -365,21 +365,18 @@ name = "TokenEndpointAuthMethod"
 key = "token_endpoint_auth_method"
 required = true
 include_in_response = true
-#allowed_values = ["accounts", "payments"]
 
 [[financial_services.app_registration.dcr.params]]
 name = "IdTokenSignatureAlgorithm"
 key = "id_token_signed_response_alg"
 required = true
 include_in_response = true
-#allowed_values = ["accounts", "payments"]
 
 [[financial_services.app_registration.dcr.params]]
 name = "RequestObjectSignatureAlgorithm"
 key = "request_object_signing_alg"
 required = true
 include_in_response = true
-#allowed_values = ["accounts", "payments"]
 
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RequiredParamsValidator"
