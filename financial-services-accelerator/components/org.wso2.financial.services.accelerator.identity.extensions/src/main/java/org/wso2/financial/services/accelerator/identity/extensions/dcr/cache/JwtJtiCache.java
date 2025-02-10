@@ -28,9 +28,9 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 public class JwtJtiCache extends FinancialServicesBaseCache<JwtJtiCacheKey, String> {
 
     private static final String CACHE_NAME = "DCR_JTI_CACHE";
-    private Integer accessExpiryMinutes;
-    private Integer modifiedExpiryMinutes;
-    private static JwtJtiCache jwtJtiCache;
+    private final Integer accessExpiryMinutes;
+    private final Integer modifiedExpiryMinutes;
+    private static volatile JwtJtiCache jwtJtiCache;
 
     /**
      * Initialize With unique cache name.
@@ -49,7 +49,11 @@ public class JwtJtiCache extends FinancialServicesBaseCache<JwtJtiCacheKey, Stri
      */
     public static synchronized JwtJtiCache getInstance() {
         if (jwtJtiCache == null) {
-            jwtJtiCache = new JwtJtiCache();
+            synchronized (JwtJtiCache.class) {
+                if (jwtJtiCache == null) {
+                    jwtJtiCache = new JwtJtiCache();
+                }
+            }
         }
         return jwtJtiCache;
     }
