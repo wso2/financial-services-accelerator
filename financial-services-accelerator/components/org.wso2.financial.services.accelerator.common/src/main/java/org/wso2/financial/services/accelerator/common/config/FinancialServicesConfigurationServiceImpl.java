@@ -53,6 +53,12 @@ public class FinancialServicesConfigurationServiceImpl implements FinancialServi
     }
 
     @Override
+    public Map<String, Map<String, Object>> getDCRValidatorsConfig() {
+
+        return configParser.getDCRValidatorsConfig();
+    }
+
+    @Override
     public List<String> getDCRResponseParameters() {
 
         return configParser.getDCRResponseParameters();

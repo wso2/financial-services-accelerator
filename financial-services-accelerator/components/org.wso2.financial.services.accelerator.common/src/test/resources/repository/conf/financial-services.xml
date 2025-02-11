@@ -65,7 +65,52 @@
                     </AllowedValues>
                     <IncludeInResponse>true</IncludeInResponse>
                 </Param>
+                <Param>
+                    <Name>RedirectUris</Name>
+                    <Key>redirect_uris</Key>
+                    <Required>true</Required>
+                    <AllowedValues>
+                    </AllowedValues>
+                    <IncludeInResponse>true</IncludeInResponse>
+                </Param>
+                <Param>
+                    <Name>GrantTypes</Name>
+                    <Key>grant_types</Key>
+                    <Required>true</Required>
+                    <AllowedValues>
+                        <Value>authorization_code</Value>
+                        <Value>refresh_token</Value>
+                        <Value>client_credentials</Value>
+                    </AllowedValues>
+                    <IncludeInResponse>true</IncludeInResponse>
+                </Param>
+                <Param>
+                    <Name>SoftwareStatement</Name>
+                    <Key>software_statement</Key>
+                    <Required>true</Required>
+                    <AllowedValues>
+                    </AllowedValues>
+                    <IncludeInResponse>true</IncludeInResponse>
+                </Param>
             </Params>
+            <Validators>
+                <Validator>
+                    <Name>RequiredParamsValidator</Name>
+                    <Class>org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.RequiredParamsValidator</Class>
+                    <Enable>true</Enable>
+                    <Priority>1</Priority>
+                    <AllowedValues>
+                    </AllowedValues>
+                </Validator>
+                <Validator>
+                    <Name>IssuerValidator</Name>
+                    <Class>org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.IssuerValidator</Class>
+                    <Enable>true</Enable>
+                    <Priority>2</Priority>
+                    <AllowedValues>
+                    </AllowedValues>
+                </Validator>
+            </Validators>
         </DCR>
     </AppRegistration>
 

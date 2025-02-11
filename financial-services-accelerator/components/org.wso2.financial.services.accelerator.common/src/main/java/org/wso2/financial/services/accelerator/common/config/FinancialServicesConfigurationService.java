@@ -32,6 +32,8 @@ public interface FinancialServicesConfigurationService {
 
     public Map<String, Map<Integer, String>> getAuthorizeSteps();
 
+    public Map<String, Map<String, Object>> getDCRValidatorsConfig();
+
     public Map<String, Map<String, Object>> getDCRParamsConfig();
 
     public List<String> getDCRResponseParameters();

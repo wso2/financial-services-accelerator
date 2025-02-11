@@ -68,7 +68,8 @@ public class FinancialServicesConstants {
     public static final String APP_REGISTRATION_TAG = "AppRegistration";
     public static final String DCR_TAG = "DCR";
     public static final String DCR_PARAMS_TAG = "Params";
-    public static final String DCR_PARAM_TAG = "Param";
+    public static final String DCR_VALIDATORS_TAG = "Validators";
+    public static final String DCR_VALIDATORS_ENABLED_TAG = "Enabled";
     public static final String DCR_PARAM_ALLOWED_VALUE_TAG = "AllowedValues";
     public static final String DCR_PARAM_NAME_TAG = "Name";
     public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
@@ -78,6 +79,8 @@ public class FinancialServicesConstants {
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
     public static final String IDENTITY_PROVIDER_NAME = "AppRegistration.SCA.IdpName";
     public static final String IDENTITY_PROVIDER_STEP = "AppRegistration.SCA.IdpStep";
+    public static final String JTI_CACHE_ACCESS_EXPIRY = "AppRegistration.DCR.JTICache.CacheAccessExpiry";
+    public static final String JTI_CACHE_MODIFY_EXPIRY = "AppRegistration.DCR.JTICache.CacheModifiedExpiry";
     public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";
     public static final String KEYSTORE_PASSWORD_TAG = "Security.InternalKeyStore.Password";
     public static final String SIGNING_ALIAS_TAG = "Security.InternalKeyStore.KeyAlias";

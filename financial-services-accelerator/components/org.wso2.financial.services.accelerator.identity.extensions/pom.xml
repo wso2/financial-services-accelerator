@@ -141,6 +141,8 @@
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*GrantHandler.class</exclude>
                         <exclude>**/*FSRequestObject.class</exclude>
+                        <exclude>**/*Cache.class</exclude>
+                        <exclude>**/*CacheKey.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

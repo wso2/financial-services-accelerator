@@ -63,6 +63,7 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Map<Integer, String>> fsExecutors = new HashMap<>();
     private final Map<String, Map<Integer, String>> authorizeSteps = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrParams = new HashMap<>();
+    private final Map<String, Map<String, Object>> dcrValidators = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;
@@ -268,43 +269,96 @@ public final class FinancialServicesConfigParser {
                             FinancialServicesConstants.DCR_TAG));
 
             if (dcrConfigs != null) {
-                OMElement dcrParamConfigs = dcrConfigs.getFirstChildWithName(
-                        new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
-                                FinancialServicesConstants.DCR_PARAMS_TAG));
-                if (dcrParamConfigs != null) {
-                    Iterator dcrParamsElements = dcrParamConfigs.getChildElements();
-                    while (dcrParamsElements.hasNext()) {
-                        OMElement dcrParamsElement = (OMElement) dcrParamsElements.next();
-                        Iterator dcrParamIterator = dcrParamsElement.getChildElements();
-                        Map<String, Object> paramValues = new HashMap<>();
-                        String paramName = null;
-                        while (dcrParamIterator.hasNext()) {
-                            OMElement paramObj = (OMElement) dcrParamIterator.next();
-                            if (FinancialServicesConstants.DCR_PARAM_NAME_TAG.equals(paramObj.getLocalName())) {
-                                paramName = paramObj.getText();
-                            }
-                            if (FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG
-                                    .equals(paramObj.getLocalName())) {
-                                OMElement allowedValuesElement = dcrParamsElement.getFirstChildWithName(
-                                        new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
-                                                FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG));
+                buildDCRParamConfigs(dcrConfigs);
+                buildDCRValidatorConfigs(dcrConfigs);
+            }
+        }
+    }
 
-                                List<String> values = new ArrayList<>();
-                                if (allowedValuesElement != null) {
-                                    Iterator allowedValues = allowedValuesElement.getChildElements();
-                                    while (allowedValues.hasNext()) {
-                                        OMElement value = (OMElement) allowedValues.next();
-                                        values.add(value.getText());
-                                    }
-                                    paramValues.put(paramObj.getLocalName(), values);
-                                }
-                            } else {
-                                paramValues.put(paramObj.getLocalName(), paramObj.getText());
+    /**
+     * Method to build DCR parameter configurations.
+     */
+    private void buildDCRParamConfigs(OMElement dcrConfigs) {
+
+        OMElement dcrParamConfigs = dcrConfigs.getFirstChildWithName(
+                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                        FinancialServicesConstants.DCR_PARAMS_TAG));
+        if (dcrParamConfigs != null) {
+            Iterator dcrParamsElements = dcrParamConfigs.getChildElements();
+            while (dcrParamsElements.hasNext()) {
+                OMElement dcrParamsElement = (OMElement) dcrParamsElements.next();
+                Iterator dcrParamIterator = dcrParamsElement.getChildElements();
+                Map<String, Object> paramValues = new HashMap<>();
+                String paramName = null;
+                while (dcrParamIterator.hasNext()) {
+                    OMElement paramObj = (OMElement) dcrParamIterator.next();
+                    if (FinancialServicesConstants.DCR_PARAM_NAME_TAG.equals(paramObj.getLocalName())) {
+                        paramName = paramObj.getText();
+                    }
+                    if (FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG
+                            .equals(paramObj.getLocalName())) {
+                        OMElement allowedValuesElement = dcrParamsElement.getFirstChildWithName(
+                                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                        FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG));
+
+                        List<String> values = new ArrayList<>();
+                        if (allowedValuesElement != null) {
+                            Iterator allowedValues = allowedValuesElement.getChildElements();
+                            while (allowedValues.hasNext()) {
+                                OMElement value = (OMElement) allowedValues.next();
+                                values.add(value.getText());
                             }
+                            paramValues.put(paramObj.getLocalName(), values);
                         }
-                        dcrParams.put(paramName,  paramValues);
+                    } else {
+                        paramValues.put(paramObj.getLocalName(), paramObj.getText());
                     }
                 }
+                dcrParams.put(paramName,  paramValues);
+            }
+        }
+    }
+
+    /**
+     * Method to build DCR validator configurations.
+     */
+    private void buildDCRValidatorConfigs(OMElement dcrConfigs) {
+
+        OMElement dcrValidatorConfigs = dcrConfigs.getFirstChildWithName(
+                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                        FinancialServicesConstants.DCR_VALIDATORS_TAG));
+        if (dcrValidatorConfigs != null) {
+            Iterator dcrValidatorElements = dcrValidatorConfigs.getChildElements();
+            while (dcrValidatorElements.hasNext()) {
+                OMElement dcrValidatorElement = (OMElement) dcrValidatorElements.next();
+                Iterator dcrValidatorIterator = dcrValidatorElement.getChildElements();
+                Map<String, Object> paramValues = new HashMap<>();
+                String paramName = null;
+                while (dcrValidatorIterator.hasNext()) {
+                    OMElement paramObj = (OMElement) dcrValidatorIterator.next();
+                    if (FinancialServicesConstants.DCR_PARAM_NAME_TAG.equals(paramObj.getLocalName())) {
+                        paramName = paramObj.getText();
+                    }
+                    if (FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG
+                            .equals(paramObj.getLocalName())) {
+                        OMElement allowedValuesElement = dcrValidatorElement.getFirstChildWithName(
+                                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                        FinancialServicesConstants.DCR_PARAM_ALLOWED_VALUE_TAG));
+
+                        List<String> values = new ArrayList<>();
+                        if (allowedValuesElement != null) {
+                            Iterator allowedValues = allowedValuesElement.getChildElements();
+                            while (allowedValues.hasNext()) {
+                                OMElement value = (OMElement) allowedValues.next();
+                                values.add(value.getText());
+                            }
+                            paramValues.put(paramObj.getLocalName(), values);
+                        }
+                    } else {
+                        paramValues.put(paramObj.getLocalName(), paramObj.getText());
+                    }
+                }
+                dcrValidators.put(paramName,  paramValues);
             }
         }
     }
@@ -446,6 +500,11 @@ public final class FinancialServicesConfigParser {
     public Map<String, Map<String, Object>> getDCRParamsConfig() {
 
         return Collections.unmodifiableMap(dcrParams);
+    }
+
+    public Map<String, Map<String, Object>> getDCRValidatorsConfig() {
+
+        return Collections.unmodifiableMap(dcrValidators);
     }
 
     public String getDataSourceName() {
