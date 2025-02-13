@@ -53,6 +53,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
     public Map<String, Object> filterDCRRegisterAttributes(ApplicationRegistrationRequest appRegistrationRequest,
                                                            Map<String, Object> ssaParams) throws DCRMClientException {
 
+        // Executing configured DCR validators.
         for (DynamicClientRegistrationValidator validator : enabledDcrValidators) {
             try {
                 validator.validatePost(appRegistrationRequest, ssaParams);
@@ -63,6 +64,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         Map<String, Object> filteredAttributes = new HashMap<>();
 
+        // Adding BFSI specific fields to be stored as SP metadata
         Map<String, Object> additionalAttributes = appRegistrationRequest.getAdditionalAttributes();
         filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
                 appRegistrationRequest.getSoftwareStatement());
@@ -76,6 +78,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         filteredAttributes.put(IdentityCommonConstants.APPLICATION_TYPE,
                 additionalAttributes.get(IdentityCommonConstants.APPLICATION_TYPE));
 
+        // Adding fields from the configuration to be stored as SP metadata
         getResponseParamsFromConfig().forEach((key) -> {
             if (additionalAttributes.containsKey(key)) {
                 filteredAttributes.put(key, additionalAttributes.get(key));
@@ -90,6 +93,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                                                          ServiceProviderProperty[] serviceProviderProperties)
             throws DCRMClientException {
 
+        // Executing configured DCR validators.
         for (DynamicClientRegistrationValidator validator : enabledDcrValidators) {
             try {
                 validator.validateUpdate(applicationUpdateRequest, ssaParams, serviceProviderProperties);
@@ -100,6 +104,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         Map<String, Object> filteredAttributes = new HashMap<>();
 
+        // Adding BFSI specific fields to be stored as SP metadata
         Map<String, Object> additionalAttributes = applicationUpdateRequest.getAdditionalAttributes();
         filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
                 applicationUpdateRequest.getSoftwareStatement());
@@ -113,6 +118,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         filteredAttributes.put(IdentityCommonConstants.APPLICATION_TYPE,
                 additionalAttributes.get(IdentityCommonConstants.APPLICATION_TYPE));
 
+        // Adding fields from the configuration to be stored as SP metadata
         getResponseParamsFromConfig().forEach((key) -> {
             if (additionalAttributes.containsKey(key)) {
                 filteredAttributes.put(key, additionalAttributes.get(key));
@@ -124,6 +130,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
     @Override
     public Map<String, Object> processDCRGetAttributes(Map<String, String> ssaParams) throws DCRMClientException {
 
+        // Executing configured DCR validators.
         for (DynamicClientRegistrationValidator validator : enabledDcrValidators) {
             try {
                 validator.validateGet(ssaParams);
@@ -132,6 +139,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        // Filtering the attributes to be returned in the response.
         Map<String, Object> filteredAttributes = new HashMap<>();
         filteredAttributes.putAll(ssaParams);
         return filteredAttributes;
@@ -141,6 +149,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
     @Override
     public List<String> getResponseAttributeKeys() {
 
+        //  Adding BFSI specific fields to be returned in the response.
         List<String> responseAttributeKeys = getResponseParamsFromConfig();
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_STATEMENT);
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_ID);
@@ -161,8 +170,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         Map<String, Map<String, Object>> dcrConfigs = configurationService.getDCRParamsConfig();
 
         dcrConfigs.forEach((key, value) -> {
-            if (Boolean.parseBoolean(value.get("IncludeInResponse").toString())) {
-                responseParams.add(value.get("Key").toString());
+            if (Boolean.parseBoolean(value.get(IdentityCommonConstants.INCLUDE_IN_RESPONSE).toString())) {
+                responseParams.add(value.get(IdentityCommonConstants.KEY).toString());
             }
         });
         return responseParams;
@@ -179,10 +188,12 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         Map<Integer, DynamicClientRegistrationValidator> validatorMap = new HashMap<>();
 
         for (Map<String, Object> validator : dcrValidators.values()) {
-            if (Boolean.parseBoolean(validator.get("Enable").toString())) {
+            if (Boolean.parseBoolean(validator.get(IdentityCommonConstants.ENABLE).toString())) {
                 DynamicClientRegistrationValidator dcrValidator = (DynamicClientRegistrationValidator)
-                        FinancialServicesUtils.getClassInstanceFromFQN(validator.get("Class").toString());
-                validatorMap.put(Integer.parseInt(validator.get("Priority").toString()), dcrValidator);
+                        FinancialServicesUtils.getClassInstanceFromFQN(
+                                validator.get(IdentityCommonConstants.CLASS).toString());
+                validatorMap.put(Integer.parseInt(validator.get(IdentityCommonConstants.PRIORITY).toString()),
+                        dcrValidator);
             }
         }
 

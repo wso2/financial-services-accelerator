@@ -41,7 +41,7 @@ public class RedirectUriMatchValidator implements DynamicClientRegistrationValid
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
                              Map<String, Object> ssaParams) throws FinancialServicesException {
 
-        validate(applicationRegistrationRequest.getRedirectUris(), ssaParams);
+        validateRedirectUrls(applicationRegistrationRequest.getRedirectUris(), ssaParams);
     }
 
     @Override
@@ -53,16 +53,17 @@ public class RedirectUriMatchValidator implements DynamicClientRegistrationValid
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
                                ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
 
-        validate(applicationUpdateRequest.getRedirectUris(), ssaParams);
+        validateRedirectUrls(applicationUpdateRequest.getRedirectUris(), ssaParams);
     }
 
     /**
      * Validate the redirect URIs in the request.
+     *
      * @param redirectUris   Redirect URIs in the request.
      * @param ssaParams      SSA parameters.
      * @throws FinancialServicesException When an error occurs while validating the request.
      */
-    public static void validate(List<String> redirectUris, Map<String, Object> ssaParams)
+    public static void validateRedirectUrls(List<String> redirectUris, Map<String, Object> ssaParams)
             throws FinancialServicesException {
         if (redirectUris != null && !redirectUris.isEmpty()) {
 

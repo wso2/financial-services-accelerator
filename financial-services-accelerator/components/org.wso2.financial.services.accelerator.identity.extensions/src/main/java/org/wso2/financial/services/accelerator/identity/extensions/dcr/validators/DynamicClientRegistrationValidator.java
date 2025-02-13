@@ -27,6 +27,8 @@ import java.util.Map;
 
 /**
  * Interface for dynamic client registration validator.
+ * This interface is used to validate the dynamic client registration requests. Implementations of this interface
+ * can be configured in the deployment.toml file.
  */
 public interface DynamicClientRegistrationValidator {
 
@@ -51,8 +53,9 @@ public interface DynamicClientRegistrationValidator {
     /**
      * Validate the update request.
      *
-     * @param applicationUpdateRequest  Application update request.
-     * @param ssaParams                 SSA parameters.
+     * @param applicationUpdateRequest   Application update request.
+     * @param ssaParams                  SSA parameters.
+     * @param serviceProviderProperties  Service provider properties.
      * @throws FinancialServicesException When an error occurs while validating the request.
      */
     void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest,

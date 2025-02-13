@@ -24,6 +24,7 @@ import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.Map;
@@ -39,7 +40,7 @@ public class SSAJTIValidator implements DynamicClientRegistrationValidator {
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
                              Map<String, Object> ssaParams) throws FinancialServicesException {
 
-        String ssaJtiValue = (String) ssaParams.get("jti");
+        String ssaJtiValue = (String) ssaParams.get(IdentityCommonConstants.JTI);
         if (IdentityCommonUtils.isJTIReplayed(ssaJtiValue)) {
             log.error("Rejected the replayed jti in the software statement");
             throw new FinancialServicesException("Rejected the replayed jti in the software statement");
@@ -56,7 +57,7 @@ public class SSAJTIValidator implements DynamicClientRegistrationValidator {
                                ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
 
 
-        String ssaJtiValue = (String) ssaParams.get("jti");
+        String ssaJtiValue = (String) ssaParams.get(IdentityCommonConstants.JTI);
         if (IdentityCommonUtils.isJTIReplayed(ssaJtiValue)) {
             log.error("Rejected the replayed jti in the software statement");
             throw new FinancialServicesException("Rejected the replayed jti in the software statement");

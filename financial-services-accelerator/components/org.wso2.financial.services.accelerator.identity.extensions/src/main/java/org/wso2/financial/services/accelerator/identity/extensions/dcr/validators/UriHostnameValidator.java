@@ -110,6 +110,7 @@ public class UriHostnameValidator implements DynamicClientRegistrationValidator 
                 String uriHost = new URI(redirectURI).getHost();
                 if (!(logoURIHost.equals(uriHost) && clientURIHost.equals(uriHost)
                         && policyURIHost.equals(uriHost) && termsOfServiceURIHost.equals(uriHost))) {
+                    log.error("URL host names do not match");
                     return false;
                 }
             }

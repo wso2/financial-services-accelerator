@@ -27,6 +27,7 @@ import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,11 +78,11 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
         for (Map.Entry<String, Map<String, Object>> paramConfig : dcrConfigs.entrySet()) {
             //convert first letter to lowercase in DCR registration config parameters
             String camelCaseConfigParam = convertFirstLetterToLowerCase(paramConfig.getKey());
-            Map additionalAttributes = (Map) requestParamMap.get("additionalAttributes");
+            Map additionalAttributes = (Map) requestParamMap.get(IdentityCommonConstants.ADDITIONAL_ATTRIBUTES);
             //check whether required parameters are available in the request as expected
-            if (Boolean.parseBoolean(paramConfig.getValue().get("Required").toString())) {
+            if (Boolean.parseBoolean(paramConfig.getValue().get(IdentityCommonConstants.REQUIRED).toString())) {
                 if (!requestParamMap.containsKey(camelCaseConfigParam) &&
-                        !additionalAttributes.containsKey(paramConfig.getValue().get("Key"))) {
+                        !additionalAttributes.containsKey(paramConfig.getValue().get(IdentityCommonConstants.KEY))) {
                     String errorMessage = String.format("Required parameter %s not found in the request",
                             camelCaseConfigParam.replaceAll("[\r\n]", ""));
                     log.error(errorMessage);
@@ -92,7 +93,7 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
                 if (requestParamMap.containsKey(camelCaseConfigParam)) {
                     value = requestParamMap.get(camelCaseConfigParam);
                 } else {
-                    value = additionalAttributes.get(paramConfig.getValue().get("Key"));
+                    value = additionalAttributes.get(paramConfig.getValue().get(IdentityCommonConstants.KEY));
                 }
                 //validate list type required parameters
                 if (value instanceof List) {
@@ -128,14 +129,14 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
             if (requestParamMap.containsKey(camelCaseConfigParam)) {
                 value = requestParamMap.get(camelCaseConfigParam);
             } else {
-                value = additionalAttributes.get(paramConfig.getValue().get("Key"));
+                value = additionalAttributes.get(paramConfig.getValue().get(IdentityCommonConstants.KEY));
             }
             //checks whether <AllowedValues> tag is set in config and is not empty.
-            if (paramConfig.getValue().get("AllowedValues") != null && value != null) {
+            if (paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES) != null && value != null) {
                 //checks whether allowed values configurations contain any empty values
-                if (!((List) paramConfig.getValue().get("AllowedValues")).contains("")) {
+                if (!((List) paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES)).contains("")) {
                     //validate against allowed values provided in config
-                    List allowedList = (List) paramConfig.getValue().get("AllowedValues");
+                    List allowedList = (List) paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES);
                     if (!allowedList.isEmpty()) {
                         //validate array type parameters
                         if (value instanceof List) {
@@ -156,7 +157,7 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
                         if (value instanceof String) {
                             String param = (String) value;
                             //check scope validation since request is sending a space separated scopes list
-                            if (camelCaseConfigParam.equals("scope")) {
+                            if (camelCaseConfigParam.equals(IdentityCommonConstants.SCOPE)) {
                                 List<String> scopeList = Arrays.asList(param.split(" "));
                                 for (String scope : scopeList) {
                                     if (!allowedList.contains(scope)) {

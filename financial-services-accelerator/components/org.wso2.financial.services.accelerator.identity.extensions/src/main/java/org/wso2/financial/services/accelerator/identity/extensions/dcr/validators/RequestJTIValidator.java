@@ -55,7 +55,6 @@ public class RequestJTIValidator implements DynamicClientRegistrationValidator {
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
                                ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
 
-
         Double requestJtiValue = (Double) applicationUpdateRequest.getAdditionalAttributes().get("jti");
         if (IdentityCommonUtils.isJTIReplayed(String.valueOf(requestJtiValue))) {
             log.error("Rejected the replayed jti in the registration request");
