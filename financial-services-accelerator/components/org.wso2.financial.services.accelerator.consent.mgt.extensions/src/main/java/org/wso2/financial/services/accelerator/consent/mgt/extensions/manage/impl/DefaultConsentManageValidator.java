@@ -23,9 +23,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageUtils;
 
@@ -46,7 +50,17 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
             "ReadBalances");
 
     @Override
-    public ConsentPayloadValidationResult validateRequestPayload(JSONObject requestPayload, String consentType) {
+    public ConsentPayloadValidationResult validateRequestPayload(ConsentManageData consentManageData,
+                                                                 String consentType) {
+        //Get the request payload from the ConsentManageData
+        Object request = consentManageData.getPayload();
+        if (!(request instanceof JSONObject)) {
+            log.error("Payload is not in the correct format");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not in the correct format");
+        }
+
+        JSONObject requestPayload = (JSONObject) request;
+
         switch (consentType) {
             case ConsentExtensionConstants.ACCOUNTS:
                 return validateAccountRequestPayload(requestPayload);
@@ -58,6 +72,16 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
                 return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST, "invalid_consent_type",
                         "Invalid consent type");
         }
+    }
+
+    @Override
+    public ConsentPayloadValidationResult validateRequestHeaders(ConsentManageData consentManageData) {
+        return new ConsentPayloadValidationResult(true);
+    }
+
+    @Override
+    public String getConsentType(ConsentManageData consentManageData) throws ConsentManagementException {
+        return ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
     }
 
     /**

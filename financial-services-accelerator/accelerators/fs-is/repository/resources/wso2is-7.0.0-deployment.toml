@@ -428,6 +428,7 @@ priority = 9
 #================consent management==============
 [financial_services.consent.manage]
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler"
+validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator"
 
 [[financial_services.consent.authorize_steps.retrieve]]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"
@@ -438,7 +439,7 @@ class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authoriz
 priority = 1
 
 [[financial_services.consent.validation]]
-validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.DefaultConsentValidato"
+validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.DefaultConsentValidator"
 signature.alias="wso2carbon"
 jwt.payload.enabled=true
 
