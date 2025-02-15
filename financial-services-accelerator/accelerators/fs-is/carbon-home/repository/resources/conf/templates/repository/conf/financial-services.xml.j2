@@ -40,6 +40,11 @@
         {% else %}
         <ManageHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler</ManageHandler>
         {% endif %}
+        {% if financial_services.consent.manage.validator is defined %}
+        <ManageValidator>{{financial_services.consent.manage.validator}}</ManageValidator>
+        {% else %}
+        <ManageValidator>org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator</ManageValidator>
+        {% endif %}
         <AuthorizeSteps>
             <Retrieve>
                 {% if financial_services.consent.authorize_steps.retrieve is defined %}

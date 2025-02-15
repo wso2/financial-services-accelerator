@@ -81,9 +81,4 @@ public interface ConsentManageHandler {
      * @throws ConsentException Error object with data required for the error response
      */
     void handleFileGet(ConsentManageData consentManageData) throws ConsentException;
-
-    /**
-     * Function to get the Consent Manage Validator.
-     */
-    ConsentManageValidator getConsentManageValidator();
 }

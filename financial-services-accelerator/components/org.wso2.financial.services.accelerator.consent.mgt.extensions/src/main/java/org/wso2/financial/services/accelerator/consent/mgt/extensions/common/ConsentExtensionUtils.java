@@ -83,11 +83,12 @@ public class ConsentExtensionUtils {
     /**
      * Method to construct Initiation response.
      *
-     * @param response       Response of the request
-     * @param createdConsent Consent response received from service layer
+     * @param responseObj       Response of the request
+     * @param createdConsent    Consent response received from service layer
      * @return  JSONObject Initiation Response
      */
-    public static JSONObject getInitiationResponse(JSONObject response, DetailedConsentResource createdConsent) {
+    public static JSONObject getInitiationResponse(Object responseObj, DetailedConsentResource createdConsent) {
+        JSONObject response = (JSONObject) responseObj;
         JSONObject dataObject = response.getJSONObject(ConsentExtensionConstants.DATA);
         dataObject.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getConsentID());
         dataObject.put(ConsentExtensionConstants.CREATION_DATE_TIME, convertToISO8601(createdConsent.getCreatedTime()));

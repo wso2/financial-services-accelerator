@@ -45,6 +45,7 @@ public class FinancialServicesConstants {
     public static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
     public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
     public static final String MANAGE_HANDLER = "Consent.ManageHandler";
+    public static final String MANAGE_VALIDATOR = "Consent.ManageValidator";
     public static final String AUTHORIZE_STEPS_CONFIG_TAG = "AuthorizeSteps";
     public static final String STEP_CONFIG_TAG = "Step";
     public static final String CONSENT_JWT_PAYLOAD_VALIDATION = "Consent.Validation.JWTPayloadValidation";
