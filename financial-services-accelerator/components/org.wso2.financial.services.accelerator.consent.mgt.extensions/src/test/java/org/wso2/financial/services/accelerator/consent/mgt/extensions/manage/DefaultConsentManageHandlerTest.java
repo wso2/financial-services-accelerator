@@ -58,7 +58,7 @@ import static org.mockito.Mockito.mockStatic;
  */
 public class DefaultConsentManageHandlerTest {
 
-    DefaultConsentManageHandler defaultConsentManageHandler;
+    DefaultConsentManageHandler defaultConsentManageHandler = new DefaultConsentManageHandler();
     @Mock
     ConsentManageData consentManageDataMock;
     @Mock
@@ -100,8 +100,6 @@ public class DefaultConsentManageHandlerTest {
         Mockito.when(consentManageBuilder.getConsentManageHandler()).thenReturn(defaultConsentManageHandler);
         Mockito.when(consentManageBuilder.getConsentManageValidator()).thenReturn(new DefaultConsentManageValidator());
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
-
-        defaultConsentManageHandler = new DefaultConsentManageHandler();
     }
 
     @AfterClass

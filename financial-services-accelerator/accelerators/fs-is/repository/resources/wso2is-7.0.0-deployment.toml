@@ -438,7 +438,7 @@ priority = 1
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentPersistStep"
 priority = 1
 
-[[financial_services.consent.validation]]
+[financial_services.consent.validation]
 validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.DefaultConsentValidator"
 signature.alias="wso2carbon"
 jwt.payload.enabled=true

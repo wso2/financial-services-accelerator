@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
@@ -56,7 +55,8 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
         Object request = consentManageData.getPayload();
         if (!(request instanceof JSONObject)) {
             log.error("Payload is not in the correct format");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not in the correct format");
+            return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
+                    ResponseStatus.BAD_REQUEST.getReasonPhrase(), "Payload is not in the correct format");
         }
 
         JSONObject requestPayload = (JSONObject) request;
