@@ -45,7 +45,7 @@ public class FSCodeResponseTypeValidatorTest {
             when(httpServletRequestMock.getParameter("response_type")).thenReturn("code");
             when(httpServletRequestMock.getParameter("client_id")).thenReturn("1234567654321");
 
-            mock.when(() -> FinancialServicesUtils.isRegulatoryApp(anyString())).thenReturn(false);
+            mock.when(() -> FinancialServicesUtils.isFapiConformantApp(anyString())).thenReturn(false);
 
             FSCodeResponseTypeValidator uut = spy(new FSCodeResponseTypeValidator());
 
