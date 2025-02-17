@@ -32,12 +32,17 @@ import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
 import org.wso2.carbon.identity.application.mgt.listener.ApplicationMgtListener;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
+import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImpl;
 import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.FSApplicationManagementListener;
 
@@ -59,6 +64,14 @@ public class IdentityExtensionsServiceComponent {
         BundleContext bundleContext = context.getBundleContext();
         bundleContext.registerService(ApplicationMgtListener.class, new FSApplicationManagementListener(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
+
+        if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement"))) {
+            String filterConfig = (String) FinancialServicesConfigParser.getInstance().getConfiguration()
+                    .get(FinancialServicesConstants.DCR_ADDITIONAL_ATTRIBUTE_FILTER);
+            AdditionalAttributeFilter attributeFilter = (AdditionalAttributeFilter) FinancialServicesUtils
+                    .getClassInstanceFromFQN(filterConfig);
+            bundleContext.registerService(AdditionalAttributeFilter.class.getName(), attributeFilter, null);
+        }
 
         log.debug("Registered FS related Identity services.");
     }

@@ -61,4 +61,15 @@ public class IdentityCommonConstants {
     public static final String SSA_TOS_URI = "tos_uri";
     public static final String SSA_CLIENT_URI = "client_uri";
     public static final String INVALID_CLIENT_METADATA = "invalid_client_metadata";
+    public static final String INCLUDE_IN_RESPONSE = "IncludeInResponse";
+    public static final String KEY = "Key";
+    public static final String ENABLE = "Enable";
+    public static final String CLASS = "Class";
+    public static final String PRIORITY = "Priority";
+    public static final String ADDITIONAL_ATTRIBUTES = "additionalAttributes";
+    public static final String REQUIRED = "Required";
+    public static final String ALLOWED_VALUES = "AllowedValues";
+    public static final String SSA_ISSUER_VALIDATOR = "SSAIssuerValidator";
+    public static final String JTI = "jti";
 }
+
