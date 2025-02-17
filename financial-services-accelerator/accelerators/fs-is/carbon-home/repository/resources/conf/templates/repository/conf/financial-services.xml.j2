@@ -226,6 +226,11 @@
         </SCA>
         {% if financial_services.app_registration.dcr.params is defined %}
         <DCR>
+            {% if financial_services.app_registration.dcr.additional_attribute_filter is defined %}
+            <AdditionalAttributeFilter>{{financial_services.app_registration.dcr.additional_attribute_filter}}</AdditionalAttributeFilter>
+            {% else %}
+            <AdditionalAttributeFilter>org.wso2.financial.services.accelerator.identity.extensions.dcr.attribute.filter.FSAdditionalAttributeFilter</AdditionalAttributeFilter>
+            {% endif %}
             <Params>
                 {% for param in financial_services.app_registration.dcr.params %}
                     <Param>
