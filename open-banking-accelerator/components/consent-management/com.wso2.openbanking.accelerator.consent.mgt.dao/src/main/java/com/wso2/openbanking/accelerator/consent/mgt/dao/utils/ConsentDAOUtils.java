@@ -23,9 +23,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class ConsentDAOUtils {
     private static final String RIGHT_PARENTHESIS = ")";
     public static final String GROUP_BY_SEPARATOR = "\\|\\|";
     public static final String ATT_VALUES_SEPARATOR = "@@";
+    private static final Log LOG = LogFactory.getLog(ConsentDAOUtils.class);
     private static final Map<String, String> DB_OPERATORS_MAP = new HashMap<String, String>() {
         {
             put(ConsentMgtDAOConstants.IN, "IN");
@@ -302,10 +304,23 @@ public class ConsentDAOUtils {
             return ArrayUtils.EMPTY_STRING_ARRAY;
         }
 
-        return Arrays.stream(concatenatedKeyValuePairs.split(GROUP_BY_SEPARATOR))
-                .map(keyValuePair -> keyValuePair.split(ATT_VALUES_SEPARATOR))
-                .filter(keyValuePair -> keyValuePair.length == 2)
-                .map(keyValuePair -> keyValuePair[1])
-                .toArray(String[]::new);
+        final String[] keyValuePairs = concatenatedKeyValuePairs.split(GROUP_BY_SEPARATOR);
+        final List<String> attributesValues = new ArrayList<>();
+        for (final String keyValuePair : keyValuePairs) {
+            final String[] keyValueArray = keyValuePair.split(ATT_VALUES_SEPARATOR);
+            if (keyValueArray.length == 2) {
+                attributesValues.add(keyValueArray[1]);
+            } else if (keyValueArray.length < 2) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(String.format("Attribute value is missing for the key '%s'. Adding an empty value.",
+                            keyValueArray[0]));
+                }
+                attributesValues.add(StringUtils.EMPTY);
+            } else {
+                attributesValues.add(keyValuePair
+                        .substring(keyValuePair.indexOf(ATT_VALUES_SEPARATOR) + ATT_VALUES_SEPARATOR.length()));
+            }
+        }
+        return attributesValues.toArray(new String[0]);
     }
 }
