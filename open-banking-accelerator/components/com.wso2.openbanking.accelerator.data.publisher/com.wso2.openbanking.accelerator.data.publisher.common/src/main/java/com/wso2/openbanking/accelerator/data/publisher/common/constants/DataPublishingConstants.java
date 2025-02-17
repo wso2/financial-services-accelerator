@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -37,5 +37,6 @@ public class DataPublishingConstants {
     public static final String WORKER_THREAD_COUNT = "DataPublishing.WorkerThreadCount";
     public static final String THRIFT_PUBLISHING_TIMEOUT = "DataPublishing.Thrift.PublishingTimeout";
     public static final String LOG_FILE_NAME = "OB_LOG";
+    public static final String DATA_PUBLISHING_CONFIG_TAG = "DataPublishing.OpenBankingDataPublisher";
 
 }

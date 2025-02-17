@@ -49,6 +49,7 @@
         <QueueSize>32768</QueueSize>
         <WorkerThreadCount>10</WorkerThreadCount>
         <PoolWaitTimeMs>60000</PoolWaitTimeMs>
+        <OpenBankingDataPublisher>com.wso2.openbanking.accelerator.data.publisher.common.OBThriftDataPublisher</OpenBankingDataPublisher>
         <Thrift>
             <PublishingTimeout>2000</PublishingTimeout>
             <Streams>
