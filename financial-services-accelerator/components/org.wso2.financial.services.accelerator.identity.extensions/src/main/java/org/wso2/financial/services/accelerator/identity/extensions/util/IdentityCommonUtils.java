@@ -297,6 +297,7 @@ public class IdentityCommonUtils {
     public static Map<String, Object> getSpMetaData(ServiceProvider serviceProvider) {
 
         Map<String, String> originalData = Arrays.stream(serviceProvider.getSpProperties())
+                .filter(serviceProviderProperty -> StringUtils.isNotEmpty(serviceProviderProperty.getValue()))
                 .collect(Collectors.toMap(ServiceProviderProperty::getName, ServiceProviderProperty::getValue));
 
         Map<String, Object> spMetaDataMap = new HashMap<>();
