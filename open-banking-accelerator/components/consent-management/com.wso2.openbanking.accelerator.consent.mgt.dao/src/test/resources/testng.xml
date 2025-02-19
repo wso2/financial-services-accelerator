@@ -22,6 +22,7 @@
         <parameter name="log-level" value="info"/>
         <classes>
             <class name="com.wso2.openbanking.accelerator.consent.mgt.dao.impl.OBConsentMgtDAOTests"/>
+            <class name="com.wso2.openbanking.accelerator.consent.mgt.dao.utils.ConsentDAOUtilsTests"/>
         </classes>
     </test>
 </suite>

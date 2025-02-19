@@ -166,7 +166,8 @@ public class ConsentMgtCommonDBQueries {
                 "OBC.CREATED_TIME AS CONSENT_CREATED_TIME," +
                 "OBC.UPDATED_TIME AS CONSENT_UPDATED_TIME," +
                 "Group_concat(distinct CA.att_key order by CA.att_key SEPARATOR '||' ) AS ATT_KEY, " +
-                "Group_concat(distinct CA.att_value order by CA.att_key SEPARATOR '||') AS ATT_VALUE, " +
+                "Group_concat(distinct CONCAT(CA.att_key, '@@', CA.att_value) order by CA.att_key SEPARATOR '||') " +
+                "AS ATT_VALUE, " +
 
 
                 "( SELECT   Group_concat( OCAR2.auth_id order by OCAR2.auth_id SEPARATOR '||') " +
