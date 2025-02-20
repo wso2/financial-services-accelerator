@@ -18,11 +18,11 @@
 
 package org.wso2.financial.services.accelerator.keymanager;
 
+import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
-import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,13 +66,11 @@ public interface FSKeyManagerExtensionInterface {
     /**
      * Do changes to service provider before updating the service provider properties.
      *
-     * @param oAuthConsumerAppDTO oAuth application DTO
-     * @param serviceProvider Service provider application
+     * @param  spAppData            Service provider data
      * @param  additionalProperties Values for additional property list defined in the config
      * @param isCreateApp           Whether this functions is called at app creation
      * @throws APIManagementException when failed to validate a given property
      */
-    void doPreUpdateSpApp(OAuthConsumerAppDTO oAuthConsumerAppDTO, ServiceProvider serviceProvider,
-                          HashMap<String, String> additionalProperties, boolean isCreateApp)
+    void doPreUpdateSpApp(JSONObject spAppData, HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException;
 }

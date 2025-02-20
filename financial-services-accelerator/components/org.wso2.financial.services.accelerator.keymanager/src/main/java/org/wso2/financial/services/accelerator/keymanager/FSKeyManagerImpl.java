@@ -18,12 +18,11 @@
 
 package org.wso2.financial.services.accelerator.keymanager;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.ExceptionCodes;
 import org.wso2.carbon.apimgt.api.model.AccessTokenInfo;
@@ -35,19 +34,17 @@ import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.carbon.apimgt.impl.AMDefaultKeyManagerImpl;
 import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
-import org.wso2.carbon.identity.application.common.util.IdentityApplicationConstants;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementServiceImpl;
-import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
-import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
+import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerConstants;
+import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerUtil;
+import org.wso2.financial.services.accelerator.keymanager.utils.IdentityServerUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,18 +65,16 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
     public AccessTokenInfo getNewApplicationAccessToken(AccessTokenRequest tokenRequest) throws APIManagementException {
 
         try {
-            ApplicationManagementServiceImpl applicationManagementService = getApplicationMgmtServiceImpl();
-            ServiceProvider serviceProvider = applicationManagementService.getServiceProviderByClientId(
-                    tokenRequest.getClientId(), IdentityApplicationConstants.OAuth2.NAME, tenantDomain);
-            if (serviceProvider != null) {
-                ServiceProviderProperty regulatoryProperty = Arrays.stream(serviceProvider.getSpProperties())
-                        .filter(serviceProviderProperty -> serviceProviderProperty.getName()
-                                .equals("regulatory")).findAny().orElse(null);
-                if (regulatoryProperty != null && "true".equals(regulatoryProperty.getValue())) {
-                    return null;
-                }
-            }
-        } catch (IdentityApplicationManagementException e) {
+            JSONObject spAppData = IdentityServerUtils.getSPApplicationFromClientId(tokenRequest.getClientId());
+//            if (spAppData != null) {
+//                ServiceProviderProperty regulatoryProperty = Arrays.stream(serviceProvider.getSpProperties())
+//                        .filter(serviceProviderProperty -> serviceProviderProperty.getName()
+//                                .equals("regulatory")).findAny().orElse(null);
+//                if (regulatoryProperty != null && "true".equals(regulatoryProperty.getValue())) {
+//                    return null;
+//                }
+//            }
+        } catch (FinancialServicesException e) {
             log.error("Error while generating keys. ", e);
         }
         return super.getNewApplicationAccessToken(tokenRequest);
@@ -118,16 +113,8 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
             if (additionalProperties != null) {
                 Object additionalPropertiesJson;
                 try {
-                    additionalPropertiesJson = new JSONParser(JSONParser.MODE_PERMISSIVE)
-                            .parse(additionalProperties.toString());
-                    if (!(additionalPropertiesJson instanceof JSONObject)) {
-                        String errMsg = "Additional properties is not a valid json object";
-                        log.error(errMsg);
-                        throw new APIManagementException(errMsg, ExceptionCodes
-                                .from(ExceptionCodes.INVALID_APPLICATION_ADDITIONAL_PROPERTIES,
-                                        errMsg));
-                    }
-                } catch (ParseException e) {
+                    additionalPropertiesJson = new JSONObject(additionalProperties.toString());
+                } catch (JSONException e) {
                     String errMsg = "Additional properties is not a valid JSON string";
                     throw new APIManagementException(errMsg, e, ExceptionCodes
                             .from(ExceptionCodes.INVALID_APPLICATION_ADDITIONAL_PROPERTIES,
@@ -136,7 +123,7 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
 
                 for (ConfigurationDto configurationDto : applicationConfigurationDtoList) {
                     String key = configurationDto.getName();
-                    String values = ((JSONObject) additionalPropertiesJson).getAsString(key);
+                    String values = ((JSONObject) additionalPropertiesJson).getString(key);
 
                     if (values == null) {
                         // AbstractKeyManager Validations
@@ -206,43 +193,34 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
         doPreCreateApplication(oauthAppRequest, additionalProperties);
         OAuthApplicationInfo oAuthApplicationInfo = oauthAppRequest.getOAuthApplicationInfo();
         String username = (String) oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_USERNAME);
+        oauthAppRequest.setOAuthApplicationInfo(oAuthApplicationInfo);
         oAuthApplicationInfo = super.createApplication(oauthAppRequest);
         // Need to get the application name after creating the application to obtain the generated app name
         String appName = oAuthApplicationInfo.getClientName();
         // Admin needs to have application role to retrieve and edit the app
         FSKeyManagerUtil.addApplicationRoleToAdmin(appName);
-
+//
         try {
-            String tenantDomain = FinancialServicesUtils.getSpTenantDomain(oAuthApplicationInfo.getClientId());
-            updateSpProperties(appName, tenantDomain, username, additionalProperties, true);
+            JSONObject appData = IdentityServerUtils.getSPApplicationFromClientId(oAuthApplicationInfo.getClientId());
 
-            ServiceProvider appServiceProvider = getApplicationMgmtServiceImpl()
-                    .getServiceProvider(appName, tenantDomain);
-            ServiceProviderProperty regulatoryProperty = getSpPropertyFromSPMetaData(
-                    "regulatory", appServiceProvider.getSpProperties());
-
-            if (regulatoryProperty != null) {
-                if (Boolean.parseBoolean(regulatoryProperty.getValue())) {
-                    OAuthAppRequest updatedOauthAppRequest = oauthAppRequest;
-                    ServiceProviderProperty appNameProperty = getSpPropertyFromSPMetaData("DisplayName",
-                            appServiceProvider.getSpProperties());
-                    if (appNameProperty != null) {
-                        updatedOauthAppRequest.getOAuthApplicationInfo().setClientName(appNameProperty.getValue());
-                    }
-                    // Assigning null as it is how the tokenScope parameter is used in the updateApplication method
-                    updatedOauthAppRequest.getOAuthApplicationInfo().addParameter("tokenScope", null);
-                    super.updateApplication(updatedOauthAppRequest);
-                }
-            }
+            updateSpProperties(appName, appData, username, additionalProperties, true);
+//
+//            if (Boolean.parseBoolean(additionalProperties.get("regulatory"))) {
+//                OAuthAppRequest updatedOauthAppRequest = oauthAppRequest;
+//                ServiceProviderProperty appNameProperty = getSpPropertyFromSPMetaData("DisplayName",
+//                        FSKeyManagerUtil.getSPMetadataFromSPApp(appData));
+//                if (appNameProperty != null) {
+//                    updatedOauthAppRequest.getOAuthApplicationInfo().setClientName(appNameProperty.getValue());
+//                }
+//                // Assigning null as it is how the tokenScope parameter is used in the updateApplication method
+//                updatedOauthAppRequest.getOAuthApplicationInfo().addParameter("tokenScope", null);
+//                super.updateApplication(updatedOauthAppRequest);
+//            }
             return oAuthApplicationInfo;
 
         } catch (FinancialServicesException | APIManagementException e) {
             throw new APIManagementException(ExceptionCodes.OAUTH2_APP_CREATION_FAILED.getErrorMessage(),
                     e, ExceptionCodes.OAUTH2_APP_CREATION_FAILED);
-        } catch (IdentityApplicationManagementException e) {
-            String errMsg = "error occurred in retrieving service provider for app " + appName;
-            log.error(errMsg);
-            throw new APIManagementException(errMsg, e, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
         }
     }
 
@@ -250,27 +228,27 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
     @Generated(message = "Excluding from code coverage since it is covered from other method")
     public OAuthApplicationInfo updateApplication(OAuthAppRequest oAuthAppRequest) throws APIManagementException {
 
-        HashMap<String, String> additionalProperties = FSKeyManagerUtil
-                .getValuesForAdditionalProperties(oAuthAppRequest);
-        // Adding SP property to identify update request. Will be removed when updating authenticators.
-        additionalProperties.put("AppCreateRequest", "false");
+//        HashMap<String, String> additionalProperties = FSKeyManagerUtil
+//                .getValuesForAdditionalProperties(oAuthAppRequest);
+//        // Adding SP property to identify update request. Will be removed when updating authenticators.
+//        additionalProperties.put("AppCreateRequest", "false");
         OAuthApplicationInfo oAuthApplicationInfo = oAuthAppRequest.getOAuthApplicationInfo();
-        String clientId = oAuthApplicationInfo.getClientId();
-        // There is no way to identify the client type in here. So we have to hardcode "oauth2" as the client type
-        try {
-            ServiceProvider serviceProvider = getApplicationMgmtServiceImpl()
-                    .getServiceProviderByClientId(clientId, OAUTH2, tenantDomain);
-            doPreUpdateApplication(oAuthAppRequest, additionalProperties, serviceProvider);
-            String appName = serviceProvider.getApplicationName();
-            String username = (String) oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_USERNAME);
-            updateSpProperties(appName, tenantDomain, username, additionalProperties, false);
-        } catch (IdentityApplicationManagementException e) {
-            String errMsg = String.format("Cannot find Service provider application for client Id %s",
-                    clientId.replaceAll("[\r\n]", ""));
-            log.error(errMsg);
-            throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED);
-        }
-
+//        String clientId = oAuthApplicationInfo.getClientId();
+//        // There is no way to identify the client type in here. So we have to hardcode "oauth2" as the client type
+//        try {
+//            ServiceProvider serviceProvider = getApplicationMgmtServiceImpl()
+//                    .getServiceProviderByClientId(clientId, OAUTH2, tenantDomain);
+//            doPreUpdateApplication(oAuthAppRequest, additionalProperties, serviceProvider);
+//            String appName = serviceProvider.getApplicationName();
+//            String username = (String) oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_USERNAME);
+//            updateSpProperties(appName, tenantDomain, username, additionalProperties, false);
+//        } catch (IdentityApplicationManagementException e) {
+//            String errMsg = String.format("Cannot find Service provider application for client Id %s",
+//                    clientId.replaceAll("[\r\n]", ""));
+//            log.error(errMsg);
+//            throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED);
+//        }
+//
         oAuthApplicationInfo = super.updateApplication(oAuthAppRequest);
         return oAuthApplicationInfo;
     }
@@ -280,97 +258,49 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
     public OAuthApplicationInfo retrieveApplication(String consumerKey) throws APIManagementException {
 
         OAuthApplicationInfo oAuthApplicationInfo = super.retrieveApplication(consumerKey);
-        String name = oAuthApplicationInfo.getClientName();
-        try {
-            String tenantDomain = FinancialServicesUtils.getSpTenantDomain(consumerKey);
-            org.wso2.carbon.identity.application.common.model.ServiceProvider appServiceProvider =
-                    getApplicationMgmtServiceImpl().getServiceProvider(name, tenantDomain);
-            // Iterate FS specific additional properties to check whether they override the value of any predefined
-            // sp properties in application management listeners
-            List<ServiceProviderProperty> spProperties =
-                    new ArrayList<>(Arrays.asList(appServiceProvider.getSpProperties()));
-            return updateAdditionalProperties(oAuthApplicationInfo, spProperties);
-        } catch (IdentityApplicationManagementException | FinancialServicesException e) {
-            throw new APIManagementException(ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED.getErrorMessage(),
-                    e, ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED);
-        }
+        return oAuthApplicationInfo;
+//        String name = oAuthApplicationInfo.getClientName();
+//        try {
+//            String tenantDomain = FinancialServicesUtils.getSpTenantDomain(consumerKey);
+//            org.wso2.carbon.identity.application.common.model.ServiceProvider appServiceProvider =
+//                    getApplicationMgmtServiceImpl().getServiceProvider(name, tenantDomain);
+//            // Iterate FS specific additional properties to check whether they override the value of any predefined
+//            // sp properties in application management listeners
+//            List<ServiceProviderProperty> spProperties =
+//                    new ArrayList<>(Arrays.asList(appServiceProvider.getSpProperties()));
+//            return updateAdditionalProperties(oAuthApplicationInfo, spProperties);
+//        } catch (IdentityApplicationManagementException | FinancialServicesException e) {
+//            throw new APIManagementException(ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED.getErrorMessage(),
+//                    e, ExceptionCodes.OAUTH2_APP_RETRIEVAL_FAILED);
+//        }
     }
 
     /**
      * @param spAppName            Generate service provider application name
-     * @param tenantDomain         Tenant domain of the service provider application
+     * @param spAppData            Service provider application data
      * @param username             Application owner
      * @param additionalProperties new Service provider property map
      * @param isCreateApp           Whether this function is called at app creation
      * @throws APIManagementException
      */
-    protected void updateSpProperties(String spAppName, String tenantDomain, String username,
+    protected void updateSpProperties(String spAppName, JSONObject spAppData, String username,
                                       HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException {
 
         try {
-            OAuthConsumerAppDTO oAuthConsumerAppDTO = getOAuthAdminService().
-                    getOAuthApplicationDataByAppName(spAppName);
-            ServiceProvider serviceProvider = getApplicationMgmtServiceImpl()
-                    .getServiceProvider(spAppName, tenantDomain);
-            doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties, isCreateApp);
+            doPreUpdateSpApp(spAppData, additionalProperties, isCreateApp);
             // Iterate FS specific additional properties to check whether they override the value of any predefined
             // sp properties in application management listeners
-            List<ServiceProviderProperty> spProperties =
-                    new ArrayList<>(Arrays.asList(serviceProvider.getSpProperties()));
-            for (Map.Entry<String, String> propertyElement : additionalProperties.entrySet()) {
-                ServiceProviderProperty overridenSPproperty = spProperties.stream().filter(
-                        serviceProviderProperty -> serviceProviderProperty.getName()
-                                .equals(propertyElement.getKey())).findAny().orElse(null);
-                // If SP property is overridden, remove old SP property and add the new one
-                if (overridenSPproperty != null) {
-                    spProperties.remove(overridenSPproperty);
-                    overridenSPproperty.setValue(propertyElement.getValue());
-                    spProperties.add(overridenSPproperty);
-                } else {
-                    ServiceProviderProperty additionalProperty = new ServiceProviderProperty();
-                    additionalProperty.setName(propertyElement.getKey());
-                    additionalProperty.setValue(propertyElement.getValue());
-                    spProperties.add(additionalProperty);
-                }
-            }
-            serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
-            try {
-                getApplicationMgmtServiceImpl().updateApplication(serviceProvider, tenantDomain, username);
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Successfully updated service provider properties for app %s",
-                            spAppName.replaceAll("[\r\n]", "")));
-                }
-            } catch (IdentityApplicationManagementException e) {
-                String errMsg = String.format("Error occurred while updating service provider %s",
-                        spAppName.replaceAll("[\r\n]", ""));
-                log.error(errMsg);
-                throw new APIManagementException(errMsg, e, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
-            }
+            Map<String, Object> spProperties = IdentityServerUtils
+                    .constructSPPropertiesList(FSKeyManagerUtil.getSPMetadataFromSPApp(spAppData));
 
-            try {
-                getOAuthAdminService().updateConsumerApplication(oAuthConsumerAppDTO);
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Successfully updated oAuth application DTO for app %s",
-                            spAppName.replaceAll("[\r\n]", "")));
-                }
-            } catch (IdentityOAuthAdminException e) {
-                String errMsg = String.format("Error occurred while updating oAuth Application data for app %s",
-                        spAppName.replaceAll("[\r\n]", ""));
-                log.error(errMsg);
-                throw new APIManagementException(errMsg, e, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
-            }
-
-        } catch (IdentityApplicationManagementException | IdentityOAuthAdminException e) {
-            String errMsg = String.format("Error occurred in retrieving service provider or oAuth app %s",
-                    spAppName.replaceAll("[\r\n]", ""));
-            log.error(errMsg);
-            throw new APIManagementException(errMsg, e, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+            IdentityServerUtils.updateSPApplication(spAppData.getString("clientId"), spAppName, spProperties);
+        } catch (FinancialServicesException e) {
+            throw new RuntimeException(e);
         }
-
     }
 
-    /**
+        /**
      * Extract values for additional properties defined in the config from database and add to oAuthApplicationInfo.
      *
      * @return oAuth application Info
@@ -441,21 +371,19 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
     /**
      * Do changes to service provider before updating the service provider properties.
      *
-     * @param oAuthConsumerAppDTO oAuth application DTO
-     * @param serviceProvider Service provider application
+     * @param spAppData             Service provider application data
+     * @param additionalProperties  AdditionalProperties
      * @param isCreateApp           Whether this function is called at app creation
      * @throws APIManagementException when failed to validate a given property
      */
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
-    public void doPreUpdateSpApp(org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO oAuthConsumerAppDTO,
-                                 ServiceProvider serviceProvider,
-                                 HashMap<String, String> additionalProperties, boolean isCreateApp)
+    public void doPreUpdateSpApp(JSONObject spAppData, HashMap<String, String> additionalProperties,
+                                 boolean isCreateApp)
             throws APIManagementException {
 
         FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
         if (keyManagerExtensionImpl != null) {
-            keyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties,
-                    isCreateApp);
+            keyManagerExtensionImpl.doPreUpdateSpApp(spAppData, additionalProperties, isCreateApp);
         }
     }
 
@@ -470,11 +398,11 @@ public class FSKeyManagerImpl extends AMDefaultKeyManagerImpl implements FSKeyMa
         return new OAuthAdminService();
     }
 
-    protected ServiceProviderProperty getSpPropertyFromSPMetaData(String propertyName,
-                                                                  ServiceProviderProperty[] spProperties) {
-
-        return Arrays.asList(spProperties).stream().filter(serviceProviderProperty -> serviceProviderProperty.getName()
-                .equals(propertyName)).findAny().orElse(null);
-    }
+//    protected ServiceProviderProperty getSpPropertyFromSPMetaData(String propertyName, JSONArray spProperties) {
+//
+//        return Arrays.asList(spProperties).stream().filter(serviceProviderProperty -> serviceProviderProperty
+//        .getName()
+//                .equals(propertyName)).findAny().orElse(null);
+//    }
 
 }

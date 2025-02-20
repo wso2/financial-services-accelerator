@@ -73,7 +73,7 @@ public class FinancialServicesConstants {
     public static final String DCR_PARAM_ALLOWED_VALUE_TAG = "AllowedValues";
     public static final String DCR_PARAM_NAME_TAG = "Name";
     public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
-    public static final String DCR_ADDITIONAL_PARAMS = "AppRegistration.DCR.AdditionalParams.Param";
+    public static final String DCR_ADDITIONAL_ATTRIBUTE_FILTER = "AppRegistration.DCR.AdditionalAttributeFilter";
     public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
             ".DisplayName";
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
@@ -138,4 +138,10 @@ public class FinancialServicesConstants {
     public static final String TENANT_DOMAIN = "carbon.super";
     public static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+    public static final String AUTH_HEADER = "Authorization";
+    public static final String BEARER_TAG = "Bearer ";
+    public static final String BASIC_TAG = "Basic ";
+    public static final String CONTENT_TYPE_TAG = "Content-Type";
+    public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String COLON = ":";
 }

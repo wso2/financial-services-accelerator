@@ -16,26 +16,29 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.keymanager;
+package org.wso2.financial.services.accelerator.keymanager.utils;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.ExceptionCodes;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
-import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
+import org.wso2.carbon.identity.base.IdentityRuntimeException;
+import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.keymanager.FSKeyManagerExtensionInterface;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
 
 import java.lang.reflect.InvocationTargetException;
@@ -86,26 +89,20 @@ public class FSKeyManagerUtil {
         Map<String, Map<String, String>> keyManagerAdditionalProperties = FinancialServicesConfigParser.getInstance()
                 .getKeyManagerAdditionalProperties();
         HashMap<String, String> additionalProperties = new HashMap<>();
-        Object additionalPropertiesJSON;
+        JSONObject additionalPropertiesJSON;
         try {
             // Get values for additional properties given at key generation step
-            additionalPropertiesJSON = new JSONParser(JSONParser.MODE_PERMISSIVE)
-                    .parse((String) oauthAppRequest.getOAuthApplicationInfo()
+            additionalPropertiesJSON = new JSONObject((String) oauthAppRequest.getOAuthApplicationInfo()
                             .getParameter(APIConstants.JSON_ADDITIONAL_PROPERTIES));
-            if (!(additionalPropertiesJSON instanceof JSONObject)) {
-                log.error(APIConstants.JSON_ADDITIONAL_PROPERTIES + " is not a JSON object");
-                throw new APIManagementException(ExceptionCodes.JSON_PARSE_ERROR.getErrorMessage(),
-                        ExceptionCodes.JSON_PARSE_ERROR);
-            }
-        } catch (ParseException e) {
-            throw new APIManagementException(ExceptionCodes.JSON_PARSE_ERROR.getErrorMessage(), e,
+        } catch (JSONException e) {
+            log.error(APIConstants.JSON_ADDITIONAL_PROPERTIES + " is not a JSON object");
+            throw new APIManagementException(ExceptionCodes.JSON_PARSE_ERROR.getErrorMessage(),
                     ExceptionCodes.JSON_PARSE_ERROR);
         }
 
-        JSONObject additionalPropertiesJSONObject = (JSONObject) additionalPropertiesJSON;
         // Add values of additional properties defined in the config to the default additional property list JSON object
         for (String key : keyManagerAdditionalProperties.keySet()) {
-            additionalProperties.put(key, additionalPropertiesJSONObject.getAsString(key));
+            additionalProperties.put(key, additionalPropertiesJSON.getString(key));
         }
         return additionalProperties;
     }
@@ -127,7 +124,7 @@ public class FSKeyManagerUtil {
      * @throws APIManagementException
      */
     @Generated(message = "excluding from coverage because it is a void method with external calls")
-    protected static void addApplicationRoleToAdmin(String applicationName) throws APIManagementException {
+    public static void addApplicationRoleToAdmin(String applicationName) throws APIManagementException {
 
         APIManagerConfiguration config = KeyManagerDataHolder.getInstance().getApiManagerConfigurationService()
                 .getAPIManagerConfiguration();
@@ -163,11 +160,48 @@ public class FSKeyManagerUtil {
     protected static UserRealm getUserRealm(String username) throws APIManagementException {
 
         try {
-            int tenantId = IdentityTenantUtil.getTenantIdOfUser(username);
+            int tenantId = getTenantIdOfUser(username);
             return KeyManagerDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
         } catch (UserStoreException e) {
             throw new APIManagementException("Error while obtaining user realm for user: " + username, e);
         }
+    }
+
+    /**
+     * Get the tenant id of the user.
+     * @param username
+     * @return
+     * @throws IdentityRuntimeException
+     */
+    public static int getTenantIdOfUser(String username) throws IdentityRuntimeException {
+        int tenantId = -1;
+        String domainName = MultitenantUtils.getTenantDomain(username);
+        if (domainName != null) {
+            try {
+                TenantManager tenantManager = KeyManagerDataHolder.getInstance().getRealmService().getTenantManager();
+                tenantId = tenantManager.getTenantId(domainName);
+            } catch (UserStoreException e) {
+                String errorMsg = "Error when getting the tenant id from the tenant domain : " + domainName;
+                throw IdentityRuntimeException.error(errorMsg, e);
+            }
+        }
+
+        if (tenantId == -1) {
+            throw IdentityRuntimeException.error("Invalid tenant domain of user " + username);
+        } else {
+            return tenantId;
+        }
+    }
+
+    public static JSONArray getSPMetadataFromSPApp(JSONObject appData) {
+        JSONArray spData = new JSONArray();
+        if (appData.has("advancedConfigurations")) {
+            JSONObject configs = appData.getJSONObject("advancedConfigurations");
+            if (configs.has("additionalSpProperties")) {
+                spData = configs.getJSONArray("additionalSpProperties");
+            }
+        }
+        return spData;
     }
 
 }

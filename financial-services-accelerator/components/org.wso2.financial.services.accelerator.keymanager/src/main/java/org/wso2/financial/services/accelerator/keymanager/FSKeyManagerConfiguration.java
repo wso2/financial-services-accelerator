@@ -25,6 +25,7 @@ import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.jwt.JWTValidatorImpl;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;

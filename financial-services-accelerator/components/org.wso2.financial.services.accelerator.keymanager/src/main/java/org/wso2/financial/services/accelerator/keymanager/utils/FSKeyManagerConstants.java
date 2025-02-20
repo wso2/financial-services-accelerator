@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.keymanager;
+package org.wso2.financial.services.accelerator.keymanager.utils;
 
 /**
  * FS Key Manager Constants.
@@ -24,5 +24,13 @@ package org.wso2.financial.services.accelerator.keymanager;
 public class FSKeyManagerConstants {
 
     public static final String CUSTOM_KEYMANAGER_TYPE = "fsKeyManager";
+    public static final String API_KEY_VALIDATOR_USERNAME = "APIKeyValidator.Username";
+    public static final String API_KEY_VALIDATOR_PASSWORD = "APIKeyValidator.Password";
+    public static final String API_KEY_VALIDATOR_URL = "APIKeyValidator.ServerURL";
+    public static final String SERVICE = "/services";
+
+    public static final String APP_RETRIEVAL_URL = "/api/server/v1/applications";
+    public static final String DCR_EP = "/api/identity/oauth2/dcr/v1.1/register/";
+
 
 }

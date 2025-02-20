@@ -32,6 +32,8 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.regex.Pattern;
 
 /**
@@ -155,5 +157,19 @@ public class FinancialServicesUtils {
     public static boolean startsWithUUID(String input) {
         Pattern uuidPattern = Pattern.compile("^" + FinancialServicesConstants.UUID_REGEX + ".*$");
         return uuidPattern.matcher(input).matches();
+    }
+
+    /**
+     * Method to obtain basic auth header.
+     *
+     * @param username Username of Auth header
+     * @param password Password of Auth header
+     * @return basic auth header
+     */
+    public static String getBasicAuthHeader(String username, String password) {
+
+        byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON + password)
+                .getBytes(StandardCharsets.UTF_8));
+        return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
     }
 }
