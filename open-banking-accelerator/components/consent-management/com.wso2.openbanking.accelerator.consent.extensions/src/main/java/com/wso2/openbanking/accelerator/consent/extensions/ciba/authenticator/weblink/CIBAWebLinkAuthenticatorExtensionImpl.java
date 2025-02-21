@@ -12,7 +12,6 @@ import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
-import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.internal.ConsentExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
@@ -22,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;
 import org.wso2.carbon.identity.application.authentication.framework.exception.AuthenticationFailedException;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public class CIBAWebLinkAuthenticatorExtensionImpl implements CIBAWebLinkAuthent
         paramList.add("login_hint=" + user.getUserName());
 
         StringBuilder builder = new StringBuilder();
-        builder.append(CarbonUtils.getCarbonServerUrl()).append(CIBAWebLinkAuthenticatorConstants.AUTHORIZE_URL_PATH);
+        builder.append(IdentityUtil.getServerURL(CIBAWebLinkAuthenticatorConstants.AUTHORIZE_URL_PATH, false, true));
         for (String param : paramList) {
             builder.append(param).append("&");
         }
