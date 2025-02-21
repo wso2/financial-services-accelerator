@@ -74,7 +74,7 @@ public class FinancialServicesConstants {
     public static final String DCR_PARAM_ALLOWED_VALUE_TAG = "AllowedValues";
     public static final String DCR_PARAM_NAME_TAG = "Name";
     public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
-    public static final String DCR_ADDITIONAL_PARAMS = "AppRegistration.DCR.AdditionalParams.Param";
+    public static final String DCR_ADDITIONAL_ATTRIBUTE_FILTER = "AppRegistration.DCR.AdditionalAttributeFilter";
     public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
             ".DisplayName";
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
