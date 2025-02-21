@@ -78,105 +78,10 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
         for (Map.Entry<String, Map<String, Object>> paramConfig : dcrConfigs.entrySet()) {
             //convert first letter to lowercase in DCR registration config parameters
             String camelCaseConfigParam = convertFirstLetterToLowerCase(paramConfig.getKey());
-            Map additionalAttributes = (Map) requestParamMap.get(IdentityCommonConstants.ADDITIONAL_ATTRIBUTES);
             //check whether required parameters are available in the request as expected
-            if (Boolean.parseBoolean(paramConfig.getValue().get(IdentityCommonConstants.REQUIRED).toString())) {
-                if (!requestParamMap.containsKey(camelCaseConfigParam) &&
-                        !additionalAttributes.containsKey(paramConfig.getValue().get(IdentityCommonConstants.KEY))) {
-                    String errorMessage = String.format("Required parameter %s not found in the request",
-                            camelCaseConfigParam.replaceAll("[\r\n]", ""));
-                    log.error(errorMessage);
-                    throw new FinancialServicesException(errorMessage);
-                }
-
-                Object value;
-                if (requestParamMap.containsKey(camelCaseConfigParam)) {
-                    value = requestParamMap.get(camelCaseConfigParam);
-                } else {
-                    value = additionalAttributes.get(paramConfig.getValue().get(IdentityCommonConstants.KEY));
-                }
-                //validate list type required parameters
-                if (value instanceof List) {
-                    List param = (List) value;
-                    if (param.isEmpty()) {
-                        String errorMessage = String.format("Required parameter %s cannot be empty",
-                                camelCaseConfigParam.replaceAll("[\r\n]", ""));
-                        log.error(errorMessage);
-                        throw  new FinancialServicesException(errorMessage);
-                    }
-
-                    boolean isAnyEmpty = param.stream().anyMatch(Objects::isNull);
-                    if (isAnyEmpty) {
-                        String errorMessage = String.format("Required parameter %s cannot be empty",
-                                camelCaseConfigParam.replaceAll("[\r\n]", ""));
-                        log.error(errorMessage);
-                        throw new FinancialServicesException(errorMessage);
-                    }
-
-                }
-                //validate string type required parameters
-                if (value instanceof String) {
-                    String param = (String) value;
-                    if (StringUtils.isBlank(param)) {
-                        String errorMessage = String.format("Required parameter %s cannot be empty",
-                                camelCaseConfigParam.replaceAll("[\r\n]", ""));
-                        log.error(errorMessage);
-                        throw new FinancialServicesException(errorMessage);
-                    }
-                }
-            }
-            Object value;
-            if (requestParamMap.containsKey(camelCaseConfigParam)) {
-                value = requestParamMap.get(camelCaseConfigParam);
-            } else {
-                value = additionalAttributes.get(paramConfig.getValue().get(IdentityCommonConstants.KEY));
-            }
-            //checks whether <AllowedValues> tag is set in config and is not empty.
-            if (paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES) != null && value != null) {
-                //checks whether allowed values configurations contain any empty values
-                if (!((List) paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES)).contains("")) {
-                    //validate against allowed values provided in config
-                    List allowedList = (List) paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES);
-                    if (!allowedList.isEmpty()) {
-                        //validate array type parameters
-                        if (value instanceof List) {
-                            List<String> params = (ArrayList<String>) value;
-                            for (Object paramObject : params) {
-                                if (paramObject instanceof String) {
-                                    String param = (String) paramObject;
-                                    if (!allowedList.contains(param)) {
-                                        String errorMessage = String.format("Invalid %s provided",
-                                                camelCaseConfigParam.replaceAll("[\r\n]", ""));
-                                        log.error(errorMessage);
-                                        throw new FinancialServicesException(errorMessage);
-                                    }
-                                }
-                            }
-                        }
-                        //validate string type parameters
-                        if (value instanceof String) {
-                            String param = (String) value;
-                            //check scope validation since request is sending a space separated scopes list
-                            if (camelCaseConfigParam.equals(IdentityCommonConstants.SCOPE)) {
-                                List<String> scopeList = Arrays.asList(param.split(" "));
-                                for (String scope : scopeList) {
-                                    if (!allowedList.contains(scope)) {
-                                        String errorMessage = String.format("Invalid %s provided",
-                                                camelCaseConfigParam.replaceAll("[\r\n]", ""));
-                                        log.error(errorMessage);
-                                        throw new FinancialServicesException(errorMessage);
-                                    }
-                                }
-                            } else if (!allowedList.contains(param)) {
-                                String errorMessage = String.format("Invalid %s provided",
-                                        camelCaseConfigParam.replaceAll("[\r\n]", ""));
-                                log.error(errorMessage);
-                                throw new FinancialServicesException(errorMessage);
-                            }
-                        }
-                    }
-                }
-            }
+            validateRequiredAttributesPresence(requestParamMap, camelCaseConfigParam, paramConfig);
+            //validate against allowed values provided in config
+            validatedAllowedValues(requestParamMap, camelCaseConfigParam, paramConfig);
         }
     }
 
@@ -185,5 +90,179 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
      */
     private static String convertFirstLetterToLowerCase(String configParameterValue) {
         return configParameterValue.substring(0, 1).toLowerCase(Locale.ENGLISH) + configParameterValue.substring(1);
+    }
+
+    /**
+     * Validate the required attributes presence.
+     *
+     * @param requestParamMap  Request parameter map
+     * @param camelCaseConfig  Camel case config
+     * @param paramConfig      Parameter config
+     * @throws FinancialServicesException  when the required attribute is not present
+     */
+    private static void validateRequiredAttributesPresence(Map<String, Object> requestParamMap, String camelCaseConfig,
+                                                           Map.Entry<String, Map<String, Object>> paramConfig)
+            throws FinancialServicesException {
+
+        Map additionalAttributes = (Map) requestParamMap.get(IdentityCommonConstants.ADDITIONAL_ATTRIBUTES);
+
+        if (Boolean.parseBoolean(paramConfig.getValue().get(IdentityCommonConstants.REQUIRED).toString())) {
+
+            //check whether required parameters are available in the request or in additional attributes as expected
+            containsRequiredParam(requestParamMap, camelCaseConfig, additionalAttributes, paramConfig);
+
+            Object value;
+            if (requestParamMap.containsKey(camelCaseConfig)) {
+                value = requestParamMap.get(camelCaseConfig);
+            } else {
+                value = additionalAttributes.get(paramConfig.getValue().get(IdentityCommonConstants.KEY));
+            }
+            //validate list type required parameters
+            if (value instanceof List) {
+                List param = (List) value;
+                if (param.isEmpty()) {
+                    String errorMessage = String.format("Required parameter %s cannot be empty",
+                            camelCaseConfig.replaceAll("[\r\n]", ""));
+                    log.debug(errorMessage);
+                    throw  new FinancialServicesException(errorMessage);
+                }
+
+                boolean isAnyEmpty = param.stream().anyMatch(Objects::isNull);
+                if (isAnyEmpty) {
+                    String errorMessage = String.format("Required parameter %s cannot be empty",
+                            camelCaseConfig.replaceAll("[\r\n]", ""));
+                    log.debug(errorMessage);
+                    throw new FinancialServicesException(errorMessage);
+                }
+
+            }
+            //validate string type required parameters
+            if (value instanceof String) {
+                String param = (String) value;
+                if (StringUtils.isBlank(param)) {
+                    String errorMessage = String.format("Required parameter %s cannot be empty",
+                            camelCaseConfig.replaceAll("[\r\n]", ""));
+                    log.debug(errorMessage);
+                    throw new FinancialServicesException(errorMessage);
+                }
+            }
+        }
+    }
+
+    /**
+     * Validate the allowed values.
+     *
+     * @param requestParamMap        Request parameter map
+     * @param camelCaseConfigParam   Camel case config parameter
+     * @param paramConfig            Parameter config
+     * @throws FinancialServicesException  when the allowed values are not valid
+     */
+    private static void validatedAllowedValues(Map<String, Object> requestParamMap, String camelCaseConfigParam,
+                                               Map.Entry<String, Map<String, Object>> paramConfig)
+            throws FinancialServicesException {
+
+        Map additionalAttributes = (Map) requestParamMap.get(IdentityCommonConstants.ADDITIONAL_ATTRIBUTES);
+        Object value;
+        if (requestParamMap.containsKey(camelCaseConfigParam)) {
+            value = requestParamMap.get(camelCaseConfigParam);
+        } else {
+            value = additionalAttributes.get(paramConfig.getValue().get(IdentityCommonConstants.KEY));
+        }
+        //checks whether <AllowedValues> tag is set in config and is not empty.
+        if (paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES) != null && value != null) {
+            //checks whether allowed values configurations contain any empty values
+            if (!((List) paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES)).contains("")) {
+                //validate against allowed values provided in config
+                List allowedList = (List) paramConfig.getValue().get(IdentityCommonConstants.ALLOWED_VALUES);
+                if (!allowedList.isEmpty()) {
+                    //validate array type parameters
+                    if (value instanceof List) {
+                        checkAllowedValuesInList(value, camelCaseConfigParam, allowedList);
+                    }
+                    //validate string type parameters
+                    if (value instanceof String) {
+                        String param = (String) value;
+                        checkAllowedValuesInString(param, camelCaseConfigParam, allowedList);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Check whether the required parameter is present in the request.
+     * @param requestParamMap        Request parameter map
+     * @param camelCaseConfig        Camel case config
+     * @param additionalAttributes   Additional attributes
+     * @param paramConfig            Parameter config
+     * @throws FinancialServicesException when the required parameter is not present
+     */
+    private static void containsRequiredParam(Map<String, Object> requestParamMap, String camelCaseConfig,
+                                  Map<String, String> additionalAttributes,
+                                  Map.Entry<String, Map<String, Object>> paramConfig)
+            throws FinancialServicesException {
+
+        String attributeKey = (String) paramConfig.getValue().get(IdentityCommonConstants.KEY);
+        if (!requestParamMap.containsKey(camelCaseConfig) &&
+                !additionalAttributes.containsKey(attributeKey)) {
+            String errorMessage = String.format("Required parameter %s not found in the request",
+                    camelCaseConfig.replaceAll("[\r\n]", ""));
+            log.debug(errorMessage);
+            throw new FinancialServicesException(errorMessage);
+        }
+    }
+
+    /**
+     * Check whether the allowed values are in the list.
+     *
+     * @param value                  object containing values
+     * @param camelCaseConfigParam   Camel case config parameter
+     * @param allowedList            Allowed list
+     * @throws FinancialServicesException
+     */
+    private static void checkAllowedValuesInList(Object value, String camelCaseConfigParam, List allowedList)
+            throws FinancialServicesException {
+        List<String> params = (ArrayList<String>) value;
+        for (Object paramObject : params) {
+            if (paramObject instanceof String) {
+                String param = (String) paramObject;
+                if (!allowedList.contains(param)) {
+                    String errorMessage = String.format("Invalid %s provided",
+                            camelCaseConfigParam.replaceAll("[\r\n]", ""));
+                    log.debug(errorMessage);
+                    throw new FinancialServicesException(errorMessage);
+                }
+            }
+        }
+    }
+
+    /**
+     * Check whether the allowed values are in the string.
+     *
+     * @param param                 parameter
+     * @param camelCaseConfigParam  Camel case config parameter
+     * @param allowedList           Allowed list
+     * @throws FinancialServicesException
+     */
+    private static void checkAllowedValuesInString(String param, String camelCaseConfigParam, List allowedList)
+            throws FinancialServicesException {
+
+        //check scope validation since request is sending a space separated scopes list
+        if (camelCaseConfigParam.equals(IdentityCommonConstants.SCOPE)) {
+            List<String> scopeList = Arrays.asList(param.split(" "));
+            for (String scope : scopeList) {
+                if (!allowedList.contains(scope)) {
+                    String errorMessage = String.format("Invalid %s provided",
+                            camelCaseConfigParam.replaceAll("[\r\n]", ""));
+                    log.debug(errorMessage);
+                    throw new FinancialServicesException(errorMessage);
+                }
+            }
+        } else if (!allowedList.contains(param)) {
+            String errorMessage = String.format("Invalid %s provided",
+                    camelCaseConfigParam.replaceAll("[\r\n]", ""));
+            log.debug(errorMessage);
+            throw new FinancialServicesException(errorMessage);
+        }
     }
 }

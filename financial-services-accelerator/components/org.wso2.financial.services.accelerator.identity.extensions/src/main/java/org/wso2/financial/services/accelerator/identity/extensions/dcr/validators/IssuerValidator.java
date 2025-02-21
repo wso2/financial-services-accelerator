@@ -39,10 +39,7 @@ public class IssuerValidator implements DynamicClientRegistrationValidator {
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
                              Map<String, Object> ssaParams) throws FinancialServicesException {
 
-        String issuer = (String) applicationRegistrationRequest.getAdditionalAttributes()
-                .get(IdentityCommonConstants.ISS);
-        String softwareId = (String) ssaParams.get(IdentityCommonConstants.SOFTWARE_ID);
-        validateSoftwareId(issuer, softwareId);
+        validateSoftwareId(applicationRegistrationRequest.getAdditionalAttributes(), ssaParams);
     }
 
     @Override
@@ -54,23 +51,25 @@ public class IssuerValidator implements DynamicClientRegistrationValidator {
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
                                ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
 
-        String issuer = (String) applicationUpdateRequest.getAdditionalAttributes().get(IdentityCommonConstants.ISS);
-        String softwareId = (String) ssaParams.get(IdentityCommonConstants.SOFTWARE_ID);
-        validateSoftwareId(issuer, softwareId);
+        validateSoftwareId(applicationUpdateRequest.getAdditionalAttributes(), ssaParams);
     }
 
     /**
      * Validate whether the issuer of the request is equal to the software id of the SSA
      *
-     * @param issuer        The issuer of the request
-     * @param softwareId    The software id of the SSA
+     * @param additionalAttributes      Additional Attributes
+     * @param ssaParams                 SSA Parameters
      * @throws FinancialServicesException When the issuer is not equal to the software id
      */
-    private static void validateSoftwareId(String issuer, String softwareId)
+    private static void validateSoftwareId(Map<String, Object> additionalAttributes, Map<String, Object> ssaParams)
             throws FinancialServicesException {
 
+        String issuer = (String) additionalAttributes.get(IdentityCommonConstants.ISS);
+        String softwareId = (String) ssaParams.get(IdentityCommonConstants.SOFTWARE_ID);
+
         if (softwareId != null && !softwareId.equals(issuer)) {
-            log.error("Invalid issuer, issuer should be the same as the software id");
+            log.debug(String.format("Invalid issuer, issuer value %s is not same as the software id value %s",
+                    issuer.replaceAll("[\r\n]+", ""), softwareId.replaceAll("[\r\n]+", "")));
             throw new FinancialServicesException("Invalid issuer, issuer should be the same as the software id");
         }
     }

@@ -42,7 +42,7 @@ public class SSAJTIValidator implements DynamicClientRegistrationValidator {
 
         String ssaJtiValue = (String) ssaParams.get(IdentityCommonConstants.JTI);
         if (IdentityCommonUtils.isJTIReplayed(ssaJtiValue)) {
-            log.error("Rejected the replayed jti in the software statement");
+            log.debug("Rejected the replayed jti in the software statement");
             throw new FinancialServicesException("Rejected the replayed jti in the software statement");
         }
     }
@@ -59,7 +59,7 @@ public class SSAJTIValidator implements DynamicClientRegistrationValidator {
 
         String ssaJtiValue = (String) ssaParams.get(IdentityCommonConstants.JTI);
         if (IdentityCommonUtils.isJTIReplayed(ssaJtiValue)) {
-            log.error("Rejected the replayed jti in the software statement");
+            log.debug("Rejected the replayed jti in the software statement");
             throw new FinancialServicesException("Rejected the replayed jti in the software statement");
         }
     }

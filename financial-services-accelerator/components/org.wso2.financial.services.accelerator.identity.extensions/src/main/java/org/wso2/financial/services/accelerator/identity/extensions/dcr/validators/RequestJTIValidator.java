@@ -41,7 +41,7 @@ public class RequestJTIValidator implements DynamicClientRegistrationValidator {
 
         Double requestJtiValue = (Double) applicationRegistrationRequest.getAdditionalAttributes().get("jti");
         if (IdentityCommonUtils.isJTIReplayed(String.valueOf(requestJtiValue))) {
-            log.error("Rejected the replayed jti in the registration request");
+            log.debug("Rejected the replayed jti in the registration request");
             throw new FinancialServicesException("Rejected the replayed jti in the registration request");
         }
     }
@@ -57,7 +57,7 @@ public class RequestJTIValidator implements DynamicClientRegistrationValidator {
 
         Double requestJtiValue = (Double) applicationUpdateRequest.getAdditionalAttributes().get("jti");
         if (IdentityCommonUtils.isJTIReplayed(String.valueOf(requestJtiValue))) {
-            log.error("Rejected the replayed jti in the registration request");
+            log.debug("Rejected the replayed jti in the registration request");
             throw new FinancialServicesException("Rejected the replayed jti in the registration request");
         }
     }

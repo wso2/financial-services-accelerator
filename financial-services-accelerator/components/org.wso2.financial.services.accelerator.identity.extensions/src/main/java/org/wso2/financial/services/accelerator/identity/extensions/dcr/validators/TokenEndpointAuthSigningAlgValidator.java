@@ -55,7 +55,6 @@ public class TokenEndpointAuthSigningAlgValidator implements DynamicClientRegist
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
                                ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
 
-
         String tokenEndpointAuthMethod = applicationUpdateRequest.getTokenEndpointAuthMethod();
         String tokenEndpointAuthSigningAlg = applicationUpdateRequest.getTokenEndpointAuthSignatureAlgorithm();
         validateTokenEPAuthSigningAlg(tokenEndpointAuthMethod, tokenEndpointAuthSigningAlg);
@@ -73,10 +72,9 @@ public class TokenEndpointAuthSigningAlgValidator implements DynamicClientRegist
                                           String tokenEndpointAuthSigningAlg) throws FinancialServicesException {
 
         // token_endpoint_auth_signing_alg must be specified if token_endpoint_auth_method is private_key_jwt.
-        if (StringUtils.isNotEmpty(tokenEndpointAuthMethod) &&
-                StringUtils.equals(tokenEndpointAuthMethod, AUTH_METHOD_PRIVATE_KEY_JWT) &&
+        if (StringUtils.equals(tokenEndpointAuthMethod, AUTH_METHOD_PRIVATE_KEY_JWT) &&
                 StringUtils.isBlank(tokenEndpointAuthSigningAlg)) {
-            log.error("Token endpoint auth signing alg must be specified if token_endpoint_auth_method is " +
+            log.debug("Token endpoint auth signing alg must be specified if token_endpoint_auth_method is " +
                     "private_key_jwt.");
             throw new FinancialServicesException("Token endpoint auth signing alg must be specified if " +
                     "token_endpoint_auth_method is private_key_jwt.");

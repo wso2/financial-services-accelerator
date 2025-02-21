@@ -42,7 +42,7 @@ public class RedirectUriFormatValidator implements DynamicClientRegistrationVali
                              Map<String, Object> ssaParams) throws FinancialServicesException {
 
         AtomicReference<Object> redirectURISoftwareStatement = new AtomicReference<>();
-        ssaParams.keySet().stream().forEach(key -> {
+        ssaParams.keySet().forEach(key -> {
             if (key.contains(IdentityCommonConstants.SSA_REDIRECT_URIS)) {
                 redirectURISoftwareStatement.set(ssaParams.get(key));
             }
@@ -50,7 +50,7 @@ public class RedirectUriFormatValidator implements DynamicClientRegistrationVali
         if (redirectURISoftwareStatement.get() instanceof List) {
             List<String> callbackUrisSoftwareStatementValues = (List<String>) redirectURISoftwareStatement.get();
             if (!validateRedirectURIs(callbackUrisSoftwareStatementValues)) {
-                log.error("Invalid redirect_uris found in the SSA");
+                log.debug("Invalid redirect_uris found in the SSA");
                 throw new FinancialServicesException("Invalid redirect_uris found in the SSA");
             }
         }
@@ -65,9 +65,14 @@ public class RedirectUriFormatValidator implements DynamicClientRegistrationVali
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
                                ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
 
-        Object redirectURISoftwareStatement = ssaParams.get("redirect_uris");
-        if (redirectURISoftwareStatement instanceof List) {
-            List<String> callbackUrisSoftwareStatementValues = (List<String>) redirectURISoftwareStatement;
+        AtomicReference<Object> redirectURISoftwareStatement = new AtomicReference<>();
+        ssaParams.keySet().forEach(key -> {
+            if (key.contains(IdentityCommonConstants.SSA_REDIRECT_URIS)) {
+                redirectURISoftwareStatement.set(ssaParams.get(key));
+            }
+        });
+        if (redirectURISoftwareStatement.get() instanceof List) {
+            List<String> callbackUrisSoftwareStatementValues = (List<String>) redirectURISoftwareStatement.get();
             if (!validateRedirectURIs(callbackUrisSoftwareStatementValues)) {
                 log.error("Invalid redirect_uris found in the SSA");
                 throw new FinancialServicesException("Invalid redirect_uris found in the SSA");
@@ -83,11 +88,8 @@ public class RedirectUriFormatValidator implements DynamicClientRegistrationVali
      */
     public static boolean validateRedirectURIs(List<String> redirectURIs) {
 
-        for (String redirectURI : redirectURIs) {
-            if (!(redirectURI != null && redirectURI.contains("https") && !redirectURI.contains("localhost"))) {
-                return false;
-            }
-        }
-        return true;
+        return redirectURIs.stream()
+                .anyMatch(redirectURI -> (redirectURI != null && redirectURI.contains("https") &&
+                        !redirectURI.contains("localhost")));
     }
 }

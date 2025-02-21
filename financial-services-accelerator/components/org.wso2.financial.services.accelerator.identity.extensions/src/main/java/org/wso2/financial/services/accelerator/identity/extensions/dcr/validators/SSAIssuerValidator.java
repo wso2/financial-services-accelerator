@@ -65,7 +65,7 @@ public class SSAIssuerValidator implements DynamicClientRegistrationValidator {
                 .get(IdentityCommonConstants.SSA_ISSUER_VALIDATOR);
         List<String> allowedValues = (List<String>) configs.get(IdentityCommonConstants.ALLOWED_VALUES);
         if (!allowedValues.contains(ssaParams.get(IdentityCommonConstants.ISS))) {
-            log.error("Invalid issuer in software statement");
+            log.debug("Invalid issuer in software statement");
             throw new FinancialServicesException("Invalid issuer in software statement");
         }
     }

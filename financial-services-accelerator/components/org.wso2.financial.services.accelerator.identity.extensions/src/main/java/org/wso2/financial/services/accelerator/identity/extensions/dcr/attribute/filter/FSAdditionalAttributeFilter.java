@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.dcr.attribute.filter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
@@ -48,6 +50,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             IdentityExtensionsDataHolder.getInstance().getConfigurationService();
     private static final List<DynamicClientRegistrationValidator> enabledDcrValidators =
             getEnabledDcrValidators();
+    private static final Log log = LogFactory.getLog(FSAdditionalAttributeFilter.class);
 
     @Override
     public Map<String, Object> filterDCRRegisterAttributes(ApplicationRegistrationRequest appRegistrationRequest,
@@ -58,6 +61,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             try {
                 validator.validatePost(appRegistrationRequest, ssaParams);
             } catch (FinancialServicesException e) {
+                log.error(e.getMessage().replaceAll("[\r\n]", ""));
                 throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
             }
         }
@@ -79,11 +83,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                 additionalAttributes.get(IdentityCommonConstants.APPLICATION_TYPE));
 
         // Adding fields from the configuration to be stored as SP metadata
-        getResponseParamsFromConfig().forEach((key) -> {
-            if (additionalAttributes.containsKey(key)) {
-                filteredAttributes.put(key, additionalAttributes.get(key));
-            }
-        });
+        getResponseParamsFromConfig()
+                .stream()
+                .filter(additionalAttributes::containsKey)
+                .forEach((key) -> filteredAttributes.put(key, additionalAttributes.get(key)));
         return filteredAttributes;
     }
 
@@ -98,6 +101,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             try {
                 validator.validateUpdate(applicationUpdateRequest, ssaParams, serviceProviderProperties);
             } catch (FinancialServicesException e) {
+                log.error(e.getMessage().replaceAll("[\r\n]", ""));
                 throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
             }
         }
@@ -119,11 +123,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                 additionalAttributes.get(IdentityCommonConstants.APPLICATION_TYPE));
 
         // Adding fields from the configuration to be stored as SP metadata
-        getResponseParamsFromConfig().forEach((key) -> {
-            if (additionalAttributes.containsKey(key)) {
-                filteredAttributes.put(key, additionalAttributes.get(key));
-            }
-        });
+        getResponseParamsFromConfig()
+                .stream()
+                .filter(additionalAttributes::containsKey)
+                .forEach((key) -> filteredAttributes.put(key, additionalAttributes.get(key)));
+
         return filteredAttributes;
     }
 
@@ -135,6 +139,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             try {
                 validator.validateGet(ssaParams);
             } catch (FinancialServicesException e) {
+                log.error(e.getMessage().replaceAll("[\r\n]", ""));
                 throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
             }
         }
@@ -174,6 +179,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                 responseParams.add(value.get(IdentityCommonConstants.KEY).toString());
             }
         });
+
         return responseParams;
     }
 

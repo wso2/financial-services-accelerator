@@ -45,7 +45,7 @@ public class UriHostnameValidator implements DynamicClientRegistrationValidator 
                              Map<String, Object> ssaParams) throws FinancialServicesException {
 
         if (!validateURIHostNames(ssaParams)) {
-            log.error("Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the " +
+            log.debug("Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the " +
                     "redirect_uris");
             throw new FinancialServicesException("Host names of logo_uri/tos_uri/policy_uri/client_uri does not " +
                     "match with the redirect_uris");
@@ -63,7 +63,7 @@ public class UriHostnameValidator implements DynamicClientRegistrationValidator 
 
 
         if (!validateURIHostNames(ssaParams)) {
-            log.error("Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the " +
+            log.debug("Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the " +
                     "redirect_uris");
             throw new FinancialServicesException("Host names of logo_uri/tos_uri/policy_uri/client_uri does not " +
                     "match with the redirect_uris");
@@ -110,12 +110,12 @@ public class UriHostnameValidator implements DynamicClientRegistrationValidator 
                 String uriHost = new URI(redirectURI).getHost();
                 if (!(logoURIHost.equals(uriHost) && clientURIHost.equals(uriHost)
                         && policyURIHost.equals(uriHost) && termsOfServiceURIHost.equals(uriHost))) {
-                    log.error("URL host names do not match");
+                    log.debug("URL host names do not match");
                     return false;
                 }
             }
         } catch (URISyntaxException e) {
-            log.error("Malformed redirect uri", e);
+            log.debug("Malformed redirect uri", e);
             return false;
         }
         return true;

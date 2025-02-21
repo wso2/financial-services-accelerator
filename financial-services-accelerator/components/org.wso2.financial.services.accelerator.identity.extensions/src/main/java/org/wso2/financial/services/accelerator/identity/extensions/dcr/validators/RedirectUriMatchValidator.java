@@ -75,7 +75,7 @@ public class RedirectUriMatchValidator implements DynamicClientRegistrationValid
             });
 
             if (!matchRedirectURI(redirectUris, redirectURISoftwareStatement.get())) {
-                log.error("Redirect URIs do not match with the software statement");
+                log.debug("Redirect URIs do not match with the software statement");
                 throw new FinancialServicesException("Redirect URIs do not match with the software statement");
             }
         }
@@ -87,18 +87,10 @@ public class RedirectUriMatchValidator implements DynamicClientRegistrationValid
      */
     public static boolean matchRedirectURI(List<String> redirectURIRequest, Object redirectURISoftwareStatement) {
 
-        int matchedURis = 0;
         if (redirectURISoftwareStatement instanceof List) {
             List callbackUrisSoftwareStatementValues = (List) redirectURISoftwareStatement;
-            for (String requestURI : redirectURIRequest) {
-                for (Object callbackUrisSoftwareStatementObject : callbackUrisSoftwareStatementValues) {
-                    String softwareStatementURI = (String) callbackUrisSoftwareStatementObject;
-                    if (requestURI.equals(softwareStatementURI)) {
-                        matchedURis = matchedURis + 1;
-                    }
-                }
-            }
+            return callbackUrisSoftwareStatementValues.containsAll(redirectURIRequest);
         }
-        return matchedURis == redirectURIRequest.size();
+        return false;
     }
 }
