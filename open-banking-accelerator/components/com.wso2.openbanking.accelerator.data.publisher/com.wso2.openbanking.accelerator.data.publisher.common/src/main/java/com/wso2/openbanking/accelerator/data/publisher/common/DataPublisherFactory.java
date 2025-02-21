@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,6 +18,7 @@
 
 package com.wso2.openbanking.accelerator.data.publisher.common;
 
+import com.wso2.openbanking.accelerator.data.publisher.common.internal.OBAnalyticsDataHolder;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -32,7 +33,7 @@ public class DataPublisherFactory<OpenBankingDataPublisher> extends BasePooledOb
     @Override
     public OpenBankingDataPublisher create() {
 
-        return (OpenBankingDataPublisher) new OBThriftDataPublisher();
+        return (OpenBankingDataPublisher) OBAnalyticsDataHolder.getInstance().getOpenBankingDataPublisher();
     }
 
     @Override

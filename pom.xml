@@ -21,7 +21,7 @@
     <groupId>com.wso2.openbanking.accelerator</groupId>
     <artifactId>open-banking</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.37-SNAPSHOT</version>
+    <version>3.3.5-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>

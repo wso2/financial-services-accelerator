@@ -928,7 +928,11 @@
     {% else %}
         <PoolWaitTimeMs>60000</PoolWaitTimeMs>
     {% endif %}
-
+    {% if open_banking.data_publishing.open_banking_data_publisher is defined %}
+        <OpenBankingDataPublisher>{{open_banking.data_publishing.open_banking_data_publisher}}</OpenBankingDataPublisher>
+    {% else %}
+        <OpenBankingDataPublisher>com.wso2.openbanking.accelerator.data.publisher.common.OBThriftDataPublisher</OpenBankingDataPublisher>
+    {% endif %}
     {% if open_banking.data_publishing.protocol == "Thrift" or open_banking.data_publishing.protocol is not defined%}
         <Thrift>
         {% if open_banking.data_publishing.thrift.publishing_timeout is defined %}
