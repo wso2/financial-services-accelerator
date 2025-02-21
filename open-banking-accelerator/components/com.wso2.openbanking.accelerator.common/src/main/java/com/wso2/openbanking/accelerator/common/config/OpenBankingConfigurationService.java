@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023 - 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,6 +18,7 @@
 
 package com.wso2.openbanking.accelerator.common.config;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,4 +45,7 @@ public interface OpenBankingConfigurationService {
 
     public Map<String, String> getAuthenticationWorkers();
 
+    default List<String> getServiceActivatorSubscribers() {
+        return Collections.emptyList();
+    }
 }

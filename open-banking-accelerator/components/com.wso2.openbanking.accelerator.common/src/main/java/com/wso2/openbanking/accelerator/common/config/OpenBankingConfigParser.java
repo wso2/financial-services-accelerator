@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023 - 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+import org.wso2.securevault.commons.MiscellaneousUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -484,9 +485,8 @@ public class OpenBankingConfigParser {
                 String key = getKey(nameStack);
                 Object currentObject = configuration.get(key);
                 String value = replaceSystemProperty(element.getText());
-                if (secretResolver != null && secretResolver.isInitialized() &&
-                        secretResolver.isTokenProtected(key)) {
-                    value = secretResolver.resolve(key);
+                if (secretResolver != null && secretResolver.isInitialized()) {
+                    value = MiscellaneousUtil.resolve(element, secretResolver);
                 }
                 if (currentObject == null) {
                     configuration.put(key, value);
