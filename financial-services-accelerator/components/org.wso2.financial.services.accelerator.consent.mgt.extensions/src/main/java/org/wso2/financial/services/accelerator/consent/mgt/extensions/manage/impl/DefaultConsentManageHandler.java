@@ -32,10 +32,10 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageUtils;
 
 /**
  * Consent manage handler default implementation.
@@ -53,10 +53,20 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
         }
 
+        //Validate Initiation headers
+        ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
+                .validateRequestHeaders(consentManageData);
+        if (!headerValidationResult.isValid()) {
+            log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
+            throw new ConsentException(headerValidationResult.getHttpCode(), headerValidationResult.getErrorCode(),
+                    headerValidationResult.getErrorMessage());
+        }
+
         if (consentManageData.getRequestPath() == null) {
             log.error("Resource Path Not Found");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found");
         }
+
         String[] requestPathArray = consentManageData.getRequestPath().split("/");
         if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
             log.error("Invalid Request Path");
@@ -106,25 +116,27 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Client ID missing in the request.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
         }
+
+        //Validate Initiation headers
+        ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
+                .validateRequestHeaders(consentManageData);
+        if (!headerValidationResult.isValid()) {
+            log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
+            throw new ConsentException(headerValidationResult.getHttpCode(), headerValidationResult.getErrorCode(),
+                    headerValidationResult.getErrorMessage());
+        }
+
         if (consentManageData.getRequestPath() == null) {
             log.error("Resource Path Not Found");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found");
         }
 
         try {
-            //Get the request payload from the ConsentManageData
-            Object request = consentManageData.getPayload();
-            if (!(request instanceof JSONObject)) {
-                log.error("Payload is not in the correct format");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not in the correct format");
-            }
-
-            String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-            JSONObject requestObject = (JSONObject) request;
+            String consentType = ConsentManageUtils.getConsentManageValidator().getConsentType(consentManageData);
 
             //Validate Initiation request
-            ConsentPayloadValidationResult validationResponse =
-                    getConsentManageValidator().validateRequestPayload(requestObject, consentType);
+            ConsentPayloadValidationResult validationResponse = ConsentManageUtils.getConsentManageValidator()
+                    .validateRequestPayload(consentManageData, consentType);
             if (!validationResponse.isValid()) {
                 log.error(validationResponse.getErrorMessage().replaceAll("[\r\n]+", " "));
                 throw new ConsentException(validationResponse.getHttpCode(), validationResponse.getErrorCode(),
@@ -132,15 +144,16 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
 
             ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
-                    requestObject.toString(), consentType, ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
+                    consentManageData.getPayload().toString(), consentType,
+                    ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
 
             DetailedConsentResource createdConsent = ConsentExtensionsDataHolder.getInstance()
                     .getConsentCoreService().createAuthorizableConsent(requestedConsent,
                     null, ConsentExtensionConstants.CREATED_STATUS, ConsentExtensionConstants.DEFAULT_AUTH_TYPE,
                     true);
 
-            consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationResponse(requestObject,
-                    createdConsent));
+            consentManageData.setResponsePayload(ConsentExtensionUtils
+                    .getInitiationResponse(consentManageData.getPayload(), createdConsent));
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
 
         } catch (ConsentManagementException e) {
@@ -158,6 +171,15 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID missing in the request.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
+        }
+
+        //Validate Initiation headers
+        ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
+                .validateRequestHeaders(consentManageData);
+        if (!headerValidationResult.isValid()) {
+            log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
+            throw new ConsentException(headerValidationResult.getHttpCode(), headerValidationResult.getErrorCode(),
+                    headerValidationResult.getErrorMessage());
         }
 
         String[] requestPathArray;
@@ -256,8 +278,4 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, "Method File Upload GET is not supported");
     }
 
-    @Override
-    public ConsentManageValidator getConsentManageValidator() {
-        return new DefaultConsentManageValidator();
-    }
 }
