@@ -17,7 +17,7 @@
  ~ under the License.
  -->
 
-<Server xmlns="http://wso2.org/projects/carbon/open-banking.xml">
+<Server xmlns="http://wso2.org/projects/carbon/open-banking.xml" xmlns:svns="http://org.wso2.securevault/configuration">
     <Gateway>
         <RequestRouter>com.wso2.openbanking.accelerator.gateway.executor.core.DefaultRequestRouter</RequestRouter>
         <!-- Custom Throttle Data publisher -->
