@@ -313,6 +313,16 @@ maxHttpHeaderSize = "65536"
 [transport.https.sslHostConfig.properties]
 ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
+#================custom filters and filter-mappings==============
+
+#[[tomcat.filter]]
+#name = "TokenPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.identity.extensions.filter.TokenPolicyChainFilter"
+
+#[[tomcat.filter_mapping]]
+#name = "TokenPolicyChainFilter"
+#url_pattern = "/token"
+
 #================configs related to financial-services.xml=============
 [[financial_services.jdbc_persistence_manager]]
 data_source.name = "WSO2FS_DB"
