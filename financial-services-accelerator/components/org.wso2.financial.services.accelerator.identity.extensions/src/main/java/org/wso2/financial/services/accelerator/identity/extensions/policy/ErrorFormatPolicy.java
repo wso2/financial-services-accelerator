@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
+ * Dummy Financial Services Policy.
  * Format error response according to the specification.
  */
 public class ErrorFormatPolicy extends BaseFinancialServicesFilterPolicy {

@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
+ * Dummy Financial Services Policy.
  * Publish access token data.
  */
 public class TokenDataPublishingPolicy extends BaseFinancialServicesFilterPolicy {

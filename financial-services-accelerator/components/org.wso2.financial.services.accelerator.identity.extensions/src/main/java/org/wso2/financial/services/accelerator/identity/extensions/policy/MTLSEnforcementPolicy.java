@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
+ * Dummy Financial Services Policy.
  * Enforce MTLS by checking the availability of the TLS Certificate.
  */
 public class MTLSEnforcementPolicy extends BaseFinancialServicesFilterPolicy {

@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
+ * Dummy Financial Services Policy.
  * Append consent id to the token api response.
  */
 public class ConsentIdResponsePolicy extends BaseFinancialServicesFilterPolicy {
