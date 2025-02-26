@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.identity.extensions.policy;
+package org.wso2.financial.services.accelerator.identity.extensions.filter.policy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +27,11 @@ import javax.servlet.ServletResponse;
 
 /**
  * Dummy Financial Services Policy.
- * Append consent id to the token api response.
+ * Enforce MTLS by checking the availability of the TLS Certificate.
  */
-public class ConsentIdResponsePolicy extends BaseFinancialServicesFilterPolicy {
+public class MTLSEnforcementFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(ConsentIdResponsePolicy.class);
+    private static final Log log = LogFactory.getLog(MTLSEnforcementFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap) {

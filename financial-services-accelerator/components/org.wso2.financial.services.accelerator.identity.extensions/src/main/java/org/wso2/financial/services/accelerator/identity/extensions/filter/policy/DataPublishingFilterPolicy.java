@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.identity.extensions.policy;
+package org.wso2.financial.services.accelerator.identity.extensions.filter.policy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +27,11 @@ import javax.servlet.ServletResponse;
 
 /**
  * Dummy Financial Services Policy.
- * Format error response according to the specification.
+ * Publish access token data.
  */
-public class ErrorFormatPolicy extends BaseFinancialServicesFilterPolicy {
+public class DataPublishingFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(ErrorFormatPolicy.class);
+    private static final Log log = LogFactory.getLog(DataPublishingFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap) {

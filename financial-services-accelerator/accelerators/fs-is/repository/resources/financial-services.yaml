@@ -4,7 +4,7 @@ components:
       name: "MTLS Enforcement Policy"
       type: "filter-policy"
       description: "Enforces MTLS on the incoming request."
-      class: "org.wso2.financial.services.accelerator.identity.policy.MTLSEnforcementPolicy"
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.MTLSEnforcementFilterPolicy"
       parameters:
         param_1:
           - key_1: "value_1"
@@ -20,7 +20,7 @@ components:
       name: "Access Token Data Publishing Policy"
       type: "filter-policy"
       description: "Publish issues access token data."
-      class: "org.wso2.financial.services.accelerator.identity.policy.TokenDataPublishingPolicy"
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.DataPublishingFilterPolicy"
       parameters:
         param_1:
           - key_1: "value_1"
@@ -36,7 +36,7 @@ components:
       name: "Consent ID to Response Policy"
       type: "filter-policy"
       description: "Add consent ID to the response."
-      class: "org.wso2.financial.services.accelerator.identity.policy.ConsentIdResponsePolicy"
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.AppendConsentIdFilterPolicy"
       parameters:
         param_1:
           - key_1: "value_1"
@@ -52,7 +52,7 @@ components:
       name: "Error Format Policy"
       type: "filter-policy"
       description: "Format Error Response."
-      class: "org.wso2.financial.services.accelerator.identity.policy.ErrorFormatPolicy"
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.ErrorFormatFilterPolicy"
       parameters:
         param_1:
           - key_1: "value_1"
@@ -69,7 +69,7 @@ apis:
     version: "1.0"
     policies: []
     paths:
-      /token:
+      /oauth2/token:
         post:
           request-flow:
             policies:
@@ -85,7 +85,7 @@ apis:
     version: "1.0"
     policies: []
     paths:
-      /authorize:
+      /oauth2/authorize:
         get:
           request-flow:
             policies:
