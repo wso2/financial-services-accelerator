@@ -2001,6 +2001,63 @@ public class OBConsentMgtCoreServiceTests {
                 ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
     }
 
+    @Test
+    public void testReAuthorizeConsentWithNewAuthResourceAndActiveAccounts() throws Exception {
+
+        AuthorizationResource authorizationResource = ConsentMgtServiceTestData
+                .getSampleTestAuthorizationResource(sampleID);
+        ArrayList<String> consentIDs = new ArrayList<>();
+        consentIDs.add(sampleID);
+
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleAuthorizationResourcesList(consentIDs))
+                .when(mockedConsentCoreDAO).searchConsentAuthorizations(Mockito.any(), Mockito.anyString(),
+                        Mockito.anyString());
+        Mockito.doReturn(authorizationResource)
+                .when(mockedConsentCoreDAO).updateAuthorizationStatus(Mockito.any(), Mockito.anyString(),
+                        Mockito.anyString());
+        Mockito.doReturn(authorizationResource).when(mockedConsentCoreDAO).storeAuthorizationResource(Mockito.any(),
+                Mockito.anyObject());
+        DetailedConsentResource sampleDetailedStoredTestConsentResource =
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
+        ArrayList<ConsentMappingResource> consentMappingResources =
+        sampleDetailedStoredTestConsentResource.getConsentMappingResources();
+        consentMappingResources.stream()
+                .filter(consentMappingResource ->
+                        consentMappingResource.getMappingStatus().equals(
+                                ConsentMgtServiceTestData.SAMPLE_NEW_MAPPING_STATUS))
+                .forEach(consentMappingResource -> consentMappingResource.setAccountID("123456"));
+        Mockito.doReturn(sampleDetailedStoredTestConsentResource)
+                .when(mockedConsentCoreDAO).getDetailedConsentResource(Mockito.any(), Mockito.anyString(),
+                        Mockito.anyBoolean());
+        Mockito.doReturn(ConsentMgtServiceTestData
+                        .getSampleTestConsentMappingResource(sampleID))
+                .when(mockedConsentCoreDAO).storeConsentMappingResource(Mockito.any(), Mockito.anyObject());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingStatus(Mockito.any(),
+                Mockito.anyObject(), Mockito.anyString());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleTestConsentResource())
+                .when(mockedConsentCoreDAO).updateConsentStatus(Mockito.any(), Mockito.anyString(),
+                        Mockito.anyString());
+        Mockito.doReturn(ConsentMgtServiceTestData
+                        .getSampleTestConsentStatusAuditRecord(sampleID,
+                                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(Mockito.any(), Mockito.anyObject());
+
+        Map<String, ArrayList<String>> sampleAccountIdsAndPermissionsMap =
+                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP;
+        sampleAccountIdsAndPermissionsMap.put("123456", new ArrayList<String>() {
+            {
+                add("permission1");
+                add("permission2");
+            }
+        });
+        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
+                sampleAccountIdsAndPermissionsMap,
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
+    }
+
     @Test (expectedExceptions = ConsentManagementException.class)
     public void testReAuthorizeConsentWithNewAuthResourceDataRetrieveError() throws Exception {
 
@@ -2555,6 +2612,65 @@ public class OBConsentMgtCoreServiceTests {
                         null,
                         ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
                         ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                        ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
+                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                        new HashMap<>());
+
+        Assert.assertNotNull(detailedConsentResource);
+    }
+
+    @Test
+    public void testAmendDetailedConsentDataWithActiveAccounts() throws Exception {
+
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentReceipt(Mockito.any(),
+                Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentValidityTime(Mockito.any(),
+                Mockito.anyString(), Mockito.anyLong());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentResource())
+                .when(mockedConsentCoreDAO).getConsentResource(Mockito.any(), Mockito.anyString());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(Mockito.any(), Mockito.anyObject());
+
+        DetailedConsentResource sampleDetailedStoredTestConsentResource =
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
+        ArrayList<ConsentMappingResource> consentMappingResources =
+                sampleDetailedStoredTestConsentResource.getConsentMappingResources();
+        consentMappingResources.stream()
+                .filter(consentMappingResource ->
+                        consentMappingResource.getMappingStatus().equals(
+                                ConsentMgtServiceTestData.SAMPLE_NEW_MAPPING_STATUS))
+                .forEach(consentMappingResource -> consentMappingResource.setAccountID("123456"));
+
+        Mockito.doReturn(sampleDetailedStoredTestConsentResource)
+                .when(mockedConsentCoreDAO).getDetailedConsentResource(Mockito.any(), Mockito.anyString(),
+                        Mockito.anyBoolean());
+        Mockito.doReturn(ConsentMgtServiceTestData
+                        .getSampleTestConsentMappingResource(ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID))
+                .when(mockedConsentCoreDAO).storeConsentMappingResource(Mockito.any(), Mockito.anyObject());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingStatus(Mockito.any(),
+                Mockito.anyObject(), Mockito.anyString());
+
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).deleteConsentAttributes(Mockito.any(),
+                Mockito.anyString(), Mockito.anyObject());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).storeConsentAttributes(Mockito.any(),
+                Mockito.anyObject());
+
+        Map<String, ArrayList<String>> sampleAccountIdsAndPermissionsMap =
+                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP;
+        sampleAccountIdsAndPermissionsMap.put("123456", new ArrayList<String>() {
+            {
+                add("permission1");
+                add("permission2");
+            }
+        });
+
+        DetailedConsentResource detailedConsentResource =
+                consentCoreServiceImpl.amendDetailedConsent(sampleID, ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
+                        ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
+                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
+                        sampleAccountIdsAndPermissionsMap,
                         ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                         ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
                         ConsentMgtServiceTestData.SAMPLE_USER_ID,
