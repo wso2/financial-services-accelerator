@@ -35,7 +35,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Filter to engage financial services policy chain.
+ * Filter to engage financial services filter policy chain.
  */
 public class PolicyChainFilter implements Filter {
 
