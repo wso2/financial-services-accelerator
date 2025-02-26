@@ -1,0 +1,96 @@
+components:
+  policy-definitions:
+    enforceMTLS: &enforceMTLS
+      name: "MTLS Enforcement Policy"
+      type: "filter-policy"
+      description: "Enforces MTLS on the incoming request."
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.MTLSEnforcementFilterPolicy"
+      parameters:
+        param_1:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_2:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_3: "value_1"
+
+    publishAccessTokenData: &publishAccessTokenData
+      name: "Access Token Data Publishing Policy"
+      type: "filter-policy"
+      description: "Publish issues access token data."
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.DataPublishingFilterPolicy"
+      parameters:
+        param_1:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_2:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_3: "value_1"
+
+    addConsentIdToResponse: &addConsentIdToResponse
+      name: "Consent ID to Response Policy"
+      type: "filter-policy"
+      description: "Add consent ID to the response."
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.AppendConsentIdFilterPolicy"
+      parameters:
+        param_1:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_2:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_3: "value_1"
+
+    errorFormatPolicy: &errorFormatPolicy
+      name: "Error Format Policy"
+      type: "filter-policy"
+      description: "Format Error Response."
+      class: "org.wso2.financial.services.accelerator.identity.extensions.filter.policy.ErrorFormatFilterPolicy"
+      parameters:
+        param_1:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_2:
+          - key_1: "value_1"
+            key_2: "value_2"
+            key_3: "value_3"
+        param_3: "value_1"
+
+apis:
+  - name: "TokenAPI"
+    version: "1.0"
+    policies: []
+    paths:
+      /oauth2/token:
+        post:
+          request-flow:
+            policies:
+              - *enforceMTLS
+          execution-flow:
+            policies:
+              - *publishAccessTokenData
+          response-flow:
+            policies:
+              - *addConsentIdToResponse
+
+  - name: "AuthorizeAPI"
+    version: "1.0"
+    policies: []
+    paths:
+      /oauth2/authorize:
+        get:
+          request-flow:
+            policies:
+              - *enforceMTLS
+
+# Global Policies (Applied to all APIs)
+global-policies:
+  - *errorFormatPolicy
