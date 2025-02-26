@@ -15,9 +15,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.identity.extensions.filter.policy;
+package org.wso2.financial.services.accelerator.common.policy.filter;
 
 import org.wso2.financial.services.accelerator.common.policy.FSPolicy;
+import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
 
 import java.util.Map;
 
@@ -29,8 +30,10 @@ import javax.servlet.ServletResponse;
  */
 public abstract class FSFilterPolicy extends FSPolicy {
 
-    public abstract void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap);
+    public abstract void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap)
+            throws FSPolicyExecutionException;
 
-    public abstract void processResponse(ServletResponse servletResponse, Map<String, Object> propertyMap);
+    public abstract void processResponse(ServletResponse servletResponse, Map<String, Object> propertyMap)
+            throws FSPolicyExecutionException;
 
 }
