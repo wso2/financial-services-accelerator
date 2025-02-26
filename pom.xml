@@ -464,6 +464,16 @@
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.io.vertx</groupId>
+                <artifactId>vertx-json-schema</artifactId>
+                <version>${vertx.json.schema.wso2.osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty-all.wso2.osgi.version}</version>
+            </dependency>
             <!--Base Products related dependencies-->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -637,6 +647,8 @@
         <quartz.version>2.3.2</quartz.version>
         <swagger.parser.v3.version>2.1.22.wso2v1</swagger.parser.v3.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <vertx.json.schema.wso2.osgi.version>4.5.11.wso2v1</vertx.json.schema.wso2.osgi.version>
+        <netty-all.wso2.osgi.version>4.1.115.wso2v2</netty-all.wso2.osgi.version>
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
@@ -664,5 +676,6 @@
         <org.apache.commons.io.version.range>[2.15.1, 2.16.0)</org.apache.commons.io.version.range>
         <org.json.version.range>[3.0.0, 4.0.0)</org.json.version.range>
         <jjwt.version.range>[0.9.1, 0.9.2)</jjwt.version.range>
+        <vertx.json.schema.wso2.osgi.version.range>[4.5.11, 5.0.0)</vertx.json.schema.wso2.osgi.version.range>
     </properties>
 </project>

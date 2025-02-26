@@ -45,19 +45,40 @@
     <url-pattern>*</url-pattern>
   </filter-mapping>
 
-  <listener>
-    <listener-class>
-      org.springframework.web.context.ContextLoaderListener
-    </listener-class>
-  </listener>
+<!--  <listener>-->
+<!--    <listener-class>-->
+<!--      org.springframework.web.context.ContextLoaderListener-->
+<!--    </listener-class>-->
+<!--  </listener>-->
 
   <servlet>
     <servlet-name>CXFServlet</servlet-name>
     <servlet-class>
-      org.apache.cxf.transport.servlet.CXFServlet
+      org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet
     </servlet-class>
+    <init-param>
+      <param-name>service-list-stylesheet</param-name>
+      <param-value>servicelist.css</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.server.provider.classnames</param-name>
+      <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>jaxrs.serviceClasses</param-name>
+      <param-value>
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentManageEndpoint
+<!--        org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentAuthorizeEndpoint-->
+<!--        org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentValidationEndpoint-->
+<!--        org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentAdminEndpoint-->
+      </param-value>
+    </init-param>
+
     <load-on-startup>1</load-on-startup>
+
   </servlet>
+
 
   <servlet-mapping>
     <servlet-name>CXFServlet</servlet-name>

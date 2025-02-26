@@ -133,4 +133,10 @@ public class FinancialServicesConstants {
     public static final String TENANT_DOMAIN = "carbon.super";
     public static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+
+    public static final String OAUTH_ERROR = "error";
+    public static final String OAUTH_ERROR_DESCRIPTION = "error_description";
+    public static final String SCHEMA_VALIDATION_FAILED_ERR_MSG_FORMAT = "Schema validation failed. %s";
+    public static final String VALIDATION_FAILED_ERR_MSG_FORMAT = "The payload of the request contains errors: %s";
+    public static final String VALIDATION_FAILED_ERR_MSG = "Schema validation failed";
 }

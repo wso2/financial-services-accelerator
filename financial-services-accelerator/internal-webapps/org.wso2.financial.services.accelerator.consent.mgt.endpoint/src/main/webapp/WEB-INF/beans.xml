@@ -25,10 +25,7 @@
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     <jaxrs:server id="consent" address="/">
         <jaxrs:serviceBeans>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentAuthorizeEndpoint"/>
             <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentManageEndpoint"/>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentAdminEndpoint"/>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentValidationEndpoint"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
