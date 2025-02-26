@@ -15,23 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.identity.extensions.policy;
+package org.wso2.financial.services.accelerator.common.policy;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 /**
- * Interface for Financial Services Policy.
+ * Abstract class for Financial Services Policy.
  */
-public interface FinancialServicesPolicy {
+public abstract class FSPolicy {
 
-    void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap);
+    private Map<String, Object> propertyMap;
 
-    void processResponse(ServletResponse servletResponse, Map<String, Object> propertyMap);
+    public Map<String, Object> getPropertyMap() {
+        return propertyMap != null ? Collections.unmodifiableMap(propertyMap) : Collections.emptyMap();
+    }
 
-    Map<String, Object> getPropertyMap();
-
-    void setPropertyMap(Map<String, Object> propertyMap);
+    public void setPropertyMap(Map<String, Object> propertyMap) {
+        this.propertyMap = propertyMap != null ? new HashMap<>(propertyMap) : new HashMap<>();
+    }
 }

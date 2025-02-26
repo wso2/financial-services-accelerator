@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.identity.extensions.policy;
+package org.wso2.financial.services.accelerator.identity.extensions.filter.policy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +27,11 @@ import javax.servlet.ServletResponse;
 
 /**
  * Dummy Financial Services Policy.
- * Enforce MTLS by checking the availability of the TLS Certificate.
+ * Format error response according to the specification.
  */
-public class MTLSEnforcementPolicy extends BaseFinancialServicesFilterPolicy {
+public class ErrorFormatFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(MTLSEnforcementPolicy.class);
+    private static final Log log = LogFactory.getLog(ErrorFormatFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap) {

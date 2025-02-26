@@ -317,11 +317,21 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 
 #[[tomcat.filter]]
 #name = "TokenPolicyChainFilter"
-#class = "org.wso2.financial.services.accelerator.identity.extensions.filter.TokenPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.identity.extensions.filter.PolicyChainFilter"
+#init_params.apiName = "TokenAPI"
 
 #[[tomcat.filter_mapping]]
 #name = "TokenPolicyChainFilter"
 #url_pattern = "/token"
+
+#[[tomcat.filter]]
+#name = "AuthorizePolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.identity.extensions.filter.PolicyChainFilter"
+#init_params.apiName = "AuthorizeAPI"
+
+#[[tomcat.filter_mapping]]
+#name = "AuthorizePolicyChainFilter"
+#url_pattern = "/authorize"
 
 #================configs related to financial-services.xml=============
 [[financial_services.jdbc_persistence_manager]]

@@ -15,34 +15,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.identity.extensions.policy;
+package org.wso2.financial.services.accelerator.identity.extensions.filter.policy;
 
-import java.util.HashMap;
+import org.wso2.financial.services.accelerator.common.policy.FSPolicy;
+
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
- * Base class for Financial Services Filter Policy.
+ * Abstract class for Financial Services Filter Policy.
  */
-public class BaseFinancialServicesFilterPolicy implements FinancialServicesPolicy {
+public abstract class FSFilterPolicy extends FSPolicy {
 
-    private Map<String, Object> propertyMap = new HashMap<>();
+    public abstract void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap);
 
-    @Override
-    public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap) {
-    }
+    public abstract void processResponse(ServletResponse servletResponse, Map<String, Object> propertyMap);
 
-    @Override
-    public void processResponse(ServletResponse servletResponse, Map<String, Object> propertyMap) {
-    }
-
-    public Map<String, Object> getPropertyMap() {
-        return propertyMap;
-    }
-
-    public void setPropertyMap(Map<String, Object> propertyMap) {
-        this.propertyMap = propertyMap;
-    }
 }
