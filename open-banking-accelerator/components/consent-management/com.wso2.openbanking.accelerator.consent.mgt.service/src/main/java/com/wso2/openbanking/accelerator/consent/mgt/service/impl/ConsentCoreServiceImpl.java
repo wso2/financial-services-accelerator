@@ -1766,7 +1766,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         if (!isNewAuthResource) {
             if (!accountsToAdd.isEmpty()) {
                 // Store accounts as consent account mappings
-                log.debug("Add extra accounts as account mappings");
+                log.debug(String.format("Adding new account entries as account mappings : %s ", accountsToAdd));
                 for (String accountID : accountsToAdd) {
                     ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
                     for (String permission : permissions) {
@@ -1781,7 +1781,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             }
             if (!accountsToActivate.isEmpty()) {
                 // Update mapping statuses of inactive accounts to active
-                log.debug("Activating inactive account mappings");
+                log.debug(String.format("Activating inactive account mappings : %s ", accountsToActivate));
                 ArrayList<String> mappingIDsToActivate = new ArrayList<>();
                 for (String accountID : accountsToActivate) {
                     for (ConsentMappingResource resource : existingAllAccountMappings) {
@@ -1795,7 +1795,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             }
             if (!accountsToRevoke.isEmpty()) {
                 // Update mapping statuses of revoking accounts to inactive
-                log.debug("Deactivate unwanted account mappings");
+                log.debug(String.format("De-activate unwanted account mappings : %s ", accountsToRevoke));
                 ArrayList<String> mappingIDsToUpdate = new ArrayList<>();
                 for (String accountID : accountsToRevoke) {
                     for (ConsentMappingResource resource : existingAllAccountMappings) {
@@ -1814,7 +1814,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             addAsInactiveList.removeAll(addAsActiveList);
 
             if (!addAsActiveList.isEmpty()) {
-                log.debug("Adding active account mappings");
+                log.debug(String.format("Adding active account mappings rows for new auth resource : %s ",
+                        addAsActiveList));
                 for (String accountID : addAsActiveList) {
                     ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
                     for (String permission : permissions) {
@@ -1828,7 +1829,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 }
             }
             if (!addAsInactiveList.isEmpty()) {
-                log.debug("add Deactivated account mappings");
+                log.debug(String.format("Adding inactive account mappings rows for new auth resource : %s ",
+                        addAsInactiveList));
                 for (String accountID : addAsInactiveList) {
                     ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
                     if (permissions == null) {
