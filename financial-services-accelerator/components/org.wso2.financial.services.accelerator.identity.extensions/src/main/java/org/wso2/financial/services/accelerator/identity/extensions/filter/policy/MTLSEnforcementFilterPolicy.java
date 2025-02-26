@@ -19,6 +19,7 @@ package org.wso2.financial.services.accelerator.identity.extensions.filter.polic
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
 
 import java.util.Map;
 
