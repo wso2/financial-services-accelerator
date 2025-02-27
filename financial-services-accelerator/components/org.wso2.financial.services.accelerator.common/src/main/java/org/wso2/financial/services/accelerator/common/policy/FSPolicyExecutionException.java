@@ -36,11 +36,17 @@ public class FSPolicyExecutionException extends Exception {
         this.errorDescription = errorDescription;
     }
 
-    public FSPolicyExecutionException(String errorMessage, String errorDescription,
-                                      Throwable cause) {
+    public FSPolicyExecutionException(String errorMessage, String errorDescription, Throwable cause) {
 
         super(errorMessage, cause);
         this.errorCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        this.errorDescription = errorDescription;
+    }
+
+    public FSPolicyExecutionException(int errorCode, String errorMessage, String errorDescription) {
+
+        super(errorMessage);
+        this.errorCode = errorCode;
         this.errorDescription = errorDescription;
     }
 

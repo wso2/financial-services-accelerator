@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.financial.services.accelerator.common.policy.filter;
 
 import org.apache.commons.logging.Log;
@@ -24,6 +25,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesYa
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicy;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
+import org.wso2.financial.services.accelerator.common.policy.FilterPolicyRequestWrapper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,11 +43,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 /**
- * Filter to engage financial services filter policy chain.
+ * Filter to engage financial services filter policy chain to consent APIs.
  */
-public class PolicyChainFilter implements Filter {
+public class ConsentPolicyChainFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(PolicyChainFilter.class);
+    private static final Log log = LogFactory.getLog(ConsentPolicyChainFilter.class);
     private String apiName;
 
     public void init(FilterConfig filterConfig) {
@@ -59,26 +61,28 @@ public class PolicyChainFilter implements Filter {
         if (servletRequest instanceof HttpServletRequest) {
             String path = ((HttpServletRequest) servletRequest).getRequestURI();
             String operation = ((HttpServletRequest) servletRequest).getMethod();
+            FilterPolicyRequestWrapper cachedRequest =
+                    new FilterPolicyRequestWrapper((HttpServletRequest) servletRequest);
 
-            log.info("Engaging policy chain for the token endpoint request");
+            log.info("Engaging policy chain for the consent endpoint request");
             List<FSPolicy> requestPolicies = FinancialServicesYamlConfigParser
                     .getPolicies(apiName, path, operation, "request-flow");
 
             try {
                 for (FSPolicy policy : requestPolicies) {
                     FSFilterPolicy filterPolicy = (FSFilterPolicy) policy;
-                    filterPolicy.processRequest(servletRequest, policy.getPropertyMap());
+                    filterPolicy.processRequest(cachedRequest, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing request policies", e);
+                log.error("Error occurred while processing consent request policies", e);
                 handleValidationFailure((HttpServletResponse) servletResponse, e.getErrorCode(),
                         e.getMessage(), e.getErrorDescription());
                 return;
             }
 
-            filterChain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(cachedRequest, servletResponse);
 
-            log.info("Engaging policy chain for the token endpoint response");
+            log.info("Engaging policy chain for the consent endpoint response");
             List<FSPolicy> responsePolicies = FinancialServicesYamlConfigParser
                     .getPolicies(apiName, path, operation, "response-flow");
             try {
@@ -87,7 +91,7 @@ public class PolicyChainFilter implements Filter {
                     filterPolicy.processResponse(servletResponse, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing response policies", e);
+                log.error("Error occurred while processing consent response policies", e);
                 handleValidationFailure((HttpServletResponse) servletResponse, e.getErrorCode(),
                         e.getMessage(), e.getErrorDescription());
                 return;
