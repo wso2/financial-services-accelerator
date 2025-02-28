@@ -136,4 +136,7 @@ public class FinancialServicesConstants {
 
     public static final String OAUTH_ERROR = "error";
     public static final String OAUTH_ERROR_DESCRIPTION = "error_description";
+    public static final String SCHEMA_VALIDATION_FAILED_ERR_MSG_FORMAT = "Schema validation failed. %s";
+    public static final String VALIDATION_FAILED_ERR_MSG_FORMAT = "The payload of the request contains errors: %s";
+    public static final String VALIDATION_FAILED_ERR_MSG = "Schema validation failed";
 }

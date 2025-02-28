@@ -64,6 +64,28 @@ components:
             key_3: "value_3"
         param_3: "value_1"
 
+    schemaValidationPolicy: &schemaValidationPolicy
+      name: "Schema Validation Policy"
+      type: "filter-policy"
+      description: "Validate payload against JSON schema."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.ConsentSchemaValidationFilterPolicy"
+      parameters:
+        json_schema_url: "https://gist.githubusercontent.com/Ashi1993/108436ac035b06e2e35604b66791f656/raw/4bd9d25fda6b2e9f634fb5ec882cca91c46fac9b/account-json-schema.json"
+
+    clientIdValidationPolicy: &clientIdValidationPolicy
+      name: "ClientId Validation Policy"
+      type: "filter-policy"
+      description: "Validate client id."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.ClientIdValidationFilterPolicy"
+
+    futureDateValidationPolicy: &futureDateValidationPolicy
+      name: "FutureDateValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate payload against JSON schema."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.FutureDateValidationFilterPolicy"
+      parameters:
+        applicable_params:
+          - "Data.ExpirationDateTime"
 apis:
   - name: "TokenAPI"
     version: "1.0"
@@ -90,6 +112,194 @@ apis:
           request-flow:
             policies:
               - *enforceMTLS
+
+  - name: "AccountsAPI"
+    version: "1.0"
+    policies: [ ]
+    paths:
+      /api/fs/consent/manage/account-access-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.ExpirationDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/account-access-consents/{consentId}:
+        get:
+          request-flow:
+            policies:
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+        delete:
+          request-flow:
+            policies:
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+
+  - name: "PaymentsAPI"
+    version: "1.0"
+    policies: [ ]
+    paths:
+      /api/fs/consent/manage/domestic-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Authorisation.CompletionDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/domestic-scheduled-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.RequestedExecutionDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/domestic-standing-order-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.FirstPaymentDateTime"
+                    - "Data.Initiation.FinalPaymentDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/file-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.RequestedExecutionDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/international-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Authorisation.CompletionDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/international-scheduled-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.RequestedExecutionDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/international-standing-order-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.FirstPaymentDateTime"
+                    - "Data.Initiation.RecurringPaymentDateTime"
+                    - "Data.Initiation.FinalPaymentDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+
+  - name: "ConfirmationOfFundsAPI"
+    version: "1.0"
+    policies: [ ]
+    paths:
+      /api/fs/consent/manage/funds-confirmation-consents:
+        post:
+          request-flow:
+            policies:
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.ExpirationDateTime"
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/account-access-consents/{consentId}:
+        get:
+          request-flow:
+            policies:
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+        delete:
+          request-flow:
+            policies:
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
 
 # Global Policies (Applied to all APIs)
 global-policies:

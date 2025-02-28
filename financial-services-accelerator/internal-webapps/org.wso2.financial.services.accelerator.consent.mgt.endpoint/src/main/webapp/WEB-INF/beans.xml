@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
- ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -25,14 +26,14 @@
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     <jaxrs:server id="consent" address="/">
         <jaxrs:serviceBeans>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentAuthorizeEndpoint"/>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentManageEndpoint"/>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentAdminEndpoint"/>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentValidationEndpoint"/>
+            <bean class="com.wso2.openbanking.accelerator.consent.endpoint.api.ConsentAuthorizeEndpoint"/>
+            <bean class="com.wso2.openbanking.accelerator.consent.endpoint.api.ConsentManageEndpoint"/>
+            <bean class="com.wso2.openbanking.accelerator.consent.endpoint.api.ConsentAdminEndpoint"/>
+            <bean class="com.wso2.openbanking.accelerator.consent.endpoint.api.ConsentValidationEndpoint"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-            <bean class="org.wso2.financial.services.accelerator.consent.mgt.endpoint.error.ConsentThrowableMapper"/>
+            <bean class="com.wso2.openbanking.accelerator.consent.endpoint.error.ConsentThrowableMapper"/>
         </jaxrs:providers>
     </jaxrs:server>
 </beans>

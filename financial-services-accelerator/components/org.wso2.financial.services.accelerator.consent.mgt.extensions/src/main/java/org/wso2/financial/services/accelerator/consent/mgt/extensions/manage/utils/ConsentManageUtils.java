@@ -22,9 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -207,15 +204,5 @@ public class ConsentManageUtils {
             return accountOpt.orElse(null);
         }
 
-    }
-
-    /**
-     * Get the consent manage validator.
-     * @return
-     */
-    public static ConsentManageValidator getConsentManageValidator() {
-
-        ConsentManageBuilder consentManageBuilder = ConsentExtensionExporter.getConsentManageBuilder();
-        return consentManageBuilder.getConsentManageValidator();
     }
 }

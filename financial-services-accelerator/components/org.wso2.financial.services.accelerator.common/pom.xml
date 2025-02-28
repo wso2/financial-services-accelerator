@@ -91,6 +91,10 @@
             <groupId>org.json.wso2</groupId>
             <artifactId>json</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.io.vertx</groupId>
+            <artifactId>vertx-json-schema</artifactId>
+        </dependency>
         <!-- Test Dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -204,7 +208,7 @@
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
                                             <!--ToDo: Improve coverage to 0.8-->
-                                            <minimum>0.0</minimum>
+<!--                                            <minimum>0.8</minimum>-->
                                         </limit>
                                     </limits>
                                 </rule>
@@ -247,7 +251,9 @@
                             org.wso2.carbon.identity.application.mgt.*;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.identity.oauth.*;version="${identity.inbound.auth.oauth.version.range}",
                             org.wso2.carbon.identity.oauth2.*;version="${identity.inbound.auth.oauth.version.range}",
-                            org.wso2.securevault;version="${org.wso2.securevault.version}"
+                            org.wso2.securevault;version="${org.wso2.securevault.version}",
+                            io.vertx.core.*; version="${vertx.json.schema.wso2.osgi.version.range}",
+                            io.vertx.json.schema.*; version="${vertx.json.schema.wso2.osgi.version.range}",
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.common.internal,

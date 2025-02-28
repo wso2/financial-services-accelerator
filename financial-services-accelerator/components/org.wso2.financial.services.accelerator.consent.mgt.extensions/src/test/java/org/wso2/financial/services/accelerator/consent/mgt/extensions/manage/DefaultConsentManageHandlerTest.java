@@ -31,13 +31,10 @@ import org.wso2.financial.services.accelerator.common.exception.ConsentManagemen
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.DataProviders;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestUtil;
@@ -98,7 +95,8 @@ public class DefaultConsentManageHandlerTest {
 
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
         Mockito.when(consentManageBuilder.getConsentManageHandler()).thenReturn(defaultConsentManageHandler);
-        Mockito.when(consentManageBuilder.getConsentManageValidator()).thenReturn(new DefaultConsentManageValidator());
+//        Mockito.when(consentManageBuilder.getConsentManageValidator())
+//        .thenReturn(new DefaultConsentManageValidator());
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
     }
 
@@ -381,18 +379,11 @@ public class DefaultConsentManageHandlerTest {
 
     private static void setConsentManageBuilder() {
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
-        ConsentManageValidator consentManageValidator = Mockito.mock(ConsentManageValidator.class);
-        Mockito.when(consentManageBuilder.getConsentManageValidator()).thenReturn(new DefaultConsentManageValidator());
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
     }
 
     private static void setConsentManageBuilderForErrorScenario() {
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
-        ConsentManageValidator consentManageValidator = Mockito.mock(ConsentManageValidator.class);
-        Mockito.when(consentManageValidator.validateRequestHeaders(any()))
-                .thenReturn(new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
-                        "Invalid headers", "Invalid headers"));
-        Mockito.when(consentManageBuilder.getConsentManageValidator()).thenReturn(consentManageValidator);
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
     }
 }

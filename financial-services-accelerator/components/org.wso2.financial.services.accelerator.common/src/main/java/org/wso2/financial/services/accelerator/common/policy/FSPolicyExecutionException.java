@@ -25,42 +25,48 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FSPolicyExecutionException extends Exception {
 
-    private int errorCode;
-    private String errorDescription;
+    private int statusCode;
+    private String errorCode;
 
-    public FSPolicyExecutionException(int errorCode, String errorMessage, String errorDescription,
+    public FSPolicyExecutionException(int statusCode, String errorCode, String errorMessage,
                                       Throwable cause) {
 
         super(errorMessage, cause);
         this.errorCode = errorCode;
-        this.errorDescription = errorDescription;
+        this.statusCode = statusCode;
     }
 
-    public FSPolicyExecutionException(String errorMessage, String errorDescription,
-                                      Throwable cause) {
+    public FSPolicyExecutionException(String errorMessage, String errorCode, Throwable cause) {
 
         super(errorMessage, cause);
-        this.errorCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        this.errorDescription = errorDescription;
+        this.statusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        this.errorCode = errorCode;
     }
 
-    public int getErrorCode() {
+    public FSPolicyExecutionException(int statusCode, String errorCode, String errorMessage) {
+
+        super(errorMessage);
+        this.statusCode = statusCode;
+        this.errorCode = errorCode;
+    }
+
+    public int getStatusCode() {
+
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+
+        this.statusCode = statusCode;
+    }
+
+    public String getErrorCode() {
 
         return errorCode;
     }
 
-    public void setErrorCode(int errorCode) {
+    public void setErrorCode(String errorCode) {
 
         this.errorCode = errorCode;
-    }
-
-    public String getErrorDescription() {
-
-        return errorDescription;
-    }
-
-    public void setErrorDescription(String errorDescription) {
-
-        this.errorDescription = errorDescription;
     }
 }
