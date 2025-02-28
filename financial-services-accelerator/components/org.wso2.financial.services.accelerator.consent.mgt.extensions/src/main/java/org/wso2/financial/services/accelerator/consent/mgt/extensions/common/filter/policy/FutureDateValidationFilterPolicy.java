@@ -91,19 +91,25 @@ public class FutureDateValidationFilterPolicy extends FSFilterPolicy {
 
     }
 
-    public static boolean isFutureDate(String expDateVal) {
+    /**
+     * Check if the provided date is a future date.
+     *
+     * @param dateVal date value
+     * @return true if the date is a future date
+     */
+    private static boolean isFutureDate(String dateVal) {
 
-        if (expDateVal == null) {
+        if (dateVal == null) {
             return true;
         }
         try {
-            OffsetDateTime expDate = OffsetDateTime.parse(expDateVal);
-            OffsetDateTime currDate = OffsetDateTime.now(expDate.getOffset());
+            OffsetDateTime providedDate = OffsetDateTime.parse(dateVal);
+            OffsetDateTime currDate = OffsetDateTime.now(providedDate.getOffset());
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Provided expiry date is: %s current date is: %s", expDate, currDate));
+                log.debug(String.format("Provided date is: %s current date is: %s", providedDate, currDate));
             }
-            return expDate.isAfter(currDate);
+            return providedDate.isAfter(currDate);
         } catch (DateTimeParseException e) {
             return false;
         }

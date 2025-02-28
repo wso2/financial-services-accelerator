@@ -379,19 +379,11 @@ public class DefaultConsentManageHandlerTest {
 
     private static void setConsentManageBuilder() {
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
-//        ConsentManageValidator consentManageValidator = Mockito.mock(ConsentManageValidator.class);
-//        Mockito.when(consentManageBuilder.getConsentManageValidator())
-//        .thenReturn(new DefaultConsentManageValidator());
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
     }
 
     private static void setConsentManageBuilderForErrorScenario() {
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
-//        ConsentManageValidator consentManageValidator = Mockito.mock(ConsentManageValidator.class);
-//        Mockito.when(consentManageValidator.validateRequestHeaders(any()))
-//                .thenReturn(new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
-//                        "Invalid headers", "Invalid headers"));
-//        Mockito.when(consentManageBuilder.getConsentManageValidator()).thenReturn(consentManageValidator);
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
     }
 }

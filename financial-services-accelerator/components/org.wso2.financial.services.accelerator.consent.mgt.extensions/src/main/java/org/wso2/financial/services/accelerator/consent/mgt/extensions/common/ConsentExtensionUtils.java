@@ -140,6 +140,13 @@ public class ConsentExtensionUtils {
         }
     }
 
+    /**
+     * Check whether a given path exists in a JSONObject.
+     *
+     * @param jsonObject  JSONObject to check
+     * @param path        Path to check
+     * @return        Whether the path exists
+     */
     public static boolean pathExists(JSONObject jsonObject, String path) {
         String[] keys = path.split("\\.");
         JSONObject current = jsonObject;
@@ -159,6 +166,13 @@ public class ConsentExtensionUtils {
         return true;
     }
 
+    /**
+     * Retrieve the value from a JSONObject for a given path.
+     *
+     * @param jsonObject  JSONObject to retrieve the value from
+     * @param path        Path to the value
+     * @return          Value for the given path
+     */
     public static Object retrieveValueFromJSONObject(JSONObject jsonObject, String path) {
         String[] keys = path.split("\\.");
         JSONObject current = jsonObject;

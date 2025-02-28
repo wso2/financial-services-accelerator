@@ -69,6 +69,12 @@ public class ClientIdValidationFilterPolicy extends FSFilterPolicy {
 
     }
 
+    /**
+     * Validate the client id.
+     *
+     * @param clientId
+     * @throws FSPolicyExecutionException
+     */
     private void validateClientId(String clientId) throws FSPolicyExecutionException {
 
         if (StringUtils.isNotEmpty(clientId)) {
