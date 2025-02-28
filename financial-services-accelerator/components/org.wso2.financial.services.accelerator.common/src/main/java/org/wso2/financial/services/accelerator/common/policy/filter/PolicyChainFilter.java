@@ -70,9 +70,9 @@ public class PolicyChainFilter implements Filter {
                     filterPolicy.processRequest(servletRequest, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing request policies", e);
-                handleValidationFailure((HttpServletResponse) servletResponse, e.getErrorCode(),
-                        e.getMessage(), e.getErrorDescription());
+                log.error("Error occurred while processing request policies.", e);
+                handleValidationFailure((HttpServletResponse) servletResponse, e.getStatusCode(), e.getErrorCode(),
+                        e.getMessage());
                 return;
             }
 
@@ -87,9 +87,9 @@ public class PolicyChainFilter implements Filter {
                     filterPolicy.processResponse(servletResponse, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing response policies", e);
-                handleValidationFailure((HttpServletResponse) servletResponse, e.getErrorCode(),
-                        e.getMessage(), e.getErrorDescription());
+                log.error("Error occurred while processing response policies.", e);
+                handleValidationFailure((HttpServletResponse) servletResponse, e.getStatusCode(), e.getErrorCode(),
+                        e.getMessage());
                 return;
             }
         }

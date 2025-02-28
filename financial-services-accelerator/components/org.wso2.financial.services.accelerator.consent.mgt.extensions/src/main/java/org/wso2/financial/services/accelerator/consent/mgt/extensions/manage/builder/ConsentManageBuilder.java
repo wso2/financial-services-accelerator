@@ -24,7 +24,6 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
 
 /**
  * Builder class for consent manage handler.
@@ -33,7 +32,6 @@ public class ConsentManageBuilder {
 
     private static final Log log = LogFactory.getLog(ConsentManageBuilder.class);
     private ConsentManageHandler consentManageHandler = null;
-    private ConsentManageValidator consentManageValidator = null;
 
     public ConsentManageBuilder() {
         build();
@@ -46,18 +44,9 @@ public class ConsentManageBuilder {
         consentManageHandler = ConsentExtensionUtils.getClassInstanceFromFQN(handlerConfig, ConsentManageHandler.class);
         log.debug("Manage handler loaded successfully");
 
-        String validatorConfig = (String) ConsentExtensionsDataHolder.getInstance().getConfigurationService()
-                .getConfigurations().get(FinancialServicesConstants.MANAGE_VALIDATOR);
-        consentManageValidator = ConsentExtensionUtils.getClassInstanceFromFQN(validatorConfig,
-                ConsentManageValidator.class);
-        log.debug("Manage Validator loaded successfully");
     }
 
     public ConsentManageHandler getConsentManageHandler() {
         return consentManageHandler;
-    }
-
-    public ConsentManageValidator getConsentManageValidator() {
-        return consentManageValidator;
     }
 }

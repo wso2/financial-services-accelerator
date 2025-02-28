@@ -333,6 +333,15 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #name = "AuthorizePolicyChainFilter"
 #url_pattern = "/authorize"
 
+#[[tomcat.filter]]
+#name = "ConsentPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.ConsentPolicyChainFilter"
+#init_params.apiName = "AccountsAPI"
+
+#[[tomcat.filter_mapping]]
+#name = "ConsentPolicyChainFilter"
+#url_pattern = "/manage/*"
+
 #================configs related to financial-services.xml=============
 [[financial_services.jdbc_persistence_manager]]
 data_source.name = "WSO2FS_DB"

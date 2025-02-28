@@ -202,8 +202,7 @@
                             org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",
                             com.fasterxml.jackson.databind;version="${jackson.databinding.version}",
                             com.fasterxml.jackson.core;version="${jackson.databinding.version}",
-                            org.owasp.encoder;version="${encoder.wso2.version}",
-                            javax.servlet;
+                            org.owasp.encoder;version="${encoder.wso2.version}"
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Export-Package>

@@ -74,9 +74,9 @@ public class ConsentPolicyChainFilter implements Filter {
                     filterPolicy.processRequest(cachedRequest, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing consent request policies", e);
-                handleValidationFailure((HttpServletResponse) servletResponse, e.getErrorCode(),
-                        e.getMessage(), e.getErrorDescription());
+                log.error("Error occurred while processing consent request policies.", e);
+                handleValidationFailure((HttpServletResponse) servletResponse, e.getStatusCode(), e.getErrorCode(),
+                        e.getMessage());
                 return;
             }
 
@@ -91,9 +91,9 @@ public class ConsentPolicyChainFilter implements Filter {
                     filterPolicy.processResponse(servletResponse, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing consent response policies", e);
-                handleValidationFailure((HttpServletResponse) servletResponse, e.getErrorCode(),
-                        e.getMessage(), e.getErrorDescription());
+                log.error("Error occurred while processing consent response policies.", e);
+                handleValidationFailure((HttpServletResponse) servletResponse, e.getStatusCode(), e.getErrorCode(),
+                        e.getMessage());
                 return;
             }
         }

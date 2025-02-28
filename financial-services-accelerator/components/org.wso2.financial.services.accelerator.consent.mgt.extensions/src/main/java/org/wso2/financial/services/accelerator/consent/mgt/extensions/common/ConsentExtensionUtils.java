@@ -54,7 +54,7 @@ public class ConsentExtensionUtils {
         } else if (requestPath.contains(ConsentExtensionConstants.PAYMENT_CONSENT_PATH)) {
             return ConsentExtensionConstants.PAYMENTS;
         } else {
-            throw new ConsentManagementException("Invalid consent type");
+            return ConsentExtensionConstants.PAYMENTS;
         }
     }
 
@@ -139,4 +139,38 @@ public class ConsentExtensionUtils {
             throw new ConsentManagementRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
     }
+
+    public static boolean pathExists(JSONObject jsonObject, String path) {
+        String[] keys = path.split("\\.");
+        JSONObject current = jsonObject;
+
+        for (int i = 0; i < keys.length; i++) {
+            if (!current.has(keys[i])) {
+                return false;
+            }
+            if (i == keys.length - 1) {
+                return true;
+            }
+            current = current.optJSONObject(keys[i]);
+            if (current == null && i != keys.length - 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static Object retrieveValueFromJSONObject(JSONObject jsonObject, String path) {
+        String[] keys = path.split("\\.");
+        JSONObject current = jsonObject;
+
+        for (int i = 0; i < keys.length - 1; i++) {
+            if (!current.has(keys[i]) || !(current.get(keys[i]) instanceof JSONObject)) {
+                return null;
+            }
+            current = current.getJSONObject(keys[i]);
+        }
+
+        return current.has(keys[keys.length - 1]) ? current.get(keys[keys.length - 1]) : null;
+    }
+
 }

@@ -33,9 +33,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageConstants;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageUtils;
 
 /**
  * Consent manage handler default implementation.
@@ -46,26 +44,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
-
-        //Check whether client ID exists
-        if (StringUtils.isEmpty(consentManageData.getClientId())) {
-            log.error("Client ID missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
-        }
-
-        //Validate Initiation headers
-        ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
-                .validateRequestHeaders(consentManageData);
-        if (!headerValidationResult.isValid()) {
-            log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
-            throw new ConsentException(headerValidationResult.getHttpCode(), headerValidationResult.getErrorCode(),
-                    headerValidationResult.getErrorMessage());
-        }
-
-        if (consentManageData.getRequestPath() == null) {
-            log.error("Resource Path Not Found");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found");
-        }
 
         String[] requestPathArray = consentManageData.getRequestPath().split("/");
         if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
@@ -111,37 +89,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
-        //Check whether client ID exists
-        if (StringUtils.isEmpty(consentManageData.getClientId())) {
-            log.error("Client ID missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
-        }
-
-        //Validate Initiation headers
-        ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
-                .validateRequestHeaders(consentManageData);
-        if (!headerValidationResult.isValid()) {
-            log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
-            throw new ConsentException(headerValidationResult.getHttpCode(), headerValidationResult.getErrorCode(),
-                    headerValidationResult.getErrorMessage());
-        }
-
-        if (consentManageData.getRequestPath() == null) {
-            log.error("Resource Path Not Found");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found");
-        }
-
         try {
-            String consentType = ConsentManageUtils.getConsentManageValidator().getConsentType(consentManageData);
-
-            //Validate Initiation request
-            ConsentPayloadValidationResult validationResponse = ConsentManageUtils.getConsentManageValidator()
-                    .validateRequestPayload(consentManageData, consentType);
-            if (!validationResponse.isValid()) {
-                log.error(validationResponse.getErrorMessage().replaceAll("[\r\n]+", " "));
-                throw new ConsentException(validationResponse.getHttpCode(), validationResponse.getErrorCode(),
-                        validationResponse.getErrorMessage());
-            }
+            String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());;
 
             ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
                     consentManageData.getPayload().toString(), consentType,
@@ -167,28 +116,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
-        //Check whether client ID exists
-        if (StringUtils.isEmpty(consentManageData.getClientId())) {
-            log.error("Client ID missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
-        }
-
-        //Validate Initiation headers
-        ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
-                .validateRequestHeaders(consentManageData);
-        if (!headerValidationResult.isValid()) {
-            log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
-            throw new ConsentException(headerValidationResult.getHttpCode(), headerValidationResult.getErrorCode(),
-                    headerValidationResult.getErrorMessage());
-        }
-
-        String[] requestPathArray;
-        if (consentManageData.getRequestPath() == null) {
-            log.error("Resource Path Not Found");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found");
-        } else {
-            requestPathArray = consentManageData.getRequestPath().split("/");
-        }
+        String[] requestPathArray = consentManageData.getRequestPath().split("/");
 
         if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
             log.error("Invalid Request Path");
