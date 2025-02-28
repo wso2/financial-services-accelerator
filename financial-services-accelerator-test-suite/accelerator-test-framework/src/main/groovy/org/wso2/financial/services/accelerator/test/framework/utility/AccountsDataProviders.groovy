@@ -44,14 +44,14 @@ class AccountsDataProviders {
         def validPermissions = new ArrayList<Object[]>()
         validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC] as Object)
         validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL] as Object)
-        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC, ConnectorTestConstants.READ_TRANSACTIONS_BASIC] as Object)
-        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC, ConnectorTestConstants.READ_TRANSACTIONS_BASIC
+        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_BASIC] as Object)
+        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_BASIC
                               , ConnectorTestConstants.READ_TRANSACTIONS_CREDITS] as Object)
-        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC, ConnectorTestConstants.READ_TRANSACTIONS_BASIC
+        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_BASIC
                               , ConnectorTestConstants.READ_TRANSACTIONS_DEBITS] as Object)
-        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC, ConnectorTestConstants.READ_TRANSACTIONS_DETAIL
+        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_DETAIL
                               , ConnectorTestConstants.READ_TRANSACTIONS_CREDITS] as Object)
-        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC, ConnectorTestConstants.READ_TRANSACTIONS_DETAIL
+        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_DETAIL
                               , ConnectorTestConstants.READ_TRANSACTIONS_DEBITS] as Object)
 
         return validPermissions

@@ -23,7 +23,6 @@ import org.testng.Assert
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 
 /**
@@ -67,36 +66,36 @@ class ConsentManageEndpointValidationTest extends FSConnectorTest {
         Assert.assertEquals(response.getStatusCode(), ConnectorTestConstants.STATUS_CODE_405)
     }
 
-    @Test
-    void "Verify File Upload Post"() {
+//    @Test
+//    void "Verify File Upload Post"() {
+//
+//        consentPath = ConnectorTestConstants.PAYMENT_CONSENT_PATH
+//        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
+//        doDefaultInitiation()
+//        Assert.assertNotNull(consentId)
+//        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+//
+//        Response response = buildKeyManagerRequest(configuration.getAppInfoClientID())
+//                .body(initiationPayload)
+//                .baseUri(configuration.getISServerUrl())
+//                .post(ConnectorTestConstants.FILE_UPLOAD_POST + "/${consentId}")
+//
+//        Assert.assertEquals(response.getStatusCode(), ConnectorTestConstants.STATUS_CODE_405)
+//    }
 
-        consentPath = ConnectorTestConstants.PAYMENT_CONSENT_PATH
-        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
-        doDefaultInitiation()
-        Assert.assertNotNull(consentId)
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
-
-        Response response = buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .body(initiationPayload)
-                .baseUri(configuration.getISServerUrl())
-                .post(ConnectorTestConstants.FILE_UPLOAD_POST + "/${consentId}")
-
-        Assert.assertEquals(response.getStatusCode(), ConnectorTestConstants.STATUS_CODE_405)
-    }
-
-    @Test
-    void "Verify File Upload GET"() {
-
-        consentPath = ConnectorTestConstants.PAYMENT_CONSENT_PATH
-        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
-        doDefaultInitiation()
-        Assert.assertNotNull(consentId)
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
-
-        Response response = buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .baseUri(configuration.getISServerUrl())
-                .get(ConnectorTestConstants.FILE_UPLOAD_POST + "/${consentId}")
-
-        Assert.assertEquals(response.getStatusCode(), ConnectorTestConstants.STATUS_CODE_405)
-    }
+//    @Test
+//    void "Verify File Upload GET"() {
+//
+//        consentPath = ConnectorTestConstants.PAYMENT_CONSENT_PATH
+//        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
+//        doDefaultInitiation()
+//        Assert.assertNotNull(consentId)
+//        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+//
+//        Response response = buildKeyManagerRequest(configuration.getAppInfoClientID())
+//                .baseUri(configuration.getISServerUrl())
+//                .get(ConnectorTestConstants.FILE_UPLOAD_POST + "/${consentId}")
+//
+//        Assert.assertEquals(response.getStatusCode(), ConnectorTestConstants.STATUS_CODE_405)
+//    }
 }

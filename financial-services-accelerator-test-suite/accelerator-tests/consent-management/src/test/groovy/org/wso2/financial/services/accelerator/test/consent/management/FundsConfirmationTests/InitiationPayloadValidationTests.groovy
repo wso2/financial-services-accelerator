@@ -45,7 +45,7 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
-                "Permissions are not in correct format")
+                "Payload is not in the correct format")
     }
 
     @Test
@@ -57,7 +57,7 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
-                "Object has missing required properties ([\"Data\",\"Risk\"])"))
+                "Invalid request payload"))
     }
 
     @Test

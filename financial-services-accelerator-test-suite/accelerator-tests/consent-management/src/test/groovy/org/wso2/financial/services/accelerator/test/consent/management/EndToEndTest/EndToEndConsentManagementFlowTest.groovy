@@ -19,7 +19,6 @@
 package org.wso2.financial.services.accelerator.test.consent.management.EndToEndTest
 
 import org.wso2.financial.services.accelerator.test.framework.constant.CofRequestPayloads
-import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response
 import org.testng.Assert

@@ -37,7 +37,7 @@ class CofRequestPayloads {
     static OffsetDateTime pastExpirationInstant = OffsetDateTime.now().minusDays(5)
     static OffsetDateTime expirationDateTime = OffsetDateTime.now().minusDays(5)
     static DateTimeFormatter formatter = DateTimeFormatter.RFC_1123_DATE_TIME
-    String accountID = "1234"
+    static String accountID = "1234"
 
     public static String cofInitiationPayload = """
     {

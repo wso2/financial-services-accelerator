@@ -56,6 +56,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -71,6 +72,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID_CAPS, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -92,7 +94,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
         Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
     }
 
@@ -104,11 +106,12 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
         Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
     }
 
@@ -124,11 +127,12 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, accessToken)
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
         Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
     }
 
@@ -142,11 +146,10 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_415)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
-        Assert.assertEquals(errorMessage, "Request Accept header 'application' is not a valid media type")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
     }
 }

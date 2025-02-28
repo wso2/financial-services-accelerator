@@ -59,8 +59,8 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
-        Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION),
+                "AuthenticationHandler not found.")
     }
 
     @Test
@@ -122,12 +122,13 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
-        Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION),
+                "AuthenticationHandler not found.")
     }
 
     @Test
@@ -142,6 +143,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, authHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -158,6 +160,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -173,6 +176,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -189,10 +193,11 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_415)
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
     }
 
     @Test
@@ -200,13 +205,13 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
 
         consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
-                .accept(ContentType.XML)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID_CAPS, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID_CAPS, UUID.randomUUID().toString())
                 .header(ConnectorTestConstants.X_FAPI_CUSTOMER_LAST_LOGGED_TIME_CAPS,
                         ConnectorTestConstants.X_FAPI_CUSTOMER_LAST_LOGGED_TIME_VALUE)
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -224,6 +229,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
                 .header(ConnectorTestConstants.X_FAPI_CUSTOMER_LAST_LOGGED_TIME_CAPS,
                         ConnectorTestConstants.X_FAPI_CUSTOMER_LAST_LOGGED_TIME_VALUE)
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -240,6 +246,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
                 .header(ConnectorTestConstants.X_FAPI_AUTH_DATE, ConnectorTestConstants.X_FAPI_AUTH_DATE_VALUE)
+                .baseUri(configuration.getISServerUrl())
                 .body(initiationPayload)
                 .post(consentPath)
 
