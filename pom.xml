@@ -44,6 +44,7 @@
                 <module>financial-services-accelerator</module>
                 <module>react-apps</module>
                 <module>integration-test-framework</module>
+                <module>financial-services-accelerator-test-suite</module>
             </modules>
             <build>
                 <plugins>

@@ -214,6 +214,11 @@
                 <artifactId>selenium-server</artifactId>
                 <version>${selenium.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>${org.codehaus.groovy.version}</version>
+            </dependency>
 <!--            <dependency>-->
 <!--                <groupId>org.bouncycastle</groupId>-->
 <!--                <artifactId>bcpkix-jdk15on</artifactId>-->
