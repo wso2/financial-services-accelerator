@@ -29,7 +29,7 @@ import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.automation.consent.AuthorizationFlowNavigationAutomationStep
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PageObjects
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
@@ -46,7 +46,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
     @BeforeClass
     void init() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
     }
 
     @Test

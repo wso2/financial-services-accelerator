@@ -61,6 +61,9 @@ class ConnectorTestConstants {
     public static final String X_FAPI_FINANCIAL_ID_CAPS = "X-Fapi-Financial-Id"
     public static final String X_IDEMPOTENCY_KEY_CAPS = "X-Idempotency-Key"
     public static final String X_FAPI_INTERACTION_ID_CAPS = "X-Fapi-Interaction-Id"
+    static final String X_FAPI_CUSTOMER_LAST_LOGGED_TIME_CAPS = "X-Fapi-Customer-Last-Logged-time"
+    static final String X_FAPI_CUSTOMER_LAST_LOGGED_TIME_VALUE = "Sun, 10 Sep 2017 19:43:31 GMT"
+    static final String X_FAPI_AUTH_DATE_VALUE = "Sun, 10 Sep 2017 19:43:31 GMT"
 
     static final String PKJWT_AUTH_METHOD = "private_key_jwt"
     static final String TLS_AUTH_METHOD = "tls_client_auth"
@@ -177,6 +180,9 @@ class ConnectorTestConstants {
     static final String READ_ACCOUNTS_DETAIL = "ReadAccountsDetail"
     static final String READ_BALANCES = "ReadBalances"
     static final String READ_TRANSACTIONS_DETAIL = "ReadTransactionsDetail"
+    static final String READ_TRANSACTIONS_BASIC = "ReadTransactionsBasic"
+    static final String READ_TRANSACTIONS_CREDITS = "ReadTransactionsCredits"
+    static final String READ_TRANSACTIONS_DEBITS = "ReadTransactionsDebits"
     static final String INVALID_PERMISSION = "ReadStatements"
     static OffsetDateTime expirationInstant = OffsetDateTime.now().plusDays(5)
     static OffsetDateTime fromInstant = OffsetDateTime.now()
@@ -255,4 +261,33 @@ class ConnectorTestConstants {
             return this.value
         }
     }
+
+    public static final String OBIE_ERROR_FIELD_INVALID ="UK.OBIE.Field.Invalid"
+    static final String SCHEME_NAME_MAXLENGTH = "department test value 1212121212 department test value 1 department test value 1"
+    static final String NAME_MAXLENGTH = "department test value 1212121212 department test value 1 department test value 1" +
+            "department test value 1 department test value 1 department test value 1 department test value 1 department test value 1" +
+            "department test value 1 department test value 1 department test value 1 department test value 1 department test value 1" +
+            "department test value 1 department test value 1 department test value 1 department test value 1 department test value 1 " +
+            "department test value 1 department test value 1 department test value 1 department test value 1 department test value 1"
+
+    static final String IDENTIFICATION_MAXLENGTH = "Account1Account1Account1Account1Account1Account1Account1Account1" +
+            "Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1" +
+            "Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1"
+    static final String SECONDARY_IDENTIFICATION_MAXLENGTH = "Account1Account1Account1Account1Account1Account1Account1"
+
+    final static String CONSENT_PATH_DOMESTIC = "/open-banking/v3.1/pisp/domestic-payment-consents"
+    final static String CONSENT_PATH_SCHEDULE = "/open-banking/v3.1/pisp/domestic-scheduled-payment-consents"
+    final static String CONSENT_PATH_STANDING_ORDERS = "/open-banking/v3.1/pisp/domestic-standing-order-consents"
+    final static String CONSENT_PATH_INTERNATIONAL_PAYMENTS = "/open-banking/v3.1/pisp/international-payment-consents"
+    final static String CONSENT_PATH_INTERNATIONAL_STANDING_ORDER = "/open-banking/v3.1/pisp/international-standing-order-consents"
+    final static String CONSENT_PATH_INTERNATIONAL_SCHEDULE = "/open-banking/v3.1/pisp/international-scheduled-payment-consents"
+    final static String CONSENT_PATH_FILE_PAYMENTS = "/open-banking/v3.1/pisp/file-payment-consents"
+
+    final static String SUBMISSION_PATH_DOMESTIC_PAYMENTS = "/open-banking/v3.1/pisp/domestic-payments"
+    final static String SUBMISSION_PATH_DOMESTIC_SCHEDULE = "/open-banking/v3.1/pisp/domestic-scheduled-payments"
+    final static String SUBMISSION_PATH_DOMESTIC_STANDING_ORDERS = "/open-banking/v3.1/pisp/domestic-standing-orders"
+    final static String SUBMISSION_PATH_INTERNATIONAL = "/open-banking/v3.1/pisp/international-payments"
+    final static String SUBMISSION_PATH_INTERNATIONAL_STANDING_ORDERS = "/open-banking/v3.1/pisp/international-standing-orders"
+    final static String SUBMISSION_PATH_INTERNATIONAL_SCHEDULE = "/open-banking/v3.1/pisp/international-scheduled-payments"
+    final static String SUBMISSION_PATH_FILE_PAYMENTS = "/open-banking/v3.1/pisp/file-payments"
 }

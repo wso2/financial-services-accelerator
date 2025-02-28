@@ -26,7 +26,7 @@ import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.JWTGenerator
 import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
@@ -48,9 +48,10 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
 
         clientId = configuration.getAppInfoClientID()
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
         //Consent initiation
-        doDefaultInitiation(initiationPayload)
+        consentResponse = doDefaultInitiation(initiationPayload)
+        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
         Assert.assertNotNull(consentId)
 
         //Consent Authorisation

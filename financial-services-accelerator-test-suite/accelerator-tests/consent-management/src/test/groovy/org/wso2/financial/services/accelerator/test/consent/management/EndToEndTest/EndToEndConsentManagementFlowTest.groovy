@@ -18,13 +18,15 @@
 
 package org.wso2.financial.services.accelerator.test.consent.management.EndToEndTest
 
+import org.wso2.financial.services.accelerator.test.framework.constant.CofRequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
@@ -124,13 +126,13 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
         def requestUri
         def validationPayload
         if (ConnectorTestConstants.ACCOUNTS_TYPE == map.get("consentType")) {
-            validationPayload = RequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+            validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
         } else if (ConnectorTestConstants.COF_TYPE == map.get("consentType")) {
             requestUri = map.get("submissionPath")
-            validationPayload = RequestPayloads.buildCofValidationPayload(accessToken, userId, consentId, requestUri)
+            validationPayload = CofRequestPayloads.buildCofValidationPayload(accessToken, userId, consentId, requestUri)
         } else {
             requestUri = map.get("submissionPath")
-            validationPayload = RequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId, requestUri)
+            validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId, requestUri)
         }
 
         doAccountValidation(validationPayload)

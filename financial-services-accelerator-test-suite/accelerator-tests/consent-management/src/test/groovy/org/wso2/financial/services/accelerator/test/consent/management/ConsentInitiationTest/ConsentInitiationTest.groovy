@@ -27,7 +27,7 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
@@ -39,7 +39,7 @@ class ConsentInitiationTest extends FSConnectorTest {
     @BeforeClass
     void init() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
     }
 
     @Test
@@ -51,20 +51,6 @@ class ConsentInitiationTest extends FSConnectorTest {
     }
 
     @Test
-    void "OB-1950_Verify Creation of a consent without Authorization Header"() {
-
-        doDefaultInitiationWithoutAuthorizationHeader()
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
-    }
-
-    @Test
-    void "OB-1951_Verify Creation of a consent without Content Type Header"() {
-
-        doDefaultInitiationWithoutContentTypeHeader()
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
-    }
-
-    @Test
     void "OB-1952_Verify Creation of a consent with incorrect request payload"() {
 
         doDefaultInitiationWithIncorrectPayload()
@@ -72,23 +58,10 @@ class ConsentInitiationTest extends FSConnectorTest {
     }
 
     @Test
-    void "OB-1953_Verify Creation of a consent with invalid value for Content Type"() {
-
-        doDefaultInitiationWithInvalidContentTypeValue()
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
-    }
-
-    @Test
-    void "OB-1954_Verify Creation of a consent with invalid value for Accept Header"() {
-
-        doDefaultInitiationWithInvalidAcceptHeaderValue()
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
-    }
-
-    @Test
     void "OB-1955_Verify Creation of a consent without ReadAccountsDetail permission"() {
 
-        doDefaultInitiation(RequestPayloads.initiationPayloadWithoutReadAccountsDetail)
+        consentResponse = doDefaultInitiation(AccountsRequestPayloads.initiationPayloadWithoutReadAccountsDetail)
+        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Authorize consent
@@ -101,7 +74,7 @@ class ConsentInitiationTest extends FSConnectorTest {
         //Consent Validate Request
         consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
-                .body(signedObject.getSignedRequest(RequestPayloads.buildValidationAccountsPayload(GenerateBasicHeader(),
+                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationAccountsPayload(GenerateBasicHeader(),
                         userId, consentId)))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, consentRequestBuilder.GenerateBasicHeader())
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
@@ -125,7 +98,8 @@ class ConsentInitiationTest extends FSConnectorTest {
     @Test
     void "OB-1956_Verify Creation of a consent without ReadTransactionsDetail permission"() {
 
-        doDefaultInitiation(RequestPayloads.initiationPayloadWithoutReadTransactionsDetail)
+        consentResponse = doDefaultInitiation(AccountsRequestPayloads.initiationPayloadWithoutReadTransactionsDetail)
+        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Authorize consent
@@ -138,7 +112,7 @@ class ConsentInitiationTest extends FSConnectorTest {
         //Consent Validate Request
         consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
-                .body(signedObject.getSignedRequest(RequestPayloads.buildValidationTransactionPayload(userId, consentId, host)))
+                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationTransactionPayload(userId, consentId, host)))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, consentRequestBuilder.GenerateBasicHeader())
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
@@ -161,7 +135,8 @@ class ConsentInitiationTest extends FSConnectorTest {
     @Test
     void "OB-1957_Verify Creation of a consent without ReadBalances permission"() {
 
-        doDefaultInitiation(RequestPayloads.initiationPayloadWithoutReadBalances)
+        consentResponse = doDefaultInitiation(AccountsRequestPayloads.initiationPayloadWithoutReadBalances)
+        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Authorize consent
@@ -174,7 +149,7 @@ class ConsentInitiationTest extends FSConnectorTest {
         //Consent Validate Request
         consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
-                .body(signedObject.getSignedRequest(RequestPayloads.buildValidationBalancePayload(userId, consentId, host)))
+                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationBalancePayload(userId, consentId, host)))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, consentRequestBuilder.GenerateBasicHeader())
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)

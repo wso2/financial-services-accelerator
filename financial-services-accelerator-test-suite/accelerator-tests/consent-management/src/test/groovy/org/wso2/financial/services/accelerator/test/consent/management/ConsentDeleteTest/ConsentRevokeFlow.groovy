@@ -18,14 +18,17 @@
 
 package org.wso2.financial.services.accelerator.test.consent.management.ConsentDeleteTest
 
+import io.restassured.http.ContentType
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ConsentRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
+import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
@@ -43,7 +46,7 @@ class ConsentRevokeFlow extends FSConnectorTest {
     @BeforeClass(alwaysRun = true)
     void init() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
     }
 
     @Test
@@ -80,6 +83,29 @@ class ConsentRevokeFlow extends FSConnectorTest {
         //Consent Revocation
         doConsentRevocationWithoutAuthorizationHeader()
         Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
+    }
+
+    @Test
+    void "TC0203004_Delete Consent With Authorization Code Type Access Token"() {
+
+        List<ConnectorTestConstants.ApiScope> scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.ACCOUNTS_TYPE)
+
+        doDefaultInitiation()
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+        userAccessToken = getUserAccessToken(code, scopeList)
+
+        consentRevocationResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, userAccessToken)
+                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
+                .delete(consentPath + "/${consentId}")
+
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
+        Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
     }
 
     @Test
@@ -140,7 +166,7 @@ class ConsentRevokeFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Revoke without client ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -158,7 +184,7 @@ class ConsentRevokeFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Revoke with invalid client ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -176,7 +202,7 @@ class ConsentRevokeFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Revoke without consent ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -194,7 +220,7 @@ class ConsentRevokeFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Revoke with invalid consent ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -212,7 +238,7 @@ class ConsentRevokeFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Revoke invalid consent type"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -247,5 +273,34 @@ class ConsentRevokeFlow extends FSConnectorTest {
         Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
 //        Assert.assertTrue(TestUtil.parseResponseBody(consentRevocationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
 //                .contains(ConnectorTestConstants.CONSENT_ALREADY_REVOKED))
+    }
+
+    @Test
+    void "TC0203021_Delete_Accounts_Initiation_With_Headers with Capital Case"() {
+
+        //Consent Initiation
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        //Authorize consent
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+        Assert.assertNotNull(code)
+        Assert.assertNotNull(TestUtil.getIdTokenFromUrl(automation.currentUrl.get()))
+
+        def basicHeader = getBasicAuthHeader(configurationService.getUserKeyManagerAdminName(),
+                configurationService.getUserKeyManagerAdminPWD())
+
+        //Consent Revocation
+        consentRevocationResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
+                .delete(consentPath + "/${consentId}")
+
+        Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }
 }

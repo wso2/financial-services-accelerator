@@ -19,8 +19,6 @@
 package org.wso2.financial.services.accelerator.test.framework.constant
 
 import org.testng.annotations.DataProvider
-import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 
 class ConsentDataProviders {
 
@@ -34,7 +32,7 @@ class ConsentDataProviders {
         Map<String, Object> cofParameterMap = new HashMap<String, String>()
         Map<String, Object> paymentsParameterMap = new HashMap<String, String>()
 
-        accountParameterMap.put("initiationPayload", RequestPayloads.initiationPayload)
+        accountParameterMap.put("initiationPayload", AccountsRequestPayloads.initiationPayload)
         accountParameterMap.put("initiationPath", ConnectorTestConstants.ACCOUNT_CONSENT_PATH)
         accountParameterMap.put("consentType", ConnectorTestConstants.ACCOUNTS_TYPE)
         accountParameterMap.put("submissionPath", ConnectorTestConstants.ACCOUNT_SUBMISSION_PATH)

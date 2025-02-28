@@ -23,7 +23,8 @@ import org.testng.Assert
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 
 /**
  * Consent Manage Endpoint Validation Test.
@@ -34,7 +35,7 @@ class ConsentManageEndpointValidationTest extends FSConnectorTest {
     void "Verify Updating of a consent"() {
 
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -52,7 +53,7 @@ class ConsentManageEndpointValidationTest extends FSConnectorTest {
     void "Verify Patching of a created consent"() {
 
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -70,7 +71,7 @@ class ConsentManageEndpointValidationTest extends FSConnectorTest {
     void "Verify File Upload Post"() {
 
         consentPath = ConnectorTestConstants.PAYMENT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPaymentPayload
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -87,7 +88,7 @@ class ConsentManageEndpointValidationTest extends FSConnectorTest {
     void "Verify File Upload GET"() {
 
         consentPath = ConnectorTestConstants.PAYMENT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPaymentPayload
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)

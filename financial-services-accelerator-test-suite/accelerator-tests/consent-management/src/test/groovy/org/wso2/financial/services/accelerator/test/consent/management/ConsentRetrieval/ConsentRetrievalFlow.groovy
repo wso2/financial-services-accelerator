@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.test.consent.management.ConsentRetrieval
 
+import io.restassured.http.ContentType
+import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response
 import org.testng.Assert
@@ -25,7 +27,7 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
@@ -42,7 +44,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @BeforeClass(alwaysRun = true)
     void init(){
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
     }
 
     @Test
@@ -63,10 +65,30 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     }
 
     @Test
-    void "OB-1960_Verify Retrieval of a Created Consent without Authorization Bearer"() {
+    void "OB-1960_Verify Retrieval of a Created Consent without Authorization header"() {
 
         doDefaultInitiation()
         doConsentRetrievalWithoutAuthorizationHeader(consentId)
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
+    }
+
+    @Test
+    void "TC0202012_Get Accounts Initiation With Invalid Authorization Header"() {
+
+        def basicHeader = getBasicAuthHeader(configurationService.getUserPSUName(),
+                configurationService.getUserPSUPWD())
+
+        doDefaultInitiation()
+        consentResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, "${configuration.getAppInfoClientID()}")
+                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+                .baseUri(configuration.getISServerUrl())
+                .get(consentPath + "/${consentId}")
+
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
@@ -124,7 +146,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Retrieval of a consent with valid inputs"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -140,7 +162,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Retrieval of a consent After Authorisation"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -158,7 +180,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval without client ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -176,7 +198,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval invalid client ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -194,7 +216,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval without consent ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -212,7 +234,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval with invalid consent ID"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -230,7 +252,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval invalid consent type"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -248,7 +270,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval without Authorisation header"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -264,7 +286,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval with incorrect Access Token type"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -278,7 +300,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
     @Test
     void "Verify Consent Retrieval with incorrect request path"() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
@@ -287,5 +309,32 @@ class ConsentRetrievalFlow extends FSConnectorTest {
         doConsentRetrievalWithIncorrectRequestPath(consentId as String)
 
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
+    }
+
+    @Test
+    void "TC0202018_Get Accounts Initiation With Headers with Capital Case"() {
+        consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+        initiationPayload = AccountsRequestPayloads.initiationPayload
+
+        def basicHeader = getBasicAuthHeader(configurationService.getUserKeyManagerAdminName(),
+                configurationService.getUserKeyManagerAdminPWD())
+
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        consentResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID_CAPS, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID_CAPS, UUID.randomUUID().toString())
+                .baseUri(configuration.getISServerUrl())
+                .get(consentPath + "/${consentId}")
+
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        String status = OBTestUtil.parseResponseBody(consentResponse, "Data.Status")
+        Assert.assertEquals(status, "AwaitingAuthorisation")
     }
 }

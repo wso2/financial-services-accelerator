@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.test.framework
 
+import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.openbanking.test.framework.OBTest
 import org.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import org.wso2.openbanking.test.framework.request_builder.SignedObject
@@ -37,13 +38,14 @@ import org.wso2.financial.services.accelerator.test.framework.automation.consent
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PageObjects
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ConsentRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
+import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -72,17 +74,18 @@ class FSConnectorTest extends OBTest{
     Response accountValidationResponse
     String consentPath
     String initiationPayload
-    String initiationIncorrectPayload = RequestPayloads.initiationIncorrectPayload
-    String initiationPayloadPayloadWithoutReadAccountsDetail = RequestPayloads.initiationPayloadWithoutReadAccountsDetail
-    String initiationPayloadWithoutReadTransactionsDetail = RequestPayloads.initiationPayloadWithoutReadTransactionsDetail
-    String initiationPayloadPayloadWithoutReadBalances = RequestPayloads.initiationPayloadWithoutReadBalances
+    String initiationIncorrectPayload = AccountsRequestPayloads.initiationIncorrectPayload
+    String initiationPayloadPayloadWithoutReadAccountsDetail = AccountsRequestPayloads.initiationPayloadWithoutReadAccountsDetail
+    String initiationPayloadWithoutReadTransactionsDetail = AccountsRequestPayloads.initiationPayloadWithoutReadTransactionsDetail
+    String initiationPayloadPayloadWithoutReadBalances = AccountsRequestPayloads.initiationPayloadWithoutReadBalances
     final String incorrectConsentPath = ConnectorTestConstants.INCORRECT_CONSENT_PATH
     final userId = "${configuration.getUserPSUName()}"
     def automation
+    String userAccessToken
+    static configurationService = new ConfigurationService()
 
     //Consent scopes
     public List<ConnectorTestConstants.ApiScope> consentScopes = [
-            ConnectorTestConstants.ApiScope.OPEN_ID,
             ConnectorTestConstants.ApiScope.ACCOUNTS
     ]
     /**
@@ -242,11 +245,14 @@ class FSConnectorTest extends OBTest{
      * @param scopes
      * @return
      */
-    String getUserAccessToken(String authMethodType = ConnectorTestConstants.PKJWT_AUTH_METHOD,
-                              String clientId = configuration.getAppInfoClientID(),
-                              String authCode, List<ConnectorTestConstants.ApiScope> scopeString) {
-        String accessToken = TokenRequestBuilder.getUserAccessToken(authMethodType,
-                scopeString.stream().map { it.scopeString }.toList(), clientId, authCode)
+    String getUserAccessToken(String authCode, List<ConnectorTestConstants.ApiScope> scopeString,
+                              String authMethodType = ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                              String clientId = configuration.getAppInfoClientID()) {
+
+        Response response = getUserAccessTokenResponse(authMethodType, clientId, authCode, scopeString)
+
+        String accessToken = TestUtil.parseResponseBody(response, "access_token")
+
         if (accessToken != null) {
             addToContext(ConnectorTestConstants.USER_ACCESS_TKN, accessToken)
         } else {
@@ -368,7 +374,7 @@ class FSConnectorTest extends OBTest{
      * Account Consent Initiation Step with without ReadAccountsDetail permission .
      * @permissionsList
      */
-    void  doDefaultInitiation(String payload) {
+    Response doDefaultInitiation(String payload) {
 
         //initiation without ReadAccountsDetail
         consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
@@ -376,7 +382,8 @@ class FSConnectorTest extends OBTest{
                 .body(payload)
                 .baseUri(configuration.getISServerUrl())
                 .post(consentPath)
-        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
+
+        return consentResponse
     }
 
 
@@ -480,7 +487,7 @@ class FSConnectorTest extends OBTest{
                                 .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
 
                 .baseUri(configuration.getISServerUrl())
-                .body(signedObject.getSignedRequest(RequestPayloads.buildValidationPayload(userId, consentId, host,
+                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationPayload(userId, consentId, host,
                         "/accounts")))
                 .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
 
@@ -797,5 +804,19 @@ class FSConnectorTest extends OBTest{
     static RequestSpecification getAccessTokenRequestWithoutCertInContext() {
 
         return TokenRequestBuilder.accessTokenRequestWithoutCertInContext
+    }
+
+    /**
+     * Generate Basic Auth Header for the given username and password.
+     * @param userName
+     * @param password
+     * @return
+     */
+    String getBasicAuthHeader(String userName, String password){
+
+        def authToken = "${userName}:${password}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        return basicHeader
     }
 }

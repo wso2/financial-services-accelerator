@@ -28,7 +28,7 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
@@ -46,7 +46,7 @@ class ConsentValidationFlow extends FSConnectorTest {
     @BeforeClass
     void init() {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = AccountsRequestPayloads.initiationPayload
         accessToken = GenerateBasicHeader()
         signedObject = new SignedObject()
         signedObject.setSigningAlgorithm(ConnectorTestConstants.ALG_RS512)
@@ -67,7 +67,7 @@ class ConsentValidationFlow extends FSConnectorTest {
         def host = configuration.getISServerUrl().split("//")[1].replace("9446", "8243")
 
         //Consent Validate Request
-        validationPayload = RequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
 
         accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
@@ -111,7 +111,8 @@ class ConsentValidationFlow extends FSConnectorTest {
     void "OB-1967_Verify Validation of a created Consent when consent does not have sufficient permissions"() {
 
         //Consent Initiation
-        doDefaultInitiation(RequestPayloads.initiationPayloadWithoutReadAccountsDetail)
+        consentResponse = doDefaultInitiation(AccountsRequestPayloads.initiationPayloadWithoutReadAccountsDetail)
+        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
@@ -145,7 +146,7 @@ class ConsentValidationFlow extends FSConnectorTest {
 
         //Consent Validate Request
 
-        validationPayload = RequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
 
         accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
@@ -182,7 +183,7 @@ class ConsentValidationFlow extends FSConnectorTest {
         def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
 
         //Consent Validate Request
-        validationPayload = RequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
 
         accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
                 .body(signedObject.getSignedRequest(validationPayload))
@@ -214,7 +215,7 @@ class ConsentValidationFlow extends FSConnectorTest {
         def host = configuration.getISServerUrl()
 
         //Consent Validate Request
-        validationPayload = RequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
 
         accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.HTML)
@@ -247,7 +248,7 @@ class ConsentValidationFlow extends FSConnectorTest {
         def host = configuration.getISServerUrl()
 
         //Consent Validate Request
-        validationPayload = RequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
 
         Response validationResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
@@ -278,7 +279,7 @@ class ConsentValidationFlow extends FSConnectorTest {
         doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
 
         //Consent Validate Request
-        validationPayload = RequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
         doAccountValidation(validationPayload)
 
         Assert.assertEquals(accountValidationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
