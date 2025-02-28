@@ -334,13 +334,63 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #url_pattern = "/authorize"
 
 #[[tomcat.filter]]
-#name = "ConsentPolicyChainFilter"
+#name = "AccountsConsentPolicyChainFilter"
 #class = "org.wso2.financial.services.accelerator.common.policy.filter.ConsentPolicyChainFilter"
 #init_params.apiName = "AccountsAPI"
 
 #[[tomcat.filter_mapping]]
-#name = "ConsentPolicyChainFilter"
-#url_pattern = "/manage/*"
+#name = "AccountsConsentPolicyChainFilter"
+#url_pattern = "/manage/account-access-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "AccountsConsentPolicyChainFilter"
+#url_pattern = "/manage/account-access-consents"
+
+#[[tomcat.filter]]
+#name = "COFConsentPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.ConsentPolicyChainFilter"
+#init_params.apiName = "ConfirmationOfFundsAPI"
+
+#[[tomcat.filter_mapping]]
+#name = "COFConsentPolicyChainFilter"
+#url_pattern = "/manage/funds-confirmation-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "COFConsentPolicyChainFilter"
+#url_pattern = "/manage/funds-confirmation-consents"
+
+#[[tomcat.filter]]
+#name = "PaymentConsentPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.ConsentPolicyChainFilter"
+#init_params.apiName = "PaymentsAPI"
+
+#[[tomcat.filter_mapping]]
+#name = "PaymentConsentPolicyChainFilter"
+#url_pattern = "/manage/domestic-payment-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "PaymentConsentPolicyChainFilter"
+#url_pattern = "/manage/domestic-scheduled-payment-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "PaymentConsentPolicyChainFilter"
+#url_pattern = "/manage/domestic-standing-order-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "PaymentConsentPolicyChainFilter"
+#url_pattern = "/manage/file-payment-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "PaymentConsentPolicyChainFilter"
+#url_pattern = "/manage/international-payment-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "PaymentConsentPolicyChainFilter"
+#url_pattern = "/manage/international-scheduled-payment-consents/*"
+
+#[[tomcat.filter_mapping]]
+#name = "PaymentConsentPolicyChainFilter"
+#url_pattern = "/manage/international-standing-order-consents/*"
 
 #================configs related to financial-services.xml=============
 [[financial_services.jdbc_persistence_manager]]
