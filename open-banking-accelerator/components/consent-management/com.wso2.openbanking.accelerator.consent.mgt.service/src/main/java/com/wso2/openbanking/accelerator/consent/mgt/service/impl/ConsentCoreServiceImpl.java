@@ -1730,13 +1730,13 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 detailedConsentResource.getConsentMappingResources();
 
         // Determine all existing account IDs
-        ArrayList<String> existingAllAccountIDs = new ArrayList<>();
+        HashSet<String> existingAllAccountIDs = new HashSet<>();
         for (ConsentMappingResource resource : existingAllAccountMappings) {
             existingAllAccountIDs.add(resource.getAccountID());
         }
 
         // existing active account mappings
-        ArrayList<String> existingActiveAccountIDs = new ArrayList<>();
+        HashSet<String> existingActiveAccountIDs = new HashSet<>();
         for (ConsentMappingResource resource : existingAllAccountMappings) {
             if (ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS.equals(resource.getMappingStatus())) {
                 existingActiveAccountIDs.add(resource.getAccountID());
@@ -2054,44 +2054,81 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                                                        Map<String, Object> additionalAmendmentData)
             throws ConsentManagementException, OBConsentDataInsertionException {
 
-        Map<String, AuthorizationResource> newAuthResources;
-        Map<String, ArrayList<ConsentMappingResource>> newMappingResources;
-
         if (additionalAmendmentData.containsKey(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES) &&
                 additionalAmendmentData.containsKey(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES)) {
 
-            newAuthResources = (Map<String, AuthorizationResource>) additionalAmendmentData
+            // user_id -> list of new authorization resources
+            Map<String, ArrayList<AuthorizationResource>> newAuthResources;
+            // user_id -> (auth_type against list of account mappings)
+            Map<String, Map<String, ArrayList<ConsentMappingResource>>> newMappingResources;
+
+            newAuthResources = (Map<String, ArrayList<AuthorizationResource>>) additionalAmendmentData
                     .get(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES);
-            newMappingResources = (Map<String, ArrayList<ConsentMappingResource>>) additionalAmendmentData
+            newMappingResources = (Map<String, Map<String, ArrayList<ConsentMappingResource>>>) additionalAmendmentData
                     .get(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES);
 
-            for (Map.Entry<String, AuthorizationResource> authResourceEntry : newAuthResources.entrySet()) {
+            for (Map.Entry<String, ArrayList<AuthorizationResource>> authResourceEntry : newAuthResources.entrySet()) {
+
                 String userId = authResourceEntry.getKey();
-                AuthorizationResource authResource = authResourceEntry.getValue();
+                ArrayList<AuthorizationResource> authResources = authResourceEntry.getValue();
 
-                if (StringUtils.isBlank(authResource.getConsentID()) ||
-                        StringUtils.isBlank(authResource.getAuthorizationType()) ||
-                        StringUtils.isBlank(authResource.getAuthorizationStatus())) {
-                    log.error("Consent ID, authorization type or authorization status is missing, cannot proceed");
-                    throw new ConsentManagementException("Cannot proceed since consent ID, authorization type or " +
-                            "authorization status is missing");
-                }
-                // create authorization resource
-                AuthorizationResource authorizationResource =
-                        consentCoreDAO.storeAuthorizationResource(connection, authResource);
-                ArrayList<ConsentMappingResource> mappingResources = newMappingResources.get(userId);
+                for (AuthorizationResource authResource : authResources) {
 
-                for (ConsentMappingResource mappingResource : mappingResources) {
-
-                    if (StringUtils.isBlank(mappingResource.getAccountID()) ||
-                            StringUtils.isBlank(mappingResource.getMappingStatus())) {
-                        log.error("Account ID or Mapping Status is not found, cannot proceed");
-                        throw new ConsentManagementException("Account ID or Mapping Status is not found, " +
+                    if (StringUtils.isBlank(authResource.getConsentID()) ||
+                            StringUtils.isBlank(authResource.getAuthorizationType()) ||
+                            StringUtils.isBlank(authResource.getAuthorizationStatus())) {
+                        log.error("Consent ID, authorization type or authorization status is missing, " +
                                 "cannot proceed");
+                        throw new ConsentManagementException("Cannot proceed since consent ID, authorization type or " +
+                                "authorization status is missing");
                     }
-                    mappingResource.setAuthorizationID(authorizationResource.getAuthorizationID());
-                    // create mapping resource
-                    consentCoreDAO.storeConsentMappingResource(connection, mappingResource);
+                    // check if existing authorization resource is present.
+                    ArrayList<AuthorizationResource> existingAuthorizationResources = new ArrayList<>();
+                    try {
+                        existingAuthorizationResources = consentCoreDAO.searchConsentAuthorizations(connection,
+                                authResource.getConsentID(), userId);
+                    } catch (OBConsentDataRetrievalException e) {
+                        // handling empty search results for consent auth resources.
+                    }
+                    AuthorizationResource authorizationResource;
+                    if (existingAuthorizationResources.stream()
+                            .noneMatch(e -> e.getAuthorizationType().equals(authResource.getAuthorizationType()))) {
+                        // create authorization resource
+                        authorizationResource =
+                                consentCoreDAO.storeAuthorizationResource(connection, authResource);
+                    } else {
+                        authorizationResource = existingAuthorizationResources.stream()
+                                .filter(e -> e.getAuthorizationType().equals(authResource.getAuthorizationType()))
+                                .findFirst().get();
+                    }
+
+                    ArrayList<ConsentMappingResource> mappingResources =
+                            newMappingResources.get(userId).get(authResource.getAuthorizationType());
+                    for (ConsentMappingResource mappingResource : mappingResources) {
+
+                        if (StringUtils.isBlank(mappingResource.getAccountID()) ||
+                                StringUtils.isBlank(mappingResource.getMappingStatus())) {
+                            log.error("Account ID or Mapping Status is not found, cannot proceed");
+                            throw new ConsentManagementException("Account ID or Mapping Status is not found, " +
+                                    "cannot proceed");
+                        }
+                        mappingResource.setAuthorizationID(authorizationResource.getAuthorizationID());
+
+                        // check if existing mapping resource is present.
+                        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+                        try {
+
+                            consentMappingResources = consentCoreDAO.getConsentMappingResources(connection,
+                                    authorizationResource.getAuthorizationID());
+                        } catch (OBConsentDataRetrievalException e) {
+                            // handling empty search results for consent mapping resources.
+                        }
+                        if (consentMappingResources.stream().noneMatch(e ->
+                                e.getAccountID().equals(mappingResource.getAccountID()))) {
+                            // create mapping resource
+                            consentCoreDAO.storeConsentMappingResource(connection, mappingResource);
+                        }
+                    }
                 }
             }
         }

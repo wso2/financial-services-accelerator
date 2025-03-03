@@ -758,16 +758,20 @@ public class ConsentMgtServiceTestData {
     public static Map<String, Object> getSampleAdditionalConsentAmendmentDataMap() {
 
         Map<String, Object> additionalAmendmentData = new HashMap<>();
-        Map<String, AuthorizationResource> newUserAuthResources = new HashMap<>();
-        Map<String, ArrayList<ConsentMappingResource>> newUserAccountMappings = new HashMap<>();
+        Map<String, ArrayList<AuthorizationResource>> newUserAuthResources = new HashMap<>();
+        Map<String, Map<String, ArrayList<ConsentMappingResource>>> newUserAccountMappings = new HashMap<>();
 
         AuthorizationResource newAuthResource = getSampleStoredTestAuthorizationResource();
-        newUserAuthResources.put(SAMPLE_NEW_USER_ID, newAuthResource);
+        ArrayList<AuthorizationResource> authResourceList = new ArrayList<>();
+        authResourceList.add(newAuthResource);
+        newUserAuthResources.put(SAMPLE_NEW_USER_ID, authResourceList);
 
         ConsentMappingResource consentMappingResource = getSampleStoredTestConsentMappingResource(null);
         ArrayList consentMappingResourceList = new ArrayList();
         consentMappingResourceList.add(consentMappingResource);
-        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceList);
+        Map<String, ArrayList<ConsentMappingResource>> consentMappingResourceMap = new HashMap<>();
+        consentMappingResourceMap.put(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_TYPE, consentMappingResourceList);
+        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceMap);
 
         additionalAmendmentData
                 .put(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES, newUserAuthResources);
@@ -779,17 +783,21 @@ public class ConsentMgtServiceTestData {
     public static Map<String, Object> getSampleAdditionalConsentAmendmentDataMapWithoutConsentId() {
 
         Map<String, Object> additionalAmendmentData = new HashMap<>();
-        Map<String, AuthorizationResource> newUserAuthResources = new HashMap<>();
-        Map<String, ArrayList<ConsentMappingResource>> newUserAccountMappings = new HashMap<>();
+        Map<String, ArrayList<AuthorizationResource>> newUserAuthResources = new HashMap<>();
+        Map<String, Map<String, ArrayList<ConsentMappingResource>>> newUserAccountMappings = new HashMap<>();
 
         AuthorizationResource newAuthResource = getSampleStoredTestAuthorizationResource();
         newAuthResource.setConsentID(null);
-        newUserAuthResources.put(SAMPLE_NEW_USER_ID, newAuthResource);
+        ArrayList<AuthorizationResource> authResourceList = new ArrayList<>();
+        authResourceList.add(newAuthResource);
+        newUserAuthResources.put(SAMPLE_NEW_USER_ID, authResourceList);
 
         ConsentMappingResource consentMappingResource = getSampleStoredTestConsentMappingResource(null);
         ArrayList consentMappingResourceList = new ArrayList();
         consentMappingResourceList.add(consentMappingResource);
-        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceList);
+        Map<String, ArrayList<ConsentMappingResource>> consentMappingResourceMap = new HashMap<>();
+        consentMappingResourceMap.put(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_TYPE, consentMappingResourceList);
+        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceMap);
 
         additionalAmendmentData
                 .put(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES, newUserAuthResources);
@@ -801,17 +809,21 @@ public class ConsentMgtServiceTestData {
     public static Map<String, Object> getSampleAdditionalConsentAmendmentDataMapWithoutAccountId() {
 
         Map<String, Object> additionalAmendmentData = new HashMap<>();
-        Map<String, AuthorizationResource> newUserAuthResources = new HashMap<>();
-        Map<String, ArrayList<ConsentMappingResource>> newUserAccountMappings = new HashMap<>();
+        Map<String, ArrayList<AuthorizationResource>> newUserAuthResources = new HashMap<>();
+        Map<String, Map<String, ArrayList<ConsentMappingResource>>> newUserAccountMappings = new HashMap<>();
 
         AuthorizationResource newAuthResource = getSampleStoredTestAuthorizationResource();
-        newUserAuthResources.put(SAMPLE_NEW_USER_ID, newAuthResource);
+        ArrayList<AuthorizationResource> authResourceList = new ArrayList<>();
+        authResourceList.add(newAuthResource);
+        newUserAuthResources.put(SAMPLE_NEW_USER_ID, authResourceList);
 
         ConsentMappingResource consentMappingResource = getSampleStoredTestConsentMappingResource(null);
         consentMappingResource.setAccountID(null);
         ArrayList consentMappingResourceList = new ArrayList();
         consentMappingResourceList.add(consentMappingResource);
-        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceList);
+        Map<String, ArrayList<ConsentMappingResource>> consentMappingResourceMap = new HashMap<>();
+        consentMappingResourceMap.put(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_TYPE, consentMappingResourceList);
+        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceMap);
 
         additionalAmendmentData
                 .put(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES, newUserAuthResources);
