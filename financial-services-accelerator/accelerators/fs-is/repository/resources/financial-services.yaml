@@ -97,8 +97,8 @@ components:
         service_type: "consent"
         security:
           type: "basic-auth" # Change to "oauth2" if needed
-          username: "is_admin@wso2.com"
-          password: "wso2123"
+          username: ""
+          password: ""
 
 apis:
   - name: "TokenAPI"
