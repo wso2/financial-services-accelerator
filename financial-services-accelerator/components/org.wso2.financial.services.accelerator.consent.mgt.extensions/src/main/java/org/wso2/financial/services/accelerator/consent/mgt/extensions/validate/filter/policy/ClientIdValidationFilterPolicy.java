@@ -26,49 +26,45 @@ import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionEx
 import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
-
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.Map;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
- * Consent expiry validation filter policy.
+ * Consent status validation filter policy.
  */
-public class ConsentExpiryValidationFilterPolicy extends FSFilterPolicy {
+public class ClientIdValidationFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(ConsentExpiryValidationFilterPolicy.class);
+    private static final Log log = LogFactory.getLog(ClientIdValidationFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap)
             throws FSPolicyExecutionException {
 
-        ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         try {
             JSONObject validatePayload = (JSONObject) servletRequest.getAttribute("decodedPayload");
-            DetailedConsentResource consent = consentCoreService.getDetailedConsent(validatePayload.getString("consentId"));
+            DetailedConsentResource consent = ConsentValidateFilterPolicyUtils.getConsentResource(servletRequest,
+                    validatePayload);
             if (consent == null) {
                 throw new FSPolicyExecutionException(HttpServletResponse.SC_NOT_FOUND,
                         "consent_not_found", "Consent not found");
             }
-            servletRequest.setAttribute("consent", consent);
-            String expDateParamName = propertyMap.get("expiry_date_param").toString();
-            JSONObject receiptObj  = new JSONObject(consent.getReceipt());
 
-            if (ConsentExtensionUtils.pathExists(receiptObj, expDateParamName)) {
-                String dateVal = (String) ConsentExtensionUtils.retrieveValueFromJSONObject(receiptObj,
-                        expDateParamName);
-                if (!isConsentExpired(dateVal)) {
-                    throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST, "invalid_request",
-                            "Provided consent is expired");
-                }
+            String clientIdFromToken = validatePayload.getString("clientId");
+            String clientIdFromConsent = consent.getClientID();
+
+            if (clientIdFromToken == null || !clientIdFromToken.equals(clientIdFromConsent)) {
+                log.error("Client id bound to the token does not have access to the given consent");
+                throw new FSPolicyExecutionException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "consent_validation_failure",
+                        "Client id bound to the token does not have access to the given consent");
             }
         } catch (ConsentManagementException e) {
             log.error(e.getMessage().replaceAll("[\n\r]", ""));

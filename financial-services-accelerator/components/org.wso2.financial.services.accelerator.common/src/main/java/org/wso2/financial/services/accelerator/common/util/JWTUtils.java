@@ -287,16 +287,16 @@ public class JWTUtils {
      * @param jwtString string value of the JWT to be validated
      * @param alias     alias in the trust store
      * @return boolean value depicting whether the signature is valid
-     * @throws ConsentManagementException error with message mentioning the cause
+     * @throws FinancialServicesException error with message mentioning the cause
      */
     @Generated(message = "Excluding from code coverage since can not call this method due to external call")
     public static boolean validateJWTSignatureWithPublicKey(String jwtString, String alias)
-            throws ConsentManagementException {
+            throws FinancialServicesException {
 
         Certificate certificate = getCertificateFromAlias(alias);
 
         if (certificate == null) {
-            throw new ConsentManagementException("Certificate not found for provided alias");
+            throw new FinancialServicesException("Certificate not found for provided alias");
         }
         PublicKey publicKey = certificate.getPublicKey();
 
@@ -305,7 +305,7 @@ public class JWTUtils {
             return SignedJWT.parse(jwtString).verify(verifier);
         } catch (JOSEException | java.text.ParseException e) {
             log.error("Error occurred while validating JWT signature", e);
-            throw new ConsentManagementException("Error occurred while validating JWT signature");
+            throw new FinancialServicesException("Error occurred while validating JWT signature");
         }
 
     }

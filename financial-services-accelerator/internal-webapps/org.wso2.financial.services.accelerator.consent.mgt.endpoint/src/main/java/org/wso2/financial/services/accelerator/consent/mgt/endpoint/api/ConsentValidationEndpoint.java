@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
@@ -103,7 +104,7 @@ public class ConsentValidationEndpoint {
      * Validate by sending consent data.
      */
     @POST
-    @Path("/validate")
+    @Path("/{s:.*}")
     @Consumes({ "application/jwt; charset=utf-8" })
     @Produces({ "application/json; charset=utf-8" })
     public Response validate(@Context HttpServletRequest request, @Context HttpServletResponse response) {
@@ -124,7 +125,7 @@ public class ConsentValidationEndpoint {
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Error while decoding the JWT request payload");
                 }
-            } catch (ConsentManagementException e) {
+            } catch (FinancialServicesException e) {
                 log.error("Error while validating JWT signature", e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while validating JWT " +
                         "signature");

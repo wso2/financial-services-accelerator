@@ -18,57 +18,64 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
 import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
-
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.Map;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
- * Consent expiry validation filter policy.
+ * Consent status validation filter policy.
  */
-public class ConsentExpiryValidationFilterPolicy extends FSFilterPolicy {
+public class UserIdValidationFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(ConsentExpiryValidationFilterPolicy.class);
+    private static final Log log = LogFactory.getLog(UserIdValidationFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap)
             throws FSPolicyExecutionException {
 
-        ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         try {
             JSONObject validatePayload = (JSONObject) servletRequest.getAttribute("decodedPayload");
-            DetailedConsentResource consent = consentCoreService.getDetailedConsent(validatePayload.getString("consentId"));
+            DetailedConsentResource consent = ConsentValidateFilterPolicyUtils.getConsentResource(servletRequest,
+                    validatePayload);
             if (consent == null) {
                 throw new FSPolicyExecutionException(HttpServletResponse.SC_NOT_FOUND,
                         "consent_not_found", "Consent not found");
             }
-            servletRequest.setAttribute("consent", consent);
-            String expDateParamName = propertyMap.get("expiry_date_param").toString();
-            JSONObject receiptObj  = new JSONObject(consent.getReceipt());
 
-            if (ConsentExtensionUtils.pathExists(receiptObj, expDateParamName)) {
-                String dateVal = (String) ConsentExtensionUtils.retrieveValueFromJSONObject(receiptObj,
-                        expDateParamName);
-                if (!isConsentExpired(dateVal)) {
-                    throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST, "invalid_request",
-                            "Provided consent is expired");
+            //User Validation
+            String userIdFromToken = FinancialServicesUtils.resolveUsernameFromUserId(validatePayload.getString("userId"));
+            boolean userIdMatching = false;
+            ArrayList<AuthorizationResource> authResources = consent.getAuthorizationResources();
+            for (AuthorizationResource resource : authResources) {
+                if (StringUtils.isNotEmpty(userIdFromToken) && userIdFromToken.equals(resource.getUserID())) {
+                    userIdMatching = true;
+                    break;
                 }
+            }
+
+            if (!userIdMatching) {
+                log.error("User bound to the token does not have access to the given consent");
+                throw new FSPolicyExecutionException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "consent_validation_failure",
+                        "User bound to the token does not have access to the given consent");
             }
         } catch (ConsentManagementException e) {
             log.error(e.getMessage().replaceAll("[\n\r]", ""));
