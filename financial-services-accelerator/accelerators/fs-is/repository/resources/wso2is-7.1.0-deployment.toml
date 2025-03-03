@@ -342,10 +342,6 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #name = "AccountsConsentPolicyChainFilter"
 #url_pattern = "/manage/account-access-consents/*"
 
-#[[tomcat.filter_mapping]]
-#name = "AccountsConsentPolicyChainFilter"
-#url_pattern = "/manage/account-access-consents"
-
 #[[tomcat.filter]]
 #name = "COFConsentPolicyChainFilter"
 #class = "org.wso2.financial.services.accelerator.common.policy.filter.chain.ConsentPolicyChainFilter"
@@ -354,10 +350,6 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #[[tomcat.filter_mapping]]
 #name = "COFConsentPolicyChainFilter"
 #url_pattern = "/manage/funds-confirmation-consents/*"
-
-#[[tomcat.filter_mapping]]
-#name = "COFConsentPolicyChainFilter"
-#url_pattern = "/manage/funds-confirmation-consents"
 
 #[[tomcat.filter]]
 #name = "PaymentConsentPolicyChainFilter"
