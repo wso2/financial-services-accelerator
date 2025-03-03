@@ -62,6 +62,8 @@ public class ConsentCoreServiceConstants {
 
     public static final String ADDITIONAL_AUTHORIZATION_RESOURCES =  "AdditionalAuthorizationResources";
     public static final String ADDITIONAL_MAPPING_RESOURCES = "AdditionalMappingResources";
+    public static final String ADDITIONAL_AUTHORIZATION_RESOURCES_LIST =  "AdditionalAuthorizationResourcesList";
+    public static final String ADDITIONAL_MAPPING_RESOURCES_WITH_AUTH_TYPES = "AdditionalMappingResourcesWithAuthTypes";
 
     public static final String CONSENT_AMENDMENT_TIME = "ConsentAmendmentTime";
     public static final String AMENDMENT_REASON_CONSENT_AMENDMENT_FLOW = "ConsentAmendmentFlow";
