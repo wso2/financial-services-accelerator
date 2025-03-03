@@ -15,8 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.wso2.financial.services.accelerator.common.policy.filter;
+package org.wso2.financial.services.accelerator.common.policy.filter.chain;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +24,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesYa
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicy;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
-import org.wso2.financial.services.accelerator.common.policy.FilterPolicyRequestWrapper;
+import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,11 +42,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 /**
- * Filter to engage financial services filter policy chain to consent APIs.
+ * Filter to engage financial services filter policy chain.
  */
-public class ConsentPolicyChainFilter implements Filter {
+public class PolicyChainFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(ConsentPolicyChainFilter.class);
+    private static final Log log = LogFactory.getLog(PolicyChainFilter.class);
     private String apiName;
 
     public void init(FilterConfig filterConfig) {
@@ -61,28 +60,26 @@ public class ConsentPolicyChainFilter implements Filter {
         if (servletRequest instanceof HttpServletRequest) {
             String path = ((HttpServletRequest) servletRequest).getRequestURI();
             String operation = ((HttpServletRequest) servletRequest).getMethod();
-            FilterPolicyRequestWrapper cachedRequest =
-                    new FilterPolicyRequestWrapper((HttpServletRequest) servletRequest);
 
-            log.info("Engaging policy chain for the consent endpoint request");
+            log.info("Engaging policy chain for the token endpoint request");
             List<FSPolicy> requestPolicies = FinancialServicesYamlConfigParser
                     .getPolicies(apiName, path, operation, "request-flow");
 
             try {
                 for (FSPolicy policy : requestPolicies) {
                     FSFilterPolicy filterPolicy = (FSFilterPolicy) policy;
-                    filterPolicy.processRequest(cachedRequest, policy.getPropertyMap());
+                    filterPolicy.processRequest(servletRequest, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing consent request policies.", e);
+                log.error("Error occurred while processing request policies.", e);
                 handleValidationFailure((HttpServletResponse) servletResponse, e.getStatusCode(), e.getErrorCode(),
                         e.getMessage());
                 return;
             }
 
-            filterChain.doFilter(cachedRequest, servletResponse);
+            filterChain.doFilter(servletRequest, servletResponse);
 
-            log.info("Engaging policy chain for the consent endpoint response");
+            log.info("Engaging policy chain for the token endpoint response");
             List<FSPolicy> responsePolicies = FinancialServicesYamlConfigParser
                     .getPolicies(apiName, path, operation, "response-flow");
             try {
@@ -91,7 +88,7 @@ public class ConsentPolicyChainFilter implements Filter {
                     filterPolicy.processResponse(servletResponse, policy.getPropertyMap());
                 }
             } catch (FSPolicyExecutionException e) {
-                log.error("Error occurred while processing consent response policies.", e);
+                log.error("Error occurred while processing response policies.", e);
                 handleValidationFailure((HttpServletResponse) servletResponse, e.getStatusCode(), e.getErrorCode(),
                         e.getMessage());
                 return;

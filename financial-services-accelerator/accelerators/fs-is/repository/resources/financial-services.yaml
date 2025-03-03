@@ -86,6 +86,20 @@ components:
       parameters:
         applicable_params:
           - "Data.ExpirationDateTime"
+
+    callExternalAPI: &callExternalAPI
+      name: "CallExternalAPI Policy"
+      type: "filter-policy"
+      description: "Invoke an external service."
+      class: "org.wso2.financial.services.accelerator.common.policy.filter.common.ExternalValidationFilterPolicy"
+      parameters:
+        endpoint: "http://localhost:9766/api/fs/consent/manage/external"
+        service_type: "consent"
+        security:
+          type: "basic-auth" # Change to "oauth2" if needed
+          username: "is_admin@wso2.com"
+          password: "wso2123"
+
 apis:
   - name: "TokenAPI"
     version: "1.0"
@@ -128,21 +142,7 @@ apis:
                 parameters:
                   applicable_params:
                     - "Data.ExpirationDateTime"
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/account-access-consents/{consentId}:
-        get:
-          request-flow:
-            policies:
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-        delete:
-          request-flow:
-            policies:
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -163,6 +163,7 @@ apis:
                 parameters:
                   applicable_params:
                     - "Data.Authorisation.CompletionDateTime"
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -179,6 +180,7 @@ apis:
                   applicable_params:
                     - "Data.Initiation.RequestedExecutionDateTime"
                     - "Data.Authorisation.CompletionDateTime"
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -196,6 +198,7 @@ apis:
                     - "Data.Initiation.FirstPaymentDateTime"
                     - "Data.Initiation.FinalPaymentDateTime"
                     - "Data.Authorisation.CompletionDateTime"
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -212,6 +215,7 @@ apis:
                   applicable_params:
                     - "Data.Initiation.RequestedExecutionDateTime"
                     - "Data.Authorisation.CompletionDateTime"
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -227,6 +231,7 @@ apis:
                 parameters:
                   applicable_params:
                     - "Data.Authorisation.CompletionDateTime"
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -243,6 +248,7 @@ apis:
                   applicable_params:
                     - "Data.Initiation.RequestedExecutionDateTime"
                     - "Data.Authorisation.CompletionDateTime"
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -261,6 +267,7 @@ apis:
                     - "Data.Initiation.RecurringPaymentDateTime"
                     - "Data.Initiation.FinalPaymentDateTime"
                     - "Data.Authorisation.CompletionDateTime"
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -281,21 +288,7 @@ apis:
                 parameters:
                   applicable_params:
                     - "Data.ExpirationDateTime"
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/account-access-consents/{consentId}:
-        get:
-          request-flow:
-            policies:
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-        delete:
-          request-flow:
-            policies:
+              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
