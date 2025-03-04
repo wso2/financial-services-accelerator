@@ -36,7 +36,7 @@ public class ConsentException extends RuntimeException {
 
         super(cause);
         this.status = status;
-        this.payload = createDefaultErrorObject(null, String.valueOf(this.status.getStatusCode()),
+        this.payload =  createDefaultErrorObject(null, String.valueOf(this.status.getStatusCode()),
                 errorMessage, null);
     }
 

@@ -69,6 +69,14 @@
       </param-value>
     </init-param>
 
+    <!-- Register the ExceptionMapper as a provider -->
+    <init-param>
+      <param-name>jaxrs.providers</param-name>
+      <param-value>
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.error.ConsentThrowableMapper
+      </param-value>
+    </init-param>
+
     <load-on-startup>1</load-on-startup>
 
   </servlet>
