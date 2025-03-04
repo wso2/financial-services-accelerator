@@ -32,13 +32,14 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Map;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Consent status validation filter policy.
@@ -61,7 +62,8 @@ public class UserIdValidationFilterPolicy extends FSFilterPolicy {
             }
 
             //User Validation
-            String userIdFromToken = FinancialServicesUtils.resolveUsernameFromUserId(validatePayload.getString("userId"));
+            String userIdFromToken = FinancialServicesUtils
+                    .resolveUsernameFromUserId(validatePayload.getString("userId"));
             boolean userIdMatching = false;
             ArrayList<AuthorizationResource> authResources = consent.getAuthorizationResources();
             for (AuthorizationResource resource : authResources) {

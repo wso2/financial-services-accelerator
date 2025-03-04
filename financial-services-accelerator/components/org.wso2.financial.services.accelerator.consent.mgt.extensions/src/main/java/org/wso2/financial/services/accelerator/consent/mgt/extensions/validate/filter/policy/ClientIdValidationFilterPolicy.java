@@ -29,13 +29,13 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.Map;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Consent status validation filter policy.

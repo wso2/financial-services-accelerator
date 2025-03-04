@@ -53,7 +53,8 @@ public class ConsentExpiryValidationFilterPolicy extends FSFilterPolicy {
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         try {
             JSONObject validatePayload = (JSONObject) servletRequest.getAttribute("decodedPayload");
-            DetailedConsentResource consent = consentCoreService.getDetailedConsent(validatePayload.getString("consentId"));
+            DetailedConsentResource consent = consentCoreService.getDetailedConsent(
+                    validatePayload.getString("consentId"));
             if (consent == null) {
                 throw new FSPolicyExecutionException(HttpServletResponse.SC_NOT_FOUND,
                         "consent_not_found", "Consent not found");
@@ -65,7 +66,7 @@ public class ConsentExpiryValidationFilterPolicy extends FSFilterPolicy {
             if (ConsentExtensionUtils.pathExists(receiptObj, expDateParamName)) {
                 String dateVal = (String) ConsentExtensionUtils.retrieveValueFromJSONObject(receiptObj,
                         expDateParamName);
-                if (!isConsentExpired(dateVal)) {
+                if (isConsentExpired(dateVal)) {
                     throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST, "invalid_request",
                             "Provided consent is expired");
                 }
