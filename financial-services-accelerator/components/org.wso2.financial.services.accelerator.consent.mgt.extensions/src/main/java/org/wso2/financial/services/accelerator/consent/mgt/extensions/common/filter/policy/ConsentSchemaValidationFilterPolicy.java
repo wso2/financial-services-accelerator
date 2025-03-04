@@ -27,7 +27,7 @@ import org.wso2.financial.services.accelerator.common.exception.SchemaValidation
 import org.wso2.financial.services.accelerator.common.json.schema.validator.JsonSchemaValidator;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
 import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.utils.ConsentFilterPolicyUtils;
+import org.wso2.financial.services.accelerator.common.policy.utils.FilterPolicyUtils;
 
 import java.util.Map;
 
@@ -77,7 +77,7 @@ public class ConsentSchemaValidationFilterPolicy extends FSFilterPolicy {
         }
 
         try {
-            String payload = ConsentFilterPolicyUtils.getStringPayload((HttpServletRequest) servletRequest);
+            String payload = FilterPolicyUtils.getStringPayload((HttpServletRequest) servletRequest);
             JSONObject payloadObj = new JSONObject(payload);
             boolean isSchemaCompliant = jsonSchemaValidator.isSchemaCompliant(jsonSchema, payloadObj);
             if (!isSchemaCompliant) {

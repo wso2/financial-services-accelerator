@@ -317,7 +317,7 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 
 #[[tomcat.filter]]
 #name = "TokenPolicyChainFilter"
-#class = "org.wso2.financial.services.accelerator.common.policy.filter.PolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.chain.PolicyChainFilter"
 #init_params.apiName = "TokenAPI"
 
 #[[tomcat.filter_mapping]]
@@ -326,7 +326,7 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 
 #[[tomcat.filter]]
 #name = "AuthorizePolicyChainFilter"
-#class = "org.wso2.financial.services.accelerator.common.policy.filter.PolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.chain.PolicyChainFilter"
 #init_params.apiName = "AuthorizeAPI"
 
 #[[tomcat.filter_mapping]]
@@ -335,33 +335,25 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 
 #[[tomcat.filter]]
 #name = "AccountsConsentPolicyChainFilter"
-#class = "org.wso2.financial.services.accelerator.common.policy.filter.ConsentPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.chain.ConsentPolicyChainFilter"
 #init_params.apiName = "AccountsAPI"
 
 #[[tomcat.filter_mapping]]
 #name = "AccountsConsentPolicyChainFilter"
 #url_pattern = "/manage/account-access-consents/*"
 
-#[[tomcat.filter_mapping]]
-#name = "AccountsConsentPolicyChainFilter"
-#url_pattern = "/manage/account-access-consents"
-
 #[[tomcat.filter]]
 #name = "COFConsentPolicyChainFilter"
-#class = "org.wso2.financial.services.accelerator.common.policy.filter.ConsentPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.chain.ConsentPolicyChainFilter"
 #init_params.apiName = "ConfirmationOfFundsAPI"
 
 #[[tomcat.filter_mapping]]
 #name = "COFConsentPolicyChainFilter"
 #url_pattern = "/manage/funds-confirmation-consents/*"
 
-#[[tomcat.filter_mapping]]
-#name = "COFConsentPolicyChainFilter"
-#url_pattern = "/manage/funds-confirmation-consents"
-
 #[[tomcat.filter]]
 #name = "PaymentConsentPolicyChainFilter"
-#class = "org.wso2.financial.services.accelerator.common.policy.filter.ConsentPolicyChainFilter"
+#class = "org.wso2.financial.services.accelerator.common.policy.filter.chain.ConsentPolicyChainFilter"
 #init_params.apiName = "PaymentsAPI"
 
 #[[tomcat.filter_mapping]]
