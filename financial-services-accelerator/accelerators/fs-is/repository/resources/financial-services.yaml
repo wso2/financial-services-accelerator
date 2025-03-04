@@ -87,6 +87,25 @@ apis:
             policies:
           response-flow:
             policies:
+      /api/fs/consent/manage/account-access-consents/{ConsentId}:
+        get:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy
+              - *callExternalAPI
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+        delete:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy
+              - *callExternalAPI
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
 
   - name: "PaymentsAPI"
     version: "1.0"
@@ -236,6 +255,25 @@ apis:
                 parameters:
                   applicable_params:
                     - "Data.ExpirationDateTime"
+              - *callExternalAPI
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/funds-confirmation-consents/{ConsentId}:
+        get:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy
+              - *callExternalAPI
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+        delete:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy
               - *callExternalAPI
           execution-flow:
             policies:
