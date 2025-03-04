@@ -115,15 +115,6 @@ public class ConsentManageEndpoint {
     public Response managePost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                @Context UriInfo uriInfo) {
 
-        if (uriInfo.getPathParameters().getFirst("s").contains("external")) {
-            JSONObject requestPayload = (JSONObject) ConsentUtils.getPayload(request);
-            JSONObject responsePayload = new JSONObject();
-            responsePayload.put("eventId", requestPayload.getString("eventId"));
-            responsePayload.put("actionStatus", "SUCCESS");
-            return Response.status(Response.Status.OK).entity(responsePayload.toString()).build();
-
-        }
-
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
