@@ -90,7 +90,13 @@ public class FilterPolicyUtils {
             CloseableHttpResponse response = HTTPClientUtils.getHttpClient().execute(httpPost);
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                throw new FinancialServicesException("Error occurred while invoking the external service");
+                String errorMsg = IOUtils.toString(response.getEntity().getContent());
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Error occurred while invoking the external service. " +
+                                    "Status code: %s, Error: %s", response.getStatusLine().getStatusCode(),
+                            errorMsg.replaceAll("[\r\n]", "")));
+                }
+                throw new FinancialServicesException("Error occurred while invoking the external service: " + errorMsg);
             }
             InputStream in = response.getEntity().getContent();
             return new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
