@@ -25,8 +25,6 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
 import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
 import org.wso2.financial.services.accelerator.common.policy.utils.FilterPolicyUtils;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
-
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -57,8 +55,8 @@ public class FutureDateValidationFilterPolicy extends FSFilterPolicy {
 
             if (applicableParams instanceof String) {
                 String applicableParam = (String) applicableParams;
-                if (ConsentExtensionUtils.pathExists(payloadObj, applicableParam)) {
-                    String dateVal = (String) ConsentExtensionUtils.retrieveValueFromJSONObject(payloadObj,
+                if (FilterPolicyUtils.pathExists(payloadObj, applicableParam)) {
+                    String dateVal = (String) FilterPolicyUtils.retrieveValueFromJSONObject(payloadObj,
                             applicableParam);
                     if (!isFutureDate(dateVal)) {
                         String errorMsg = String.format("The %S value has to be a future date", applicableParam);
@@ -69,8 +67,8 @@ public class FutureDateValidationFilterPolicy extends FSFilterPolicy {
             } else if (applicableParams instanceof List) {
                 List<String> applicableParamList = (List<String>) applicableParams;
                 for (String applicableParam : applicableParamList) {
-                    if (ConsentExtensionUtils.pathExists(payloadObj, applicableParam)) {
-                        String dateVal = (String) ConsentExtensionUtils.retrieveValueFromJSONObject(payloadObj,
+                    if (FilterPolicyUtils.pathExists(payloadObj, applicableParam)) {
+                        String dateVal = (String) FilterPolicyUtils.retrieveValueFromJSONObject(payloadObj,
                                 applicableParam);
                         if (!isFutureDate(dateVal)) {
                             String errorMsg = String.format("The %S value has to be a future date", applicableParam);

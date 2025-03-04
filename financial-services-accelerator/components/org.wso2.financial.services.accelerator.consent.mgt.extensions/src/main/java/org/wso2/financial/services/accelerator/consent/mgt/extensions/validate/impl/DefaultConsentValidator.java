@@ -344,6 +344,7 @@ public class DefaultConsentValidator implements ConsentValidator {
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
             return;
         }
+
         consentValidationResult.setValid(true);
     }
 

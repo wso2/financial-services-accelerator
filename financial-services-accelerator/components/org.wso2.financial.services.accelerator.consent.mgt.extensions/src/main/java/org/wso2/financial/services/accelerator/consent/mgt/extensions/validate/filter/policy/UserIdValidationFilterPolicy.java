@@ -28,12 +28,8 @@ import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPoli
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -90,29 +86,5 @@ public class UserIdValidationFilterPolicy extends FSFilterPolicy {
     public void processResponse(ServletResponse servletResponse, Map<String, Object> propertyMap)
             throws FSPolicyExecutionException {
 
-    }
-
-    /**
-     * Method to check the consent expiration.
-     *
-     * @param expDateVal   Expiration date value
-     * @return boolean     True if consent is expired
-     * @throws ConsentException Consent Exception with error details
-     */
-    private static boolean isConsentExpired(String expDateVal) throws ConsentException {
-
-        if (expDateVal != null && !expDateVal.isEmpty()) {
-            try {
-                OffsetDateTime expDate = OffsetDateTime.parse(expDateVal);
-                return OffsetDateTime.now().isAfter(expDate);
-            } catch (DateTimeParseException e) {
-                log.error(String.format("Error occurred while parsing the expiration date : %s",
-                        expDateVal.replaceAll("[\n\r]", "")));
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Error occurred while parsing the expiration date");
-            }
-        } else {
-            return false;
-        }
     }
 }

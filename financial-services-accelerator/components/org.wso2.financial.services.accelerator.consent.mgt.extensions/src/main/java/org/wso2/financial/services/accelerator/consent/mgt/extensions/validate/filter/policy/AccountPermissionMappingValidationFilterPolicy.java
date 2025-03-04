@@ -20,25 +20,30 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
 import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
+import org.wso2.financial.services.accelerator.common.policy.utils.FilterPolicyUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Consent status validation filter policy.
+ * Account Permission validation filter policy.
+ * Validate whether the consent has the required permission to access the requested resource
  */
-public class ConsentStatusValidationFilterPolicy extends FSFilterPolicy {
+public class AccountPermissionMappingValidationFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(ConsentStatusValidationFilterPolicy.class);
+    private static final Log log = LogFactory.getLog(AccountPermissionMappingValidationFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap)
@@ -46,28 +51,38 @@ public class ConsentStatusValidationFilterPolicy extends FSFilterPolicy {
 
         try {
             JSONObject validatePayload = (JSONObject) servletRequest.getAttribute("decodedPayload");
+            String electedResource = validatePayload.getString("electedResource");
             DetailedConsentResource consent = ConsentValidateFilterPolicyUtils.getConsentResource(servletRequest,
                     validatePayload);
-            if (consent == null) {
-                throw new FSPolicyExecutionException(HttpServletResponse.SC_NOT_FOUND,
-                        "consent_not_found", "Consent not found");
-            }
-
-            if (propertyMap.containsKey("applicable_status")) {
-                String applicableStatus = (String) propertyMap.get("applicable_status");
-                if (applicableStatus != null && !applicableStatus.isEmpty()) {
-                    if (!applicableStatus.equals(consent.getCurrentStatus())) {
-                        log.error("Consent is not in the correct state");
-                        throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST,
-                                "consent_status_invalid", "Consent is not in the correct state");
+            Map<String, String> resourcePermissionMappings = (Map<String, String>)
+                    propertyMap.get("resource_permission_mappings");
+            String permissionPath = (String) propertyMap.get("path_to_permissions");
+            JSONObject consentReceipt = new JSONObject(consent.getReceipt());
+            AtomicBoolean hasAllowedPermissions = new AtomicBoolean(true);
+            if (FilterPolicyUtils.pathExists(consentReceipt, permissionPath)) {
+                JSONArray permissions = (JSONArray) FilterPolicyUtils.retrieveValueFromJSONObject(consentReceipt,
+                        permissionPath);
+                resourcePermissionMappings.forEach((resource, allowedPermissions) -> {
+                    String[] resourcePaths = resource.split("/|");
+                    String[] allowedPermissionsList = allowedPermissions.split("/|");
+                    if (Arrays.stream(resourcePaths).anyMatch(electedResource::matches)) {
+                        for (String permission : allowedPermissionsList) {
+                            if (!permissions.toList().contains(permission)) {
+                                hasAllowedPermissions.set(false);
+                                break;
+                            }
+                        }
                     }
-                }
+                });
+            }
+            if (!hasAllowedPermissions.get()) {
+                throw new FSPolicyExecutionException(HttpServletResponse.SC_FORBIDDEN, "forbidden",
+                        "Consent does not have the required permissions to access the requested resource");
             }
         } catch (ConsentManagementException e) {
-            log.error(e.getMessage().replaceAll("[\n\r]", ""));
-            throw new FSPolicyExecutionException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "consent_retrieval_failure", e.getMessage(), e);
+            throw new RuntimeException(e);
         }
+
     }
 
     @Override

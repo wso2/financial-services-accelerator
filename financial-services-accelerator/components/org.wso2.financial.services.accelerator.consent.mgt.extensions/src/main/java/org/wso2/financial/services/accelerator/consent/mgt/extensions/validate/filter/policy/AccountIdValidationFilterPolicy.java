@@ -34,11 +34,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Consent status validation filter policy.
+ * AccountId validation filter policy.
  */
-public class ClientIdValidationFilterPolicy extends FSFilterPolicy {
+public class AccountIdValidationFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(ClientIdValidationFilterPolicy.class);
+    private static final Log log = LogFactory.getLog(AccountIdValidationFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap)
@@ -48,25 +48,26 @@ public class ClientIdValidationFilterPolicy extends FSFilterPolicy {
             JSONObject validatePayload = (JSONObject) servletRequest.getAttribute("decodedPayload");
             DetailedConsentResource consent = ConsentValidateFilterPolicyUtils.getConsentResource(servletRequest,
                     validatePayload);
-            if (consent == null) {
-                throw new FSPolicyExecutionException(HttpServletResponse.SC_NOT_FOUND,
-                        "consent_not_found", "Consent not found");
+
+            if (!validatePayload.getString("electedResource").contains("{AccountId}") &&
+                    !validatePayload.getString("electedResource").contains("{accountId}")) {
+                return;
             }
 
-            String clientIdFromToken = validatePayload.getString("clientId");
-            String clientIdFromConsent = consent.getClientID();
+            JSONObject resourceParams = validatePayload.getJSONObject("resourceParams");
+            String resourcePath = resourceParams.getString("ResourcePath");
 
-            if (clientIdFromToken == null || !clientIdFromToken.equals(clientIdFromConsent)) {
-                log.error("Client id bound to the token does not have access to the given consent");
-                throw new FSPolicyExecutionException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "consent_validation_failure",
-                        "Client id bound to the token does not have access to the given consent");
+            boolean accountIdExists = consent.getConsentMappingResources().stream()
+                    .anyMatch(resource -> resourcePath.contains(resource.getAccountID()));
+
+            if (!accountIdExists) {
+                throw new FSPolicyExecutionException(HttpServletResponse.SC_FORBIDDEN,
+                        "consent_validation_failure", "Requested Resource with the given ID is Unavailable.");
             }
         } catch (ConsentManagementException e) {
-            log.error(e.getMessage().replaceAll("[\n\r]", ""));
-            throw new FSPolicyExecutionException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "consent_retrieval_failure", e.getMessage(), e);
+            throw new RuntimeException(e);
         }
+
     }
 
     @Override

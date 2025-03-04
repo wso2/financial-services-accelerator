@@ -87,7 +87,7 @@ public class ConsentSchemaValidationFilterPolicy extends FSFilterPolicy {
             }
         } catch (FinancialServicesException | JSONException e) {
             log.error(e.getMessage().replaceAll("[\n\r]", ""));
-            throw new FSPolicyExecutionException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST,
                     "schema_validation_failure", e.getMessage(), e);
         } catch (SchemaValidationException e) {
             log.error(e.getMessage().replaceAll("[\n\r]", ""));

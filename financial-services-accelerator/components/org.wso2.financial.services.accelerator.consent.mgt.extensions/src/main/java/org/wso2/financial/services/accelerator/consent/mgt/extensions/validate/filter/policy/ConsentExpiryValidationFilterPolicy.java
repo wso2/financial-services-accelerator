@@ -24,9 +24,9 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
 import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
+import org.wso2.financial.services.accelerator.common.policy.utils.FilterPolicyUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
@@ -63,8 +63,8 @@ public class ConsentExpiryValidationFilterPolicy extends FSFilterPolicy {
             String expDateParamName = propertyMap.get("expiry_date_param").toString();
             JSONObject receiptObj  = new JSONObject(consent.getReceipt());
 
-            if (ConsentExtensionUtils.pathExists(receiptObj, expDateParamName)) {
-                String dateVal = (String) ConsentExtensionUtils.retrieveValueFromJSONObject(receiptObj,
+            if (FilterPolicyUtils.pathExists(receiptObj, expDateParamName)) {
+                String dateVal = (String) FilterPolicyUtils.retrieveValueFromJSONObject(receiptObj,
                         expDateParamName);
                 if (isConsentExpired(dateVal)) {
                     throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST, "invalid_request",
