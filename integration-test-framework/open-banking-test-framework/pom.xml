@@ -126,6 +126,11 @@
             <version>5.0.0-M1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${org.codehaus.groovy.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

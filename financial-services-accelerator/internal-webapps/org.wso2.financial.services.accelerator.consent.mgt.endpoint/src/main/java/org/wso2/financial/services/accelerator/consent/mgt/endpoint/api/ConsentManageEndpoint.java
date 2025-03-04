@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.api;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -96,7 +97,11 @@ public class ConsentManageEndpoint {
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
-        consentManageHandler.handleGet(consentManageData);
+        try {
+            consentManageHandler.handleGet(consentManageData);
+        } catch (ConsentException e) {
+            return Response.status(e.getStatus().getStatusCode()).entity(e.getPayload().toString()).build();
+        }
         return sendResponse(consentManageData);
     }
 
@@ -114,7 +119,11 @@ public class ConsentManageEndpoint {
                 ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
-        consentManageHandler.handlePost(consentManageData);
+        try {
+            consentManageHandler.handlePost(consentManageData);
+        } catch (ConsentException e) {
+            return Response.status(e.getStatus().getStatusCode()).entity(e.getPayload().toString()).build();
+        }
         return sendResponse(consentManageData);
     }
 
@@ -132,7 +141,11 @@ public class ConsentManageEndpoint {
                 null, uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
-        consentManageHandler.handleDelete(consentManageData);
+        try {
+            consentManageHandler.handleDelete(consentManageData);
+        } catch (ConsentException e) {
+            return Response.status(e.getStatus().getStatusCode()).entity(e.getPayload().toString()).build();
+        }
         return sendResponse(consentManageData);
     }
 
@@ -150,7 +163,11 @@ public class ConsentManageEndpoint {
                 ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
-        consentManageHandler.handlePut(consentManageData);
+        try {
+            consentManageHandler.handlePut(consentManageData);
+        } catch (ConsentException e) {
+            return Response.status(e.getStatus().getStatusCode()).entity(e.getPayload().toString()).build();
+        }
         return sendResponse(consentManageData);
     }
 
@@ -168,7 +185,11 @@ public class ConsentManageEndpoint {
                 uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"),
                 request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
-        consentManageHandler.handlePatch(consentManageData);
+        try {
+            consentManageHandler.handlePatch(consentManageData);
+        } catch (ConsentException e) {
+            return Response.status(e.getStatus().getStatusCode()).entity(e.getPayload().toString()).build();
+        }
         return sendResponse(consentManageData);
     }
 
@@ -186,7 +207,11 @@ public class ConsentManageEndpoint {
                 ConsentUtils.getFileUploadPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
-        consentManageHandler.handleFileUploadPost(consentManageData);
+        try {
+            consentManageHandler.handleFileUploadPost(consentManageData);
+        } catch (ConsentException e) {
+            return Response.status(e.getStatus().getStatusCode()).entity(e.getPayload().toString()).build();
+        }
         return sendFileUploadResponse(consentManageData);
     }
 
@@ -203,7 +228,11 @@ public class ConsentManageEndpoint {
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
-        consentManageHandler.handleFileGet(consentManageData);
+        try {
+            consentManageHandler.handleFileGet(consentManageData);
+        } catch (ConsentException e) {
+            return Response.status(e.getStatus().getStatusCode()).entity(e.getPayload().toString()).build();
+        }
         return sendResponse(consentManageData);
     }
 
