@@ -88,7 +88,9 @@ public class ExternalValidationFilterPolicy extends FSFilterPolicy {
         ExternalServiceRequest.EventRequest eventRequest =
                 new ExternalServiceRequest.EventRequest(requestPayloadObj, new ArrayList<>(), new ArrayList<>());
         ExternalServiceRequest.Event event = new ExternalServiceRequest.Event(eventRequest);
+        ExternalServiceRequest.AllowedOperation allowedOperation =
+                new ExternalServiceRequest.AllowedOperation("validate");
 
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), event, "validate");
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), event, allowedOperation);
     }
 }

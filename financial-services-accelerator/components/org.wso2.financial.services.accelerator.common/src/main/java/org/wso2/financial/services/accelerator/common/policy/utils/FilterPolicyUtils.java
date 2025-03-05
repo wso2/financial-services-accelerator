@@ -164,4 +164,51 @@ public class FilterPolicyUtils {
                 .getBytes(StandardCharsets.UTF_8));
         return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
     }
+
+    /**
+     * Check whether a given path exists in a JSONObject.
+     *
+     * @param jsonObject  JSONObject to check
+     * @param path        Path to check
+     * @return        Whether the path exists
+     */
+    public static boolean pathExists(JSONObject jsonObject, String path) {
+        String[] keys = path.split("\\.");
+        JSONObject current = jsonObject;
+
+        for (int i = 0; i < keys.length; i++) {
+            if (!current.has(keys[i])) {
+                return false;
+            }
+            if (i == keys.length - 1) {
+                return true;
+            }
+            current = current.optJSONObject(keys[i]);
+            if (current == null && i != keys.length - 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Retrieve the value from a JSONObject for a given path.
+     *
+     * @param jsonObject  JSONObject to retrieve the value from
+     * @param path        Path to the value
+     * @return          Value for the given path
+     */
+    public static Object retrieveValueFromJSONObject(JSONObject jsonObject, String path) {
+        String[] keys = path.split("\\.");
+        JSONObject current = jsonObject;
+
+        for (int i = 0; i < keys.length - 1; i++) {
+            if (!current.has(keys[i]) || !(current.get(keys[i]) instanceof JSONObject)) {
+                return null;
+            }
+            current = current.getJSONObject(keys[i]);
+        }
+
+        return current.has(keys[keys.length - 1]) ? current.get(keys[keys.length - 1]) : null;
+    }
 }

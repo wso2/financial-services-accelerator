@@ -60,6 +60,7 @@ public class FinancialServicesYamlConfigParser {
             // Read YAML file into a String
             String yamlContent = Files.readString(filePath);
             LoaderOptions options = new LoaderOptions();
+            options.setMaxAliasesForCollections(100);
             Yaml yaml = new Yaml(options);
             return yaml.load(yamlContent);
         } catch (IOException e) {
