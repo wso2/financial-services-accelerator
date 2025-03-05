@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.test.consent.management.ConsentValidateTest
 
-import org.wso2.openbanking.test.framework.request_builder.SignedObject
 import io.restassured.RestAssured
 import io.restassured.config.EncoderConfig
 import io.restassured.http.ContentType
@@ -28,33 +27,32 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-
-import java.nio.charset.Charset
+import org.wso2.openbanking.test.framework.request_builder.SignedObject
 
 /**
- * Consent Validation Tests.
+ * Payment Consent Validation Tests.
  */
-class ConsentValidationFlow extends FSConnectorTest {
+class PaymentConsentValidationFlow extends FSConnectorTest {
 
     SignedObject signedObject
     def validationPayload
-    def requestUri
+    List<ConnectorTestConstants.ApiScope> scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
 
     @BeforeClass
     void init() {
-        consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = AccountsRequestPayloads.initiationPayload
+        consentPath = ConnectorTestConstants.PAYMENT_CONSENT_PATH
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         accessToken = GenerateBasicHeader()
         signedObject = new SignedObject()
         signedObject.setSigningAlgorithm(ConnectorTestConstants.ALG_RS512)
     }
 
-    //Enable the test when [open_banking.consent.validation.jwt.payload] enabled=false in deployment.toml file
-    @Test (enabled = false)
-    void "OB-1720_Send Validate Request with JSON payload"() {
+    @Test
+    void "OB-1721_Send Validate Request with JWT payload"() {
 
         //Consent Initiation
         doDefaultInitiation()
@@ -62,28 +60,13 @@ class ConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
-
-        def host = configuration.getISServerUrl().split("//")[1].replace("9446", "8243")
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         //Consent Validate Request
-        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId)
+        doConsentValidate(ConnectorTestConstants.PAYMENT_VALIDATE_PATH, validationPayload)
 
-        accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
-                .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
-                .body(signedObject.getSignedRequest(validationPayload))
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
-                .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
-                .config(RestAssured.config()
-                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(
-                                TestUtil.getSslSocketFactory()))
-                        .encoderConfig(new EncoderConfig().encodeContentTypeAs(
-                                ConnectorTestConstants.CONTENT_TYPE_JWT, ContentType.TEXT)
-                                .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
-                .baseUri(configuration.getISServerUrl())
-                .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
-
-        Assert.assertEquals(accountValidationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
 
     @Test
@@ -95,40 +78,17 @@ class ConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Consent Denial
-        consentDenial(configuration.getAppInfoClientID(), true, consentScopes)
-
-        def host = configuration.getISServerUrl()
+        consentDenial(configuration.getAppInfoClientID(), true, scopeList)
 
         //Consent Validate Request
-        doConsentValidate(consentId)
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId)
+        doConsentValidate(ConnectorTestConstants.PAYMENT_VALIDATE_PATH, validationPayload)
 
-        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("isValid").toString()
-                .contains(ConnectorTestConstants.IS_VALID_FALSE))
-    }
-
-    @Test
-    void "OB-1967_Verify Validation of a created Consent when consent does not have sufficient permissions"() {
-
-        //Consent Initiation
-        consentResponse = doDefaultInitiation(AccountsRequestPayloads.initiationPayloadWithoutReadAccountsDetail)
-        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
-        Assert.assertNotNull(consentId)
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
-
-        //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
-
-        def host = configuration.getISServerUrl()
-
-        //Consent Validate Request
-        doConsentValidate(consentId)
-
-        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("isValid").toString()
-                .contains(ConnectorTestConstants.IS_VALID_FALSE))
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("errorMessage").toString()
-                .contains(ConnectorTestConstants.PERMISSION_MISMATCH_ERROR))
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR),
+                "consent_status_invalid")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Consent is not in the correct state")
     }
 
     @Test
@@ -140,15 +100,14 @@ class ConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         def host = configuration.getISServerUrl()
 
         //Consent Validate Request
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId)
 
-        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
-
-        accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
+        consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
                 .body(signedObject.getSignedRequest(validationPayload))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${accessToken}")
@@ -162,7 +121,7 @@ class ConsentValidationFlow extends FSConnectorTest {
                 .baseUri(configuration.getISServerUrl())
                 .post(ConnectorTestConstants.INCORRECT_ACCOUNT_VALIDATE_PATH)
 
-        Assert.assertEquals(accountValidationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_404)
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_404)
     }
 
     @Test
@@ -174,31 +133,24 @@ class ConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
-
-        def host = configuration.getISServerUrl()
-
-        def authToken = "${configuration.getUserKeyManagerAdminName()}:" +
-                "${configuration.getUserKeyManagerAdminPWD()}"
-        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         //Consent Validate Request
-        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId)
 
-        accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
+        consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .body(signedObject.getSignedRequest(validationPayload))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${accessToken}")
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .config(RestAssured.config()
                         .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(
                                 TestUtil.getSslSocketFactory()))
-                        .encoderConfig(new EncoderConfig().encodeContentTypeAs(
-                                ConnectorTestConstants.CONTENT_TYPE_JWT, ContentType.TEXT)
-                                .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                )
                 .baseUri(configuration.getISServerUrl())
-                .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
+                .post(ConnectorTestConstants.PAYMENT_VALIDATE_PATH)
 
-        Assert.assertEquals(accountValidationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
     }
 
     @Test
@@ -210,17 +162,16 @@ class ConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
-
-        def host = configuration.getISServerUrl()
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         //Consent Validate Request
-        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId)
 
-        accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
+        consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.HTML)
                 .body(signedObject.getSignedRequest(validationPayload))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${accessToken}")
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .config(RestAssured.config()
                         .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(
@@ -229,9 +180,9 @@ class ConsentValidationFlow extends FSConnectorTest {
                                 ConnectorTestConstants.CONTENT_TYPE_JWT, ContentType.TEXT)
                                 .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
                 .baseUri(configuration.getISServerUrl())
-                .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
+                .post(ConnectorTestConstants.PAYMENT_VALIDATE_PATH)
 
-        Assert.assertEquals(accountValidationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
     }
 
     @Test
@@ -243,17 +194,16 @@ class ConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
-
-        def host = configuration.getISServerUrl()
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         //Consent Validate Request
-        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId)
 
         Response validationResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
                 .body(signedObject.getSignedRequest(validationPayload))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${accessToken}")
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JWT)
                 .config(RestAssured.config()
                         .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(
@@ -262,13 +212,13 @@ class ConsentValidationFlow extends FSConnectorTest {
                                 ConnectorTestConstants.CONTENT_TYPE_JWT, ContentType.TEXT)
                                 .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
                 .baseUri(configuration.getISServerUrl())
-                .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
+                .post(ConnectorTestConstants.PAYMENT_VALIDATE_PATH)
 
         Assert.assertEquals(validationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_406)
     }
 
     @Test
-    void "OB-1721_Send Validate Request with JWT payload"() {
+    void "Verify Validation of a created Consent with mismatching user Id"() {
 
         //Consent Initiation
         doDefaultInitiation()
@@ -276,12 +226,38 @@ class ConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         //Consent Validate Request
-        validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
-        doAccountValidation(validationPayload)
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, "userId", consentId)
+        doConsentValidate(ConnectorTestConstants.PAYMENT_VALIDATE_PATH, validationPayload)
 
-        Assert.assertEquals(accountValidationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR),
+                "consent_validation_failure")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "User bound to the token does not have access to the given consent")
+    }
+
+    @Test
+    void "Verify Validation of a created Consent with mismatching client Id"() {
+
+        //Consent Initiation
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        //Consent Authorisation
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
+
+        //Consent Validate Request
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId, "clientId")
+        doConsentValidate(ConnectorTestConstants.PAYMENT_VALIDATE_PATH, validationPayload)
+
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR),
+                "consent_validation_failure")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Client id bound to the token does not have access to the given consent")
     }
 }

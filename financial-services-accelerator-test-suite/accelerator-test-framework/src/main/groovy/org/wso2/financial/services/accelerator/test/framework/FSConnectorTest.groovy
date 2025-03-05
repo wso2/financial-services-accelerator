@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.test.framework
 
-import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.openbanking.test.framework.OBTest
 import org.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import org.wso2.openbanking.test.framework.request_builder.SignedObject
@@ -71,7 +70,6 @@ class FSConnectorTest extends OBTest{
     Response consentResponse
     Response consentRevocationResponse
     Response consentValidateResponse
-    Response accountValidationResponse
     String consentPath
     String initiationPayload
     String initiationIncorrectPayload = AccountsRequestPayloads.initiationIncorrectPayload
@@ -468,7 +466,7 @@ class FSConnectorTest extends OBTest{
      * Account Consent Validate.
      * @param consentId
      */
-    Response doConsentValidate(String consentId) {
+    Response doConsentValidate(String validatePath, String claims) {
 
         def host = configuration.getISServerUrl().split("//")[1].replace(
                 "8343", "8243")
@@ -487,9 +485,8 @@ class FSConnectorTest extends OBTest{
                                 .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
 
                 .baseUri(configuration.getISServerUrl())
-                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationPayload(userId, consentId, host,
-                        "/accounts")))
-                .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
+                .body(signedObject.getSignedRequest(claims))
+                .post(validatePath)
 
         return consentValidateResponse
     }
@@ -734,30 +731,6 @@ class FSConnectorTest extends OBTest{
 
         // Get User denied message From URL
         denyResponse = TestUtil.getErrorDescriptionFromUrlWhenDenied(automation.currentUrl.get())
-    }
-
-    /**
-     * Account Validation Request
-     * @param payload
-     */
-    void doAccountValidation(String payload) {
-
-        SignedObject signedObject = new SignedObject()
-        signedObject.setSigningAlgorithm(ConnectorTestConstants.ALG_RS512)
-
-        accountValidationResponse = FSRestAsRequestBuilder.buildRequest()
-                .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
-                .body(signedObject.getSignedRequest(payload))
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
-                .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
-                .config(RestAssured.config()
-                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(
-                                TestUtil.getSslSocketFactory()))
-                        .encoderConfig(new EncoderConfig().encodeContentTypeAs(
-                                ConnectorTestConstants.CONTENT_TYPE_JWT, ContentType.TEXT)
-                                .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
-                .baseUri(configuration.getISServerUrl())
-                .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
     }
 
     /**

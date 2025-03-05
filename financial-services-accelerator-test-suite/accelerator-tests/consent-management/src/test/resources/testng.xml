@@ -24,8 +24,10 @@
             <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentInitiationTest.ConsentInitiationTest"/>
             <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentRetrieval.ConsentRetrievalFlow"/>
             <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentDeleteTest.ConsentRevokeFlow"/>
-            <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentValidateTest.ConsentValidationFlow"/>
-            <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentValidateTest.ConsentManageEndpointValidationTest"/>
+            <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentValidateTest.AccountConsentValidationFlow"/>
+            <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentValidateTest.COFConsentValidationFlow"/>
+            <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentValidateTest.PaymentConsentValidationFlow"/>
+            <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentOperationsFlowTests.ConsentManageEndpointValidationTest"/>
             <class name="org.wso2.financial.services.accelerator.test.consent.management.ConsentAuthorisationTest.AuthorizationFlowValidationTest"/>
         </classes>
     </test>
