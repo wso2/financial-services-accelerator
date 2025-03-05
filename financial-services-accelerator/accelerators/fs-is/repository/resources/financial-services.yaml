@@ -24,6 +24,30 @@ components:
         applicable_params:
           - "Data.ExpirationDateTime"
 
+    consentDataRetrievalPolicy: &consentDataRetrievalPolicy
+      name: "Consent JSON Build Policy"
+      type: "consent-retrieval-policy"
+      description: "Builds a json with consent data to be displayed in consent approval page."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.ConsentDataRetrievalPolicy"
+
+    consentStatusValidationPolicy: &consentStatusValidationPolicy
+      name: "Consent JSON Build Policy"
+      type: "consent-retrieval-policy"
+      description: "Builds a json with consent data to be displayed in consent approval page."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.ConsentStatusValidationPolicy"
+
+    accountRetrievalPolicy: &accountRetrievalPolicy
+      name: "Consent JSON Build Policy"
+      type: "consent-retrieval-policy"
+      description: "Builds a json with consent data to be displayed in consent approval page."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.AccountRetrievalPolicy"
+
+    consentJsonBuildPolicy: &consentJsonBuildPolicy
+      name: "Consent JSON Build Policy"
+      type: "consent-retrieval-policy"
+      description: "Builds a json with consent data to be displayed in consent approval page."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.ConsentJsonBuildPolicy"
+
     callExternalAPI: &callExternalAPI
       name: "CallExternalAPI Policy"
       type: "filter-policy"
@@ -63,8 +87,31 @@ apis:
     paths:
       /oauth2/authorize:
         get:
-          request-flow:
+          execution-flow:
             policies:
+              - *consentDataRetrievalPolicy
+              - *consentStatusValidationPolicy
+              - *accountRetrievalPolicy
+              - <<: *consentJsonBuildPolicy
+                parameters:
+                  consent-data:
+                    accounts:
+                      - path: "Data.Permissions"
+                        title: "Permissions"
+                      - path: "Data.ExpirationDateTime"
+                        title: "Expiration Date Time"
+                      - path: "Data.TransactionFromDateTime"
+                        title: "Transaction From Date Time"
+                      - path: "Data.Transaction To Date Time"
+                        title: "Transaction To Date Time"
+                    payments:
+                      - path: "Data.Initiation.RequestedExecutionDateTime"
+                        title: "Requested Execution Date Time"
+                      - path: "Data.Authorisation.CompletionDateTime"
+                        title: "Completion Date Time"
+                    cof:
+                      - path: "Data.ExpirationDateTime"
+                        title: "Expiration Date Time"
 
   - name: "AccountsAPI"
     version: "1.0"
