@@ -51,6 +51,8 @@ public class DefaultConsentValidator implements ConsentValidator {
                 consentValidateData.getComprehensiveConsent().getReceipt(),
                 filteredAccountIds, consentValidateData.getConsentId()));
 
+        consentValidationResult.setValid(true);
+
     }
 
     /**
