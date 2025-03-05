@@ -262,6 +262,27 @@ components:
           type: "basic-auth" # Change to "basic-auth" if needed
           username: ""
           password: ""
+    
+    jwtSignatureValidationPolicy: &jwtSignatureValidationPolicy
+      name: "jwtSignatureValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate JWT signature."
+      class: "org.wso2.financial.services.accelerator.common.policy.filter.common.JWTSignatureValidationFilterPolicy"
+      parameters:
+        # Signature validation is done using the public key of the cert with given alias
+        type: "public-key"
+        key-alias: "wso2carbon"
+        # If the signature validation should be done using JWKS Url then uncomment below
+        #type: "jwks-uri"
+        #jwks_url: ""
+
+    consentExpiryValidationPolicy: &consentExpiryValidationPolicy
+      name: "consentExpiryValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the consent is expired."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.ConsentExpiryValidationFilterPolicy"
+      parameters:
+        expiry_date_param: "Data.ExpirationDateTime"
 
 # Global Policies (Applied to all APIs)
 global-policies:
