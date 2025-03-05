@@ -1,3 +1,69 @@
+apis:
+  - name: "TokenAPI"
+    version: "1.0"
+    policies: []
+    paths:
+      /oauth2/token:
+        post:
+          request-flow:
+            policies:
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+
+  - name: "AuthorizeAPI"
+    version: "1.0"
+    policies: []
+    paths:
+      /oauth2/authorize:
+        get:
+          request-flow:
+            policies:
+
+  - name: "ConsentAPI"
+    version: "1.0"
+    policies: [ ]
+    paths:
+      /api/fs/consent/manage/*:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy
+              - <<: *schemaValidationPolicy
+                parameters:
+                  json_schema_url: ""
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.ExpirationDateTime"
+              - *callExternalAPI
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/validate/*:
+        post:
+          request-flow:
+            policies:
+              - *jwtSignatureValidationPolicy
+              - *clientIdValidationPolicy
+              - *consentExpiryValidationPolicy
+              - *consentStatusValidationPolicy
+              - *clientIdMatchingValidationPolicy
+              - *userIdMatchingValidationPolicy
+              - *accountIdMatchingValidationPolicy
+              - *accountResourcePermissionMappingValidationPolicy
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+
+
+
+# Global Policies (Applied to all APIs)
+global-policies:
+
 components:
   policy-definitions:
 
@@ -107,283 +173,3 @@ components:
           - "/standing-orders|/accounts/[^/?]*/standing-orders": "ReadStandingOrdersBasic|ReadStandingOrdersDetail"
           - "/statements|/accounts/[^/?]*/statements|/accounts/[^/?]*/statements/[^/?]*": "ReadStatementsBasic|ReadStatementsDetail"
           - "/accounts/[^/?]*/statements/[^/?]*/file": "ReadStatementsDetail"
-
-apis:
-  - name: "TokenAPI"
-    version: "1.0"
-    policies: []
-    paths:
-      /oauth2/token:
-        post:
-          request-flow:
-            policies:
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-
-  - name: "AuthorizeAPI"
-    version: "1.0"
-    policies: []
-    paths:
-      /oauth2/authorize:
-        get:
-          request-flow:
-            policies:
-
-  - name: "AccountsAPI"
-    version: "1.0"
-    policies: [ ]
-    paths:
-      /api/fs/consent/manage/account-access-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.ExpirationDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/account-access-consents/{ConsentId}:
-        get:
-          request-flow:
-            policies:
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-        delete:
-          request-flow:
-            policies:
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/validate/accounts:
-        post:
-          request-flow:
-            policies:
-              - *jwtSignatureValidationPolicy
-              - *clientIdValidationPolicy
-              - *consentExpiryValidationPolicy
-              - *consentStatusValidationPolicy
-              - *clientIdMatchingValidationPolicy
-              - *userIdMatchingValidationPolicy
-              - *accountIdMatchingValidationPolicy
-              - *accountResourcePermissionMappingValidationPolicy
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-
-  - name: "PaymentsAPI"
-    version: "1.0"
-    policies: [ ]
-    paths:
-      /api/fs/consent/manage/domestic-payment-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.Authorisation.CompletionDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/domestic-scheduled-payment-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.Initiation.RequestedExecutionDateTime"
-                    - "Data.Authorisation.CompletionDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/domestic-standing-order-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.Initiation.FirstPaymentDateTime"
-                    - "Data.Initiation.FinalPaymentDateTime"
-                    - "Data.Authorisation.CompletionDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/file-payment-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.Initiation.RequestedExecutionDateTime"
-                    - "Data.Authorisation.CompletionDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/international-payment-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.Authorisation.CompletionDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/international-scheduled-payment-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.Initiation.RequestedExecutionDateTime"
-                    - "Data.Authorisation.CompletionDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/international-standing-order-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.Initiation.FirstPaymentDateTime"
-                    - "Data.Initiation.RecurringPaymentDateTime"
-                    - "Data.Initiation.FinalPaymentDateTime"
-                    - "Data.Authorisation.CompletionDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/validate/payments:
-        post:
-          request-flow:
-            policies:
-              - *jwtSignatureValidationPolicy
-              - *clientIdValidationPolicy
-              - *consentExpiryValidationPolicy
-              - *consentStatusValidationPolicy
-              - *clientIdMatchingValidationPolicy
-              - *userIdMatchingValidationPolicy
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-
-  - name: "ConfirmationOfFundsAPI"
-    version: "1.0"
-    policies: [ ]
-    paths:
-      /api/fs/consent/manage/funds-confirmation-consents:
-        post:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - <<: *schemaValidationPolicy
-                parameters:
-                  json_schema_url: ""
-              - <<: *futureDateValidationPolicy
-                parameters:
-                  applicable_params:
-                    - "Data.ExpirationDateTime"
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/manage/funds-confirmation-consents/{ConsentId}:
-        get:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-        delete:
-          request-flow:
-            policies:
-              - *clientIdValidationPolicy
-              - *callExternalAPI
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-      /api/fs/consent/validate/fundsconfirmation:
-        post:
-          request-flow:
-            policies:
-              - *jwtSignatureValidationPolicy
-              - *clientIdValidationPolicy
-              - *consentExpiryValidationPolicy
-              - *consentStatusValidationPolicy
-              - *clientIdMatchingValidationPolicy
-              - *userIdMatchingValidationPolicy
-          execution-flow:
-            policies:
-          response-flow:
-            policies:
-
-# Global Policies (Applied to all APIs)
-global-policies:
