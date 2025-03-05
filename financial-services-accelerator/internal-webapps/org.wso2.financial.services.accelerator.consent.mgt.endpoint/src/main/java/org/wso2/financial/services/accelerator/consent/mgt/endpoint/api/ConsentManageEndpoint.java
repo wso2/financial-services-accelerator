@@ -21,7 +21,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.api;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
