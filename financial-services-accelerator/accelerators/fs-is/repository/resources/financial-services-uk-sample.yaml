@@ -284,5 +284,26 @@ components:
       parameters:
         expiry_date_param: "Data.ExpirationDateTime"
 
+     consentStatusValidationPolicy: &consentStatusValidationPolicy
+      name: "consentStatusValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the consent is in the applicable status."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.ConsentStatusValidationFilterPolicy"
+      parameters:
+        applicable_status: "Authorised"
+
+    clientIdMatchingValidationPolicy: &clientIdMatchingValidationPolicy
+      name: "clientIdMatchingValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the client id of the submission request is matching with the client id associated with the consent"
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.ClientIdMatchingValidationFilterPolicy"
+
+    userIdMatchingValidationPolicy: &userIdMatchingValidationPolicy
+      name: "userIdMatchingValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the user id of the submission request is matching with the user id associated with the consent"
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.UserIdMatchingValidationFilterPolicy"
+
+
 # Global Policies (Applied to all APIs)
 global-policies:
