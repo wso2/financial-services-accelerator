@@ -41,6 +41,8 @@ components:
       type: "consent-retrieval-policy"
       description: "Builds a json with consent data to be displayed in consent approval page."
       class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.AccountRetrievalPolicy"
+      parameters:
+        sharable-accounts-endpoint: ""
 
     consentJsonBuildPolicy: &consentJsonBuildPolicy
       name: "Consent JSON Build Policy"

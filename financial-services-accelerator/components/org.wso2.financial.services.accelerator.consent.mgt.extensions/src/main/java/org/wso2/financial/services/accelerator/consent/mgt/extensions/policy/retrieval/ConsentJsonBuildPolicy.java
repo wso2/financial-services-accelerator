@@ -38,7 +38,7 @@ public class ConsentJsonBuildPolicy extends ConsentRetrievalStepPolicy {
     private static final String CONSENT_DATA_CONFIG_KEY = "consent-data";
     private static final String ACCOUNTS_KEY = "accounts";
     private static final String PATH_KEY = "path";
-    private static final String TITLE_KEY = "accounts";
+    private static final String TITLE_KEY = "title";
     private static final String DATA_KEY = "data";
 
     @Override

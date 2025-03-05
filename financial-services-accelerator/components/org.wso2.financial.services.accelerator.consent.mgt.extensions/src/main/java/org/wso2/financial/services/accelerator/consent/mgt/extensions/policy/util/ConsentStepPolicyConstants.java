@@ -17,6 +17,9 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.util;
 
+/**
+ * Consent Step Policy Constants.
+ */
 public class ConsentStepPolicyConstants {
 
     public static final String CONSENT_RESOURCE = "consentResource";

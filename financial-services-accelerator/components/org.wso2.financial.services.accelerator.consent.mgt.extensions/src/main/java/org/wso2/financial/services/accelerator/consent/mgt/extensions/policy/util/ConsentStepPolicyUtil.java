@@ -19,6 +19,9 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.ut
 
 import org.json.JSONObject;
 
+/**
+ * Consent Step Policy Util.
+ */
 public class ConsentStepPolicyUtil {
 
     /**
