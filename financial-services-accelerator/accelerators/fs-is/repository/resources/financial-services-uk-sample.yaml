@@ -1,0 +1,262 @@
+apis:
+  - name: "AccountsAPI"
+    version: "1.0"
+    policies: [ ]
+    paths:
+      /api/fs/consent/manage/account-access-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy  # Validate application existence.
+
+              - <<: *schemaValidationPolicy  # Validate schema of the request paylaod.
+                parameters: # Config the json schema url.
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/108436ac035b06e2e35604b66791f656/raw/4bd9d25fda6b2e9f634fb5ec882cca91c46fac9b/account-json-schema.json"
+
+              - <<: *futureDateValidationPolicy  # Validate whether given dates are future dates.
+                parameters:
+                  applicable_params: # Config the json path of the date parameters.
+                    - "Data.ExpirationDateTime"
+
+              - <<: *callExternalService # Invoke the external validation service.
+                parameters:  # Config the details of the external validation service.
+                  endpoint: "http://localhost:9766/api/fs/consent/manage/external"
+                  service_type: "consent"
+                  security: 
+                    type: "basic-auth"
+                    username: "is_admin@wso2.com" 
+                    password: "wso2123" 
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/account-access-consents/{consentId}:
+        get:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+        delete:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+
+  - name: "PaymentsAPI"
+    version: "1.0"
+    policies: [ ]
+    paths:
+      /api/fs/consent/manage/domestic-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/9ce9e96794008ad7aaedcd5cb1031fb6/raw/b88484d4dfd357f280c04bbc4337125cbdb33aec/domestic-payment-json-schema.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Authorisation.CompletionDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/domestic-scheduled-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/390ec3a6b8543e1543f36b0b1017eddd/raw/13214a2e776b1722e5a86a17a7bf60be07624152/domestic-scheduled-payment-json-schema.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.RequestedExecutionDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/domestic-standing-order-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/48481b5c4354a2a3be7ba18e647c3e35/raw/b48891e8f09619a63b62ae0941677ba85b34a188/domestic-standing-order-schema-json.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                  - "Data.Initiation.FirstPaymentDateTime"
+                  - "Data.Initiation.FinalPaymentDateTime"
+                  - "Data.Authorisation.CompletionDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/file-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/ca48430d289ec40d0aae3ae030a7aac0/raw/19690f2ac6cf1de1a614b04fe657dd8e72df3cb2/file-payment-schema-json.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.RequestedExecutionDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/international-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/8f480794871fbb700d536cffcc491e40/raw/556c2fe1be7cbc17892db06282329523abc1b65a/international-payment-json-schema.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Authorisation.CompletionDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/international-scheduled-payment-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/6c7ba60c5bb72ecf0e6f7da2f67eb533/raw/42047e74c730ce03e672afe881115af3a168a4a7/international-scheduled-payment-json-schema.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.RequestedExecutionDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/international-standing-order-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/d3784f54c0d758286944177a547d045f/raw/9da8088605c14777bcf4c155568fe0e8e16a9366/international-standing-order-json-schema.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.Initiation.FirstPaymentDateTime"
+                    - "Data.Initiation.RecurringPaymentDateTime"
+                    - "Data.Initiation.FinalPaymentDateTime"
+                    - "Data.Authorisation.CompletionDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+
+  - name: "ConfirmationOfFundsAPI"
+    version: "1.0"
+    policies: [ ]
+    paths:
+      /api/fs/consent/manage/funds-confirmation-consents:
+        post:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - <<: *schemaValidationPolicy # Validate schema of the request paylaod.
+                parameters:
+                  json_schema_url: "https://gist.githubusercontent.com/Ashi1993/e2ac79185fbf50193006eace73a958a5/raw/709f3dacf2618994df63eb86acf9410478e7e3d7/cof-json-schema.json"
+              - <<: *futureDateValidationPolicy
+                parameters:
+                  applicable_params:
+                    - "Data.ExpirationDateTime"
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/manage/funds-confirmation-consents/{ConsentId}:
+        get:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+        delete:
+          request-flow:
+            policies:
+              - *clientIdValidationPolicy # Validate application existence.
+              - *callExternalService # Invoke the external validation service.
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      
+components:
+  policy-definitions:
+    schemaValidationPolicy: &schemaValidationPolicy
+      name: "Schema Validation Policy"
+      type: "filter-policy"
+      description: "Validate payload against JSON schema."
+      parameters:
+        json_schema_url: "https://gist.githubusercontent.com/Ashi1993/108436ac035b06e2e35604b66791f656/raw/4bd9d25fda6b2e9f634fb5ec882cca91c46fac9b/account-json-schema.json"
+
+    clientIdValidationPolicy: &clientIdValidationPolicy
+      name: "ClientId Validation Policy"
+      type: "filter-policy"
+      description: "Validate whether the client id is present in the request."
+
+    futureDateValidationPolicy: &futureDateValidationPolicy
+      name: "FutureDateValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the given dates are future dates."
+      parameters:
+        applicable_params:
+          - "Data.ExpirationDateTime"
+
+    callExternalService: &callExternalService
+      name: "callExternalService Policy"
+      type: "filter-policy"
+      description: "Invoke an external service."
+      parameters: 
+        # Only supports http
+        endpoint: "http://localhost:9766/api/fs/consent/manage/external"
+        service_type: "consent"
+        security: 
+          type: "basic-auth" # Change to "Oauth2" if needed 
+          username: "is_admin@wso2.com" 
+          password: "wso2123" 
+
+# Global Policies (Applied to all APIs)
+global-policies:
