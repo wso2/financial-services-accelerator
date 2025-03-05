@@ -88,11 +88,11 @@ class ConsentInitiationTest extends FSConnectorTest {
                 .baseUri(configuration.getISServerUrl())
                 .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
 
-        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("isValid").toString()
-                .contains(ConnectorTestConstants.IS_VALID_FALSE))
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("errorMessage").toString()
-                .contains(ConnectorTestConstants.PERMISSION_MISMATCH_ERROR))
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR),
+                "forbidden")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Consent does not have the required permissions to access the requested resource")
     }
 
     @Test
@@ -125,11 +125,11 @@ class ConsentInitiationTest extends FSConnectorTest {
                 .baseUri(configuration.getISServerUrl())
                 .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
 
-        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("isValid").toString()
-                .contains(ConnectorTestConstants.IS_VALID_FALSE))
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("errorMessage").toString()
-                .contains(ConnectorTestConstants.PERMISSION_MISMATCH_ERROR))
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR),
+                "forbidden")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Consent does not have the required permissions to access the requested resource")
     }
 
     @Test
@@ -162,11 +162,11 @@ class ConsentInitiationTest extends FSConnectorTest {
                 .baseUri(configuration.getISServerUrl())
                 .post(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH)
 
-        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("isValid").toString()
-                .contains(ConnectorTestConstants.IS_VALID_FALSE))
-        Assert.assertTrue(consentValidateResponse.jsonPath().get("errorMessage").toString()
-                .contains(ConnectorTestConstants.PERMISSION_MISMATCH_ERROR))
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR),
+                "forbidden")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Consent does not have the required permissions to access the requested resource")
     }
 
     @Test
@@ -179,7 +179,9 @@ class ConsentInitiationTest extends FSConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+                "invalid_header")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Client ID missing in the request.")
     }
 
@@ -193,7 +195,9 @@ class ConsentInitiationTest extends FSConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
-                "Payload is not in the correct format")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+                "schema_validation_failure")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "A JSONObject text must begin with '{' at 0 [character 1 line 1]")
     }
 }

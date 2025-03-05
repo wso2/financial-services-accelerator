@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.test.consent.management.ConsentValidateTest
+package org.wso2.financial.services.accelerator.test.consent.management.ConsentOperationsFlowTests
 
 import io.restassured.response.Response
 import org.testng.Assert

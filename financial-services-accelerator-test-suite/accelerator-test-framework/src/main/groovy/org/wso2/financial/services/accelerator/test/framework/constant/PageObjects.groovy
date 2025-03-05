@@ -51,6 +51,6 @@ class PageObjects {
     public static final String LBL_INCORRECT_USERNAME = "//div[@id='error-msg']"
     public static final String AUTH_CONTINUE_XPATH = "//input[@value=\"Continue\"]"
     public static final String ACCOUNTS_PAGE_TXT = "//h5[contains(@class,'ui body')]"
-    static final String PAYMENTS_SELECT_XPATH = """//option[@value="12345"]"""
+    static final String PAYMENTS_SELECT_XPATH = """//option[@value="30080012343456"]"""
     public static final String LBL_REDIRECT_ERROR = "//h3/following-sibling::p"
 }

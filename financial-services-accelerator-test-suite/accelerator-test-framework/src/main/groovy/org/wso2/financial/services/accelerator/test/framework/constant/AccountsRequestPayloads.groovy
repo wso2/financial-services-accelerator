@@ -207,7 +207,8 @@ class AccountsRequestPayloads {
      * @param requestUri - Request url
      * @return
      */
-    static String buildValidationAccountsPayload(String accessToken, String userId, String consentId) {
+    static String buildValidationAccountsPayload(String accessToken, String userId, String consentId,
+                                                 String clientId = acceleratorConfiguration.getAppInfoClientID()) {
         return """
 			{
       			"headers": {
@@ -229,8 +230,8 @@ class AccountsRequestPayloads {
 					"httpMethod": "GET"
  			 	 },
  			    "userId": "${userId}",
-     		 	"electedResource": "/accounts/1234",
-				"clientId": "${acceleratorConfiguration.getAppInfoClientID()}"
+     		 	"electedResource": "/accounts",
+				"clientId": "${clientId}"
  			}
     			"""
     }
@@ -261,12 +262,12 @@ class AccountsRequestPayloads {
 				},
 				"consentId": "${consentId}",
 				"resourceParams": {
-					"resource": "/aisp/accounts",
+					"resource": "/aisp/accounts/30080012343456/transactions",
 					"context": "/open-banking/v3.1/aisp",
 					"httpMethod": "GET"
 				},
 				"userId": "${userId}",
-				"electedResource": "/accounts/1234/transactions",
+				"electedResource": "/accounts/{AccountId}/transactions",
 				"clientId": "${acceleratorConfiguration.getAppInfoClientID()}"
 			}
 """.stripIndent()
@@ -299,16 +300,90 @@ class AccountsRequestPayloads {
 	  				},
 	  				"consentId": "${consentId}",
 					"resourceParams": {
-	    			"resource": "/aisp/accounts",
+	    			"resource": "/aisp/accounts/30080012343456/balances",
 	    			"context": "/open-banking/v3.1/aisp",
 	    			"httpMethod": "GET"
 	  				},
 	  				"userId": "${userId}",
-	  				"electedResource": "/accounts/1234/balances",
+	  				"electedResource": "/accounts/{accountId}/balances",
 					"clientId": "${acceleratorConfiguration.getAppInfoClientID()}"
 		}
 		""".stripIndent()
         return initiationPayload
+    }
+
+    /**
+     * Build Validation Payload for accounts
+     * @param clientId - Client Id
+     * @param userId - User Id
+     * @param consentId - Consent Id
+     * @param requestUri - Request url
+     * @return
+     */
+    static String buildValidationAccountPayloadWithValidAccountId(String accessToken, String userId, String consentId,
+                                                                    String clientId = acceleratorConfiguration.getAppInfoClientID()) {
+        return """
+			{
+      			"headers": {
+ 			  		"Authorization": "${accessToken}",
+ 			 	 	"consent-id": "${consentId}",
+ 			  		"activityid": "8666aa84-fc5a-425e-91c9-37fa30a95784",
+ 			  		"Cache-Control": "no-cache",
+ 			  		"Connection": "keep-alive",
+ 		      		"User-Agent": "PostmanRuntime/7.28.4",
+ 			  		"Host": "localhost:8243",
+ 			  		"Postman-Token": "244d15b6-eb18-4045-ba87-8ee6c830b84c",
+ 			  		"Accept-Encoding": "gzip, deflate, br",
+ 			  		"accept": "application/json; charset=utf-8"
+ 			  	},
+        		"consentId": "${consentId}",
+        		"resourceParams": {
+					"resource": "/aisp/accounts/30080012343456",
+					"context": "/open-banking/v3.1/aisp",
+					"httpMethod": "GET"
+ 			 	 },
+ 			    "userId": "${userId}",
+     		 	"electedResource": "/accounts/{AccountId}",
+				"clientId": "${clientId}"
+ 			}
+    			"""
+    }
+
+    /**
+     * Build Validation Payload for accounts
+     * @param clientId - Client Id
+     * @param userId - User Id
+     * @param consentId - Consent Id
+     * @param requestUri - Request url
+     * @return
+     */
+    static String buildValidationAccountPayloadWithInvalidAccountId(String accessToken, String userId, String consentId,
+                                                 String clientId = acceleratorConfiguration.getAppInfoClientID()) {
+        return """
+			{
+      			"headers": {
+ 			  		"Authorization": "${accessToken}",
+ 			 	 	"consent-id": "${consentId}",
+ 			  		"activityid": "8666aa84-fc5a-425e-91c9-37fa30a95784",
+ 			  		"Cache-Control": "no-cache",
+ 			  		"Connection": "keep-alive",
+ 		      		"User-Agent": "PostmanRuntime/7.28.4",
+ 			  		"Host": "localhost:8243",
+ 			  		"Postman-Token": "244d15b6-eb18-4045-ba87-8ee6c830b84c",
+ 			  		"Accept-Encoding": "gzip, deflate, br",
+ 			  		"accept": "application/json; charset=utf-8"
+ 			  	},
+        		"consentId": "${consentId}",
+        		"resourceParams": {
+					"resource": "/aisp/accounts/1234",
+					"context": "/open-banking/v3.1/aisp",
+					"httpMethod": "GET"
+ 			 	 },
+ 			    "userId": "${userId}",
+     		 	"electedResource": "/accounts/{AccountId}",
+				"clientId": "${clientId}"
+ 			}
+    			"""
     }
 
     /**

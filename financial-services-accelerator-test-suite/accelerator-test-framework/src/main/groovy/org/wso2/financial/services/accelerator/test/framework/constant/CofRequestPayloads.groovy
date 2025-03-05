@@ -44,7 +44,7 @@ class CofRequestPayloads {
               "Data": {
                 "ExpirationDateTime": "${expirationInstant}",
                 "DebtorAccount": {
-                  "SchemeName": "OB.IBAN",
+                  "SchemeName": "UK.OBIE.IBAN",
                   "Identification": "${accountID}",
                   "Name": "Account1",
                   "SecondaryIdentification": "Account1"
@@ -75,7 +75,8 @@ class CofRequestPayloads {
      * @param requestUri - Request url
      * @return
      */
-    static String buildCofValidationPayload(String accessToken, String userId, String consentId, String requestUri) {
+    static String buildCofValidationPayload(String accessToken, String userId, String consentId,
+                                            String clientId = acceleratorConfiguration.getAppInfoClientID()) {
 
         String initiationPayload = """{
 	  			"headers": {
@@ -93,13 +94,13 @@ class CofRequestPayloads {
 	  				},
 	  				"consentId": "${consentId}",
 					"resourceParams": {
-						"resource": "/aisp/accounts",
-						"context": "/open-banking/v3.1/aisp",
+						"resource": "/cbpii/funds-confirmation",
+						"context": "/open-banking/v3.1/cbpii",
 						"httpMethod": "GET"
 	  				},
 	  				"userId": "${userId}",
-	  				"electedResource": "${requestUri}",
-					"clientId": "${acceleratorConfiguration.getAppInfoClientID()}",
+	  				"electedResource": "/funds-confirmation",
+					"clientId": "${clientId}",
 					"body": ${getCofSubmissionPayload(consentId)}
 			}
 """.stripIndent()

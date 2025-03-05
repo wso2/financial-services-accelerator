@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.test.consent.management.EndToEndTest
 
 import org.wso2.financial.services.accelerator.test.framework.constant.CofRequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response
 import org.testng.Assert
@@ -83,7 +84,8 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
     void "Generate authorization code when valid request object is present in the authorization request"() {
 
         //Authorise Consent
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+        List<ConnectorTestConstants.ApiScope> scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(map.get("consentType"))
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         Assert.assertNotNull(code)
         Assert.assertNotNull(OBTestUtil.getIdTokenFromUrl(automation.currentUrl.get()))
@@ -124,22 +126,25 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
         def selectedAccount = "1234"
         def requestUri
         def validationPayload
+        def validateURL
         if (ConnectorTestConstants.ACCOUNTS_TYPE == map.get("consentType")) {
             validationPayload = AccountsRequestPayloads.buildValidationAccountsPayload(accessToken, userId, consentId)
+            validateURL = ConnectorTestConstants.ACCOUNT_VALIDATE_PATH
         } else if (ConnectorTestConstants.COF_TYPE == map.get("consentType")) {
-            requestUri = map.get("submissionPath")
-            validationPayload = CofRequestPayloads.buildCofValidationPayload(accessToken, userId, consentId, requestUri)
+            validationPayload = CofRequestPayloads.buildCofValidationPayload(accessToken, userId, consentId)
+            validateURL = ConnectorTestConstants.COF_VALIDATE_PATH
         } else {
             requestUri = map.get("submissionPath")
-            validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId, requestUri)
+            validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId, consentId)
+            validateURL = ConnectorTestConstants.PAYMENT_VALIDATE_PATH
         }
 
-        doAccountValidation(validationPayload)
+        doConsentValidate(validateURL, validationPayload)
 
-        Assert.assertEquals(accountValidationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertEquals(Boolean.parseBoolean(OBTestUtil.parseResponseBody(accountValidationResponse, ConnectorTestConstants.IS_VALID)),
+        Assert.assertEquals(consentValidateResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(Boolean.parseBoolean(OBTestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.IS_VALID)),
                 true)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(accountValidationResponse, "consentInformation"))
+        Assert.assertNotNull(OBTestUtil.parseResponseBody(consentValidateResponse, "consentInformation"))
     }
 
     @Test (dependsOnMethods = "Validate Retrieval on valid account for requestUri")

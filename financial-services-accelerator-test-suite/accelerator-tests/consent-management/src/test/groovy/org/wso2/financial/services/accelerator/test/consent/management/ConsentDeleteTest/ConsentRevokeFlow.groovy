@@ -103,8 +103,8 @@ class ConsentRevokeFlow extends FSConnectorTest {
                 .baseUri(configuration.getISServerUrl())
                 .delete(consentPath + "/${consentId}")
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
+        Assert.assertEquals(consentRevocationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        def errorMessage = TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
         Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
     }
 

@@ -142,8 +142,8 @@ class ConnectorTestConstants {
     static final String INVALID_AUTH_URL_SCOPE_ERROR = "Request with 'client_id' = '@@CLIENT_ID' " +
             "has 'response_type' for 'hybrid flow'; but 'openid' scope not found."
     static final String INVALID_REQUEST_OBJECT_ERROR = "invalid_request_object"
-    static final String INVALID_SIG_ALGO_ERROR = "Request Object signature verification failed. Invalid signature" +
-            " algorithm."
+    static final String INVALID_SIG_ALGO_ERROR = "Request Object signature verification failed due to an invalid " +
+            "signature algorithm."
     static final String INVALID_CERT_ERROR = "Error occurred while validating request object signature using" +
             " jwks endpoint"
     static final String INVALID_PARAM_ERROR = "Invalid parameters found in the Request Object."
@@ -195,14 +195,16 @@ class ConnectorTestConstants {
     static final String CONSENT_PATH = CONSENT_API + "/account-access-consents"
     static final String ACCOUNT_CONSENT_PATH = CONSENT_API + "/account-access-consents"
     static final String ACCOUNT_SUBMISSION_PATH = "/accounts/"
-    static final String PAYMENT_CONSENT_PATH = CONSENT_API + "/payment-consents"
+    static final String PAYMENT_CONSENT_PATH = CONSENT_API + "/domestic-payment-consents"
     static final String PAYMENT_SUBMISSION_PATH = "/payments"
     static final String COF_CONSENT_PATH = CONSENT_API + "/funds-confirmation-consents"
     static final String COF_SUBMISSION_PATH = "/funds-confirmations"
     static final String INCORRECT_CONSENT_PATH = AISP_PATH + "account-access-consent"
     static final String INCORRECT_ACCOUNT_VALIDATE_PATH = AISP_PATH + "account"
     static final String FILE_UPLOAD_POST = CONSENT_API + "/fileUpload"
-    static final String ACCOUNT_VALIDATE_PATH = "/api/fs/consent/validate/validate"
+    static final String ACCOUNT_VALIDATE_PATH = "/api/fs/consent/validate/accounts"
+    static final String PAYMENT_VALIDATE_PATH = "/api/fs/consent/validate/payments"
+    static final String COF_VALIDATE_PATH = "/api/fs/consent/validate/fundsconfirmation"
     static final String ACCOUNTS_CONFIRMATION_PATH = CONSENT_API + "/account-confirmation"
     static final String ACCOUNTS_PATH = AISP_PATH + "accounts"
     static final String ACCOUNT_CONSENT_DELETE_PATH = "/api/fs/consent/admin/revoke"
