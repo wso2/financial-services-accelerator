@@ -18,7 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage;
 
-/*import org.json.JSONObject;
+import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -48,14 +48,14 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;*/
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * Default consent manage handler test.
  */
 public class DefaultConsentManageHandlerTest {
 
-    /*DefaultConsentManageHandler defaultConsentManageHandler = new DefaultConsentManageHandler();
+    DefaultConsentManageHandler defaultConsentManageHandler = new DefaultConsentManageHandler();
     @Mock
     ConsentManageData consentManageDataMock;
     @Mock
@@ -385,5 +385,5 @@ public class DefaultConsentManageHandlerTest {
     private static void setConsentManageBuilderForErrorScenario() {
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
-    }*/
+    }
 }
