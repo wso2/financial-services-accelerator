@@ -224,11 +224,13 @@ apis:
             policies:
       
 components:
+  components:
   policy-definitions:
     schemaValidationPolicy: &schemaValidationPolicy
       name: "Schema Validation Policy"
       type: "filter-policy"
       description: "Validate payload against JSON schema."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.ConsentSchemaValidationFilterPolicy"
       parameters:
         json_schema_url: "https://gist.githubusercontent.com/Ashi1993/108436ac035b06e2e35604b66791f656/raw/4bd9d25fda6b2e9f634fb5ec882cca91c46fac9b/account-json-schema.json"
 
@@ -236,27 +238,30 @@ components:
       name: "ClientId Validation Policy"
       type: "filter-policy"
       description: "Validate whether the client id is present in the request."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.ClientIdValidationFilterPolicy"
 
     futureDateValidationPolicy: &futureDateValidationPolicy
       name: "FutureDateValidationPolicy Policy"
       type: "filter-policy"
       description: "Validate whether the given dates are future dates."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.FutureDateValidationFilterPolicy"
       parameters:
         applicable_params:
           - "Data.ExpirationDateTime"
 
-    callExternalService: &callExternalService
-      name: "callExternalService Policy"
+    callExternalAPI: &callExternalAPI
+      name: "CallExternalAPI Policy"
       type: "filter-policy"
       description: "Invoke an external service."
-      parameters: 
+      class: "org.wso2.financial.services.accelerator.common.policy.filter.common.ExternalValidationFilterPolicy"
+      parameters:
         # Only supports http
         endpoint: "http://localhost:9766/api/fs/consent/manage/external"
         service_type: "consent"
-        security: 
-          type: "basic-auth" # Change to "Oauth2" if needed 
-          username: "is_admin@wso2.com" 
-          password: "wso2123" 
+        security:
+          type: "basic-auth" # Change to "basic-auth" if needed
+          username: ""
+          password: ""
 
 # Global Policies (Applied to all APIs)
 global-policies:
