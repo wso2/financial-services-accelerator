@@ -12,13 +12,13 @@ components:
     clientIdValidationPolicy: &clientIdValidationPolicy
       name: "ClientId Validation Policy"
       type: "filter-policy"
-      description: "Validate client id."
+      description: "Validate whether the client id is present in the request."
       class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.ClientIdValidationFilterPolicy"
 
     futureDateValidationPolicy: &futureDateValidationPolicy
       name: "FutureDateValidationPolicy Policy"
       type: "filter-policy"
-      description: "Validate payload against JSON schema."
+      description: "Validate whether the given dates are future dates."
       class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.common.filter.policy.FutureDateValidationFilterPolicy"
       parameters:
         applicable_params:
@@ -30,18 +30,83 @@ components:
       description: "Invoke an external service."
       class: "org.wso2.financial.services.accelerator.common.policy.filter.common.ExternalValidationFilterPolicy"
       parameters:
+        # Only supports http
         endpoint: "http://localhost:9766/api/fs/consent/manage/external"
         service_type: "consent"
         security:
-          type: "basic-auth"
-          username: ""
-          password: ""
-          # Change to "oauth2" if needed
-          #type: "oauth2" # Change to "basic-auth" if needed
-          #clientId: "your-client-id"
-          #clientSecret: "your-client-secret"
-          #tokenEndpoint: "https://auth.example.com/token"
-          #grantType: "client_credentials"
+          type: "basic-auth" # Change to "basic-auth" if needed
+          username: "is_admin@wso2.com"
+          password: "wso2123"
+
+    jwtSignatureValidationPolicy: &jwtSignatureValidationPolicy
+      name: "jwtSignatureValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate JWT signature."
+      class: "org.wso2.financial.services.accelerator.common.policy.filter.common.JWTSignatureValidationFilterPolicy"
+      parameters:
+        # Signature validation is done using the public key of the cert with given alias
+        type: "public-key"
+        key-alias: "wso2carbon"
+        # If the signature validation should be done using JWKS Url then uncomment below
+        #type: "jwks-uri"
+        #jwks_url: ""
+
+    consentExpiryValidationPolicy: &consentExpiryValidationPolicy
+      name: "consentExpiryValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the consent is expired."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.ConsentExpiryValidationFilterPolicy"
+      parameters:
+        expiry_date_param: "Data.ExpirationDateTime"
+
+    consentStatusValidationPolicy: &consentStatusValidationPolicy
+      name: "consentStatusValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the consent is in the applicable status."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.ConsentStatusValidationFilterPolicy"
+      parameters:
+        applicable_status: "Authorised"
+
+    clientIdMatchingValidationPolicy: &clientIdMatchingValidationPolicy
+      name: "clientIdMatchingValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the client id of the submission request is matching with the client id associated with the consent"
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.ClientIdMatchingValidationFilterPolicy"
+
+    userIdMatchingValidationPolicy: &userIdMatchingValidationPolicy
+      name: "userIdMatchingValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the user id of the submission request is matching with the user id associated with the consent"
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.UserIdMatchingValidationFilterPolicy"
+
+    accountIdMatchingValidationPolicy: &accountIdMatchingValidationPolicy
+      name: "AccountIdMatchingValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the requested account id is bound to the the consent"
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.AccountIdMatchingValidationFilterPolicy"
+
+    accountResourcePermissionMappingValidationPolicy: &accountResourcePermissionMappingValidationPolicy
+      name: "accountResourcePermissionMappingValidationPolicy Policy"
+      type: "filter-policy"
+      description: "Validate whether the consent has the required permission to access the requested resource"
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.AccountPermissionMappingValidationFilterPolicy"
+      parameters:
+        path_to_permissions: "Data.Permissions"
+        resource_permission_mappings:
+          # Add resource paths (only support regex) and the mapped permission values seprated from pipeline
+          - "/accounts|/accounts/[^/?]*": "ReadAccountsBasic|ReadAccountsDetail"
+          - "/balances|/accounts/[^/?]*/balances": "ReadBalances"
+          - "/transactions|/accounts/[^/?]*/transactions|/accounts/[^/?]*/statements/[^/?]*/transactions": "ReadTransactionsBasic|ReadTransactionsCredit|ReadTransactionsDebits|ReadTransactionsDetail"
+          - "/beneficiaries|/accounts/[^/?]*/beneficiaries": "ReadBeneficiariesBasic|ReadBeneficiariesDetail"
+          - "/direct-debits|/accounts/[^/?]*/direct-debits": "ReadDirectDebits"
+          - "/offers|/accounts/[^/?]*/offers": "ReadOffers"
+          - "/party": "ReadPartyPSU"
+          - "/accounts/[^/?]*/parties|/accounts/[^/?]*/party": "ReadParty"
+          - "/products|/accounts/[^/?]*/product": "ReadProducts"
+          - "/scheduled-payments|/accounts/[^/?]*/scheduled-payments": "ReadScheduledPaymentsBasic|ReadScheduledPaymentsDetail"
+          - "/standing-orders|/accounts/[^/?]*/standing-orders": "ReadStandingOrdersBasic|ReadStandingOrdersDetail"
+          - "/statements|/accounts/[^/?]*/statements|/accounts/[^/?]*/statements/[^/?]*": "ReadStatementsBasic|ReadStatementsDetail"
+          - "/accounts/[^/?]*/statements/[^/?]*/file": "ReadStatementsDetail"
 
 apis:
   - name: "TokenAPI"
@@ -91,8 +156,6 @@ apis:
         get:
           request-flow:
             policies:
-              - *clientIdValidationPolicy
-              - *callExternalAPI
           execution-flow:
             policies:
           response-flow:
@@ -100,8 +163,22 @@ apis:
         delete:
           request-flow:
             policies:
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/validate/accounts:
+        post:
+          request-flow:
+            policies:
+              - *jwtSignatureValidationPolicy
               - *clientIdValidationPolicy
-              - *callExternalAPI
+              - *consentExpiryValidationPolicy
+              - *consentStatusValidationPolicy
+              - *clientIdMatchingValidationPolicy
+              - *userIdMatchingValidationPolicy
+              - *accountIdMatchingValidationPolicy
+              - *accountResourcePermissionMappingValidationPolicy
           execution-flow:
             policies:
           response-flow:
@@ -238,6 +315,20 @@ apis:
             policies:
           response-flow:
             policies:
+      /api/fs/consent/validate/payments:
+        post:
+          request-flow:
+            policies:
+              - *jwtSignatureValidationPolicy
+              - *clientIdValidationPolicy
+              - *consentExpiryValidationPolicy
+              - *consentStatusValidationPolicy
+              - *clientIdMatchingValidationPolicy
+              - *userIdMatchingValidationPolicy
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
 
   - name: "ConfirmationOfFundsAPI"
     version: "1.0"
@@ -275,6 +366,20 @@ apis:
             policies:
               - *clientIdValidationPolicy
               - *callExternalAPI
+          execution-flow:
+            policies:
+          response-flow:
+            policies:
+      /api/fs/consent/validate/fundsconfirmation:
+        post:
+          request-flow:
+            policies:
+              - *jwtSignatureValidationPolicy
+              - *clientIdValidationPolicy
+              - *consentExpiryValidationPolicy
+              - *consentStatusValidationPolicy
+              - *clientIdMatchingValidationPolicy
+              - *userIdMatchingValidationPolicy
           execution-flow:
             policies:
           response-flow:
