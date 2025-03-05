@@ -82,7 +82,7 @@ public class ConsentException extends RuntimeException {
                                                String state) {
 
         JSONObject error = new JSONObject();
-        error.put(FinancialServicesConstants.OAUTH_ERROR, errorCode);
+        error.put(FinancialServicesConstants.OAUTH_ERROR, "consent_management_error");
         error.put(FinancialServicesConstants.OAUTH_ERROR_DESCRIPTION, errorDescription);
         if (state != null) {
             error.put(ConsentExtensionConstants.STATE, state);

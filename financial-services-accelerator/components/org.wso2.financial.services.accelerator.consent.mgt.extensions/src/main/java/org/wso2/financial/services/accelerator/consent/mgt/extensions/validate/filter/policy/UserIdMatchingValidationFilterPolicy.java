@@ -18,15 +18,19 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.policy.FSPolicyExecutionException;
 import org.wso2.financial.services.accelerator.common.policy.filter.FSFilterPolicy;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
@@ -36,9 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Consent status validation filter policy.
  */
-public class ClientIdValidationFilterPolicy extends FSFilterPolicy {
+public class UserIdMatchingValidationFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(ClientIdValidationFilterPolicy.class);
+    private static final Log log = LogFactory.getLog(UserIdMatchingValidationFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap)
@@ -53,14 +57,23 @@ public class ClientIdValidationFilterPolicy extends FSFilterPolicy {
                         "consent_not_found", "Consent not found");
             }
 
-            String clientIdFromToken = validatePayload.getString("clientId");
-            String clientIdFromConsent = consent.getClientID();
+            //User Validation
+            String userIdFromToken = FinancialServicesUtils
+                    .resolveUsernameFromUserId(validatePayload.getString("userId"));
+            boolean userIdMatching = false;
+            ArrayList<AuthorizationResource> authResources = consent.getAuthorizationResources();
+            for (AuthorizationResource resource : authResources) {
+                if (StringUtils.isNotEmpty(userIdFromToken) && userIdFromToken.equals(resource.getUserID())) {
+                    userIdMatching = true;
+                    break;
+                }
+            }
 
-            if (clientIdFromToken == null || !clientIdFromToken.equals(clientIdFromConsent)) {
-                log.error("Client id bound to the token does not have access to the given consent");
-                throw new FSPolicyExecutionException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            if (!userIdMatching) {
+                log.error("User bound to the token does not have access to the given consent");
+                throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST,
                         "consent_validation_failure",
-                        "Client id bound to the token does not have access to the given consent");
+                        "User bound to the token does not have access to the given consent");
             }
         } catch (ConsentManagementException e) {
             log.error(e.getMessage().replaceAll("[\n\r]", ""));

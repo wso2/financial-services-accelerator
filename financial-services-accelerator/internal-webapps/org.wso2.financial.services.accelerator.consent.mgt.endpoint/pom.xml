@@ -123,6 +123,10 @@
             <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+        <groupId>org.wso2.orbit.io.vertx</groupId>
+        <artifactId>vertx-json-schema</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

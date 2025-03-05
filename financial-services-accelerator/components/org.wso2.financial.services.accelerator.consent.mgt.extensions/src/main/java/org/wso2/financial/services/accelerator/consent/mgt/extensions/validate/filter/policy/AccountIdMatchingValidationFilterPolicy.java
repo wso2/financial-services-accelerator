@@ -36,9 +36,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * AccountId validation filter policy.
  */
-public class AccountIdValidationFilterPolicy extends FSFilterPolicy {
+public class AccountIdMatchingValidationFilterPolicy extends FSFilterPolicy {
 
-    private static final Log log = LogFactory.getLog(AccountIdValidationFilterPolicy.class);
+    private static final Log log = LogFactory.getLog(AccountIdMatchingValidationFilterPolicy.class);
 
     @Override
     public void processRequest(ServletRequest servletRequest, Map<String, Object> propertyMap)
@@ -55,13 +55,13 @@ public class AccountIdValidationFilterPolicy extends FSFilterPolicy {
             }
 
             JSONObject resourceParams = validatePayload.getJSONObject("resourceParams");
-            String resourcePath = resourceParams.getString("ResourcePath");
+            String resourcePath = resourceParams.getString("resource");
 
             boolean accountIdExists = consent.getConsentMappingResources().stream()
                     .anyMatch(resource -> resourcePath.contains(resource.getAccountID()));
 
             if (!accountIdExists) {
-                throw new FSPolicyExecutionException(HttpServletResponse.SC_FORBIDDEN,
+                throw new FSPolicyExecutionException(HttpServletResponse.SC_BAD_REQUEST,
                         "consent_validation_failure", "Requested Resource with the given ID is Unavailable.");
             }
         } catch (ConsentManagementException e) {

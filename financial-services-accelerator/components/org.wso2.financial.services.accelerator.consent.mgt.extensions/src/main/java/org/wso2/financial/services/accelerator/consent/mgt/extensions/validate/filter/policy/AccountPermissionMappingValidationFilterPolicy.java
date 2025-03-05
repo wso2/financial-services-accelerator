@@ -29,6 +29,7 @@ import org.wso2.financial.services.accelerator.common.policy.utils.FilterPolicyU
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.filter.policy.utils.ConsentValidateFilterPolicyUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,7 +55,7 @@ public class AccountPermissionMappingValidationFilterPolicy extends FSFilterPoli
             String electedResource = validatePayload.getString("electedResource");
             DetailedConsentResource consent = ConsentValidateFilterPolicyUtils.getConsentResource(servletRequest,
                     validatePayload);
-            Map<String, String> resourcePermissionMappings = (Map<String, String>)
+            ArrayList<Map<String, String>> resourcePermissionMappings = (ArrayList<Map<String, String>>)
                     propertyMap.get("resource_permission_mappings");
             String permissionPath = (String) propertyMap.get("path_to_permissions");
             JSONObject consentReceipt = new JSONObject(consent.getReceipt());
@@ -62,17 +63,19 @@ public class AccountPermissionMappingValidationFilterPolicy extends FSFilterPoli
             if (FilterPolicyUtils.pathExists(consentReceipt, permissionPath)) {
                 JSONArray permissions = (JSONArray) FilterPolicyUtils.retrieveValueFromJSONObject(consentReceipt,
                         permissionPath);
-                resourcePermissionMappings.forEach((resource, allowedPermissions) -> {
-                    String[] resourcePaths = resource.split("/|");
-                    String[] allowedPermissionsList = allowedPermissions.split("/|");
-                    if (Arrays.stream(resourcePaths).anyMatch(electedResource::matches)) {
-                        for (String permission : allowedPermissionsList) {
-                            if (!permissions.toList().contains(permission)) {
-                                hasAllowedPermissions.set(false);
-                                break;
+                resourcePermissionMappings.forEach((resourceMapping) -> {
+                    resourceMapping.forEach((resources, allowedPermissions) -> {
+                        String[] resourcePaths = resources.split("\\|");
+                        String[] allowedPermissionsList = allowedPermissions.split("\\|");
+                        if (Arrays.stream(resourcePaths).anyMatch(electedResource::matches)) {
+                            for (String permission : allowedPermissionsList) {
+                                if (!permissions.toList().contains(permission)) {
+                                    hasAllowedPermissions.set(false);
+                                    break;
+                                }
                             }
                         }
-                    }
+                    });
                 });
             }
             if (!hasAllowedPermissions.get()) {

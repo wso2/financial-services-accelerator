@@ -11,9 +11,9 @@ public class ExternalServiceRequest {
 
     String eventId;
     Event event;
-    String allowedOperation;
+    AllowedOperation allowedOperation;
 
-    public ExternalServiceRequest(String eventId, Event event, String allowedOperation) {
+    public ExternalServiceRequest(String eventId, Event event, AllowedOperation allowedOperation) {
         this.eventId = eventId;
         this.event = event;
         this.allowedOperation = allowedOperation;
@@ -35,11 +35,11 @@ public class ExternalServiceRequest {
         this.event = event;
     }
 
-    public String getAllowedOperation() {
+    public AllowedOperation getAllowedOperation() {
         return allowedOperation;
     }
 
-    public void setAllowedOperation(String allowedOperation) {
+    public void setAllowedOperation(AllowedOperation allowedOperation) {
         this.allowedOperation = allowedOperation;
     }
 
@@ -100,6 +100,25 @@ public class ExternalServiceRequest {
 
         public void setAdditionalParams(List<String> additionalParams) {
             this.additionalParams = additionalParams;
+        }
+    }
+
+    /**
+     * AllowedOperation.
+     */
+    public static class AllowedOperation {
+        String op;
+
+        public AllowedOperation(String op) {
+            this.op = op;
+        }
+
+        public String getOp() {
+            return op;
+        }
+
+        public void setOp(String op) {
+            this.op = op;
         }
     }
 }
