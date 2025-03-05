@@ -35,8 +35,8 @@ components:
         service_type: "consent"
         security:
           type: "basic-auth" # Change to "basic-auth" if needed
-          username: "is_admin@wso2.com"
-          password: "wso2123"
+          username: ""
+          password: ""
 
     jwtSignatureValidationPolicy: &jwtSignatureValidationPolicy
       name: "jwtSignatureValidationPolicy Policy"
