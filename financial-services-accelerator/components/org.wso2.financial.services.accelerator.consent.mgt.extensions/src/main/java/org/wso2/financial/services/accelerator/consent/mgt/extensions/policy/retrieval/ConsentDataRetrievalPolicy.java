@@ -26,9 +26,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.util.ConsentStepPolicyConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.Map;
+
 /**
  * Financial Services Consent Retrieval Step Policy for Consent Data Retrieval.
  */
@@ -50,11 +52,10 @@ public class ConsentDataRetrievalPolicy extends ConsentRetrievalStepPolicy {
         try {
             // Add data from database to the property map to be used by the policy chain.
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
-            // ToDo: Get primary user's authorization resource.
             AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
 
-            retrievalContext.put("consentResource", consentResource);
-            retrievalContext.put("authorizationResource", authorizationResource);
+            retrievalContext.put(ConsentStepPolicyConstants.CONSENT_RESOURCE, consentResource);
+            retrievalContext.put(ConsentStepPolicyConstants.AUTH_RESOURCE, authorizationResource);
 
             // Set the consent data to be used in consent persistence.
             consentData.setConsentId(consentId);

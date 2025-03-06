@@ -25,22 +25,22 @@ components:
           - "Data.ExpirationDateTime"
 
     consentDataRetrievalPolicy: &consentDataRetrievalPolicy
-      name: "Consent JSON Build Policy"
+      name: "Consent DataRetrieval Policy"
       type: "consent-retrieval-policy"
-      description: "Builds a json with consent data to be displayed in consent approval page."
+      description: "Gets consent data from database to be used in other policies."
       class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.ConsentDataRetrievalPolicy"
 
     consentStatusValidationPolicy: &consentStatusValidationPolicy
-      name: "Consent JSON Build Policy"
+      name: "Consent Status Validation Policy"
       type: "consent-retrieval-policy"
-      description: "Builds a json with consent data to be displayed in consent approval page."
+      description: "Validates the consent status and other relevant consent parameters (eg: expiry, user status)."
       class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.ConsentStatusValidationPolicy"
 
-    accountRetrievalPolicy: &accountRetrievalPolicy
-      name: "Consent JSON Build Policy"
+    backendDataRetrievalPolicy: &backendDataRetrievalPolicy
+      name: "Backend Data Retrieval Policy"
       type: "consent-retrieval-policy"
-      description: "Builds a json with consent data to be displayed in consent approval page."
-      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.AccountRetrievalPolicy"
+      description: "Gets sharable user data from the given backend endpoint (eg: bank accounts list)."
+      class: "org.wso2.financial.services.accelerator.consent.mgt.extensions.policy.retrieval.BackendDataRetrievalPolicy"
       parameters:
         sharable-accounts-endpoint: ""
 
@@ -93,9 +93,11 @@ apis:
             policies:
               - *consentDataRetrievalPolicy
               - *consentStatusValidationPolicy
-              - *accountRetrievalPolicy
+              - *backendDataRetrievalPolicy
               - <<: *consentJsonBuildPolicy
                 parameters:
+                  # For each consent type, define consent data to be displayed in the consent approval page,
+                  # and the json path to the values in the consent receipt.
                   consent-data:
                     accounts:
                       - path: "Data.Permissions"
