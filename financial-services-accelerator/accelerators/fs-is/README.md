@@ -1,4 +1,4 @@
-### **WSO2 Financial Services IS Accelerator 4.0.0**
+### **WSO2 Financial Services IS Accelerator 5.0.0**
 
 **Try Locally:**
 

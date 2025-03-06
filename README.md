@@ -51,8 +51,8 @@ Please refer the following README files to run the products:
 
 | Product                           | Instructions Path                          |
 |:----------------------------------|:-------------------------------------------|
-| ```Identity Server Accelerator``` | `/wso2-fs-iam-accelerator-4.0.0/README.md` |
-| ```API Manager Accelerator```     | `/wso2-fs-am-accelerator-4.0.0/README.md`  |
+| ```Identity Server Accelerator``` | `/wso2-fs-iam-accelerator-5.0.0/README.md` |
+| ```API Manager Accelerator```     | `/wso2-fs-am-accelerator-5.0.0/README.md`  |
 
 ### Reporting Issues
 
