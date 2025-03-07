@@ -124,6 +124,11 @@ public class FinancialServicesConstants {
     public static final String REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR =
             "EventNotifications.Realtime.RequestGenerator";
 
+    // Service Extensions Constants
+    public static final String SERVICE_EXTENSIONS_ENABLED = "ServiceExtensionsAPI.Enable";
+    public static final String SERVICE_EXTENSIONS_BASE_URL = "ServiceExtensionsAPI.BaseURL";
+    public static final String ENABLED_SERVICE_EXTENSION_TYPE = "ServiceExtensionsAPI.EnabledExtensionTypes.Type";
+
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
     public static final String NEW_LINE = "[\r\n]";

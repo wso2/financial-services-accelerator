@@ -387,4 +387,19 @@
             {% endif %}
         </Realtime>
     </EventNotifications>
+    <ServiceExtensionsAPI>
+        {% if financial_services.service.extensions.api.enabled is defined %}
+        <Enable>{{financial_services.service.extensions.api.enabled}}</Enable>
+        {% else %}
+        <Enable>false</Enable>
+        {% endif %}
+        {% if financial_services.service.extensions.api.base_url is defined %}
+        <BaseURL>{{financial_services.service.extensions.api.base_url}}</BaseURL>
+        {% endif %}
+        <EnabledExtensionTypes>
+            {% for type in financial_services.service.extensions.api.enabled_extension_types %}
+            <Type>{{type}}</Type>
+            {% endfor %}
+        </EnabledExtensionTypes>
+    </ServiceExtensionsAPI>
 </Server>

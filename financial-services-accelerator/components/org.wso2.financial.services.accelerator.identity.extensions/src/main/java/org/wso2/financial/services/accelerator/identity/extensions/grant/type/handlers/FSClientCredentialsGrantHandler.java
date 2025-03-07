@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers;
 
-
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
