@@ -30,7 +30,6 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
-import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
 import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.AbstractApplicationUpdater;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -150,7 +149,6 @@ public class IdentityExtensionsDataHolder {
                 this.configurationMap.get(FinancialServicesConstants.RESPONSE_HANDLER).toString());
         this.setClaimProvider((ClaimProvider) IdentityCommonUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.CLAIM_PROVIDER).toString()));
-        FSClaimProvider.setClaimProvider(getClaimProvider());
     }
 
     public void setConfigurationMap(Map<String, Object> confMap) {

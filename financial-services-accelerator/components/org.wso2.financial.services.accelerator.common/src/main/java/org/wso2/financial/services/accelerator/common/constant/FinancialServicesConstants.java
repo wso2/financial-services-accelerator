@@ -133,4 +133,13 @@ public class FinancialServicesConstants {
     public static final String TENANT_DOMAIN = "carbon.super";
     public static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+
+    public static final String CONTENT_TYPE_TAG = "Content-Type";
+    public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    public static final String ACCEPT = "Accept";
+    public static final String COLON = ":";
+    public static final String AUTH_HEADER = "Authorization";
+    public static final String BEARER_TAG = "Bearer ";
+    public static final String BASIC_TAG = "Basic ";
 }

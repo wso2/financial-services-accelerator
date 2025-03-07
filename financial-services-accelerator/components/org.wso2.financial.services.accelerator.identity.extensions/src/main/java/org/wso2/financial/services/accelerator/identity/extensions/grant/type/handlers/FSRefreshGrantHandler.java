@@ -48,7 +48,7 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
         try {
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
-                executeInitialStep(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
+                appendParametersToTokenResponse(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 tokReqMsgCtx.setScope(IdentityCommonUtils.removeInternalScopes(tokReqMsgCtx.getScope()));
                 if (tokReqMsgCtx.getScope().length == 0) {
                     oAuth2AccessTokenRespDTO.setAuthorizedScopes("");
@@ -62,14 +62,18 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
     }
 
     /**
-     * Extend this method to perform any actions which requires internal scopes.
+     * Extend this method to perform any actions which requires internal scopes and to append response parameters.
      *
      * @param oAuth2AccessTokenRespDTO
      * @param tokReqMsgCtx
      */
-    public void executeInitialStep(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
-                                   OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
+    public void appendParametersToTokenResponse(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
+                                                OAuthTokenReqMessageContext tokReqMsgCtx)
+            throws IdentityOAuth2Exception {
 
+        /**
+         * TODO: call external service and set the required response parameters
+         */
     }
 
     @Override
