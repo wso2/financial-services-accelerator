@@ -136,12 +136,12 @@ pool_options.defaultAutoCommit=false
 pool_options.commitOnReturn=true
 
 [keystore.primary]
-file_name = "wso2carbon.jks"
+file_name = "wso2carbon.p12"
 password = "wso2carbon"
 type="JKS"
 
 [truststore]
-file_name="client-truststore.jks"
+file_name="client-truststore.p12"
 password="wso2carbon"
 type="JKS"
 
@@ -314,6 +314,11 @@ maxHttpHeaderSize = "65536"
 ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
 #================configs related to financial-services.xml=============
+[financial_services.service.extensions.api]
+enabled = false
+base_url = ""
+enabled_extension_types = []
+
 [[financial_services.jdbc_persistence_manager]]
 data_source.name = "WSO2FS_DB"
 connection_verification_timeout=1

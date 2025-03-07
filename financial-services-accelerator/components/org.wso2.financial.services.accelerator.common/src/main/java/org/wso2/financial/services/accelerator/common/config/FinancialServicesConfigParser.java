@@ -787,4 +787,47 @@ public final class FinancialServicesConfigParser {
                 "realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
     }
 
+    /**
+     * Method to determine service extensions feature is enabled or not from the configurations.
+     *
+     * @return boolean value indicating the state
+     */
+    public boolean isServiceExtensionsEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get service extensions base url.
+     *
+     * @return String service extensions base url
+     */
+    public String getServiceExtensionsBaseUrl() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_BASE_URL);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get enabled service extension types.
+     *
+     * @return List of enabled service extensions
+     */
+    public List<String> getEnabledServiceExtensionTypes() {
+
+        Object enabledServiceExtensionTypesObj = configuration.get(
+                FinancialServicesConstants.ENABLED_SERVICE_EXTENSION_TYPE);
+        List<String> enabledServiceExtensionTypes = new ArrayList<>();
+        if (enabledServiceExtensionTypesObj instanceof ArrayList) {
+            enabledServiceExtensionTypes.addAll((ArrayList) enabledServiceExtensionTypesObj);
+        } else if (enabledServiceExtensionTypesObj instanceof String) {
+            enabledServiceExtensionTypes.add((String) enabledServiceExtensionTypesObj);
+        }
+
+        return enabledServiceExtensionTypes;
+    }
+
 }

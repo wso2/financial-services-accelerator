@@ -27,6 +27,10 @@ public class ExternalServiceRequest {
     Event event;
     AllowedOperation allowedOperation;
 
+    public ExternalServiceRequest() {
+
+    }
+
     public ExternalServiceRequest(String eventId, Event event, AllowedOperation allowedOperation) {
         this.eventId = eventId;
         this.event = event;
