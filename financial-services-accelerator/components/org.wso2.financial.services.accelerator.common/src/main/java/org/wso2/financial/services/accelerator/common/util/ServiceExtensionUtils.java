@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
-import org.wso2.financial.services.accelerator.common.extension.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 
 import java.io.IOException;
 import java.io.InputStream;

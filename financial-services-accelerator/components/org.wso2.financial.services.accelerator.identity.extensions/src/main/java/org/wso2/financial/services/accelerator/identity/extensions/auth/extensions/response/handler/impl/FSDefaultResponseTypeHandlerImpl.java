@@ -49,6 +49,10 @@ public class FSDefaultResponseTypeHandlerImpl implements FSResponseTypeHandler {
      */
     public long updateRefreshTokenValidityPeriod(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
+        /**
+         * TODO: call external service and set the refresh token validity period
+         */
+
         return oAuthAuthzReqMessageContext.getRefreshTokenvalidityPeriod();
     }
 

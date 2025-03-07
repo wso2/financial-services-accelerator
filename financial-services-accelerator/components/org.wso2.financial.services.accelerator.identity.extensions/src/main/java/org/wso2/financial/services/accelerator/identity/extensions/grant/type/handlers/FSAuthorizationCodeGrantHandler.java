@@ -37,7 +37,7 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
         try {
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
-                executeInitialStep(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
+                appendParametersToTokenResponse(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 tokReqMsgCtx.setScope(IdentityCommonUtils.removeInternalScopes(tokReqMsgCtx.getScope()));
                 return oAuth2AccessTokenRespDTO;
             }
@@ -48,23 +48,32 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
     }
 
     /**
-     * Extend this method to perform any actions which requires internal scopes.
+     * Extend this method to perform any actions which requires internal scopes and to append response parameters.
      *
      * @param oAuth2AccessTokenRespDTO
      * @param tokReqMsgCtx
      */
-    public void executeInitialStep(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
-                                   OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
+    public void appendParametersToTokenResponse(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
+                                                OAuthTokenReqMessageContext tokReqMsgCtx)
+            throws IdentityOAuth2Exception {
 
+        /**
+         * TODO: call external service and set the required response parameters
+         */
     }
 
     /**
-     * Extend this method to perform any actions related when issuing refresh token.
+     * Extend this method to determine if a refresh token should be issued.
      *
      * @return
      */
     @Override
     public boolean issueRefreshToken() throws IdentityOAuth2Exception {
+
+        /**
+         * TODO: call external service and return true if success response with true parameter, else return
+         * super.issueRefreshToken()
+         */
 
         return super.issueRefreshToken();
     }

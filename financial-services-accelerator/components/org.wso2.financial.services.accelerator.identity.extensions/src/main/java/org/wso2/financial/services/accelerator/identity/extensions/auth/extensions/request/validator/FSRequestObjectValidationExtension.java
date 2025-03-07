@@ -72,8 +72,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
                     dataMap.put(IdentityCommonConstants.SCOPE, Arrays.asList(allowedScopes.split(" ")));
                 }
                 // perform FS customized validations
-                ValidationResponse validationResponse = fsDefaultRequestObjectValidator
-                        .validateFSConstraints(fsRequestObject, dataMap);
+                ValidationResponse validationResponse = validateRequestObject(fsRequestObject, dataMap);
 
                 if (!validationResponse.isValid()) {
                     log.error(String.format("Request object validation failed: %s",
@@ -89,6 +88,16 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
             log.error("Error while retrieving regulatory property from sp metadata", e);
             throw new RequestObjectException(RequestObjectException.ERROR_CODE_INVALID_REQUEST, e.getErrorMessage());
         }
+    }
+
+    private static ValidationResponse validateRequestObject(FSRequestObject fsRequestObject,
+                                                            Map<String, Object> dataMap) {
+        /**
+         * TODO: call external service and set the validation response
+         */
+
+        return fsDefaultRequestObjectValidator
+                .validateFSConstraints(fsRequestObject, dataMap);
     }
 
     /**

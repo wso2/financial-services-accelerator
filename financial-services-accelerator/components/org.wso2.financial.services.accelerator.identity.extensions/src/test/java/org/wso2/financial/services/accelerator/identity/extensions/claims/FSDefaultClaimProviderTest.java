@@ -50,8 +50,6 @@ public class FSDefaultClaimProviderTest {
     @Test
     public void testHandleCustomClaims() throws IdentityOAuth2Exception {
 
-        FSClaimProvider.setClaimProvider(new FSDefaultClaimProvider());
-
         try (MockedStatic<OAuthServerConfiguration> configuration = mockStatic(OAuthServerConfiguration.class)) {
 
             OAuthServerConfiguration oAuthServerConfigurationInstance = mock(OAuthServerConfiguration.class);

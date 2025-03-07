@@ -18,34 +18,27 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
-import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jose.util.X509CertUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
-import org.wso2.carbon.identity.oauth2.model.HttpRequestHeader;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.DefaultOIDCClaimsCallbackHandler;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
-import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
- * This call back handler adds ob specific additional claims to self contained JWT access token.
+ * This call back handler adds FS specific additional claims to self-contained JWT access token.
  */
 public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbackHandler {
 
@@ -68,7 +61,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
                 if (jwtClaimsSet != null) {
                     userClaimsInOIDCDialect.putAll(jwtClaimsSet.getClaims());
                 }
-                addCnfClaimToOIDCDialect(tokenReqMessageContext, userClaimsInOIDCDialect);
+
                 addConsentIDClaimToOIDCDialect(tokenReqMessageContext, userClaimsInOIDCDialect);
                 updateSubClaim(tokenReqMessageContext, userClaimsInOIDCDialect);
 
@@ -98,28 +91,6 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
             throws IdentityOAuth2Exception {
 
         return super.handleCustomClaims(jwtClaimsSetBuilder, tokenReqMessageContext);
-    }
-
-    private void addCnfClaimToOIDCDialect(OAuthTokenReqMessageContext tokenReqMessageContext,
-                                          Map<String, Object> userClaimsInOIDCDialect) {
-        Base64URL certThumbprint;
-        X509Certificate certificate;
-        String headerName = IdentityCommonUtils.getMTLSAuthHeader();
-
-        HttpRequestHeader[] requestHeaders = tokenReqMessageContext.getOauth2AccessTokenReqDTO()
-                .getHttpRequestHeaders();
-        Optional<HttpRequestHeader> certHeader =
-                Arrays.stream(requestHeaders).filter(h -> headerName.equals(h.getName())).findFirst();
-        if (certHeader.isPresent()) {
-            try {
-                certificate = IdentityCommonUtils.parseCertificate(certHeader.get().getValue()[0]);
-                certThumbprint = X509CertUtils.computeSHA256Thumbprint(certificate);
-                userClaimsInOIDCDialect.put(IdentityCommonConstants.CNF_CLAIM,
-                        Collections.singletonMap("x5t#S256", certThumbprint));
-            } catch (FinancialServicesException e) {
-                log.error("Error while extracting the certificate", e);
-            }
-        }
     }
 
     private void addConsentIDClaimToOIDCDialect(OAuthTokenReqMessageContext tokenReqMessageContext,

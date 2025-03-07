@@ -25,22 +25,30 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * FS specific claim provider.
+ * FS specific claim provider used to set ID token claims.
  */
 public class FSClaimProvider implements ClaimProvider {
-
-    private static ClaimProvider claimProvider;
 
     @Override
     public Map<String, Object> getAdditionalClaims(OAuthAuthzReqMessageContext authAuthzReqMessageContext,
                                                    OAuth2AuthorizeRespDTO authorizeRespDTO)
             throws IdentityOAuth2Exception {
 
-        return getClaimProvider().getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO);
+        return getAdditionalIDTokenClaimsForAuthorizeResponse();
 
+    }
+
+    private Map<String, Object> getAdditionalIDTokenClaimsForAuthorizeResponse() {
+
+        /**
+         * TODO: call external service and set the required additional claims map to set to id token
+         */
+
+        return new HashMap<>();
     }
 
     @Override
@@ -48,16 +56,15 @@ public class FSClaimProvider implements ClaimProvider {
                                                    OAuth2AccessTokenRespDTO tokenRespDTO)
             throws IdentityOAuth2Exception {
 
-        return getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
+        return getAdditionalIDTokenClaimsForTokenResponse();
     }
 
-    public static void setClaimProvider(ClaimProvider claimProvider) {
+    private Map<String, Object> getAdditionalIDTokenClaimsForTokenResponse() {
 
-        FSClaimProvider.claimProvider = claimProvider;
-    }
+        /**
+         * TODO: call external service and set the required additional claims map to set to id token
+         */
 
-    public static ClaimProvider getClaimProvider() {
-
-        return claimProvider;
+        return new HashMap<>();
     }
 }
