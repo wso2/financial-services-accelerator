@@ -52,7 +52,6 @@ public class APIMServiceTest extends PowerMockTestCase {
 
     private APIMService uut;
     private static final String REQUEST_URL = "http://localhost:9446";
-    private static final String RESPONSE_STRING = "{\"access_token\":\"dummy-token\"}";
 
     @BeforeClass
     public void init() {
