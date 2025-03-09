@@ -91,6 +91,11 @@ public class APIMService implements Serializable {
         // adding headers to request
         headers.forEach(httpRequest::addHeader);
 
+        // Updating the host header to apim host
+        String hostname = httpRequest.getURI().getHost();
+        httpRequest.removeHeaders(HttpHeaders.HOST);
+        httpRequest.addHeader(HttpHeaders.HOST, hostname);
+
         JSONObject responseJson = Utils.sendRequest(httpRequest);
         int statusCode = responseJson.optInt("res_status_code", 200);
         responseJson.remove("res_status_code");

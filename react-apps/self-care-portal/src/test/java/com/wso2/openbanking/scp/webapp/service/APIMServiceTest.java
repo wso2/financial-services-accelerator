@@ -18,26 +18,41 @@
 
 package com.wso2.openbanking.scp.webapp.service;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.scp.webapp.exception.TokenGenerationException;
 import com.wso2.openbanking.scp.webapp.util.Constants;
 import com.wso2.openbanking.scp.webapp.util.Utils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpGet;
+import org.json.JSONObject;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+@PrepareForTest({Utils.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class APIMServiceTest extends PowerMockTestCase {
 
     private APIMService uut;
+    private static final String REQUEST_URL = "http://localhost:9446";
+    private static final String RESPONSE_STRING = "{\"access_token\":\"dummy-token\"}";
 
     @BeforeClass
     public void init() {
@@ -135,6 +150,18 @@ public class APIMServiceTest extends PowerMockTestCase {
 
         // assert
         Assert.assertTrue(uut.isAccessTokenExpired(reqMock));
+    }
+
+    @Test()
+    public void testForwardRequest() throws IOException, TokenGenerationException, OpenBankingException {
+
+        PowerMockito.mockStatic(Utils.class);
+        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+        JSONObject resp = new JSONObject();
+        resp.append("res_status_code", 200);
+        PowerMockito.when(Utils.sendRequest(Mockito.any())).thenReturn(resp);
+        Map<String, String> headers = new HashMap<>();
+        uut.forwardRequest(httpServletResponse, new HttpGet(REQUEST_URL), headers);
     }
 
     @Test(description = "if validity token is invalid throw SessionTimeoutException",
