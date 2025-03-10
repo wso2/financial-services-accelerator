@@ -27,9 +27,6 @@ public class ExternalServiceRequest {
     private Request request;
     private String allowedOperation;
 
-    public ExternalServiceRequest() {
-    }
-
     public ExternalServiceRequest(String requestId, Request request, String allowedOperation) {
         this.requestId = requestId;
         this.request = request;
