@@ -30,6 +30,7 @@ import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentCache;
@@ -39,6 +40,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.builder.ConsentStepsBuilder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentPersistStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
@@ -95,9 +98,16 @@ public class ConsentAuthorizeEndpoint {
         if (consentRetrievalSteps == null || consentPersistSteps == null) {
             ConsentStepsBuilder consentStepsBuilder = ConsentExtensionExporter.getConsentStepsBuilder();
 
-            if (consentStepsBuilder != null) {
+            if (consentStepsBuilder != null && !
+                    FinancialServicesConfigParser.getInstance().isExternalAPIServiceEnabled()) {
                 consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
                 consentPersistSteps = consentStepsBuilder.getConsentPersistSteps();
+            } else {
+                // If external API service is enabled, add the external API steps.
+                consentRetrievalSteps = new ArrayList<>();
+                consentPersistSteps = new ArrayList<>();
+                consentRetrievalSteps.add(new ExternalAPIConsentRetrievalStep());
+                consentPersistSteps.add(new ExternalAPIConsentPersistStep());
             }
 
             if (consentRetrievalSteps != null && !consentRetrievalSteps.isEmpty()) {
@@ -355,6 +365,9 @@ public class ConsentAuthorizeEndpoint {
      */
     private void executeRetrieval(ConsentData consentData, JSONObject jsonObject) {
 
+        if (FinancialServicesConfigParser.getInstance().isExternalAPIServiceEnabled()) {
+
+        }
         for (ConsentRetrievalStep step : consentRetrievalSteps) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Executing retrieval step %s",
