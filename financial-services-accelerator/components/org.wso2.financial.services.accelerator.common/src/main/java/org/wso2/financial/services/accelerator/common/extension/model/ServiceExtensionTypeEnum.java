@@ -19,20 +19,30 @@
 package org.wso2.financial.services.accelerator.common.extension.model;
 
 /**
- * AllowedOperation.
+ * Service extension type enum
  */
-public class AllowedOperation {
-    String op;
+public enum ServiceExtensionTypeEnum {
 
-    public AllowedOperation(String op) {
-        this.op = op;
+    POST_TOKEN_GENERATION("post-token-generation");
+
+    private final String type;
+
+    ServiceExtensionTypeEnum(String value) {
+        this.type = value;
     }
 
-    public String getOp() {
-        return op;
+    public static ServiceExtensionTypeEnum fromString(String type) {
+
+        for (ServiceExtensionTypeEnum serviceExtensionTypeEnum : ServiceExtensionTypeEnum.values()) {
+            if (serviceExtensionTypeEnum.type.equalsIgnoreCase(type)) {
+                return serviceExtensionTypeEnum;
+            }
+        }
+        return null;
     }
 
-    public void setOp(String op) {
-        this.op = op;
+    public String toString() {
+        return String.valueOf(type);
     }
+
 }

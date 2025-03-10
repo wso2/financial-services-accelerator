@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.CarbonUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
@@ -785,6 +786,48 @@ public final class FinancialServicesConfigParser {
                 FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR);
         return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications.service." +
                 "realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
+    }
+
+    /**
+     * Method to determine service extensions feature is enabled or not from the configurations.
+     *
+     * @return boolean value indicating the state
+     */
+    public boolean isServiceExtensionsEndpointEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get service extensions endpoint base url.
+     *
+     * @return String service extensions endpoint base url
+     */
+    public String getServiceExtensionsEndpointBaseUrl() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_BASE_URL);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extension types.
+     *
+     * @return List of service extensions
+     */
+    public List<ServiceExtensionTypeEnum> getServiceExtensionTypes() {
+        Object serviceExtensionTypesObj = configuration.get(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
+
+        List<String> serviceExtensionTypes = serviceExtensionTypesObj instanceof List<?>
+                ? (List<String>) serviceExtensionTypesObj
+                : Collections.singletonList((String) serviceExtensionTypesObj);
+
+        return serviceExtensionTypes.stream()
+                .map(ServiceExtensionTypeEnum::fromString)
+                .collect(Collectors.toList());
     }
 
 }

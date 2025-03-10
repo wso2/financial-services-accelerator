@@ -26,10 +26,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,15 +53,16 @@ public class ServiceExtensionUtils {
      * Method to invoke external service call.
      *
      * @param externalServiceRequest
-     * @param service
+     * @param serviceType
      * @return
      */
-    public static JSONObject invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest, String service) {
+    public static JSONObject invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest,
+                                                       ServiceExtensionTypeEnum serviceType) {
         try {
             String externalServicesPayload = (new JSONObject(externalServiceRequest)).toString();
 
-            // TODO: use the service to construct the URL
-            HttpPost httpPost = new HttpPost("");
+            String constructedUrl = constructExtensionEndpoint(serviceType);
+            HttpPost httpPost = new HttpPost(constructedUrl);
             StringEntity params = new StringEntity(externalServicesPayload);
             httpPost.setEntity(params);
             httpPost.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
@@ -84,6 +87,12 @@ public class ServiceExtensionUtils {
         } catch (FinancialServicesException | IOException e) {
             throw new FinancialServicesRuntimeException("Error Occurred while invoking the external service", e);
         }
+    }
+
+    private static String constructExtensionEndpoint(ServiceExtensionTypeEnum serviceType) {
+
+        String baseUrl = FinancialServicesConfigParser.getInstance().getServiceExtensionsEndpointBaseUrl();
+        return baseUrl + "/" + serviceType.toString();
     }
 
     /**

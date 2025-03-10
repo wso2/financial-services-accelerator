@@ -18,22 +18,39 @@
 
 package org.wso2.financial.services.accelerator.common.extension.model;
 
+import org.json.JSONObject;
+
+import java.util.Map;
+
 /**
- * Event.
+ * Request.
  */
-public class Event {
+public class Request {
 
-    EventRequest request;
+    private JSONObject payload;
+    private Map<String, String> additionalAttributes;
 
-    public Event(EventRequest request) {
-        this.request = request;
+    public Request() {
     }
 
-    public EventRequest getRequest() {
-        return request;
+    public Request(JSONObject payload, Map<String, String> additionalAttributes) {
+        this.payload = payload;
+        this.additionalAttributes = additionalAttributes;
     }
 
-    public void setRequest(EventRequest request) {
-        this.request = request;
+    public JSONObject getPayload() {
+        return payload;
+    }
+
+    public void setPayload(JSONObject payload) {
+        this.payload = payload;
+    }
+
+    public Map<String, String> getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(Map<String, String> additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
     }
 }

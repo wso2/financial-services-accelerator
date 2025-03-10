@@ -116,9 +116,9 @@ public class HTTPClientUtils {
     }
 
     /**
-     * Get closeable https client.
+     * Get closeable http client.
      *
-     * @return Closeable https client
+     * @return Closeable http client
      * @throws FinancialServicesException FinancialServicesException exception
      */
     @Generated(message = "Ignoring since method contains no logics")
