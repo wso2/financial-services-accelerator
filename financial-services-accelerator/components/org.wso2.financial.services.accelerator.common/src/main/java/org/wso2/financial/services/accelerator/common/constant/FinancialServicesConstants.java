@@ -148,12 +148,3 @@ public class FinancialServicesConstants {
     public static final String BEARER_TAG = "Bearer ";
     public static final String BASIC_TAG = "Basic ";
 }
-
-/*<ServiceExtensionsEndpoint>
-    <Enable>false</Enable>
-    <BaseURL>www.xyz.com/api</BaseURL>
-    <ExtensionTypes>
-        <Type>extension_type1</Type>
-        <Type>extension_type2</Type>
-    </ExtensionTypes>
-</ServiceExtensionsEndpoint>*/
