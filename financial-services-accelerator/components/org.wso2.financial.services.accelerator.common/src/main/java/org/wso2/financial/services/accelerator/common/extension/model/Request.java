@@ -27,8 +27,8 @@ import java.util.Map;
  */
 public class Request {
 
-    JSONObject payload;
-    Map<String, String> additionalAttributes;
+    private JSONObject payload;
+    private Map<String, String> additionalAttributes;
 
     public Request() {
     }

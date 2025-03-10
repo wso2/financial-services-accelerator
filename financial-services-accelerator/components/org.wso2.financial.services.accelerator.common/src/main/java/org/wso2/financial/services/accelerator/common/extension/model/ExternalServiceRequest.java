@@ -23,12 +23,11 @@ package org.wso2.financial.services.accelerator.common.extension.model;
  */
 public class ExternalServiceRequest {
 
-    String requestId;
-    Request request;
-    String allowedOperation;
+    private String requestId;
+    private Request request;
+    private String allowedOperation;
 
     public ExternalServiceRequest() {
-
     }
 
     public ExternalServiceRequest(String requestId, Request request, String allowedOperation) {
@@ -60,5 +59,4 @@ public class ExternalServiceRequest {
     public void setAllowedOperation(String allowedOperation) {
         this.allowedOperation = allowedOperation;
     }
-
 }
