@@ -116,9 +116,6 @@ create_mysql_databases() {
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_USER_STORE}; CREATE DATABASE ${DB_USER_STORE};
     ALTER DATABASE ${DB_USER_STORE} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
     echo "Database Created: ${DB_USER_STORE}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_GOV}; CREATE DATABASE ${DB_GOV};
-    ALTER DATABASE ${DB_GOV} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
-    echo "Database Created: ${DB_GOV}"
 };
 
 create_mysql_database_tables() {
@@ -131,8 +128,6 @@ create_mysql_database_tables() {
     echo "Database tables Created for: ${DB_FS_STORE}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_USER_STORE} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_USER_STORE}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_GOV} -h${DB_HOST} -e "SOURCE ${WSO2_IS_HOME}/dbscripts/mysql.sql";
-    echo "Database tables Created for: ${DB_GOV}"
 };
 
 echo -e "\nReplace hostnames \n"
