@@ -23,41 +23,41 @@ package org.wso2.financial.services.accelerator.common.extension.model;
  */
 public class ExternalServiceRequest {
 
-    String eventId;
-    Event event;
-    AllowedOperation allowedOperation;
+    String requestId;
+    Request request;
+    String allowedOperation;
 
     public ExternalServiceRequest() {
 
     }
 
-    public ExternalServiceRequest(String eventId, Event event, AllowedOperation allowedOperation) {
-        this.eventId = eventId;
-        this.event = event;
+    public ExternalServiceRequest(String requestId, Request request, String allowedOperation) {
+        this.requestId = requestId;
+        this.request = request;
         this.allowedOperation = allowedOperation;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getRequestId() {
+        return requestId;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
-    public Event getEvent() {
-        return event;
+    public Request getRequest() {
+        return request;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setRequest(Request request) {
+        this.request = request;
     }
 
-    public AllowedOperation getAllowedOperation() {
+    public String getAllowedOperation() {
         return allowedOperation;
     }
 
-    public void setAllowedOperation(AllowedOperation allowedOperation) {
+    public void setAllowedOperation(String allowedOperation) {
         this.allowedOperation = allowedOperation;
     }
 

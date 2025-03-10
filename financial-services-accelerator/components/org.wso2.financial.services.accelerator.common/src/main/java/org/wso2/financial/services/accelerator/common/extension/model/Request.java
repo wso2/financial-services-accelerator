@@ -18,21 +18,39 @@
 
 package org.wso2.financial.services.accelerator.common.extension.model;
 
+import org.json.JSONObject;
+
+import java.util.Map;
+
 /**
- * AllowedOperation.
+ * Request.
  */
-public class AllowedOperation {
-    String op;
+public class Request {
 
-    public AllowedOperation(String op) {
-        this.op = op;
+    JSONObject payload;
+    Map<String, String> additionalAttributes;
+
+    public Request() {
     }
 
-    public String getOp() {
-        return op;
+    public Request(JSONObject payload, Map<String, String> additionalAttributes) {
+        this.payload = payload;
+        this.additionalAttributes = additionalAttributes;
     }
 
-    public void setOp(String op) {
-        this.op = op;
+    public JSONObject getPayload() {
+        return payload;
+    }
+
+    public void setPayload(JSONObject payload) {
+        this.payload = payload;
+    }
+
+    public Map<String, String> getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(Map<String, String> additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
     }
 }

@@ -818,7 +818,8 @@ public final class FinancialServicesConfigParser {
      * @return List of service extensions
      */
     public List<ServiceExtensionTypeEnum> getServiceExtensionTypes() {
-        Object serviceExtensionTypesObj = configuration.get(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
+        Object serviceExtensionTypesObj = configuration.get(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
 
         List<String> serviceExtensionTypes = serviceExtensionTypesObj instanceof List<?>
                 ? (List<String>) serviceExtensionTypesObj
