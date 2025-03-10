@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.CarbonUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
@@ -816,18 +817,16 @@ public final class FinancialServicesConfigParser {
      *
      * @return List of service extensions
      */
-    public List<String> getServiceExtensionTypes() {
+    public List<ServiceExtensionTypeEnum> getServiceExtensionTypes() {
+        Object serviceExtensionTypesObj = configuration.get(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
 
-        Object serviceExtensionTypesObj = configuration.get(
-                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
-        List<String> serviceExtensionTypes = new ArrayList<>();
-        if (serviceExtensionTypesObj instanceof ArrayList) {
-            serviceExtensionTypes.addAll((ArrayList) serviceExtensionTypesObj);
-        } else if (serviceExtensionTypesObj instanceof String) {
-            serviceExtensionTypes.add((String) serviceExtensionTypesObj);
-        }
+        List<String> serviceExtensionTypes = serviceExtensionTypesObj instanceof List<?>
+                ? (List<String>) serviceExtensionTypesObj
+                : Collections.singletonList((String) serviceExtensionTypesObj);
 
-        return serviceExtensionTypes;
+        return serviceExtensionTypes.stream()
+                .map(ServiceExtensionTypeEnum::fromString)
+                .collect(Collectors.toList());
     }
 
 }
