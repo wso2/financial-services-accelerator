@@ -153,6 +153,6 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
     @Generated(message = "Excluding from code coverage since it requires a service call")
     protected boolean isRegulatory(OAuth2Parameters oAuth2Parameters) throws RequestObjectException {
 
-        return FinancialServicesUtils.isRegulatoryApp(oAuth2Parameters.getClientId());
+        return FinancialServicesUtils.isFapiConformantApp(oAuth2Parameters.getClientId());
     }
 }
