@@ -792,42 +792,42 @@ public final class FinancialServicesConfigParser {
      *
      * @return boolean value indicating the state
      */
-    public boolean isServiceExtensionsEnabled() {
+    public boolean isServiceExtensionsEndpointEnabled() {
 
         Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.SERVICE_EXTENSIONS_ENABLED);
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_ENABLED);
         return config.map(Boolean::parseBoolean).orElse(false);
     }
 
     /**
-     * Method to get service extensions base url.
+     * Method to get service extensions endpoint base url.
      *
-     * @return String service extensions base url
+     * @return String service extensions endpoint base url
      */
-    public String getServiceExtensionsBaseUrl() {
+    public String getServiceExtensionsEndpointBaseUrl() {
 
         Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.SERVICE_EXTENSIONS_BASE_URL);
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_BASE_URL);
         return config.map(String::trim).orElse(null);
     }
 
     /**
-     * Method to get enabled service extension types.
+     * Method to get service extension types.
      *
-     * @return List of enabled service extensions
+     * @return List of service extensions
      */
-    public List<String> getEnabledServiceExtensionTypes() {
+    public List<String> getServiceExtensionTypes() {
 
-        Object enabledServiceExtensionTypesObj = configuration.get(
-                FinancialServicesConstants.ENABLED_SERVICE_EXTENSION_TYPE);
-        List<String> enabledServiceExtensionTypes = new ArrayList<>();
-        if (enabledServiceExtensionTypesObj instanceof ArrayList) {
-            enabledServiceExtensionTypes.addAll((ArrayList) enabledServiceExtensionTypesObj);
-        } else if (enabledServiceExtensionTypesObj instanceof String) {
-            enabledServiceExtensionTypes.add((String) enabledServiceExtensionTypesObj);
+        Object serviceExtensionTypesObj = configuration.get(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
+        List<String> serviceExtensionTypes = new ArrayList<>();
+        if (serviceExtensionTypesObj instanceof ArrayList) {
+            serviceExtensionTypes.addAll((ArrayList) serviceExtensionTypesObj);
+        } else if (serviceExtensionTypesObj instanceof String) {
+            serviceExtensionTypes.add((String) serviceExtensionTypesObj);
         }
 
-        return enabledServiceExtensionTypes;
+        return serviceExtensionTypes;
     }
 
 }

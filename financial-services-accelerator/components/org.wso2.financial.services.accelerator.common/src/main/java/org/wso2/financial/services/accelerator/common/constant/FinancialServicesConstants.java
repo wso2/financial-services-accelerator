@@ -125,9 +125,9 @@ public class FinancialServicesConstants {
             "EventNotifications.Realtime.RequestGenerator";
 
     // Service Extensions Constants
-    public static final String SERVICE_EXTENSIONS_ENABLED = "ServiceExtensionsAPI.Enable";
-    public static final String SERVICE_EXTENSIONS_BASE_URL = "ServiceExtensionsAPI.BaseURL";
-    public static final String ENABLED_SERVICE_EXTENSION_TYPE = "ServiceExtensionsAPI.EnabledExtensionTypes.Type";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ServiceExtensionsEndpoint.Enable";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ServiceExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_TYPE = "ServiceExtensionsEndpoint.ExtensionTypes.Type";
 
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
@@ -148,3 +148,12 @@ public class FinancialServicesConstants {
     public static final String BEARER_TAG = "Bearer ";
     public static final String BASIC_TAG = "Basic ";
 }
+
+/*<ServiceExtensionsEndpoint>
+    <Enable>false</Enable>
+    <BaseURL>www.xyz.com/api</BaseURL>
+    <ExtensionTypes>
+        <Type>extension_type1</Type>
+        <Type>extension_type2</Type>
+    </ExtensionTypes>
+</ServiceExtensionsEndpoint>*/
