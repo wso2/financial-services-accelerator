@@ -23,7 +23,9 @@ package org.wso2.financial.services.accelerator.common.extension.model;
  */
 public enum ServiceExtensionTypeEnum {
 
-    POST_TOKEN_GENERATION("post-token-generation");
+    POST_TOKEN_GENERATION("post-token-generation"),
+    CONSENT_RETRIEVAL("consent-retrieval"),
+    CONSENT_PERSISTENCE("consent-persistence");
 
     private final String type;
 

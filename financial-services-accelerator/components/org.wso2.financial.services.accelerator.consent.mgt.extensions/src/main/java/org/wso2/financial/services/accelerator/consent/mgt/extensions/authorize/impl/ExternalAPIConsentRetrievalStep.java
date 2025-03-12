@@ -18,14 +18,14 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.extension.model.AllowedOperation;
-import org.wso2.financial.services.accelerator.common.extension.model.Event;
-import org.wso2.financial.services.accelerator.common.extension.model.EventRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.Request;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -37,8 +37,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Consent retrieval step default implementation.
@@ -68,9 +68,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             setMandatoryConsentData(consentId, consentData);
             ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(consentData, jsonObject);
             // Call external API
-            JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                    "externalService");
-            JSONObject updatedJson = response.getJSONObject(CONSENT_STEPS_JSON_OBJECT_KEY);
+            log.debug("Calling external service to get consent data to be displayed");
+            JSONObject updatedJson = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+                    ServiceExtensionTypeEnum.CONSENT_RETRIEVAL);
             for (String key : updatedJson.keySet()) {
                 jsonObject.put(key, updatedJson.get(key));
             }
@@ -89,7 +89,6 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
      */
     private void setMandatoryConsentData(String consentId, ConsentData consentData) throws ConsentManagementException {
 
-        // Add data from database to the property map to be used by the external service.
         ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
         AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
 
@@ -101,16 +100,14 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private ExternalServiceRequest createExternalServiceRequest(ConsentData consentData, JSONObject jsonObject) {
 
+        String consentDataJsonString = new Gson().toJson(consentData);
         JSONObject payload = new JSONObject();
-        payload.append(CONSENT_STEPS_JSON_OBJECT_KEY, jsonObject);
-        payload.append(CONSENT_DATA_OBJECT_KEY, consentData);
+        payload.put(CONSENT_STEPS_JSON_OBJECT_KEY, jsonObject);
+        payload.put(CONSENT_DATA_OBJECT_KEY, consentDataJsonString);
 
         // Create event request
-        List<String> additionalParams = new ArrayList<>();
-        EventRequest eventRequest = new EventRequest(payload, additionalParams);
-        Event event = new Event(eventRequest);
-
-        return new ExternalServiceRequest("", event, new AllowedOperation(""));
+        Request eventRequest = new Request(payload, new HashMap<>());
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), eventRequest, "");
     }
 
 }

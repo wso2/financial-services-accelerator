@@ -88,6 +88,7 @@ public class ConsentAuthorizeEndpoint {
     private static List<ConsentPersistStep> consentPersistSteps = null;
     private static List<ConsentRetrievalStep> consentRetrievalSteps = null;
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public ConsentAuthorizeEndpoint() {
         initializeConsentSteps();
@@ -99,7 +100,7 @@ public class ConsentAuthorizeEndpoint {
             ConsentStepsBuilder consentStepsBuilder = ConsentExtensionExporter.getConsentStepsBuilder();
 
             if (consentStepsBuilder != null && !
-                    FinancialServicesConfigParser.getInstance().isExternalAPIServiceEnabled()) {
+                     configParser.isServiceExtensionsEndpointEnabled()) {
                 consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
                 consentPersistSteps = consentStepsBuilder.getConsentPersistSteps();
             } else {
@@ -365,9 +366,6 @@ public class ConsentAuthorizeEndpoint {
      */
     private void executeRetrieval(ConsentData consentData, JSONObject jsonObject) {
 
-        if (FinancialServicesConfigParser.getInstance().isExternalAPIServiceEnabled()) {
-
-        }
         for (ConsentRetrievalStep step : consentRetrievalSteps) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Executing retrieval step %s",

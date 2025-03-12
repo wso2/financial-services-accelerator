@@ -25,10 +25,9 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.extension.model.AllowedOperation;
-import org.wso2.financial.services.accelerator.common.extension.model.Event;
-import org.wso2.financial.services.accelerator.common.extension.model.EventRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.Request;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
@@ -44,8 +43,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Consent persist step default implementation.
@@ -91,32 +90,19 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                 consentPersistData.setConsentData(initialConsentData);
             }
 
-            // Call external API
-            JSONObject payload = new JSONObject();
-            payload.append(CONSENT_PERSIST_DATA_OBJECT_KEY, consentPersistData);
-
-            // Create event request
-            List<String> additionalParams = new ArrayList<>();
-            EventRequest eventRequest = new EventRequest(payload, additionalParams);
-            Event event = new Event(eventRequest);
-
-            ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                    "", event, new AllowedOperation(""));
-            JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                    "externalService");
-            String consentPersistDataJson = response.get(CONSENT_PERSIST_DATA_OBJECT_KEY).toString();
-            consentPersistData = new Gson().fromJson(consentPersistDataJson, ConsentPersistData.class);
-
-            ConsentData consentData = consentPersistData.getConsentData();
+            // Call external service and get updated consent persist data.
+            ConsentPersistData updatedConsentPersistData = getExternalConsentPersistData(consentPersistData);
+            ConsentData consentData = updatedConsentPersistData.getConsentData();
+            JSONObject accountsPayload = updatedConsentPersistData.getPayload();
 
             consentCoreService.bindUserAccountsToConsent(consentData.getConsentResource(), consentData.getUserId(),
-                            consentData.getAuthResource().getAuthorizationID(),
-                            getConsentedAccounts(payload, true), "Authorized", "Authorized");
+                    consentData.getAuthResource().getAuthorizationID(),
+                    getConsentedAccounts(accountsPayload, true), "Authorized", "Authorized");
 
 
         } catch (ConsentManagementException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Exception occurred while persisting consent");
+                    "Exception occurred while persisting consent", e);
         }
     }
 
@@ -126,17 +112,18 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
      * @param persistPayload payload to persist
      * @return Account data map
      */
+    //ToDo: update method to match external request
     private static Map<String, ArrayList<String>> getConsentedAccounts(JSONObject persistPayload, boolean isApproved) {
 
         Map<String, ArrayList<String>> accountIDsMapWithPermissions = new HashMap<>();
         ArrayList<String> permissionsDefault = new ArrayList<>();
         permissionsDefault.add(ConsentExtensionConstants.PRIMARY);
 
-        //Check whether payment account exists
-        //Payment Account is the debtor account sent in the payload
+        // Check whether payment account exists
+        // Payment Account is the debtor account sent in the payload
         if (persistPayload.has(ConsentExtensionConstants.PAYMENT_ACCOUNT) &&
                 StringUtils.isNotBlank(persistPayload.getString(ConsentExtensionConstants.PAYMENT_ACCOUNT))) {
-            //Check whether account Id is in String format
+            // Check whether account-id is in String format
             if (!(persistPayload.get(ConsentExtensionConstants.PAYMENT_ACCOUNT) instanceof String)) {
                 log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST,
@@ -147,7 +134,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             accountIDsMapWithPermissions.put(paymentAccount, permissionsDefault);
         } else if (persistPayload.has(ConsentExtensionConstants.COF_ACCOUNT) &&
                 StringUtils.isNotBlank(persistPayload.getString(ConsentExtensionConstants.COF_ACCOUNT))) {
-            //Check whether account Id is in String format
+            // Check whether account-id is in String format
             if (!(persistPayload.get(ConsentExtensionConstants.COF_ACCOUNT) instanceof String)) {
                 log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST,
@@ -186,4 +173,32 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         }
         return accountIDsMapWithPermissions;
     }
+
+    private ExternalServiceRequest createExternalServiceRequest(ConsentPersistData consentPersistData) {
+
+        JSONObject payload = new JSONObject();
+        String consentPersistDataJsonString = new Gson().toJson(consentPersistData);
+        payload.append(CONSENT_PERSIST_DATA_OBJECT_KEY, consentPersistDataJsonString);
+        Request eventRequest = new Request(payload, new HashMap<>());
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), eventRequest, "");
+    }
+
+    private ConsentPersistData getExternalConsentPersistData(ConsentPersistData consentPersistData) {
+        ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(consentPersistData);
+        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+                ServiceExtensionTypeEnum.CONSENT_PERSISTENCE);
+
+        // Navigate through the JSON structure
+        JSONObject request = response.getJSONObject("request");
+        JSONObject payload = request.getJSONObject("payload");
+        JSONArray consentPersistDataArray = payload.getJSONArray("consent_persist_data");
+
+        // Since it’s an array with one element, extract the first element
+        if (consentPersistDataArray.length() > 0) {
+            String consentPersistDataJson = consentPersistDataArray.getString(0);
+            return ConsentPersistData.fromJson(consentPersistDataJson);
+        }
+        return null;
+    }
+
 }
