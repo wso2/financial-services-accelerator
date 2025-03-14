@@ -68,8 +68,8 @@ public class IdentityExtensionsServiceComponent {
         if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement"))) {
             String filterConfig = (String) FinancialServicesConfigParser.getInstance().getConfiguration()
                     .get(FinancialServicesConstants.DCR_ADDITIONAL_ATTRIBUTE_FILTER);
-            AdditionalAttributeFilter attributeFilter = (AdditionalAttributeFilter) FinancialServicesUtils
-                    .getClassInstanceFromFQN(filterConfig);
+            AdditionalAttributeFilter attributeFilter = FinancialServicesUtils
+                    .getClassInstanceFromFQN(filterConfig, AdditionalAttributeFilter.class);
             bundleContext.registerService(AdditionalAttributeFilter.class.getName(), attributeFilter, null);
         }
 

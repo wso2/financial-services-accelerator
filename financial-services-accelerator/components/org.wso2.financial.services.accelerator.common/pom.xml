@@ -156,6 +156,8 @@
                         <exclude>**/*Exception.class</exclude>
                         <exclude>**/*FinancialServicesBaseCache.class</exclude>
                         <exclude>**/*FinancialServicesBaseCacheKey.class</exclude>
+                        <exclude>**/*Request.class</exclude>
+                        <exclude>**/*Enum.class</exclude>
                         <!-- Excluded since involves datasource initialization -->
                         <exclude>**/DatabaseUtils.class</exclude>
                         <exclude>**/JDBCPersistenceManager.class</exclude>

@@ -50,9 +50,9 @@ public class EventNotificationUtils {
      */
     public static EventCreationServiceHandler getEventNotificationCreationServiceHandler() {
 
-        return (EventCreationServiceHandler)
-                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
-                        getConfiguration().get(FinancialServicesConstants.EVENT_CREATION_HANDLER).toString());
+        return FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
+                        getConfiguration().get(FinancialServicesConstants.EVENT_CREATION_HANDLER).toString(),
+                EventCreationServiceHandler.class);
     }
 
     /**
@@ -61,9 +61,9 @@ public class EventNotificationUtils {
      */
     public static EventPollingServiceHandler getEventPollingServiceHandler() {
 
-        return (EventPollingServiceHandler)
-                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
-                        getConfiguration().get(FinancialServicesConstants.EVENT_POLLING_HANDLER).toString());
+        return FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
+                        getConfiguration().get(FinancialServicesConstants.EVENT_POLLING_HANDLER).toString(),
+                EventPollingServiceHandler.class);
     }
 
     /**

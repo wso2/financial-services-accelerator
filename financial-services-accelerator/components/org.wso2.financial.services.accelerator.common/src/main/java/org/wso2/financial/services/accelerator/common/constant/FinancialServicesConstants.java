@@ -124,6 +124,11 @@ public class FinancialServicesConstants {
     public static final String REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR =
             "EventNotifications.Realtime.RequestGenerator";
 
+    // Service Extensions Constants
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ServiceExtensionsEndpoint.Enable";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ServiceExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_TYPE = "ServiceExtensionsEndpoint.ExtensionTypes.Type";
+
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
     public static final String NEW_LINE = "[\r\n]";
@@ -133,4 +138,13 @@ public class FinancialServicesConstants {
     public static final String TENANT_DOMAIN = "carbon.super";
     public static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+    public static final String CONTENT_TYPE_TAG = "Content-Type";
+    public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    public static final String ACCEPT = "Accept";
+    public static final String COLON = ":";
+    public static final String AUTH_HEADER = "Authorization";
+    public static final String BEARER_TAG = "Bearer ";
+    public static final String BASIC_TAG = "Basic ";
+    public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 }

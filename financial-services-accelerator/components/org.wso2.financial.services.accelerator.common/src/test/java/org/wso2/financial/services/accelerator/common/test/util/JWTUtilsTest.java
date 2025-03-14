@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.common.test.util;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.test.util.testutils.JWTUtilsTestDataProvider;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 
@@ -68,6 +69,25 @@ public class JWTUtilsTest {
     public void testValidNotValidBefore(Date time, long timeSkew, boolean expected) {
 
         Assert.assertEquals(JWTUtils.isValidNotValidBeforeTime(time, timeSkew), expected);
+    }
+
+    @Test
+    public void testDecodeRequestJWT() throws ParseException {
+
+        String jwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6I" +
+                "kpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTc0MTk0MzM0Nn0.NVWtXLE-41ykk2xkiVnWrN_f" +
+                "InvonW6KeD6GfrtxmVDnJHuMXuro8qS-4iAN9Jzgh_j0R-ZiM-p_6kGqxsYVB4z3tcJ85kgVep2PpV-4" +
+                "ZaDzoNPb24yEiV4Wr36SLLomnssqFuqNVe_LkJgoAMlT8zJpsLyNW9LAOmsmoEqQIR9r0T8nbLvZWsUN" +
+                "fUbPjDMrijUcPh3z5TeAs0dqW938AGNJO93b_PB6qWWio7m9QtWkE95jhZVboYgrj3JYtqlycQN9Dj5F" +
+                "BZ82WfQAL1tqkzFicKPErKXnlyoPreOGKJXUzT_m5OHnfybc_F78NqaFetIy8F0n-X9j7QMj2vRj_w";
+        String header = "{\"typ\":\"JWT\",\"alg\":\"RS256\"}";
+        String body = "{\"sub\":\"1234567890\",\"name\":\"John Doe\",\"admin\":true,\"iat\":1741943346}";
+
+        String decodeJwtBody = JWTUtils.decodeRequestJWT(jwt, FinancialServicesConstants.JWT_BODY);
+        Assert.assertEquals(decodeJwtBody.trim(), body);
+
+        String decodeJwtHeader = JWTUtils.decodeRequestJWT(jwt, FinancialServicesConstants.JWT_HEAD);
+        Assert.assertEquals(decodeJwtHeader, header);
     }
 }
 

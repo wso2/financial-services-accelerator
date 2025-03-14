@@ -58,4 +58,24 @@
         <Class name="org.wso2.financial.services.accelerator.common.util.CarbonUtils"/>
         <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.extension.model.Request"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.extension.model.Request"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
 </FindBugsFilter>
