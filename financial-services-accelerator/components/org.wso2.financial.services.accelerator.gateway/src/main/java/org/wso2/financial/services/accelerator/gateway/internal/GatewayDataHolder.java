@@ -113,8 +113,9 @@ public class GatewayDataHolder {
             setGatewayCacheAccessExpiry((String) configurations.get(FinancialServicesConstants.GATEWAY_CACHE_EXPIRY));
             setGatewayCacheModifiedExpiry((String) configurations
                     .get(FinancialServicesConstants.GATEWAY_CACHE_MODIFIED_EXPIRY));
-            AbstractRequestRouter configuredRequestRouter = (AbstractRequestRouter) FinancialServicesUtils
-                    .getClassInstanceFromFQN(configurations.get(FinancialServicesConstants.REQUEST_ROUTER).toString());
+            AbstractRequestRouter configuredRequestRouter = FinancialServicesUtils.getClassInstanceFromFQN(
+                    configurations.get(FinancialServicesConstants.REQUEST_ROUTER).toString(),
+                    AbstractRequestRouter.class);
             configuredRequestRouter.build();
             this.setRequestRouter(configuredRequestRouter);
             this.urlMap = constructURLMap();

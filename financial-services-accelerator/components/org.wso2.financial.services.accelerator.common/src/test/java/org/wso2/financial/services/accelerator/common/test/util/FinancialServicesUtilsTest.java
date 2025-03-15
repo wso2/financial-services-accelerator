@@ -25,10 +25,14 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -67,5 +71,24 @@ public class FinancialServicesUtilsTest {
         String body = "String Body";
         Assert.assertEquals(FinancialServicesUtils.reduceStringLength(body, 25), body);
         Assert.assertEquals(FinancialServicesUtils.reduceStringLength(body, 6), "String");
+    }
+
+    @Test
+    public void testStartsWithUUID() {
+
+        Assert.assertFalse(FinancialServicesUtils.startsWithUUID("String Body"));
+
+        Assert.assertTrue(FinancialServicesUtils.startsWithUUID(UUID.randomUUID().toString()));
+    }
+
+    @Test
+    public void testConvertToISO8601() {
+
+        OffsetDateTime offsetDateTime = OffsetDateTime.now();
+        // Define the format you want
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FinancialServicesConstants.ISO_FORMAT);
+        // Format the date
+        String formattedDate = offsetDateTime.format(formatter);
+        Assert.assertEquals(FinancialServicesUtils.convertToISO8601(offsetDateTime.toEpochSecond()), formattedDate);
     }
 }

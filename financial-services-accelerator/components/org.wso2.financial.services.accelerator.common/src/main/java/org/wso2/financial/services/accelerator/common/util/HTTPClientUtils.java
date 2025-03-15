@@ -116,6 +116,31 @@ public class HTTPClientUtils {
     }
 
     /**
+     * Get closeable http client.
+     *
+     * @return Closeable http client
+     * @throws FinancialServicesException FinancialServicesException exception
+     */
+    @Generated(message = "Ignoring since method contains no logics")
+    public static CloseableHttpClient getHttpClient() throws FinancialServicesException {
+
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                .build();
+
+        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
+                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
+                new PoolingHttpClientConnectionManager();
+
+        // configuring default maximum connections
+        connectionManager.setMaxTotal(FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections());
+        connectionManager.setDefaultMaxPerRoute(FinancialServicesConfigParser.getInstance()
+                .getConnectionPoolMaxConnectionsPerRoute());
+
+        return HttpClients.custom().setConnectionManager(connectionManager).build();
+    }
+
+    /**
      * create a SSL Connection Socket Factory.
      *
      * @return SSLConnectionSocketFactory

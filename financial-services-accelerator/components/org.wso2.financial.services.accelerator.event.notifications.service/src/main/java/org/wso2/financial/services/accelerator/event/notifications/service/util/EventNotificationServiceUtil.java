@@ -54,9 +54,8 @@ public class EventNotificationServiceUtil {
      */
     public static EventNotificationGenerator getEventNotificationGenerator() {
 
-        return (EventNotificationGenerator)
-                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance()
-                        .getEventNotificationGenerator());
+        return FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance()
+                        .getEventNotificationGenerator(), EventNotificationGenerator.class);
     }
 
     /**
@@ -67,9 +66,8 @@ public class EventNotificationServiceUtil {
     public static RealtimeEventNotificationRequestGenerator getRealtimeEventNotificationRequestGenerator() {
 
         RealtimeEventNotificationRequestGenerator realtimeEventNotificationRequestGenerator =
-                (RealtimeEventNotificationRequestGenerator) FinancialServicesUtils
-                        .getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
-                        getRealtimeEventNotificationRequestGenerator());
+                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
+                getRealtimeEventNotificationRequestGenerator(), RealtimeEventNotificationRequestGenerator.class);
         return realtimeEventNotificationRequestGenerator;
     }
 

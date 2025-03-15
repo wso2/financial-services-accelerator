@@ -129,8 +129,8 @@ public class DefaultRequestRouterTest {
             List<FinancialServicesGatewayExecutor> executorList = new ArrayList<>();
             Map<Integer, String> executorNames = stringMapEntry.getValue();
             for (Map.Entry<Integer, String> executorEntity : executorNames.entrySet()) {
-                FinancialServicesGatewayExecutor object = (FinancialServicesGatewayExecutor)
-                        FinancialServicesUtils.getClassInstanceFromFQN(executorEntity.getValue());
+                FinancialServicesGatewayExecutor object = FinancialServicesUtils.getClassInstanceFromFQN(
+                        executorEntity.getValue(), FinancialServicesGatewayExecutor.class);
                 executorList.add(object);
             }
             executors.put(stringMapEntry.getKey(), executorList);

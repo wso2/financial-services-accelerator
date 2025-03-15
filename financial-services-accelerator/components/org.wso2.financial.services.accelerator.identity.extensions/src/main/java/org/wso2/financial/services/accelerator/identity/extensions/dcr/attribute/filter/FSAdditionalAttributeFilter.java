@@ -195,9 +195,9 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         for (Map<String, Object> validator : dcrValidators.values()) {
             if (Boolean.parseBoolean(validator.get(IdentityCommonConstants.ENABLE).toString())) {
-                DynamicClientRegistrationValidator dcrValidator = (DynamicClientRegistrationValidator)
-                        FinancialServicesUtils.getClassInstanceFromFQN(
-                                validator.get(IdentityCommonConstants.CLASS).toString());
+                DynamicClientRegistrationValidator dcrValidator = FinancialServicesUtils.getClassInstanceFromFQN(
+                                validator.get(IdentityCommonConstants.CLASS).toString(),
+                        DynamicClientRegistrationValidator.class);
                 validatorMap.put(Integer.parseInt(validator.get(IdentityCommonConstants.PRIORITY).toString()),
                         dcrValidator);
             }

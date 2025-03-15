@@ -303,7 +303,7 @@ public class JWTUtils {
         try {
             JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
             return SignedJWT.parse(jwtString).verify(verifier);
-        } catch (JOSEException | java.text.ParseException e) {
+        } catch (JOSEException | ParseException e) {
             log.error("Error occurred while validating JWT signature", e);
             throw new ConsentManagementException("Error occurred while validating JWT signature");
         }
@@ -367,6 +367,7 @@ public class JWTUtils {
      * @return string value of the signed JWT
      * @throws Exception error if the tenant is invalid
      */
+    @Generated(message = "Excluding from code coverage since it contains external https call")
     public static String signJWTWithDefaultKey(String body) throws Exception {
         KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(-1234);
         KeyStore primaryKeyStore = keyStoreManager.getPrimaryKeyStore();

@@ -25,6 +25,7 @@ import org.wso2.financial.services.accelerator.common.test.validator.resources.S
 import org.wso2.financial.services.accelerator.common.test.validator.resources.SampleRequestObject;
 import org.wso2.financial.services.accelerator.common.test.validator.resources.ValidatorTestDataProvider;
 import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
+import org.wso2.financial.services.accelerator.common.validator.validationgroups.ValidationOrder;
 
 import java.text.ParseException;
 import java.util.Set;
@@ -79,7 +80,8 @@ public class LogicValidatorsTest {
         sampleRequestObject.setClaimSet(JWTClaimsSet.parse(claimsString));
 
         //Act
-        String violation = FinancialServicesValidator.getInstance().getFirstViolation(sampleRequestObject);
+        String violation = FinancialServicesValidator.getInstance().getFirstViolation(sampleRequestObject,
+                ValidationOrder.class);
 
         //Assert
         assertNull("Valid scope formats should pass", violation);

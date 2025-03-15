@@ -45,9 +45,9 @@ public class EventSubscriptionUtils {
      */
     public static EventSubscriptionServiceHandler getEventSubscriptionServiceHandler() {
 
-        return (EventSubscriptionServiceHandler)
-                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance()
-                        .getConfiguration().get(FinancialServicesConstants.EVENT_SUBSCRIPTION_HANDLER).toString());
+        return FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance()
+                        .getConfiguration().get(FinancialServicesConstants.EVENT_SUBSCRIPTION_HANDLER).toString(),
+                EventSubscriptionServiceHandler.class);
     }
 
     /**
