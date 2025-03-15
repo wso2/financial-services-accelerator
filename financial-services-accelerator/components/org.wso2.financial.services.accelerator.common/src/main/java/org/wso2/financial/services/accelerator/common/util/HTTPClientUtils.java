@@ -124,7 +124,6 @@ public class HTTPClientUtils {
     @Generated(message = "Ignoring since method contains no logics")
     public static CloseableHttpClient getHttpClient() throws FinancialServicesException {
 
-
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
                 .build();
