@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Consent validator default implementation.
+ * Consent validator default implementation with external service call.
  */
 public class ConsentValidatorServiceExtension implements ConsentValidator {
 
