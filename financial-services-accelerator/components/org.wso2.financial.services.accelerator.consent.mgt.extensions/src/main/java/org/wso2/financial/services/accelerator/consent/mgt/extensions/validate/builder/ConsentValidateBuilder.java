@@ -20,11 +20,15 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.ConsentValidatorServiceExtension;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +39,7 @@ public class ConsentValidateBuilder {
     private static final Log log = LogFactory.getLog(ConsentValidateBuilder.class);
     private ConsentValidator consentValidator = null;
     private String requestSignatureAlias = null;
+    private String serviceEndpointBaseUrl = null;
 
     public ConsentValidateBuilder() {
         build();
@@ -42,12 +47,25 @@ public class ConsentValidateBuilder {
 
     private void build() {
 
-        Map<String, Object> configs =  ConsentExtensionsDataHolder.getInstance().getConfigurationService()
-                .getConfigurations();
-        String handlerConfig = (String)  configs.get(FinancialServicesConstants.CONSENT_VALIDATOR);
-        consentValidator = ConsentExtensionUtils.getClassInstanceFromFQN(handlerConfig, ConsentValidator.class);
+        FinancialServicesConfigurationService configurationService = ConsentExtensionsDataHolder.getInstance()
+                .getConfigurationService();
+        Map<String, Object> configs =  configurationService.getConfigurations();
+        Map<String, Object> serviceExtensionConfigs =  configurationService.getServiceExtensionConfigs();
+        List<ServiceExtensionTypeEnum> supportedServiceTypes = (List<ServiceExtensionTypeEnum>)
+                serviceExtensionConfigs.get(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
+
+        if ((boolean) serviceExtensionConfigs.get(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_ENABLED) &&
+                supportedServiceTypes.contains(ServiceExtensionTypeEnum.CONSENT_VALIDATION)) {
+            log.debug("Service extensions endpoint is enabled. Loading configurations from service extensions.");
+            consentValidator = new ConsentValidatorServiceExtension();
+            serviceEndpointBaseUrl = (String) serviceExtensionConfigs
+                    .get(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_BASE_URL);
+        } else {
+            String handlerConfig = (String)  configs.get(FinancialServicesConstants.CONSENT_VALIDATOR);
+            consentValidator = FinancialServicesUtils.getClassInstanceFromFQN(handlerConfig, ConsentValidator.class);
+        }
         requestSignatureAlias = (String) configs.get(FinancialServicesConstants.SIGNATURE_ALIAS);
-        log.debug("Admin handler loaded successfully");
+        log.debug("Validate handler loaded successfully");
     }
 
     public ConsentValidator getConsentValidator() {

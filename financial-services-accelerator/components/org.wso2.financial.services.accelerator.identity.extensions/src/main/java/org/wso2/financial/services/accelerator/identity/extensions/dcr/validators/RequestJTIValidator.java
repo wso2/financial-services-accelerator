@@ -39,7 +39,7 @@ public class RequestJTIValidator implements DynamicClientRegistrationValidator {
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
                              Map<String, Object> ssaParams) throws FinancialServicesException {
 
-        Double requestJtiValue = (Double) applicationRegistrationRequest.getAdditionalAttributes().get("jti");
+        String requestJtiValue = (String) applicationRegistrationRequest.getAdditionalAttributes().get("jti");
         if (IdentityCommonUtils.isJTIReplayed(String.valueOf(requestJtiValue))) {
             log.debug("Rejected the replayed jti in the registration request");
             throw new FinancialServicesException("Rejected the replayed jti in the registration request");
@@ -55,7 +55,7 @@ public class RequestJTIValidator implements DynamicClientRegistrationValidator {
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
                                ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
 
-        Double requestJtiValue = (Double) applicationUpdateRequest.getAdditionalAttributes().get("jti");
+        String requestJtiValue = (String) applicationUpdateRequest.getAdditionalAttributes().get("jti");
         if (IdentityCommonUtils.isJTIReplayed(String.valueOf(requestJtiValue))) {
             log.debug("Rejected the replayed jti in the registration request");
             throw new FinancialServicesException("Rejected the replayed jti in the registration request");
