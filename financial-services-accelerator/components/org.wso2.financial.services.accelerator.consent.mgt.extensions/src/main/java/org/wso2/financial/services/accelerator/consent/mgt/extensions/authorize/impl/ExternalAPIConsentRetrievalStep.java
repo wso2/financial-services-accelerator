@@ -109,8 +109,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         payload.put(CONSENT_DATA_OBJECT_KEY, requestJsonString);
 
         Request eventRequest = new Request(payload, new HashMap<>());
-        // ToDo: Add allowed operation
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), eventRequest, "");
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), eventRequest);
     }
 
     /**
