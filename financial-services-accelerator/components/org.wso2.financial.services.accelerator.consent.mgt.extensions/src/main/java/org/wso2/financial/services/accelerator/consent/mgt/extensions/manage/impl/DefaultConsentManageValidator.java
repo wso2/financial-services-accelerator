@@ -106,6 +106,10 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
         }
 
         JSONArray permissions = data.getJSONArray("Permissions");
+        if (permissions.length() == 0) {
+            return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
+                    ResponseStatus.BAD_REQUEST.getReasonPhrase(), "Permissions are empty");
+        }
         for (int i = 0; i < permissions.length(); i++) {
             Object permission = permissions.get(i);
             if (!(permission instanceof String)) {
@@ -129,7 +133,7 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
         if (!ConsentManageUtils.isConsentExpirationTimeValid(data.getString("ExpirationDateTime"))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(),
-                    "ExpirationDateTime should be a future time");
+                    "ExpirationDateTime should be a future date");
         }
 
         if (data.has("TransactionFromDateTime") && (!(data.get("TransactionFromDateTime") instanceof String) ||
@@ -170,8 +174,8 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
 
         JSONObject data = initiation.getJSONObject(ConsentExtensionConstants.DATA);
 
-        if (data.has("ExpirationDateTime") && !((data.get("ExpirationDateTime") instanceof String) ||
-                ConsentExtensionUtils.isValid8601(data.getString("ExpirationDateTime")))) {
+        if (data.has("ExpirationDateTime") && (!(data.get("ExpirationDateTime") instanceof String) ||
+                !ConsentExtensionUtils.isValid8601(data.getString("ExpirationDateTime")))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(), "ExpirationDateTime is invalid");
         }

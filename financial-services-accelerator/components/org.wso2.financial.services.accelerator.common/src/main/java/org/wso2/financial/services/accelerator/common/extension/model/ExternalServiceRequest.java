@@ -33,6 +33,11 @@ public class ExternalServiceRequest {
         this.allowedOperation = allowedOperation;
     }
 
+    public ExternalServiceRequest(String requestId, Request request) {
+        this.requestId = requestId;
+        this.request = request;
+    }
+
     public String getRequestId() {
         return requestId;
     }

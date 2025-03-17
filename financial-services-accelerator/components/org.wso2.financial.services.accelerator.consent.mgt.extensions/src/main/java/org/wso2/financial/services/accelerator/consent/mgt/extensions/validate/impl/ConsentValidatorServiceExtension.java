@@ -24,7 +24,6 @@ import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.extension.model.AllowedOperations;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -144,10 +143,8 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
         ConsentValidateRequest request = new ConsentValidateRequest(consentValidateData.getConsentId(),
                 new JSONObject(consentValidateData.getComprehensiveConsent()),
                 constructDataPayload(consentValidateData), additionalParams);
-        AllowedOperations allowedOperation = new AllowedOperations();
-        allowedOperation.setOperation(AllowedOperations.AllowedOperationsEnum.VALIDATE);
 
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), request, allowedOperation);
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), request);
     }
 
     /**
