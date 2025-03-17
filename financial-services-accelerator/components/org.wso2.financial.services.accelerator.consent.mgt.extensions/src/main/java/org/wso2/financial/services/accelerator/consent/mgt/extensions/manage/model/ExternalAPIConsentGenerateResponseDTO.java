@@ -20,7 +20,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 import java.util.Map;
 
 /**
- * ConsentManageExternalResponseDTO
+ * ExternalAPIConsentGenerateResponseDTO
  */
 public class ExternalAPIConsentGenerateResponseDTO {
 

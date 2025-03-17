@@ -18,34 +18,26 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
 /**
- * ExternalAPIConsentGenerateRequestDTO
+ * ExternalAPIConsentRevokeResponseDTO
  */
-public class ExternalAPIConsentGenerateRequestDTO {
+public class ExternalAPIConsentRevokeResponseDTO {
 
-    //Payload can either be a JSONObject or a JSONArray
-    private Object payload;
-    private String requestPath;
+    private boolean shouldRevokeTokens;
+    private String revokedStatus;
 
-    public ExternalAPIConsentGenerateRequestDTO(ConsentManageData consentManageData) {
-
-        this.payload = consentManageData.getPayload();
-        this.requestPath = consentManageData.getRequestPath();
+    public boolean getShouldRevokeTokens() {
+        return shouldRevokeTokens;
     }
 
-    public Object getPayload() {
-        return payload;
+    public void setShouldRevokeTokens(boolean shouldRevokeTokens) {
+        this.shouldRevokeTokens = shouldRevokeTokens;
     }
 
-    public void setPayload(Object payload) {
-        this.payload = payload;
+    public String getRevokedStatus() {
+        return revokedStatus;
     }
 
-    public String getRequestPath() {
-        return requestPath;
+    public void setRevokedStatus(String revokedStatus) {
+        this.revokedStatus = revokedStatus;
     }
-
-    public void setRequestPath(String requestPath) {
-        this.requestPath = requestPath;
-    }
-
 }
