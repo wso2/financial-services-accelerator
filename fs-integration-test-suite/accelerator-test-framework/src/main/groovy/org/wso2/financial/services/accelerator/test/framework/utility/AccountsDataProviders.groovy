@@ -27,7 +27,6 @@ class AccountsDataProviders {
     Object[] getInvalidAccountsPermissionsForInitiation() {
 
         def invalidPermissions = new ArrayList<Object[]>()
-        invalidPermissions.add([] as Object)
         invalidPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC, "xyz"] as Object)
         invalidPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC, ConnectorTestConstants.INVALID_PERMISSION] as Object)
 

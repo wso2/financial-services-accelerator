@@ -49,6 +49,19 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 "Permissions are not in correct format")
     }
 
+    @Test
+    void "Accounts Initiation With empty Permissions"() {
+
+        setInitiationPayload(AccountsRequestPayloads.getUpdatedInitiationPayload([]))
+        doDefaultInitiation()
+
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Permissions are empty")
+    }
+
     @Test(dataProvider = "InvalidAccountsPermissionsForInitiation", dataProviderClass = AccountsDataProviders.class)
     void "Accounts Initiation With Invalid Permissions"(permissions) {
 

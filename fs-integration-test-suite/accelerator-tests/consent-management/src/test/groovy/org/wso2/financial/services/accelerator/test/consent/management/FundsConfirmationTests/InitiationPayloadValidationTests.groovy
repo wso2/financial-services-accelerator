@@ -178,7 +178,7 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-x        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("ExpirationDateTime should be a future date"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "ExpirationDateTime should be a future date")
     }
 }
