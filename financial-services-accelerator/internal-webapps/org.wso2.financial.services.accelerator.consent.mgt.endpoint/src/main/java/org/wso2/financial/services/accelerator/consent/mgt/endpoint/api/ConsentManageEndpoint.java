@@ -21,6 +21,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.api;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -28,6 +30,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.ExternalAPIConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +60,7 @@ import javax.ws.rs.core.UriInfo;
 public class ConsentManageEndpoint {
 
     private static final Log log = LogFactory.getLog(ConsentManageEndpoint.class);
-
+    private static FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
     private static ConsentManageHandler consentManageHandler = null;
     private static final String CLIENT_ID_HEADER = "x-wso2-client-id";
 
@@ -72,14 +75,20 @@ public class ConsentManageEndpoint {
 
         ConsentManageBuilder consentManageBuilder = ConsentExtensionExporter.getConsentManageBuilder();
 
-        if (consentManageBuilder != null) {
+        boolean isExternalConsentManageEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_GENERATION);
+        boolean isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
+
+        if ((isExtensionsEnabled && isExternalConsentManageEnabled)) {
+            consentManageHandler = new ExternalAPIConsentManageHandler();
+        } else if (consentManageBuilder != null) {
             consentManageHandler = consentManageBuilder.getConsentManageHandler();
         }
         if (consentManageHandler != null) {
             log.info(String.format("Consent manage handler %s initialized",
                     consentManageHandler.getClass().getName().replaceAll("\n\r", "")));
         } else {
-            log.warn("Consent manage handler is null");
+            log.warn("Consent manage handler initialization failed");
         }
     }
 
