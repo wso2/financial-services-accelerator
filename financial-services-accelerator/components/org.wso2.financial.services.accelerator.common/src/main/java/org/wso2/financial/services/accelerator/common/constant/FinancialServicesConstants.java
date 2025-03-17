@@ -128,6 +128,11 @@ public class FinancialServicesConstants {
     public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ServiceExtensionsEndpoint.Enable";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ServiceExtensionsEndpoint.BaseURL";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_TYPE = "ServiceExtensionsEndpoint.ExtensionTypes.Type";
+    public static final String CONSENT_TYPE = "consent_type";
+    public static final String ACTION_STATUS = "actionStatus";
+    public static final String ACTION_STATUS_SUCCESS = "SUCCESS";
+    public static final String ERROR_DESCRIPTION = "errorDescription";
+    public  static final String ERROR_MESSAGE = "errorMessage";
 
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";

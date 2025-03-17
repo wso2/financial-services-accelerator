@@ -25,9 +25,9 @@ public class ExternalServiceRequest {
 
     private String requestId;
     private Request request;
-    private String allowedOperation;
+    private AllowedOperations allowedOperation;
 
-    public ExternalServiceRequest(String requestId, Request request, String allowedOperation) {
+    public ExternalServiceRequest(String requestId, Request request, AllowedOperations allowedOperation) {
         this.requestId = requestId;
         this.request = request;
         this.allowedOperation = allowedOperation;
@@ -49,11 +49,11 @@ public class ExternalServiceRequest {
         this.request = request;
     }
 
-    public String getAllowedOperation() {
+    public AllowedOperations getAllowedOperation() {
         return allowedOperation;
     }
 
-    public void setAllowedOperation(String allowedOperation) {
+    public void setAllowedOperation(AllowedOperations allowedOperation) {
         this.allowedOperation = allowedOperation;
     }
 }

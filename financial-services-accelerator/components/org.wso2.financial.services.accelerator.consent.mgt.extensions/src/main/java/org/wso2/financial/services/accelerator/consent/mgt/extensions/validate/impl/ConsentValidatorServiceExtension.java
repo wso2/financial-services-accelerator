@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.extension.model.AllowedOperations;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -45,6 +47,13 @@ import java.util.UUID;
 public class ConsentValidatorServiceExtension implements ConsentValidator {
 
     private static final Log log = LogFactory.getLog(ConsentValidatorServiceExtension.class);
+    private static final String HEADERS = "headers";
+    private static final String CONSENT_ID = "consentId";
+    private static final String CLIENT_ID = "clientId";
+    private static final String RESOURCE_PARAMS = "resourceParams";
+    private static final String USER_ID = "userId";
+    private static final String ELECTED_RESOURCE = "electedResource";
+    private static final String BODY = "body";
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -104,43 +113,59 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
             return;
         }
 
+        // Invoking external validation service configured
         JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(
                 getConsentValidateServiceRequest(consentValidateData),
                 ServiceExtensionTypeEnum.CONSENT_VALIDATION);
 
-        if ("SUCCESS".equals(response.getString("actionStatus"))) {
+        if (FinancialServicesConstants.ACTION_STATUS_SUCCESS.equals(
+                response.getString(FinancialServicesConstants.ACTION_STATUS))) {
             consentValidationResult.setValid(true);
         } else {
             consentValidationResult.setValid(false);
-            consentValidationResult.setErrorMessage(response.getString("errorDescription"));
-            consentValidationResult.setErrorCode(response.getString("errorMessage"));
+            consentValidationResult.setErrorMessage(response.getString(FinancialServicesConstants.ERROR_DESCRIPTION));
+            consentValidationResult.setErrorCode(response.getString(FinancialServicesConstants.ERROR_MESSAGE));
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
         }
         consentValidationResult.setValid(true);
 
     }
 
+    /**
+     * Construct the service request to be sent to the external service.
+     *
+     * @param consentValidateData  Consent validation data
+     * @return  External service request
+     */
     private ExternalServiceRequest getConsentValidateServiceRequest(ConsentValidateData consentValidateData) {
 
-        Map<String, String> additionalParams = Map.of("consent_type",
+        Map<String, String> additionalParams = Map.of(FinancialServicesConstants.CONSENT_TYPE,
                 consentValidateData.getComprehensiveConsent().getConsentType());
         ConsentValidateRequest request = new ConsentValidateRequest(consentValidateData.getConsentId(),
                 new JSONObject(consentValidateData.getComprehensiveConsent()),
                 constructDataPayload(consentValidateData), additionalParams);
+        AllowedOperations allowedOperation = new AllowedOperations();
+        allowedOperation.setOperation(AllowedOperations.AllowedOperationsEnum.VALIDATE);
 
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), request, "validate");
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), request, allowedOperation);
     }
 
+    /**
+     * Construct the data payload to be sent to the external service.
+     *
+     * @param consentValidateData  Consent validation data
+     * @return  Data payload
+     */
     private JSONObject constructDataPayload(ConsentValidateData consentValidateData) {
         JSONObject dataPayload = new JSONObject();
-        dataPayload.put("headers", consentValidateData.getHeaders());
-        dataPayload.put("consentId", consentValidateData.getConsentId());
-        dataPayload.put("clientId", consentValidateData.getClientId());
-        dataPayload.put("resourceParams", consentValidateData.getResourceParams());
-        dataPayload.put("userId", consentValidateData.getUserId());
-        dataPayload.put("electedResource", consentValidateData.getRequestPath());
+        dataPayload.put(HEADERS, consentValidateData.getHeaders());
+        dataPayload.put(CONSENT_ID, consentValidateData.getConsentId());
+        dataPayload.put(CLIENT_ID, consentValidateData.getClientId());
+        dataPayload.put(RESOURCE_PARAMS, consentValidateData.getResourceParams());
+        dataPayload.put(USER_ID, consentValidateData.getUserId());
+        dataPayload.put(ELECTED_RESOURCE, consentValidateData.getRequestPath());
         if (consentValidateData.getPayload() != null) {
-            dataPayload.put("body", consentValidateData.getPayload());
+            dataPayload.put(BODY, consentValidateData.getPayload());
         }
         return dataPayload;
     }
