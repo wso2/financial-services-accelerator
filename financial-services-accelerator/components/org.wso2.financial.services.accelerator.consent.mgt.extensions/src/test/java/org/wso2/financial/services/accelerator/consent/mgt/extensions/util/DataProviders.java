@@ -36,10 +36,8 @@ public class DataProviders {
                 {INITIATION_NON_STRING_EXPIRATION_DATES},
                 {INITIATION_WITH_INVALID_EXPIRATION_DATES},
                 {INITIATION_WITH_PAST_EXPIRATION_DATES},
-                {INITIATION_WITHOUT_TRANS_FROM_DATES},
                 {INITIATION_NON_STRING_TRANS_FROM_DATES},
                 {INITIATION_WITH_INVALID_TRANS_FROM_DATES},
-                {INITIATION_WITHOUT_TRANS_TO_DATES},
                 {INITIATION_NON_STRING_TRANS_TO_DATES},
                 {INITIATION_WITH_INVALID_TRANS_TO_DATES},
                 {INITIATION_WITH_PAST_TRANS_TO_DATES}
@@ -47,11 +45,20 @@ public class DataProviders {
         };
     }
 
-    public static final String INITIATION_WITHOUT_ACCOUNT_PERMISSION = "{\"Data\": {\"Permissions\": " +
+    public static final String INITIATION_WITHOUT_PERMISSIONS = "{\"Data\": {\"ExpirationDateTime\": " +
+            "\"" + TestConstants.EXP_DATE + "\",\"TransactionFromDateTime\": \"2021-05-03T00:00:00+00:00\"," +
+            "\"TransactionToDateTime\": \"2021-12-03T00:00:00+00:00\"},\"Risk\": {}}";
+
+    public static final String INITIATION_WITH_NON_STRING_PERMISSION = "{\"Data\": {\"Permissions\": " +
             "[\"ReadBalances\",\"ReadBeneficiariesDetail\",\"ReadDirectDebits\",\"ReadProducts\"," +
             "\"ReadStandingOrdersDetail\",\"ReadTransactionsCredits\",\"ReadTransactionsDebits\"," +
             "\"ReadTransactionsDetail\",\"ReadOffers\",\"ReadPAN\",\"ReadParty\",\"ReadPartyPSU\"," +
             " \"ReadScheduledPaymentsDetail\",\"ReadStatementsDetail\"],\"ExpirationDateTime\": " +
+            "\"" + TestConstants.EXP_DATE + "\",\"TransactionFromDateTime\": \"2021-05-03T00:00:00+00:00\"," +
+            "\"TransactionToDateTime\": \"2021-12-03T00:00:00+00:00\"},\"Risk\": {}}";
+
+    public static final String INITIATION_WITHOUT_ACCOUNT_PERMISSION = "{\"Data\": {\"Permissions\": " +
+            "[\"ReadBalances\",ReadBeneficiariesDetail],\"ExpirationDateTime\": " +
             "\"" + TestConstants.EXP_DATE + "\",\"TransactionFromDateTime\": \"2021-05-03T00:00:00+00:00\"," +
             "\"TransactionToDateTime\": \"2021-12-03T00:00:00+00:00\"},\"Risk\": {}}";
 

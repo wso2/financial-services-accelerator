@@ -227,7 +227,7 @@ public class TestConstants {
             "       \"iss\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
             "       \"exp\": 1739098988640, \n" +
             "       \"iat\": 1738839788640, \n" +
-            "       \"jti\": 1738839788640, \n" +
+            "       \"jti\": \"1738839788640\", \n" +
             "       \"response_types\": [\"code id_token\"]" +
             "   }\n" +
             "}\n";

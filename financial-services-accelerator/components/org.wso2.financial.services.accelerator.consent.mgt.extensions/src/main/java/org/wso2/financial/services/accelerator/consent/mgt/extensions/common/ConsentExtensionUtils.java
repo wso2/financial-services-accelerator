@@ -31,6 +31,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -79,6 +81,21 @@ public class ConsentExtensionUtils {
         Date simpleDateVal = new Date(dateValue * 1000);
         return simple.format(simpleDateVal);
     }
+
+    /**
+     * Validate whether the date is a valid ISO 8601 format.
+     * @param dateValue
+     * @return
+     */
+    public static boolean isValid8601(String dateValue) {
+        try {
+            OffsetDateTime.parse(dateValue);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
 
     /**
      * Method to construct Initiation response.
