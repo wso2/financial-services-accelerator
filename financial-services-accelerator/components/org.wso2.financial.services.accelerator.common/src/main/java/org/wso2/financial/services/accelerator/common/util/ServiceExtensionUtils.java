@@ -80,6 +80,7 @@ public class ServiceExtensionUtils {
                                     "Status code: %s, Error: %s", response.getStatusLine().getStatusCode(),
                             errorMsg.replaceAll("[\r\n]", "")));
                 }
+                //ToDo: Return a proper error response
                 throw new FinancialServicesException("Error occurred while invoking the external service: " + errorMsg);
             }
             InputStream in = response.getEntity().getContent();

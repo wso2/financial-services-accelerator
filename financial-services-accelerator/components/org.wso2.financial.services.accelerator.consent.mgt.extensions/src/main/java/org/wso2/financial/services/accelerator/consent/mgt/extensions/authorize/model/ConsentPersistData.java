@@ -18,10 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -109,46 +105,6 @@ public class ConsentPersistData {
     public void setBrowserCookies(Map<String, String> cookies) {
 
         this.browserCookies.putAll(cookies);
-    }
-
-    // ToDo: Remove this method
-    public static ConsentPersistData fromJson(String json) {
-        Gson gson = new Gson();
-
-        JsonObject rootObject = JsonParser.parseString(json).getAsJsonObject();
-        JsonObject payloadObject = rootObject.getAsJsonObject("payload").getAsJsonObject("map");
-        JSONObject payloadJson = new JSONObject(payloadObject.toString());
-
-        Map<String, String> headers = payloadObject.has("headers")
-                ? gson.fromJson(payloadObject.get("headers"), new TypeToken<Map<String, String>>() {
-        }.getType())
-                : new HashMap<>();
-
-        boolean approval = Boolean.parseBoolean(payloadObject.get("approval").getAsString());
-
-        ConsentData consentData = rootObject.has("consentData") && !payloadObject.get(
-                "consentData").isJsonNull()
-                ? gson.fromJson(rootObject.get("consentData"), ConsentData.class)
-                : null;
-
-        ConsentPersistData data = new ConsentPersistData(payloadJson, headers, approval, consentData);
-
-        if (payloadObject.has("metadata") && !payloadObject.get("metadata").isJsonNull()) {
-            Map<String, Object> metadata = gson.fromJson(payloadObject.get("metadata"),
-                    new TypeToken<Map<String, Object>>() {
-                    }.getType());
-            data.addMultipleMetadata(metadata);
-        }
-
-        if (payloadObject.has("cookies") && !payloadObject.get("cookies").isJsonNull()) {
-            JsonObject cookiesMap = payloadObject.getAsJsonObject("cookies").getAsJsonObject("map");
-            Map<String, String> browserCookies = gson.fromJson(cookiesMap,
-                    new TypeToken<Map<String, String>>() {
-                    }.getType());
-            data.setBrowserCookies(browserCookies);
-        }
-
-        return data;
     }
 
 }

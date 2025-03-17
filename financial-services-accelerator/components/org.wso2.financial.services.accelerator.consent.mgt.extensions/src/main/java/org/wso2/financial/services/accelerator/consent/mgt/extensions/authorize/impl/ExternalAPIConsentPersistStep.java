@@ -33,6 +33,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentRes
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistExternalRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistExternalResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -63,41 +65,39 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
 
         try {
-            ConsentData initialConsentData = consentPersistData.getConsentData();
+            ConsentData consentData = consentPersistData.getConsentData();
             ConsentResource consentResource;
 
-            if (initialConsentData == null) {
+            if (consentData == null) {
                 log.error("Consent data is not available");
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, AuthErrorCode.SERVER_ERROR.name(),
                         "Consent data is not available");
             }
 
-            if (initialConsentData.getConsentId() == null) {
+            if (consentData.getConsentId() == null) {
                 log.error("Consent ID not available in consent data");
-                throw new ConsentException(initialConsentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
-                        "Consent ID not available in consent data", initialConsentData.getState());
+                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                        "Consent ID not available in consent data", consentData.getState());
             }
 
-            if (initialConsentData.getAuthResource() == null) {
+            if (consentData.getAuthResource() == null) {
                 log.error("Auth resource not available in consent data");
-                throw new ConsentException(initialConsentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
-                        "Auth resource not available in consent data", initialConsentData.getState());
+                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                        "Auth resource not available in consent data", consentData.getState());
             }
 
-            if (initialConsentData.getConsentResource() == null) {
-                consentResource = consentCoreService.getConsent(initialConsentData.getConsentId(), false);
-                initialConsentData.setConsentResource(consentResource);
-                consentPersistData.setConsentData(initialConsentData);
-            }
+            consentResource = consentCoreService.getConsent(consentData.getConsentId(), false);
+            consentData.setConsentResource(consentResource);
+            consentPersistData.setConsentData(consentData);
 
             // Call external service and get updated consent persist data.
-            ConsentPersistData updatedConsentPersistData = getExternalConsentPersistData(consentPersistData);
-            ConsentData consentData = updatedConsentPersistData.getConsentData();
-            JSONObject accountsPayload = updatedConsentPersistData.getPayload();
+            ConsentPersistExternalRequestDTO externalRequestDTO = getExternalRequestDTO(consentPersistData);
+            ConsentPersistExternalResponseDTO externalResponseDTO = callExternalService(externalRequestDTO);
+            updateConsentPersistData(consentPersistData, externalResponseDTO);
 
-            consentCoreService.bindUserAccountsToConsent(consentData.getConsentResource(), consentData.getUserId(),
+            consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(),
                     consentData.getAuthResource().getAuthorizationID(),
-                    getConsentedAccounts(accountsPayload, true), "Authorized", "Authorized");
+                    getConsentedAccounts(consentPersistData.getPayload(), true), "Authorized", "Authorized");
 
 
         } catch (ConsentManagementException e) {
@@ -174,31 +174,37 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         return accountIDsMapWithPermissions;
     }
 
-    private ExternalServiceRequest createExternalServiceRequest(ConsentPersistData consentPersistData) {
+    private ConsentPersistExternalResponseDTO callExternalService(ConsentPersistExternalRequestDTO externalRequestDTO) {
+
+        ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(externalRequestDTO);
+        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+                ServiceExtensionTypeEnum.CONSENT_PERSISTENCE);
+
+        return new Gson().fromJson(response.toString(), ConsentPersistExternalResponseDTO.class);
+
+    }
+
+    private ExternalServiceRequest createExternalServiceRequest(ConsentPersistExternalRequestDTO externalRequestDTO) {
 
         JSONObject payload = new JSONObject();
-        String consentPersistDataJsonString = new Gson().toJson(consentPersistData);
+        String consentPersistDataJsonString = new Gson().toJson(externalRequestDTO);
         payload.append(CONSENT_PERSIST_DATA_OBJECT_KEY, consentPersistDataJsonString);
         Request eventRequest = new Request(payload, new HashMap<>());
         return new ExternalServiceRequest(UUID.randomUUID().toString(), eventRequest, "");
     }
 
-    private ConsentPersistData getExternalConsentPersistData(ConsentPersistData consentPersistData) {
-        ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(consentPersistData);
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.CONSENT_PERSISTENCE);
+    private ConsentPersistExternalRequestDTO getExternalRequestDTO(ConsentPersistData consentPersistData) {
+        ConsentPersistExternalRequestDTO externalRequestDTO = new ConsentPersistExternalRequestDTO();
 
-        // Navigate through the JSON structure
-        JSONObject request = response.getJSONObject("request");
-        JSONObject payload = request.getJSONObject("payload");
-        JSONArray consentPersistDataArray = payload.getJSONArray("consent_persist_data");
+        JSONObject payloadJson = consentPersistData.getPayload();
+        externalRequestDTO.setPayload(payloadJson);
+        return externalRequestDTO;
+    }
 
-        // Since it’s an array with one element, extract the first element
-        if (consentPersistDataArray.length() > 0) {
-            String consentPersistDataJson = consentPersistDataArray.getString(0);
-            return ConsentPersistData.fromJson(consentPersistDataJson);
-        }
-        return null;
+    private void updateConsentPersistData(ConsentPersistData consentPersistData,
+                                          ConsentPersistExternalResponseDTO externalResponseDTO) {
+
+        consentPersistData.setPayload(externalResponseDTO.getPayload());
     }
 
 }

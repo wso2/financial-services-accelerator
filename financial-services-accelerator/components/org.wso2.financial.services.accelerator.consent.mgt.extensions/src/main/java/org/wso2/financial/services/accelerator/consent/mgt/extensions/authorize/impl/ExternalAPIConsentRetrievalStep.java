@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
 import com.google.gson.Gson;
@@ -31,6 +30,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIConsentRetrievalRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIConsentRetrievalResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -47,7 +48,6 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
-    private static final String CONSENT_STEPS_JSON_OBJECT_KEY = "consent_steps_json";
     private static final String CONSENT_DATA_OBJECT_KEY = "consent_data";
 
     public ExternalAPIConsentRetrievalStep() {
@@ -66,13 +66,13 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
         try {
             setMandatoryConsentData(consentId, consentData);
-            ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(consentData, jsonObject);
-            // Call external API
+            ExternalAPIConsentRetrievalRequestDTO requestDTO = new ExternalAPIConsentRetrievalRequestDTO(consentData);
+
             log.debug("Calling external service to get consent data to be displayed");
-            JSONObject updatedJson = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                    ServiceExtensionTypeEnum.CONSENT_RETRIEVAL);
-            for (String key : updatedJson.keySet()) {
-                jsonObject.put(key, updatedJson.get(key));
+            ExternalAPIConsentRetrievalResponseDTO responseDTO = callExternalService(requestDTO);
+            JSONObject displayConsentData = new JSONObject(responseDTO.getDisplayConsentData());
+            for (String key : displayConsentData.keySet()) {
+                jsonObject.put(key, displayConsentData.get(key));
             }
         } catch (ConsentManagementException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
@@ -95,19 +95,28 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         // Set the consent data to be used in consent persistence.
         consentData.setConsentId(consentId);
         consentData.setType(consentResource.getConsentType());
+        consentData.setConsentResource(consentResource);
         consentData.setAuthResource(authorizationResource);
     }
 
-    private ExternalServiceRequest createExternalServiceRequest(ConsentData consentData, JSONObject jsonObject) {
+    private ExternalServiceRequest createExternalServiceRequest(
+            ExternalAPIConsentRetrievalRequestDTO requestDTO) {
 
-        String consentDataJsonString = new Gson().toJson(consentData);
+        String requestJsonString = new Gson().toJson(requestDTO);
         JSONObject payload = new JSONObject();
-        payload.put(CONSENT_STEPS_JSON_OBJECT_KEY, jsonObject);
-        payload.put(CONSENT_DATA_OBJECT_KEY, consentDataJsonString);
+        payload.put(CONSENT_DATA_OBJECT_KEY, requestJsonString);
 
-        // Create event request
         Request eventRequest = new Request(payload, new HashMap<>());
         return new ExternalServiceRequest(UUID.randomUUID().toString(), eventRequest, "");
+    }
+
+    private ExternalAPIConsentRetrievalResponseDTO callExternalService(
+            ExternalAPIConsentRetrievalRequestDTO requestDTO) {
+
+        ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(requestDTO);
+        JSONObject responseJson = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+                ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrievalResponseDTO.class);
     }
 
 }

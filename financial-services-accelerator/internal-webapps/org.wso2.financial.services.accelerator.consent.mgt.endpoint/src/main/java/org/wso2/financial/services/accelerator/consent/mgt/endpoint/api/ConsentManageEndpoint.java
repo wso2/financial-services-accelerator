@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -21,6 +21,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.api;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -28,6 +30,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.ExternalAPIConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +60,7 @@ import javax.ws.rs.core.UriInfo;
 public class ConsentManageEndpoint {
 
     private static final Log log = LogFactory.getLog(ConsentManageEndpoint.class);
+    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     private static ConsentManageHandler consentManageHandler = null;
     private static final String CLIENT_ID_HEADER = "x-wso2-client-id";
@@ -71,15 +75,21 @@ public class ConsentManageEndpoint {
     private static void initializeConsentManageHandler() {
 
         ConsentManageBuilder consentManageBuilder = ConsentExtensionExporter.getConsentManageBuilder();
+        boolean isExternalConsentManageEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.CONSENT_MANAGE);
+        boolean isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
 
-        if (consentManageBuilder != null) {
+        if ((isExtensionsEnabled && isExternalConsentManageEnabled)) {
+            consentManageHandler = new ExternalAPIConsentManageHandler();
+        } else if (consentManageBuilder != null) {
             consentManageHandler = consentManageBuilder.getConsentManageHandler();
         }
+
         if (consentManageHandler != null) {
             log.info(String.format("Consent manage handler %s initialized",
                     consentManageHandler.getClass().getName().replaceAll("\n\r", "")));
         } else {
-            log.warn("Consent manage handler is null");
+            log.warn("Consent manage handler not initialized.");
         }
     }
 
@@ -209,7 +219,8 @@ public class ConsentManageEndpoint {
 
     /**
      * Method to send response using the payload and response status.
-     * @param consentManageData  Consent manage data
+     *
+     * @param consentManageData Consent manage data
      * @return Response
      */
     private Response sendResponse(ConsentManageData consentManageData) {
@@ -227,7 +238,8 @@ public class ConsentManageEndpoint {
 
     /**
      * Method to send file upload response using the payload and response status.
-     * @param consentManageData  Consent manage data
+     *
+     * @param consentManageData Consent manage data
      * @return Response
      */
     private Response sendFileUploadResponse(ConsentManageData consentManageData) {

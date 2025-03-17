@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -24,8 +24,11 @@ package org.wso2.financial.services.accelerator.common.extension.model;
 public enum ServiceExtensionTypeEnum {
 
     POST_TOKEN_GENERATION("post-token-generation"),
-    CONSENT_RETRIEVAL("consent-retrieval"),
-    CONSENT_PERSISTENCE("consent-persistence");
+    PRE_CONSENT_AUTHORIZATION("pre-consent-authorization"),
+    CONSENT_PERSISTENCE("consent-persistence"),
+    CONSENT_MANAGE("consent-manage"),
+    CONSENT_MANAGE_GET("consent-manage-get"),
+    CONSENT_MANAGE_DELETE("consent-manage-delete");
 
     private final String type;
 

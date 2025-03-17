@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -32,6 +32,7 @@ import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentCache;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentConstants;
@@ -54,6 +55,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,33 +98,39 @@ public class ConsentAuthorizeEndpoint {
 
     private static synchronized void initializeConsentSteps() {
 
-        if (consentRetrievalSteps == null || consentPersistSteps == null) {
-            ConsentStepsBuilder consentStepsBuilder = ConsentExtensionExporter.getConsentStepsBuilder();
+        if (consentRetrievalSteps != null && consentPersistSteps != null) {
+            log.info("Retrieval and persist steps are already initialized.");
+            return;
+        }
+        ConsentStepsBuilder consentStepsBuilder = ConsentExtensionExporter.getConsentStepsBuilder();
 
-            if (consentStepsBuilder != null && !
-                     configParser.isServiceExtensionsEndpointEnabled()) {
-                consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
-                consentPersistSteps = consentStepsBuilder.getConsentPersistSteps();
-            } else {
-                // If external API service is enabled, add the external API steps.
-                consentRetrievalSteps = new ArrayList<>();
-                consentPersistSteps = new ArrayList<>();
-                consentRetrievalSteps.add(new ExternalAPIConsentRetrievalStep());
-                consentPersistSteps.add(new ExternalAPIConsentPersistStep());
-            }
+        boolean isExternalConsentRetrievalEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
+        boolean isExternalConsentPersistenceEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.CONSENT_PERSISTENCE);
+        boolean isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
 
-            if (consentRetrievalSteps != null && !consentRetrievalSteps.isEmpty()) {
-                log.info("Consent retrieval steps are not null or empty");
-            } else {
-                log.warn("Consent retrieval steps are null or empty");
-            }
-            if (consentPersistSteps != null && !consentPersistSteps.isEmpty()) {
-                log.info("Consent persist steps are not null or empty");
-            } else {
-                log.warn("Consent persist steps are null or empty");
-            }
+        if (isExtensionsEnabled && isExternalConsentRetrievalEnabled) {
+            consentRetrievalSteps = Collections.singletonList(new ExternalAPIConsentRetrievalStep());
+        } else if (consentStepsBuilder != null) {
+            consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
+        }
+
+        if (isExtensionsEnabled && isExternalConsentPersistenceEnabled) {
+            consentPersistSteps = Collections.singletonList(new ExternalAPIConsentPersistStep());
+        } else if (consentStepsBuilder != null) {
+            consentPersistSteps = consentStepsBuilder.getConsentPersistSteps();
+        }
+
+        if (consentRetrievalSteps != null && !consentRetrievalSteps.isEmpty()) {
+            log.info("Consent retrieval steps successfully initialized.");
         } else {
-            log.debug("Retrieval and persist steps are available");
+            log.warn("Consent retrieval steps have not been initialized.");
+        }
+        if (consentPersistSteps != null && !consentPersistSteps.isEmpty()) {
+            log.info("Consent persist steps successfully initialized.");
+        } else {
+            log.warn("Consent persist steps have not been initialized.");
         }
     }
 
@@ -131,10 +139,10 @@ public class ConsentAuthorizeEndpoint {
      */
     @GET
     @Path("/retrieve/{session-data-key}")
-    @Consumes({ "application/x-www-form-urlencoded" })
-    @Produces({ "application/json; charset=utf-8" })
+    @Consumes({"application/x-www-form-urlencoded"})
+    @Produces({"application/json; charset=utf-8"})
     public Response retrieve(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("session-data-key") String sessionDataKey) throws ConsentException,
+                             @PathParam("session-data-key") String sessionDataKey) throws ConsentException,
             ConsentManagementException, UserStoreException {
 
         String loggedInUser;
@@ -229,11 +237,11 @@ public class ConsentAuthorizeEndpoint {
      */
     @PATCH
     @Path("/persist/{session-data-key}")
-    @Consumes({ "application/json; charset=utf-8" })
-    @Produces({ "application/json; charset=utf-8" })
+    @Consumes({"application/json; charset=utf-8"})
+    @Produces({"application/json; charset=utf-8"})
     public Response persist(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("session-data-key") String sessionDataKey,
-            @QueryParam("authorize") String authorize)
+                            @PathParam("session-data-key") String sessionDataKey,
+                            @QueryParam("authorize") String authorize)
             throws ConsentException, ConsentManagementException, URISyntaxException {
 
         ConsentData consentData = ConsentCache.getConsentDataFromCache(sessionDataKey);
