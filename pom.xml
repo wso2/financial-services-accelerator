@@ -91,6 +91,8 @@
     <modules>
         <module>financial-services-accelerator</module>
         <module>react-apps</module>
+        <module>fs-integration-test-suite/accelerator-tests/is-tests</module>
+        <module>fs-integration-test-suite/accelerator-tests/gateway-tests</module>
     </modules>
 
     <repositories>
