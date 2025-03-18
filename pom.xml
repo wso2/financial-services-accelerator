@@ -43,6 +43,7 @@
             <modules>
                 <module>financial-services-accelerator</module>
                 <module>react-apps</module>
+                <module>financial-services-accelerator/accelerators</module>
                 <module>integration-test-framework</module>
             </modules>
             <build>
@@ -69,39 +70,18 @@
             </properties>
         </profile>
         <profile>
-            <id>solution</id>
+            <id>test-suite</id>
             <activation>
+                <activeByDefault>false</activeByDefault>
                 <property>
                     <name>profile</name>
-                    <value>solution</value>
+                    <value>test-suite</value>
                 </property>
             </activation>
             <modules>
-                <module>financial-services-accelerator</module>
-                <module>financial-services-accelerator/accelerators</module>
+                <module>integration-test-framework</module>
+                <module>fs-integration-test-suite</module>
             </modules>
-            <properties>
-                <npm.executable>npm</npm.executable>
-            </properties>
-        </profile>
-        <profile>
-            <id>open-banking-test-suite</id>
-            <activation>
-                <property>
-                    <name>profile</name>
-                    <value>open-banking-test-suite</value>
-                </property>
-            </activation>
-        </profile>
-        <profile>
-            <id>integration-test-suite</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>profile</name>
-                    <value>integration-test-suite</value>
-                </property>
-            </activation>
         </profile>
     </profiles>
 

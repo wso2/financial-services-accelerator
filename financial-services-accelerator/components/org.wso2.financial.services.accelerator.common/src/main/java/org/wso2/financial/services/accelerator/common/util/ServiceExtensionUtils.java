@@ -39,6 +39,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,6 +49,16 @@ import javax.servlet.http.HttpServletRequest;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
+//    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+
+    public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
+
+        boolean isServiceExtensionsEndpointEnabled = FinancialServicesConfigParser.getInstance()
+                .isServiceExtensionsEndpointEnabled();
+        List<ServiceExtensionTypeEnum> serviceExtensionTypes = FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionTypes();
+        return isServiceExtensionsEndpointEnabled && serviceExtensionTypes.contains(serviceExtensionTypeEnum);
+    }
 
     /**
      * Method to invoke external service call.
