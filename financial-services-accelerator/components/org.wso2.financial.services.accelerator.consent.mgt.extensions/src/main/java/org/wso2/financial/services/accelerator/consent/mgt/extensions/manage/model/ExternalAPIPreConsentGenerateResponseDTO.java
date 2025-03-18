@@ -20,9 +20,9 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 import java.util.Map;
 
 /**
- * ExternalAPIConsentGenerateResponseDTO
+ * ExternalAPIPreConsentGenerateResponseDTO
  */
-public class ExternalAPIConsentGenerateResponseDTO {
+public class ExternalAPIPreConsentGenerateResponseDTO {
 
     private Map<String, Object> receipt;
     private int consentFrequency;

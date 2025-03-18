@@ -36,12 +36,14 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentGenerateRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.HashMap;
@@ -95,11 +97,9 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
                         consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
                 ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
                         consentId, consentType, resourcePath, consentAttributes);
-                callExternalService(requestDTO); // Calling external service for validations
+                ExternalAPIConsentRetrieveResponseDTO responseDTO = callExternalService(requestDTO);
 
-                JSONObject receiptJSON = new JSONObject(consentResource.getReceipt());
-                consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(receiptJSON,
-                        consentResource));
+                consentManageData.setResponsePayload(responseDTO.getData());
                 consentManageData.setResponseStatus(ResponseStatus.OK);
             } catch (ConsentManagementException e) {
                 log.error("Error Occurred while handling the request", e);
@@ -125,12 +125,19 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found");
         }
 
-        ExternalAPIConsentGenerateRequestDTO requestDTO = new ExternalAPIConsentGenerateRequestDTO(consentManageData);
-        ExternalAPIConsentGenerateResponseDTO responseDTO = callExternalService(requestDTO);
+        // Call external service before generating consent
+        ExternalAPIPreConsentGenerateRequestDTO preRequestDTO =
+                new ExternalAPIPreConsentGenerateRequestDTO(consentManageData);
+        ExternalAPIPreConsentGenerateResponseDTO preResponseDTO = callExternalService(preRequestDTO);
 
-        DetailedConsentResource createdConsent = generateConsent(responseDTO, consentManageData.getClientId());
-        consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationResponse(
-                consentManageData.getPayload(), createdConsent));
+        DetailedConsentResource createdConsent = generateConsent(preResponseDTO, consentManageData.getClientId());
+
+        // Call external service after generating consent
+        ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
+                createdConsent);
+        ExternalAPIPostConsentGenerateResponseDTO postResponseDTO = callExternalService(postRequestDTO);
+
+        consentManageData.setResponsePayload(postResponseDTO.getData());
         consentManageData.setResponseStatus(ResponseStatus.CREATED);
 
     }
@@ -223,11 +230,20 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
         throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, "Method File Upload GET is not supported");
     }
 
-    private ExternalAPIConsentGenerateResponseDTO callExternalService(ExternalAPIConsentGenerateRequestDTO requestDTO)
+    private ExternalAPIPreConsentGenerateResponseDTO callExternalService(
+            ExternalAPIPreConsentGenerateRequestDTO requestDTO)
             throws ConsentException {
         JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_GENERATION);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentGenerateResponseDTO.class);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentGenerateResponseDTO.class);
+    }
+
+    private ExternalAPIPostConsentGenerateResponseDTO callExternalService(
+            ExternalAPIPostConsentGenerateRequestDTO requestDTO)
+            throws ConsentException {
+        JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
+        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.POST_CONSENT_GENERATION);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIPostConsentGenerateResponseDTO.class);
     }
 
     private ExternalAPIConsentRevokeResponseDTO callExternalService(ExternalAPIConsentRevokeRequestDTO requestDTO)
@@ -252,8 +268,8 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
         return ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest, serviceType);
     }
 
-    private DetailedConsentResource generateConsent(ExternalAPIConsentGenerateResponseDTO responseDTO, String clientId)
-            throws ConsentException {
+    private DetailedConsentResource generateConsent(
+            ExternalAPIPreConsentGenerateResponseDTO responseDTO, String clientId) throws ConsentException {
 
         try {
             ConsentResource consentResource = new ConsentResource(clientId,
