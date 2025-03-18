@@ -23,7 +23,7 @@
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
         <groupId>com.wso2.openbanking.accelerator</groupId>
-        <version>3.3.0-SNAPSHOT</version>
+        <version>3.3.8-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -198,6 +198,7 @@
                         <exclude>**/CertValidationErrors.class</exclude>
                         <exclude>**/JDBCRetentionDataPersistenceManager.class</exclude>
                         <exclude>**/*Type*/**</exclude>
+                        <exclude>**/*OpenBankingConfigurationService*/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Consent core service implementation.
@@ -1725,66 +1726,139 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
         // Get existing consent account mappings
         log.debug("Retrieve existing active account mappings");
-        ArrayList<ConsentMappingResource> existingAccountMappings =
+        ArrayList<ConsentMappingResource> existingAllAccountMappings =
                 detailedConsentResource.getConsentMappingResources();
 
-        // Determine unique account IDs
-        HashSet<String> existingAccountIDs = new HashSet<>();
-        for (ConsentMappingResource resource : existingAccountMappings) {
-            existingAccountIDs.add(resource.getAccountID());
+        // Determine all existing account IDs
+        HashSet<String> existingAllAccountIDs = new HashSet<>();
+        for (ConsentMappingResource resource : existingAllAccountMappings) {
+            existingAllAccountIDs.add(resource.getAccountID());
         }
 
-        ArrayList<String> existingAccountIDsList = new ArrayList<>(existingAccountIDs);
-
-        ArrayList<String> reAuthorizedAccounts = new ArrayList<>();
-        for (Map.Entry<String, ArrayList<String>> entry : accountIDsMapWithPermissions.entrySet()) {
-            String accountID = entry.getKey();
-            reAuthorizedAccounts.add(accountID);
-        }
-
-        // Determine whether the account should be removed or added
-        ArrayList<String> accountsToRevoke = new ArrayList<>(existingAccountIDsList);
-        accountsToRevoke.removeAll(reAuthorizedAccounts);
-
-        ArrayList<String> accountsToAdd = new ArrayList<>(reAuthorizedAccounts);
-
-        if (isNewAuthResource) {
-            ArrayList<String> commonAccountsFromReAuth = new ArrayList<>(existingAccountIDs);
-            commonAccountsFromReAuth.retainAll(accountsToAdd);
-            accountsToAdd.removeAll(existingAccountIDs);
-            accountsToAdd.addAll(commonAccountsFromReAuth);
-        } else {
-            accountsToAdd.removeAll(existingAccountIDs);
-        }
-
-        if (!accountsToAdd.isEmpty()) {
-            // Store accounts as consent account mappings
-            log.debug("Add extra accounts as account mappings");
-            for (String accountID : accountsToAdd) {
-                ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
-                for (String permission : permissions) {
-                    ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-                    consentMappingResource.setAuthorizationID(authID);
-                    consentMappingResource.setAccountID(accountID);
-                    consentMappingResource.setPermission(permission);
-                    consentMappingResource.setMappingStatus(ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
-                    consentCoreDAO.storeConsentMappingResource(connection, consentMappingResource);
-                }
+        // existing active account mappings
+        HashSet<String> existingActiveAccountIDs = new HashSet<>();
+        for (ConsentMappingResource resource : existingAllAccountMappings) {
+            if (ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS.equals(resource.getMappingStatus())) {
+                existingActiveAccountIDs.add(resource.getAccountID());
             }
         }
-        if (!accountsToRevoke.isEmpty()) {
-            // Update mapping statuses of revoking accounts to inactive
-            log.debug("Deactivate unwanted account mappings");
-            ArrayList<String> mappingIDsToUpdate = new ArrayList<>();
-            for (String accountID : accountsToRevoke) {
-                for (ConsentMappingResource resource : existingAccountMappings) {
-                    if (accountID.equalsIgnoreCase(resource.getAccountID())) {
-                        mappingIDsToUpdate.add(resource.getMappingID());
+
+        // selected list of account IDs
+        ArrayList<String> selectedAccountIDsList = new ArrayList<>();
+        for (Map.Entry<String, ArrayList<String>> entry : accountIDsMapWithPermissions.entrySet()) {
+            String accountID = entry.getKey();
+            selectedAccountIDsList.add(accountID);
+        }
+
+        // existing active account mappings to make inactive.
+        ArrayList<String> accountsToRevoke = new ArrayList<>(existingAllAccountIDs);
+        accountsToRevoke.removeAll(selectedAccountIDsList);
+
+        // new account mapping to add new entries
+        ArrayList<String> accountsToAdd = new ArrayList<>(selectedAccountIDsList);
+        accountsToAdd.removeAll(existingAllAccountIDs);
+
+        // existing inactive account mappings to activate.
+        ArrayList<String> accountsToActivate = new ArrayList<>(existingAllAccountIDs);
+        accountsToActivate.removeAll(existingActiveAccountIDs);
+        accountsToActivate.retainAll(selectedAccountIDsList);
+
+        if (!isNewAuthResource) {
+            if (!accountsToAdd.isEmpty()) {
+                // Store accounts as consent account mappings
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Adding new account entries as account mappings : %s ", accountsToAdd));
+                }
+                for (String accountID : accountsToAdd) {
+                    ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
+                    for (String permission : permissions) {
+                        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+                        consentMappingResource.setAuthorizationID(authID);
+                        consentMappingResource.setAccountID(accountID);
+                        consentMappingResource.setPermission(permission);
+                        consentMappingResource.setMappingStatus(ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
+                        consentCoreDAO.storeConsentMappingResource(connection, consentMappingResource);
                     }
                 }
             }
-            consentCoreDAO.updateConsentMappingStatus(connection, mappingIDsToUpdate,
-                    ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
+            if (!accountsToActivate.isEmpty()) {
+                // Update mapping statuses of inactive accounts to active
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Activating inactive account mappings : %s ", accountsToActivate));
+                }
+                ArrayList<String> mappingIDsToActivate = new ArrayList<>();
+                for (String accountID : accountsToActivate) {
+                    for (ConsentMappingResource resource : existingAllAccountMappings) {
+                        if (accountID.equalsIgnoreCase(resource.getAccountID())) {
+                            mappingIDsToActivate.add(resource.getMappingID());
+                        }
+                    }
+                }
+                consentCoreDAO.updateConsentMappingStatus(connection, mappingIDsToActivate,
+                        ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
+            }
+            if (!accountsToRevoke.isEmpty()) {
+                // Update mapping statuses of revoking accounts to inactive
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("De-activate unwanted account mappings : %s ", accountsToRevoke));
+                }
+                ArrayList<String> mappingIDsToUpdate = new ArrayList<>();
+                for (String accountID : accountsToRevoke) {
+                    for (ConsentMappingResource resource : existingAllAccountMappings) {
+                        if (accountID.equalsIgnoreCase(resource.getAccountID())) {
+                            mappingIDsToUpdate.add(resource.getMappingID());
+                        }
+                    }
+                }
+                consentCoreDAO.updateConsentMappingStatus(connection, mappingIDsToUpdate,
+                        ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
+            }
+        } else {
+            // Add mappings to new auth resource.
+            ArrayList<String> addAsActiveList = new ArrayList<>(selectedAccountIDsList);
+            ArrayList<String> addAsInactiveList = new ArrayList<>(existingAllAccountIDs);
+            addAsInactiveList.removeAll(addAsActiveList);
+
+            if (!addAsActiveList.isEmpty()) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Adding active account mappings rows for new auth resource : %s ",
+                        addAsActiveList));
+                }
+                for (String accountID : addAsActiveList) {
+                    ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
+                    for (String permission : permissions) {
+                        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+                        consentMappingResource.setAuthorizationID(authID);
+                        consentMappingResource.setAccountID(accountID);
+                        consentMappingResource.setPermission(permission);
+                        consentMappingResource.setMappingStatus(ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
+                        consentCoreDAO.storeConsentMappingResource(connection, consentMappingResource);
+                    }
+                }
+            }
+            if (!addAsInactiveList.isEmpty()) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Adding inactive account mappings rows for new auth resource : %s ",
+                        addAsInactiveList));
+                }
+                for (String accountID : addAsInactiveList) {
+                    ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
+                    if (permissions == null) {
+                        permissions = existingAllAccountMappings.stream()
+                                .filter(mapping -> mapping.getAccountID().equals(accountID))
+                                .map(ConsentMappingResource::getPermission)
+                                .collect(Collectors.toCollection(ArrayList::new));
+                    }
+                    for (String permission : permissions) {
+                        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+                        consentMappingResource.setAuthorizationID(authID);
+                        consentMappingResource.setAccountID(accountID);
+                        consentMappingResource.setPermission(permission);
+                        consentMappingResource.setMappingStatus(ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
+                        consentCoreDAO.storeConsentMappingResource(connection, consentMappingResource);
+                    }
+                }
+            }
         }
     }
 
@@ -1980,15 +2054,15 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                                                        Map<String, Object> additionalAmendmentData)
             throws ConsentManagementException, OBConsentDataInsertionException {
 
-        Map<String, AuthorizationResource> newAuthResources;
-        Map<String, ArrayList<ConsentMappingResource>> newMappingResources;
-
         if (additionalAmendmentData.containsKey(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES) &&
                 additionalAmendmentData.containsKey(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES)) {
-
-            newAuthResources = (Map<String, AuthorizationResource>) additionalAmendmentData
-                    .get(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES);
-            newMappingResources = (Map<String, ArrayList<ConsentMappingResource>>) additionalAmendmentData
+            // This approach does not support multiple auth resources for a single user.
+            // Hence this approach is deprecated, This logic kept for backward compatibility.
+            Map<String, AuthorizationResource> newAuthResources =
+                    (Map<String, AuthorizationResource>) additionalAmendmentData
+                            .get(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES);
+            Map<String, ArrayList<ConsentMappingResource>> newMappingResources =
+                    (Map<String, ArrayList<ConsentMappingResource>>) additionalAmendmentData
                     .get(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES);
 
             for (Map.Entry<String, AuthorizationResource> authResourceEntry : newAuthResources.entrySet()) {
@@ -2018,6 +2092,95 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     mappingResource.setAuthorizationID(authorizationResource.getAuthorizationID());
                     // create mapping resource
                     consentCoreDAO.storeConsentMappingResource(connection, mappingResource);
+                }
+            }
+
+        } else if (additionalAmendmentData.containsKey(
+                ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES_LIST) &&
+                additionalAmendmentData.containsKey(
+                        ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES_WITH_AUTH_TYPES)) {
+
+            // This approach supports multiple auth resources for a single user.
+            // user_id -> list of new authorization resources
+            Map<String, ArrayList<AuthorizationResource>> newAuthResources;
+            // user_id -> (auth_type against list of account mappings)
+            Map<String, Map<String, ArrayList<ConsentMappingResource>>> newMappingResources;
+
+            newAuthResources = (Map<String, ArrayList<AuthorizationResource>>) additionalAmendmentData
+                    .get(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES_LIST);
+            newMappingResources = (Map<String, Map<String, ArrayList<ConsentMappingResource>>>) additionalAmendmentData
+                    .get(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES_WITH_AUTH_TYPES);
+
+            for (Map.Entry<String, ArrayList<AuthorizationResource>> authResourceEntry : newAuthResources.entrySet()) {
+
+                String userId = authResourceEntry.getKey();
+                ArrayList<AuthorizationResource> authResources = authResourceEntry.getValue();
+
+                for (AuthorizationResource authResource : authResources) {
+
+                    if (StringUtils.isBlank(authResource.getConsentID()) ||
+                            StringUtils.isBlank(authResource.getAuthorizationType()) ||
+                            StringUtils.isBlank(authResource.getAuthorizationStatus())) {
+                        log.error("Consent ID, authorization type or authorization status is missing, " +
+                                "cannot proceed");
+                        throw new ConsentManagementException("Cannot proceed since consent ID, authorization type or " +
+                                "authorization status is missing");
+                    }
+                    // check if existing authorization resource is present.
+                    ArrayList<AuthorizationResource> existingAuthorizationResources = new ArrayList<>();
+                    try {
+                        existingAuthorizationResources = consentCoreDAO.searchConsentAuthorizations(connection,
+                                authResource.getConsentID(), userId);
+                    } catch (OBConsentDataRetrievalException e) {
+                        // handling empty search results for consent auth resources.
+                        if (log.isDebugEnabled()) {
+                            log.debug("No existing authorization resources found for the consent ID: " +
+                                    authResource.getConsentID() + " and user ID: " + userId);
+                        }
+                    }
+                    AuthorizationResource authorizationResource;
+                    if (existingAuthorizationResources.stream()
+                            .noneMatch(e -> e.getAuthorizationType().equals(authResource.getAuthorizationType()))) {
+                        // create authorization resource
+                        authorizationResource =
+                                consentCoreDAO.storeAuthorizationResource(connection, authResource);
+                    } else {
+                        authorizationResource = existingAuthorizationResources.stream()
+                                .filter(e -> e.getAuthorizationType().equals(authResource.getAuthorizationType()))
+                                .findFirst().get();
+                    }
+
+                    ArrayList<ConsentMappingResource> mappingResources =
+                            newMappingResources.get(userId).get(authResource.getAuthorizationType());
+                    for (ConsentMappingResource mappingResource : mappingResources) {
+
+                        if (StringUtils.isBlank(mappingResource.getAccountID()) ||
+                                StringUtils.isBlank(mappingResource.getMappingStatus())) {
+                            log.error("Account ID or Mapping Status is not found, cannot proceed");
+                            throw new ConsentManagementException("Account ID or Mapping Status is not found, " +
+                                    "cannot proceed");
+                        }
+                        mappingResource.setAuthorizationID(authorizationResource.getAuthorizationID());
+
+                        // check if existing mapping resource is present.
+                        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+                        try {
+
+                            consentMappingResources = consentCoreDAO.getConsentMappingResources(connection,
+                                    authorizationResource.getAuthorizationID());
+                        } catch (OBConsentDataRetrievalException e) {
+                            // handling empty search results for consent mapping resources.
+                            if (log.isDebugEnabled()) {
+                                log.debug("No existing mapping resources found for the authorization ID: " +
+                                        authorizationResource.getAuthorizationID());
+                            }
+                        }
+                        if (consentMappingResources.stream().noneMatch(e ->
+                                e.getAccountID().equals(mappingResource.getAccountID()))) {
+                            // create mapping resource
+                            consentCoreDAO.storeConsentMappingResource(connection, mappingResource);
+                        }
+                    }
                 }
             }
         }
