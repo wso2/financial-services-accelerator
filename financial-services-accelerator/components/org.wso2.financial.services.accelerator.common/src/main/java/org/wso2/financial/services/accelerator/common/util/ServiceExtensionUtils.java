@@ -49,12 +49,14 @@ import javax.servlet.http.HttpServletRequest;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+//    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
-        boolean isServiceExtensionsEndpointEnabled = configParser.isServiceExtensionsEndpointEnabled();
-        List<ServiceExtensionTypeEnum> serviceExtensionTypes = configParser.getServiceExtensionTypes();
+        boolean isServiceExtensionsEndpointEnabled = FinancialServicesConfigParser.getInstance()
+                .isServiceExtensionsEndpointEnabled();
+        List<ServiceExtensionTypeEnum> serviceExtensionTypes = FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionTypes();
         return isServiceExtensionsEndpointEnabled && serviceExtensionTypes.contains(serviceExtensionTypeEnum);
     }
 
@@ -100,7 +102,7 @@ public class ServiceExtensionUtils {
 
     private static String constructExtensionEndpoint(ServiceExtensionTypeEnum serviceType) {
 
-        String baseUrl = configParser.getServiceExtensionsEndpointBaseUrl();
+        String baseUrl = FinancialServicesConfigParser.getInstance().getServiceExtensionsEndpointBaseUrl();
         return baseUrl + "/" + serviceType.toString();
     }
 
