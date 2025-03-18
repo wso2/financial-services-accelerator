@@ -31,7 +31,7 @@ public interface FSResponseTypeHandler {
      * @param oAuthAuthzReqMessageContext
      * @return
      */
-    public long updateRefreshTokenValidityPeriod(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext);
+    public long getRefreshTokenValidityPeriod(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext);
 
     /**
      * return the new approved scope.
@@ -39,7 +39,7 @@ public interface FSResponseTypeHandler {
      * @param oAuthAuthzReqMessageContext
      * @return
      */
-    public String[] updateApprovedScopes(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext);
+    public String[] getApprovedScopes(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext);
 
 
 }

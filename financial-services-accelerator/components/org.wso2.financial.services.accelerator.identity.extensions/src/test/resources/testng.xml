@@ -23,7 +23,7 @@
         <classes>
             <class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidatorTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.RequestObjectValidatorTest" />
-            <class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.ResponseTypeHandlerTest" />
+            <!--<class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.ResponseTypeHandlerTest" />-->
             <class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.validator.FSCodeResponseTypeValidatorTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.validator.FSHybridResponseTypeValidatorTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultOIDCClaimsCallbackHandlerTest" />

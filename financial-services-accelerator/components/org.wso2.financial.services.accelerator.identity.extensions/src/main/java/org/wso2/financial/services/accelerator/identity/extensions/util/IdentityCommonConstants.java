@@ -23,6 +23,7 @@ package org.wso2.financial.services.accelerator.identity.extensions.util;
  */
 public class IdentityCommonConstants {
 
+    public static final String OPENBANKING_INTENT_ID = "openbanking_intent_id";
     public static final String CLIENT_ID = "client_id";
     public static final String REQUEST_URI = "request_uri";
     public static final String RESPONSE_TYPE = "response_type";
@@ -74,5 +75,8 @@ public class IdentityCommonConstants {
 
     // Service Extension constants
     public static final String USER_ID = "userId";
+    public static final String SCOPES = "scopes";
+    public static final String CONSENT_ID = "consentId";
+    public static final String VALIDITY_PERIOD = "validityPeriod";
 }
 

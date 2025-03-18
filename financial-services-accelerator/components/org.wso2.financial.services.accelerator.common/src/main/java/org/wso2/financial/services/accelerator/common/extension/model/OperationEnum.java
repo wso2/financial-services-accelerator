@@ -24,7 +24,9 @@ package org.wso2.financial.services.accelerator.common.extension.model;
 public enum OperationEnum {
 
     ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE("additionalIdTokenClaimsForAuthzResponse"),
-    ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE("additionalIdTokenClaimsForTokenResponse");
+    ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE("additionalIdTokenClaimsForTokenResponse"),
+    GET_APPROVED_SCOPES("getApprovedScopes"),
+    GET_REFRESH_TOKEN_VALIDITY_PERIOD("getRefreshTokenValidityPeriod");
 
     private final String operation;
 

@@ -18,31 +18,16 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
-import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
-import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
-import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
-import org.wso2.carbon.identity.oauth.common.OAuthConstants;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
-import org.wso2.financial.services.accelerator.common.util.JWTUtils;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
-import java.text.ParseException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.wso2.carbon.identity.openidconnect.model.Constants.JWT_PART_DELIMITER;
-import static org.wso2.carbon.identity.openidconnect.model.Constants.NUMBER_OF_PARTS_IN_JWE;
 
 /**
  * Default FS specific claim provider implementation.

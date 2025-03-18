@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -26,13 +28,13 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.Request;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +45,7 @@ import java.util.UUID;
  */
 public class FSClaimProvider implements ClaimProvider {
 
+    private static final Log log = LogFactory.getLog(FSClaimProvider.class);
     private static ClaimProvider claimProvider;
 
     @Override
@@ -154,29 +157,32 @@ public class FSClaimProvider implements ClaimProvider {
 
         Map<String, Object> additionalClaims = new HashMap<>();
 
-        if (!FinancialServicesConstants.ACTION_STATUS_SUCCESS
-                .equals(response.optString(FinancialServicesConstants.ACTION_STATUS, ""))) {
-            String message = response.optString(FinancialServicesConstants.ERROR_MESSAGE,
-                    "malformed_response");
-            String description = response.optString(FinancialServicesConstants.ERROR_DESCRIPTION,
-                    "Response not in required format");
-            throw new IdentityOAuth2Exception(message, description);
+        if (response == null) {
+            log.error("Null response received from external service.");
+            throw new IdentityOAuth2Exception("Null response received from external service.");
         }
 
-        // Extract claims from response payload
+        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
+
         JSONObject responsePayload = response.optJSONObject("payload");
-        if (responsePayload != null) {
-            JSONArray claims = responsePayload.optJSONArray("claims");
-            if (claims != null) {
-                for (Object claimObject : claims) {
-                    if (claimObject instanceof JSONObject) {
-                        JSONObject claim = (JSONObject) claimObject;
-                        String key = claim.optString("key", "");
-                        Object value = claim.opt("value");
-                        if (!key.isEmpty() && value != null) {
-                            additionalClaims.put(key, value);
-                        }
-                    }
+        if (responsePayload == null) {
+            log.error("Missing payload in response from external service.");
+            throw new IdentityOAuth2Exception("Missing payload in response from external service.");
+        }
+
+        JSONArray claims = responsePayload.optJSONArray("claims");
+        if (claims == null) {
+            log.error("Missing claims array in response payload.");
+            throw new IdentityOAuth2Exception("Missing claims array in response payload.");
+        }
+
+        for (Object claimObject : claims) {
+            if (claimObject instanceof JSONObject) {
+                JSONObject claim = (JSONObject) claimObject;
+                String key = claim.optString("key");
+                Object value = claim.opt("value");
+                if (!key.isEmpty() && value != null) {
+                    additionalClaims.put(key, value);
                 }
             }
         }
