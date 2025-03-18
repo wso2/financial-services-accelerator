@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 
 import java.io.IOException;
@@ -49,7 +52,6 @@ import javax.servlet.http.HttpServletRequest;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
-//    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
@@ -67,7 +69,7 @@ public class ServiceExtensionUtils {
      * @param serviceType
      * @return
      */
-    public static JSONObject invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest,
+    public static ExternalServiceResponse invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest,
                                                        ServiceExtensionTypeEnum serviceType) {
         try {
             String externalServicesPayload = (new JSONObject(externalServiceRequest)).toString();
@@ -94,10 +96,19 @@ public class ServiceExtensionUtils {
                 throw new FinancialServicesException("Error occurred while invoking the external service: " + errorMsg);
             }
             InputStream in = response.getEntity().getContent();
-            return new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
+            return mapResponse(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)),
+                    ExternalServiceResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new FinancialServicesRuntimeException("Error Occurred while mapping response to model class", e);
         } catch (FinancialServicesException | IOException e) {
             throw new FinancialServicesRuntimeException("Error Occurred while invoking the external service", e);
         }
+    }
+
+    public static <T> T mapResponse(String jsonResponse, Class<T> clazz) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(jsonResponse, clazz);
     }
 
     private static String constructExtensionEndpoint(ServiceExtensionTypeEnum serviceType) {

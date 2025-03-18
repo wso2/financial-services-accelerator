@@ -18,12 +18,12 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.nimbusds.jose.JWSAlgorithm;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
@@ -45,9 +45,10 @@ import org.wso2.financial.services.accelerator.common.exception.ConsentManagemen
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
-import org.wso2.financial.services.accelerator.common.extension.model.Request;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -484,15 +485,11 @@ public class IdentityCommonUtils {
      * @param response
      * @throws IdentityOAuth2Exception
      */
-    public static void serviceExtensionActionStatusValidation(JSONObject response) throws IdentityOAuth2Exception {
+    public static void serviceExtensionActionStatusValidation(ExternalServiceResponse response)
+            throws IdentityOAuth2Exception {
 
-        String status = response.optString(FinancialServicesConstants.ACTION_STATUS, "");
-        if (!FinancialServicesConstants.ACTION_STATUS_SUCCESS.equals(status)) {
-            String message = response.optString(FinancialServicesConstants.ERROR_MESSAGE,
-                    "malformed_response");
-            String description = response.optString(FinancialServicesConstants.ERROR_DESCRIPTION,
-                    "Response not in required format");
-            throw new IdentityOAuth2Exception(message, description);
+        if (!StatusEnum.SUCCESS.equals(response.getStatus())) {
+            throw new IdentityOAuth2Exception(response.getErrorMessage(), response.getErrorDescription());
         }
     }
 
@@ -508,27 +505,26 @@ public class IdentityCommonUtils {
                                                            String consentId) throws IdentityOAuth2Exception {
 
         // Construct the payload
-        JSONObject payload = new JSONObject();
-        payload.put(IdentityCommonConstants.SCOPES, Arrays.toString(oauthAuthzMsgCtx.getApprovedScope()));
-        payload.put(IdentityCommonConstants.CONSENT_ID, consentId);
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.SCOPES, Arrays.toString(oauthAuthzMsgCtx.getApprovedScope()));
+        data.put(IdentityCommonConstants.CONSENT_ID, consentId);
 
-        Request request = new Request(payload, new HashMap<>());
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
-                request, OperationEnum.GET_APPROVED_SCOPES);
+                data, OperationEnum.GET_APPROVED_SCOPES);
 
         // Invoke external service
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
                 ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION);
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
-        JSONObject responsePayload = response.optJSONObject("payload");
-        if (responsePayload == null) {
+        JsonNode responseData = response.getData();
+        if (responseData == null) {
             log.error("Missing payload in response from external service.");
             throw new IdentityOAuth2Exception("Missing payload in response from external service.");
         }
 
-        JSONArray approvedScopesArray = responsePayload.optJSONArray("approvedScopes");
+        JsonNode approvedScopesArray = responseData.get("approvedScopes");
         if (approvedScopesArray == null) {
             log.error("Missing approvedScopes array in response payload.");
             throw new IdentityOAuth2Exception("Missing approvedScopes array in response payload.");
@@ -556,38 +552,37 @@ public class IdentityCommonUtils {
                                                                    String consentId) throws IdentityOAuth2Exception {
 
         // Construct the payload
-        JSONObject payload = new JSONObject();
-        payload.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
-        payload.put(IdentityCommonConstants.CONSENT_ID, consentId);
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
+        data.put(IdentityCommonConstants.CONSENT_ID, consentId);
 
         ConsentCoreService consentCoreService = IdentityExtensionsDataHolder.getInstance().getConsentCoreService();
         ConsentResource consentResource = null;
         try {
             consentResource = consentCoreService.getConsent(consentId, false);
-            payload.put(IdentityCommonConstants.VALIDITY_PERIOD, consentResource.getValidityPeriod());
+            data.put(IdentityCommonConstants.VALIDITY_PERIOD, consentResource.getValidityPeriod());
         } catch (ConsentManagementException e) {
             log.error(String.format("Error while retrieving the consent for consent id: %s",
                     consentId.replaceAll("[\r\n]", "")));
             throw new IdentityOAuth2Exception("Error while retrieving the consent");
         }
 
-        Request request = new Request(payload, new HashMap<>());
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
-                request, OperationEnum.GET_REFRESH_TOKEN_VALIDITY_PERIOD);
+                data, OperationEnum.GET_REFRESH_TOKEN_VALIDITY_PERIOD);
 
         // Invoke external service
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
                 ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION);
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
-        JSONObject responsePayload = response.optJSONObject("payload");
-        if (responsePayload == null) {
+        JsonNode responseData = response.getData();
+        if (responseData == null) {
             log.error("Missing payload in response from external service.");
             throw new IdentityOAuth2Exception("Missing payload in response from external service.");
         }
 
-        return responsePayload.optLong("refreshTokenValidityPeriod");
+        return responseData.get("refreshTokenValidityPeriod").asLong();
     }
 
 }

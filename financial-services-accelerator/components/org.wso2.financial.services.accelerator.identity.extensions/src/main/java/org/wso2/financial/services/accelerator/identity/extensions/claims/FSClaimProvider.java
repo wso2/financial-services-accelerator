@@ -18,9 +18,9 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
@@ -29,8 +29,8 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
-import org.wso2.financial.services.accelerator.common.extension.model.Request;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
@@ -115,18 +115,17 @@ public class FSClaimProvider implements ClaimProvider {
             throws IdentityOAuth2Exception {
 
         // Construct the payload
-        JSONObject payload = new JSONObject();
-        payload.put(IdentityCommonConstants.USER_ID, authAuthzReqMessageContext.getAuthorizationReqDTO()
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.USER_ID, authAuthzReqMessageContext.getAuthorizationReqDTO()
                 .getUser().getUserName());
 
         // TODO: Retrieve consent ID if required
 
-        Request request = new Request(payload, new HashMap<>());
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), request, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
+                UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
 
         // Invoke external service
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
                 ServiceExtensionTypeEnum.PRE_ID_TOKEN_GENERATION);
 
         return processResponseAndGetClaims(response);
@@ -137,23 +136,23 @@ public class FSClaimProvider implements ClaimProvider {
             throws IdentityOAuth2Exception {
 
         // Construct the payload
-        JSONObject payload = new JSONObject();
-        payload.put(IdentityCommonConstants.USER_ID, tokenReqMessageContext.getAuthorizedUser().getUserName());
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.USER_ID, tokenReqMessageContext.getAuthorizedUser().getUserName());
 
         // TODO: Retrieve consent ID if required
 
-        Request request = new Request(payload, new HashMap<>());
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), request, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE);
+                UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE);
 
         // Invoke external service
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
                 ServiceExtensionTypeEnum.PRE_ID_TOKEN_GENERATION);
 
         return processResponseAndGetClaims(response);
     }
 
-    private Map<String, Object> processResponseAndGetClaims(JSONObject response) throws IdentityOAuth2Exception {
+    private Map<String, Object> processResponseAndGetClaims(ExternalServiceResponse response)
+            throws IdentityOAuth2Exception {
 
         Map<String, Object> additionalClaims = new HashMap<>();
 
@@ -164,13 +163,13 @@ public class FSClaimProvider implements ClaimProvider {
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
-        JSONObject responsePayload = response.optJSONObject("payload");
-        if (responsePayload == null) {
+        JsonNode responseData = response.getData();
+        if (responseData == null) {
             log.error("Missing payload in response from external service.");
             throw new IdentityOAuth2Exception("Missing payload in response from external service.");
         }
 
-        JSONArray claims = responsePayload.optJSONArray("claims");
+        JsonNode claims = responseData.get("claims");
         if (claims == null) {
             log.error("Missing claims array in response payload.");
             throw new IdentityOAuth2Exception("Missing claims array in response payload.");

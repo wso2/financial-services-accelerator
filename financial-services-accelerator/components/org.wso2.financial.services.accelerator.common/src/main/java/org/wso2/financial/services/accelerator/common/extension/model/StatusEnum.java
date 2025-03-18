@@ -18,39 +18,32 @@
 
 package org.wso2.financial.services.accelerator.common.extension.model;
 
-import org.json.JSONObject;
-
-import java.util.Map;
-
 /**
- * Request.
+ * Status enum
  */
-public class Request {
+public enum StatusEnum {
 
-    private JSONObject payload;
-    private Map<String, String> additionalParams;
+    SUCCESS("SUCCESS"),
+    ERROR("ERROR");
 
-    public Request() {
+    private final String status;
+
+    StatusEnum(String status) {
+        this.status = status;
     }
 
-    public Request(JSONObject payload, Map<String, String> additionalParams) {
-        this.payload = payload;
-        this.additionalParams = additionalParams;
+    public static StatusEnum fromString(String status) {
+
+        for (StatusEnum statusEnum : StatusEnum.values()) {
+            if (statusEnum.status.equalsIgnoreCase(status)) {
+                return statusEnum;
+            }
+        }
+        return null;
     }
 
-    public JSONObject getPayload() {
-        return payload;
+    public String toString() {
+        return status;
     }
 
-    public void setPayload(JSONObject payload) {
-        this.payload = payload;
-    }
-
-    public Map<String, String> getAdditionalParams() {
-        return additionalParams;
-    }
-
-    public void setAdditionalParams(Map<String, String> additionalParams) {
-        this.additionalParams = additionalParams;
-    }
 }
