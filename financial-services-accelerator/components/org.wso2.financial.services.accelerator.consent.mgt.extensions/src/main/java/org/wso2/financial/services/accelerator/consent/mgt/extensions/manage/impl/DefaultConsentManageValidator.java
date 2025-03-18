@@ -180,10 +180,11 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(), "ExpirationDateTime is invalid");
         }
 
-        if (!ConsentManageUtils.isConsentExpirationTimeValid(data.getString("ExpirationDateTime"))) {
+        if (data.has("ExpirationDateTime") &&
+                !ConsentManageUtils.isConsentExpirationTimeValid(data.getString("ExpirationDateTime"))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(),
-                    "ExpirationDateTime should be a future time");
+                    "ExpirationDateTime should be a future date");
         }
 
         if (data.has(ConsentExtensionConstants.DEBTOR_ACC)) {
