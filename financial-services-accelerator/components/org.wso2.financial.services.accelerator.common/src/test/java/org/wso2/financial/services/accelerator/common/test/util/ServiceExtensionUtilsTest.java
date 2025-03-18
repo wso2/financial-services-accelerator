@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.Request;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
@@ -150,6 +151,7 @@ public class ServiceExtensionUtilsTest {
         appRegistrationRequest.put("appRegistrationRequest", new HashMap<>());
         appRegistrationRequest.put("ssaParams", new HashMap<>());
         request.setPayload(appRegistrationRequest);
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), request, null);
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), request,
+                OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
     }
 }

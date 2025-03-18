@@ -43,6 +43,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImpl;
 import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.FSApplicationManagementListener;
 
@@ -63,6 +64,7 @@ public class IdentityExtensionsServiceComponent {
         log.debug("Identity Extensions component activated.");
         BundleContext bundleContext = context.getBundleContext();
         bundleContext.registerService(ApplicationMgtListener.class, new FSApplicationManagementListener(), null);
+        bundleContext.registerService(ClaimProvider.class.getName(), new FSClaimProvider(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
 
         if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement"))) {

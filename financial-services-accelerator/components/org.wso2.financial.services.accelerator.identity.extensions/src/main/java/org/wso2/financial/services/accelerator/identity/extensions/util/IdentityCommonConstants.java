@@ -71,5 +71,8 @@ public class IdentityCommonConstants {
     public static final String ALLOWED_VALUES = "AllowedValues";
     public static final String SSA_ISSUER_VALIDATOR = "SSAIssuerValidator";
     public static final String JTI = "jti";
+
+    // Service Extension constants
+    public static final String USER_ID = "userId";
 }
 
