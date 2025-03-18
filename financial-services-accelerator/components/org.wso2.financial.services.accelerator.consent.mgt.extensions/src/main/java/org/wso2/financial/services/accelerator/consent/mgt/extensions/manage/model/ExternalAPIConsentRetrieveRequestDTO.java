@@ -17,27 +17,22 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
-
 import java.util.Map;
 
 /**
- * ExternalAPIConsentRevokeRequestDTO
+ * ExternalAPIConsentRetrieveRequestDTO
  */
-public class ExternalAPIConsentRevokeRequestDTO {
+public class ExternalAPIConsentRetrieveRequestDTO {
 
     private String consentId;
     private String consentType;
-    private String consentStatus;
     private String resourcePath;
     private Map<String, String> consentAttributes;
 
-    public ExternalAPIConsentRevokeRequestDTO(ConsentResource consentResource, String resourcePath,
-                                              Map<String, String> consentAttributes) {
-
-        this.consentId = consentResource.getConsentID();
-        this.consentType = consentResource.getConsentType();
-        this.consentStatus = consentResource.getCurrentStatus();
+    public ExternalAPIConsentRetrieveRequestDTO(String consentId, String consentType, String resourcePath,
+                                                Map<String, String> consentAttributes) {
+        this.consentId = consentId;
+        this.consentType = consentType;
         this.resourcePath = resourcePath;
         this.consentAttributes = consentAttributes;
     }
@@ -56,14 +51,6 @@ public class ExternalAPIConsentRevokeRequestDTO {
 
     public void setConsentType(String consentType) {
         this.consentType = consentType;
-    }
-
-    public String getConsentStatus() {
-        return consentStatus;
-    }
-
-    public void setConsentStatus(String consentStatus) {
-        this.consentStatus = consentStatus;
     }
 
     public String getResourcePath() {

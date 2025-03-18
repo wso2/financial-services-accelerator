@@ -38,11 +38,14 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -60,7 +63,53 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
 
-        // TODO: Implement GET method
+        String clientId = consentManageData.getClientId();
+        String resourcePath = consentManageData.getRequestPath();
+        String consentType = consentManageData.getRequestPath();
+
+        if (StringUtils.isEmpty(clientId)) {
+            log.error("Client ID missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
+        }
+
+        if (resourcePath == null) {
+            log.error("Resource path not found");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found");
+        }
+
+        String[] requestPathArray = resourcePath.split("/");
+        if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
+            log.error("Invalid resource path");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid Request Path");
+        }
+        String consentId = resourcePath.split("/")[1];
+        if (ConsentExtensionUtils.isConsentIdValid(consentId)) {
+            try {
+                // Get consent by consent ID from database
+                ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+                if (consentResource == null) {
+                    log.error("Consent not found in the database");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found in the database");
+                }
+                Map<String, String> consentAttributes =
+                        consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
+                        consentId, consentType, resourcePath, consentAttributes);
+                callExternalService(requestDTO); // Calling external service for validations
+
+                JSONObject receiptJSON = new JSONObject(consentResource.getReceipt());
+                consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(receiptJSON,
+                        consentResource));
+                consentManageData.setResponseStatus(ResponseStatus.OK);
+            } catch (ConsentManagementException e) {
+                log.error("Error Occurred while handling the request", e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error Occurred while handling the request");
+            }
+        } else {
+            log.error("Invalid consent Id found");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid consent Id found");
+        }
     }
 
     @Override
@@ -89,17 +138,20 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
-        if (StringUtils.isEmpty(consentManageData.getClientId())) {
+        String clientId = consentManageData.getClientId();
+        String resourcePath = consentManageData.getRequestPath();
+
+        if (StringUtils.isEmpty(clientId)) {
             log.error("Client ID missing in the request.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.");
         }
 
         String[] requestPathArray;
-        if (consentManageData.getRequestPath() == null) {
+        if (resourcePath == null) {
             log.error("Resource Path Not Found");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found");
         } else {
-            requestPathArray = consentManageData.getRequestPath().split("/");
+            requestPathArray = resourcePath.split("/");
         }
 
         if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
@@ -111,13 +163,15 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             try {
                 // Get consent by consent ID from database
                 ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
-
                 if (consentResource == null) {
                     log.error("Consent not found");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found");
                 }
 
-                ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(consentResource);
+                Map<String, String> consentAttributes =
+                        consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(consentResource,
+                        resourcePath, consentAttributes);
                 ExternalAPIConsentRevokeResponseDTO responseDTO = callExternalService(requestDTO);
 
                 boolean shouldRevokeTokens = responseDTO.getShouldRevokeTokens();
@@ -181,6 +235,13 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
         JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
+    }
+
+    private ExternalAPIConsentRetrieveResponseDTO callExternalService(ExternalAPIConsentRetrieveRequestDTO requestDTO)
+            throws ConsentException {
+        JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
+        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
     }
 
     private JSONObject callExternalService(
