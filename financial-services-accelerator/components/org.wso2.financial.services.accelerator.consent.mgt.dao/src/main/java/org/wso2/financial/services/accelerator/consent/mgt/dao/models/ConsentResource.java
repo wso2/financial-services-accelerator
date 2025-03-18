@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -43,6 +43,17 @@ public class ConsentResource {
         this.clientID = clientID;
         this.receipt = receipt;
         this.consentType = consentType;
+        this.currentStatus = currentStatus;
+    }
+
+    public ConsentResource(String clientID, String receipt, String consentType, int consentFrequency,
+                           long validityPeriod, boolean recurringIndicator, String currentStatus) {
+        this.clientID = clientID;
+        this.receipt = receipt;
+        this.consentType = consentType;
+        this.consentFrequency = consentFrequency;
+        this.validityPeriod = validityPeriod;
+        this.recurringIndicator = recurringIndicator;
         this.currentStatus = currentStatus;
     }
 
