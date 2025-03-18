@@ -96,7 +96,7 @@
             <Validators>
                 <Validator>
                     <Name>RequiredParamsValidator</Name>
-                    <Class>org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.RequiredParamsValidator</Class>
+                    <Class>validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.RequiredParamsValidator</Class>
                     <Enable>true</Enable>
                     <Priority>1</Priority>
                     <AllowedValues>
@@ -104,7 +104,7 @@
                 </Validator>
                 <Validator>
                     <Name>IssuerValidator</Name>
-                    <Class>org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.IssuerValidator</Class>
+                    <Class>validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.IssuerValidator</Class>
                     <Enable>true</Enable>
                     <Priority>2</Priority>
                     <AllowedValues>

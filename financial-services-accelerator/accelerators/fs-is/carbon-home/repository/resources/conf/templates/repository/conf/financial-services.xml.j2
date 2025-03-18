@@ -207,7 +207,7 @@
         {% if financial_services.app_registration.applicationupdater is defined %}
         <ApplicationUpdaterImpl>{{financial_services.app_registration.applicationupdater}}</ApplicationUpdaterImpl>
         {% else %}
-        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
+        <ApplicationUpdaterImpl>listener.application.org.wso2.financial.services.accelerator.identity.extensions.client.registration.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}
         <SCA>
             <PrimaryAuthenticator>
@@ -231,11 +231,6 @@
         </SCA>
         {% if financial_services.app_registration.dcr.params is defined %}
         <DCR>
-            {% if financial_services.app_registration.dcr.additional_attribute_filter is defined %}
-            <AdditionalAttributeFilter>{{financial_services.app_registration.dcr.additional_attribute_filter}}</AdditionalAttributeFilter>
-            {% else %}
-            <AdditionalAttributeFilter>org.wso2.financial.services.accelerator.identity.extensions.dcr.attribute.filter.FSAdditionalAttributeFilter</AdditionalAttributeFilter>
-            {% endif %}
             <Params>
                 {% for param in financial_services.app_registration.dcr.params %}
                     <Param>
@@ -266,6 +261,9 @@
                 </Validator>
                 {% endfor %}
             </Validators>
+            {% if financial_services.app_registration.dcr.additional_attribute_filter is defined %}
+            <DCRServiceExtension>{{financial_services.app_registration.dcr.service_extension}}</DCRServiceExtension>
+            {% endif %}
             <JTICache>
                 {% if financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes is defined %}
                 <CacheAccessExpiry>{{financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes}}</CacheAccessExpiry>

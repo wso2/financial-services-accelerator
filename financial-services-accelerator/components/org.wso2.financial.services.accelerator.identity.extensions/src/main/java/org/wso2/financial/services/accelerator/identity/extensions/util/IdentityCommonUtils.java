@@ -52,8 +52,8 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCache;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCacheKey;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 import java.io.ByteArrayInputStream;
