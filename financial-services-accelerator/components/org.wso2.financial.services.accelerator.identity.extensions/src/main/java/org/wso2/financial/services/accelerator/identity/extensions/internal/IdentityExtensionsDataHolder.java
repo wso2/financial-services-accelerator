@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
@@ -55,6 +56,7 @@ public class IdentityExtensionsDataHolder {
     private RequestObjectService requestObjectService;
     private ClaimProvider claimProvider;
     private OAuthAdminServiceImpl oAuthAdminService;
+    private ConsentCoreService consentCoreService;
 
     private IdentityExtensionsDataHolder() {
 
@@ -257,5 +259,23 @@ public class IdentityExtensionsDataHolder {
     public void setOauthAdminService(OAuthAdminServiceImpl oauthAdminService) {
 
         this.oAuthAdminService = oauthAdminService;
+    }
+
+    /**
+     * To get the the instance of {@link ConsentCoreService}.
+     *
+     * @return consentCoreService
+     */
+    public ConsentCoreService getConsentCoreService() {
+        return consentCoreService;
+    }
+
+    /**
+     * To set the ConsentCoreService.
+     *
+     * @param consentCoreService instance of {@link ConsentCoreService}
+     */
+    public void setConsentCoreService(ConsentCoreService consentCoreService) {
+        this.consentCoreService = consentCoreService;
     }
 }

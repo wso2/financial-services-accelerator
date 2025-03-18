@@ -25,12 +25,12 @@ public class ExternalServiceRequest {
 
     private String requestId;
     private Request request;
-    private AllowedOperations allowedOperation;
+    private String operation;
 
-    public ExternalServiceRequest(String requestId, Request request, AllowedOperations allowedOperation) {
+    public ExternalServiceRequest(String requestId, Request request, OperationEnum operation) {
         this.requestId = requestId;
         this.request = request;
-        this.allowedOperation = allowedOperation;
+        this.operation = operation.toString();
     }
 
     public ExternalServiceRequest(String requestId, Request request) {
@@ -54,11 +54,11 @@ public class ExternalServiceRequest {
         this.request = request;
     }
 
-    public AllowedOperations getAllowedOperation() {
-        return allowedOperation;
+    public String getOperation() {
+        return operation;
     }
 
-    public void setAllowedOperation(AllowedOperations allowedOperation) {
-        this.allowedOperation = allowedOperation;
+    public void setOperation(OperationEnum operation) {
+        this.operation = operation.toString();
     }
 }

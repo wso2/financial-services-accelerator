@@ -25,9 +25,12 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.authz.handlers.CodeResponseTypeHandler;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 /**
  * Extension to append scope with FS_ prefix at the end of auth flow, before offering auth code.
@@ -53,17 +56,37 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
                 return issueCode(oauthAuthzMsgCtx);
             }
         } catch (RequestObjectException e) {
-            log.error("Error while reading regulatory property", e);
-            throw new IdentityOAuth2Exception("Error while reading regulatory property");
+            throw  new IdentityOAuth2Exception("Error while reading regulatory property");
         }
 
-        oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(
-                fsResponseTypeHandler.updateRefreshTokenValidityPeriod(oauthAuthzMsgCtx));
-        String[] approvedScopes = fsResponseTypeHandler.updateApprovedScopes(oauthAuthzMsgCtx);
-        if (approvedScopes != null) {
-            oauthAuthzMsgCtx.setApprovedScope(approvedScopes);
+        // Perform FS default behaviour
+        String sessionDataKey = oauthAuthzMsgCtx.getAuthorizationReqDTO().getSessionDataKey();
+        String consentId = IdentityCommonUtils.getConsentIDFromSessionData(sessionDataKey);
+        String[] updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
+        long refreshTokenValidityPeriod = oauthAuthzMsgCtx.getRefreshTokenvalidityPeriod();
+
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION)) {
+            // Perform FS customized behaviour with service extension
+            updatedApprovedScopes = IdentityCommonUtils
+                    .getApprovedScopesWithServiceExtension(oauthAuthzMsgCtx, consentId);
+        } else if (fsResponseTypeHandler != null) {
+            // Perform FS customized behaviour
+            updatedApprovedScopes = fsResponseTypeHandler.getApprovedScopes(oauthAuthzMsgCtx);
+        }
+
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION)) {
+            // Perform FS customized behaviour with service extension
+            refreshTokenValidityPeriod = IdentityCommonUtils
+                    .getRefreshTokenValidityPeriodWithServiceExtension(oauthAuthzMsgCtx, consentId);
+        } else if (fsResponseTypeHandler != null) {
+            // Perform FS customized behaviour
+            refreshTokenValidityPeriod = fsResponseTypeHandler.getRefreshTokenValidityPeriod(oauthAuthzMsgCtx);
+        }
+
+        oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(refreshTokenValidityPeriod);
+        if (updatedApprovedScopes != null) {
+            oauthAuthzMsgCtx.setApprovedScope(updatedApprovedScopes);
         } else {
-            log.error("Error while updating scopes");
             throw new IdentityOAuth2Exception("Error while updating scopes");
         }
         return issueCode(oauthAuthzMsgCtx);
