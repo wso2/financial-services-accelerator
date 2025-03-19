@@ -34,7 +34,6 @@
 
     <modules>
         <module>fs-apim</module>
-        <!--TODO: uncomment after fixing consent extensions-->
         <module>fs-is</module>
     </modules>
 </project>
