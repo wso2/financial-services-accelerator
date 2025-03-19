@@ -43,7 +43,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -64,6 +66,16 @@ public class ServiceExtensionUtilsTest {
         configs.put(FinancialServicesConstants.MAX_INSTRUCTED_AMOUNT, "1000");
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
+        Mockito.doReturn(FinancialServicesConstants.BASIC_AUTH).when(configParserMock)
+                .getServiceExtensionsEndpointSecurityType();
+        Mockito.doReturn("test").when(configParserMock)
+                .getServiceExtensionsEndpointSecurityBasicAuthUsername();
+        Mockito.doReturn("test").when(configParserMock)
+                .getServiceExtensionsEndpointSecurityBasicAuthPassword();
+        Mockito.doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        List<ServiceExtensionTypeEnum> serviceExtensionTypes = new ArrayList<>();
+        serviceExtensionTypes.add(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+        Mockito.doReturn(serviceExtensionTypes).when(configParserMock).getServiceExtensionTypes();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         String serviceResponse = "{\n" +
@@ -93,6 +105,12 @@ public class ServiceExtensionUtilsTest {
     public static void afterClass() {
         configParser.close();
         httpClientUtilsMockedStatic.close();
+    }
+
+    @Test
+    public void testIsInvokeExternalService() {
+        Assert.assertTrue(ServiceExtensionUtils
+                .isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST));
     }
 
     @Test

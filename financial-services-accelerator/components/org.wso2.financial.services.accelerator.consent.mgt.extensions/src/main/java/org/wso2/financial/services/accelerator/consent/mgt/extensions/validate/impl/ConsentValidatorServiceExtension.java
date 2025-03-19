@@ -21,12 +21,12 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -38,7 +38,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.m
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidationResult;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -66,18 +65,6 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
             consentValidationResult.setErrorMessage("Consent Details cannot be found");
             consentValidationResult.setErrorCode(ResponseStatus.BAD_REQUEST.getReasonPhrase());
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
-            return;
-        }
-
-        JSONObject receiptJSON;
-        try {
-            receiptJSON = new JSONObject(consentValidateData.getComprehensiveConsent().getReceipt());
-        } catch (JSONException e) {
-            log.error(e.getMessage().replaceAll("[\n\r]", ""));
-            consentValidationResult.setValid(false);
-            consentValidationResult.setErrorMessage(e.getMessage().replaceAll("[\n\r]", ""));
-            consentValidationResult.setErrorCode(ResponseStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-            consentValidationResult.setHttpCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
@@ -114,25 +101,25 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
         }
 
         // Invoking external validation service configured
-        JSONObject response = null;
+        ExternalServiceResponse response = null;
         try {
             response = ServiceExtensionUtils.invokeExternalServiceCall(
                     getConsentValidateServiceRequest(consentValidateData),
                     ServiceExtensionTypeEnum.CONSENT_VALIDATION);
-            if (FinancialServicesConstants.ACTION_STATUS_SUCCESS.equals(
-                    response.getString(FinancialServicesConstants.ACTION_STATUS))) {
+            if (StatusEnum.SUCCESS.equals(response.getStatus())) {
                 consentValidationResult.setValid(true);
             } else {
                 consentValidationResult.setValid(false);
-                consentValidationResult.setErrorMessage(response.getString(FinancialServicesConstants.ERROR_DESCRIPTION));
-                consentValidationResult.setErrorCode(response.getString(FinancialServicesConstants.ERROR_MESSAGE));
-                consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
-            }git
+                consentValidationResult.setErrorMessage(response.getErrorDescription());
+                consentValidationResult.setErrorCode(response.getErrorMessage());
+                consentValidationResult.setHttpCode(Integer.parseInt(response.getErrorCode()));
+            }
         } catch (FinancialServicesException e) {
-            throw new RuntimeException(e);
+            consentValidationResult.setValid(false);
+            consentValidationResult.setErrorMessage(e.getMessage());
+            consentValidationResult.setErrorCode("Error occurred while invoking the external service");
+            consentValidationResult.setHttpCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
         }
-        consentValidationResult.setValid(true);
-
     }
 
     /**
@@ -143,13 +130,12 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
      */
     private ExternalServiceRequest getConsentValidateServiceRequest(ConsentValidateData consentValidateData) {
 
-        Map<String, String> additionalParams = Map.of(FinancialServicesConstants.CONSENT_TYPE,
-                consentValidateData.getComprehensiveConsent().getConsentType());
         ConsentValidateRequest request = new ConsentValidateRequest(consentValidateData.getConsentId(),
                 new JSONObject(consentValidateData.getComprehensiveConsent()),
-                constructDataPayload(consentValidateData), additionalParams);
+                constructDataPayload(consentValidateData),
+                consentValidateData.getComprehensiveConsent().getConsentType());
 
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), request);
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), new JSONObject(request));
     }
 
     /**

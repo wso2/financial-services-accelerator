@@ -44,7 +44,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Service extension utils.
@@ -142,22 +141,6 @@ public class ServiceExtensionUtils {
 
         String baseUrl = FinancialServicesConfigParser.getInstance().getServiceExtensionsEndpointBaseUrl();
         return baseUrl + "/" + serviceType.toString();
-    }
-
-    /**
-     * Extract string payload from request object.
-     *
-     * @param request The request object
-     * @return String payload
-     * @throws FinancialServicesException Payload read errors
-     */
-    public static String getStringPayload(HttpServletRequest request) throws FinancialServicesException {
-        try {
-            return IOUtils.toString(request.getInputStream());
-        } catch (IOException e) {
-            log.error("Error while extracting the payload", e);
-            throw new FinancialServicesException("Error while extracting the payload", e);
-        }
     }
 
     public static void setBasicAuthHeader(HttpPost httpPost, String userName, String password) {

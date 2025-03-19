@@ -31,7 +31,7 @@
             <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
         </then>
         <else>
-            <header name="To" value="https://localhost:9443/api/fs/backend/services/payments/paymentservice" />
+            <header name="To" value="https://localhost:9443/api/fs/backend/services/payments/paymnetservice" />
         </else>
     </filter>
 </sequence>
