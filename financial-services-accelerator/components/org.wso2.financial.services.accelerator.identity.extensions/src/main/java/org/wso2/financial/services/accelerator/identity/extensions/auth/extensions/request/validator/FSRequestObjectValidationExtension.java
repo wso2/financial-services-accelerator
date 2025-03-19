@@ -207,8 +207,8 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
         if (StringUtils.isEmpty(fsRequestObjectViolation)) {
             try {
                 if (!isClientIdAndScopePresent(fsRequestObject)) {
-                    return new ValidationResponse(false, "Client Id and scope are mandatory to" +
-                            " include in the request object.");
+                    return new ValidationResponse(false, "Client Id and scope must be" +
+                            " included in the request object.");
                 }
                 String scopeViolation = validateScope(fsRequestObject, dataMap);
                 if (StringUtils.isEmpty(scopeViolation)) {
@@ -248,9 +248,9 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
             //remove scope claim
             JWTClaimsSet claimsSet = fsRequestObject.getClaimsSet();
             JSONObject claimsSetJsonObject = claimsSet.toJSONObject();
-            if (claimsSetJsonObject.containsKey("scope")) {
-                String scopeClaimString = claimsSetJsonObject.remove("scope").toString();
-                List allowedScopes = (List) dataMap.get("scope");
+            if (claimsSetJsonObject.containsKey(IdentityCommonConstants.SCOPE)) {
+                String scopeClaimString = claimsSetJsonObject.remove(IdentityCommonConstants.SCOPE).toString();
+                List allowedScopes = (List) dataMap.get(IdentityCommonConstants.SCOPE);
                 List<String> requestedScopes = new ArrayList<>(Arrays.asList(scopeClaimString.split(" ")));
                 StringBuilder stringBuilder = new StringBuilder();
 
@@ -273,13 +273,14 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
                 if (StringUtils.isBlank(modifiedScopeString) || modifiedScopeString.split(" ").length <= 1) {
                     throw new RequestObjectException("No valid scopes found in the request");
                 }
-                claimsSetJsonObject.put("scope", modifiedScopeString);
+                claimsSetJsonObject.put(IdentityCommonConstants.SCOPE, modifiedScopeString);
                 //Set claims set to request object
                 JWTClaimsSet validatedClaimsSet = JWTClaimsSet.parse(claimsSetJsonObject);
                 fsRequestObject.setClaimSet(validatedClaimsSet);
                 log.debug("Successfully set the modified claims-set to the request object");
             }
         } catch (ParseException | RequestObjectException e) {
+            log.error("Error while validating scope of request object", e);
             return e.getMessage();
         }
         return StringUtils.EMPTY;
@@ -311,9 +312,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
             return new ValidationResponse(true);
         } catch (IdentityOAuth2Exception e) {
             String errorDescription = response.getErrorDescription();
-            if (log.isDebugEnabled()) {
-                log.debug(errorDescription.replaceAll("[\r\n]", ""));
-            }
+            log.error(errorDescription.replaceAll("[\r\n]", ""));
             return new ValidationResponse(false, errorDescription);
         }
     }
