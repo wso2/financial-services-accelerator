@@ -28,17 +28,21 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
+import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -129,8 +133,7 @@ public class FSClaimProvider implements ClaimProvider {
         JSONObject data = new JSONObject();
         data.put(IdentityCommonConstants.USER_ID, authAuthzReqMessageContext.getAuthorizationReqDTO()
                 .getUser().getUserName());
-
-        // TODO: Retrieve consent ID if required
+        data.put(IdentityCommonConstants.CONSENT_ID, getConsentIdFromAuthzFlow(authAuthzReqMessageContext));
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
                 UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
@@ -149,8 +152,7 @@ public class FSClaimProvider implements ClaimProvider {
         // Construct the payload
         JSONObject data = new JSONObject();
         data.put(IdentityCommonConstants.USER_ID, tokenReqMessageContext.getAuthorizedUser().getUserName());
-
-        // TODO: Retrieve consent ID if required
+        data.put(IdentityCommonConstants.CONSENT_ID, getConsentIdFromTokenFlow(tokenRespDTO));
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
                 UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE);
@@ -188,6 +190,47 @@ public class FSClaimProvider implements ClaimProvider {
         }
 
         return additionalClaims;
+    }
+
+    private String getConsentIdFromAuthzFlow(OAuthAuthzReqMessageContext authAuthzReqMessageContext)
+            throws IdentityOAuth2Exception {
+
+        // Obtaining session data key from Authorization Request
+        String sessionDataKey = authAuthzReqMessageContext.getAuthorizationReqDTO().getSessionDataKey();
+
+        // Retrieving open banking intent id claim
+        Optional<RequestedClaim> intentClaim = IdentityCommonUtils.retrieveIntentIDFromReqObjService(sessionDataKey,
+                "authorize");
+
+        if (intentClaim.isPresent()) {
+            return intentClaim.get().getValue();
+        }
+
+        return null;
+    }
+
+    private String getConsentIdFromTokenFlow(OAuth2AccessTokenRespDTO tokenRespDTO)
+            throws IdentityOAuth2Exception {
+
+        //retrieving open banking intent id claim
+        String accessTokenReference = null;
+
+        // retrieve oauth2 access token from JTI value.
+        try {
+            accessTokenReference = JWTUtils.decodeRequestJWTToJSONObject(tokenRespDTO.getAccessToken(), "body")
+                    .getAsString("jti");
+        } catch (ParseException e) {
+            throw new IdentityOAuth2Exception("Failed to retrieve Access Token Reference.", e);
+        }
+
+        Optional<RequestedClaim> intentClaim = IdentityCommonUtils
+                .retrieveIntentIDFromReqObjService(accessTokenReference, "token");
+
+        if (intentClaim.isPresent()) {
+            return intentClaim.get().getValue();
+        }
+
+        return null;
     }
 
 }
