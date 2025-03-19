@@ -26,13 +26,15 @@ public class ExternalAPIPostConsentGenerateRequestDTO {
 
     private String consentId;
     private String status;
+    private String resourcePath;
     private long createdTime;
     private Object consentPayload;
 
-    public ExternalAPIPostConsentGenerateRequestDTO(DetailedConsentResource consentResource) {
+    public ExternalAPIPostConsentGenerateRequestDTO(DetailedConsentResource consentResource, String resourcePath) {
 
         this.consentId = consentResource.getConsentID();
         this.status = consentResource.getCurrentStatus();
+        this.resourcePath = resourcePath;
         this.createdTime = consentResource.getCreatedTime();
         this.consentPayload = consentResource.getReceipt();
     }
@@ -51,6 +53,14 @@ public class ExternalAPIPostConsentGenerateRequestDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
     }
 
     public long getCreatedTime() {

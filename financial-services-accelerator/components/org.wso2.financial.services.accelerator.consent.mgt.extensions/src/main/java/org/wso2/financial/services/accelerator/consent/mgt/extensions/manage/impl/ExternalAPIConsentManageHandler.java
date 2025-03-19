@@ -136,7 +136,7 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
 
             // Call external service after generating consent
             ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
-                    createdConsent);
+                    createdConsent, consentManageData.getRequestPath());
             ExternalAPIPostConsentGenerateResponseDTO postResponseDTO = callExternalService(postRequestDTO);
 
             consentManageData.setResponsePayload(postResponseDTO.getResponseData());
