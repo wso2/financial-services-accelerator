@@ -176,18 +176,15 @@
         <Extensions>
             {% if financial_services.identity.extensions.request_object_validator is defined %}
             <RequestObjectValidator>{{financial_services.identity.extensions.request_object_validator}}</RequestObjectValidator>
-            {% else %}
-            <RequestObjectValidator>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator</RequestObjectValidator>
             {% endif %}
             {% if financial_services.identity.extensions.response_type_handler is defined %}
             <ResponseTypeHandler>{{financial_services.identity.extensions.response_type_handler}}</ResponseTypeHandler>
-            {% else %}
-            <ResponseTypeHandler>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
             {% endif %}
             {% if financial_services.identity.extensions.claim_provider is defined %}
             <ClaimProvider>{{financial_services.identity.extensions.claim_provider}}</ClaimProvider>
-            {% else %}
-            <ClaimProvider>org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider</ClaimProvider>
+            {% endif %}
+            {% if financial_services.identity.extensions.grant_handler is defined %}
+            <GrantHandler>{{financial_services.identity.extensions.grant_handler}}</GrantHandler>
             {% endif %}
         </Extensions>
         <TokenSubject>

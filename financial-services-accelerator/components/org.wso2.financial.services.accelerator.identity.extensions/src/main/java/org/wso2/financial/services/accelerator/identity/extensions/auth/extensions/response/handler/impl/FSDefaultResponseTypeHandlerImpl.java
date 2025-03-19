@@ -45,7 +45,7 @@ public class FSDefaultResponseTypeHandlerImpl implements FSResponseTypeHandler {
      */
     public String[] getApprovedScopes(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
-        return new String[0];
+        return oAuthAuthzReqMessageContext.getApprovedScope();
     }
 
 }

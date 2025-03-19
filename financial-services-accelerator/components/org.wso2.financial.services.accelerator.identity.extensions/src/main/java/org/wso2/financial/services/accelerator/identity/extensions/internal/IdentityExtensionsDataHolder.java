@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.identity.extensions.auth.extensio
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
 import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.AbstractApplicationUpdater;
+import org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSGrantHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.Map;
@@ -51,6 +52,7 @@ public class IdentityExtensionsDataHolder {
     private AbstractApplicationUpdater abstractApplicationUpdater;
     private FSRequestObjectValidator fsRequestObjectValidator;
     private FSResponseTypeHandler fsResponseTypeHandler;
+    private FSGrantHandler fsGrantHandler;
     private static RealmService realmService;
     private static OAuth2Service oAuth2Service;
     private RequestObjectService requestObjectService;
@@ -144,14 +146,15 @@ public class IdentityExtensionsDataHolder {
         IdentityExtensionsDataHolder.configurationService = configurationService;
         this.configurationMap = configurationService.getConfigurations();
         abstractApplicationUpdater = (AbstractApplicationUpdater) IdentityCommonUtils.getClassInstanceFromFQN
-                (configurationService.getConfigurations().get(FinancialServicesConstants.POST_APPLICATION_LISTENER)
-                        .toString());
+                (configurationService.getConfigurations().get(FinancialServicesConstants.POST_APPLICATION_LISTENER));
         fsRequestObjectValidator = (FSRequestObjectValidator) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.REQUEST_VALIDATOR).toString());
+                this.configurationMap.get(FinancialServicesConstants.REQUEST_VALIDATOR));
         fsResponseTypeHandler = (FSResponseTypeHandler) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.RESPONSE_HANDLER).toString());
+                this.configurationMap.get(FinancialServicesConstants.RESPONSE_HANDLER));
+        fsGrantHandler = (FSGrantHandler) IdentityCommonUtils.getClassInstanceFromFQN(
+                this.configurationMap.get(FinancialServicesConstants.GRANT_HANDLER));
         this.setClaimProvider((ClaimProvider) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.CLAIM_PROVIDER).toString()));
+                this.configurationMap.get(FinancialServicesConstants.CLAIM_PROVIDER)));
         FSClaimProvider.setClaimProvider(getClaimProvider());
     }
 
@@ -181,6 +184,10 @@ public class IdentityExtensionsDataHolder {
 
     public FSResponseTypeHandler getObResponseTypeHandler() {
         return fsResponseTypeHandler;
+    }
+
+    public FSGrantHandler getObGrantHandler() {
+        return fsGrantHandler;
     }
 
     public ClaimProvider getClaimProvider() {

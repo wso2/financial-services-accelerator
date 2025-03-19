@@ -45,7 +45,7 @@ public class RequestObjectValidatorTest {
 
         // Mock
         FSRequestObjectValidator fsDefaultRequestObjectValidator = mock(FSRequestObjectValidator.class);
-        when(fsDefaultRequestObjectValidator.validateFSConstraints(any(), anyMap()))
+        when(fsDefaultRequestObjectValidator.validateRequestObject(any(), anyMap()))
                 .thenReturn(new ValidationResponse(true));
 
         FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
@@ -75,7 +75,7 @@ public class RequestObjectValidatorTest {
         doReturn(true).when(uut).isRegulatory(any());
 
         // Assign
-        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = new FSRequestObjectValidator();
+        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = new DefaultFSRequestObjectValidator();
 
         // Act
         boolean result = uut.validateRequestObject(requestObject, oAuth2Parameters);
@@ -92,7 +92,7 @@ public class RequestObjectValidatorTest {
 
         // Mock
         FSRequestObjectValidator fsRequestObjectValidator = mock(FSRequestObjectValidator.class);
-        when(fsRequestObjectValidator.validateFSConstraints(any(), anyMap()))
+        when(fsRequestObjectValidator.validateRequestObject(any(), anyMap()))
                 .thenReturn(new ValidationResponse(true));
 
         FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
