@@ -44,7 +44,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Service extension utils.
@@ -52,13 +51,12 @@ import javax.servlet.http.HttpServletRequest;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
+    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
-        boolean isServiceExtensionsEndpointEnabled = FinancialServicesConfigParser.getInstance()
-                .isServiceExtensionsEndpointEnabled();
-        List<ServiceExtensionTypeEnum> serviceExtensionTypes = FinancialServicesConfigParser.getInstance()
-                .getServiceExtensionTypes();
+        boolean isServiceExtensionsEndpointEnabled = configParser.isServiceExtensionsEndpointEnabled();
+        List<ServiceExtensionTypeEnum> serviceExtensionTypes = configParser.getServiceExtensionTypes();
         return isServiceExtensionsEndpointEnabled && serviceExtensionTypes.contains(serviceExtensionTypeEnum);
     }
 
@@ -84,7 +82,16 @@ public class ServiceExtensionUtils {
             httpPost.setHeader(FinancialServicesConstants.ACCEPT,
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
 
-            // TODO: need to see security requirement
+            //Setting security credentials
+            if (FinancialServicesConstants.BASIC_AUTH.equals(configParser.getServiceExtensionsEndpointSecurityType())) {
+                setBasicAuthHeader(httpPost, configParser.getServiceExtensionsEndpointSecurityBasicAuthUsername(),
+                        configParser.getServiceExtensionsEndpointSecurityBasicAuthPassword());
+            } else if (FinancialServicesConstants.OAUTH2
+                    .equals(configParser.getServiceExtensionsEndpointSecurityType())) {
+                setOauth2AuthHeader(httpPost, configParser.getServiceExtensionsEndpointSecurityOauth2Token());
+            } else {
+                throw new FinancialServicesException("Invalid security type for service extensions endpoint");
+            }
 
             CloseableHttpResponse response = HTTPClientUtils.getHttpClient().execute(httpPost);
             HttpEntity entity = response.getEntity();
@@ -136,32 +143,14 @@ public class ServiceExtensionUtils {
         return baseUrl + "/" + serviceType.toString();
     }
 
-    /**
-     * Extract string payload from request object.
-     *
-     * @param request The request object
-     * @return String payload
-     * @throws FinancialServicesException Payload read errors
-     */
-    public static String getStringPayload(HttpServletRequest request) throws FinancialServicesException {
-        try {
-            return IOUtils.toString(request.getInputStream());
-        } catch (IOException e) {
-            log.error("Error while extracting the payload", e);
-            throw new FinancialServicesException("Error while extracting the payload", e);
-        }
-    }
-
     public static void setBasicAuthHeader(HttpPost httpPost, String userName, String password) {
 
         httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, getBasicAuthHeader(userName, password));
     }
 
-    public static void setOauth2AuthHeader(HttpPost httpPost, String tokenEP, String userName, String password)
-            throws URISyntaxException, IOException, FinancialServicesException {
+    public static void setOauth2AuthHeader(HttpPost httpPost, String token) {
 
-        httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER,
-                getClientCredentialGrantToken(tokenEP, userName, password));
+        httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, FinancialServicesConstants.BEARER_TAG + token);
     }
 
     /**

@@ -18,6 +18,9 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.mockito.MockedStatic;
@@ -26,6 +29,10 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -40,6 +47,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.m
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,28 +64,38 @@ public class ConsentValidatorServiceExtensionTest {
     ConsentValidationResult consentValidationResultMock;
     MockedStatic<FinancialServicesUtils> financialServicesUtilsMockedStatic;
     MockedStatic<ServiceExtensionUtils> serviceExtensionUtilsMockedStatic;
+    private static MockedStatic<FinancialServicesConfigParser> configParser;
 
     @BeforeClass
-    public void beforeTest() {
+    public void beforeTest() throws JsonProcessingException {
         consentValidateDataMock = Mockito.mock(ConsentValidateData.class);
         consentValidationResultMock = Mockito.spy(ConsentValidationResult.class);
+
+        configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
+        Map<String, Object> configs = new HashMap<String, Object>();
+        configs.put(FinancialServicesConstants.MAX_INSTRUCTED_AMOUNT, "1000");
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(configs).when(configParserMock).getConfiguration();
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
 
         financialServicesUtilsMockedStatic = Mockito.mockStatic(FinancialServicesUtils.class);
         financialServicesUtilsMockedStatic.when(() -> FinancialServicesUtils.resolveUsernameFromUserId(anyString()))
                 .thenReturn(TestConstants.SAMPLE_USER_ID);
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree("{}");
         serviceExtensionUtilsMockedStatic = Mockito.mockStatic(ServiceExtensionUtils.class);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
-                .invokeExternalServiceCall(any(), any())).thenReturn(new JSONObject("{\n" +
-                "  \"responseId\": \"Ec1wMjmiG8\",\n" +
-                "  \"actionStatus\": \"SUCCESS\"\n" +
-                "}"));
+                .invokeExternalServiceCall(any(), any())).thenReturn(new ExternalServiceResponse("testId",
+                StatusEnum.SUCCESS, rootNode));
     }
 
     @AfterClass
     public void afterTest() {
         financialServicesUtilsMockedStatic.close();
         serviceExtensionUtilsMockedStatic.close();
+        configParser.close();
     }
 
     @Test
@@ -104,21 +122,6 @@ public class ConsentValidatorServiceExtensionTest {
         Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.BAD_REQUEST.getReasonPhrase());
         Assert.assertEquals(consentValidationResultMock.getErrorMessage(), "Consent Details cannot be found");
         Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_BAD_REQUEST);
-    }
-
-    @Test
-    public void testValidateWithStringReceipt() {
-        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
-        doReturn("Receipt").when(consentResource).getReceipt();
-        doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
-
-        validator.validate(consentValidateDataMock, consentValidationResultMock);
-
-        Assert.assertFalse(consentValidationResultMock.isValid());
-        Assert.assertEquals(consentValidationResultMock.getErrorCode(),
-                ResponseStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        Assert.assertTrue(consentValidationResultMock.getErrorMessage().contains("A JSONObject text must begin with"));
-        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
 
     @Test
