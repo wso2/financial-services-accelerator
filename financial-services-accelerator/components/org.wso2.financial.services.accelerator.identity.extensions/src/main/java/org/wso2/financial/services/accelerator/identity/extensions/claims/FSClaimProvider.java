@@ -165,35 +165,25 @@ public class FSClaimProvider implements ClaimProvider {
     private Map<String, Object> processResponseAndGetClaims(ExternalServiceResponse response)
             throws IdentityOAuth2Exception {
 
-        Map<String, Object> additionalClaims = new HashMap<>();
-
-        if (response == null) {
-            log.error("Null response received from external service.");
-            throw new IdentityOAuth2Exception("Null response received from external service.");
-        }
-
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
         JsonNode responseData = response.getData();
-        if (responseData == null) {
-            log.error("Missing payload in response from external service.");
-            throw new IdentityOAuth2Exception("Missing payload in response from external service.");
+        if (responseData == null || !responseData.has("claims")) {
+            throw new IdentityOAuth2Exception("Missing claims in response payload.");
         }
 
-        JsonNode claims = responseData.get("claims");
-        if (claims == null) {
-            log.error("Missing claims array in response payload.");
-            throw new IdentityOAuth2Exception("Missing claims array in response payload.");
-        }
+        Map<String, Object> additionalClaims = new HashMap<>();
+        for (JsonNode claimNode : responseData.get("claims")) {
+            if (!claimNode.hasNonNull("key") || !claimNode.hasNonNull("value")) {
+                continue;
+            }
 
-        for (Object claimObject : claims) {
-            if (claimObject instanceof JSONObject) {
-                JSONObject claim = (JSONObject) claimObject;
-                String key = claim.optString("key");
-                Object value = claim.opt("value");
-                if (!key.isEmpty() && value != null) {
-                    additionalClaims.put(key, value);
-                }
+            String key = claimNode.get("key").asText();
+            Object value = claimNode.get("value").asText();
+
+            // Add only if key is not empty
+            if (!key.isEmpty()) {
+                additionalClaims.put(key, value);
             }
         }
 
