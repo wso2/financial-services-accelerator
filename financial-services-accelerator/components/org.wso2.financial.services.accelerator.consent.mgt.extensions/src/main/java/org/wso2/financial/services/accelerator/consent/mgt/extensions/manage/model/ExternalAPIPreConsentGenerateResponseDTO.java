@@ -24,21 +24,19 @@ import java.util.Map;
  */
 public class ExternalAPIPreConsentGenerateResponseDTO {
 
-    private Map<String, Object> receipt;
+    private Map<String, Object> consentPayload;
     private int consentFrequency;
     private long validityTime;
     private boolean recurringIndicator;
     private String consentStatus;
     private String consentType;
-    private String authorizationStatus;
-    private String authorizationType;
 
-    public Map<String, Object> getReceipt() {
-        return receipt;
+    public Map<String, Object> getConsentPayload() {
+        return consentPayload;
     }
 
-    public void setReceipt(Map<String, Object> payload) {
-        this.receipt = payload;
+    public void setConsentPayload(Map<String, Object> payload) {
+        this.consentPayload = payload;
     }
 
     public int getConsentFrequency() {
@@ -79,22 +77,6 @@ public class ExternalAPIPreConsentGenerateResponseDTO {
 
     public void setConsentType(String consentType) {
         this.consentType = consentType;
-    }
-
-    public String getAuthorizationStatus() {
-        return authorizationStatus;
-    }
-
-    public void setAuthorizationStatus(String authorizationStatus) {
-        this.authorizationStatus = authorizationStatus;
-    }
-
-    public String getAuthorizationType() {
-        return authorizationType;
-    }
-
-    public void setAuthorizationType(String authorizationType) {
-        this.authorizationType = authorizationType;
     }
 
 }

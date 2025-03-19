@@ -283,13 +283,13 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
 
         try {
             ConsentResource consentResource = new ConsentResource(clientId,
-                    new Gson().toJson(responseDTO.getReceipt()), responseDTO.getConsentType(),
+                    new Gson().toJson(responseDTO.getConsentPayload()), responseDTO.getConsentType(),
                     responseDTO.getConsentFrequency(), responseDTO.getValidityTime(),
-                    responseDTO.getRecurringIndicator(), responseDTO.getAuthorizationStatus());
+                    responseDTO.getRecurringIndicator(), "created");
 
             DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
                     consentResource, null, responseDTO.getConsentStatus(),
-                    responseDTO.getAuthorizationType(), true
+                    "authorisation", true
             );
             return createdConsent;
         } catch (ConsentManagementException e) {
