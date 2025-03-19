@@ -29,6 +29,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -87,11 +88,13 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
         if (ConsentExtensionUtils.isConsentIdValid(consentId)) {
             try {
                 // Get consent by consent ID from database
-                ConsentResource consentResource = consentCoreService.getConsent(consentId, true);
+                ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+                ConsentAttributes consentAttributes = consentCoreService.getConsentAttributes(consentId);
                 if (consentResource == null) {
                     log.error("Consent not found in the database");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found in the database");
                 }
+                consentResource.setConsentAttributes(consentAttributes.getConsentAttributes());
                 ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(consentId,
                         consentResource, resourcePath);
                 ExternalAPIConsentRetrieveResponseDTO responseDTO = callExternalService(requestDTO);
