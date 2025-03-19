@@ -88,15 +88,13 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
         if (ConsentExtensionUtils.isConsentIdValid(consentId)) {
             try {
                 // Get consent by consent ID from database
-                ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+                ConsentResource consentResource = consentCoreService.getConsent(consentId, true);
                 if (consentResource == null) {
                     log.error("Consent not found in the database");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found in the database");
                 }
-                Map<String, String> consentAttributes =
-                        consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
-                ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
-                        consentId, consentType, resourcePath, consentAttributes);
+                ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(consentId,
+                        consentResource, resourcePath);
                 ExternalAPIConsentRetrieveResponseDTO responseDTO = callExternalService(requestDTO);
 
                 consentManageData.setResponsePayload(responseDTO.getData());

@@ -17,7 +17,7 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import java.util.Map;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 
 /**
  * ExternalAPIConsentRetrieveRequestDTO
@@ -25,16 +25,14 @@ import java.util.Map;
 public class ExternalAPIConsentRetrieveRequestDTO {
 
     private String consentId;
-    private String consentType;
+    private ConsentResource consentResource;
     private String resourcePath;
-    private Map<String, String> consentAttributes;
 
-    public ExternalAPIConsentRetrieveRequestDTO(String consentId, String consentType, String resourcePath,
-                                                Map<String, String> consentAttributes) {
+    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ConsentResource consentResource,
+                                                String resourcePath) {
         this.consentId = consentId;
-        this.consentType = consentType;
         this.resourcePath = resourcePath;
-        this.consentAttributes = consentAttributes;
+        this.consentResource = consentResource;
     }
 
     public String getConsentId() {
@@ -45,12 +43,13 @@ public class ExternalAPIConsentRetrieveRequestDTO {
         this.consentId = consentId;
     }
 
-    public String getConsentType() {
-        return consentType;
+    public ConsentResource getConsentResource() {
+        return consentResource;
     }
 
-    public void setConsentType(String consentType) {
-        this.consentType = consentType;
+    public void setConsentResource(
+            ConsentResource consentResource) {
+        this.consentResource = consentResource;
     }
 
     public String getResourcePath() {
@@ -59,13 +58,5 @@ public class ExternalAPIConsentRetrieveRequestDTO {
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
-    }
-
-    public Map<String, String> getConsentAttributes() {
-        return consentAttributes;
-    }
-
-    public void setConsentAttributes(Map<String, String> consentAttributes) {
-        this.consentAttributes = consentAttributes;
     }
 }

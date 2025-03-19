@@ -35,6 +35,7 @@ public class ConsentResource {
     private String currentStatus;
     private long createdTime;
     private long updatedTime;
+    private Map<String, String> consentAttributes;
 
     public ConsentResource() {
     }
@@ -71,8 +72,6 @@ public class ConsentResource {
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
     }
-
-    private Map<String, String> consentAttributes;
 
     public long getUpdatedTime() {
 
