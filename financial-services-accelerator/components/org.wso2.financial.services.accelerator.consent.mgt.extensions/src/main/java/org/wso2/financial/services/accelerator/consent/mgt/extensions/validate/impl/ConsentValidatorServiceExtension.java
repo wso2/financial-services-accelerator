@@ -24,6 +24,7 @@ import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -113,18 +114,22 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
         }
 
         // Invoking external validation service configured
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(
-                getConsentValidateServiceRequest(consentValidateData),
-                ServiceExtensionTypeEnum.CONSENT_VALIDATION);
-
-        if (FinancialServicesConstants.ACTION_STATUS_SUCCESS.equals(
-                response.getString(FinancialServicesConstants.ACTION_STATUS))) {
-            consentValidationResult.setValid(true);
-        } else {
-            consentValidationResult.setValid(false);
-            consentValidationResult.setErrorMessage(response.getString(FinancialServicesConstants.ERROR_DESCRIPTION));
-            consentValidationResult.setErrorCode(response.getString(FinancialServicesConstants.ERROR_MESSAGE));
-            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+        JSONObject response = null;
+        try {
+            response = ServiceExtensionUtils.invokeExternalServiceCall(
+                    getConsentValidateServiceRequest(consentValidateData),
+                    ServiceExtensionTypeEnum.CONSENT_VALIDATION);
+            if (FinancialServicesConstants.ACTION_STATUS_SUCCESS.equals(
+                    response.getString(FinancialServicesConstants.ACTION_STATUS))) {
+                consentValidationResult.setValid(true);
+            } else {
+                consentValidationResult.setValid(false);
+                consentValidationResult.setErrorMessage(response.getString(FinancialServicesConstants.ERROR_DESCRIPTION));
+                consentValidationResult.setErrorCode(response.getString(FinancialServicesConstants.ERROR_MESSAGE));
+                consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            }git
+        } catch (FinancialServicesException e) {
+            throw new RuntimeException(e);
         }
         consentValidationResult.setValid(true);
 

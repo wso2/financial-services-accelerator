@@ -401,5 +401,21 @@
             <Type>{{type}}</Type>
             {% endfor %}
         </ExtensionTypes>
+        <Security>
+            {% if financial_services.service.extensions.endpoint.security.type is defined %}
+            <Type>{{financial_services.service.extensions.endpoint.security.type}}</Type>
+            {% else %}
+            <Type>Basic-Auth</Type>
+            {% endif %}
+            {% if financial_services.service.extensions.endpoint.security.username is defined %}
+            <Username>{{financial_services.service.extensions.endpoint.security.username}}</Username>
+            {% endif %}
+            {% if financial_services.service.extensions.endpoint.security.password is defined %}
+            <Password>{{financial_services.service.extensions.endpoint.security.password}}</Password>
+            {% endif %}
+            {% if financial_services.service.extensions.endpoint.security.token is defined %}{% if financial_services.service.extensions.endpoint.security.username is defined %}
+            <Token>{{financial_services.service.extensions.endpoint.security.token}}</UserName>
+            {% endif %}
+        </Security>
     </ServiceExtensionsEndpoint>
 </Server>

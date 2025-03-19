@@ -18,24 +18,26 @@
 
 package org.wso2.financial.services.accelerator.common.extension.model;
 
+import org.json.JSONObject;
+
 /**
  * Model class to represent the external service request
  */
 public class ExternalServiceRequest {
 
     private String requestId;
-    private Request request;
+    private JSONObject data;
     private String operation;
 
-    public ExternalServiceRequest(String requestId, Request request, OperationEnum operation) {
+    public ExternalServiceRequest(String requestId, JSONObject data, OperationEnum operation) {
         this.requestId = requestId;
-        this.request = request;
-        this.operation = operation.toString();
+        this.data = data;
+        this.operation = operation.getValue();
     }
 
-    public ExternalServiceRequest(String requestId, Request request) {
+    public ExternalServiceRequest(String requestId, JSONObject data) {
         this.requestId = requestId;
-        this.request = request;
+        this.data = data;
     }
 
     public String getRequestId() {
@@ -46,12 +48,12 @@ public class ExternalServiceRequest {
         this.requestId = requestId;
     }
 
-    public Request getRequest() {
-        return request;
+    public JSONObject getData() {
+        return data;
     }
 
-    public void setRequest(Request request) {
-        this.request = request;
+    public void setData(JSONObject data) {
+        this.data = data;
     }
 
     public String getOperation() {
@@ -59,6 +61,6 @@ public class ExternalServiceRequest {
     }
 
     public void setOperation(OperationEnum operation) {
-        this.operation = operation.toString();
+        this.operation = operation.getValue();
     }
 }
