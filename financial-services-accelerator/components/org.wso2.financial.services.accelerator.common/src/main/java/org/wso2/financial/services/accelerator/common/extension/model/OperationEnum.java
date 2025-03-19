@@ -27,7 +27,9 @@ public enum OperationEnum {
     ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE("additionalIdTokenClaimsForTokenResponse"),
     GET_APPROVED_SCOPES("getApprovedScopes"),
     GET_REFRESH_TOKEN_VALIDITY_PERIOD("getRefreshTokenValidityPeriod"),
-    VALIDATE_REQUEST_OBJECT("validateRequestObject");
+    VALIDATE_REQUEST_OBJECT("validateRequestObject"),
+    APPEND_PARAMETERS_TO_TOKEN_RESPONSE("appendParametersToTokenResponse"),
+    ISSUE_REFRESH_TOKEN("issueRefreshToken");
 
     private final String operation;
 

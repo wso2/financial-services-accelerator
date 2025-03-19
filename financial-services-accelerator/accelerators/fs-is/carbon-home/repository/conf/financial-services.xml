@@ -72,6 +72,7 @@
             <RequestObjectValidator>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator</RequestObjectValidator>
             <ResponseTypeHandler>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
             <ClaimProvider>org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider</ClaimProvider>
+            <GrantHandler>org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSDefaultGrantHandler</GrantHandler>
         </Extensions>
         <TokenSubject>
             <RemoveUserStoreDomainFromSubject>true</RemoveUserStoreDomainFromSubject>

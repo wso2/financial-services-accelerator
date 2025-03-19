@@ -78,5 +78,6 @@ public class IdentityCommonConstants {
     public static final String SCOPES = "scopes";
     public static final String CONSENT_ID = "consentId";
     public static final String VALIDITY_PERIOD = "validityPeriod";
+    public static final String GRANT_TYPE = "grantType";
 }
 

@@ -38,6 +38,8 @@ import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
+import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
@@ -85,14 +87,19 @@ public class IdentityCommonUtils {
     private static final Log log = LogFactory.getLog(IdentityCommonUtils.class);
 
     /**
-     * Method to obtain the Object when the full class path is given.
+     * Method to obtain the Object when the full class path object config is given.
      *
-     * @param classpath full class path
+     * @param configObject full class path config object
      * @return new object instance
      */
     @Generated(message = "Ignoring since method contains no logics")
-    public static Object getClassInstanceFromFQN(String classpath) {
+    public static Object getClassInstanceFromFQN(Object configObject) {
 
+        if (configObject == null || StringUtils.isBlank(configObject.toString())) {
+            return null;
+        }
+
+        String classpath = configObject.toString();
         try {
             return Class.forName(classpath).getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
@@ -574,6 +581,44 @@ public class IdentityCommonUtils {
         }
 
         return responseData.get("refreshTokenValidityPeriod").asLong();
+    }
+
+    public static void appendParametersToTokenResponseWithServiceExtension(
+            OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO, OAuthTokenReqMessageContext tokReqMsgCtx)
+            throws FinancialServicesException, IdentityOAuth2Exception {
+
+        // Construct the payload
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.GRANT_TYPE, tokReqMsgCtx.getOauth2AccessTokenReqDTO().getGrantType());
+        data.put(IdentityCommonConstants.SCOPES, tokReqMsgCtx.getScope());
+
+        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
+                UUID.randomUUID().toString(), data, OperationEnum.APPEND_PARAMETERS_TO_TOKEN_RESPONSE);
+
+        // Invoke external service
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+                ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION);
+
+        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
+
+        JsonNode responseData = response.getData();
+        if (responseData == null || !responseData.has("parameters")) {
+            throw new IdentityOAuth2Exception("Missing parameters in response payload.");
+        }
+
+        for (JsonNode claimNode : responseData.get("parameters")) {
+            if (!claimNode.hasNonNull("key") || !claimNode.hasNonNull("value")) {
+                continue;
+            }
+
+            String key = claimNode.get("key").asText();
+            String value = claimNode.get("value").asText();
+
+            // Add only if key is not empty
+            if (!key.isEmpty()) {
+                oAuth2AccessTokenRespDTO.addParameter(key, value);
+            }
+        }
     }
 
 }

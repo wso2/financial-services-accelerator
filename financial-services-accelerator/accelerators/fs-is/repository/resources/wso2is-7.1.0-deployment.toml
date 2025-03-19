@@ -480,9 +480,11 @@ consent_id_claim_name="consent_id"
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
 
 [financial_services.identity.extensions]
-request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
-response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
-claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
+# Uncomment these to get a default implementation of identity extensions
+#request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
+#response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
+#claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
+#grant_handler="org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSDefaultGrantHandler"
 
 [financial_services.identity.token]
 remove_user_store_domain_from_subject=false
