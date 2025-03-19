@@ -232,6 +232,7 @@
                             com.nimbusds.jose.*;version="${org.wso2.orbit.nimbus.version.range}",
                             com.nimbusds.jwt.*;version="${org.wso2.orbit.nimbus.version.range}",
                             net.minidev.json.*;version="${json-smart.version}",
+                            com.fasterxml.jackson.databind.*;version="${jackson.databinding.version}",
                             javax.servlet.http; version="${imp.pkg.version.javax.servlet}",
 
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
