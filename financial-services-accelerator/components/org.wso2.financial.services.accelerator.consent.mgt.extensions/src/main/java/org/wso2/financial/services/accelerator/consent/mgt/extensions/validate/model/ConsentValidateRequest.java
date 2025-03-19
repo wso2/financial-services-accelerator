@@ -19,24 +19,22 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.common.extension.model.Request;
-
-import java.util.Map;
 
 /**
  * Consent validate request model.
  */
-public class ConsentValidateRequest extends Request {
+public class ConsentValidateRequest {
     JSONObject consentPayload;
     String consentId;
     JSONObject dataPayload;
+    String consentType;
 
     public ConsentValidateRequest(String consentId, JSONObject consentPayload, JSONObject dataPayload,
-                                  Map<String, String> additionalParams) {
-        super(null, additionalParams);
+                                  String consentType) {
         this.consentPayload = consentPayload;
         this.consentId = consentId;
         this.dataPayload = dataPayload;
+        this.consentType = consentType;
     }
 
     public JSONObject getConsentPayload() {
@@ -61,6 +59,14 @@ public class ConsentValidateRequest extends Request {
 
     public void setDataPayload(JSONObject dataPayload) {
         this.dataPayload = dataPayload;
+    }
+
+    public String getConsentType() {
+        return consentType;
+    }
+
+    public void setConsentType(String consentType) {
+        this.consentType = consentType;
     }
 
 }
