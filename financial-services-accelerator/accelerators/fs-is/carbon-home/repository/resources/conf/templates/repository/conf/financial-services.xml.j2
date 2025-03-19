@@ -206,6 +206,8 @@
     <AppRegistration>
         {% if financial_services.app_registration.applicationupdater is defined %}
         <ApplicationUpdaterImpl>{{financial_services.app_registration.applicationupdater}}</ApplicationUpdaterImpl>
+        {% elif financial_services.app_registration.application_updater is defined %}
+        <ApplicationUpdaterImpl>{{financial_services.app_registration.application_updater}}</ApplicationUpdaterImpl>
         {% else %}
         <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}
