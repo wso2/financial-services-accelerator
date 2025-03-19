@@ -44,7 +44,7 @@ public enum OperationEnum {
         return null;
     }
 
-    public String toString() {
+    public String getValue() {
         return operation;
     }
 

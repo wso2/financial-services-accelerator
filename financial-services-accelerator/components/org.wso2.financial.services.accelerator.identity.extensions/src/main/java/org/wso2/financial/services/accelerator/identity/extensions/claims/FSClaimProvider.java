@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
@@ -56,8 +57,13 @@ public class FSClaimProvider implements ClaimProvider {
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
-            return additionalIdTokenClaimsAuthzResponseWithServiceExtension(
-                    authAuthzReqMessageContext, authorizeRespDTO);
+            try {
+                return additionalIdTokenClaimsAuthzResponseWithServiceExtension(
+                        authAuthzReqMessageContext, authorizeRespDTO);
+            } catch (FinancialServicesException e) {
+                log.error("Error while invoking external service extension", e);
+                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+            }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
             return getClaimProvider().getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO);
@@ -75,8 +81,13 @@ public class FSClaimProvider implements ClaimProvider {
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
-            return additionalIdTokenClaimsTokenResponseWithServiceExtension(
-                    tokenReqMessageContext, tokenRespDTO);
+            try {
+                return additionalIdTokenClaimsTokenResponseWithServiceExtension(
+                        tokenReqMessageContext, tokenRespDTO);
+            } catch (FinancialServicesException e) {
+                log.error("Error while invoking external service extension", e);
+                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+            }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
             return getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
@@ -112,7 +123,7 @@ public class FSClaimProvider implements ClaimProvider {
 
     private Map<String, Object> additionalIdTokenClaimsAuthzResponseWithServiceExtension(
             OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
-            throws IdentityOAuth2Exception {
+            throws IdentityOAuth2Exception, FinancialServicesException {
 
         // Construct the payload
         JSONObject data = new JSONObject();
@@ -133,7 +144,7 @@ public class FSClaimProvider implements ClaimProvider {
 
     private Map<String, Object> additionalIdTokenClaimsTokenResponseWithServiceExtension(
             OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO)
-            throws IdentityOAuth2Exception {
+            throws IdentityOAuth2Exception, FinancialServicesException {
 
         // Construct the payload
         JSONObject data = new JSONObject();

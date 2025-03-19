@@ -31,7 +31,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
@@ -96,15 +96,15 @@ public class ServiceExtensionUtilsTest {
     }
 
     @Test
-    public void testInvokeExternalServiceCall() {
+    public void testInvokeExternalServiceCall() throws FinancialServicesException {
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
                 ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
 
         Assert.assertNotNull(response);
     }
 
-    @Test(expectedExceptions = FinancialServicesRuntimeException.class)
-    public void testInvokeExternalServiceCallForError() throws IOException {
+    @Test(expectedExceptions = FinancialServicesException.class)
+    public void testInvokeExternalServiceCallForError() throws IOException, FinancialServicesException {
 
         StatusLine statusLine = Mockito.mock(StatusLine.class);
         Mockito.doReturn(400).when(statusLine).getStatusCode();

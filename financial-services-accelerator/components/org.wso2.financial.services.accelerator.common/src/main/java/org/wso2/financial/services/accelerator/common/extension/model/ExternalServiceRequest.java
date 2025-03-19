@@ -27,12 +27,12 @@ public class ExternalServiceRequest {
 
     private String requestId;
     private JSONObject data;
-    private OperationEnum operation;
+    private String operation;
 
     public ExternalServiceRequest(String requestId, JSONObject data, OperationEnum operation) {
         this.requestId = requestId;
         this.data = data;
-        this.operation = operation;
+        this.operation = operation.getValue();
     }
 
     public ExternalServiceRequest(String requestId, JSONObject data) {
@@ -56,11 +56,11 @@ public class ExternalServiceRequest {
         this.data = data;
     }
 
-    public OperationEnum getOperation() {
+    public String getOperation() {
         return operation;
     }
 
     public void setOperation(OperationEnum operation) {
-        this.operation = operation;
+        this.operation = operation.getValue();
     }
 }

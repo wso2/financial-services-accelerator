@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.nimbusds.jose.JWSAlgorithm;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +72,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -502,7 +502,8 @@ public class IdentityCommonUtils {
      * @throws IdentityOAuth2Exception
      */
     public static String[] getApprovedScopesWithServiceExtension(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
-                                                           String consentId) throws IdentityOAuth2Exception {
+                                                           String consentId)
+            throws IdentityOAuth2Exception, FinancialServicesException {
 
         // Construct the payload
         JSONObject data = new JSONObject();
@@ -519,23 +520,13 @@ public class IdentityCommonUtils {
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
         JsonNode responseData = response.getData();
-        if (responseData == null) {
-            log.error("Missing payload in response from external service.");
-            throw new IdentityOAuth2Exception("Missing payload in response from external service.");
-        }
-
-        JsonNode approvedScopesArray = responseData.get("approvedScopes");
-        if (approvedScopesArray == null) {
-            log.error("Missing approvedScopes array in response payload.");
+        if (responseData == null || !responseData.has("approvedScopes")) {
             throw new IdentityOAuth2Exception("Missing approvedScopes array in response payload.");
         }
 
+        ArrayNode approvedScopesArray = (ArrayNode) responseData.get("approvedScopes");
         List<String> scopesList = new ArrayList<>();
-        for (Object scopeObject : approvedScopesArray) {
-            if (scopeObject instanceof String) {
-                scopesList.add(((String) scopeObject).toLowerCase(Locale.ROOT).trim());
-            }
-        }
+        approvedScopesArray.forEach(node -> scopesList.add(node.asText()));
 
         return scopesList.toArray(new String[0]);
     }
@@ -549,7 +540,8 @@ public class IdentityCommonUtils {
      * @throws IdentityOAuth2Exception
      */
     public static long getRefreshTokenValidityPeriodWithServiceExtension(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
-                                                                   String consentId) throws IdentityOAuth2Exception {
+                                                                   String consentId)
+            throws IdentityOAuth2Exception, FinancialServicesException {
 
         // Construct the payload
         JSONObject data = new JSONObject();
@@ -577,9 +569,8 @@ public class IdentityCommonUtils {
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
         JsonNode responseData = response.getData();
-        if (responseData == null) {
-            log.error("Missing payload in response from external service.");
-            throw new IdentityOAuth2Exception("Missing payload in response from external service.");
+        if (responseData == null || !responseData.has("refreshTokenValidityPeriod")) {
+            throw new IdentityOAuth2Exception("Missing refreshTokenValidityPeriod in response payload.");
         }
 
         return responseData.get("refreshTokenValidityPeriod").asLong();
