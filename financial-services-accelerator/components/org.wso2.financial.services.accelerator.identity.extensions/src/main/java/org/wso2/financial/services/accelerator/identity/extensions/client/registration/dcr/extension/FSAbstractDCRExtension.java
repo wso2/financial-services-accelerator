@@ -38,10 +38,9 @@ public abstract class FSAbstractDCRExtension {
      *
      * @param appRegistrationRequest  DCR registration request.
      * @param ssaClaims               SSA claims.
-     * @return Processed additional attributes to be stored and returned in the DCR register response.
      * @throws FinancialServicesException In case of validation failure or any other blocking error.
      */
-    public abstract Map<String, Object> validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
+    public abstract void validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
                                                       Map<String, Object> ssaClaims)
             throws FinancialServicesException;
 
@@ -55,33 +54,11 @@ public abstract class FSAbstractDCRExtension {
      * @param applicationUpdateRequest  DCR update request.
      * @param ssaClaims                 SSA claims.
      * @param spProperties              Existing service provider properties.
-     * @return Processed additional attributes to be stored and returned in the DCR update response.
      * @throws FinancialServicesException In case of validation failure or any other blocking error.
      */
-    public abstract Map<String, Object> validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
+    public abstract void validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
                                                       Map<String, Object> ssaClaims, List<JSONObject> spProperties)
             throws FinancialServicesException;
-
-    /**
-     * Get the map of additional request parameters to be added to DCR register and update requests.
-     *
-     * @return Map of Additional Request Parameters.
-     */
-    public abstract Map<String, Object> getAdditionalRequestParameters();
-
-    /**
-     * Get the keys of additional attributes to be returned in the DCR register, update and get responses.
-     *
-     * @return List of response attribute keys.
-     */
-    public abstract List<String> getResponseAttributeKeys();
-
-    /**
-     * Get the conditional auth script to store against the application.
-     *
-     * @return the conditional auth script.
-     */
-    public abstract String getConditionalAuthScript();
 
     /**
      * Perform any post delete actions of the application.

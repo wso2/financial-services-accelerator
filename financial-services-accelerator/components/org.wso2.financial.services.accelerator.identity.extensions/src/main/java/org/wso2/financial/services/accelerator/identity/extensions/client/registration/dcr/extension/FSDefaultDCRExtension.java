@@ -20,7 +20,11 @@ package org.wso2.financial.services.accelerator.identity.extensions.client.regis
 
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,37 +32,37 @@ import java.util.Map;
  * Abstract class for extending methods to be invoked by FS Additional Attribute Filter.
  * These methods can be used to validate the DCR request.
  */
-public abstract class FSDefaultDCRExtension {
+public class FSDefaultDCRExtension {
 
 
-    public abstract Map<String, Object> validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
+    public Map<String, Object> validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
                                                       Map<String, Object> ssaClaims)
-            throws FinancialServicesException;
+            throws FinancialServicesException {
+        return new HashMap<>();
+    }
 
-    public abstract Map<String, Object> validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
+    public Map<String, Object> validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
                                                       Map<String, Object> ssaClaims, List<JSONObject> spProperties)
-            throws FinancialServicesException;
-
-    /**
-     * Get the map of additional request parameters to be added to DCR register and update requests.
-     *
-     * @return Map of Additional Request Parameters.
-     */
-    public abstract Map<String, Object> getAdditionalRequestParameters();
-
+            throws FinancialServicesException {
+        return new HashMap<>();
+    }
     /**
      * Get the keys of additional attributes to be returned in the DCR register, update and get responses.
      *
      * @return List of response attribute keys.
      */
-    public abstract List<String> getResponseAttributeKeys();
+    public List<String> getResponseAttributeKeys() {
+        return getResponseParamsFromConfig();
+    }
 
     /**
      * Get the conditional auth script to store against the application.
      *
      * @return the conditional auth script.
      */
-    public abstract String getConditionalAuthScript();
+    public String getConditionalAuthScript() {
+        return "";
+    }
 
     /**
      * Perform any post delete actions of the application.
@@ -66,5 +70,27 @@ public abstract class FSDefaultDCRExtension {
      * @param clientId    Client ID of the deleted application.
      * @throws FinancialServicesException In case of any other blocking error.
      */
-    public abstract void doPostDeleteApplication(String clientId) throws FinancialServicesException;
+    public void doPostDeleteApplication(String clientId) throws FinancialServicesException {
+
+    }
+
+    /**
+     * Get the response parameters from the configuration.
+     * @return List of response parameters.
+     */
+    private List<String> getResponseParamsFromConfig() {
+
+        List<String> responseParams = new ArrayList<>();
+
+        Map<String, Map<String, Object>> dcrConfigs = IdentityExtensionsDataHolder.getInstance()
+                .getConfigurationService().getDCRParamsConfig();
+
+        dcrConfigs.forEach((key, value) -> {
+            if (Boolean.parseBoolean(value.get(IdentityCommonConstants.INCLUDE_IN_RESPONSE).toString())) {
+                responseParams.add(value.get(IdentityCommonConstants.KEY).toString());
+            }
+        });
+
+        return responseParams;
+    }
 }
