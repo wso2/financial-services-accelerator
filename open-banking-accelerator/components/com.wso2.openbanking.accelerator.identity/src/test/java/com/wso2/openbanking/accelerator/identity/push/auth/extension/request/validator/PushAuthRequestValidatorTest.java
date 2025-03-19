@@ -147,21 +147,10 @@ public class PushAuthRequestValidatorTest extends PowerMockTestCase {
 
     @Test(expectedExceptions = PushAuthRequestValidatorException.class,
             dependsOnMethods = "validateRequestUriParamInRequest")
-    public void validateFormBodyParamsInRequest() throws Exception {
-
-        // remove previous invalid parameters
-        parameterMap.remove("request_uri");
-        // add new parameters to be tested
-        parameterMap.put("scope", Arrays.asList("dummyScope"));
-        pushAuthRequestValidator.validateParams(httpServletRequestMock, parameterMap);
-    }
-
-    @Test(expectedExceptions = PushAuthRequestValidatorException.class,
-            dependsOnMethods = "validateRequestUriParamInRequest")
     public void validateRequestObject() throws Exception {
 
         // remove previous invalid parameters
-        parameterMap.remove("scope");
+        parameterMap.remove("request_uri");
         // add new parameters to be tested
         parameterMap.put("request", Arrays.asList("invalidReqObj"));
         pushAuthRequestValidator.validateParams(httpServletRequestMock, parameterMap);

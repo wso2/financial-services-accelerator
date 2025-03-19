@@ -88,30 +88,6 @@ public class PushAuthRequestValidatorUtils {
     private static final String OIDC_IDP_ENTITY_ID = "IdPEntityId";
     private static final String OAUTH2_TOKEN_EP_URL = "OAuth2TokenEPUrl";
     private static final String OIDC_ID_TOKEN_ISSUER_ID = "OAuth.OpenIDConnect.IDTokenIssuerID";
-    private static final ArrayList<String> ALLOWED_FORM_BODY_PARAMS = new ArrayList<String>() {
-        {
-            add("client_id");
-            add("client_assertion");
-            add("client_assertion_type");
-        }
-    };
-
-    /**
-     * Check whether push auth request only contains client_id, client_assertion and client_assertion_type when request
-     * parameter is present.
-     */
-    public static void validateRequestFormBody(Map<String, Object> parameters)
-            throws PushAuthRequestValidatorException {
-
-        for (Map.Entry<String, Object> parameter: parameters.entrySet()) {
-            if (!PushAuthRequestConstants.REQUEST.equalsIgnoreCase(parameter.getKey()) &&
-                    !ALLOWED_FORM_BODY_PARAMS.contains(parameter.getKey())) {
-                log.error("Invalid parameters found in the request");
-                throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
-                        PushAuthRequestConstants.INVALID_REQUEST, "Invalid parameters found in the request");
-            }
-        }
-    }
 
     /**
      * Check whether the algorithm used to sign the request object is valid.

@@ -91,8 +91,6 @@ public class PushAuthRequestValidator {
 
         // if "request" parameter is available, decode it and put it into parameter map
         if (parameters.containsKey(PushAuthRequestConstants.REQUEST)) {
-            // validate form body when "request" parameter is present
-            PushAuthRequestValidatorUtils.validateRequestFormBody(parameters);
 
             try {
                 String requestParam = parameters.get(PushAuthRequestConstants.REQUEST).toString();
