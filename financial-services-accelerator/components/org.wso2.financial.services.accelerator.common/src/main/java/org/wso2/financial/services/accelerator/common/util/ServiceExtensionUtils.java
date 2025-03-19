@@ -110,7 +110,7 @@ public class ServiceExtensionUtils {
             return mapResponse(responseContent, ExternalServiceResponse.class);
         } catch (JsonProcessingException e) {
             throw new FinancialServicesException("Error occurred while mapping response to model class", e);
-        } catch (FinancialServicesException | IOException e) {
+        } catch (IOException e) {
             throw new FinancialServicesException("Error occurred while invoking the external service", e);
         }
     }
