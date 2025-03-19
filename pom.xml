@@ -42,7 +42,6 @@
             </activation>
             <modules>
                 <module>financial-services-accelerator</module>
-                <module>react-apps</module>
                 <module>financial-services-accelerator/accelerators</module>
                 <module>integration-test-framework</module>
             </modules>
@@ -90,7 +89,7 @@
 
     <modules>
         <module>financial-services-accelerator</module>
-        <module>react-apps</module>
+        <module>integration-test-framework</module>
     </modules>
 
     <repositories>

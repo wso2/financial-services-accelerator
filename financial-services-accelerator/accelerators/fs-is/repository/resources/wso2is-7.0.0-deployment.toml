@@ -316,9 +316,14 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 [financial_services.service.extensions.endpoint]
 enabled = false
 base_url = ""
-
 # allowed extension_types: "post-token-generation", "pre-consent-authorization"
 extension_types = ["post-token-generation"]
+
+[financial_services.service.extensions.endpoint.security]
+# supported types : Basic-Auth or OAuth2
+type = "Basic-Auth"
+username = ""
+password = ""
 
 [[financial_services.jdbc_persistence_manager]]
 data_source.name = "WSO2FS_DB"

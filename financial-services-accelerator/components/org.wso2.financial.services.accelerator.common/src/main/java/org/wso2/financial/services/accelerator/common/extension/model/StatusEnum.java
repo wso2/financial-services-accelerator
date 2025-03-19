@@ -19,33 +19,31 @@
 package org.wso2.financial.services.accelerator.common.extension.model;
 
 /**
- * Operation type enum
+ * Status enum
  */
-public enum OperationEnum {
+public enum StatusEnum {
 
-    ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE("additionalIdTokenClaimsForAuthzResponse"),
-    ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE("additionalIdTokenClaimsForTokenResponse"),
-    GET_APPROVED_SCOPES("getApprovedScopes"),
-    GET_REFRESH_TOKEN_VALIDITY_PERIOD("getRefreshTokenValidityPeriod");
+    SUCCESS("SUCCESS"),
+    ERROR("ERROR");
 
-    private final String operation;
+    private final String status;
 
-    OperationEnum(String value) {
-        this.operation = value;
+    StatusEnum(String status) {
+        this.status = status;
     }
 
-    public static OperationEnum fromString(String operation) {
+    public static StatusEnum fromString(String status) {
 
-        for (OperationEnum operationEnum : OperationEnum.values()) {
-            if (operationEnum.operation.equalsIgnoreCase(operation)) {
-                return operationEnum;
+        for (StatusEnum statusEnum : StatusEnum.values()) {
+            if (statusEnum.status.equalsIgnoreCase(status)) {
+                return statusEnum;
             }
         }
         return null;
     }
 
-    public String getValue() {
-        return operation;
+    public String toString() {
+        return status;
     }
 
 }

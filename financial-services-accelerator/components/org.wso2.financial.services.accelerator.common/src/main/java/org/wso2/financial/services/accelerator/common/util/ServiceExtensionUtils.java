@@ -18,9 +18,12 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -29,8 +32,8 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 
 import java.io.IOException;
@@ -41,7 +44,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Service extension utils.
@@ -49,14 +51,12 @@ import javax.servlet.http.HttpServletRequest;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
-//    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
-        boolean isServiceExtensionsEndpointEnabled = FinancialServicesConfigParser.getInstance()
-                .isServiceExtensionsEndpointEnabled();
-        List<ServiceExtensionTypeEnum> serviceExtensionTypes = FinancialServicesConfigParser.getInstance()
-                .getServiceExtensionTypes();
+        boolean isServiceExtensionsEndpointEnabled = configParser.isServiceExtensionsEndpointEnabled();
+        List<ServiceExtensionTypeEnum> serviceExtensionTypes = configParser.getServiceExtensionTypes();
         return isServiceExtensionsEndpointEnabled && serviceExtensionTypes.contains(serviceExtensionTypeEnum);
     }
 
@@ -67,8 +67,9 @@ public class ServiceExtensionUtils {
      * @param serviceType
      * @return
      */
-    public static JSONObject invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest,
-                                                       ServiceExtensionTypeEnum serviceType) {
+    public static ExternalServiceResponse invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest,
+                                                       ServiceExtensionTypeEnum serviceType)
+            throws FinancialServicesException {
         try {
             String externalServicesPayload = (new JSONObject(externalServiceRequest)).toString();
 
@@ -78,26 +79,62 @@ public class ServiceExtensionUtils {
             httpPost.setEntity(params);
             httpPost.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
-            httpPost.setHeader(FinancialServicesConstants.ACCEPT, FinancialServicesConstants.JSON_CONTENT_TYPE);
+            httpPost.setHeader(FinancialServicesConstants.ACCEPT,
+                    FinancialServicesConstants.JSON_CONTENT_TYPE);
 
-            // TODO: need to see security requirement
+            //Setting security credentials
+            if (FinancialServicesConstants.BASIC_AUTH.equals(configParser.getServiceExtensionsEndpointSecurityType())) {
+                setBasicAuthHeader(httpPost, configParser.getServiceExtensionsEndpointSecurityBasicAuthUsername(),
+                        configParser.getServiceExtensionsEndpointSecurityBasicAuthPassword());
+            } else if (FinancialServicesConstants.OAUTH2
+                    .equals(configParser.getServiceExtensionsEndpointSecurityType())) {
+                setOauth2AuthHeader(httpPost, configParser.getServiceExtensionsEndpointSecurityOauth2Token());
+            } else {
+                throw new FinancialServicesException("Invalid security type for service extensions endpoint");
+            }
 
             CloseableHttpResponse response = HTTPClientUtils.getHttpClient().execute(httpPost);
-
-            if (response.getStatusLine().getStatusCode() != 200) {
-                String errorMsg = IOUtils.toString(response.getEntity().getContent());
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Error occurred while invoking the external service. " +
-                                    "Status code: %s, Error: %s", response.getStatusLine().getStatusCode(),
-                            errorMsg.replaceAll("[\r\n]", "")));
-                }
-                throw new FinancialServicesException("Error occurred while invoking the external service: " + errorMsg);
+            HttpEntity entity = response.getEntity();
+            if (entity == null) {
+                throw new FinancialServicesException("Error occurred while invoking the external service");
             }
-            InputStream in = response.getEntity().getContent();
-            return new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
-        } catch (FinancialServicesException | IOException e) {
-            throw new FinancialServicesRuntimeException("Error Occurred while invoking the external service", e);
+
+            InputStream inputStream = entity.getContent();
+            if (inputStream == null) {
+                throw new FinancialServicesException("Error occurred while invoking the external service");
+            }
+
+            String responseContent = IOUtils.toString(inputStream, String.valueOf(StandardCharsets.UTF_8));
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200) {
+                log.error(String.format("Error occurred while invoking the external service. " +
+                                "Status code: %s, Error: %s", statusCode,
+                        responseContent.replaceAll("[\r\n]", "")));
+                throw new FinancialServicesException("Error occurred while invoking the external service");
+            }
+
+            // Map response to response model
+            return mapResponse(responseContent, ExternalServiceResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new FinancialServicesException("Error occurred while mapping response to model class", e);
+        } catch (IOException e) {
+            throw new FinancialServicesException("Error occurred while invoking the external service", e);
         }
+    }
+
+    /**
+     * Method to map a json object to a model class
+     *
+     * @param jsonResponse
+     * @param clazz
+     * @return
+     * @param <T>
+     * @throws JsonProcessingException
+     */
+    public static <T> T mapResponse(String jsonResponse, Class<T> clazz) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(jsonResponse, clazz);
     }
 
     private static String constructExtensionEndpoint(ServiceExtensionTypeEnum serviceType) {
@@ -106,32 +143,14 @@ public class ServiceExtensionUtils {
         return baseUrl + "/" + serviceType.toString();
     }
 
-    /**
-     * Extract string payload from request object.
-     *
-     * @param request The request object
-     * @return String payload
-     * @throws FinancialServicesException Payload read errors
-     */
-    public static String getStringPayload(HttpServletRequest request) throws FinancialServicesException {
-        try {
-            return IOUtils.toString(request.getInputStream());
-        } catch (IOException e) {
-            log.error("Error while extracting the payload", e);
-            throw new FinancialServicesException("Error while extracting the payload", e);
-        }
-    }
-
     public static void setBasicAuthHeader(HttpPost httpPost, String userName, String password) {
 
         httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, getBasicAuthHeader(userName, password));
     }
 
-    public static void setOauth2AuthHeader(HttpPost httpPost, String tokenEP, String userName, String password)
-            throws URISyntaxException, IOException, FinancialServicesException {
+    public static void setOauth2AuthHeader(HttpPost httpPost, String token) {
 
-        httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER,
-                getClientCredentialGrantToken(tokenEP, userName, password));
+        httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, FinancialServicesConstants.BEARER_TAG + token);
     }
 
     /**

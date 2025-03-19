@@ -1,5 +1,5 @@
 <!--
- ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,7 @@
  ~ under the License.
  -->
 
-<sequence xmlns="http://ws.apache.org/ns/synapse" name="accounts-dynamic-endpoint-insequence">
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="payments-dynamic-endpoint-insequence">
     <property name="endpointURI" expression="get-property('To')"/>
     
     <!--Appending Basic Auth for Consent Management APIs -->
@@ -25,13 +25,13 @@
     i.e Base64(username:password) -->
     <property name="Authorization" value="Basic <AUTH_HEADER_VALUE>" scope="transport"/>
     
-    <filter regex=".*\/account-access-consents.*" source="$ctx:endpointURI">
+    <filter regex=".*\/payment-consents.*" source="$ctx:endpointURI">
         <then>
             <header name="To" value="https://localhost:9446/api/fs/consent/manage" />
             <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
         </then>
         <else>
-            <header name="To" value="https://localhost:9443/api/fs/backend/services/accounts/accountservice" />
+            <header name="To" value="https://localhost:9443/api/fs/backend/services/payments/paymentservice" />
         </else>
     </filter>
 </sequence>

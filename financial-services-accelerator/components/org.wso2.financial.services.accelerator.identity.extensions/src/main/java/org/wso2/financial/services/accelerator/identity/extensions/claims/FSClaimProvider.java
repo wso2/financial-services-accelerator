@@ -18,9 +18,9 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
@@ -28,9 +28,10 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
-import org.wso2.financial.services.accelerator.common.extension.model.Request;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
@@ -56,8 +57,13 @@ public class FSClaimProvider implements ClaimProvider {
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
-            return additionalIdTokenClaimsAuthzResponseWithServiceExtension(
-                    authAuthzReqMessageContext, authorizeRespDTO);
+            try {
+                return additionalIdTokenClaimsAuthzResponseWithServiceExtension(
+                        authAuthzReqMessageContext, authorizeRespDTO);
+            } catch (FinancialServicesException e) {
+                log.error("Error while invoking external service extension", e);
+                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+            }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
             return getClaimProvider().getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO);
@@ -75,8 +81,13 @@ public class FSClaimProvider implements ClaimProvider {
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
-            return additionalIdTokenClaimsTokenResponseWithServiceExtension(
-                    tokenReqMessageContext, tokenRespDTO);
+            try {
+                return additionalIdTokenClaimsTokenResponseWithServiceExtension(
+                        tokenReqMessageContext, tokenRespDTO);
+            } catch (FinancialServicesException e) {
+                log.error("Error while invoking external service extension", e);
+                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+            }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
             return getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
@@ -112,21 +123,20 @@ public class FSClaimProvider implements ClaimProvider {
 
     private Map<String, Object> additionalIdTokenClaimsAuthzResponseWithServiceExtension(
             OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
-            throws IdentityOAuth2Exception {
+            throws IdentityOAuth2Exception, FinancialServicesException {
 
         // Construct the payload
-        JSONObject payload = new JSONObject();
-        payload.put(IdentityCommonConstants.USER_ID, authAuthzReqMessageContext.getAuthorizationReqDTO()
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.USER_ID, authAuthzReqMessageContext.getAuthorizationReqDTO()
                 .getUser().getUserName());
 
         // TODO: Retrieve consent ID if required
 
-        Request request = new Request(payload, new HashMap<>());
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), request, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
+                UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
 
         // Invoke external service
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
                 ServiceExtensionTypeEnum.PRE_ID_TOKEN_GENERATION);
 
         return processResponseAndGetClaims(response);
@@ -134,56 +144,46 @@ public class FSClaimProvider implements ClaimProvider {
 
     private Map<String, Object> additionalIdTokenClaimsTokenResponseWithServiceExtension(
             OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO)
-            throws IdentityOAuth2Exception {
+            throws IdentityOAuth2Exception, FinancialServicesException {
 
         // Construct the payload
-        JSONObject payload = new JSONObject();
-        payload.put(IdentityCommonConstants.USER_ID, tokenReqMessageContext.getAuthorizedUser().getUserName());
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.USER_ID, tokenReqMessageContext.getAuthorizedUser().getUserName());
 
         // TODO: Retrieve consent ID if required
 
-        Request request = new Request(payload, new HashMap<>());
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), request, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE);
+                UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE);
 
         // Invoke external service
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
                 ServiceExtensionTypeEnum.PRE_ID_TOKEN_GENERATION);
 
         return processResponseAndGetClaims(response);
     }
 
-    private Map<String, Object> processResponseAndGetClaims(JSONObject response) throws IdentityOAuth2Exception {
-
-        Map<String, Object> additionalClaims = new HashMap<>();
-
-        if (response == null) {
-            log.error("Null response received from external service.");
-            throw new IdentityOAuth2Exception("Null response received from external service.");
-        }
+    private Map<String, Object> processResponseAndGetClaims(ExternalServiceResponse response)
+            throws IdentityOAuth2Exception {
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
-        JSONObject responsePayload = response.optJSONObject("payload");
-        if (responsePayload == null) {
-            log.error("Missing payload in response from external service.");
-            throw new IdentityOAuth2Exception("Missing payload in response from external service.");
+        JsonNode responseData = response.getData();
+        if (responseData == null || !responseData.has("claims")) {
+            throw new IdentityOAuth2Exception("Missing claims in response payload.");
         }
 
-        JSONArray claims = responsePayload.optJSONArray("claims");
-        if (claims == null) {
-            log.error("Missing claims array in response payload.");
-            throw new IdentityOAuth2Exception("Missing claims array in response payload.");
-        }
+        Map<String, Object> additionalClaims = new HashMap<>();
+        for (JsonNode claimNode : responseData.get("claims")) {
+            if (!claimNode.hasNonNull("key") || !claimNode.hasNonNull("value")) {
+                continue;
+            }
 
-        for (Object claimObject : claims) {
-            if (claimObject instanceof JSONObject) {
-                JSONObject claim = (JSONObject) claimObject;
-                String key = claim.optString("key");
-                Object value = claim.opt("value");
-                if (!key.isEmpty() && value != null) {
-                    additionalClaims.put(key, value);
-                }
+            String key = claimNode.get("key").asText();
+            Object value = claimNode.get("value").asText();
+
+            // Add only if key is not empty
+            if (!key.isEmpty()) {
+                additionalClaims.put(key, value);
             }
         }
 
