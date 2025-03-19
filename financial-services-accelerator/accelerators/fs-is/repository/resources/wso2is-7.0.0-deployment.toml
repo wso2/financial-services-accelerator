@@ -321,6 +321,7 @@ base_url = ""
 extension_types = ["post-token-generation"]
 
 [financial_services.service.extensions.endpoint.security]
+# supported types : Basic-Auth or OAuth2
 type = "Basic-Auth"
 username = ""
 password = ""

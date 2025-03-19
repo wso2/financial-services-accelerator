@@ -120,24 +120,6 @@ public class ConsentManageEndpoint {
     public Response managePost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                @Context UriInfo uriInfo) {
 
-        if (uriInfo.getPathParameters().getFirst("s").contains("consent-validation")) {
-            JSONObject payloadObj = (JSONObject) ConsentUtils.getPayload(request);
-            JSONObject requestObj = (JSONObject) payloadObj.get("data");
-            if (requestObj.has("consentPayload")) {
-                JSONObject success = new JSONObject();
-                success.put("status", "SUCCESS");
-                success.put("responseId", "1234");
-                return Response.status(Response.Status.OK).entity(success.toString()).build();
-            } else {
-                JSONObject error = new JSONObject();
-                error.put("status", "ERROR");
-                error.put("responseId", "1234");
-                error.put("errorMessage", "Error");
-                error.put("errorDescription", "Error Description");
-                error.put("errorCode", "400");
-                return Response.status(Response.Status.OK).entity(error.toString()).build();
-            }
-        }
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
