@@ -80,8 +80,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             jsonObject.put("consentData", consentDataJsonArray);
             jsonObject.put("accounts", consumerDataJsonArray);
         } catch (FinancialServicesException e) {
+            // ToDo: Improve error handling
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
-                    "Exception occurred while getting consent data", consentData.getState());
+                    e.getMessage(), consentData.getState());
         }
     }
 
@@ -131,7 +132,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
                 externalServiceRequest, ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
-            ExternalAPIUtil.handleResponseError(externalServiceResponse);
+            throw new FinancialServicesException(externalServiceResponse.getErrorMessage());
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);
