@@ -25,16 +25,14 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 public class ExternalAPIPostConsentGenerateRequestDTO {
 
     private String consentId;
-    private String status;
-    private String resourcePath;
+    private String consentStatus;
     private long createdTime;
     private Object consentPayload;
 
     public ExternalAPIPostConsentGenerateRequestDTO(DetailedConsentResource consentResource, String resourcePath) {
 
         this.consentId = consentResource.getConsentID();
-        this.status = consentResource.getCurrentStatus();
-        this.resourcePath = resourcePath;
+        this.consentStatus = consentResource.getCurrentStatus();
         this.createdTime = consentResource.getCreatedTime();
         this.consentPayload = consentResource.getReceipt();
     }
@@ -47,20 +45,12 @@ public class ExternalAPIPostConsentGenerateRequestDTO {
         this.consentId = consentId;
     }
 
-    public String getStatus() {
-        return status;
+    public String getConsentStatus() {
+        return consentStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getResourcePath() {
-        return resourcePath;
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
+    public void setConsentStatus(String consentStatus) {
+        this.consentStatus = consentStatus;
     }
 
     public long getCreatedTime() {
