@@ -28,6 +28,7 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -241,7 +242,7 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
     private ExternalAPIPreConsentGenerateResponseDTO callExternalService(
             ExternalAPIPreConsentGenerateRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
+        JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_GENERATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentGenerateResponseDTO.class);
     }
@@ -249,21 +250,21 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
     private ExternalAPIPostConsentGenerateResponseDTO callExternalService(
             ExternalAPIPostConsentGenerateRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
+        JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.POST_CONSENT_GENERATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPostConsentGenerateResponseDTO.class);
     }
 
     private ExternalAPIConsentRevokeResponseDTO callExternalService(ExternalAPIConsentRevokeRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
+        JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
     }
 
     private ExternalAPIConsentRetrieveResponseDTO callExternalService(ExternalAPIConsentRetrieveRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(new Gson().toJson(requestDTO));
+        JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
     }
@@ -275,6 +276,10 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
                 UUID.randomUUID().toString(), requestJson);
         ExternalServiceResponse response =
                 ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest, serviceType);
+
+        if (response.getStatus().equals(StatusEnum.ERROR)) {
+            handleResponseError(response);
+        }
         return new JSONObject(response.getData().toString());
     }
 
@@ -296,6 +301,15 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent");
         }
+    }
+
+    private void handleResponseError(ExternalServiceResponse response) throws ConsentException {
+
+        int httpErrorCode = Integer.parseInt(response.getErrorCode());
+        if (httpErrorCode < 400 || httpErrorCode >= 500) {
+            httpErrorCode = 500;
+        }
+        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getErrorMessage());
     }
 
 }
