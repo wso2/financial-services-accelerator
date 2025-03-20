@@ -91,11 +91,11 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             try {
                 // Get consent by consent ID from database
                 ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
-                ConsentAttributes consentAttributes = consentCoreService.getConsentAttributes(consentId);
                 if (consentResource == null) {
                     log.error("Consent not found in the database");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found in the database");
                 }
+                ConsentAttributes consentAttributes = consentCoreService.getConsentAttributes(consentId);
                 consentResource.setConsentAttributes(consentAttributes.getConsentAttributes());
                 ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(consentId,
                         consentResource, resourcePath);
@@ -184,11 +184,11 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
                     log.error("Consent not found");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found");
                 }
-
                 Map<String, String> consentAttributes =
                         consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                consentResource.setConsentAttributes(consentAttributes);
                 ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(consentResource,
-                        resourcePath, consentAttributes);
+                        resourcePath);
                 ExternalAPIConsentRevokeResponseDTO responseDTO = callExternalService(requestDTO);
 
                 boolean shouldRevokeTokens = responseDTO.getShouldRevokeTokens();

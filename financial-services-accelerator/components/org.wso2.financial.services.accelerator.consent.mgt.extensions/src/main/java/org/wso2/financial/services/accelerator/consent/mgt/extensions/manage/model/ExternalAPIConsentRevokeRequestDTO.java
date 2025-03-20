@@ -19,27 +19,20 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 
-import java.util.Map;
-
 /**
  * ExternalAPIConsentRevokeRequestDTO
  */
 public class ExternalAPIConsentRevokeRequestDTO {
 
     private String consentId;
-    private String consentType;
-    private String consentStatus;
     private String resourcePath;
-    private Map<String, String> consentAttributes;
+    private ConsentResource consentResource;
 
-    public ExternalAPIConsentRevokeRequestDTO(ConsentResource consentResource, String resourcePath,
-                                              Map<String, String> consentAttributes) {
+    public ExternalAPIConsentRevokeRequestDTO(ConsentResource consentResource, String resourcePath) {
 
         this.consentId = consentResource.getConsentID();
-        this.consentType = consentResource.getConsentType();
-        this.consentStatus = consentResource.getCurrentStatus();
         this.resourcePath = resourcePath;
-        this.consentAttributes = consentAttributes;
+        this.consentResource = consentResource;
     }
 
     public String getConsentId() {
@@ -50,22 +43,6 @@ public class ExternalAPIConsentRevokeRequestDTO {
         this.consentId = consentId;
     }
 
-    public String getConsentType() {
-        return consentType;
-    }
-
-    public void setConsentType(String consentType) {
-        this.consentType = consentType;
-    }
-
-    public String getConsentStatus() {
-        return consentStatus;
-    }
-
-    public void setConsentStatus(String consentStatus) {
-        this.consentStatus = consentStatus;
-    }
-
     public String getResourcePath() {
         return resourcePath;
     }
@@ -74,11 +51,12 @@ public class ExternalAPIConsentRevokeRequestDTO {
         this.resourcePath = resourcePath;
     }
 
-    public Map<String, String> getConsentAttributes() {
-        return consentAttributes;
+    public ConsentResource getConsentResource() {
+        return consentResource;
     }
 
-    public void setConsentAttributes(Map<String, String> consentAttributes) {
-        this.consentAttributes = consentAttributes;
+    public void setConsentResource(
+            ConsentResource consentResource) {
+        this.consentResource = consentResource;
     }
 }

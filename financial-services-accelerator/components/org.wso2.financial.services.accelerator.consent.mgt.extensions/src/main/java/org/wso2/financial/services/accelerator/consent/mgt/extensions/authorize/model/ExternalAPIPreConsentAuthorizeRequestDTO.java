@@ -17,6 +17,8 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+
 /**
  * Wrapper for pre consent authorize flow external request data.
  */
@@ -26,7 +28,7 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     private String userId;
     private String consentType;
     private String consentStatus;
-    private String consentPayload;
+    private ConsentResource consentResource;
 
     public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData) {
 
@@ -34,7 +36,7 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.userId = consentData.getUserId();
         this.consentType = consentData.getConsentResource().getConsentType();
         this.consentStatus = consentData.getConsentResource().getCurrentStatus();
-        this.consentPayload = consentData.getConsentResource().getReceipt();
+        this.consentResource = consentData.getConsentResource();
     }
 
     public String getConsentId() {
@@ -69,11 +71,11 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.consentStatus = consentStatus;
     }
 
-    public String getConsentPayload() {
-        return consentPayload;
+    public ConsentResource getConsentResource() {
+        return consentResource;
     }
 
-    public void setConsentPayload(String consentPayload) {
-        this.consentPayload = consentPayload;
+    public void setConsentResource(ConsentResource consentResource) {
+        this.consentResource = consentResource;
     }
 }
