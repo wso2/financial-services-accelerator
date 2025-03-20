@@ -33,6 +33,7 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
         this.consentType = consentData.getConsentResource().getConsentType();
+        this.consentStatus = consentData.getConsentResource().getCurrentStatus();
         this.consentPayload = consentData.getConsentResource().getReceipt();
     }
 
