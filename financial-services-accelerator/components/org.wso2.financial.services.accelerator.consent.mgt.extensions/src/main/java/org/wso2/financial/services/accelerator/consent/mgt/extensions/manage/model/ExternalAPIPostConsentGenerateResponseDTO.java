@@ -20,9 +20,9 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 import com.google.gson.JsonElement;
 
 /**
- * ExternalAPIConsentRetrieveResponseDTO
+ * ExternalAPIPostConsentGenerateResponseDTO
  */
-public class ExternalAPIConsentRetrieveResponseDTO {
+public class ExternalAPIPostConsentGenerateResponseDTO {
 
     private JsonElement responseData;
 
@@ -30,7 +30,7 @@ public class ExternalAPIConsentRetrieveResponseDTO {
         return responseData;
     }
 
-    public void setResponseData(JsonElement responseData) {
-        this.responseData = responseData;
+    public void setResponseData(JsonElement data) {
+        this.responseData = data;
     }
 }

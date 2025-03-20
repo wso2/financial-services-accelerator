@@ -18,16 +18,16 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
 /**
- * Wrapper for consent retrieve flow external request data.
+ * Wrapper for pre consent authorize flow external request data.
  */
-public class ExternalAPIConsentRetrievalRequestDTO {
+public class ExternalAPIPreConsentAuthorizeRequestDTO {
 
     private String consentId;
     private String userId;
     private String consentType;
     private String consentReceipt;
 
-    public ExternalAPIConsentRetrievalRequestDTO(ConsentData consentData) {
+    public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();

@@ -17,22 +17,26 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
 /**
- * ExternalAPIConsentRetrieveRequestDTO
+ * ExternalAPIPostConsentGenerateRequestDTO
  */
-public class ExternalAPIConsentRetrieveRequestDTO {
+public class ExternalAPIPostConsentGenerateRequestDTO {
 
     private String consentId;
-    private ConsentResource consentResource;
+    private String status;
     private String resourcePath;
+    private long createdTime;
+    private Object consentPayload;
 
-    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ConsentResource consentResource,
-                                                String resourcePath) {
-        this.consentId = consentId;
+    public ExternalAPIPostConsentGenerateRequestDTO(DetailedConsentResource consentResource, String resourcePath) {
+
+        this.consentId = consentResource.getConsentID();
+        this.status = consentResource.getCurrentStatus();
         this.resourcePath = resourcePath;
-        this.consentResource = consentResource;
+        this.createdTime = consentResource.getCreatedTime();
+        this.consentPayload = consentResource.getReceipt();
     }
 
     public String getConsentId() {
@@ -43,13 +47,12 @@ public class ExternalAPIConsentRetrieveRequestDTO {
         this.consentId = consentId;
     }
 
-    public ConsentResource getConsentResource() {
-        return consentResource;
+    public String getStatus() {
+        return status;
     }
 
-    public void setConsentResource(
-            ConsentResource consentResource) {
-        this.consentResource = consentResource;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getResourcePath() {
@@ -58,5 +61,21 @@ public class ExternalAPIConsentRetrieveRequestDTO {
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
+    }
+
+    public long getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(long createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Object getConsentPayload() {
+        return consentPayload;
+    }
+
+    public void setConsentPayload(Object consentPayload) {
+        this.consentPayload = consentPayload;
     }
 }
