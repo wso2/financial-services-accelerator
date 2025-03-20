@@ -253,7 +253,7 @@
                             org.wso2.carbon.user.core.service.*;version="${carbon.kernel.version}",
                             org.wso2.carbon.context.*;version="${carbon.kernel.version}",
                             org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.version}",
-                            org.wso2.carbon.identity.core.util;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.core.*;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.user.api;version="0",
                             com.google.gson;version="${google.gson.version.range}",
                             org.json;version="${org.json.version.range}"
