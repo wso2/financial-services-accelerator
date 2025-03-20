@@ -25,14 +25,16 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     private String consentId;
     private String userId;
     private String consentType;
-    private String consentReceipt;
+    private String consentStatus;
+    private String consentPayload;
 
     public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
         this.consentType = consentData.getConsentResource().getConsentType();
-        this.consentReceipt = consentData.getConsentResource().getReceipt();
+        this.consentStatus = consentData.getConsentResource().getCurrentStatus();
+        this.consentPayload = consentData.getConsentResource().getReceipt();
     }
 
     public String getConsentId() {
@@ -59,11 +61,19 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.consentType = consentType;
     }
 
-    public String getConsentReceipt() {
-        return consentReceipt;
+    public String getConsentStatus() {
+        return consentStatus;
     }
 
-    public void setConsentReceipt(String consentReceipt) {
-        this.consentReceipt = consentReceipt;
+    public void setConsentStatus(String consentStatus) {
+        this.consentStatus = consentStatus;
+    }
+
+    public String getConsentPayload() {
+        return consentPayload;
+    }
+
+    public void setConsentPayload(String consentPayload) {
+        this.consentPayload = consentPayload;
     }
 }
