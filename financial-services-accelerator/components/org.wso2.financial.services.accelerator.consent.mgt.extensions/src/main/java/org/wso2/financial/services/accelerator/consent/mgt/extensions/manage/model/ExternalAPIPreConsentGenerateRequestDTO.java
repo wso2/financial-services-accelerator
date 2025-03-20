@@ -24,12 +24,12 @@ public class ExternalAPIPreConsentGenerateRequestDTO {
 
     //Payload can either be a JSONObject or a JSONArray
     private Object consentPayload;
-    private String requestPath;
+    private String resourcePath;
 
     public ExternalAPIPreConsentGenerateRequestDTO(ConsentManageData consentManageData) {
 
         this.consentPayload = consentManageData.getPayload();
-        this.requestPath = consentManageData.getRequestPath();
+        this.resourcePath = consentManageData.getRequestPath();
     }
 
     public Object getConsentPayload() {
@@ -40,12 +40,12 @@ public class ExternalAPIPreConsentGenerateRequestDTO {
         this.consentPayload = consentPayload;
     }
 
-    public String getRequestPath() {
-        return requestPath;
+    public String getResourcePath() {
+        return resourcePath;
     }
 
-    public void setRequestPath(String requestPath) {
-        this.requestPath = requestPath;
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
     }
 
 }
