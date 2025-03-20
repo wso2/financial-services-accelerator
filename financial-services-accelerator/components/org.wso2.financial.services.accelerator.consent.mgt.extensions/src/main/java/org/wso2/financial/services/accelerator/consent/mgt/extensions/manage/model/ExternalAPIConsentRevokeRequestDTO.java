@@ -19,8 +19,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 
-import java.util.Map;
-
 /**
  * ExternalAPIConsentRevokeRequestDTO
  */
