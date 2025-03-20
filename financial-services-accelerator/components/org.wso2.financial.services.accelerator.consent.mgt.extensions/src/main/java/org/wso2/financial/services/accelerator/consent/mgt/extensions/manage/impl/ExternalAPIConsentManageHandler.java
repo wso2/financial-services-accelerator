@@ -187,8 +187,9 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
 
                 Map<String, String> consentAttributes =
                         consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                consentResource.setConsentAttributes(consentAttributes);
                 ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(consentResource,
-                        resourcePath, consentAttributes);
+                        resourcePath);
                 ExternalAPIConsentRevokeResponseDTO responseDTO = callExternalService(requestDTO);
 
                 boolean shouldRevokeTokens = responseDTO.getShouldRevokeTokens();

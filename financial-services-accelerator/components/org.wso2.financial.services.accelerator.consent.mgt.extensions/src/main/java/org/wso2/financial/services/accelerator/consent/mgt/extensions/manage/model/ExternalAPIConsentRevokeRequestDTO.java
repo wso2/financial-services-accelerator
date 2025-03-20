@@ -27,19 +27,16 @@ import java.util.Map;
 public class ExternalAPIConsentRevokeRequestDTO {
 
     private String consentId;
-    private String consentType;
     private String consentStatus;
     private String resourcePath;
-    private Map<String, String> consentAttributes;
+    private ConsentResource consentResource;
 
-    public ExternalAPIConsentRevokeRequestDTO(ConsentResource consentResource, String resourcePath,
-                                              Map<String, String> consentAttributes) {
+    public ExternalAPIConsentRevokeRequestDTO(ConsentResource consentResource, String resourcePath) {
 
         this.consentId = consentResource.getConsentID();
-        this.consentType = consentResource.getConsentType();
         this.consentStatus = consentResource.getCurrentStatus();
         this.resourcePath = resourcePath;
-        this.consentAttributes = consentAttributes;
+        this.consentResource = consentResource;
     }
 
     public String getConsentId() {
@@ -48,14 +45,6 @@ public class ExternalAPIConsentRevokeRequestDTO {
 
     public void setConsentId(String consentId) {
         this.consentId = consentId;
-    }
-
-    public String getConsentType() {
-        return consentType;
-    }
-
-    public void setConsentType(String consentType) {
-        this.consentType = consentType;
     }
 
     public String getConsentStatus() {
@@ -74,11 +63,4 @@ public class ExternalAPIConsentRevokeRequestDTO {
         this.resourcePath = resourcePath;
     }
 
-    public Map<String, String> getConsentAttributes() {
-        return consentAttributes;
-    }
-
-    public void setConsentAttributes(Map<String, String> consentAttributes) {
-        this.consentAttributes = consentAttributes;
-    }
 }
