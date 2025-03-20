@@ -35,6 +35,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentRes
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
@@ -278,7 +279,7 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
                 ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest, serviceType);
 
         if (response.getStatus().equals(StatusEnum.ERROR)) {
-            handleResponseError(response);
+            ExternalAPIUtil.handleResponseError(response);
         }
         return new JSONObject(response.getData().toString());
     }
@@ -301,15 +302,6 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent");
         }
-    }
-
-    private void handleResponseError(ExternalServiceResponse response) throws ConsentException {
-
-        int httpErrorCode = Integer.parseInt(response.getErrorCode());
-        if (httpErrorCode < 400 || httpErrorCode >= 500) {
-            httpErrorCode = 500;
-        }
-        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getErrorMessage());
     }
 
 }
