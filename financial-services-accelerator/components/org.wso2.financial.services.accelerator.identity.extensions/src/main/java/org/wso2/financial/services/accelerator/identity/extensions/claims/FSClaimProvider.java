@@ -217,8 +217,9 @@ public class FSClaimProvider implements ClaimProvider {
 
         // retrieve oauth2 access token from JTI value.
         try {
-            accessTokenReference = JWTUtils.decodeRequestJWTToJSONObject(tokenRespDTO.getAccessToken(), "body")
-                    .getAsString("jti");
+            JSONObject decodedRequestObj = new JSONObject(JWTUtils.decodeRequestJWT(tokenRespDTO.getAccessToken(),
+                    "body"));
+            accessTokenReference = decodedRequestObj.getString("jti");
         } catch (ParseException e) {
             throw new IdentityOAuth2Exception("Failed to retrieve Access Token Reference.", e);
         }

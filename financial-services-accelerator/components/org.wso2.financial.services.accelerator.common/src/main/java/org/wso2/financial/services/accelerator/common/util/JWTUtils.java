@@ -39,7 +39,6 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -102,29 +101,6 @@ public class JWTUtils {
         }
 
         return StringUtils.EMPTY;
-
-    }
-
-    /**
-     * Decode request JWT to JSON object
-     *
-     * @param jwtToken jwt sent by the tpp
-     * @param jwtPart  expected jwt part (header, body)
-     * @return json object containing requested jwt part
-     */
-    public static JSONObject decodeRequestJWTToJSONObject(String jwtToken, String jwtPart) throws ParseException {
-
-        JSONObject jsonObject = new JSONObject();
-
-        JWSObject plainObject = JWSObject.parse(jwtToken);
-
-        if (FinancialServicesConstants.JWT_HEAD.equals(jwtPart)) {
-            jsonObject = plainObject.getHeader().toJSONObject();
-        } else if (FinancialServicesConstants.JWT_BODY.equals(jwtPart)) {
-            jsonObject = plainObject.getPayload().toJSONObject();
-        }
-
-        return jsonObject;
 
     }
 
