@@ -18,7 +18,6 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
 /**
  * ExternalAPIPostConsentGenerateRequestDTO

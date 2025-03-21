@@ -135,7 +135,8 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             ExternalAPIPreConsentGenerateResponseDTO preResponseDTO = callExternalService(preRequestDTO);
 
             DetailedConsentResource createdConsent = generateConsent(preResponseDTO, consentManageData.getClientId());
-            ConsentResource createdConsentResource = consentCoreService.getConsent(createdConsent.getConsentID(), false);
+            ConsentResource createdConsentResource = consentCoreService.getConsent(createdConsent.getConsentID(),
+                    false);
             // ToDo: Fix dao layer error to remove this line.
             //  https://github.com/wso2/financial-services-accelerator/issues/404
             createdConsentResource.setConsentAttributes(createdConsent.getConsentAttributes());
