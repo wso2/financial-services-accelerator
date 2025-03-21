@@ -135,10 +135,14 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             ExternalAPIPreConsentGenerateResponseDTO preResponseDTO = callExternalService(preRequestDTO);
 
             DetailedConsentResource createdConsent = generateConsent(preResponseDTO, consentManageData.getClientId());
+            ConsentResource createdConsentResource = consentCoreService.getConsent(createdConsent.getConsentID(), false);
+            // ToDo: Fix dao layer error to remove this line.
+            //  https://github.com/wso2/financial-services-accelerator/issues/404
+            createdConsentResource.setConsentAttributes(createdConsent.getConsentAttributes());
 
             // Call external service after generating consent
             ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
-                    createdConsent, consentManageData.getRequestPath());
+                    createdConsentResource, consentManageData.getRequestPath());
             ExternalAPIPostConsentGenerateResponseDTO postResponseDTO = callExternalService(postRequestDTO);
 
             consentManageData.setResponsePayload(postResponseDTO.getResponseData());
@@ -192,8 +196,8 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
                         resourcePath);
                 ExternalAPIConsentRevokeResponseDTO responseDTO = callExternalService(requestDTO);
 
-                boolean shouldRevokeTokens = responseDTO.getShouldRevokeTokens();
-                boolean success = consentCoreService.revokeConsent(consentId, responseDTO.getRevokedStatus(),
+                boolean shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
+                boolean success = consentCoreService.revokeConsent(consentId, responseDTO.getRevocationStatusName(),
                         null, shouldRevokeTokens);
                 if (!success) {
                     log.error("Consent revocation unsuccessful");
@@ -266,7 +270,7 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
 
     private ExternalAPIConsentRetrieveResponseDTO callExternalService(ExternalAPIConsentRetrieveRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
     }
