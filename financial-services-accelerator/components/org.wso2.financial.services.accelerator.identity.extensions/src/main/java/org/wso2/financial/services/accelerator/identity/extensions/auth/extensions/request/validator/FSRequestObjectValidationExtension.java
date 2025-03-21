@@ -31,7 +31,6 @@ import org.wso2.carbon.identity.openidconnect.model.RequestObject;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
-import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
@@ -300,8 +299,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
         // Construct the payload
         org.json.JSONObject data = new org.json.JSONObject(fsRequestObject.getClaimsSet().toJSONObject());
 
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
-                data, OperationEnum.VALIDATE_REQUEST_OBJECT);
+        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
 
         // Invoke external service
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
