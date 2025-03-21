@@ -17,6 +17,7 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
+import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 
 /**
@@ -60,5 +61,18 @@ public class ExternalAPIPostConsentGenerateRequestDTO {
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
+    }
+
+    /**
+     * Convert the dto to a JSON object with correct consent resource format.
+     *
+     * @return JSON object
+     */
+    public JSONObject toJson() {
+
+        JSONObject dtoJson = new JSONObject(this);
+        JSONObject consentResourceJson = this.consentResource.toJson();
+        dtoJson.put("consentResource", consentResourceJson);
+        return dtoJson;
     }
 }
