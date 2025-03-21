@@ -192,8 +192,8 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
                         resourcePath);
                 ExternalAPIConsentRevokeResponseDTO responseDTO = callExternalService(requestDTO);
 
-                boolean shouldRevokeTokens = responseDTO.getShouldRevokeTokens();
-                boolean success = consentCoreService.revokeConsent(consentId, responseDTO.getRevokedStatus(),
+                boolean shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
+                boolean success = consentCoreService.revokeConsent(consentId, responseDTO.getRevocationStatusName(),
                         null, shouldRevokeTokens);
                 if (!success) {
                     log.error("Consent revocation unsuccessful");
@@ -266,7 +266,7 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
 
     private ExternalAPIConsentRetrieveResponseDTO callExternalService(ExternalAPIConsentRetrieveRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
     }
