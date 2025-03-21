@@ -111,11 +111,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
      */
     private ExternalServiceRequest createExternalServiceRequest(ExternalAPIPreConsentAuthorizeRequestDTO requestDTO) {
 
-        JSONObject requestJson = new JSONObject(requestDTO);
-        JSONObject payload = new JSONObject();
-        payload.put(CONSENT_DATA_OBJECT_KEY, requestJson);
-
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), payload);
+        JSONObject requestJson = requestDTO.toJson();
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), requestJson);
     }
 
     /**
