@@ -516,7 +516,7 @@ public class IdentityCommonUtils {
 
         // Construct the payload
         JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, Arrays.toString(oauthAuthzMsgCtx.getApprovedScope()));
+        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
         data.put(IdentityCommonConstants.CONSENT_ID, consentId);
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
