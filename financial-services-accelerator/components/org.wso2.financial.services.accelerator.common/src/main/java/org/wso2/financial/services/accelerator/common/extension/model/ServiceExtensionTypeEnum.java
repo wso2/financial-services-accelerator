@@ -24,6 +24,7 @@ package org.wso2.financial.services.accelerator.common.extension.model;
 public enum ServiceExtensionTypeEnum {
 
     PRE_CONSENT_GENERATION("pre-consent-generation"),
+    POST_CONSENT_GENERATION("post-consent-generation"),
     PRE_CONSENT_RETRIEVAL("pre-consent-retrieval"),
     PRE_CONSENT_REVOCATION("pre-consent-revocation"),
     PRE_CONSENT_AUTHORIZATION("pre-consent-authorization"),

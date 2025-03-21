@@ -284,6 +284,7 @@ additional_attribute_filter= "org.wso2.financial.services.accelerator.identity.e
 
 [oauth.oidc]
 id_token.signature_algorithm="PS256"
+enable_claims_separation_for_access_tokens = false
 
 [oauth.oidc.token_endpoint]
 signing_algorithms=["PS256","ES256"]
@@ -317,9 +318,14 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 [financial_services.service.extensions.endpoint]
 enabled = false
 base_url = ""
-
 # allowed extension_types: "post-token-generation", "pre-consent-authorization"
 extension_types = ["post-token-generation"]
+
+[financial_services.service.extensions.endpoint.security]
+# supported types : Basic-Auth or OAuth2
+type = "Basic-Auth"
+username = ""
+password = ""
 
 [[financial_services.jdbc_persistence_manager]]
 data_source.name = "WSO2FS_DB"
@@ -482,9 +488,11 @@ consent_id_claim_name="consent_id"
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
 
 [financial_services.identity.extensions]
-request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
-response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
-claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
+# Uncomment these to get a default implementation of identity extensions
+#request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
+#response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
+#claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
+#grant_handler="org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSDefaultGrantHandler"
 
 [financial_services.identity.token]
 remove_user_store_domain_from_subject=false

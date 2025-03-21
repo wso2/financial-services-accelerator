@@ -831,6 +831,54 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
+     * Method to get service extensions endpoint security type.
+     *
+     * @return String service extensions endpoint security type
+     */
+    public String getServiceExtensionsEndpointSecurityType() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_SECURITY_TYPE);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security basic auth username.
+     *
+     * @return String service extensions endpoint security basic auth username
+     */
+    public String getServiceExtensionsEndpointSecurityBasicAuthUsername() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security basic auth password.
+     *
+     * @return String service extensions endpoint security basic auth password
+     */
+    public String getServiceExtensionsEndpointSecurityBasicAuthPassword() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security oauth2 token.
+     *
+     * @return String service extensions endpoint security oauth2 token
+     */
+    public String getServiceExtensionsEndpointSecurityOauth2Token() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_OAUTH2_TOKEN);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
      * Get config related for checking whether PSU is a federated user or not.
      *
      * @return Boolean value indicating whether PSU is a federated user or not

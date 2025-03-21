@@ -18,34 +18,34 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
 /**
- * ExternalAPIConsentGenerateRequestDTO
+ * ExternalAPIPreConsentGenerateRequestDTO
  */
-public class ExternalAPIConsentGenerateRequestDTO {
+public class ExternalAPIPreConsentGenerateRequestDTO {
 
     //Payload can either be a JSONObject or a JSONArray
-    private Object payload;
-    private String requestPath;
+    private Object consentPayload;
+    private String resourcePath;
 
-    public ExternalAPIConsentGenerateRequestDTO(ConsentManageData consentManageData) {
+    public ExternalAPIPreConsentGenerateRequestDTO(ConsentManageData consentManageData) {
 
-        this.payload = consentManageData.getPayload();
-        this.requestPath = consentManageData.getRequestPath();
+        this.consentPayload = consentManageData.getPayload();
+        this.resourcePath = consentManageData.getRequestPath();
     }
 
-    public Object getPayload() {
-        return payload;
+    public Object getConsentPayload() {
+        return consentPayload;
     }
 
-    public void setPayload(Object payload) {
-        this.payload = payload;
+    public void setConsentPayload(Object consentPayload) {
+        this.consentPayload = consentPayload;
     }
 
-    public String getRequestPath() {
-        return requestPath;
+    public String getResourcePath() {
+        return resourcePath;
     }
 
-    public void setRequestPath(String requestPath) {
-        this.requestPath = requestPath;
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
     }
 
 }

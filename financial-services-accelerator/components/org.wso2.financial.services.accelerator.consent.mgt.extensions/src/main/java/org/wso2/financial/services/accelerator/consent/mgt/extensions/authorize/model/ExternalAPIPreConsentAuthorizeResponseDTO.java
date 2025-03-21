@@ -17,24 +17,30 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import org.json.JSONObject;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Wrapper for consent retrieve flow response data.
+ * Wrapper for pre consent authorize flow external response data.
  */
-public class ExternalAPIConsentRetrievalResponseDTO {
+public class ExternalAPIPreConsentAuthorizeResponseDTO {
 
-    JSONObject displayConsentData;
+    private List<Map<String, Object>> consentData;
+    private List<Map<String, Object>> consumerData;
 
-    public ExternalAPIConsentRetrievalResponseDTO(JSONObject displayConsentData) {
-        this.displayConsentData = displayConsentData;
+    public List<Map<String, Object>> getConsentData() {
+        return consentData;
     }
 
-    public JSONObject getDisplayConsentData() {
-        return displayConsentData;
+    public void setConsentData(List<Map<String, Object>> consentData) {
+        this.consentData = consentData;
     }
 
-    public void setDisplayConsentData(JSONObject displayConsentData) {
-        this.displayConsentData = displayConsentData;
+    public List<Map<String, Object>> getConsumerData() {
+        return consumerData;
+    }
+
+    public void setConsumerData(List<Map<String, Object>> consumerData) {
+        this.consumerData = consumerData;
     }
 }

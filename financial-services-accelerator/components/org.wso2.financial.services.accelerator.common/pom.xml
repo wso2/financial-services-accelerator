@@ -157,6 +157,7 @@
                         <exclude>**/*FinancialServicesBaseCache.class</exclude>
                         <exclude>**/*FinancialServicesBaseCacheKey.class</exclude>
                         <exclude>**/*Request.class</exclude>
+                        <exclude>**/*Response.class</exclude>
                         <exclude>**/*Enum.class</exclude>
                         <!-- Excluded since involves datasource initialization -->
                         <exclude>**/DatabaseUtils.class</exclude>

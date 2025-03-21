@@ -17,27 +17,20 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
+import com.google.gson.JsonElement;
+
 /**
- * ExternalAPIConsentRevokeResponseDTO
+ * ExternalAPIPostConsentGenerateResponseDTO
  */
-public class ExternalAPIConsentRevokeResponseDTO {
+public class ExternalAPIPostConsentGenerateResponseDTO {
 
-    private boolean requireTokenRevocation;
-    private String revocationStatusName;
+    private JsonElement responseData;
 
-    public boolean getRequireTokenRevocation() {
-        return requireTokenRevocation;
+    public JsonElement getResponseData() {
+        return responseData;
     }
 
-    public void setRequireTokenRevocation(boolean requireTokenRevocation) {
-        this.requireTokenRevocation = requireTokenRevocation;
-    }
-
-    public String getRevocationStatusName() {
-        return revocationStatusName;
-    }
-
-    public void setRevocationStatusName(String revocationStatusName) {
-        this.revocationStatusName = revocationStatusName;
+    public void setResponseData(JsonElement data) {
+        this.responseData = data;
     }
 }
