@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>accelerator-tests</artifactId>
-        <version>4.0.0-M2</version>
+        <version>4.0.0-M3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
