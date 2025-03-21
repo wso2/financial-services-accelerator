@@ -17,6 +17,7 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
+import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
 /**
@@ -34,7 +35,7 @@ public class ExternalAPIPostConsentGenerateRequestDTO {
         this.consentId = consentResource.getConsentID();
         this.consentStatus = consentResource.getCurrentStatus();
         this.createdTime = consentResource.getCreatedTime();
-        this.consentPayload = consentResource.getReceipt();
+        this.consentPayload = new JSONObject(consentResource.getReceipt());
     }
 
     public String getConsentId() {
