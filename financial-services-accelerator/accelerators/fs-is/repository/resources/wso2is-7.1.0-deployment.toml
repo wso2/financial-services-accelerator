@@ -284,6 +284,7 @@ additional_attribute_filter= "org.wso2.financial.services.accelerator.identity.e
 
 [oauth.oidc]
 id_token.signature_algorithm="PS256"
+enable_claims_separation_for_access_tokens = false
 
 [oauth.oidc.token_endpoint]
 signing_algorithms=["PS256","ES256"]
