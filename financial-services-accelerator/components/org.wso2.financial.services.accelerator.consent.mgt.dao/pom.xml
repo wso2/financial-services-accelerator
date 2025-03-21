@@ -39,6 +39,10 @@
             <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
@@ -226,6 +230,7 @@
                             org.apache.commons.lang3;version="${commons-lang3.version}",
                             org.apache.commons.collections4;version="${commons-collections.version}",
                             org.apache.commons.logging;version="${commons.logging.version}",
+                            org.json.*;version="${org.json.version}",
                             net.minidev.json; version="${json-smart.version}"
                         </Import-Package>
                         <Export-Package>

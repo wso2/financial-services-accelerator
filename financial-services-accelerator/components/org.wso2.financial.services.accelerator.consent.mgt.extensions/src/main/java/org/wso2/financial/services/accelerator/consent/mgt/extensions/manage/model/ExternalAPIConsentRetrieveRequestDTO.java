@@ -62,15 +62,15 @@ public class ExternalAPIConsentRetrieveRequestDTO {
     }
 
     /**
-     * Convert the dto to a JSON object with correct receipt format.
+     * Convert the dto to a JSON object with correct consent resource format.
      *
      * @return JSON object
      */
     public JSONObject toJson() {
 
         JSONObject dtoJson = new JSONObject(this);
-        JSONObject receiptJson = new JSONObject(this.consentResource.getReceipt());
-        dtoJson.put("consentResource", receiptJson);
+        JSONObject consentResourceJson = this.consentResource.toJson();
+        dtoJson.put("consentResource", consentResourceJson);
         return dtoJson;
     }
 }
