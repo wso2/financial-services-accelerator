@@ -62,6 +62,7 @@ public class FinancialServicesConstants {
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
     public static final String GRANT_HANDLER = "Identity.Extensions.GrantHandler";
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
+    public static final String INTROSPECTION_DATA_PROVIDER = "Identity.Extensions.IntrospectionDataProvider";
     public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
     public static final String REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
