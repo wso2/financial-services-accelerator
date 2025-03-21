@@ -257,14 +257,14 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
     private ExternalAPIPostConsentGenerateResponseDTO callExternalService(
             ExternalAPIPostConsentGenerateRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.POST_CONSENT_GENERATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPostConsentGenerateResponseDTO.class);
     }
 
     private ExternalAPIConsentRevokeResponseDTO callExternalService(ExternalAPIConsentRevokeRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
     }
