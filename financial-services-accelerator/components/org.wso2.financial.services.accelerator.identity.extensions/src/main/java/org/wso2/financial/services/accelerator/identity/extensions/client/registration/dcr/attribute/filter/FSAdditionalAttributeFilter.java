@@ -18,25 +18,30 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.attribute.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
 import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.extension.FSAbstractDCRExtension;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.DynamicClientRegistrationValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Map.Entry.comparingByKey;
@@ -66,6 +71,19 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST)) {
+            //TODO:
+        } else {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> map = objectMapper.convertValue(appRegistrationRequest, Map.class);
+                getFSAbstractDCRExtension().validateDCRRegisterAttributes(map, ssaParams);
+            } catch (FinancialServicesException e) {
+                throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
+
+            }
+        }
+
         Map<String, Object> filteredAttributes = new HashMap<>();
         Map<String, Object> additionalAttributes = appRegistrationRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
@@ -89,6 +107,19 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             } catch (FinancialServicesException e) {
                 log.error(e.getMessage().replaceAll("[\r\n]", ""));
                 throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
+            }
+        }
+
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST)) {
+            //TODO:
+        } else {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> map = objectMapper.convertValue(applicationUpdateRequest, Map.class);
+                getFSAbstractDCRExtension().validateDCRRegisterAttributes(map, ssaParams);
+            } catch (FinancialServicesException e) {
+                throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
+
             }
         }
 
@@ -183,5 +214,12 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         return priorityMap.keySet().stream()
                 .map(priorityMap::get).collect(Collectors.toList());
+    }
+
+    private static FSAbstractDCRExtension getFSAbstractDCRExtension() {
+        Object dcrServiceExtension = configurationService.getConfigurations()
+                .get(FinancialServicesConstants.DCR_SERVICE_EXTENSION);
+        return FinancialServicesUtils.getClassInstanceFromFQN(dcrServiceExtension.toString(),
+                FSAbstractDCRExtension.class);
     }
 }

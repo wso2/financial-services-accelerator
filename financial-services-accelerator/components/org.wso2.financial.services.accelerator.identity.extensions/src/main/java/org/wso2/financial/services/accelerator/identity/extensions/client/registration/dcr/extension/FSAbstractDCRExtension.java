@@ -59,12 +59,4 @@ public abstract class FSAbstractDCRExtension {
     public abstract void validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
                                                       Map<String, Object> ssaClaims, List<JSONObject> spProperties)
             throws FinancialServicesException;
-
-    /**
-     * Perform any post delete actions of the application.
-     *
-     * @param clientId    Client ID of the deleted application.
-     * @throws FinancialServicesException In case of any other blocking error.
-     */
-    public abstract void doPostDeleteApplication(String clientId) throws FinancialServicesException;
 }

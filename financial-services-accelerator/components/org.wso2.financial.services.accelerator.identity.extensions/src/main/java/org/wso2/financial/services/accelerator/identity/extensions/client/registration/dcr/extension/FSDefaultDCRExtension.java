@@ -20,10 +20,7 @@ package org.wso2.financial.services.accelerator.identity.extensions.client.regis
 
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,52 +42,5 @@ public class FSDefaultDCRExtension {
                                                       Map<String, Object> ssaClaims, List<JSONObject> spProperties)
             throws FinancialServicesException {
         return new HashMap<>();
-    }
-    /**
-     * Get the keys of additional attributes to be returned in the DCR register, update and get responses.
-     *
-     * @return List of response attribute keys.
-     */
-    public List<String> getResponseAttributeKeys() {
-        return getResponseParamsFromConfig();
-    }
-
-    /**
-     * Get the conditional auth script to store against the application.
-     *
-     * @return the conditional auth script.
-     */
-    public String getConditionalAuthScript() {
-        return "";
-    }
-
-    /**
-     * Perform any post delete actions of the application.
-     *
-     * @param clientId    Client ID of the deleted application.
-     * @throws FinancialServicesException In case of any other blocking error.
-     */
-    public void doPostDeleteApplication(String clientId) throws FinancialServicesException {
-
-    }
-
-    /**
-     * Get the response parameters from the configuration.
-     * @return List of response parameters.
-     */
-    private List<String> getResponseParamsFromConfig() {
-
-        List<String> responseParams = new ArrayList<>();
-
-        Map<String, Map<String, Object>> dcrConfigs = IdentityExtensionsDataHolder.getInstance()
-                .getConfigurationService().getDCRParamsConfig();
-
-        dcrConfigs.forEach((key, value) -> {
-            if (Boolean.parseBoolean(value.get(IdentityCommonConstants.INCLUDE_IN_RESPONSE).toString())) {
-                responseParams.add(value.get(IdentityCommonConstants.KEY).toString());
-            }
-        });
-
-        return responseParams;
     }
 }

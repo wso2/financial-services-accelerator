@@ -331,7 +331,7 @@ data_source.name = "WSO2FS_DB"
 connection_verification_timeout=1
 
 [financial_services.app_registration]
-applicationupdater = "listener.application.org.wso2.financial.services.accelerator.identity.extensions.client.registration.ApplicationUpdaterImpl"
+applicationupdater = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl"
 
 [[financial_services.app_registration.dcr.params]]
 name = "SoftwareId"

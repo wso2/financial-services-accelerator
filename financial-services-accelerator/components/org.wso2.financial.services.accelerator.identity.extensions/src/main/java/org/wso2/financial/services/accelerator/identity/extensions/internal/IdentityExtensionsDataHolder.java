@@ -29,6 +29,7 @@ import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
@@ -36,7 +37,6 @@ import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClai
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.AbstractApplicationUpdater;
 import org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSGrantHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSIntrospectionDataProvider;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.Map;
 
@@ -148,19 +148,22 @@ public class IdentityExtensionsDataHolder {
 
         IdentityExtensionsDataHolder.configurationService = configurationService;
         this.configurationMap = configurationService.getConfigurations();
-        abstractApplicationUpdater = (AbstractApplicationUpdater) IdentityCommonUtils.getClassInstanceFromFQN
-                (configurationService.getConfigurations().get(FinancialServicesConstants.POST_APPLICATION_LISTENER));
-        fsRequestObjectValidator = (FSRequestObjectValidator) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.REQUEST_VALIDATOR));
-        fsResponseTypeHandler = (FSResponseTypeHandler) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.RESPONSE_HANDLER));
-        fsGrantHandler = (FSGrantHandler) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.GRANT_HANDLER));
-        this.setClaimProvider((ClaimProvider) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.CLAIM_PROVIDER)));
+        String appUpdaterClassName = configurationService.getConfigurations()
+                .get(FinancialServicesConstants.POST_APPLICATION_LISTENER).toString();
+        abstractApplicationUpdater = FinancialServicesUtils.getClassInstanceFromFQN(appUpdaterClassName,
+                AbstractApplicationUpdater.class);
+        fsRequestObjectValidator = FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
+                .get(FinancialServicesConstants.REQUEST_VALIDATOR).toString(), FSRequestObjectValidator.class);
+        fsResponseTypeHandler = FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
+                .get(FinancialServicesConstants.RESPONSE_HANDLER).toString(), FSResponseTypeHandler.class);
+        fsGrantHandler = FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
+                .get(FinancialServicesConstants.GRANT_HANDLER).toString(), FSGrantHandler.class);
+        this.setClaimProvider(FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
+                .get(FinancialServicesConstants.CLAIM_PROVIDER).toString(), ClaimProvider.class));
         FSClaimProvider.setClaimProvider(getClaimProvider());
-        this.setIntrospectionDataProvider((IntrospectionDataProvider) IdentityCommonUtils.getClassInstanceFromFQN(
-                this.configurationMap.get(FinancialServicesConstants.INTROSPECTION_DATA_PROVIDER)));
+        this.setIntrospectionDataProvider(FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
+                .get(FinancialServicesConstants.INTROSPECTION_DATA_PROVIDER).toString(),
+                IntrospectionDataProvider.class));
         FSIntrospectionDataProvider.setIntrospectionDataProvider(getIntrospectionDataProvider());
     }
 
