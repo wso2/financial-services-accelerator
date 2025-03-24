@@ -211,7 +211,7 @@
         {% elif financial_services.app_registration.application_updater is defined %}
         <ApplicationUpdaterImpl>{{financial_services.app_registration.application_updater}}</ApplicationUpdaterImpl>
         {% else %}
-        <ApplicationUpdaterImpl>listener.application.org.wso2.financial.services.accelerator.identity.extensions.client.registration.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
+        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}
         <SCA>
             <PrimaryAuthenticator>

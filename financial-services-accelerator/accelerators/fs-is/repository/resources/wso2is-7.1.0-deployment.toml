@@ -344,7 +344,7 @@ name = "Scope"
 key = "scope"
 required = true
 include_in_response = true
-allowed_values = ["accounts", "payments"]
+allowed_values = ["accounts", "payments", "fundsconfirmations"]
 
 [[financial_services.app_registration.dcr.params]]
 name = "RedirectUris"
@@ -392,48 +392,48 @@ include_in_response = true
 
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RequiredParamsValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.RequiredParamsValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.RequiredParamsValidator"
 enable = true
 priority = 1
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "IssuerValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.IssuerValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.IssuerValidator"
 enable = true
 priority = 2
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RedirectUriFormatValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.RedirectUriFormatValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.RedirectUriFormatValidator"
 enable = true
 priority = 3
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RedirectUriMatchValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.RedirectUriMatchValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.RedirectUriMatchValidator"
 enable = true
 priority = 4
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "UriHostnameValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.UriHostnameValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.UriHostnameValidator"
 enable = true
 priority = 5
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "SSAIssuerValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.SSAIssuerValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.SSAIssuerValidator"
 enable = true
 priority = 6
 allowed_values = ["OpenBanking Ltd"]
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RequestJTIValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.RequestJTIValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.RequestJTIValidator"
 enable = true
 priority = 7
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "SSAJTIValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.SSAJTIValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.SSAJTIValidator"
 enable = true
 priority = 8
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "TokenEndpointAuthSigningAlgValidator"
-class = "validators.org.wso2.financial.services.accelerator.identity.extensions.client.registration.TokenEndpointAuthSigningAlgValidator"
+class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.TokenEndpointAuthSigningAlgValidator"
 enable = true
 priority = 9
 
