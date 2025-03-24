@@ -19,32 +19,30 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.common.extension.model.Request;
-
-import java.util.Map;
 
 /**
  * Consent validate request model.
  */
-public class ConsentValidateRequest extends Request {
-    JSONObject consentPayload;
+public class ConsentValidateRequest {
+    JSONObject consentResource;
     String consentId;
     JSONObject dataPayload;
+    String consentType;
 
-    public ConsentValidateRequest(String consentId, JSONObject consentPayload, JSONObject dataPayload,
-                                  Map<String, String> additionalParams) {
-        super(null, additionalParams);
-        this.consentPayload = consentPayload;
+    public ConsentValidateRequest(String consentId, JSONObject consentResource, JSONObject dataPayload,
+                                  String consentType) {
+        this.consentResource = consentResource;
         this.consentId = consentId;
         this.dataPayload = dataPayload;
+        this.consentType = consentType;
     }
 
-    public JSONObject getConsentPayload() {
-        return consentPayload;
+    public JSONObject getConsentResource() {
+        return consentResource;
     }
 
-    public void setConsentPayload(JSONObject consentPayload) {
-        this.consentPayload = consentPayload;
+    public void setConsentResource(JSONObject consentResource) {
+        this.consentResource = consentResource;
     }
 
     public String getConsentId() {
@@ -61,6 +59,14 @@ public class ConsentValidateRequest extends Request {
 
     public void setDataPayload(JSONObject dataPayload) {
         this.dataPayload = dataPayload;
+    }
+
+    public String getConsentType() {
+        return consentType;
+    }
+
+    public void setConsentType(String consentType) {
+        this.consentType = consentType;
     }
 
 }

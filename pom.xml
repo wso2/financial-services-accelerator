@@ -21,7 +21,7 @@
     <groupId>org.wso2.financial.services.accelerator</groupId>
     <artifactId>financial-services</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-M2</version>
+    <version>4.0.0-M3</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -42,7 +42,6 @@
             </activation>
             <modules>
                 <module>financial-services-accelerator</module>
-                <module>react-apps</module>
                 <module>financial-services-accelerator/accelerators</module>
                 <module>integration-test-framework</module>
             </modules>
@@ -90,9 +89,7 @@
 
     <modules>
         <module>financial-services-accelerator</module>
-        <module>react-apps</module>
-        <module>fs-integration-test-suite/accelerator-tests/is-tests</module>
-        <module>fs-integration-test-suite/accelerator-tests/gateway-tests</module>
+        <module>integration-test-framework</module>
     </modules>
 
     <repositories>

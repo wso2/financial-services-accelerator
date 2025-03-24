@@ -24,10 +24,15 @@ package org.wso2.financial.services.accelerator.common.extension.model;
 public enum ServiceExtensionTypeEnum {
 
     PRE_CONSENT_GENERATION("pre-consent-generation"),
+    POST_CONSENT_GENERATION("post-consent-generation"),
+    PRE_CONSENT_RETRIEVAL("pre-consent-retrieval"),
+    PRE_CONSENT_REVOCATION("pre-consent-revocation"),
     PRE_CONSENT_AUTHORIZATION("pre-consent-authorization"),
     CONSENT_VALIDATION("consent-validation"),
-    POST_TOKEN_GENERATION("post-token-generation"),
-    AUTHORIZE_REQUEST_VALIDATION("authorize-request-validation"),
+    PRE_ACCESS_TOKEN_GENERATION("pre-access-token-generation"),
+    PRE_USER_AUTHORIZATION("pre-user-authorization"),
+    POST_USER_AUTHORIZATION("post-user-authorization"),
+    PRE_ID_TOKEN_GENERATION("pre-id-token-generation"),
     VALIDATE_DCR_CREATE_REQUEST("validate-dcr-app-creation"),
     VALIDATE_DCR_UPDATE_REQUEST("validate-dcr-app-update"),
     GET_DCR_ADDITIONAL_REQ_PARAMS("get-additional-dcr-request-parameters"),

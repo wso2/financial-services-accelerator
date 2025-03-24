@@ -60,7 +60,9 @@ public class FinancialServicesConstants {
     public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
+    public static final String GRANT_HANDLER = "Identity.Extensions.GrantHandler";
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
+    public static final String INTROSPECTION_DATA_PROVIDER = "Identity.Extensions.IntrospectionDataProvider";
     public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
     public static final String REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
@@ -128,11 +130,17 @@ public class FinancialServicesConstants {
     public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ServiceExtensionsEndpoint.Enable";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ServiceExtensionsEndpoint.BaseURL";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_TYPE = "ServiceExtensionsEndpoint.ExtensionTypes.Type";
-    public static final String CONSENT_TYPE = "consent_type";
+    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ServiceExtensionsEndpoint.Security.Type";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ServiceExtensionsEndpoint.Security.Username";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ServiceExtensionsEndpoint.Security.Password";
+    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ServiceExtensionsEndpoint.Security.Token";
+    public static final String CONSENT_TYPE = "consentType";
     public static final String ACTION_STATUS = "actionStatus";
     public static final String ACTION_STATUS_SUCCESS = "SUCCESS";
     public static final String ERROR_DESCRIPTION = "errorDescription";
     public  static final String ERROR_MESSAGE = "errorMessage";
+    public static final String BASIC_AUTH = "Basic-Auth";
+    public static final String OAUTH2 = "OAuth2";
 
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";

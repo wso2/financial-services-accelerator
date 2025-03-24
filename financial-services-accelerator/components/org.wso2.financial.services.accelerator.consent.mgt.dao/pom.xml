@@ -23,7 +23,7 @@
     <parent>
         <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-M2</version>
+        <version>4.0.0-M3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -37,6 +37,10 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -226,6 +230,7 @@
                             org.apache.commons.lang3;version="${commons-lang3.version}",
                             org.apache.commons.collections4;version="${commons-collections.version}",
                             org.apache.commons.logging;version="${commons.logging.version}",
+                            org.json.*;version="${org.json.version}",
                             net.minidev.json; version="${json-smart.version}"
                         </Import-Package>
                         <Export-Package>

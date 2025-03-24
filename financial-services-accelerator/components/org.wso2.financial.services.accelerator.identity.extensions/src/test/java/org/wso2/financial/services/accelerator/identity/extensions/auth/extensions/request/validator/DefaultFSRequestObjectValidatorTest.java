@@ -60,7 +60,7 @@ public class DefaultFSRequestObjectValidatorTest {
             DefaultFSRequestObjectValidator uut = new DefaultFSRequestObjectValidator();
 
             FSRequestObject<?> obRequestObject = getObRequestObject(ReqObjectTestDataProvider.VALID_REQUEST);
-            ValidationResponse validationResponse = uut.validateFSConstraints(obRequestObject, ALLOWED_SCOPES);
+            ValidationResponse validationResponse = uut.validateRequestObject(obRequestObject, ALLOWED_SCOPES);
 
             // assert
             Assert.assertTrue(validationResponse.isValid());
@@ -81,7 +81,7 @@ public class DefaultFSRequestObjectValidatorTest {
             DefaultFSRequestObjectValidator uut = new DefaultFSRequestObjectValidator();
 
             FSRequestObject<?> obRequestObject = getObRequestObject(ReqObjectTestDataProvider.NO_CLIENT_ID_REQUEST);
-            ValidationResponse validationResponse = uut.validateFSConstraints(obRequestObject, ALLOWED_SCOPES);
+            ValidationResponse validationResponse = uut.validateRequestObject(obRequestObject, ALLOWED_SCOPES);
 
             // assert
             Assert.assertFalse(validationResponse.isValid());
@@ -104,7 +104,7 @@ public class DefaultFSRequestObjectValidatorTest {
             DefaultFSRequestObjectValidator uut = new DefaultFSRequestObjectValidator();
 
             FSRequestObject<?> obRequestObject = getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
-            ValidationResponse validationResponse = uut.validateFSConstraints(obRequestObject, ALLOWED_SCOPES);
+            ValidationResponse validationResponse = uut.validateRequestObject(obRequestObject, ALLOWED_SCOPES);
 
             // assert
             Assert.assertFalse(validationResponse.isValid());

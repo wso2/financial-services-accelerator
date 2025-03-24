@@ -1,0 +1,37 @@
+<!--
+ ~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="payments-dynamic-endpoint-insequence">
+    <property name="endpointURI" expression="get-property('To')"/>
+    
+    <!--Appending Basic Auth for Consent Management APIs -->
+    <property name="Authorization" scope="transport" action="remove"/>
+    <!-- Replace the  <AUTH_HEADER_VALUE> with Base64 encoded "username:password" value.
+    i.e Base64(username:password) -->
+    <property name="Authorization" value="Basic <AUTH_HEADER_VALUE>" scope="transport"/>
+    
+    <filter regex=".*\/payment-consents.*" source="$ctx:endpointURI">
+        <then>
+            <header name="To" value="https://localhost:9446/api/fs/consent/manage" />
+            <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
+        </then>
+        <else>
+            <header name="To" value="https://localhost:9443/api/fs/backend/services/payments/paymentservice" />
+        </else>
+    </filter>
+</sequence>

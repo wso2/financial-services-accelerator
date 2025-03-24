@@ -31,9 +31,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
-import org.wso2.financial.services.accelerator.common.extension.model.Request;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
@@ -42,7 +43,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -63,11 +66,21 @@ public class ServiceExtensionUtilsTest {
         configs.put(FinancialServicesConstants.MAX_INSTRUCTED_AMOUNT, "1000");
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
+        Mockito.doReturn(FinancialServicesConstants.BASIC_AUTH).when(configParserMock)
+                .getServiceExtensionsEndpointSecurityType();
+        Mockito.doReturn("test").when(configParserMock)
+                .getServiceExtensionsEndpointSecurityBasicAuthUsername();
+        Mockito.doReturn("test").when(configParserMock)
+                .getServiceExtensionsEndpointSecurityBasicAuthPassword();
+        Mockito.doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        List<ServiceExtensionTypeEnum> serviceExtensionTypes = new ArrayList<>();
+        serviceExtensionTypes.add(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+        Mockito.doReturn(serviceExtensionTypes).when(configParserMock).getServiceExtensionTypes();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         String serviceResponse = "{\n" +
                 "  \"responseId\": \"Ec1wMjmiG8\",\n" +
-                "  \"actionStatus\": \"SUCCESS\"\n" +
+                "  \"status\": \"SUCCESS\"\n" +
                 "}";
         byte[] crlBytes = serviceResponse.getBytes(StandardCharsets.UTF_8);
         InputStream inStream = new ByteArrayInputStream(crlBytes);
@@ -95,15 +108,21 @@ public class ServiceExtensionUtilsTest {
     }
 
     @Test
-    public void testInvokeExternalServiceCall() {
-        JSONObject response = ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
+    public void testIsInvokeExternalService() {
+        Assert.assertTrue(ServiceExtensionUtils
+                .isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST));
+    }
+
+    @Test
+    public void testInvokeExternalServiceCall() throws FinancialServicesException {
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
                 ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
 
         Assert.assertNotNull(response);
     }
 
-    @Test(expectedExceptions = FinancialServicesRuntimeException.class)
-    public void testInvokeExternalServiceCallForError() throws IOException {
+    @Test(expectedExceptions = FinancialServicesException.class)
+    public void testInvokeExternalServiceCallForError() throws IOException, FinancialServicesException {
 
         StatusLine statusLine = Mockito.mock(StatusLine.class);
         Mockito.doReturn(400).when(statusLine).getStatusCode();
@@ -145,11 +164,10 @@ public class ServiceExtensionUtilsTest {
     }
 
     private ExternalServiceRequest getDCRCreateServiceRequest() {
-        Request request = new Request();
         JSONObject appRegistrationRequest = new JSONObject();
         appRegistrationRequest.put("appRegistrationRequest", new HashMap<>());
         appRegistrationRequest.put("ssaParams", new HashMap<>());
-        request.setPayload(appRegistrationRequest);
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), request, null);
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), appRegistrationRequest,
+                OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
     }
 }

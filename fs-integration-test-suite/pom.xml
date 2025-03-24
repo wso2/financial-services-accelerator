@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>financial-services</artifactId>
-        <version>4.0.0-M2</version>
+        <version>4.0.0-M3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -379,8 +379,8 @@
         <org.apache.groovy.version>4.0.1</org.apache.groovy.version>
         <selenium.version>3.141.59</selenium.version>
         <jacoco.version>0.8.3</jacoco.version>
-        <openbanking.test.framework.version>4.0.0-M2</openbanking.test.framework.version>
-        <bfsi.test.framework.version>4.0.0-M2</bfsi.test.framework.version>
+        <openbanking.test.framework.version>4.0.0-M3</openbanking.test.framework.version>
+        <bfsi.test.framework.version>4.0.0-M3</bfsi.test.framework.version>
     </properties>
 
 </project>
