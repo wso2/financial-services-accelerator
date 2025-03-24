@@ -24,20 +24,12 @@
 
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <artifactId>fs-integration-test-suite</artifactId>
+        <artifactId>is-tests</artifactId>
         <version>4.0.0-M3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>accelerator-tests</artifactId>
-    <packaging>pom</packaging>
-    <name>FS Accelerator Test Modules</name>
-    <url>http://wso2.org</url>
-
-    <modules>
-        <module>is-tests</module>
-        <module>gateway-tests</module>
-    </modules>
+    <artifactId>org.wso2.financial.services.accelerator.is.test.token</artifactId>
 
     <dependencies>
         <dependency>
@@ -45,26 +37,49 @@
             <artifactId>open-banking-test-framework</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2</groupId>
-            <artifactId>bfsi-test-framework</artifactId>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.financial.services.accelerator</groupId>
-            <artifactId>accelerator-test-framework</artifactId>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+            <artifactId>axiom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>oauth2-oidc-sdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -79,13 +94,35 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>addSources</goal>
+                            <goal>addTestSources</goal>
+                            <goal>compile</goal>
+                            <goal>compileTests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/../resources</directory>
+            </resource>
+        </resources>
     </build>
-
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
 </project>
