@@ -73,6 +73,8 @@ public class FSAdditionalAttributeFilterTest {
                 ".extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl");
         confMap.put(FinancialServicesConstants.CLAIM_PROVIDER, "org.wso2.financial.services.accelerator.identity" +
                 ".extensions.claims.RoleClaimProviderImpl");
+        confMap.put(FinancialServicesConstants.GRANT_HANDLER, "org.wso2.financial.services.accelerator.identity" +
+                ".extensions.grant.type.handlers.FSDefaultGrantHandler");
         FinancialServicesConfigurationService configurationService =
                 Mockito.mock(FinancialServicesConfigurationService.class);
         Mockito.when(configurationService.getConfigurations()).thenReturn(confMap);

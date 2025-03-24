@@ -15,22 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
+package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
-import com.google.gson.JsonElement;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 
 /**
- * ExternalAPIConsentRetrieveResponseDTO
+ * Util class for external API service related operations.
  */
-public class ExternalAPIConsentRetrieveResponseDTO {
+public class ExternalAPIUtil {
 
-    private JsonElement responseData;
+    public static void handleResponseError(ExternalServiceResponse response) throws ConsentException {
 
-    public JsonElement getResponseData() {
-        return responseData;
-    }
-
-    public void setResponseData(JsonElement responseData) {
-        this.responseData = responseData;
+        int httpErrorCode = Integer.parseInt(response.getErrorCode());
+        if (httpErrorCode < 400 || httpErrorCode >= 500) {
+            httpErrorCode = 500;
+        }
+        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getErrorMessage());
     }
 }

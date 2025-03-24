@@ -21,19 +21,21 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 
 /**
- * ExternalAPIConsentRetrieveRequestDTO
+ * ExternalAPIPostConsentGenerateRequestDTO
  */
-public class ExternalAPIConsentRetrieveRequestDTO {
+public class ExternalAPIPostConsentGenerateRequestDTO {
 
     private String consentId;
     private ConsentResource consentResource;
     private String resourcePath;
 
-    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ConsentResource consentResource,
-                                                String resourcePath) {
-        this.consentId = consentId;
-        this.resourcePath = resourcePath;
+
+    public ExternalAPIPostConsentGenerateRequestDTO(ConsentResource consentResource, String resourcePath) {
+
+        this.consentId = consentResource.getConsentID();
         this.consentResource = consentResource;
+        this.resourcePath = resourcePath;
+
     }
 
     public String getConsentId() {

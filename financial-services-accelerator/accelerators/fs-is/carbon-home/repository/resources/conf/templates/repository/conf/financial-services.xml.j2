@@ -176,18 +176,20 @@
         <Extensions>
             {% if financial_services.identity.extensions.request_object_validator is defined %}
             <RequestObjectValidator>{{financial_services.identity.extensions.request_object_validator}}</RequestObjectValidator>
-            {% else %}
-            <RequestObjectValidator>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator</RequestObjectValidator>
             {% endif %}
             {% if financial_services.identity.extensions.response_type_handler is defined %}
             <ResponseTypeHandler>{{financial_services.identity.extensions.response_type_handler}}</ResponseTypeHandler>
-            {% else %}
-            <ResponseTypeHandler>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
             {% endif %}
             {% if financial_services.identity.extensions.claim_provider is defined %}
             <ClaimProvider>{{financial_services.identity.extensions.claim_provider}}</ClaimProvider>
+            {% endif %}
+            {% if financial_services.identity.extensions.grant_handler is defined %}
+            <GrantHandler>{{financial_services.identity.extensions.grant_handler}}</GrantHandler>
+            {% endif %}
+            {% if financial_services.identity.extensions.introspection_data_provider is defined %}
+            <IntrospectionDataProvider>{{financial_services.identity.extensions.introspection_data_provider}}</IntrospectionDataProvider>
             {% else %}
-            <ClaimProvider>org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider</ClaimProvider>
+            <IntrospectionDataProvider>org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSDefaultIntrospectionDataProvider</IntrospectionDataProvider>
             {% endif %}
         </Extensions>
         <TokenSubject>
@@ -206,6 +208,8 @@
     <AppRegistration>
         {% if financial_services.app_registration.applicationupdater is defined %}
         <ApplicationUpdaterImpl>{{financial_services.app_registration.applicationupdater}}</ApplicationUpdaterImpl>
+        {% elif financial_services.app_registration.application_updater is defined %}
+        <ApplicationUpdaterImpl>{{financial_services.app_registration.application_updater}}</ApplicationUpdaterImpl>
         {% else %}
         <ApplicationUpdaterImpl>listener.application.org.wso2.financial.services.accelerator.identity.extensions.client.registration.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}

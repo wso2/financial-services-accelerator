@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
 
+import org.json.JSONObject;
+
 import java.util.Map;
 
 /**
@@ -35,6 +37,7 @@ public class ConsentResource {
     private String currentStatus;
     private long createdTime;
     private long updatedTime;
+    private Map<String, String> consentAttributes;
 
     public ConsentResource() {
     }
@@ -71,8 +74,6 @@ public class ConsentResource {
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
     }
-
-    private Map<String, String> consentAttributes;
 
     public long getUpdatedTime() {
 
@@ -183,4 +184,18 @@ public class ConsentResource {
 
         this.createdTime = createdTime;
     }
+
+    /**
+     * Convert to JSON object with correct receipt format.
+     *
+     * @return JSON object
+     */
+    public JSONObject toJson() {
+
+        JSONObject consentResourceJson = new JSONObject(this);
+        JSONObject receiptJson = new JSONObject(this.getReceipt());
+        consentResourceJson.put("receipt", receiptJson);
+        return consentResourceJson;
+    }
+
 }

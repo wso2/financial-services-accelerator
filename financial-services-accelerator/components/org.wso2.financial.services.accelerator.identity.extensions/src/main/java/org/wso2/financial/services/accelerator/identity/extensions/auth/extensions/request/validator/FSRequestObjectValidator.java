@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,34 +18,25 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator;
 
-import org.apache.commons.lang3.StringUtils;
-import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
 
 import java.util.Map;
 
 /**
- * The extension class for enforcing FS Request Object Validations. For Tool kits to extend.
+ * Defines a contract for validating FSRequestObject instances.
+ * Implementations should provide a validation logic.
  */
-public class FSRequestObjectValidator {
+public interface FSRequestObjectValidator {
 
     /**
-     * Extension point for tool kits. Perform validation and return the error message if any, else null.
+     * Validates the given FSRequestObject and returns a validation response.
      *
-     * @param obRequestObject request object
-     * @param dataMap         provides scope related data needed for validation from service provider meta data
-     * @return the response object with error message.
+     * @param fsRequestObject The request object to validate.
+     * @param dataMap         Additional data required for validation, such as scope-related information.
+     * @return A ValidationResponse indicating whether the request is valid or contains errors.
      */
-    public ValidationResponse validateFSConstraints(FSRequestObject obRequestObject, Map<String, Object> dataMap) {
-
-        String violation = FinancialServicesValidator.getInstance().getFirstViolation(obRequestObject);
-
-        if (StringUtils.isEmpty(violation)) {
-            return new ValidationResponse(true);
-        } else {
-            return new ValidationResponse(false, violation);
-        }
-    }
+    ValidationResponse validateRequestObject(FSRequestObject fsRequestObject,
+                                                             Map<String, Object> dataMap);
 
 }

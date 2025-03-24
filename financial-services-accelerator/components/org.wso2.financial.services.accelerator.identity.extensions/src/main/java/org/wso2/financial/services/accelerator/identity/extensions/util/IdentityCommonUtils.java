@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
@@ -33,11 +34,14 @@ import org.wso2.carbon.identity.application.common.util.IdentityApplicationConst
 import org.wso2.carbon.identity.base.IdentityRuntimeException;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
+import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
@@ -85,14 +89,19 @@ public class IdentityCommonUtils {
     private static final Log log = LogFactory.getLog(IdentityCommonUtils.class);
 
     /**
-     * Method to obtain the Object when the full class path is given.
+     * Method to obtain the Object when the full class path object config is given.
      *
-     * @param classpath full class path
+     * @param configObject full class path config object
      * @return new object instance
      */
     @Generated(message = "Ignoring since method contains no logics")
-    public static Object getClassInstanceFromFQN(String classpath) {
+    public static Object getClassInstanceFromFQN(Object configObject) {
 
+        if (configObject == null || StringUtils.isBlank(configObject.toString())) {
+            return null;
+        }
+
+        String classpath = configObject.toString();
         try {
             return Class.forName(classpath).getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
@@ -507,7 +516,7 @@ public class IdentityCommonUtils {
 
         // Construct the payload
         JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, Arrays.toString(oauthAuthzMsgCtx.getApprovedScope()));
+        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
         data.put(IdentityCommonConstants.CONSENT_ID, consentId);
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
@@ -574,6 +583,140 @@ public class IdentityCommonUtils {
         }
 
         return responseData.get("refreshTokenValidityPeriod").asLong();
+    }
+
+    public static void appendParametersToTokenResponseWithServiceExtension(
+            OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO, OAuthTokenReqMessageContext tokReqMsgCtx)
+            throws FinancialServicesException, IdentityOAuth2Exception {
+
+        // Construct the payload
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.GRANT_TYPE, tokReqMsgCtx.getOauth2AccessTokenReqDTO().getGrantType());
+        data.put(IdentityCommonConstants.SCOPES, tokReqMsgCtx.getScope());
+
+        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
+                UUID.randomUUID().toString(), data, OperationEnum.APPEND_PARAMETERS_TO_TOKEN_RESPONSE);
+
+        // Invoke external service
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+                ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION);
+
+        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
+
+        JsonNode responseData = response.getData();
+        if (responseData == null || !responseData.has("parameters")) {
+            throw new IdentityOAuth2Exception("Missing parameters in response payload.");
+        }
+
+        for (JsonNode claimNode : responseData.get("parameters")) {
+            if (!claimNode.hasNonNull("key") || !claimNode.hasNonNull("value")) {
+                continue;
+            }
+
+            String key = claimNode.get("key").asText();
+            String value = claimNode.get("value").asText();
+
+            // Add only if key is not empty
+            if (!key.isEmpty()) {
+                oAuth2AccessTokenRespDTO.addParameter(key, value);
+            }
+        }
+    }
+
+    /**
+     * Call Request Object Service and retrieve openbanking intent id.
+     *
+     * @param key session data key
+     * @return openbanking intent id
+     */
+    public static Optional<RequestedClaim>  retrieveIntentIDFromReqObjService(String key, String request)
+            throws IdentityOAuth2Exception {
+        Optional<RequestedClaim> intentClaim;
+        List<RequestedClaim> requestedClaimsForIDToken;
+        String errorMsg = "";
+        try {
+            if ("authorize".equals(request)) {
+                requestedClaimsForIDToken = getRequestedClaims(
+                        new SessionDataCacheKey(key).getSessionDataId(), false);
+                errorMsg = "Failed to obtain Claims from session data key :";
+            } else {
+                requestedClaimsForIDToken = getRequestedClaims(key);
+                errorMsg = "Failed to obtain Claims from token id :";
+            }
+
+            intentClaim = requestedClaimsForIDToken.stream()
+                    .filter(claimParam -> IdentityCommonConstants.OPENBANKING_INTENT_ID.equals(claimParam.getName()))
+                    .findFirst();
+        } catch (IdentityOAuth2Exception e) {
+            throw new IdentityOAuth2Exception(errorMsg + key);
+        }
+
+        return intentClaim;
+    }
+
+    /**
+     * Method to obtain Claims from request object.
+     *
+     * @param sessionDataKey session data key of request
+     * @param isUserInfo     boolean value indicating whether user info claims are required or not
+     * @return List of claims
+     * @throws IdentityOAuth2Exception when failed to obtain claims using the service
+     */
+    @Generated(message = "Ignoring since the method require OSGi services to function.")
+    public static List<RequestedClaim> getRequestedClaims(String sessionDataKey, boolean isUserInfo)
+            throws IdentityOAuth2Exception {
+
+        List<RequestedClaim> requestedClaims = new ArrayList<>();
+        if (sessionDataKey != null && !sessionDataKey.isEmpty()) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Obtaining request claims (without userinfo values ) from OSGi Service");
+                }
+
+                Object serviceObj = PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                        .getOSGiService(RequestObjectService.class, null);
+
+                if (serviceObj instanceof RequestObjectService) {
+                    RequestObjectService requestObjectService = (RequestObjectService) serviceObj;
+                    requestedClaims = requestObjectService.getRequestedClaimsForSessionDataKey(sessionDataKey,
+                            isUserInfo);
+                }
+            } catch (RequestObjectException e) {
+                throw new IdentityOAuth2Exception("Failed to obtain Claims from session data key :" +
+                        sessionDataKey);
+            }
+        }
+        return requestedClaims;
+    }
+
+    /**
+     * Method to obtain Claims from request object.
+     *
+     * @param token token
+     * @return List of claims
+     * @throws IdentityOAuth2Exception when failed to obtain claims using the service
+     */
+    @Generated(message = "Ignoring since the method require OSGi services to function.")
+    public static List<RequestedClaim> getRequestedClaims(String token) throws IdentityOAuth2Exception {
+
+        List<RequestedClaim> requestedClaims = new ArrayList<>();
+        if (token != null && !token.isEmpty()) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Obtaining request claims from OSGi Service");
+                }
+                Object serviceObj = PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                        .getOSGiService(RequestObjectService.class, null);
+
+                if (serviceObj instanceof RequestObjectService) {
+                    RequestObjectService requestObjectService = (RequestObjectService) serviceObj;
+                    requestedClaims = requestObjectService.getRequestedClaimsForIDToken(token);
+                }
+            } catch (RequestObjectException e) {
+                throw new IdentityOAuth2Exception("Failed to obtain Claims from token", e);
+            }
+        }
+        return requestedClaims;
     }
 
 }

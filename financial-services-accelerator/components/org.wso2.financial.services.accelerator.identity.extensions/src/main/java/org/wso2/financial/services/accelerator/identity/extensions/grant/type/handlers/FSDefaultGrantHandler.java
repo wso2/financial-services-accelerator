@@ -16,22 +16,26 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator;
+package org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers;
 
-import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
-import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
-
-import java.util.Map;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
+import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 
 /**
- * Default FS request object validator.
+ * FS default grant handler extension.
  */
-public class DefaultFSRequestObjectValidator implements FSRequestObjectValidator {
+public class FSDefaultGrantHandler implements FSGrantHandler {
 
     @Override
-    public ValidationResponse validateRequestObject(FSRequestObject fsRequestObject, Map<String, Object> dataMap) {
+    public void appendParametersToTokenResponse(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
+                                                OAuthTokenReqMessageContext tokReqMsgCtx) {
 
-        return new ValidationResponse(true);
+    }
+
+    @Override
+    public boolean issueRefreshToken(String grantType) {
+
+        return true;
     }
 
 }
