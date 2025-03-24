@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.financial.services.is.accelerator.test.consent.management</artifactId>
+    <artifactId>org.wso2.financial.services.accelerator.is.test.consent.management</artifactId>
 
     <dependencies>
         <dependency>
