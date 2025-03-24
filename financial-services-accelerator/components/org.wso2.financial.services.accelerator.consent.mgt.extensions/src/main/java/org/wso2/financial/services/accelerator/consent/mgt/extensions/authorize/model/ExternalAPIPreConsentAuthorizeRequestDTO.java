@@ -17,6 +17,9 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+
 /**
  * Wrapper for pre consent authorize flow external request data.
  */
@@ -24,17 +27,14 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
 
     private String consentId;
     private String userId;
-    private String consentType;
-    private String consentStatus;
-    private String consentPayload;
+    private ConsentResource consentResource;
 
     public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
-        this.consentType = consentData.getConsentResource().getConsentType();
-        this.consentStatus = consentData.getConsentResource().getCurrentStatus();
-        this.consentPayload = consentData.getConsentResource().getReceipt();
+        this.consentResource = consentData.getConsentResource();
+
     }
 
     public String getConsentId() {
@@ -53,27 +53,25 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.userId = userId;
     }
 
-    public String getConsentType() {
-        return consentType;
+    public ConsentResource getConsentResource() {
+        return consentResource;
     }
 
-    public void setConsentType(String consentType) {
-        this.consentType = consentType;
+    public void setConsentResource(
+            ConsentResource consentResource) {
+        this.consentResource = consentResource;
     }
 
-    public String getConsentStatus() {
-        return consentStatus;
-    }
+    /**
+     * Convert the dto to a JSON object with correct consent resource format.
+     *
+     * @return JSON object
+     */
+    public JSONObject toJson() {
 
-    public void setConsentStatus(String consentStatus) {
-        this.consentStatus = consentStatus;
-    }
-
-    public String getConsentPayload() {
-        return consentPayload;
-    }
-
-    public void setConsentPayload(String consentPayload) {
-        this.consentPayload = consentPayload;
+        JSONObject dtoJson = new JSONObject(this);
+        JSONObject consentResourceJson = this.consentResource.toJson();
+        dtoJson.put("consentResource", consentResourceJson);
+        return dtoJson;
     }
 }

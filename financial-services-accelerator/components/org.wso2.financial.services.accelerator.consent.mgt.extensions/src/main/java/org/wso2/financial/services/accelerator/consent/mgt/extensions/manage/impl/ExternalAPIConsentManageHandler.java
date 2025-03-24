@@ -135,10 +135,15 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             ExternalAPIPreConsentGenerateResponseDTO preResponseDTO = callExternalService(preRequestDTO);
 
             DetailedConsentResource createdConsent = generateConsent(preResponseDTO, consentManageData.getClientId());
+            ConsentResource createdConsentResource = consentCoreService.getConsent(createdConsent.getConsentID(),
+                    false);
+            // ToDo: Fix dao layer error to remove this line.
+            //  https://github.com/wso2/financial-services-accelerator/issues/404
+            createdConsentResource.setConsentAttributes(createdConsent.getConsentAttributes());
 
             // Call external service after generating consent
             ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
-                    createdConsent, consentManageData.getRequestPath());
+                    createdConsentResource, consentManageData.getRequestPath());
             ExternalAPIPostConsentGenerateResponseDTO postResponseDTO = callExternalService(postRequestDTO);
 
             consentManageData.setResponsePayload(postResponseDTO.getResponseData());
@@ -192,8 +197,8 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
                         resourcePath);
                 ExternalAPIConsentRevokeResponseDTO responseDTO = callExternalService(requestDTO);
 
-                boolean shouldRevokeTokens = responseDTO.getShouldRevokeTokens();
-                boolean success = consentCoreService.revokeConsent(consentId, responseDTO.getRevokedStatus(),
+                boolean shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
+                boolean success = consentCoreService.revokeConsent(consentId, responseDTO.getRevocationStatusName(),
                         null, shouldRevokeTokens);
                 if (!success) {
                     log.error("Consent revocation unsuccessful");
@@ -252,21 +257,21 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
     private ExternalAPIPostConsentGenerateResponseDTO callExternalService(
             ExternalAPIPostConsentGenerateRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.POST_CONSENT_GENERATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPostConsentGenerateResponseDTO.class);
     }
 
     private ExternalAPIConsentRevokeResponseDTO callExternalService(ExternalAPIConsentRevokeRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
     }
 
     private ExternalAPIConsentRetrieveResponseDTO callExternalService(ExternalAPIConsentRetrieveRequestDTO requestDTO)
             throws FinancialServicesException {
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
     }
@@ -292,10 +297,11 @@ public class ExternalAPIConsentManageHandler implements ConsentManageHandler {
             ConsentResource consentResource = new ConsentResource(clientId,
                     new Gson().toJson(responseDTO.getConsentPayload()), responseDTO.getConsentType(),
                     responseDTO.getConsentFrequency(), responseDTO.getValidityTime(),
-                    responseDTO.getRecurringIndicator(), "created");
+                    responseDTO.getRecurringIndicator(), responseDTO.getConsentStatus());
 
+            // ToDo: Get proper auth type and status from external service.
             DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
-                    consentResource, null, responseDTO.getConsentStatus(),
+                    consentResource, null, "created",
                     "authorisation", true
             );
             return createdConsent;

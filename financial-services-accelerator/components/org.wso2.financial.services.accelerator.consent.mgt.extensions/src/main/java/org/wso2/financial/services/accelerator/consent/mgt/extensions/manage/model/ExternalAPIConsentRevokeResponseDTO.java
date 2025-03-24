@@ -22,22 +22,22 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
  */
 public class ExternalAPIConsentRevokeResponseDTO {
 
-    private boolean shouldRevokeTokens;
-    private String revokedStatus;
+    private boolean requireTokenRevocation;
+    private String revocationStatusName;
 
-    public boolean getShouldRevokeTokens() {
-        return shouldRevokeTokens;
+    public boolean getRequireTokenRevocation() {
+        return requireTokenRevocation;
     }
 
-    public void setShouldRevokeTokens(boolean shouldRevokeTokens) {
-        this.shouldRevokeTokens = shouldRevokeTokens;
+    public void setRequireTokenRevocation(boolean requireTokenRevocation) {
+        this.requireTokenRevocation = requireTokenRevocation;
     }
 
-    public String getRevokedStatus() {
-        return revokedStatus;
+    public String getRevocationStatusName() {
+        return revocationStatusName;
     }
 
-    public void setRevokedStatus(String revokedStatus) {
-        this.revokedStatus = revokedStatus;
+    public void setRevocationStatusName(String revocationStatusName) {
+        this.revocationStatusName = revocationStatusName;
     }
 }

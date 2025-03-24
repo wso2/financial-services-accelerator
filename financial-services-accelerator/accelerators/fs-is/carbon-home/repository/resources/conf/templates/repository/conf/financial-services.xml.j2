@@ -186,6 +186,11 @@
             {% if financial_services.identity.extensions.grant_handler is defined %}
             <GrantHandler>{{financial_services.identity.extensions.grant_handler}}</GrantHandler>
             {% endif %}
+            {% if financial_services.identity.extensions.introspection_data_provider is defined %}
+            <IntrospectionDataProvider>{{financial_services.identity.extensions.introspection_data_provider}}</IntrospectionDataProvider>
+            {% else %}
+            <IntrospectionDataProvider>org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSDefaultIntrospectionDataProvider</IntrospectionDataProvider>
+            {% endif %}
         </Extensions>
         <TokenSubject>
             {% if financial_services.identity.token.remove_user_store_domain_from_subject is defined %}
@@ -203,6 +208,8 @@
     <AppRegistration>
         {% if financial_services.app_registration.applicationupdater is defined %}
         <ApplicationUpdaterImpl>{{financial_services.app_registration.applicationupdater}}</ApplicationUpdaterImpl>
+        {% elif financial_services.app_registration.application_updater is defined %}
+        <ApplicationUpdaterImpl>{{financial_services.app_registration.application_updater}}</ApplicationUpdaterImpl>
         {% else %}
         <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}
