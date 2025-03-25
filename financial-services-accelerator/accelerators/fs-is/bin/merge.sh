@@ -40,7 +40,8 @@ fi
 
 echo -e "================================================\n"
 
-echo -e "\nRemove old financial services artifacts from base product\n"
+echo -e "\nRemoving old financial services artifacts from base product\n"
+echo -e "================================================\n"
 find "${WSO2_IS_HOME}"/repository/components/dropins -name "org.wso2.financial.services.accelerator.*" -exec rm -rf {} \;
 find "${WSO2_IS_HOME}"/repository/components/lib -name "org.wso2.financial.services.accelerator.*" -exec rm -rf {} \;
 
