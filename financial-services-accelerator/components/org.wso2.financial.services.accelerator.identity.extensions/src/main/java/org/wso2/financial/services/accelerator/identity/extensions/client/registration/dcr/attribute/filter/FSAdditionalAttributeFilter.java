@@ -166,7 +166,6 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         Map<String, Object> filteredAttributes = new HashMap<>();
         filteredAttributes.putAll(ssaParams);
         return filteredAttributes;
-
     }
 
     @Override
@@ -231,7 +230,17 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                 .map(priorityMap::get).collect(Collectors.toList());
     }
 
-    private static Map<String, Object> getCustomAttributesToStore(Map<String, Object> appUpdateRequest,
+    /**
+     * Get the custom attributes to store.
+     * @param appRequest                 Application request.
+     * @param ssaParams                  SSA parameters.
+     * @param spProperties               Service provider properties.
+     * @param operation                  Operation type.
+     * @param serviceExtensionTypeEnum   Service extension type.
+     * @return                         Custom attributes to store.
+     * @throws DCRMClientException      When an error occurs while getting custom attributes to store.
+     */
+    private static Map<String, Object> getCustomAttributesToStore(Map<String, Object> appRequest,
                                                                 Map<String, Object> ssaParams,
                                                                 List<JSONObject> spProperties, String operation,
                                                                 ServiceExtensionTypeEnum serviceExtensionTypeEnum)
@@ -239,8 +248,9 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         if (ServiceExtensionUtils.isInvokeExternalService(serviceExtensionTypeEnum)) {
             try {
+                log.debug("Executing external service call to get custom attributes to store");
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(
-                        getExternalServiceRequest(appUpdateRequest, ssaParams, spProperties, operation),
+                        getExternalServiceRequest(appRequest, ssaParams, spProperties, operation),
                         serviceExtensionTypeEnum);
                 if (StatusEnum.SUCCESS.equals(response.getStatus())) {
                     JSONObject attributesToStoreJson = new JSONObject(response.getData().get("attributesToStore")
@@ -252,9 +262,14 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             } catch (FinancialServicesException e) {
                 throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
             }
-        } else if (getFSAbstractDCRExtension() != null) {
+        } else if (getFSDCRExtension() != null) {
             try {
-                getFSAbstractDCRExtension().validateDCRUpdateAttributes(appUpdateRequest, ssaParams, spProperties);
+                log.debug("Executing custom DCR extension to get custom attributes to store");
+                if (IdentityCommonConstants.APP_REG_REQUEST.equals(operation)) {
+                    return getFSDCRExtension().validateDCRRegisterAttributes(appRequest, ssaParams);
+                } else {
+                    return getFSDCRExtension().validateDCRUpdateAttributes(appRequest, ssaParams, spProperties);
+                }
             } catch (FinancialServicesException e) {
                 throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
 
@@ -263,6 +278,14 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         return new HashMap<>();
     }
 
+    /**
+     * Method to get the external service request.
+     * @param appRequest      Application request.
+     * @param ssaParams       SSA parameters.
+     * @param spProperties    Service provider properties.
+     * @param operation       Operation type.
+     * @return               External service request.
+     */
     private static ExternalServiceRequest getExternalServiceRequest(Map<String, Object> appRequest,
                                                                     Map<String, Object> ssaParams,
                                                                     List<JSONObject> spProperties, String operation) {
@@ -276,7 +299,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         return new ExternalServiceRequest(UUID.randomUUID().toString(), data);
     }
 
-    private static FSAbstractDCRExtension getFSAbstractDCRExtension() {
+    /**
+     * Get the FSAbstractDCRExtension instance.
+     * @return FSAbstractDCRExtension instance.
+     */
+    private static FSAbstractDCRExtension getFSDCRExtension() {
         Object dcrServiceExtension = configurationService.getConfigurations()
                 .get(FinancialServicesConstants.DCR_SERVICE_EXTENSION);
         if (dcrServiceExtension == null) {
@@ -287,6 +314,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         }
     }
 
+    /**
+     * Construct the service provider property list.
+     * @param serviceProviderProperties  Service provider properties.
+     * @return                        List of service provider properties.
+     */
     private static List<JSONObject> constructSPPropertyList(ServiceProviderProperty[] serviceProviderProperties) {
 
         List<JSONObject> spPropertyList = new ArrayList<>();

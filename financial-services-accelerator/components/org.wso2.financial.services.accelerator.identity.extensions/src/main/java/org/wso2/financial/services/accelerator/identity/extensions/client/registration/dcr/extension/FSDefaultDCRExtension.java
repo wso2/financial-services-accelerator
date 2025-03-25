@@ -29,15 +29,16 @@ import java.util.Map;
  * Abstract class for extending methods to be invoked by FS Additional Attribute Filter.
  * These methods can be used to validate the DCR request.
  */
-public class FSDefaultDCRExtension {
+public class FSDefaultDCRExtension extends FSAbstractDCRExtension {
 
-
+    @Override
     public Map<String, Object> validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
                                                       Map<String, Object> ssaClaims)
             throws FinancialServicesException {
         return new HashMap<>();
     }
 
+    @Override
     public Map<String, Object> validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
                                                       Map<String, Object> ssaClaims, List<JSONObject> spProperties)
             throws FinancialServicesException {

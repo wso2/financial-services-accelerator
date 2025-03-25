@@ -333,9 +333,6 @@ connection_verification_timeout=1
 [financial_services.app_registration]
 application_updater = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl"
 
-[financial_services.app_registration]
-application_updater = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl"
-
 #[financial_services.app_registration.sca.primaryauth]
 #name = ""
 #display = ""

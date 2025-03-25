@@ -268,7 +268,7 @@
                 </Validator>
                 {% endfor %}
             </Validators>
-            {% if financial_services.app_registration.dcr.additional_attribute_filter is defined %}
+            {% if financial_services.app_registration.dcr.service_extension is defined %}
             <DCRServiceExtension>{{financial_services.app_registration.dcr.service_extension}}</DCRServiceExtension>
             {% endif %}
             <JTICache>

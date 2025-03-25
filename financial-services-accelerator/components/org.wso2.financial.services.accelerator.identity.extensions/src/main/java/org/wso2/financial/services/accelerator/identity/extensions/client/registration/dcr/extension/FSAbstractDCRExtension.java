@@ -38,9 +38,11 @@ public abstract class FSAbstractDCRExtension {
      *
      * @param appRegistrationRequest  DCR registration request.
      * @param ssaClaims               SSA claims.
+     *
+     * @return Map of additional attributes to be stored as service provider metadata.
      * @throws FinancialServicesException In case of validation failure or any other blocking error.
      */
-    public abstract void validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
+    public abstract Map<String, Object> validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
                                                       Map<String, Object> ssaClaims)
             throws FinancialServicesException;
 
@@ -54,9 +56,11 @@ public abstract class FSAbstractDCRExtension {
      * @param applicationUpdateRequest  DCR update request.
      * @param ssaClaims                 SSA claims.
      * @param spProperties              Existing service provider properties.
+     *
+     * @return Map of additional attributes to be stored as service provider metadata.
      * @throws FinancialServicesException In case of validation failure or any other blocking error.
      */
-    public abstract void validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
+    public abstract Map<String, Object> validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
                                                       Map<String, Object> ssaClaims, List<JSONObject> spProperties)
             throws FinancialServicesException;
 }
