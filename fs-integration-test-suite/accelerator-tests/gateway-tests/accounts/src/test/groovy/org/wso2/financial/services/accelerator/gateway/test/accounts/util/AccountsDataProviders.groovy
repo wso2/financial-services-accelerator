@@ -40,10 +40,10 @@ class AccountsDataProviders {
     @DataProvider(name = "AccountsResources")
     Object[] accountsResources() {
         def accountsResources = new ArrayList<>()
-        accountsResources.add(org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.ACCOUNTS_PATH as Object)
-        accountsResources.add(org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.ACCOUNTS_BULK_PATH as Object)
-        accountsResources.add(org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.BALANCES_SINGLE_PATH as Object)
-        accountsResources.add(org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.TRANSACTIONS_SINGLE_PATH as Object)
+        accountsResources.add(AccountConstants.ACCOUNTS_PATH as Object)
+        accountsResources.add(AccountConstants.ACCOUNTS_BULK_PATH as Object)
+        accountsResources.add(AccountConstants.BALANCES_SINGLE_PATH as Object)
+        accountsResources.add(AccountConstants.TRANSACTIONS_SINGLE_PATH as Object)
 
         return accountsResources
     }
@@ -52,13 +52,13 @@ class AccountsDataProviders {
     Object[] accountsResourcesWithoutPermissions() {
 
         def accountsResources = new ArrayList<String[]>()
-        accountsResources.add([org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.ACCOUNTS_BULK_PATH,
+        accountsResources.add([AccountConstants.ACCOUNTS_BULK_PATH,
                                AccountPayloads.initiationPayloadWithoutReadAccountBasic] as String[])
-        accountsResources.add([org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.ACCOUNTS_PATH,
+        accountsResources.add([AccountConstants.ACCOUNTS_PATH,
                                AccountPayloads.initiationPayloadWithoutReadAccountDetails] as String[])
-        accountsResources.add([org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.BALANCES_SINGLE_PATH,
+        accountsResources.add([AccountConstants.BALANCES_SINGLE_PATH,
                                AccountPayloads.initiationPayloadWithoutReadAccountBalance] as String[])
-        accountsResources.add([org.wso2.financial.services.accelerator.test.gateway.integration.accounts.util.AccountConstants.TRANSACTIONS_SINGLE_PATH,
+        accountsResources.add([AccountConstants.TRANSACTIONS_SINGLE_PATH,
                                AccountPayloads.initiationPayloadWithoutReadAccountTransactions] as String[])
 
         return accountsResources

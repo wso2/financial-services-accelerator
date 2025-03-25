@@ -28,7 +28,6 @@ import org.wso2.financial.services.accelerator.test.framework.constant.Connector
 import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
 
 /**
  * End to End Consent Management Flow Tests.
@@ -77,7 +76,7 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
         doConsentRetrieval(consentId)
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(consentResponse, "Data.Status"), "AwaitingAuthorisation")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "Data.Status"), "AwaitingAuthorisation")
     }
 
     @Test (dependsOnMethods = "Verify Retrieving for a Created Consent")
@@ -88,7 +87,7 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
         doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
 
         Assert.assertNotNull(code)
-        Assert.assertNotNull(OBTestUtil.getIdTokenFromUrl(automation.currentUrl.get()))
+        Assert.assertNotNull(TestUtil.getIdTokenFromUrl(automation.currentUrl.get()))
     }
 
     @Test (dependsOnMethods = "Generate authorization code when valid request object is present in the authorization request")
@@ -116,7 +115,7 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
         doConsentRetrieval(consentId)
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(consentResponse, "Data.Status"), "Authorised")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "Data.Status"), "Authorised")
     }
 
     @Test (dependsOnMethods = "Verify Retrieving for a Created Consent After authorizing")
@@ -142,9 +141,9 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
         doConsentValidate(validateURL, validationPayload)
 
         Assert.assertEquals(consentValidateResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertEquals(Boolean.parseBoolean(OBTestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.IS_VALID)),
+        Assert.assertEquals(Boolean.parseBoolean(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.IS_VALID)),
                 true)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(consentValidateResponse, "consentInformation"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentValidateResponse, "consentInformation"))
     }
 
     @Test (dependsOnMethods = "Validate Retrieval on valid account for requestUri")

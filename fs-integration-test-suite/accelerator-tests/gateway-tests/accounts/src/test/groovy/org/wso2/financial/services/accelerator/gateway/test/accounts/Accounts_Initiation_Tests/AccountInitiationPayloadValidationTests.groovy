@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.gateway.test.accounts.Accounts_Initiation_Tests
 
 import io.restassured.response.Response
+import jdk.internal.net.http.Response
 import org.testng.Assert
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants

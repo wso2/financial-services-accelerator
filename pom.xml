@@ -43,7 +43,6 @@
             <modules>
                 <module>financial-services-accelerator</module>
                 <module>financial-services-accelerator/accelerators</module>
-                <module>integration-test-framework</module>
             </modules>
             <build>
                 <plugins>

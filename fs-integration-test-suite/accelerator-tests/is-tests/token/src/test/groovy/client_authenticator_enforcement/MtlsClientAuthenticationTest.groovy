@@ -18,13 +18,13 @@
 
 package client_authenticator_enforcement
 
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Mutual TLS Client AUthentication Validation Test.
@@ -44,9 +44,9 @@ class MtlsClientAuthenticationTest extends FSConnectorTest {
                 clientId, [scope])
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_REQUEST)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Request does not follow the registered token endpoint auth method tls_client_auth")
     }
 
@@ -58,9 +58,9 @@ class MtlsClientAuthenticationTest extends FSConnectorTest {
                 [scope])
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Client ID not found in the request.")
     }
 
@@ -71,9 +71,9 @@ class MtlsClientAuthenticationTest extends FSConnectorTest {
         Response tokenResponse = getApplicationAccessTokenTLSWithAssertion([scope], clientId)
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_REQUEST)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Request does not follow the registered token endpoint auth method tls_client_auth")
     }
 
@@ -85,9 +85,9 @@ class MtlsClientAuthenticationTest extends FSConnectorTest {
                 [scope], clientId)
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_REQUEST)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Request does not follow the registered token endpoint auth method tls_client_auth")
     }
 
@@ -99,9 +99,9 @@ class MtlsClientAuthenticationTest extends FSConnectorTest {
                 clientId, [scope])
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Unsupported client authentication mechanism")
     }
 
@@ -113,9 +113,9 @@ class MtlsClientAuthenticationTest extends FSConnectorTest {
                 [scope])
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Client ID not found in the request.")
     }
 
