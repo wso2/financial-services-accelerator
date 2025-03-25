@@ -49,10 +49,10 @@ If you want to build the Financial Services Accelerator from the source code:
 
 Please refer the following README files to run the products:
 
-| Product                           | Instructions Path                          |
-|:----------------------------------|:-------------------------------------------|
-| ```Identity Server Accelerator``` | `/wso2-fs-iam-accelerator-4.0.0/README.md` |
-| ```API Manager Accelerator```     | `/wso2-fs-am-accelerator-4.0.0/README.md`  |
+| Product                           | Instructions Path                         |
+|:----------------------------------|:------------------------------------------|
+| ```Identity Server Accelerator``` | `/wso2-fsiam-accelerator-4.0.0/README.md` |
+| ```API Manager Accelerator```     | `/wso2-fsam-accelerator-4.0.0/README.md`  |
 
 ### Reporting Issues
 
