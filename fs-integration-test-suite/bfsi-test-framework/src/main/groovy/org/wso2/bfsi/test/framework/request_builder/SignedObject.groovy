@@ -30,8 +30,9 @@ import org.json.JSONObject
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.wso2.bfsi.test.framework.configuration.CommonConfigurationService
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
+import org.wso2.bfsi.test.framework.keystore.KeyStore
+
 import java.security.Key
-import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
 import java.security.PrivateKey
@@ -83,9 +84,9 @@ class SignedObject {
                 .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
 
 
-        Key signingKey = org.wso2.bfsi.test.framework.keystore.KeyStore.getApplicationSigningKey()
-        Certificate certificate = org.wso2.bfsi.test.framework.keystore.KeyStore.getApplicationCertificate()
-        String thumbprint = org.wso2.bfsi.test.framework.keystore.KeyStore.getJwkThumbPrintForSHA1(certificate)
+        Key signingKey = KeyStore.getApplicationSigningKey()
+        Certificate certificate = KeyStore.getApplicationCertificate()
+        String thumbprint = KeyStore.getJwkThumbPrintForSHA1(certificate)
 
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(getSigningAlgorithm()))
                 .keyID(thumbprint).type(JOSEObjectType.JWT).build();
@@ -110,7 +111,7 @@ class SignedObject {
 
         Key signingKey = KeyStore.getApplicationSigningKey()
         Certificate certificate = KeyStore.getApplicationCertificate()
-        String thumbprint = org.wso2.bfsi.test.framework.keystore.KeyStore.getJwkThumbPrintForSHA1(certificate)
+        String thumbprint = KeyStore.getJwkThumbPrintForSHA1(certificate)
 
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(getSigningAlgorithm()))
                 .keyID(thumbprint).type(JOSEObjectType.JWT).build();
