@@ -36,6 +36,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.NodeList
 import org.wso2.bfsi.test.framework.configuration.CommonConfigurationService
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
+import org.wso2.bfsi.test.framework.keystore.KeyStore
 import org.xml.sax.SAXException
 
 import javax.mail.Header
@@ -52,7 +53,6 @@ import javax.xml.transform.stream.StreamResult
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.security.Key
-import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -216,7 +216,7 @@ class CommonTestUtil {
                                     String signatureAlgorithm) throws TestFrameworkException {
         try {
             Signature rsa = Signature.getInstance(signatureAlgorithm);
-            KeyStore keyStore = org.wso2.bfsi.test.framework.keystore.KeyStore.getApplicationKeyStore()
+            KeyStore keyStore = KeyStore.getApplicationKeyStore()
             PrivateKey privateKey = (PrivateKey) keyStore.getKey(obConfiguration.getAppKeyStoreAlias(),
                     obConfiguration.getAppKeyStorePWD().toCharArray());
             rsa.initSign(privateKey);
@@ -318,7 +318,7 @@ class CommonTestUtil {
     static String generateXjwsSignatureWithKey(String header, String requestBody, String pwd, String alias) {
 
         try {
-            Key key = org.wso2.bfsi.test.framework.keystore.KeyStore.getSigningKey(obConfiguration.getAppKeyStoreLocation(), pwd, alias)
+            Key key = KeyStore.getSigningKey(obConfiguration.getAppKeyStoreLocation(), pwd, alias)
             if (key instanceof RSAPrivateKey) {
 
                 JWSHeader jwsHeader = JWSHeader.parse(header);

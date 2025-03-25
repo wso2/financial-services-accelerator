@@ -18,7 +18,7 @@
 
 package org.wso2.bfsi.test.framework
 
-import org.apache.coyote.Response
+import io.restassured.response.Response
 import org.wso2.bfsi.test.framework.automation.BrowserAutomation
 import org.wso2.bfsi.test.framework.automation.NavigationAutomationStep
 import org.wso2.bfsi.test.framework.automation.ScreenshotAutomationStep

@@ -21,6 +21,7 @@ package org.wso2.bfsi.test.framework.automation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.openqa.selenium.By
+import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.remote.RemoteWebDriver
 import java.util.concurrent.TimeUnit
@@ -176,7 +177,7 @@ class AutomationMethod {
         try {
             webDriver.findElement(By.xpath(locator))
             return true
-        } catch (org.openqa.selenium.NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return false
         }
     }
