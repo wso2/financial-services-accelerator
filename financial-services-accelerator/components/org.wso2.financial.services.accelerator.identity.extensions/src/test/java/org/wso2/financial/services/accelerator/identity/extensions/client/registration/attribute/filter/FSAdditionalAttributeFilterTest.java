@@ -29,6 +29,7 @@ import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.attribute.filter.FSAdditionalAttributeFilter;
@@ -44,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * Additional attribute filter tests.
@@ -53,6 +56,7 @@ public class FSAdditionalAttributeFilterTest {
     FSAdditionalAttributeFilter fsAdditionalAttributeFilter;
     IdentityExtensionsDataHolder identityExtensionsDataHolder;
     private static MockedStatic<IdentityExtensionsDataHolder> identityExtensionsDataHolderMockedStatic;
+    private MockedStatic<FinancialServicesConfigParser> configParserMockedStatic;
     private static MockedStatic<JwtJtiCache> jwtJtiCacheMockedStatic;
     private static final Gson gson = new Gson();
 
@@ -66,7 +70,7 @@ public class FSAdditionalAttributeFilterTest {
         confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_NAME, "SMSAuthentication");
         confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_STEP, "2");
         confMap.put(FinancialServicesConstants.POST_APPLICATION_LISTENER, "org.wso2.financial.services.accelerator" +
-                ".identity.extensions.dcr.application.listener.ApplicationUpdaterImpl");
+                ".identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl");
         confMap.put(FinancialServicesConstants.REQUEST_VALIDATOR, "org.wso2.financial.services.accelerator.identity" +
                 ".extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator");
         confMap.put(FinancialServicesConstants.RESPONSE_HANDLER, "org.wso2.financial.services.accelerator.identity" +
@@ -86,6 +90,11 @@ public class FSAdditionalAttributeFilterTest {
         identityExtensionsDataHolderMockedStatic.when(IdentityExtensionsDataHolder::getInstance)
                 .thenReturn(identityExtensionsDataHolder);
 
+        configParserMockedStatic = Mockito.mockStatic(FinancialServicesConfigParser.class);
+        FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
+        doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
         JwtJtiCache jwtJtiCache = Mockito.mock(JwtJtiCache.class);
         Mockito.doReturn(null).when(jwtJtiCache).getFromCache(JwtJtiCacheKey.of(anyString()));
 
@@ -100,6 +109,8 @@ public class FSAdditionalAttributeFilterTest {
     @AfterClass
     public void afterClass() {
         identityExtensionsDataHolderMockedStatic.close();
+        configParserMockedStatic.close();
+        jwtJtiCacheMockedStatic.close();
     }
 
     @Test
@@ -199,41 +210,43 @@ public class FSAdditionalAttributeFilterTest {
 
         Map<String, Map<String, Object>> dcrValidatorConfigs = new HashMap<>();
         dcrValidatorConfigs.put("RequiredParamsValidator", Map.of("Enable", true, "Priority", "1",
-                "Class", "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators" +
-                        ".RequiredParamsValidator", "Name", "RequiredParamsValidator",
+                "Class", "org.wso2.financial.services.accelerator.identity.extensions.client.registration" +
+                        ".dcr.validators.RequiredParamsValidator", "Name", "RequiredParamsValidator",
                 "AllowedValues", new ArrayList<>()));
         dcrValidatorConfigs.put("IssuerValidator", Map.of("Enable", true, "Priority", "2", "Class",
-                "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.IssuerValidator",
+                "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr." +
+                        "validators.IssuerValidator",
                 "Name", "IssuerValidator", "AllowedValues", new ArrayList<>()));
         dcrValidatorConfigs.put("RedirectUriFormatValidator", Map.of("Enable", true, "Priority", "3",
-                "Class", "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators." +
-                        "RedirectUriFormatValidator", "Name", "RedirectUriFormatValidator",
+                "Class", "org.wso2.financial.services.accelerator.identity.extensions.client.registration." +
+                        "dcr.validators.RedirectUriFormatValidator", "Name", "RedirectUriFormatValidator",
                 "AllowedValues", new ArrayList<>()));
         dcrValidatorConfigs.put("RedirectUriMatchValidator", Map.of("Enable", true, "Priority", "4",
-                "Class", "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators" +
-                        ".RedirectUriMatchValidator", "Name", "RedirectUriMatchValidator",
+                "Class", "org.wso2.financial.services.accelerator.identity.extensions.client.registration." +
+                        "dcr.validators.RedirectUriMatchValidator", "Name", "RedirectUriMatchValidator",
                 "AllowedValues", new ArrayList<>()));
         dcrValidatorConfigs.put("UriHostnameValidator", Map.of("Enable", true, "Priority", "5",
-                "Class", "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators." +
-                        "UriHostnameValidator", "Name", "UriHostnameValidator",
+                "Class", "org.wso2.financial.services.accelerator.identity.extensions.client.registration" +
+                        ".dcr.validators.UriHostnameValidator", "Name", "UriHostnameValidator",
                 "AllowedValues", new ArrayList<>()));
 
         List<String> allowedIssuers = new ArrayList<>();
         allowedIssuers.add("OpenBanking Ltd");
         dcrValidatorConfigs.put("SSAIssuerValidator", Map.of("Enable", true, "Priority", "6",
-                "Class", "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators." +
-                        "SSAIssuerValidator", "Name", "SSAIssuerValidator",
+                "Class", "org.wso2.financial.services.accelerator.identity.extensions.client.registration" +
+                        ".dcr.validators.SSAIssuerValidator", "Name", "SSAIssuerValidator",
                 "AllowedValues", allowedIssuers));
         dcrValidatorConfigs.put("RequestJTIValidator", Map.of("Enable", true, "Priority", "7",
-                "Class", "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators." +
-                        "RequestJTIValidator", "Name", "RequestJTIValidator", "AllowedValues",
+                "Class", "org.wso2.financial.services.accelerator.identity.extensions.client.registration" +
+                        ".dcr.validators.RequestJTIValidator", "Name", "RequestJTIValidator", "AllowedValues",
                 new ArrayList<>()));
         dcrValidatorConfigs.put("SSAJTIValidator", Map.of("Enable", true, "Priority", "8", "Class",
-                "org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.SSAJTIValidator",
+                "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr" +
+                        ".validators.SSAJTIValidator",
                 "Name", "SSAJTIValidator", "AllowedValues", new ArrayList<>()));
         dcrValidatorConfigs.put("TokenEndpointAuthSigningAlgValidator", Map.of("Enable", true, "Priority",
-                "9", "Class", "org.wso2.financial.services.accelerator.identity.extensions.dcr." +
-                        "validators.TokenEndpointAuthSigningAlgValidator",
+                "9", "Class", "org.wso2.financial.services.accelerator.identity.extensions.client." +
+                        "registration.dcr.validators.TokenEndpointAuthSigningAlgValidator",
                 "Name", "TokenEndpointAuthSigningAlgValidator", "AllowedValues", new ArrayList<>()));
         return dcrValidatorConfigs;
     }

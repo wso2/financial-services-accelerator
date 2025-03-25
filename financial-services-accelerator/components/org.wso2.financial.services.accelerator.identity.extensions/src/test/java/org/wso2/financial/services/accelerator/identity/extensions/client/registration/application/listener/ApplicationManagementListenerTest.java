@@ -121,6 +121,7 @@ public class ApplicationManagementListenerTest {
         confMap.put(FinancialServicesConstants.PRIMARY_AUTHENTICATOR_NAME, "BasicAuthenticator");
         confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_NAME, "SMSAuthentication");
         confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_STEP, "2");
+        confMap.put(FinancialServicesConstants.CONDITIONAL_AUTH_SCRIPT_NAME, "common.auth.script.js");
         identityExtensionsDataHolder.setConfigurationMap(confMap);
         identityExtensionsDataHolder.setApplicationManagementService(applicationManagementService);
         identityExtensionsDataHolder.setOauthAdminService(oAuthAdminService);

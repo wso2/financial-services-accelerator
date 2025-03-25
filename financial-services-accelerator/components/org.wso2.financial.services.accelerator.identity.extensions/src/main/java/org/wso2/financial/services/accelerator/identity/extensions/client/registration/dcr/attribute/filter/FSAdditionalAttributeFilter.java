@@ -43,9 +43,11 @@ import org.wso2.financial.services.accelerator.identity.extensions.util.Identity
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -85,10 +87,17 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         Map<String, Object> filteredAttributes = new HashMap<>();
         Map<String, Object> additionalAttributes = appRegistrationRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
+        filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
+                appRegistrationRequest.getSoftwareStatement());
         getResponseAttributeKeys()
                 .stream()
                 .filter(additionalAttributes::containsKey)
                 .forEach((key) -> filteredAttributes.put(key, additionalAttributes.get(key)));
+
+        getResponseAttributeKeys()
+                .stream()
+                .filter(requestMap::containsKey)
+                .forEach((key) -> filteredAttributes.put(key, requestMap.get(key)));
 
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
@@ -119,14 +128,20 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         Map<String, Object> attributesToStore = getCustomAttributesToStore(requestMap, ssaParams, spProperties,
                 IdentityCommonConstants.APP_UPDATE_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST);
 
-
         Map<String, Object> filteredAttributes = new HashMap<>();
         Map<String, Object> additionalAttributes = applicationUpdateRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
+        filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
+                applicationUpdateRequest.getSoftwareStatement());
         getResponseAttributeKeys()
                 .stream()
                 .filter(additionalAttributes::containsKey)
                 .forEach((key) -> filteredAttributes.put(key, additionalAttributes.get(key)));
+
+        getResponseAttributeKeys()
+                .stream()
+                .filter(requestMap::containsKey)
+                .forEach((key) -> filteredAttributes.put(key, requestMap.get(key)));
 
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
@@ -158,22 +173,22 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
     public List<String> getResponseAttributeKeys() {
 
         //  Adding BFSI specific fields to be returned in the response.
-        List<String> responseAttributeKeys = getResponseParamsFromConfig();
+        Set<String> responseAttributeKeys = getResponseParamsFromConfig();
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_STATEMENT);
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_ID);
         responseAttributeKeys.add(IdentityCommonConstants.SCOPE);
         responseAttributeKeys.add(IdentityCommonConstants.RESPONSE_TYPES);
         responseAttributeKeys.add(IdentityCommonConstants.APPLICATION_TYPE);
-        return responseAttributeKeys;
+        return new ArrayList<>(responseAttributeKeys);
     }
 
     /**
      * Get the response parameters from the configuration.
      * @return List of response parameters.
      */
-    private List<String> getResponseParamsFromConfig() {
+    private Set<String> getResponseParamsFromConfig() {
 
-        List<String> responseParams = new ArrayList<>();
+        Set<String> responseParams = new HashSet<>();
 
         Map<String, Map<String, Object>> dcrConfigs = configurationService.getDCRParamsConfig();
 
