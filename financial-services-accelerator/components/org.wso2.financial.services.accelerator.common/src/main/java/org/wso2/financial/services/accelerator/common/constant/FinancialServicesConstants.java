@@ -81,6 +81,7 @@ public class FinancialServicesConstants {
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
     public static final String IDENTITY_PROVIDER_NAME = "AppRegistration.SCA.IdpName";
     public static final String IDENTITY_PROVIDER_STEP = "AppRegistration.SCA.IdpStep";
+    public static final String CONDITIONAL_AUTH_SCRIPT_NAME = "AppRegistration.ConditionalAuthScriptFileName";
     public static final String JTI_CACHE_ACCESS_EXPIRY = "AppRegistration.DCR.JTICache.CacheAccessExpiry";
     public static final String JTI_CACHE_MODIFY_EXPIRY = "AppRegistration.DCR.JTICache.CacheModifiedExpiry";
     public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";

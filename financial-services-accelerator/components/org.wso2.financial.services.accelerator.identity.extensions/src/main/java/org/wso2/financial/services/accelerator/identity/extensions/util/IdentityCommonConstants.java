@@ -62,6 +62,7 @@ public class IdentityCommonConstants {
     public static final String SSA_TOS_URI = "tos_uri";
     public static final String SSA_CLIENT_URI = "client_uri";
     public static final String INVALID_CLIENT_METADATA = "invalid_client_metadata";
+    public static final String SERVER_ERROR = "server_error";
     public static final String INCLUDE_IN_RESPONSE = "IncludeInResponse";
     public static final String KEY = "Key";
     public static final String ENABLE = "Enable";
@@ -79,5 +80,9 @@ public class IdentityCommonConstants {
     public static final String CONSENT_ID = "consentId";
     public static final String VALIDITY_PERIOD = "validityPeriod";
     public static final String GRANT_TYPE = "grantType";
+    public static final String APP_REG_REQUEST = "appRegistrationRequest";
+    public static final String APP_UPDATE_REQUEST = "appUpdateRequest";
+    public static final String SSA_PARAMS = "ssaParams";
+    public static final String SP_PROPERTIES = "spProperties";
 }
 

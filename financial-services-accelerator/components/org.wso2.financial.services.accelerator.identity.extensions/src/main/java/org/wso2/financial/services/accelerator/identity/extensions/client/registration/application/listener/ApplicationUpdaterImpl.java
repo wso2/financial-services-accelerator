@@ -18,11 +18,9 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener;
 
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.AuthenticationStep;
 import org.wso2.carbon.identity.application.common.model.IdentityProvider;
@@ -31,7 +29,6 @@ import org.wso2.carbon.identity.application.common.model.LocalAuthenticatorConfi
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.application.common.model.script.AuthenticationScriptConfig;
-import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
@@ -40,8 +37,6 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.util.DCRUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -184,8 +179,9 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
             if (DCRUtils.getFapiCompliantPropertyFromSP(serviceProvider)) {
                 if (localAndOutboundAuthenticationConfig.getAuthenticationScriptConfig() == null) {
                     TextFileReader textFileReader = TextFileReader.getInstance();
-                    String authScript = textFileReader.readFile
-                            (IdentityCommonConstants.CONDITIONAL_COMMON_AUTH_SCRIPT_FILE_NAME);
+                    String authScriptFileName = IdentityExtensionsDataHolder.getInstance().getConfigurationMap().
+                            get(FinancialServicesConstants.CONDITIONAL_AUTH_SCRIPT_NAME).toString();
+                    String authScript = textFileReader.readFile(authScriptFileName);
                     if (StringUtils.isNotEmpty(authScript)) {
                         AuthenticationScriptConfig scriptConfig = new AuthenticationScriptConfig();
                         scriptConfig.setContent(authScript);
@@ -225,56 +221,6 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
                                                localAndOutboundAuthenticationConfig, String tenantDomain,
                                        String userName) throws FinancialServicesException {
 
-        try {
-            boolean updateAuthenticator = false;
-
-            if (localAndOutboundAuthenticationConfig == null) {
-                localAndOutboundAuthenticationConfig = new LocalAndOutboundAuthenticationConfig();
-            }
-
-            localAndOutboundAuthenticationConfig.setUseTenantDomainInLocalSubjectIdentifier(true);
-            localAndOutboundAuthenticationConfig.setUseUserstoreDomainInLocalSubjectIdentifier(true);
-
-            ApplicationManagementService applicationManagementService = IdentityExtensionsDataHolder.getInstance()
-                    .getApplicationManagementService();
-            ServiceProvider existingSP = applicationManagementService
-                    .getServiceProvider(serviceProvider.getApplicationID());
-
-            // Authenticators are updated only when creating the app or when an authenticator change
-            // is made from the IS carbon console
-
-            //If authentication steps are not set then it is a create request
-            if (existingSP.getLocalAndOutBoundAuthenticationConfig() == null ||
-                    existingSP.getLocalAndOutBoundAuthenticationConfig().getAuthenticationSteps() == null ||
-                    existingSP.getLocalAndOutBoundAuthenticationConfig().getAuthenticationSteps().length == 0) {
-                updateAuthenticator = true;
-            }
-            // Checking whether any change have been made in the Local & Outbound Configs of the SP
-            if (!new Gson().toJson(localAndOutboundAuthenticationConfig).equals(new Gson().toJson(existingSP
-                    .getLocalAndOutBoundAuthenticationConfig()))) {
-                updateAuthenticator = true;
-            }
-
-            if (updateAuthenticator) {
-                localAndOutboundAuthenticationConfig.setAuthenticationType("flow");
-                setAuthenticators(tenantDomain, serviceProvider, localAndOutboundAuthenticationConfig);
-                setConditionalAuthScript(serviceProvider, localAndOutboundAuthenticationConfig);
-            }
-            //update service provider Properties
-            setServiceProviderProperties(serviceProvider, serviceProvider.getSpProperties());
-            serviceProvider.setLocalAndOutBoundAuthenticationConfig(localAndOutboundAuthenticationConfig);
-            IdentityExtensionsDataHolder identityExtensionsDataHolder = IdentityExtensionsDataHolder.getInstance();
-            Map<String, Object> spMetaData = IdentityCommonUtils.getSpMetaData(serviceProvider);
-            //update oauth application
-            setOauthAppProperties(oauthApplication, spMetaData);
-            if (StringUtils.isNotBlank(CarbonContext.getThreadLocalCarbonContext().getUsername())) {
-                identityExtensionsDataHolder.getOauthAdminService().updateConsumerApplication(oauthApplication);
-            }
-        } catch (IdentityOAuthAdminException e) {
-            throw new FinancialServicesException("Error occurred while updating application ", e);
-        } catch (IdentityApplicationManagementException e) {
-            throw new FinancialServicesException("Error occurred while retrieving service provider ", e);
-        }
     }
 
     public void doPreDeleteApplication(String applicationName, String tenantDomain, String userName)
@@ -284,6 +230,5 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
 
     public void doPostDeleteApplication(ServiceProvider serviceProvider, String tenantDomain, String userName)
             throws FinancialServicesException {
-
     }
 }

@@ -148,22 +148,19 @@ public class IdentityExtensionsDataHolder {
 
         IdentityExtensionsDataHolder.configurationService = configurationService;
         this.configurationMap = configurationService.getConfigurations();
-        String appUpdaterClassName = configurationService.getConfigurations()
-                .get(FinancialServicesConstants.POST_APPLICATION_LISTENER).toString();
-        abstractApplicationUpdater = FinancialServicesUtils.getClassInstanceFromFQN(appUpdaterClassName,
-                AbstractApplicationUpdater.class);
-        fsRequestObjectValidator = FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
-                .get(FinancialServicesConstants.REQUEST_VALIDATOR).toString(), FSRequestObjectValidator.class);
-        fsResponseTypeHandler = FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
-                .get(FinancialServicesConstants.RESPONSE_HANDLER).toString(), FSResponseTypeHandler.class);
-        fsGrantHandler = FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
-                .get(FinancialServicesConstants.GRANT_HANDLER).toString(), FSGrantHandler.class);
-        this.setClaimProvider(FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
-                .get(FinancialServicesConstants.CLAIM_PROVIDER).toString(), ClaimProvider.class));
+        abstractApplicationUpdater = (AbstractApplicationUpdater) FinancialServicesUtils.getClassInstanceFromFQN
+                (configurationService.getConfigurations().get(FinancialServicesConstants.POST_APPLICATION_LISTENER));
+        fsRequestObjectValidator = (FSRequestObjectValidator) FinancialServicesUtils.getClassInstanceFromFQN(
+                this.configurationMap.get(FinancialServicesConstants.REQUEST_VALIDATOR));
+        fsResponseTypeHandler = (FSResponseTypeHandler) FinancialServicesUtils.getClassInstanceFromFQN(
+                this.configurationMap.get(FinancialServicesConstants.RESPONSE_HANDLER));
+        fsGrantHandler = (FSGrantHandler) FinancialServicesUtils.getClassInstanceFromFQN(
+                this.configurationMap.get(FinancialServicesConstants.GRANT_HANDLER));
+        this.setClaimProvider((ClaimProvider) FinancialServicesUtils.getClassInstanceFromFQN(
+                this.configurationMap.get(FinancialServicesConstants.CLAIM_PROVIDER)));
         FSClaimProvider.setClaimProvider(getClaimProvider());
-        this.setIntrospectionDataProvider(FinancialServicesUtils.getClassInstanceFromFQN(this.configurationMap
-                .get(FinancialServicesConstants.INTROSPECTION_DATA_PROVIDER).toString(),
-                IntrospectionDataProvider.class));
+        this.setIntrospectionDataProvider((IntrospectionDataProvider) FinancialServicesUtils.getClassInstanceFromFQN(
+                this.configurationMap.get(FinancialServicesConstants.INTROSPECTION_DATA_PROVIDER)));
         FSIntrospectionDataProvider.setIntrospectionDataProvider(getIntrospectionDataProvider());
     }
 

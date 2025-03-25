@@ -330,7 +330,22 @@ data_source.name = "WSO2FS_DB"
 connection_verification_timeout=1
 
 [financial_services.app_registration]
-applicationupdater = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl"
+application_updater = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl"
+
+[financial_services.app_registration]
+application_updater = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl"
+
+#[financial_services.app_registration.sca.primaryauth]
+#name = ""
+#display = ""
+
+#[financial_services.app_registration.sca.idp]
+#name = ""
+#step = 2
+
+# Put the conditional auth script inside the <IAM_HOME>/repository/conf folder and config the file name below.
+#[financial_services.app_registration.conditional.auth.script]
+#filename=""
 
 [[financial_services.app_registration.dcr.params]]
 name = "SoftwareId"
