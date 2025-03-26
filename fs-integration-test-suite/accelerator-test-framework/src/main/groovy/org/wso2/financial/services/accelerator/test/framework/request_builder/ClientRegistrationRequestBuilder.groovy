@@ -91,6 +91,16 @@ class ClientRegistrationRequestBuilder {
     }
 
     /**
+     * Build Client Registration Request.
+     * @return dcr request
+     */
+    static RequestSpecification buildKeyManageRegistrationRequestWithClaims(String claims) {
+
+        return buildRegistrationRequest("application/json")
+                .body(claims)
+    }
+
+    /**
      * Get a registration request without encoding.
      *
      * @param accessToken
