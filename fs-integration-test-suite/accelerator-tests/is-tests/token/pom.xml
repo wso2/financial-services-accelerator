@@ -33,12 +33,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2</groupId>
-            <artifactId>open-banking-test-framework</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
+            <version>${bcpkix-jdk15on.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json.wso2</groupId>
@@ -60,6 +57,7 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
+            <version>${org.codehaus.groovy.version}</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
@@ -77,6 +75,24 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <version>${org.osgi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>6.0.23</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>2.7.15</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -120,7 +136,7 @@
         </plugins>
         <resources>
             <resource>
-                <directory>${project.basedir}/../resources</directory>
+                <directory>${project.basedir}/../../../accelerator-test-framework/src/main/resources</directory>
             </resource>
         </resources>
     </build>

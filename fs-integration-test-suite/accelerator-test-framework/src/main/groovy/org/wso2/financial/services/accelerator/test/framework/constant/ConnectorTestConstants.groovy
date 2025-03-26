@@ -18,7 +18,8 @@
 
 package org.wso2.financial.services.accelerator.test.framework.constant
 
-import org.wso2.openbanking.test.framework.configuration.OBConfigurationService
+import org.wso2.bfsi.test.framework.constant.Constants
+import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -27,9 +28,9 @@ import java.time.temporal.ChronoUnit
 /**
  * Common Constants of IAM scenarios.
  */
-class ConnectorTestConstants {
+class ConnectorTestConstants extends Constants{
 
-    static OBConfigurationService configurationService = new OBConfigurationService()
+    static ConfigurationService configurationService = new ConfigurationService()
 
     static final String SIGNING_ALGORITHM = configurationService.getCommonSigningAlgorithm()
     public static final Instant DATE_TIME = Instant.now().plus(5, ChronoUnit.DAYS)

@@ -18,9 +18,9 @@
 
 package org.wso2.financial.services.accelerator.test.framework
 
-import org.wso2.openbanking.test.framework.OBTest
-import org.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
-import org.wso2.openbanking.test.framework.request_builder.SignedObject
+import org.wso2.bfsi.test.framework.CommonTest
+import org.wso2.bfsi.test.framework.automation.WaitForRedirectAutomationStep
+import org.wso2.bfsi.test.framework.request_builder.SignedObject
 import io.restassured.RestAssured
 import io.restassured.config.EncoderConfig
 import io.restassured.http.ContentType
@@ -44,14 +44,13 @@ import org.wso2.financial.services.accelerator.test.framework.request_builder.To
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
-import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 /**
  * Base class for Accelerator Test.
  * All common functions that directly required for test class are implemented in here.
  */
-class FSConnectorTest extends OBTest{
+class FSConnectorTest extends CommonTest{
 
     ConfigurationService configuration = new ConfigurationService()
     protected static Logger log = LogManager.getLogger(FSConnectorTest.class.getName())

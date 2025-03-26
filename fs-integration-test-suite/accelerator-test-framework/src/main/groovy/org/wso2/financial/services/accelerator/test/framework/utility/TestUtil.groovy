@@ -20,9 +20,9 @@ package org.wso2.financial.services.accelerator.test.framework.utility
 
 import com.fasterxml.uuid.Generators
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
+import org.wso2.bfsi.test.framework.util.CommonTestUtil
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
-import org.wso2.openbanking.test.framework.utility.SSLSocketFactoryCreator
+import org.wso2.bfsi.test.framework.util.SSLSocketFactoryCreator
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 
@@ -36,7 +36,7 @@ import java.security.cert.CertificateException
 /**
  * Accelerator layer class to contain utilities.
  */
-class TestUtil extends OBTestUtil{
+class TestUtil extends CommonTestUtil{
 
     static ConfigurationService configurationService = new ConfigurationService()
 
@@ -142,7 +142,7 @@ class TestUtil extends OBTestUtil{
                 sslSocketFactory = sslSocketFactoryCreator.creatWithCustomKeystore(keystoreLocation, keystorePassword, 0);
 
                 // Skip hostname verification.
-                sslSocketFactory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory
+                sslSocketFactory.setHostnameVerifier(SSLSocketFactory
                         .ALLOW_ALL_HOSTNAME_VERIFIER);
             } catch (TestFrameworkException e) {
                 log.error("Unable to create the SSL socket factory", e);
