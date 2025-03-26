@@ -119,7 +119,7 @@
                         <exclude>**/*AuthErrorCode.class</exclude>
                         <exclude>**/*ResponseStatus.class</exclude>
                         <exclude>**/*ConsentPayloadValidationResult.class</exclude>
-                        <exclude>**/*ConsentValidationRequest.class</exclude>
+                        <exclude>**/*ConsentValidateRequest.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
