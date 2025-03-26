@@ -35,8 +35,8 @@
     <url>http://wso2.org</url>
 
     <modules>
-<!--        <module>is-tests</module>-->
-<!--        <module>gateway-tests</module>-->
+        <module>is-tests</module>
+        <module>gateway-tests</module>
     </modules>
 
     <dependencies>
