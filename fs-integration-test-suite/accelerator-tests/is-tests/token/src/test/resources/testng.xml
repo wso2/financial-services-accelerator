@@ -19,26 +19,16 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="WSO2 Open Banking - Accelerator Token Flow Test" parallel="tests" >
     <test name="Token Flow - Regulatory Application" enabled="true" group-by-instances="true">
-        <!--    <classes>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.regulatory_app.mtls_enforcement_validator.MtlsEnforcementValidationTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.regulatory_app.signature_algorithm_validation.SignatureAlgorithmValidationTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.regulatory_app.client_authenticator_enforcement.MtlsClientAuthenticationTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.regulatory_app.client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.regulatory_app.grant_type_validation.ClientCredentialGrantAccessTokenTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.regulatory_app.grant_type_validation.AuthorisationCodeGrantAccessToken"/>-->
-        <!--      &lt;!&ndash;ToDo: Uncomment after resolving https://github.com/wso2-enterprise/financial-open-banking/issues/7783&ndash;&gt;-->
-        <!--      &lt;!&ndash;class name="grant_type_validation.regulatory_app.org.wso2.financial.services.accelerator.test.token.RefreshTokenGrantAccessToken"/&ndash;&gt;-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.regulatory_app.grant_type_validation.PasswordGrantAccessTokenTest"/>-->
-        <!--    </classes>-->
-    </test>
-    <test name="Token Flow - Non-Regulatory Application" parallel="tests" enabled="false"  group-by-instances="true">
-        <!--    <classes>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.non_regulatory_app.grant_type_validation.ClientCredentialGrantAccessTokenTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.non_regulatory_app.grant_type_validation.AuthorisationCodeGrantAccessTokenTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.non_regulatory_app.grant_type_validation.RefreshTokenGrantAccessTokenTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.non_regulatory_app.grant_type_validation.PasswordGrantAccessTokenTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.non_regulatory_app.client_authenticator_enforcement.MtlsClientAuthenticationTest"/>-->
-        <!--      <class name="org.wso2.financial.services.accelerator.test.token.non_regulatory_app.client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>-->
-        <!--    </classes>-->
+            <classes>
+<!--              <class name="client_authenticator_enforcement.MtlsClientAuthenticationTest"/>-->
+<!--              <class name="client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>-->
+<!--              <class name="mtls_enforcement_validator.MtlsEnforcementValidationTest"/>-->
+<!--              <class name="signature_algorithm_validation.SignatureAlgorithmValidationTest"/>-->
+<!--              <class name="grant_type_validation.ClientCredentialGrantAccessTokenTest"/>-->
+              <class name="grant_type_validation.AuthorisationCodeGrantAccessTokenTest"/>
+              <!--ToDo: Uncomment after resolving https://github.com/wso2-enterprise/financial-open-banking/issues/7783-->
+              <!--class name="grant_type_validation.regulatory_app.org.wso2.financial.services.accelerator.test.token.RefreshTokenGrantAccessToken"/-->
+<!--              <class name="grant_type_validation.RefreshTokenGrantAccessToken"/>-->
+            </classes>
     </test>
 </suite>

@@ -32,6 +32,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>bfsi-test-framework</module>
         <module>accelerator-test-framework</module>
         <module>accelerator-tests</module>
     </modules>
@@ -47,6 +48,18 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
+
+        <repository>
+            <id>wso2-nexus-2</id>
+            <name>WSO2 internal Repository</name>
+            <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
+
         <repository>
             <id>wso2.releases</id>
             <name>WSO2 internal Repository</name>
@@ -69,34 +82,21 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
+
     </repositories>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.codehaus.groovy</groupId>
+                <groupId>org.apache.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
-                <version>${org.codehaus.groovy.version}</version>
+                <version>${org.apache.groovy.version}</version>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>${org.testng.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2</groupId>
-                <artifactId>open-banking-test-framework</artifactId>
-                <version>${openbanking.test.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2</groupId>
-                <artifactId>bfsi-test-framework</artifactId>
-                <version>${bfsi.test.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.financial.services.accelerator</groupId>
-                <artifactId>accelerator-test-framework</artifactId>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -143,23 +143,8 @@
             <dependency>
                 <groupId>org.wso2.orbit.com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
-                <version>${org.wso2.orbit.com.nimbusds.jose.version}</version>
+                <version>${org.wso2.orbit.com.nimbusds.version}</version>
                 <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
-                <version>${bcpkix-jdk15on.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.uuid</groupId>
-                <artifactId>java-uuid-generator</artifactId>
-                <version>${java.uuid.generator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-server</artifactId>
-                <version>${selenium.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/net.minidev/json-smart -->
             <dependency>
@@ -177,12 +162,6 @@
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${io.rest-assured.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.bitbucket.b_c</groupId>
-                <artifactId>jose4j</artifactId>
-                <version>${org.bitbucket.b_c.verion}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
@@ -204,38 +183,49 @@
                 <scope>compile</scope>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.uuid</groupId>
+                <artifactId>java-uuid-generator</artifactId>
+                <version>${com.fasterxml.uuid.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
                 <groupId>bouncycastle</groupId>
                 <artifactId>bcprov-jdk14</artifactId>
                 <version>${bouncycastle.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>com.nimbusds</groupId>
-                <artifactId>oauth2-oidc-sdk</artifactId>
-                <version>${com.nimbus.oauth2-oidc-sdk.version}</version>
+                <groupId>org.bitbucket.b_c</groupId>
+                <artifactId>jose4j</artifactId>
+                <version>${org.bitbucket.b_c.verion}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${com.google.guava.version}</version>
+                <groupId>org.wso2.securevault</groupId>
+                <artifactId>org.wso2.securevault</artifactId>
+                <version>${org.wso2.securevault.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>${com.google.inject.guice.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>oauth2-oidc-sdk</artifactId>
+                <version>${com.nimbusds.oidc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>6.0.0</version>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-server</artifactId>
+                <version>${selenium.version}</version>
             </dependency>
+            <!--            <dependency>-->
+            <!--                <groupId>org.bouncycastle</groupId>-->
+            <!--                <artifactId>bcpkix-jdk15on</artifactId>-->
+            <!--                <version>${bcpkix-jdk15on.version}</version>-->
+            <!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>bouncycastle</groupId>-->
+            <!--                <artifactId>bcprov-jdk14</artifactId>-->
+            <!--                <version>${bouncycastle.version}</version>-->
+            <!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -248,7 +238,6 @@
                     <version>${org.codehaus.gmavenplus.version}</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
@@ -342,20 +331,21 @@
     </build>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <maven-resources-plugin-version>3.0.2</maven-resources-plugin-version>
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
         <surefire.plugin.version>2.22.2</surefire.plugin.version>
         <org.apache.ws.commons.axiom.wso2.version>1.2.11.wso2v9</org.apache.ws.commons.axiom.wso2.version>
         <org.codehaus.gmavenplus.version>1.13.1</org.codehaus.gmavenplus.version>
+        <org.apache.groovy.version>4.0.1</org.apache.groovy.version>
         <org.testng.version>6.14.3</org.testng.version>
         <org.apache.logging.log4j.version>2.17.1</org.apache.logging.log4j.version>
         <org.slf4j.version>2.0.0-alpha5</org.slf4j.version>
         <org.apache.axis2.wso2.version>1.6.1-wso2v77</org.apache.axis2.wso2.version>
         <javax.activation.version>1.1.1</javax.activation.version>
         <org.json.wso2.version>3.0.0.wso2v1</org.json.wso2.version>
-        <org.wso2.orbit.com.nimbusds.jose.version>9.18.0.wso2v1</org.wso2.orbit.com.nimbusds.jose.version>
+        <org.wso2.orbit.com.nimbusds.version>9.18.0.wso2v1</org.wso2.orbit.com.nimbusds.version>
         <net.minidev.json.smart.version>2.4.8</net.minidev.json.smart.version>
         <net.minidev.asm.version>1.0.2</net.minidev.asm.version>
         <io.rest-assured.version>5.0.0</io.rest-assured.version>
@@ -370,17 +360,16 @@
         <findsecbugs-plugin.version>1.10.1</findsecbugs-plugin.version>
         <maven.spotbugsplugin.version>4.2.3</maven.spotbugsplugin.version>
         <maven.checkstyleplugin.version>3.1.0</maven.checkstyleplugin.version>
+        <com.wso2.openbanking.test>4.0.0-SNAPSHOT</com.wso2.openbanking.test>
         <com.google.guava.version>31.0.1-jre</com.google.guava.version>
         <com.google.inject.guice.version>4.2.3</com.google.inject.guice.version>
-        <com.nimbus.oauth2-oidc-sdk.version>9.35</com.nimbus.oauth2-oidc-sdk.version>
-        <bcpkix-jdk15on.version>1.59</bcpkix-jdk15on.version>
-        <java.uuid.generator.version>3.1.4</java.uuid.generator.version>
-        <org.codehaus.groovy.version>2.4.11</org.codehaus.groovy.version>
-        <org.apache.groovy.version>4.0.1</org.apache.groovy.version>
+        <com.nimbusds.oidc.version>6.13</com.nimbusds.oidc.version>
         <selenium.version>3.141.59</selenium.version>
+        <org.codehaus.groovy.version>2.4.11</org.codehaus.groovy.version>
+        <bcpkix-jdk15on.version>1.59</bcpkix-jdk15on.version>
         <jacoco.version>0.8.3</jacoco.version>
-        <openbanking.test.framework.version>4.0.0-M3</openbanking.test.framework.version>
-        <bfsi.test.framework.version>4.0.0-M3</bfsi.test.framework.version>
+        <bfsi-test-framework.version>4.0.0-M3</bfsi-test-framework.version>
+        <org.osgi.version>6.0.0</org.osgi.version>
     </properties>
 
 </project>

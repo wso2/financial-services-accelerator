@@ -18,11 +18,11 @@
 
 package org.wso2.financial.services.accelerator.test.framework.configuration
 
-import org.wso2.openbanking.test.framework.configuration.OBConfigurationService
+import org.wso2.bfsi.test.framework.configuration.CommonConfigurationService
 
 /**
  * Class to provide data that should be configured to the Accelerator layer.
  * Used to inherit methods from OB layer to Accelerator layer.
  */
-class ConfigurationService extends OBConfigurationService {
+class ConfigurationService extends CommonConfigurationService {
 }

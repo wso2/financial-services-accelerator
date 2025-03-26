@@ -19,7 +19,7 @@
 package org.wso2.financial.services.accelerator.test.framework.utility
 
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
-import org.wso2.openbanking.test.framework.utility.RestAsRequestBuilder
+import org.wso2.bfsi.test.framework.util.RestAsRequestBuilder
 import io.restassured.RestAssured
 import io.restassured.config.EncoderConfig
 import io.restassured.config.RestAssuredConfig

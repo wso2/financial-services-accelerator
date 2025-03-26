@@ -18,8 +18,9 @@
 
 package org.wso2.financial.services.accelerator.gateway.test.accounts.util
 
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
+
 import io.restassured.response.Response
+import jdk.internal.net.http.Response
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.testng.Assert

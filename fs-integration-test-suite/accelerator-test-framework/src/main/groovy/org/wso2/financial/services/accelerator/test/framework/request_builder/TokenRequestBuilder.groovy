@@ -18,10 +18,9 @@
 
 package org.wso2.financial.services.accelerator.test.framework.request_builder
 
-import org.wso2.openbanking.test.framework.constant.OBConstants
-import org.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
-import org.wso2.openbanking.test.framework.request_builder.PayloadGenerator
-import org.wso2.openbanking.test.framework.request_builder.SignedObject
+import org.wso2.bfsi.test.framework.request_builder.JSONRequestGenerator
+import org.wso2.bfsi.test.framework.request_builder.PayloadGenerator
+import org.wso2.bfsi.test.framework.request_builder.SignedObject
 import io.restassured.RestAssured
 import io.restassured.response.Response
 import io.restassured.specification.RequestSpecification
@@ -62,12 +61,12 @@ class TokenRequestBuilder {
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .body(jwt)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         } else {
             response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(jwt)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         }
 
         return response
@@ -96,7 +95,7 @@ class TokenRequestBuilder {
         Response response = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .body(accessTokenJWT)
-                .post(OBConstants.TOKEN_ENDPOINT)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         return response
     }
@@ -122,12 +121,12 @@ class TokenRequestBuilder {
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .body(accessTokenJWT)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         } else {
             response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(accessTokenJWT)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         }
 
         return response
@@ -161,7 +160,7 @@ class TokenRequestBuilder {
         Response response = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .body(accessTokenJWT)
-                .post(OBConstants.TOKEN_ENDPOINT)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         return response
     }
@@ -187,7 +186,7 @@ class TokenRequestBuilder {
         Response response = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .body(accessTokenJWT)
-                .post(OBConstants.TOKEN_ENDPOINT)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         return response
     }
@@ -214,7 +213,7 @@ class TokenRequestBuilder {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(accessTokenJWT)
-                .post(OBConstants.TOKEN_ENDPOINT)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         return response
     }
@@ -237,7 +236,7 @@ class TokenRequestBuilder {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(jwt)
-                .post(OBConstants.TOKEN_ENDPOINT)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         def accessToken = TestUtil.parseResponseBody(response, "access_token")
         log.info("Got user access token $accessToken")
@@ -265,12 +264,12 @@ class TokenRequestBuilder {
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .body(jwt)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         } else {
             response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(jwt)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         }
         return response
     }
@@ -296,7 +295,7 @@ class TokenRequestBuilder {
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                 .body(payload)
-                .post(OBConstants.INTROSPECTION_ENDPOINT)
+                .post(ConnectorTestConstants.INTROSPECTION_ENDPOINT)
 
         return response
     }
@@ -321,13 +320,13 @@ class TokenRequestBuilder {
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                     .body(payload)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         } else {
             tokenResponse = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                     .body(payload)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         }
 
         return tokenResponse
@@ -352,13 +351,13 @@ class TokenRequestBuilder {
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                     .body(payload)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         } else {
             tokenResponse = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                     .body(payload)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         }
 
         return tokenResponse
@@ -391,7 +390,7 @@ class TokenRequestBuilder {
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(payload)
                     .baseUri(configuration.getISServerUrl())
-                    .post(OBConstants.OAUTH2_REVOKE_ENDPOINT)
+                    .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
 
         return response
     }
@@ -428,7 +427,7 @@ class TokenRequestBuilder {
         response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(accessTokenJWT)
-                    .post(OBConstants.TOKEN_ENDPOINT)
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         return response
     }
