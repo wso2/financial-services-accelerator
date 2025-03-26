@@ -30,10 +30,10 @@ import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.id.ClientID
 import com.nimbusds.oauth2.sdk.id.Issuer
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
-import org.wso2.openbanking.test.framework.keystore.OBKeyStore
-import org.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
-import org.wso2.openbanking.test.framework.request_builder.PayloadGenerator
-import org.wso2.openbanking.test.framework.request_builder.SignedObject
+import org.wso2.bfsi.test.framework.keystore.KeyStore
+import org.wso2.bfsi.test.framework.request_builder.JSONRequestGenerator
+import org.wso2.bfsi.test.framework.request_builder.PayloadGenerator
+import org.wso2.bfsi.test.framework.request_builder.SignedObject
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.json.JSONObject
 import org.testng.Reporter
@@ -94,11 +94,11 @@ class JWTGenerator {
      */
      String getSignedRequestObject(String claims) {
 
-        Certificate certificate = OBKeyStore.getApplicationCertificate()
-        String thumbprint = OBKeyStore.getJwkThumbPrintForSHA1(certificate)
+        Certificate certificate = KeyStore.getApplicationCertificate()
+        String thumbprint = KeyStore.getJwkThumbPrintForSHA1(certificate)
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(getSigningAlgorithm()))
                 .keyID(thumbprint).type(JOSEObjectType.JWT).build()
-        Key signingKey = OBKeyStore.getApplicationSigningKey()
+        Key signingKey = KeyStore.getApplicationSigningKey()
 
         JWSObject jwsObject = new JWSObject(header, new Payload(claims))
         JWSSigner signer = new RSASSASigner((PrivateKey) signingKey)
@@ -114,11 +114,11 @@ class JWTGenerator {
      */
     String getSignedRequestObjectWithCustomAlgorithm(String claims) {
 
-        Certificate certificate = OBKeyStore.getApplicationCertificate()
-        String thumbprint = OBKeyStore.getJwkThumbPrintForSHA1(certificate)
+        Certificate certificate = KeyStore.getApplicationCertificate()
+        String thumbprint = KeyStore.getJwkThumbPrintForSHA1(certificate)
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse("RS256"))
                 .keyID(thumbprint).type(JOSEObjectType.JWT).build()
-        Key signingKey = OBKeyStore.getApplicationSigningKey()
+        Key signingKey = KeyStore.getApplicationSigningKey()
 
         JWSObject jwsObject = new JWSObject(header, new Payload(claims))
         JWSSigner signer = new RSASSASigner((PrivateKey) signingKey)

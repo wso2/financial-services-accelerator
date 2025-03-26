@@ -18,13 +18,13 @@
 
 package client_authenticator_enforcement
 
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * PKJWT Client AUthentication Validation Test.
@@ -45,9 +45,9 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
                 "deleted_client_id", [scope])
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 ("A valid OAuth client could not be found for client_id: deleted_client_id"))
     }
 
@@ -61,9 +61,9 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
                 clientId, [scope], expireTime)
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 "invalid_request")
-        Assert.assertTrue(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION).
+        Assert.assertTrue(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION).
                 contains("JWT Token is expired."))
     }
 
@@ -75,9 +75,9 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
                 clientId, [scope])
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Unsupported client authentication mechanism")
     }
 
@@ -87,7 +87,7 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Response tokenResponse = getApplicationAccessTokenResponseWithoutClientId(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 [scope])
 
-        def accessToken = OBTestUtil.parseResponseBody(tokenResponse, "access_token")
+        def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
 
         //TODO:
 //        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
@@ -104,13 +104,13 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 clientId, [scope])
 
-        def accessToken = OBTestUtil.parseResponseBody(tokenResponse, "access_token")
+        def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
         Assert.assertNotNull(accessToken)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(tokenResponse, "expires_in"))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(tokenResponse, "scope"))
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
+        Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "expires_in"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "scope"))
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
     }
 
     @Test(priority = 1)
@@ -120,12 +120,12 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 clientId, [scope])
 
-        def accessToken = OBTestUtil.parseResponseBody(tokenResponse, "access_token")
+        def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
         Assert.assertNotNull(accessToken)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(tokenResponse, "expires_in"))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(tokenResponse, "scope"))
-        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
+        Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "expires_in"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "scope"))
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
     }
 }

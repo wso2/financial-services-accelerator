@@ -29,9 +29,8 @@ import org.wso2.financial.services.accelerator.test.framework.constant.Connector
 import org.wso2.financial.services.accelerator.test.framework.constant.PageObjects
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.openbanking.test.framework.automation.OBBrowserAutomation
-import org.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
+import org.wso2.bfsi.test.framework.automation.BrowserAutomation
+import org.wso2.bfsi.test.framework.automation.WaitForRedirectAutomationStep
 
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
@@ -311,13 +310,13 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
         String authoriseUrl = authorisationBuilder.getAuthorizationRequestWithoutOpenIDScope(configuration.getAppInfoClientID(),
                 consentId, [ConnectorTestConstants.ApiScope.ACCOUNTS], true).toURI().toString()
 
-        OBBrowserAutomation.AutomationContext automation
-        automation = getBrowserAutomation(OBBrowserAutomation.DEFAULT_DELAY)
+        BrowserAutomation.AutomationContext automation
+        automation = getBrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthorizationFlowNavigationAutomationStep(authoriseUrl))
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
-        Assert.assertEquals(OBTestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
+        Assert.assertEquals(TestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
                 ConnectorTestConstants.INVALID_AUTH_URL_SCOPE_ERROR.replace("@@CLIENT_ID", configuration.getAppInfoClientID()))
 
     }
@@ -336,12 +335,12 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
                 consentId, [ConnectorTestConstants.ApiScope.ACCOUNTS], true,
                 ConnectorTestConstants.SCOPE_PARAMETER, "invalid_scope").toURI().toString()
 
-        OBBrowserAutomation.AutomationContext automation
-        automation = getBrowserAutomation(OBBrowserAutomation.DEFAULT_DELAY)
+        BrowserAutomation.AutomationContext automation
+        automation = getBrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthorizationFlowNavigationAutomationStep(authoriseUrl))
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
-        Assert.assertEquals(OBTestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
+        Assert.assertEquals(TestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
                 ConnectorTestConstants.INVALID_AUTH_URL_SCOPE_ERROR.replace("@@CLIENT_ID", configuration.getAppInfoClientID()))
     }
 
@@ -358,8 +357,8 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
         String authoriseUrl = authorisationBuilder.getAuthorizationRequestWithCustomAud(configuration.getAppInfoClientID(),
                 consentId, consentScopes, true).toURI().toString()
 
-        OBBrowserAutomation.AutomationContext automation
-        automation = getBrowserAutomation(OBBrowserAutomation.DEFAULT_DELAY)
+        BrowserAutomation.AutomationContext automation
+        automation = getBrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthorizationFlowNavigationAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
                     driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
@@ -368,7 +367,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
 
         Assert.assertTrue(URLDecoder.decode(automation.currentUrl.get())
                 .contains(ConnectorTestConstants.INVALID_REQUEST_OBJECT_ERROR))
-        Assert.assertEquals(OBTestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
+        Assert.assertEquals(TestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
                 ConnectorTestConstants.INVALID_PARAM_ERROR)
     }
 
@@ -385,8 +384,8 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
         String authoriseUrl = authorisationBuilder.getAuthorizationRequestWithCustomAlgorithm(configuration.getAppInfoClientID(),
                 consentId, [ConnectorTestConstants.ApiScope.ACCOUNTS], true).toURI().toString()
 
-        OBBrowserAutomation.AutomationContext automation
-        automation = getBrowserAutomation(OBBrowserAutomation.DEFAULT_DELAY)
+        BrowserAutomation.AutomationContext automation
+        automation = getBrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthorizationFlowNavigationAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
                     driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
@@ -394,7 +393,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
-        Assert.assertEquals(OBTestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
+        Assert.assertEquals(TestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
                 ConnectorTestConstants.INVALID_SIG_ALGO_ERROR)
     }
 }

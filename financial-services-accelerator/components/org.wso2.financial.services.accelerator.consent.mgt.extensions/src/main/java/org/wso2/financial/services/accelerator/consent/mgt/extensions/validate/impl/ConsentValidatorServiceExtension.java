@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -109,9 +110,11 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
             if (StatusEnum.SUCCESS.equals(response.getStatus())) {
                 consentValidationResult.setValid(true);
             } else {
+                JSONObject errorData = new JSONObject(response.getData().toString());
                 consentValidationResult.setValid(false);
-                consentValidationResult.setErrorMessage(response.getErrorDescription());
-                consentValidationResult.setErrorCode(response.getErrorMessage());
+                consentValidationResult.setErrorMessage(
+                        errorData.getString(FinancialServicesConstants.ERROR_DESCRIPTION));
+                consentValidationResult.setErrorCode(errorData.getString(FinancialServicesConstants.ERROR_MESSAGE));
                 consentValidationResult.setHttpCode(Integer.parseInt(response.getErrorCode()));
             }
         } catch (FinancialServicesException e) {

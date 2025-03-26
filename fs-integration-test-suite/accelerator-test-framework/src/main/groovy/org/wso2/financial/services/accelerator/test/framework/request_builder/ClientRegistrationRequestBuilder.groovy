@@ -18,15 +18,13 @@
 
 package org.wso2.financial.services.accelerator.test.framework.request_builder
 
-import org.wso2.openbanking.test.framework.configuration.OBConfigurationService
-import org.wso2.openbanking.test.framework.constant.OBConstants
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
-import org.wso2.openbanking.test.framework.utility.RestAsRequestBuilder
+import org.wso2.bfsi.test.framework.util.RestAsRequestBuilder
 import io.restassured.RestAssured
 import io.restassured.config.EncoderConfig
 import io.restassured.http.ContentType
 import io.restassured.response.Response
 import io.restassured.specification.RequestSpecification
+import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
@@ -39,7 +37,7 @@ import java.time.temporal.ChronoUnit
  */
 class ClientRegistrationRequestBuilder {
 
-    static OBConfigurationService obConfigurationService = new OBConfigurationService()
+    static ConfigurationService obConfigurationService = new ConfigurationService()
     static JWTGenerator jwtGenerator = new JWTGenerator()
 
     /**
@@ -53,7 +51,7 @@ class ClientRegistrationRequestBuilder {
                 .header("charset", StandardCharsets.UTF_8.toString())
                 .accept("application/json")
                 .config(RestAssured.config()
-                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(OBTestUtil.getSslSocketFactory()))
+                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(TestUtil.getSslSocketFactory()))
                         .encoderConfig(new EncoderConfig().encodeContentTypeAs(
                                 contentType, ContentType.TEXT)))
                 .baseUri(obConfigurationService.getServerBaseURL())
@@ -76,7 +74,7 @@ class ClientRegistrationRequestBuilder {
     static RequestSpecification buildRegistrationRequestForGetAndDelete(String accessToken) {
 
         return buildRegistrationRequest("application/json")
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
     }
 
     /**
@@ -86,7 +84,7 @@ class ClientRegistrationRequestBuilder {
     static RequestSpecification buildRegistrationRequestForUpdate(String accessToken, String claims) {
 
         return buildRegistrationRequest("application/jwt")
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
                 .body(jwtGenerator.getSignedRequestObject(claims))
     }
 
@@ -585,7 +583,7 @@ class ClientRegistrationRequestBuilder {
     static Response retrieveServiceProviderCreated(String appName) {
 
         def response = RestAsRequestBuilder.buildBasicRequest()
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY,
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY,
                         "Basic " + TestUtil.getBasicAuthHeader(
                                 obConfigurationService.getUserKeyManagerAdminName(),
                                 obConfigurationService.getUserKeyManagerAdminPWD()))
@@ -607,7 +605,7 @@ class ClientRegistrationRequestBuilder {
     static Response retrieveOauthAppFromDevPortal(String appName, String accessToken) {
 
         def response = RestAsRequestBuilder.buildBasicRequest()
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .queryParam("query", appName)
                 .baseUri(obConfigurationService.getApimServerUrl())
@@ -625,7 +623,7 @@ class ClientRegistrationRequestBuilder {
     static Response retrieveSubscriptionForApp(String appId, String accessToken) {
 
         def response = RestAsRequestBuilder.buildBasicRequest()
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .queryParam("applicationId", appId)
                 .urlEncodingEnabled(false)
