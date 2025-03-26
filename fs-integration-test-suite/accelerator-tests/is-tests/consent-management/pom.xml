@@ -35,12 +35,12 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>bfsi-test-framework</artifactId>
-            <version>4.0.0-M3</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>accelerator-test-framework</artifactId>
-            <version>4.0.0-M3</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
