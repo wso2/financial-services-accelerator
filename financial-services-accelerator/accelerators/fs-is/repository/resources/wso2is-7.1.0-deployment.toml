@@ -284,6 +284,7 @@ ssa_jkws= "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/0015800001
 [oauth.oidc]
 id_token.signature_algorithm="PS256"
 enable_claims_separation_for_access_tokens = false
+enable_hybrid_flow_app_level_validation = false
 
 [oauth.oidc.token_endpoint]
 signing_algorithms=["PS256","ES256"]
