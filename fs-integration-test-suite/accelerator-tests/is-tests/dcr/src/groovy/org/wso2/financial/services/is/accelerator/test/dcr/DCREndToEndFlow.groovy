@@ -43,8 +43,8 @@ class DCREndToEndFlow extends FSConnectorTest {
     @BeforeClass(alwaysRun = true)
     void setup() {
 
-        registrationPath = configuration.getServerAuthorisationServerURL() + DCRConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(0)
+        registrationPath = configuration.getISServerUrl() + DCRConstants.REGISTRATION_ENDPOINT
+        configuration.setTppNumber(1)
         SSA = new File(configuration.getAppDCRSSAPath()).text
     }
 
@@ -52,7 +52,7 @@ class DCREndToEndFlow extends FSConnectorTest {
     void "Invoke registration request structured as a JWS"() {
 
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildKeyManageRegistrationRequestWithClaims(ClientRegistrationRequestBuilder.getRegularClaims(SSA))
+                .buildKeyManageRegistrationRequestWithClaims(ClientRegistrationRequestBuilder.getRegularClaimsForISDcr(SSA))
                 .when()
                 .post(registrationPath)
 
@@ -71,58 +71,59 @@ class DCREndToEndFlow extends FSConnectorTest {
 
     }
 
-//    @Test(groups = "SmokeTest", dependsOnMethods = "Invoke registration request structured as a JWS")
-//    void "Get access token"() {
-//
-//        accessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, scopes)
-//        Assert.assertNotNull(accessToken)
-//    }
-//
-//    @Test (groups = "SmokeTest", dependsOnMethods = "Get access token")
-//    void "Retrieve registration details with a valid clientId and access token"() {
-//
-//        def registrationResponse = ClientRegistrationRequestBuilder
-//                .buildRegistrationRequestForGetAndDelete(accessToken)
-//                .get(registrationPath + "/" + clientId)
-//
-//        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
-////        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
-//    }
-//
-//    @Test(groups = "SmokeTest", dependsOnMethods = "Retrieve registration details with a valid clientId and access token")
-//    void "Update client request with a valid details"() {
-//
-//        def registrationResponse = ClientRegistrationRequestBuilder
-//                .buildRegistrationRequestForUpdate(accessToken, ClientRegistrationRequestBuilder.getUpdateRegularClaims(SSA))
-//                .put(registrationPath + "/" + clientId)
-//
-//        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
+    @Test(groups = "SmokeTest", dependsOnMethods = "Invoke registration request structured as a JWS")
+    void "Get access token"() {
+
+        accessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, scopes)
+        Assert.assertNotNull(accessToken)
+    }
+
+    @Test (groups = "SmokeTest", dependsOnMethods = "Get access token")
+    void "Retrieve registration details with a valid clientId and access token"() {
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildKeyManagerRegistrationRequest()
+                .get(registrationPath + "/" + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
 //        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
-//    }
-//
-//    @Test (groups = "SmokeTest", dependsOnMethods = "Update client request with a valid details")
-//    void "Delete client with a valid clientId and access token"() {
-//
-//        def registrationResponse = ClientRegistrationRequestBuilder
-//                .buildRegistrationRequestForGetAndDelete(accessToken)
-//                .delete(registrationPath + "/" + clientId)
-//
-//        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
-//    }
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
+    }
+
+    @Test(groups = "SmokeTest", dependsOnMethods = "Retrieve registration details with a valid clientId and access token")
+    void "Update client request with a valid details"() {
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildKeyManagerRegistrationRequest()
+                .body(ClientRegistrationRequestBuilder.getRegularClaimsForISDcr(SSA))
+                .put(registrationPath + "/" + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
+    }
+
+    @Test (groups = "SmokeTest", dependsOnMethods = "Update client request with a valid details")
+    void "Delete client with a valid clientId and access token"() {
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildKeyManagerRegistrationRequest()
+                .delete(registrationPath + "/" + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
+    }
 }
