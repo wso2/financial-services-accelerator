@@ -1,0 +1,128 @@
+/**
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.financial.services.accelerator.is.test.event.notifications.EventPollingTest
+
+import com.wso2.openbanking.test.framework.utility.OBTestUtil
+import io.restassured.http.ContentType
+import org.testng.Assert
+import org.testng.annotations.BeforeClass
+import org.testng.annotations.Test
+import org.wso2.financial.services.accelerator.test.event.notifications.utils.AbstractEventNotificationFlow
+import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationConstants
+import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+
+/**
+ * Event Polling Request Validation Test
+ */
+class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
+
+    @BeforeClass(alwaysRun = true)
+    void initializePayloadBeforeTests() {
+        pollingPayload = EventNotificationPayloads.initialEventPollingRequestPayload
+    }
+
+    @Test
+    void "Event Polling request with invalid access token"() {
+
+        pollingResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+                .contentType(ContentType.URLENC)
+                .baseUri(configuration.getISServerUrl())
+                .body(constructPollingPayload(pollingPayload))
+                .post(pollingPath)
+
+        Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+    }
+
+    @Test
+    void "Event Polling request request without authorization header"() {
+
+        pollingResponse = requestBuilder.buildEventNotificationRequestWithoutAuthHeader()
+                .contentType(ContentType.URLENC)
+                .baseUri(configuration.getISServerUrl())
+                .body(constructPollingPayload(pollingPayload))
+                .post(pollingPath)
+
+        Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+    }
+
+    @Test
+    void "Event Polling request request without client id"() {
+
+        pollingResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+                .contentType(ContentType.URLENC)
+                .baseUri(configuration.getISServerUrl())
+                .body(constructPollingPayload(pollingPayload))
+                .post(pollingPath)
+
+        Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+    }
+
+    @Test
+    void "Event polling request with wrong content type"() {
+
+        pollingResponse = requestBuilder.buildEventNotificationRequest()
+                .contentType(ContentType.JSON)
+                .baseUri(configuration.getISServerUrl())
+                .body(constructPollingPayload(pollingPayload))
+                .post(pollingPath)
+
+        Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_415)
+    }
+
+    @Test
+    void "Event polling request without content type header"() {
+
+        pollingResponse = requestBuilder.buildEventNotificationRequest()
+                .baseUri(configuration.getISServerUrl())
+                .body(constructPollingPayload(pollingPayload))
+                .post(pollingPath)
+
+        Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_415)
+    }
+
+    @Test
+    void "Event polling request Without request Payload"() {
+
+        pollingResponse = requestBuilder.buildEventNotificationRequest()
+                .contentType(ContentType.URLENC)
+                .baseUri(configuration.getISServerUrl())
+                .post(pollingPath)
+
+        Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR),
+                EventNotificationConstants.MISSING_REQUEST_PAYLOAD)
+        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR_DESCRIPTION),
+                "No request payload found")
+    }
+
+    @Test
+    void "Event polling request With Empty request Payload"() {
+
+        pollingPayload = ''
+
+        doDefaultEventPolling()
+
+        Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR),
+                EventNotificationConstants.INVALID_REQUEST_PAYLOAD)
+        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR_DESCRIPTION),
+                "Request payload cannot be empty")
+    }
+}

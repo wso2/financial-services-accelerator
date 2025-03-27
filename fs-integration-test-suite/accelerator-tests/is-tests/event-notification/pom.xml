@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.financial.services.accelerator.is.test.event.notification</artifactId>
+    <artifactId>org.wso2.financial.services.accelerator.is.test.event.notifications</artifactId>
 
     <dependencies>
         <dependency>
