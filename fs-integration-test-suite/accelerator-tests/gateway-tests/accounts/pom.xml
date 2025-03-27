@@ -10,9 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-<!--    <artifactId>org.wso2.financial.services.accelerator.gateway.test.accounts</artifactId>-->
-    <artifactId>accounts</artifactId>
-
+    <artifactId>org.wso2.financial.services.accelerator.gateway.test.accounts</artifactId>
 
     <dependencies>
         <dependency>

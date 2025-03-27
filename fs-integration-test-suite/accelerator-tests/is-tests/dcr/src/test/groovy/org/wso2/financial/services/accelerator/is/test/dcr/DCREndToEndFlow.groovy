@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.financial.services.is.accelerator.test.dcr
+package org.wso2.financial.services.accelerator.is.test.dcr
 
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
@@ -26,7 +26,7 @@ import org.wso2.financial.services.accelerator.test.framework.configuration.Conf
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.financial.services.is.accelerator.test.dcr.util.DCRConstants
+import org.wso2.financial.services.accelerator.is.test.dcr.util.DCRConstants
 
 /**
  * Dynamic Client Registration End to End Flow Tests.

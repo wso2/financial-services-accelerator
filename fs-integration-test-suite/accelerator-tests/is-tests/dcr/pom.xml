@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.financial.services.is.accelerator.test.dcr</artifactId>
+    <artifactId>org.wso2.financial.services.accelerator.is.test.dcr</artifactId>
 
     <dependencies>
         <dependency>
@@ -130,7 +130,7 @@
         </plugins>
         <resources>
             <resource>
-                <directory>${project.basedir}/../resources</directory>
+                <directory>${project.basedir}/../../../accelerator-test-framework/src/main/resources</directory>
             </resource>
         </resources>
     </build>

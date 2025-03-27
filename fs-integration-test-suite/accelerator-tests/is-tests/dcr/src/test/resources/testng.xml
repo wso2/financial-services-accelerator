@@ -20,7 +20,7 @@
 <suite name="WSO2 Open Banking - Dynamic Client Registration Flow Test">
     <test name="Dynamic Client Registration Flow" parallel="false" enabled="true" group-by-instances="true">
         <classes>
-            <class name="org.wso2.financial.services.is.accelerator.test.dcr.DCREndToEndFlow"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.dcr.DCREndToEndFlow"/>
         </classes>
     </test>
 </suite>

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.financial.services.is.accelerator.test.dcr.util
+package org.wso2.financial.services.accelerator.is.test.dcr.util
 
 /**
  * DCR Request Constants.
