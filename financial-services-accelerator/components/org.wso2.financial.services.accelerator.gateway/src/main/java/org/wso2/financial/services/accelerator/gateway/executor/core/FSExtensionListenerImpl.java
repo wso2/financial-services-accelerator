@@ -219,7 +219,7 @@ public class FSExtensionListenerImpl implements ExtensionListener {
     }
 
     /**
-     * Method to store properties to cache
+     * Method to store properties to cache.
      *
      * @param key          unique cache key
      * @param contextProps properties to store

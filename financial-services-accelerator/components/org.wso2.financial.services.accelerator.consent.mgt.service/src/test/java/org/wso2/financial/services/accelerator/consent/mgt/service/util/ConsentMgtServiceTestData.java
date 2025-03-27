@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Data class for Consent Management Service Tests
+ */
 public class ConsentMgtServiceTestData {
 
     public static final String SAMPLE_CONSENT_RECEIPT = "{\"validUntil\": \"2020-10-20\", \"frequencyPerDay\": 1," +

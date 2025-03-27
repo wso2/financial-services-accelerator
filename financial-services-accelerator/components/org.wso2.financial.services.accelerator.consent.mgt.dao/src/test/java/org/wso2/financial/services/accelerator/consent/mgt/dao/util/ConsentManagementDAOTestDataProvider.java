@@ -23,6 +23,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.Consent
 
 import java.util.UUID;
 
+/**
+ * Data provider class for Consent Management DAO Test
+ */
 public class ConsentManagementDAOTestDataProvider {
 
     @DataProvider(name = "storeConsentDataProvider")

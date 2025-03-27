@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data holder for executor core
+ * Data holder for executor core.
  */
 public class GatewayDataHolder {
 

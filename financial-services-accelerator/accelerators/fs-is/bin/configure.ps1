@@ -110,11 +110,11 @@ Function Set-Datasources
     if ($PROPERTIES.'DB_TYPE' -eq "mysql")
     {
         # MySQL
-        Find-Replace $DEPLOYMENT_TOML_FILE "DB_APIMGT_URL" "jdbc:mysql://$( $PROPERTIES.'DB_HOST' ):3306/$( $PROPERTIES.'DB_APIMGT' )?allowPublicKeyRetrieval=true&amp;autoReconnect=true&amp;useSSL=false"
+        Find-Replace $DEPLOYMENT_TOML_FILE "DB_IDENTITY_URL" "jdbc:mysql://$( $PROPERTIES.'DB_HOST' ):3306/$( $PROPERTIES.'DB_IDENTITY' )?allowPublicKeyRetrieval=true&amp;autoReconnect=true&amp;useSSL=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_IS_CONFIG_URL" "jdbc:mysql://$( $PROPERTIES.'DB_HOST' ):3306/$( $PROPERTIES.'DB_IS_CONFIG' )?allowPublicKeyRetrieval=true&amp;autoReconnect=true&amp;useSSL=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_GOV_URL" "jdbc:mysql://$( $PROPERTIES.'DB_HOST' ):3306/$( $PROPERTIES.'DB_IS_CONFIG' )?allowPublicKeyRetrieval=true&amp;autoReconnect=true&amp;useSSL=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_USER_STORE_URL" "jdbc:mysql://$( $PROPERTIES.'DB_HOST' ):3306/$( $PROPERTIES.'DB_USER_STORE' )?allowPublicKeyRetrieval=true&amp;autoReconnect=true&amp;useSSL=false"
-        Find-Replace $DEPLOYMENT_TOML_FILE "DB_OB_STORE_URL" "jdbc:mysql://$( $PROPERTIES.'DB_HOST' ):3306/$( $PROPERTIES.'DB_OPEN_BANKING_STORE' )?allowPublicKeyRetrieval=true&amp;autoReconnect=true&amp;useSSL=false"
+        Find-Replace $DEPLOYMENT_TOML_FILE "DB_FS_STORE_URL" "jdbc:mysql://$( $PROPERTIES.'DB_HOST' ):3306/$( $PROPERTIES.'DB_FS_STORE' )?allowPublicKeyRetrieval=true&amp;autoReconnect=true&amp;useSSL=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_USER" "$( $PROPERTIES.'DB_USER' )"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_PASS" "$( $PROPERTIES.'DB_PASS' )"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_DRIVER" "$( $PROPERTIES.'DB_DRIVER' )"
@@ -122,11 +122,11 @@ Function Set-Datasources
     elseif($PROPERTIES.'DB_TYPE' -eq "mssql")
     {
         # Microsoft SQL Server
-        Find-Replace $DEPLOYMENT_TOML_FILE "DB_APIMGT_URL" "jdbc:sqlserver://$( $PROPERTIES.'DB_HOST' ):1433;databaseName=$( $PROPERTIES.'DB_APIMGT' );encrypt=false"
+        Find-Replace $DEPLOYMENT_TOML_FILE "DB_IDENTITY_URL" "jdbc:sqlserver://$( $PROPERTIES.'DB_HOST' ):1433;databaseName=$( $PROPERTIES.'DB_IDENTITY' );encrypt=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_IS_CONFIG_URL" "jdbc:sqlserver://$( $PROPERTIES.'DB_HOST' ):1433;databaseName=$( $PROPERTIES.'DB_IS_CONFIG' );encrypt=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_GOV_URL" "jdbc:sqlserver://$( $PROPERTIES.'DB_HOST' ):1433;databaseName=$( $PROPERTIES.'DB_IS_CONFIG' );encrypt=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_USER_STORE_URL" "jdbc:sqlserver://$( $PROPERTIES.'DB_HOST' ):1433;databaseName=$( $PROPERTIES.'DB_USER_STORE' );encrypt=false"
-        Find-Replace $DEPLOYMENT_TOML_FILE "DB_OB_STORE_URL" "jdbc:sqlserver://$( $PROPERTIES.'DB_HOST' ):1433;databaseName=$( $PROPERTIES.'DB_OPEN_BANKING_STORE' );encrypt=false"
+        Find-Replace $DEPLOYMENT_TOML_FILE "DB_FS_STORE_URL" "jdbc:sqlserver://$( $PROPERTIES.'DB_HOST' ):1433;databaseName=$( $PROPERTIES.'DB_FS_STORE' );encrypt=false"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_USER" "$( $PROPERTIES.'DB_USER' )"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_PASS" "$( $PROPERTIES.'DB_PASS' )"
         Find-Replace $DEPLOYMENT_TOML_FILE "DB_DRIVER" "$( $PROPERTIES.'DB_DRIVER' )"
@@ -170,11 +170,17 @@ Function Add-Databases {
             $DB_MYSQL_PASS = $PROPERTIES.'DB_PASS'
         }
 
+        Add-Database "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_IDENTITY' )"
+        Write-Output "Database Created: $( $PROPERTIES.'DB_IDENTITY' )"
+        
         Add-Database "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_IS_CONFIG' )"
         Write-Output "Database Created: $( $PROPERTIES.'DB_IS_CONFIG' )"
         
-        Add-Database "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_OPEN_BANKING_STORE' )"
-        Write-Output "Database Created: $( $PROPERTIES.'DB_OPEN_BANKING_STORE' )"
+        Add-Database "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_FS_STORE' )"
+        Write-Output "Database Created: $( $PROPERTIES.'DB_FS_STORE' )"
+        
+        Add-Database "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_USER_STORE' )"
+        Write-Output "Database Created: $( $PROPERTIES.'DB_USER_STORE' )"
     }
     else {
         Write-Output "[INFO] The databases must be created manually for non mysql DBMSs."   
@@ -189,11 +195,18 @@ Function Add-DatabaseTables {
             $DB_MYSQL_PASS = $PROPERTIES.'DB_PASS'
         }
 
+        Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_IDENTITY' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\identity\mysql.sql")"
+        Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_IDENTITY' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\consent\mysql.sql")"
+        Write-Output "Database tables Created for: $( $PROPERTIES.'DB_IDENTITY' )"
+
         Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_IS_CONFIG' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\mysql.sql")"
         Write-Output "Database tables Created for: $( $PROPERTIES.'DB_IS_CONFIG' )"
 
-        Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_OPEN_BANKING_STORE' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\open-banking\consent\mysql.sql")"
-        Write-Output "Database tables Created for: $( $PROPERTIES.'DB_OPEN_BANKING_STORE' )"
+        Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_FS_STORE' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\financial-services\consent\mysql.sql")"
+        Write-Output "Database tables Created for: $( $PROPERTIES.'DB_FS_STORE' )"
+
+        Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" "$DB_MYSQL_PASS" "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_USER_STORE' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\mysql.sql")"
+        Write-Output "Database tables Created for: $( $PROPERTIES.'DB_USER_STORE' )"
     }
     else {
         Write-Output "[INFO] The database tables must be created manually for non mysql DBMSs."

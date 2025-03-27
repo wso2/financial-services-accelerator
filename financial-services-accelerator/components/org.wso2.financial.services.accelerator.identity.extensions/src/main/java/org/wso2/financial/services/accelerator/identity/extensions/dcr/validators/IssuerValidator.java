@@ -55,7 +55,7 @@ public class IssuerValidator implements DynamicClientRegistrationValidator {
     }
 
     /**
-     * Validate whether the issuer of the request is equal to the software id of the SSA
+     * Validate whether the issuer of the request is equal to the software id of the SSA.
      *
      * @param additionalAttributes      Additional Attributes
      * @param ssaParams                 SSA Parameters
