@@ -253,7 +253,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                         getExternalServiceRequest(appRequest, ssaParams, spProperties, operation),
                         serviceExtensionTypeEnum);
                 if (StatusEnum.SUCCESS.equals(response.getStatus())) {
-                    JSONObject attributesToStoreJson = new JSONObject(response.getData().get("attributesToStore")
+                    JSONObject attributesToStoreJson = new JSONObject(response.getData()
+                            .get(IdentityCommonConstants.ATTRIBUTES_TO_STORE)
                             .toString());
                     return attributesToStoreJson.toMap();
                 } else {
