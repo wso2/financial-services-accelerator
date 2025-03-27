@@ -48,7 +48,6 @@ import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
@@ -58,12 +57,11 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCache;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCacheKey;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -87,33 +85,6 @@ import java.util.stream.Collectors;
 public class IdentityCommonUtils {
 
     private static final Log log = LogFactory.getLog(IdentityCommonUtils.class);
-
-    /**
-     * Method to obtain the Object when the full class path object config is given.
-     *
-     * @param configObject full class path config object
-     * @return new object instance
-     */
-    @Generated(message = "Ignoring since method contains no logics")
-    public static Object getClassInstanceFromFQN(Object configObject) {
-
-        if (configObject == null || StringUtils.isBlank(configObject.toString())) {
-            return null;
-        }
-
-        String classpath = configObject.toString();
-        try {
-            return Class.forName(classpath).getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException e) {
-            log.error(String.format("Class not found: %s",  classpath.replaceAll("[\r\n]", "")));
-            throw new FinancialServicesRuntimeException("Cannot find the defined class", e);
-        } catch (InstantiationException | InvocationTargetException |
-                 NoSuchMethodException | IllegalAccessException e) {
-            //Throwing a runtime exception since we cannot proceed with invalid objects
-            throw new FinancialServicesRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
-        }
-    }
-
 
     /**
      * Remove the internal scopes from the space delimited list of authorized scopes.

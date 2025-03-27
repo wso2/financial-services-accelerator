@@ -206,12 +206,10 @@
         </TokenSubject>
     </Identity>
     <AppRegistration>
-        {% if financial_services.app_registration.applicationupdater is defined %}
-        <ApplicationUpdaterImpl>{{financial_services.app_registration.applicationupdater}}</ApplicationUpdaterImpl>
-        {% elif financial_services.app_registration.application_updater is defined %}
+        {% if financial_services.app_registration.application_updater is defined %}
         <ApplicationUpdaterImpl>{{financial_services.app_registration.application_updater}}</ApplicationUpdaterImpl>
         {% else %}
-        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
+        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}
         <SCA>
             <PrimaryAuthenticator>
@@ -233,13 +231,13 @@
             <IdpStep>{{financial_services.app_registration.sca.idp.step}}</IdpStep>
             {% endif %}
         </SCA>
+        {% if financial_services.app_registration.conditional.auth.script.filename is defined %}
+        <ConditionalAuthScriptFileName>{{financial_services.app_registration.conditional.auth.script.filename}}</ConditionalAuthScriptFileName>
+        {% else %}
+        <ConditionalAuthScriptFileName>common.auth.script.js</ConditionalAuthScriptFileName>
+        {% endif %}
         {% if financial_services.app_registration.dcr.params is defined %}
         <DCR>
-            {% if financial_services.app_registration.dcr.additional_attribute_filter is defined %}
-            <AdditionalAttributeFilter>{{financial_services.app_registration.dcr.additional_attribute_filter}}</AdditionalAttributeFilter>
-            {% else %}
-            <AdditionalAttributeFilter>org.wso2.financial.services.accelerator.identity.extensions.dcr.attribute.filter.FSAdditionalAttributeFilter</AdditionalAttributeFilter>
-            {% endif %}
             <Params>
                 {% for param in financial_services.app_registration.dcr.params %}
                     <Param>
@@ -270,6 +268,9 @@
                 </Validator>
                 {% endfor %}
             </Validators>
+            {% if financial_services.app_registration.dcr.service_extension is defined %}
+            <DCRServiceExtension>{{financial_services.app_registration.dcr.service_extension}}</DCRServiceExtension>
+            {% endif %}
             <JTICache>
                 {% if financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes is defined %}
                 <CacheAccessExpiry>{{financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
