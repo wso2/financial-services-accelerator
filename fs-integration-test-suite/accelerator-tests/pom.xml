@@ -41,24 +41,24 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2</groupId>
-            <artifactId>open-banking-test-framework</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2</groupId>
+            <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>bfsi-test-framework</artifactId>
+            <version>4.0.0-M3</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>accelerator-test-framework</artifactId>
+            <version>4.0.0-M3</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
+            <version>${org.codehaus.groovy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
+            <version>${bcpkix-jdk15on.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>

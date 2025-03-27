@@ -18,10 +18,10 @@
 
 package mtls_enforcement_validator
 
-import org.wso2.openbanking.test.framework.keystore.OBKeyStore
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.Test
+import org.wso2.bfsi.test.framework.keystore.KeyStore
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 
@@ -126,7 +126,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
-                        OBKeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
+                        KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -153,7 +153,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
-                        OBKeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
+                        KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -225,7 +225,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
-                        OBKeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
+                        KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -254,7 +254,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
-                        OBKeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
+                        KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -344,7 +344,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
-                        OBKeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
+                        KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -374,7 +374,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
-                        OBKeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
+                        KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
     }

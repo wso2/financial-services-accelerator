@@ -18,7 +18,6 @@
 
 package signature_algorithm_validation
 
-import org.wso2.openbanking.test.framework.constant.OBConstants
 import io.restassured.RestAssured
 import io.restassured.response.Response
 import org.testng.Assert
@@ -90,7 +89,7 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(jwt)
-                .post(OBConstants.TOKEN_ENDPOINT)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),

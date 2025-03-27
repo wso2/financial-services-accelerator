@@ -18,10 +18,12 @@
 
 package org.wso2.financial.services.accelerator.test.framework.constant
 
+import org.wso2.bfsi.test.framework.constant.CommonPageObjects
+
 /**
  * Class for keeping Accelerator Page Objects.
  */
-class PageObjects {
+class PageObjects extends CommonPageObjects{
 
     //Dev portal page objects
     public static final String TAB_APPLICATIONS = "//span[contains(text(),'Applications')]"

@@ -30,7 +30,7 @@ import org.wso2.financial.services.accelerator.test.framework.constant.AccountsR
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.openbanking.test.framework.request_builder.SignedObject
+import org.wso2.bfsi.test.framework.request_builder.SignedObject
 
 /**
  * Consent Validation Tests.
