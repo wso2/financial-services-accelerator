@@ -154,7 +154,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
         doConsentRetrieval(consentId as String)
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        String status = OBTestUtil.parseResponseBody(consentResponse, "Data.Status")
+        String status = TestUtil.parseResponseBody(consentResponse, "Data.Status")
         Assert.assertEquals(status, "AwaitingAuthorisation")
     }
 
@@ -172,7 +172,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
         doConsentRetrieval(consentId as String)
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        String status = OBTestUtil.parseResponseBody(consentResponse, "Data.Status")
+        String status = TestUtil.parseResponseBody(consentResponse, "Data.Status")
         Assert.assertEquals(status, "Authorised")
     }
 
