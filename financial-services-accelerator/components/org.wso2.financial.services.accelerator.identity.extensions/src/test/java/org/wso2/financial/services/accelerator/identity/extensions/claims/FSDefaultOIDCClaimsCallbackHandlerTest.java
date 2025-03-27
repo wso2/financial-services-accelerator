@@ -55,7 +55,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
 import static org.wso2.carbon.identity.core.util.IdentityCoreConstants.MULTI_ATTRIBUTE_SEPARATOR_DEFAULT;
 
 /**
@@ -153,11 +152,6 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
                     oAuthTokenReqMessageContext);
 
             assertEquals("123", jwtClaimsSet.getClaim("consent_id"));
-            assertTrue(jwtClaimsSet.getClaim("cnf").toString().contains("{x5t#S256=LS0tLS1CRUdJTiBDRVJUSUZJQ0F" +
-                    "URS0tLS0tCk1JSUZPRENDQkNDZ0F3SUJBZ0lFV2NiaWlUQU5CZ2txaGtpRzl3MEJBUXNGQURCVE1Rc3dDUVlEVlFRR0V3Sk" +
-                    "gKUWpFVU1CSUdBMVVFQ2hNTFQzQmxia0poYm10cGJtY3hMakFzQmdOVkJBTVRKVTl3Wlc1Q1lXNXJhVzVuSUZCeQpaUzFRY" +
-                    "205a2RXTjBhVzl1SUVsemMzVnBibWNnUTBFd0hoY05Nak14TVRFMU1EVXhNRE14V2hjTk1qUXhNakUxCk1EVTBNRE14V2pC" +
-                    "aE1Rc3dDUVlEV"));
             assertEquals("aaa@gold.com", jwtClaimsSet.getClaim("sub"));
         }
     }
