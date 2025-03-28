@@ -37,7 +37,7 @@ import static org.testng.AssertJUnit.assertTrue;
 /**
  * Test for request object validator.
  */
-public class RequestObjectValidatorTest {
+public class FSRequestObjectValidationExtensionTest {
 
     @Test(dataProvider = "dp-checkValidRequestObject", dataProviderClass = ReqObjectTestDataProvider.class)
     public void checkValidRequestObject(RequestObject requestObject,

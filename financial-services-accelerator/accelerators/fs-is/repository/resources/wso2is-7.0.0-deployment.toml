@@ -254,12 +254,10 @@ token.enable = true
 [[oauth.custom_response_type]]
 class = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSCodeResponseTypeHandlerExtension"
 name = "code"
-validator = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.validator.FSCodeResponseTypeValidator"
 
 [[oauth.custom_response_type]]
 class = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSHybridResponseTypeHandlerExtension"
 name = "code id_token"
-validator = "org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.validator.FSHybridResponseTypeValidator"
 
 [oauth.grant_type.refresh_token]
 enable = true
@@ -284,6 +282,7 @@ additional_attribute_filter= "org.wso2.financial.services.accelerator.identity.e
 
 [oauth.oidc]
 id_token.signature_algorithm="PS256"
+enable_claims_separation_for_access_tokens = false
 
 [oauth.oidc.token_endpoint]
 signing_algorithms=["PS256","ES256"]
