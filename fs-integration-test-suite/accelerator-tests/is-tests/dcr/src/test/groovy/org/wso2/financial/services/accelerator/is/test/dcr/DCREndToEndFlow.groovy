@@ -45,7 +45,7 @@ class DCREndToEndFlow extends FSConnectorTest {
     @BeforeClass(alwaysRun = true)
     void setup() {
 
-        registrationPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
+        dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
         configuration.setTppNumber(1)
         ssa = new File(configuration.getAppDCRSSAPath()).text
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
@@ -89,7 +89,7 @@ class DCREndToEndFlow extends FSConnectorTest {
 
         def registrationResponse = ClientRegistrationRequestBuilder
                 .buildKeyManagerRegistrationRequest()
-                .get(registrationPath + "/" + clientId)
+                .get(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"))
@@ -132,7 +132,7 @@ class DCREndToEndFlow extends FSConnectorTest {
 
         def registrationResponse = ClientRegistrationRequestBuilder
                 .buildKeyManagerRegistrationRequest()
-                .delete(registrationPath + "/" + clientId)
+                .delete(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }

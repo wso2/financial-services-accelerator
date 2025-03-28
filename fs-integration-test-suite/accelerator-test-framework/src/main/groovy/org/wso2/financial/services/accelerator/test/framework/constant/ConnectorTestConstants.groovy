@@ -295,5 +295,5 @@ class ConnectorTestConstants extends Constants{
     final static String SUBMISSION_PATH_INTERNATIONAL_STANDING_ORDERS = "/open-banking/v3.1/pisp/international-standing-orders"
     final static String SUBMISSION_PATH_INTERNATIONAL_SCHEDULE = "/open-banking/v3.1/pisp/international-scheduled-payments"
     final static String SUBMISSION_PATH_FILE_PAYMENTS = "/open-banking/v3.1/pisp/file-payments"
-    final static String REGISTRATION_ENDPOINT = "/api/identity/oauth2/dcr/v1.1/register"
+    final static String REGISTRATION_ENDPOINT = "/api/identity/oauth2/dcr/v1.1/register/"
 }

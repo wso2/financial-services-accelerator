@@ -34,7 +34,7 @@ class RegistrationDetailsRetrievalTests extends FSConnectorTest {
     @BeforeClass
     void generateAccessToken() {
 
-        dcrPath = ConnectorTestConstants.REGISTRATION_URL
+        dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 
         def ssa = new File(configuration.getAppDCRSSAPath()).text

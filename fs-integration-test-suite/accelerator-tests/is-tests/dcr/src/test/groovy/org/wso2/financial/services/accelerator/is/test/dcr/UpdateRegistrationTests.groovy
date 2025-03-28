@@ -13,6 +13,7 @@ import io.restassured.response.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import org.testng.Assert
+import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
@@ -36,7 +37,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @BeforeClass
     void generateAccessToken() {
 
-        dcrPath = ConnectorTestConstants.REGISTRATION_URL
+        dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 
         ssa = new File(configuration.getAppDCRSSAPath()).text
@@ -604,7 +605,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     }
 
     @Test
-    void "Update registration request without token_endpoint_auth_signing_alg" (){
+    void "Update registration request without token_endpoint_auth_signing_alg for private_key_jwt method" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
@@ -614,7 +615,11 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .put(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Token endpoint auth signing alg must be specified if token_endpoint_auth_method is private_key_jwt.")
     }
 
     @Test
@@ -709,36 +714,6 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "invalid_client_metadata")
     }
 
-    @Test (priority = 2)
-    void "Update registration request enabling require_signed_request_object for tls_client_auth method" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
-                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
-
-        payload.put("require_signed_request_object", true)
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-    }
-
-    @Test (priority = 2)
-    void "Update registration request disabling require_signed_request_object for tls_client_auth method" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
-                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
-
-        payload.put("require_signed_request_object", false)
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-    }
-
     @Test
     void "Update registration request without require_signed_request_object for private_key_jwt method" (){
 
@@ -775,23 +750,6 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
                 configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
-
-        payload.put("tls_client_certificate_bound_access_tokens", false)
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-    }
-
-    @Test (priority = 2)
-    void "Update registration request disabling tls_client_certificate_bound_access_tokens tls_client_auth" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
-                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
 
         payload.put("tls_client_certificate_bound_access_tokens", false)
 
@@ -854,36 +812,6 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "invalid_client_metadata")
     }
 
-    @Test (priority = 2)
-    void "Update registration request without token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
-                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
-
-        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-    }
-
-    @Test (priority = 2)
-    void "Update registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
-                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
-
-        payload.put("token_endpoint_allow_reuse_pvt_key_jwt", true)
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-    }
-
     @Test
     void "Update registration request with ext_application_display_name having disallowed characters" (){
 
@@ -900,7 +828,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "invalid_client_metadata")
     }
 
-    @Test
+    @Test (priority = 2)
     void "Update registration request with client_name having disallowed characters" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
@@ -919,4 +847,142 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Client Name is not adhering to the regex: ^[a-zA-Z0-9._-]+(?: [a-zA-Z0-9._-]+)*\$")
     }
 
+    @Test (priority = 2)
+    void "Create tls_client_auth_app"() {
+
+        deleteApplicationIfExist(clientId)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(registrationRequestBuilder.getRegularClaims(ssa, configuration.getAppDCRSoftwareId(),
+                        ConnectorTestConstants.TLS_AUTH_METHOD))
+                .post(dcrPath)
+
+        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                clientId, consentScopes)
+
+        accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(accessToken)
+
+    }
+
+    @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
+    void "Update registration request enabling require_signed_request_object for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("require_signed_request_object", true)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
+    void "Update registration request disabling require_signed_request_object for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("require_signed_request_object", false)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
+    void "Update registration request without token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
+    void "Update registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("token_endpoint_allow_reuse_pvt_key_jwt", true)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
+    void "Update registration request disabling tls_client_certificate_bound_access_tokens tls_client_auth" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("tls_client_certificate_bound_access_tokens", false)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
+    void "Update registration request without token_endpoint_auth_signing_alg for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.remove("token_endpoint_auth_signing_alg")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @AfterClass
+    void deleteApplication() {
+
+        deleteApplicationIfExist(clientId)
+    }
+
+    /**
+     * Delete Application if exist.
+     * @param clientId
+     */
+    void deleteApplicationIfExist(String clientId) {
+
+        Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                clientId, consentScopes)
+
+        accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(accessToken)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .delete(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
+    }
 }
