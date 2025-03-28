@@ -39,7 +39,7 @@ public enum ServiceExtensionTypeEnum {
     GET_DCR_RESPONSE_PARAMS("get-dcr-response-parameters"),
     GET_DCR_AUTH_SCRIPT("get-dcr-auth-script"),
     POST_DCR_APP_DELETE("post-dcr-app-delete"),
-    MAP_CUSTOM_ERROR_RESPONSE("map-custom-error-response");
+    ERROR_MAPPER("error-mapper");
 
     private final String type;
 

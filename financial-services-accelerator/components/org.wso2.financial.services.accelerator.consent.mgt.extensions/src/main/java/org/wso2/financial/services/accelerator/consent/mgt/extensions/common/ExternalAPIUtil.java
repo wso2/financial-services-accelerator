@@ -32,7 +32,7 @@ public class ExternalAPIUtil {
             httpErrorCode = 500;
         }
         throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getData()
-                .get(FinancialServicesConstants.ERROR_DESCRIPTION)
+                .path(FinancialServicesConstants.ERROR_DESCRIPTION)
                 .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION));
     }
 }

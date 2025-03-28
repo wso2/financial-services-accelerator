@@ -56,7 +56,7 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
                         .location(((ConsentException) throwable).getErrorRedirectURI()).build();
             }
 
-            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.MAP_CUSTOM_ERROR_RESPONSE)) {
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.ERROR_MAPPER)) {
                 // Perform FS customized error response mapping with service extension
                 try {
                     JSONObject payload = ((ConsentException) throwable).getPayload();
@@ -129,7 +129,7 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
 
         // Invoke external service
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.MAP_CUSTOM_ERROR_RESPONSE);
+                ServiceExtensionTypeEnum.ERROR_MAPPER);
 
         return Response.status(Integer.parseInt(response.getErrorCode()))
                 .entity(response.getData().toString())
@@ -149,15 +149,9 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
             if (ConsentOperationEnum.CONSENT_DEFAULT.toString().equals(message)) {
                 return false;
             }
-
-            for (ConsentOperationEnum operationEnum : ConsentOperationEnum.values()) {
-                if (message.contains(operationEnum.toString())) {
-                    return true;
-                }
-
-            }
         }
-        return false;
+
+        return true;
     }
 
 }

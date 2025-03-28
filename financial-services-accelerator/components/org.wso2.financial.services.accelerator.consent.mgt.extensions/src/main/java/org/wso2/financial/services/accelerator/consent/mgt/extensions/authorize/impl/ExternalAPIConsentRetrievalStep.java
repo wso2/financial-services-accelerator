@@ -130,7 +130,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                 externalServiceRequest, ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
             throw new FinancialServicesException(externalServiceResponse.getData()
-                    .get(FinancialServicesConstants.ERROR_MESSAGE)
+                    .path(FinancialServicesConstants.ERROR_MESSAGE)
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
