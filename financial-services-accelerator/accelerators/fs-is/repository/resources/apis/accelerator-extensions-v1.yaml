@@ -26,7 +26,60 @@ tags:
   description: APIs for authorize flow extensions
 - name: Token & Authorize
   description: APIs for token & authorize flow extensions
+- name: Error Handling
+  description: APIs for handling accelerator errors
 paths:
+  /error-mapper:
+    post:
+      tags:
+      - Error Handling
+      summary: map accelerator level error formats to custom error formats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorMapperRequestBody'
+            example:
+              requestId: Ec1wMjmiG8
+              data: 
+                error:
+                    code: "401"
+                    description: Invalid client ID provided.
+                    operation: consent_create
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForErrorMapper'
+              example:
+                responseId: Ec1wMjmiG8
+                data: 
+                  customErrorCode: invalid
+                  customErrorDescription: Invalid client ID provided. 
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                errorMessage: invalid_request
+                errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+
   /pre-dynamic-client-registration:
     post:
       tags:
@@ -67,6 +120,7 @@ paths:
                 status: ERROR
                 errorMessage: server_error
                 errorDescription: Failed to process the response
+              
   /pre-dynamic-client-update:
     post:
       tags:
@@ -206,6 +260,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response200ForResponseAlternation'
+             
         "400":
           description: Bad Request
           content:
@@ -228,6 +283,7 @@ paths:
                 status: ERROR
                 errorMessage: server_error
                 errorDescription: Failed to process the response
+ 
   /pre-consent-revocation:
     post:
       tags:
@@ -517,14 +573,35 @@ paths:
                 $ref: '#/components/schemas/Response200ForIdtokenGeneration'
 components:
   schemas:
+    Response200ForErrorMapper:
+      type: object
+      properties:
+        responseId:
+          type: string
+        data:
+          type: object  
+          description: Defines the custom error response.
+  
     Response200ForDcrValidation:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponseDCRValidation'
       - $ref: '#/components/schemas/FailedResponseDCRValidation'
+      
     Response200ForDcrUpdate:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponseDCRUpdate'
       - $ref: '#/components/schemas/FailedResponseDCRValidation'
+      
+    ErrorMapperRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/ErrorMapperData'
+    
     AppCreationValidationRequestBody:
       type: object
       properties:
@@ -534,8 +611,31 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/AppCreationValidationData'
+          
+    ErrorMapperData:
+      type: object
+      description: Defines the context data related to the errors.
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+            
+    Error:
+      type: object
+      description: Defines an error object with details.
+      properties:
+        code:
+          type: string
+          description: Error code identifying the specific issue.
+        description:
+          type: string
+          description: Detailed description of the error.
+        operation:
+          type: string
+          description: The operation where the error occurred.
+          
     AppCreationValidationData:
       type: object
+      description: Defines the context data related to the app creation validation.
       properties:
         clientRegistration:
           type: object
@@ -543,7 +643,6 @@ components:
         softwareStatement:
           type: object
           description: Parameters of the decoded SSA.
-      description: Defines the context data related to the app creation validation.
     AppUpdateValidationRequestBody:
       type: object
       properties:
@@ -553,8 +652,10 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/AppUpdateValidationData'
+          
     AppUpdateValidationData:
       type: object
+      description: Defines the context data related to the app creation validation.
       properties:
         clientUpdate:
           type: object
@@ -565,7 +666,7 @@ components:
         clientAppProperties:
           type: object
           description: properties of the existing client application.
-      description: Defines the context data related to the app creation validation.
+    
     SuccessResponseDCRValidation:
       type: object
       properties:
@@ -576,7 +677,12 @@ components:
           enum:
           - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponseDCRValidation_data'
+          type: object  
+          description: Defines the success response.
+          properties:
+            attributesToStore:
+              type: object
+              
     SuccessResponseDCRUpdate:
       type: object
       properties:
@@ -587,7 +693,12 @@ components:
           enum:
           - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponseDCRUpdate_data'
+          type: object  
+          description: Defines the success response.
+          properties:
+            attributesToUpdate:
+              type: object      
+    
     FailedResponseDCRValidation:
       required:
       - errorDescription
@@ -609,6 +720,7 @@ components:
         errorDescription:
           type: string
           description: Offers a detailed explanation of the error.
+    
     RequestBase:
       type: object
       properties:
@@ -648,10 +760,13 @@ components:
       allOf:
       - $ref: '#/components/schemas/ResponseBase'
       - type: object
+       
+          
     AdditionalClaimsAuthzResponse:
       allOf:
       - $ref: '#/components/schemas/ResponseBase'
       - type: object
+        
     PostUserAuthRequestBase:
       type: object
       properties:
@@ -693,6 +808,7 @@ components:
         properties:
           data:
             $ref: '#/components/schemas/PostUserAuthRefreshTokenResponseData'
+          
     PostUserAuthApprovedScopesResponse:
       allOf:
       - $ref: '#/components/schemas/PostUserAuthResponseBase'
@@ -717,10 +833,10 @@ components:
           description: To identify requested
         consentResource:
           type: object
-          description: detailed consent resource
+          description: detailed consent resource 
         resourcePath:
           type: string
-          description: consent resource path
+          description: consent resource path 
     ConsentRetrievalData:
       type: object
       properties:
@@ -729,7 +845,7 @@ components:
           description: The consent id
         consentResource:
           type: object
-          description: "The  consent resource containing receipt,attributes"
+          description: The  consent resource containing receipt,attributes
         resourcePath:
           type: string
           description: Resource url
@@ -769,6 +885,7 @@ components:
           type: string
           enum:
           - SUCCESS
+        
     SuccessResponseTokenGeneration:
       type: object
       properties:
@@ -780,6 +897,7 @@ components:
           - SUCCESS
         data:
           $ref: '#/components/schemas/SuccessResponseTokenGenerationData'
+          
     SuccessResponseIssueRefreshTokenGeneration:
       type: object
       properties:
@@ -791,6 +909,7 @@ components:
           - SUCCESS
         data:
           $ref: '#/components/schemas/SuccessResponseIssueRefreshTokenGenerationData'
+
     SuccessResponseConsentRevocation:
       type: object
       properties:
@@ -838,8 +957,8 @@ components:
     FailedResponse:
       required:
       - data
-      - errorCode
       - status
+      - errorCode
       type: object
       properties:
         status:
@@ -853,11 +972,12 @@ components:
         data:
           type: object
           description: :"Custom error object to response back"
+    
     FailedResponseInConsent:
       required:
       - data
-      - errorCode
       - status
+      - errorCode
       type: object
       properties:
         status:
@@ -872,10 +992,10 @@ components:
           type: object
           description: :"Custom error object to response back"
     ErrorResponse:
+      type: object
       required:
       - data
       - status
-      type: object
       properties:
         status:
           type: string
@@ -1164,18 +1284,6 @@ components:
     PreUserAuthorizationRequestBodyData:
       type: object
       description: full request object
-    SuccessResponseDCRValidation_data:
-      type: object
-      properties:
-        attributesToStore:
-          type: object
-      description: Defines the success response.
-    SuccessResponseDCRUpdate_data:
-      type: object
-      properties:
-        attributesToUpdate:
-          type: object
-      description: Defines the success response.
   securitySchemes:
     BasicAuth:
       type: http
