@@ -98,7 +98,7 @@ public class ServiceExtensionUtilsTest {
         Mockito.doReturn(httpResponse).when(httpClient).execute(Mockito.any());
 
         httpClientUtilsMockedStatic = Mockito.mockStatic(HTTPClientUtils.class);
-        httpClientUtilsMockedStatic.when(() -> HTTPClientUtils.getHttpClient()).thenReturn(httpClient);
+        httpClientUtilsMockedStatic.when(() -> HTTPClientUtils.getHttpsClient()).thenReturn(httpClient);
     }
 
     @AfterClass

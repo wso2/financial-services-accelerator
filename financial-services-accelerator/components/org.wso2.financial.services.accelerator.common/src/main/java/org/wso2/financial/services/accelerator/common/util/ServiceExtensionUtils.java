@@ -93,7 +93,7 @@ public class ServiceExtensionUtils {
                 throw new FinancialServicesException("Invalid security type for service extensions endpoint");
             }
 
-            CloseableHttpResponse response = HTTPClientUtils.getHttpClient().execute(httpPost);
+            CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost);
             HttpEntity entity = response.getEntity();
             if (entity == null) {
                 throw new FinancialServicesException("Error occurred while invoking the external service");
