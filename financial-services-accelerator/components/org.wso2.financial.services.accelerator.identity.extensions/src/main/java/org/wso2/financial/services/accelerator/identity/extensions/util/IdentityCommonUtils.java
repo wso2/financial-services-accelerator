@@ -498,7 +498,17 @@ public class IdentityCommonUtils {
             throws IdentityOAuth2Exception {
 
         if (!StatusEnum.SUCCESS.equals(response.getStatus())) {
-            throw new IdentityOAuth2Exception(response.getErrorMessage(), response.getErrorDescription());
+            if (response.getData() == null) {
+                log.error("Unable to locate \"data\" in the response payload");
+                throw new IdentityOAuth2Exception(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE,
+                        FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+            }
+
+            String errMsg = response.getData().path(FinancialServicesConstants.ERROR_MESSAGE)
+                    .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE);
+            String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                    .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+            throw new IdentityOAuth2Exception(errMsg, errDesc);
         }
     }
 

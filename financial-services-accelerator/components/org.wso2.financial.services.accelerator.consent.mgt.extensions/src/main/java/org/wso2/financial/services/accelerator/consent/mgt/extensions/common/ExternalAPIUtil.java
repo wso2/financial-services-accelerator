@@ -17,6 +17,7 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 
 /**
@@ -30,6 +31,8 @@ public class ExternalAPIUtil {
         if (httpErrorCode < 400 || httpErrorCode >= 500) {
             httpErrorCode = 500;
         }
-        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getErrorMessage());
+        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getData()
+                .get(FinancialServicesConstants.ERROR_DESCRIPTION)
+                .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION));
     }
 }

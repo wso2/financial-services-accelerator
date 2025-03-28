@@ -93,6 +93,7 @@ public class ConsentExtensionConstants {
     public static final String ERRORS = "errors";
     public static final String ERROR_CODE = "code";
     public static final String ERROR_MSG = "message";
+    public static final String OPERATION = "operation";
     public static final String ERROR_DESCRIPTION = "description";
     public static final String STATE = "state";
     public static final String REDIRECT_URI = "redirect_uri";
