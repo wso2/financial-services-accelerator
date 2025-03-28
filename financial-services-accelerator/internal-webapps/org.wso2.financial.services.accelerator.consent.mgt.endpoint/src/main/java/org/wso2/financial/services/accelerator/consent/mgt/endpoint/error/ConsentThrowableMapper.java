@@ -20,7 +20,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.error;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.consent.mgt.core.constant.ConsentConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -99,26 +98,20 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
 
     private JSONObject updateErrorMessageField(JSONObject payload) {
 
-        JSONArray errorsArray = payload.getJSONArray(ConsentExtensionConstants.ERRORS);
+        JSONObject error = (JSONObject) payload.get(ConsentExtensionConstants.ERROR);
 
-        JSONArray updatedErrorsArray = new JSONArray();
-        for (int i = 0; i < errorsArray.length(); i++) {
-            JSONObject error = errorsArray.getJSONObject(i);
-            JSONObject updatedError = new JSONObject();
+        String code = error.getString(ConsentExtensionConstants.ERROR_CODE);
+        String description = error.getString(ConsentExtensionConstants.ERROR_DESCRIPTION);
+        String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
 
-            String code = error.getString(ConsentExtensionConstants.ERROR_CODE);
-            String description = error.getString(ConsentExtensionConstants.ERROR_DESCRIPTION);
-            String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
+        JSONObject updatedError = new JSONObject();
+        updatedError.put(ConsentExtensionConstants.ERROR_CODE, code);
+        updatedError.put(ConsentExtensionConstants.ERROR_DESCRIPTION, description);
+        updatedError.put(ConsentExtensionConstants.OPERATION, message);
 
-            updatedError.put(ConsentExtensionConstants.ERROR_CODE, code);
-            updatedError.put(ConsentExtensionConstants.ERROR_DESCRIPTION, description);
-            updatedError.put(ConsentExtensionConstants.OPERATION, message);
-
-            updatedErrorsArray.put(updatedError);
-        }
-
-        payload.put(ConsentExtensionConstants.ERRORS, updatedErrorsArray);
-        return payload;
+        JSONObject updatedPayload = new JSONObject();
+        updatedPayload.put(ConsentExtensionConstants.ERROR, updatedError);
+        return updatedPayload;
     }
 
     private Response customErrorResponseWithServiceExtension(JSONObject payload) throws FinancialServicesException {
@@ -140,15 +133,11 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
 
     private boolean isConsentManageException(JSONObject payload) {
 
-        JSONArray errorsArray = payload.getJSONArray(ConsentExtensionConstants.ERRORS);
+        JSONObject error = (JSONObject) payload.get(ConsentExtensionConstants.ERROR);
+        String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
 
-        for (int i = 0; i < errorsArray.length(); i++) {
-            JSONObject error = errorsArray.getJSONObject(i);
-            String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
-
-            if (ConsentOperationEnum.CONSENT_DEFAULT.toString().equals(message)) {
-                return false;
-            }
+        if (ConsentOperationEnum.CONSENT_DEFAULT.toString().equals(message)) {
+            return false;
         }
 
         return true;

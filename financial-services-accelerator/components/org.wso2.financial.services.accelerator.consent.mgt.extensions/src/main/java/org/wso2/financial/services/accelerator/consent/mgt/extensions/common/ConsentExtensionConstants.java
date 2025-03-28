@@ -90,7 +90,7 @@ public class ConsentExtensionConstants {
     public static final String COF_ACCOUNT = "cofAccount";
     public static final String PRIMARY = "primary";
     public static final String ACCOUNT_IDS = "accountIds";
-    public static final String ERRORS = "errors";
+    public static final String ERROR = "error";
     public static final String ERROR_CODE = "code";
     public static final String ERROR_MSG = "message";
     public static final String OPERATION = "operation";

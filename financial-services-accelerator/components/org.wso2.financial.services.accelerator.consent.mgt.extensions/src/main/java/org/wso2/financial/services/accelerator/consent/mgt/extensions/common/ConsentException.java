@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -102,12 +101,9 @@ public class ConsentException extends RuntimeException {
             error.put(ConsentExtensionConstants.REDIRECT_URI, redirectURI.toString());
         }
 
-        JSONArray errorList = new JSONArray();
-        errorList.put(error);
-
-        JSONObject errorObj = new JSONObject();
-        errorObj.put(ConsentExtensionConstants.ERRORS, errorList);
-        return errorObj;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(ConsentExtensionConstants.ERROR, error);
+        return jsonObject;
     }
 
     public JSONObject getPayload() {
