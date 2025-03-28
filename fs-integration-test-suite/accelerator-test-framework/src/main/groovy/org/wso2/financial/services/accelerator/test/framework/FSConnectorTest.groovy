@@ -79,6 +79,8 @@ class FSConnectorTest extends CommonTest{
     final String incorrectConsentPath = ConnectorTestConstants.INCORRECT_CONSENT_PATH
     final userId = "${configuration.getUserPSUName()}"
     def automation
+    String dcrPath
+    String clientId
 
     //Consent scopes
     public List<ConnectorTestConstants.ApiScope> consentScopes = [
