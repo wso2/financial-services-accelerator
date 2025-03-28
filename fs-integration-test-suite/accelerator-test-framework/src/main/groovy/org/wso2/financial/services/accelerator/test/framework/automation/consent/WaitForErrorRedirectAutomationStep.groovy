@@ -18,8 +18,8 @@
 
 package org.wso2.financial.services.accelerator.test.framework.automation.consent
 
-import org.wso2.openbanking.test.framework.automation.BrowserAutomationStep
-import org.wso2.openbanking.test.framework.automation.OBBrowserAutomation
+import org.wso2.bfsi.test.framework.automation.BrowserAutomationStep
+import org.wso2.bfsi.test.framework.automation.BrowserAutomation
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -52,7 +52,7 @@ class WaitForErrorRedirectAutomationStep implements BrowserAutomationStep {
      * @param context automation context.
      */
     @Override
-    void execute(RemoteWebDriver webDriver, OBBrowserAutomation.AutomationContext context) {
+    void execute(RemoteWebDriver webDriver, BrowserAutomation.AutomationContext context) {
 
         WebDriverWait wait = new WebDriverWait(webDriver, 10)
         wait.until(ExpectedConditions.urlContains("oauth2_error.do"))

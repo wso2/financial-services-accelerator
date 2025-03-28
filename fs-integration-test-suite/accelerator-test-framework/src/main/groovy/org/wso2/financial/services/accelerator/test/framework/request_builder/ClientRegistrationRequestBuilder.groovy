@@ -18,19 +18,23 @@
 
 package org.wso2.financial.services.accelerator.test.framework.request_builder
 
-import org.wso2.openbanking.test.framework.configuration.OBConfigurationService
-import org.wso2.openbanking.test.framework.constant.OBConstants
-import org.wso2.openbanking.test.framework.utility.OBTestUtil
-import org.wso2.openbanking.test.framework.utility.RestAsRequestBuilder
+import com.nimbusds.jose.JWSObject
+import groovy.json.JsonSlurper
 import io.restassured.RestAssured
 import io.restassured.config.EncoderConfig
 import io.restassured.http.ContentType
 import io.restassured.response.Response
 import io.restassured.specification.RequestSpecification
+import org.apache.commons.lang3.StringUtils
+import org.wso2.bfsi.test.framework.util.RestAsRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
+import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.text.ParseException
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -39,8 +43,9 @@ import java.time.temporal.ChronoUnit
  */
 class ClientRegistrationRequestBuilder {
 
-    static OBConfigurationService obConfigurationService = new OBConfigurationService()
+    static ConfigurationService obConfigurationService = new ConfigurationService()
     static JWTGenerator jwtGenerator = new JWTGenerator()
+    static String DISALLOWED_CHARS_PATTERN = '([~!#$;%^&*+={}\\s\\|\\\\<>\\\"\'\\/,\\]\\[\\(\\)])'
 
     /**
      * Build Client Registration Request.
@@ -53,7 +58,7 @@ class ClientRegistrationRequestBuilder {
                 .header("charset", StandardCharsets.UTF_8.toString())
                 .accept("application/json")
                 .config(RestAssured.config()
-                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(OBTestUtil.getSslSocketFactory()))
+                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(TestUtil.getSslSocketFactory()))
                         .encoderConfig(new EncoderConfig().encodeContentTypeAs(
                                 contentType, ContentType.TEXT)))
                 .baseUri(obConfigurationService.getServerBaseURL())
@@ -76,7 +81,7 @@ class ClientRegistrationRequestBuilder {
     static RequestSpecification buildRegistrationRequestForGetAndDelete(String accessToken) {
 
         return buildRegistrationRequest("application/json")
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
     }
 
     /**
@@ -86,8 +91,18 @@ class ClientRegistrationRequestBuilder {
     static RequestSpecification buildRegistrationRequestForUpdate(String accessToken, String claims) {
 
         return buildRegistrationRequest("application/jwt")
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
                 .body(jwtGenerator.getSignedRequestObject(claims))
+    }
+
+    /**
+     * Build Client Registration Request.
+     * @return dcr request
+     */
+    static RequestSpecification buildKeyManageRegistrationRequestWithClaims(String claims) {
+
+        return buildKeyManagerRegistrationRequest()
+                .body(claims)
     }
 
     /**
@@ -114,6 +129,21 @@ class ClientRegistrationRequestBuilder {
         return RestAsRequestBuilder.buildRequest()
                 .header("charset", StandardCharsets.UTF_8.toString())
                 .baseUri(obConfigurationService.getServerBaseURL())
+    }
+
+    /**
+     * Build Client Registration Request.
+     * @return dcr request
+     */
+    static RequestSpecification buildKeyManagerRegistrationRequest() {
+
+        def authToken = "${obConfigurationService.getUserKeyManagerAdminName()}:" +
+                "${obConfigurationService.getUserKeyManagerAdminPWD()}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        return FSRestAsRequestBuilder.buildBasicRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
     }
 
     /**
@@ -585,7 +615,7 @@ class ClientRegistrationRequestBuilder {
     static Response retrieveServiceProviderCreated(String appName) {
 
         def response = RestAsRequestBuilder.buildBasicRequest()
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY,
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY,
                         "Basic " + TestUtil.getBasicAuthHeader(
                                 obConfigurationService.getUserKeyManagerAdminName(),
                                 obConfigurationService.getUserKeyManagerAdminPWD()))
@@ -607,7 +637,7 @@ class ClientRegistrationRequestBuilder {
     static Response retrieveOauthAppFromDevPortal(String appName, String accessToken) {
 
         def response = RestAsRequestBuilder.buildBasicRequest()
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .queryParam("query", appName)
                 .baseUri(obConfigurationService.getApimServerUrl())
@@ -625,7 +655,7 @@ class ClientRegistrationRequestBuilder {
     static Response retrieveSubscriptionForApp(String appId, String accessToken) {
 
         def response = RestAsRequestBuilder.buildBasicRequest()
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .queryParam("applicationId", appId)
                 .urlEncodingEnabled(false)
@@ -716,5 +746,89 @@ class ClientRegistrationRequestBuilder {
              "software_on_behalf_of_org": "WSO2 Open Banking"
            }
          """
+    }
+
+    /**
+     * Get Regular Claims for DCR Request.
+     * @param ssa
+     * @param iss
+     * @param time
+     * @param tokenEndpointAuthMethod
+     * @param tokenEndpointAuthAlg
+     * @param idTokenSignedAlg
+     * @param reqObjSignedAlg
+     * @return request claims
+     */
+    static String getRegularClaimsForISDcr(String ssa, String iss = obConfigurationService.getAppDCRSoftwareId(),
+                                   String tokenEndpointAuthMethod = ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                                   long time = Instant.now().toEpochMilli(),
+                                   String tokenEndpointAuthAlg = ConnectorTestConstants.ALG_PS256,
+                                   String idTokenSignedAlg = ConnectorTestConstants.ALG_PS256,
+                                   String reqObjSignedAlg = ConnectorTestConstants.ALG_PS256) {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+
+        String ssaBody = decodeRequestJWT(ssa, "body")
+        def json = new JsonSlurper().parseText(ssaBody)
+
+        return """
+             {
+               "iss": "${iss}",
+               "iat": ${time},
+               "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
+               "jti": "${currentTimeInMillis}",
+               "aud": "https://localbank.com",
+               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "scope": "accounts payments fundsconfirmations",
+               "redirect_uris": [
+                 "${obConfigurationService.getAppDCRRedirectUri()}"
+               ],
+               "token_endpoint_auth_signing_alg": "${tokenEndpointAuthAlg}",
+               "token_endpoint_auth_method": "${tokenEndpointAuthMethod}",
+               "grant_types": [
+                  "authorization_code",
+                  "client_credentials",
+                  "refresh_token"
+               ],
+               "response_types": [
+                  "code id_token"
+               ],
+               "application_type": "web",
+               "id_token_signed_response_alg": "${idTokenSignedAlg}",
+               "id_token_encrypted_response_alg": "RSA-OAEP",
+               "id_token_encrypted_response_enc": "A256GCM",
+               "request_object_signing_alg": "${reqObjSignedAlg}",
+               "software_statement": "${ssa}",
+               "client_name":"${getSafeApplicationName(json['software_client_name'])}",
+               "jwks_uri":"${json['software_jwks_endpoint']}",
+               "token_type_extension": "JWT",
+               "require_signed_request_object": true,
+               "tls_client_certificate_bound_access_tokens": true,
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "ext_application_display_name":"${getSafeApplicationName(json['software_client_name'])}"
+         }
+         """
+    }
+
+    static String decodeRequestJWT(String jwtToken, String jwtPart) throws ParseException {
+
+        JWSObject plainObject = JWSObject.parse(jwtToken);
+
+        if ("head".equals(jwtPart)) {
+            return plainObject.getHeader().toString();
+        } else if ("body".equals(jwtPart)) {
+            return plainObject.getPayload().toString();
+        }
+
+        return StringUtils.EMPTY;
+    }
+
+    static String getSafeApplicationName(String applicationName) {
+
+        String sanitizedInput = applicationName.trim().replaceAll(DISALLOWED_CHARS_PATTERN,
+                "_");
+
+        return StringUtils.abbreviate(sanitizedInput, 70);
+
     }
 }
