@@ -18,12 +18,15 @@
 
 package org.wso2.financial.services.accelerator.test.framework.request_builder
 
-import org.wso2.bfsi.test.framework.util.RestAsRequestBuilder
+import com.nimbusds.jose.JWSObject
+import groovy.json.JsonSlurper
 import io.restassured.RestAssured
 import io.restassured.config.EncoderConfig
 import io.restassured.http.ContentType
 import io.restassured.response.Response
 import io.restassured.specification.RequestSpecification
+import org.apache.commons.lang3.StringUtils
+import org.wso2.bfsi.test.framework.util.RestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
@@ -31,6 +34,7 @@ import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.text.ParseException
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -41,6 +45,7 @@ class ClientRegistrationRequestBuilder {
 
     static ConfigurationService configurationService = new ConfigurationService()
     static JWTGenerator jwtGenerator = new JWTGenerator()
+    static String DISALLOWED_CHARS_PATTERN = '([~!#$;%^&*+={}\\s\\|\\\\<>\\\"\'\\/,\\]\\[\\(\\)])'
 
     /**
      * Build Client Registration Request.
@@ -91,6 +96,16 @@ class ClientRegistrationRequestBuilder {
     }
 
     /**
+     * Build Client Registration Request.
+     * @return dcr request
+     */
+    static RequestSpecification buildKeyManageRegistrationRequestWithClaims(String claims) {
+
+        return buildKeyManagerRegistrationRequest()
+                .body(claims)
+    }
+
+    /**
      * Get a registration request without encoding.
      *
      * @param accessToken
@@ -117,6 +132,21 @@ class ClientRegistrationRequestBuilder {
     }
 
     /**
+     * Build Client Registration Request.
+     * @return dcr request
+     */
+    static RequestSpecification buildKeyManagerRegistrationRequest() {
+
+        def authToken = "${obConfigurationService.getUserKeyManagerAdminName()}:" +
+                "${obConfigurationService.getUserKeyManagerAdminPWD()}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        return FSRestAsRequestBuilder.buildBasicRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+    }
+
+    /**
      * Get Regular Claims for DCR Request.
      * @param ssa
      * @param iss
@@ -137,6 +167,9 @@ class ClientRegistrationRequestBuilder {
         long currentTimeInMillis = System.currentTimeMillis()
         long currentTimeInSeconds = currentTimeInMillis / 1000
 
+        String ssaBody = decodeRequestJWT(ssa, "body")
+        def json = new JsonSlurper().parseText(ssaBody)
+
         return """
              {
                 "iss": "${iss}",
@@ -144,7 +177,7 @@ class ClientRegistrationRequestBuilder {
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
                 "aud": "https://localbank.com",
-                "scope": "accounts payments",
+                "scope": "accounts payments fundsconfirmations",
                 "token_endpoint_auth_method": "${tokenEndpointAuthMethod}",
                 "token_endpoint_auth_signing_alg": "${tokenEndpointAuthAlg}",
                 "grant_types": [
@@ -156,6 +189,8 @@ class ClientRegistrationRequestBuilder {
                     "code id_token"
                     ],
                 "id_token_signed_response_alg": "${idTokenSignedAlg}",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "${reqObjSignedAlg}",                            
                 "application_type": "web",
                 "software_id": "${iss}",
@@ -169,6 +204,7 @@ class ClientRegistrationRequestBuilder {
                 "token_type_extension":"JWT",
                 "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${iss}.jwks",
                 "client_name": "${iss}",
+                "ext_application_display_name":"${getSafeApplicationName(json['software_client_name'])}"
                 "software_statement": "${ssa}"
             }
         """
@@ -816,30 +852,10 @@ class ClientRegistrationRequestBuilder {
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
-               "grant_types": [
-                  "authorization_code",
-                  "client_credentials",
-                  "refresh_token"
-               ],
-               "response_types": [
-                  "code id_token"
-               ],
-               "application_type": "web",
-               "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
-               "id_token_encrypted_response_alg": "RSA-OAEP",
-               "id_token_encrypted_response_enc": "A256GCM",
-               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
-               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
-               "token_endpoint_allow_reuse_pvt_key_jwt":false,
-               "tls_client_certificate_bound_access_tokens":true,
-               "require_signed_request_object":true,
-               "token_type_extension":"JWT",
-               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
-               "client_name": "${configurationService.getAppDCRSoftwareId()}",
-               "software_statement": "${ssa}"
-         }
-         """
+ 
+             }"""
     }
+
 
     /**
      * Get Regular Claims for DCR Request with null redirect uri.
@@ -931,5 +947,25 @@ class ClientRegistrationRequestBuilder {
                "software_statement": "${ssa}"
          }
          """
+    }
+
+    static String decodeRequestJWT(String jwtToken, String jwtPart) throws ParseException {
+
+        JWSObject plainObject = JWSObject.parse(jwtToken);
+
+        if ("head".equals(jwtPart)) {
+            return plainObject.getHeader().toString();
+        } else if ("body".equals(jwtPart)) {
+            return plainObject.getPayload().toString();
+        }
+
+        return StringUtils.EMPTY;
+    }
+
+    static String getSafeApplicationName(String applicationName) {
+
+        String sanitizedInput = applicationName.trim().replaceAll(DISALLOWED_CHARS_PATTERN, "_");
+
+        return StringUtils.abbreviate(sanitizedInput, 70);
     }
 }

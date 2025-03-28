@@ -35,12 +35,12 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>bfsi-test-framework</artifactId>
-            <version>4.0.0-M3</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>accelerator-test-framework</artifactId>
-            <version>4.0.0-M3</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -81,6 +81,17 @@
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>${bcpkix-jdk15on.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.financial.services.accelerator</groupId>
+            <artifactId>accelerator-test-framework</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -149,7 +160,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <accelerator.test.framework.version>4.0.0-M3</accelerator.test.framework.version>
+        <accelerator.test.framework.version>${project.version}</accelerator.test.framework.version>
     </properties>
 
 </project>

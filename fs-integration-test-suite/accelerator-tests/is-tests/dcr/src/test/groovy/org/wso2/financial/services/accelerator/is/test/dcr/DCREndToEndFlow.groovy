@@ -127,6 +127,4 @@ class DCREndToEndFlow extends FSConnectorTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }
-
-
 }

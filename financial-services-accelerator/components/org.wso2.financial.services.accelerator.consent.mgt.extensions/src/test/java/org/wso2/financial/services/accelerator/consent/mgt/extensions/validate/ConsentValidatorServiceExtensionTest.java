@@ -232,4 +232,39 @@ public class ConsentValidatorServiceExtensionTest {
 
         Assert.assertTrue(consentValidationResultMock.isValid());
     }
+
+    @Test
+    public void testValidateForExternalServiceError() throws JsonProcessingException {
+        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
+        doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
+        ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
+                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_AUTH_ID);
+        doReturn(authResources).when(consentResource).getAuthorizationResources();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentResource).getClientID();
+        doReturn(TestConstants.ACCOUNTS).when(consentResource).getConsentType();
+
+        doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
+        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentValidateDataMock).getConsentId();
+        doReturn(new JSONObject()).when(consentValidateDataMock).getHeaders();
+        doReturn(new HashMap<>()).when(consentValidateDataMock).getResourceParams();
+        doReturn("/accounts").when(consentValidateDataMock).getRequestPath();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree("{" +
+                    "\"errorMessage\": \"errorMessage\"," +
+                    "\"errorDescription\": \"errorDescription\"" +
+                "}");
+
+        ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse("testId",
+                StatusEnum.ERROR, rootNode);
+        externalServiceResponse.setErrorCode("400");
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .invokeExternalServiceCall(any(), any())).thenReturn(externalServiceResponse);
+
+        validator.validate(consentValidateDataMock, consentValidationResultMock);
+
+        Assert.assertFalse(consentValidationResultMock.isValid());
+    }
 }

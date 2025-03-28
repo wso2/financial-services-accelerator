@@ -107,7 +107,7 @@ class ConnectorTestConstants extends Constants{
     static final String INVALID_CREDENTIALS_ERROR = "Invalid Credentials"
 
     //DCR Constants
-    static final String REGISTRATION_URL = "/api/openbanking/dynamic-client-registration/register"
+    static final String REGISTRATION_URL = "/api/identity/oauth2/dcr/v1.1/register/"
     static final String SOFTWARE_ID = configurationService.getAppDCRSoftwareId()
     static final String REDIRECT_URI = configurationService.getAppDCRRedirectUri()
     static final String ALTERNATE_REDIRECT_URI = configurationService.getAppDCRAlternateRedirectUri()

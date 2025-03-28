@@ -826,6 +826,159 @@ class ClientRegistrationTests extends FSConnectorTest {
                 "invalid_client_metadata")
     }
 
+    @Test
+    void "Invoke registration request disabling tls_client_certificate_bound_access_tokens for private_key_jwt method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
+
+        payload.put("tls_client_certificate_bound_access_tokens", false)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Invoke registration request disabling tls_client_certificate_bound_access_tokens tls_client_auth" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("tls_client_certificate_bound_access_tokens", false)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Invoke registration request without tls_client_certificate_bound_access_tokens" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
+
+        payload.remove("tls_client_certificate_bound_access_tokens")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Invoke registration request without token_endpoint_allow_reuse_pvt_key_jwt for for private_key_jwt method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
+
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Invoke registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for private_key_jwt method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
+
+        payload.put("token_endpoint_allow_reuse_pvt_key_jwt", true)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Invoke registration request without token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+        deleteApplicationIfExist(clientId)
+    }
+
+    @Test
+    void "Invoke registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("token_endpoint_allow_reuse_pvt_key_jwt", true)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+        deleteApplicationIfExist(clientId)
+    }
+
+    @Test
+    void "Invoke registration request with ext_application_display_name having disallowed characters" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
+
+        payload.put("ext_application_display_name", "WSO2 Open Banking TPP @@||++(Sandbox)")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Invoke registration request with client_name having disallowed characters" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("client_name", "WSO2 Open Banking TPP @@||++(Sandbox)")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Client Name is not adhering to the regex: ^[a-zA-Z0-9._-]+(?: [a-zA-Z0-9._-]+)*\$")
+    }
+
     void deleteApplicationIfExist(String clientId) {
 
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,

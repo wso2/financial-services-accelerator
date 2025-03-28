@@ -33,8 +33,9 @@
     <name>FS Accelerator IS Test Modules</name>
 
     <modules>
-<!--        <module>consent-management</module>-->
+        <module>consent-management</module>
         <module>token</module>
+        <module>dcr</module>
     </modules>
 
     <dependencies>

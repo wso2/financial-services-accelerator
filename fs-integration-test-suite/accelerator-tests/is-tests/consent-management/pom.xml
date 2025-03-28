@@ -29,18 +29,18 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.financial.services.is.accelerator.test.consent.management</artifactId>
+    <artifactId>org.wso2.financial.services.accelerator.is.test.consent.management</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>bfsi-test-framework</artifactId>
-            <version>4.0.0-M3</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>accelerator-test-framework</artifactId>
-            <version>4.0.0-M3</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
