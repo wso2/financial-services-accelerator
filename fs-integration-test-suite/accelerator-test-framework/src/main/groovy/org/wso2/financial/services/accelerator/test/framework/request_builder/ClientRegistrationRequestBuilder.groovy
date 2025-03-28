@@ -137,8 +137,8 @@ class ClientRegistrationRequestBuilder {
      */
     static RequestSpecification buildKeyManagerRegistrationRequest() {
 
-        def authToken = "${obConfigurationService.getUserKeyManagerAdminName()}:" +
-                "${obConfigurationService.getUserKeyManagerAdminPWD()}"
+        def authToken = "${configurationService.getUserKeyManagerAdminName()}:" +
+                "${configurationService.getUserKeyManagerAdminPWD()}"
         def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
 
         return FSRestAsRequestBuilder.buildBasicRequest()
@@ -203,7 +203,7 @@ class ClientRegistrationRequestBuilder {
                 "require_signed_request_object":true,
                 "token_type_extension":"JWT",
                 "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${iss}.jwks",
-                "client_name": "${iss}",
+                "client_name":"${getSafeApplicationName(json['software_client_name'])}",
                 "ext_application_display_name":"${getSafeApplicationName(json['software_client_name'])}"
                 "software_statement": "${ssa}"
             }
@@ -831,6 +831,7 @@ class ClientRegistrationRequestBuilder {
     }
 
     /**
+<<<<<<< HEAD
      * Get Regular Claims for DCR Request with defined redirect uri.
      * @param ssa
      */
@@ -877,29 +878,7 @@ class ClientRegistrationRequestBuilder {
                "redirect_uris": null,
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
-               "grant_types": [
-                  "authorization_code",
-                  "client_credentials",
-                  "refresh_token"
-               ],
-               "response_types": [
-                  "code id_token"
-               ],
-               "application_type": "web",
-               "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
-               "id_token_encrypted_response_alg": "RSA-OAEP",
-               "id_token_encrypted_response_enc": "A256GCM",
-               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
-               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
-               "token_endpoint_allow_reuse_pvt_key_jwt":false,
-               "tls_client_certificate_bound_access_tokens":true,
-               "require_signed_request_object":true,
-               "token_type_extension":"JWT",
-               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
-               "client_name": "${configurationService.getAppDCRSoftwareId()}",
-               "software_statement": "${ssa}"
-         }
-         """
+}"""
     }
 
     /**
@@ -945,6 +924,18 @@ class ClientRegistrationRequestBuilder {
                "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
                "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
+               "id_token_signed_response_alg": "${idTokenSignedAlg}",
+               "id_token_encrypted_response_alg": "RSA-OAEP",
+               "id_token_encrypted_response_enc": "A256GCM",
+               "request_object_signing_alg": "${reqObjSignedAlg}",
+               "software_statement": "${ssa}",
+               "client_name":"${getSafeApplicationName(json['software_client_name'])}",
+               "jwks_uri":"${json['software_jwks_endpoint']}",
+               "token_type_extension": "JWT",
+               "require_signed_request_object": true,
+               "tls_client_certificate_bound_access_tokens": true,
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "ext_application_display_name":"${getSafeApplicationName(json['software_client_name'])}"
          }
          """
     }
@@ -964,8 +955,10 @@ class ClientRegistrationRequestBuilder {
 
     static String getSafeApplicationName(String applicationName) {
 
-        String sanitizedInput = applicationName.trim().replaceAll(DISALLOWED_CHARS_PATTERN, "_");
+        String sanitizedInput = applicationName.trim().replaceAll(DISALLOWED_CHARS_PATTERN,
+                "_");
 
         return StringUtils.abbreviate(sanitizedInput, 70);
+
     }
 }

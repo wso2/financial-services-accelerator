@@ -28,6 +28,7 @@ import org.wso2.financial.services.accelerator.test.framework.configuration.Conf
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
+import org.wso2.financial.services.accelerator.is.test.dcr.util.DCRConstants
 
 /**
  * Dynamic Client Registration End to End Flow Tests.
@@ -124,7 +125,6 @@ class DCREndToEndFlow extends FSConnectorTest {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .delete(dcrPath + clientId)
-
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }
 }
