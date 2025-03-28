@@ -68,8 +68,10 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
                                 .build();
                     }
 
+                    payload = updateErrorMessageField(payload);
                     return customErrorResponseWithServiceExtension(payload);
                 } catch (FinancialServicesException e) {
+                    log.error("Error occurred while invoking the external service", e);
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                             .entity(e.getMessage())
                             .header(ConsentConstants.HEADER_CONTENT_TYPE,
@@ -95,6 +97,30 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
         }
     }
 
+    private JSONObject updateErrorMessageField(JSONObject payload) {
+
+        JSONArray errorsArray = payload.getJSONArray(ConsentExtensionConstants.ERRORS);
+
+        JSONArray updatedErrorsArray = new JSONArray();
+        for (int i = 0; i < errorsArray.length(); i++) {
+            JSONObject error = errorsArray.getJSONObject(i);
+            JSONObject updatedError = new JSONObject();
+
+            String code = error.getString(ConsentExtensionConstants.ERROR_CODE);
+            String description = error.getString(ConsentExtensionConstants.ERROR_DESCRIPTION);
+            String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
+
+            updatedError.put(ConsentExtensionConstants.ERROR_CODE, code);
+            updatedError.put(ConsentExtensionConstants.ERROR_DESCRIPTION, description);
+            updatedError.put(ConsentExtensionConstants.OPERATION, message);
+
+            updatedErrorsArray.put(updatedError);
+        }
+
+        payload.put(ConsentExtensionConstants.ERRORS, updatedErrorsArray);
+        return payload;
+    }
+
     private Response customErrorResponseWithServiceExtension(JSONObject payload) throws FinancialServicesException {
 
         // Construct the payload
@@ -113,17 +139,19 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
     }
 
     private boolean isConsentManageException(JSONObject payload) {
+
         JSONArray errorsArray = payload.getJSONArray(ConsentExtensionConstants.ERRORS);
 
         for (int i = 0; i < errorsArray.length(); i++) {
             JSONObject error = errorsArray.getJSONObject(i);
             String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
 
+            if (ConsentOperationEnum.CONSENT_DEFAULT.toString().equals(message)) {
+                return false;
+            }
+
             for (ConsentOperationEnum operationEnum : ConsentOperationEnum.values()) {
                 if (message.contains(operationEnum.toString())) {
-                    // update the "message" key with "operation"
-                    error.remove(ConsentExtensionConstants.ERROR_MSG);
-                    error.put(ConsentExtensionConstants.ERROR_MSG, message);
                     return true;
                 }
 
