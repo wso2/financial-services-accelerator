@@ -26,8 +26,10 @@ import io.restassured.response.Response
 import io.restassured.specification.RequestSpecification
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
+import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -37,24 +39,24 @@ import java.time.temporal.ChronoUnit
  */
 class ClientRegistrationRequestBuilder {
 
-    static ConfigurationService obConfigurationService = new ConfigurationService()
+    static ConfigurationService configurationService = new ConfigurationService()
     static JWTGenerator jwtGenerator = new JWTGenerator()
 
     /**
      * Build Client Registration Request.
      * @return dcr request
      */
-    static RequestSpecification buildRegistrationRequest(String contentType) {
+    static RequestSpecification buildRegistrationRequest() {
 
-        return RestAsRequestBuilder.buildRequest()
-                .contentType(contentType)
-                .header("charset", StandardCharsets.UTF_8.toString())
-                .accept("application/json")
-                .config(RestAssured.config()
-                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(TestUtil.getSslSocketFactory()))
-                        .encoderConfig(new EncoderConfig().encodeContentTypeAs(
-                                contentType, ContentType.TEXT)))
-                .baseUri(obConfigurationService.getServerBaseURL())
+        def authToken = "${configurationService.getUserKeyManagerAdminName()}:" +
+                "${configurationService.getUserKeyManagerAdminPWD()}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        return FSRestAsRequestBuilder.buildBasicRequest()
+                .contentType(ContentType.JSON.toString())
+                .accept(ContentType.JSON.toString())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+                .baseUri(configurationService.getISServerUrl())
     }
 
     /**
@@ -63,8 +65,8 @@ class ClientRegistrationRequestBuilder {
      */
     static RequestSpecification buildRegistrationRequestWithClaims(String claims) {
 
-        return buildRegistrationRequest("application/jwt")
-                .body(jwtGenerator.getSignedRequestObject(claims))
+        return buildRegistrationRequest(ContentType.JSON.toString())
+                .body(claims)
     }
 
     /**
@@ -83,7 +85,7 @@ class ClientRegistrationRequestBuilder {
      */
     static RequestSpecification buildRegistrationRequestForUpdate(String accessToken, String claims) {
 
-        return buildRegistrationRequest("application/jwt")
+        return buildRegistrationRequest(ContentType.JSON.toString())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} ${accessToken}")
                 .body(jwtGenerator.getSignedRequestObject(claims))
     }
@@ -96,7 +98,7 @@ class ClientRegistrationRequestBuilder {
      */
     static RequestSpecification buildPlainRequest(String claims) {
 
-        return RestAsRequestBuilder.buildRequest()
+        return RestAsRequestBuilder.buildBasicRequest()
                 .contentType("application/json")
                 .body(claims)
                 .accept("application/json")
@@ -109,9 +111,9 @@ class ClientRegistrationRequestBuilder {
      */
     static RequestSpecification buildRegistrationRequestWithoutContentType() {
 
-        return RestAsRequestBuilder.buildRequest()
+        return RestAsRequestBuilder.buildBasicRequest()
                 .header("charset", StandardCharsets.UTF_8.toString())
-                .baseUri(obConfigurationService.getServerBaseURL())
+                .baseUri(configurationService.getServerBaseURL())
     }
 
     /**
@@ -125,7 +127,7 @@ class ClientRegistrationRequestBuilder {
      * @param reqObjSignedAlg
      * @return request claims
      */
-    static String getRegularClaims(String ssa, String iss = obConfigurationService.getAppDCRSoftwareId(),
+    static String getRegularClaims(String ssa, String iss = configurationService.getAppDCRSoftwareId(),
                                    String tokenEndpointAuthMethod = ConnectorTestConstants.PKJWT_AUTH_METHOD,
                                    long time = Instant.now().toEpochMilli(),
                                    String tokenEndpointAuthAlg = ConnectorTestConstants.ALG_PS256,
@@ -133,37 +135,43 @@ class ClientRegistrationRequestBuilder {
                                    String reqObjSignedAlg = ConnectorTestConstants.ALG_PS256) {
 
         long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
 
         return """
              {
-               "iss": "${iss}",
-               "iat": ${time},
-               "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
-               "jti": "${currentTimeInMillis}",
-               "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
-               "scope": "accounts payments fundsconfirmations",
-               "redirect_uris": [
-                 "${obConfigurationService.getAppDCRRedirectUri()}"
-               ],
-               "token_endpoint_auth_signing_alg": "${tokenEndpointAuthAlg}",
-               "token_endpoint_auth_method": "${tokenEndpointAuthMethod}",
-               "grant_types": [
-                  "authorization_code",
-                  "client_credentials",
-                  "refresh_token"
-               ],
-               "response_types": [
-                  "code id_token"
-               ],
-               "application_type": "web",
-               "id_token_signed_response_alg": "${idTokenSignedAlg}",
-               "id_token_encrypted_response_alg": "RSA-OAEP",
-               "id_token_encrypted_response_enc": "A256GCM",
-               "request_object_signing_alg": "${reqObjSignedAlg}",
-               "software_statement": "${ssa}"
-         }
-         """
+                "iss": "${iss}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://localbank.com",
+                "scope": "accounts payments",
+                "token_endpoint_auth_method": "${tokenEndpointAuthMethod}",
+                "token_endpoint_auth_signing_alg": "${tokenEndpointAuthAlg}",
+                "grant_types": [
+                    "authorization_code",
+                    "client_credentials",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "id_token_signed_response_alg": "${idTokenSignedAlg}",
+                "request_object_signing_alg": "${reqObjSignedAlg}",                            
+                "application_type": "web",
+                "software_id": "${iss}",
+                "redirect_uris": [
+                    "${configurationService.getAppInfoRedirectURL()}"
+                    ],
+                "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+                "token_endpoint_allow_reuse_pvt_key_jwt":false,
+                "tls_client_certificate_bound_access_tokens":true,
+                "require_signed_request_object":true,
+                "token_type_extension":"JWT",
+                "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${iss}.jwks",
+                "client_name": "${iss}",
+                "software_statement": "${ssa}"
+            }
+        """
     }
 
     /**
@@ -176,12 +184,12 @@ class ClientRegistrationRequestBuilder {
 
         return """
              {
-               "iss": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
                "iat": ${Instant.now().toEpochMilli()},
                "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
                  ${redirectUri}
@@ -201,6 +209,13 @@ class ClientRegistrationRequestBuilder {
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
                "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
          }
          """
@@ -216,12 +231,12 @@ class ClientRegistrationRequestBuilder {
 
         return """
              {
-               "iss": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
                "iat": ${Instant.now().toEpochMilli()},
                "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
@@ -238,6 +253,13 @@ class ClientRegistrationRequestBuilder {
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
                "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
          }
          """
@@ -282,6 +304,13 @@ class ClientRegistrationRequestBuilder {
                  "redirect_uris": [
                      "${ConnectorTestConstants.REDIRECT_URI}"
                      ],
+                 "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+                 "token_endpoint_allow_reuse_pvt_key_jwt":false,
+                 "tls_client_certificate_bound_access_tokens":true,
+                 "require_signed_request_object":true,
+                 "token_type_extension":"JWT",
+                 "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${iss}.jwks",
+                 "client_name": "${configurationService.getAppDCRSoftwareId()}",
                  "software_statement": "${ssa}"
              }
          """
@@ -297,15 +326,15 @@ class ClientRegistrationRequestBuilder {
 
         return """
              {
-               "iss": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
                "iat": ${Instant.now().toEpochMilli()},
                "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 "${obConfigurationService.getAppDCRRedirectUri()}"
+                 "${configurationService.getAppDCRRedirectUri()}"
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
@@ -320,6 +349,13 @@ class ClientRegistrationRequestBuilder {
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
                "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
          }
          """
@@ -362,6 +398,13 @@ class ClientRegistrationRequestBuilder {
                  "redirect_uris": [
                      "${ConnectorTestConstants.REDIRECT_URI}"
                      ],
+                 "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+                 "token_endpoint_allow_reuse_pvt_key_jwt":false,
+                 "tls_client_certificate_bound_access_tokens":true,
+                 "require_signed_request_object":true,
+                 "token_type_extension":"JWT",
+                 "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${iss}.jwks",
+                 "client_name": "${iss}",
                  "software_statement": "${ssa}"
              }
          """
@@ -376,15 +419,15 @@ class ClientRegistrationRequestBuilder {
 
         return """
              {
-               "iss": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
                "iat": ${Instant.now().toEpochMilli()},
                "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 "${obConfigurationService.getAppDCRRedirectUri()}"
+                 "${configurationService.getAppDCRRedirectUri()}"
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
@@ -400,7 +443,14 @@ class ClientRegistrationRequestBuilder {
                "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
-               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}"
+               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks"
          }
          """
     }
@@ -415,15 +465,15 @@ class ClientRegistrationRequestBuilder {
 
         return """
              {
-               "iss": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
                "iat": ${Instant.now().toEpochMilli()},
                "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 "${obConfigurationService.getAppDCRRedirectUri()}"
+                 "${configurationService.getAppDCRRedirectUri()}"
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
@@ -439,6 +489,13 @@ class ClientRegistrationRequestBuilder {
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
                "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
          }
          """
@@ -454,15 +511,15 @@ class ClientRegistrationRequestBuilder {
 
         return """
              {
-               "iss": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
                "iat": ${Instant.now().toEpochMilli()},
                "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 "${obConfigurationService.getAppDCRRedirectUri()}"
+                 "${configurationService.getAppDCRRedirectUri()}"
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
@@ -478,6 +535,13 @@ class ClientRegistrationRequestBuilder {
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
                "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
          }
          """
@@ -493,15 +557,15 @@ class ClientRegistrationRequestBuilder {
 
         return """
              {
-               "iss": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
                "iat": ${Instant.now().toEpochMilli()},
                "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 "${obConfigurationService.getAppDCRRedirectUri()}"
+                 "${configurationService.getAppDCRRedirectUri()}"
                ],
                "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
@@ -517,6 +581,13 @@ class ClientRegistrationRequestBuilder {
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
                "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
          }
          """
@@ -533,7 +604,7 @@ class ClientRegistrationRequestBuilder {
      * @param reqObjSignedAlg
      * @return request claims
      */
-    static String getUpdateRegularClaims(String ssa, String iss = obConfigurationService.getAppDCRSoftwareId(),
+    static String getUpdateRegularClaims(String ssa, String iss = configurationService.getAppDCRSoftwareId(),
                                          String tokenEndpointAuthMethod = ConnectorTestConstants.PKJWT_AUTH_METHOD,
                                          String time = System.currentTimeMillis() / 1000L,
                                          String tokenEndpointAuthAlg = ConnectorTestConstants.ALG_PS256,
@@ -550,10 +621,10 @@ class ClientRegistrationRequestBuilder {
                "exp": ${time + 3600},
                "jti": "${currentTimeInMillis}",
                "aud": "https://localbank.com",
-               "software_id": "${obConfigurationService.getAppDCRSoftwareId()}",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 "${obConfigurationService.getAppDCRRedirectUri()}"
+                 "${configurationService.getAppDCRRedirectUri()}"
                ],
                "token_endpoint_auth_signing_alg": "${tokenEndpointAuthAlg}",
                "token_endpoint_auth_method": "${tokenEndpointAuthMethod}",
@@ -570,6 +641,13 @@ class ClientRegistrationRequestBuilder {
                "id_token_encrypted_response_alg": "RSA-OAEP",
                "id_token_encrypted_response_enc": "A256GCM",
                "request_object_signing_alg": "${reqObjSignedAlg}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${iss}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
                "software_statement": "${ssa}"
          }
          """
@@ -585,12 +663,12 @@ class ClientRegistrationRequestBuilder {
         def response = RestAsRequestBuilder.buildBasicRequest()
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY,
                         "Basic " + TestUtil.getBasicAuthHeader(
-                                obConfigurationService.getUserKeyManagerAdminName(),
-                                obConfigurationService.getUserKeyManagerAdminPWD()))
+                                configurationService.getUserKeyManagerAdminName(),
+                                configurationService.getUserKeyManagerAdminPWD()))
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .queryParam("filter", "name+eq+$appName")
                 .urlEncodingEnabled(false)
-                .baseUri(obConfigurationService.getISServerUrl())
+                .baseUri(configurationService.getISServerUrl())
                 .get(ConnectorTestConstants.SP_INTERNAL_ENDPOINT)
 
         return response
@@ -608,7 +686,7 @@ class ClientRegistrationRequestBuilder {
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, "${ConnectorTestConstants.BEARER} $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .queryParam("query", appName)
-                .baseUri(obConfigurationService.getApimServerUrl())
+                .baseUri(configurationService.getApimServerUrl())
                 .get(ConnectorTestConstants.OAUTH_APP_INTERNAL_ENDPOINT)
 
         return response
@@ -627,7 +705,7 @@ class ClientRegistrationRequestBuilder {
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .queryParam("applicationId", appId)
                 .urlEncodingEnabled(false)
-                .baseUri(obConfigurationService.getApimServerUrl())
+                .baseUri(configurationService.getApimServerUrl())
                 .get(ConnectorTestConstants.API_INTERNAL_ENDPOINT)
 
         return response
@@ -652,7 +730,7 @@ class ClientRegistrationRequestBuilder {
                "software_version": 1.5,
                "software_client_uri": "https://wso2.com",
                "software_redirect_uris": [
-               "${obConfigurationService.getAppDCRRedirectUri()}"
+               "${configurationService.getAppDCRRedirectUri()}"
                  ],
                "software_roles": [
                 "ASP",
@@ -713,6 +791,145 @@ class ClientRegistrationRequestBuilder {
              "software_tos_uri": "https://wso2.com",
              "software_on_behalf_of_org": "WSO2 Open Banking"
            }
+         """
+    }
+
+    /**
+     * Get Regular Claims for DCR Request with defined redirect uri.
+     * @param ssa
+     */
+    static String getRegularClaimsWithDefinedRedirectURI(String ssa, String redirectUri) {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+
+        return """
+             {
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
+               "iat": ${Instant.now().toEpochMilli()},
+               "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
+               "jti": "${currentTimeInMillis}",
+               "aud": "https://localbank.com",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
+               "scope": "accounts payments",
+               "redirect_uris": [
+                 "${redirectUri}"
+               ],
+               "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
+               "grant_types": [
+                  "authorization_code",
+                  "client_credentials",
+                  "refresh_token"
+               ],
+               "response_types": [
+                  "code id_token"
+               ],
+               "application_type": "web",
+               "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "id_token_encrypted_response_alg": "RSA-OAEP",
+               "id_token_encrypted_response_enc": "A256GCM",
+               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
+               "software_statement": "${ssa}"
+         }
+         """
+    }
+
+    /**
+     * Get Regular Claims for DCR Request with null redirect uri.
+     * @param ssa
+     */
+    static String getRegularClaimsWithNullRedirectURI(String ssa) {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+
+        return """
+             {
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
+               "iat": ${Instant.now().toEpochMilli()},
+               "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
+               "jti": "${currentTimeInMillis}",
+               "aud": "https://localbank.com",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
+               "scope": "accounts payments",
+               "redirect_uris": null,
+               "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
+               "grant_types": [
+                  "authorization_code",
+                  "client_credentials",
+                  "refresh_token"
+               ],
+               "response_types": [
+                  "code id_token"
+               ],
+               "application_type": "web",
+               "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "id_token_encrypted_response_alg": "RSA-OAEP",
+               "id_token_encrypted_response_enc": "A256GCM",
+               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
+               "software_statement": "${ssa}"
+         }
+         """
+    }
+
+    /**
+     * Get Regular Claims for DCR Request with multiple redirect uris.
+     * @param ssa
+     */
+    static String getRegularClaimsWithMultipleRedirectURI(String ssa, String redirectUri1, String redirectUri2) {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+
+        return """
+             {
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
+               "iat": ${Instant.now().toEpochMilli()},
+               "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
+               "jti": "${currentTimeInMillis}",
+               "aud": "https://localbank.com",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
+               "scope": "accounts payments",
+               "redirect_uris": [
+                 ${redirectUri1}, ${redirectUri2}
+               ],
+               "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
+               "grant_types": [
+                  "authorization_code",
+                  "client_credentials",
+                  "refresh_token"
+               ],
+               "response_types": [
+                  "code id_token"
+               ],
+               "application_type": "web",
+               "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "id_token_encrypted_response_alg": "RSA-OAEP",
+               "id_token_encrypted_response_enc": "A256GCM",
+               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "ext_application_display_name": "WSO2_Open_Banking_TPP2__Sandbox_",
+               "token_endpoint_allow_reuse_pvt_key_jwt":false,
+               "tls_client_certificate_bound_access_tokens":true,
+               "require_signed_request_object":true,
+               "token_type_extension":"JWT",
+               "jwks_uri":"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/${configurationService.getAppDCRSoftwareId()}.jwks",
+               "client_name": "${configurationService.getAppDCRSoftwareId()}",
+               "software_statement": "${ssa}"
+         }
          """
     }
 }
