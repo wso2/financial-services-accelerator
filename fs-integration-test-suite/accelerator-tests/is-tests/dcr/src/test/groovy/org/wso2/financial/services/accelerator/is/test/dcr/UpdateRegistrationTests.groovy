@@ -39,14 +39,16 @@ class UpdateRegistrationTests extends FSConnectorTest {
         dcrPath = ConnectorTestConstants.REGISTRATION_URL
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 
-        ssa = new File(configuration.getAppDCRSSAPath()).text
+//        ssa = new File(configuration.getAppDCRSSAPath()).text
+//
+//        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+//                .body(registrationRequestBuilder.getRegularClaims(ssa))
+//                .post(dcrPath)
+//
+//        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+//        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(registrationRequestBuilder.getRegularClaims(ssa))
-                .post(dcrPath)
-
-        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+        clientId = "k2OeYnooagkqJ6gyBSf0hFw8EvYa"
 
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 clientId, consentScopes)
@@ -190,8 +192,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without iss claim"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         // Remove the "iss" claim
         payload.remove("iss")
@@ -234,8 +235,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without token_endpoint_auth_method"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("token_endpoint_auth_method")
 
@@ -265,8 +265,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     void "Update registration request with null value for grant_type"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(registrationRequestBuilder.getRegularClaimsWithInvalidGrantTypes(ssa,
-                        null))
+                .body(registrationRequestBuilder.getRegularClaimsWithInvalidGrantTypes(ssa, null))
                 .put(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -277,8 +276,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without grant_type"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("grant_type")
 
@@ -294,8 +292,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid response_types"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("response_types", "token")
 
@@ -311,8 +308,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with an null response_types"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("response_types", null)
 
@@ -328,8 +324,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without response_types"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("response_types")
 
@@ -343,8 +338,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with softwareId not match with ssa"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("software_id", "SP1")
 
@@ -360,8 +354,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without software_id"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("software_id")
 
@@ -375,8 +368,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without scopes"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("scope")
 
@@ -392,8 +384,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with invalid SSA"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("software_statement", "invalid_ssa")
 
@@ -409,8 +400,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with null value for SSA"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("software_statement", null)
 
@@ -426,8 +416,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without SSA"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("software_statement")
 
@@ -443,8 +432,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without application_type"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("application_type")
 
@@ -460,8 +448,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid application_type"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("application_type", "pc")
 
@@ -477,8 +464,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with null value for application_type"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("application_type", null)
 
@@ -494,8 +480,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid id_token_signed_response_alg"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("id_token_signed_response_alg", "ES256")
 
@@ -511,8 +496,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with null value for id_token_signed_response_alg"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("id_token_signed_response_alg", null)
 
@@ -528,8 +512,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without id_token_signed_response_alg"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("id_token_signed_response_alg")
 
@@ -545,8 +528,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid request_object_signing_alg"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("request_object_signing_alg", "ES256")
 
@@ -562,8 +544,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with null value for request_object_signing_alg"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("request_object_signing_alg", null)
 
@@ -579,8 +560,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without request_object_signing_alg"() {
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("request_object_signing_alg")
 
@@ -596,8 +576,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid token_endpoint_auth_signing_alg" (){
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("token_endpoint_auth_signing_alg", "mtls")
 
@@ -613,8 +592,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request with an null token_endpoint_auth_signing_alg" (){
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.put("token_endpoint_auth_signing_alg", null)
 
@@ -630,8 +608,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without token_endpoint_auth_signing_alg" (){
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(
-                ssa))
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("token_endpoint_auth_signing_alg")
 
@@ -734,7 +711,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "invalid_client_metadata")
     }
 
-    @Test
+    @Test (priority = 2)
     void "Update registration request enabling require_signed_request_object for tls_client_auth method" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
@@ -749,7 +726,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
 
-    @Test
+    @Test (priority = 2)
     void "Update registration request disabling require_signed_request_object for tls_client_auth method" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
@@ -773,7 +750,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
-                .post(dcrPath + clientId)
+                .put(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
@@ -794,4 +771,154 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
     }
+
+    @Test
+    void "Update registration request disabling tls_client_certificate_bound_access_tokens for private_key_jwt method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
+
+        payload.put("tls_client_certificate_bound_access_tokens", false)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test (priority = 2)
+    void "Update registration request disabling tls_client_certificate_bound_access_tokens tls_client_auth" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("tls_client_certificate_bound_access_tokens", false)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Update registration request without tls_client_certificate_bound_access_tokens" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
+
+        payload.remove("tls_client_certificate_bound_access_tokens")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Update registration request without token_endpoint_allow_reuse_pvt_key_jwt for for private_key_jwt method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
+
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Update registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for private_key_jwt method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
+
+        payload.put("token_endpoint_allow_reuse_pvt_key_jwt", true)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test (priority = 2)
+    void "Update registration request without token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @Test (priority = 2)
+    void "Update registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("token_endpoint_allow_reuse_pvt_key_jwt", true)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @Test
+    void "Update registration request with ext_application_display_name having disallowed characters" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
+
+        payload.put("ext_application_display_name", "WSO2 Open Banking TPP @@||++(Sandbox)")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+    }
+
+    @Test
+    void "Update registration request with client_name having disallowed characters" (){
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.put("client_name", "WSO2 Open Banking TPP @@||++(Sandbox)")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Client Name is not adhering to the regex: ^[a-zA-Z0-9._-]+(?: [a-zA-Z0-9._-]+)*\$")
+    }
+
 }
