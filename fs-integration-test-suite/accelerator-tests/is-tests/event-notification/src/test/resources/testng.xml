@@ -18,17 +18,25 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="WSO2 Financial Services - Event Notification Flow Test">
-    <test name="Event Notification Flow" parallel="tests" enabled="true" group-by-instances="true">
+    <test name="Event Subscription Validation Flow" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventCreationTest.EventCreationEndToEndTest" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventCreationTest.EventCreationEndToEndTest" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventPollingTest.EventPollingEndToEndTests" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventPollingTest.EventPollingRequestValidationTest" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventSubscriptionTest.EventSubscriptionEndToEndTest" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventSubscriptionTest.EventSubscriptionCreationValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventSubscriptionTest.EventSubscriptionRetrievalValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventSubscriptionTest.EventSubscriptionUpdateValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.test.event.notifications.EventSubscriptionTest.EventSubscriptionDeletionValidationTest" />
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest.EventSubscriptionEndToEndTest" />
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest.EventSubscriptionCreationValidationTests" />
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest.EventSubscriptionRetrievalValidationTests" />
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest.EventSubscriptionUpdateValidationTests" />
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest.EventSubscriptionDeletionValidationTest" />
+        </classes>
+    </test>
+    <test name="Event Creation Validation Flow" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventCreationTest.EventCreationEndToEndTest" />
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventCreationTest.EventCreationRequestValidationTest" />
+        </classes>
+    </test>
+    <test name="Event Polling Validation Flow" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventPollingTest.EventPollingEndToEndTests" />
+            <class name="org.wso2.financial.services.accelerator.is.test.event.notifications.EventPollingTest.EventPollingRequestValidationTest" />
         </classes>
     </test>
 </suite>

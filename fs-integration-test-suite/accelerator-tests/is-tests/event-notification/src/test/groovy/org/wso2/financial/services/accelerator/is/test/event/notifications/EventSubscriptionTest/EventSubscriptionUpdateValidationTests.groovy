@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -22,8 +22,8 @@ import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.AbstractEventNotificationFlow
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 
 /**
@@ -44,7 +44,7 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
 
         subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
                 .contentType(ContentType.JSON)
-                .baseUri(configuration.getISServerUrl())
+//                .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
                 .put(subscriptionPath + "/" + subscriptionId)
 
@@ -78,7 +78,7 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
     @Test
     void "Event subscription update request with wrong content type"() {
 
-        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.XML)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
@@ -90,7 +90,7 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
     @Test
     void "Event subscription update request without content type header"() {
 
-        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequest()
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
                 .put(subscriptionPath + "/" + subscriptionId)

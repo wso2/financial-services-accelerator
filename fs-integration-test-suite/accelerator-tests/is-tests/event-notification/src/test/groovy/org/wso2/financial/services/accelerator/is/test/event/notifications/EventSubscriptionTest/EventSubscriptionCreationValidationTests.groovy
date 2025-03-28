@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,14 +18,14 @@
 
 package org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest
 
-import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.AbstractEventNotificationFlow
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationConstants
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Subscription Creation Validation Tests
@@ -129,7 +129,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
                 .post(subscriptionPath)
 
         Assert.assertEquals(subscriptionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_EVENT_TYPES))
     }
 
@@ -145,11 +145,11 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
                 .post(subscriptionPath)
 
         Assert.assertEquals(subscriptionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-        Assert.assertNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_CALLBACK_URL))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_VERSION))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_EVENT_TYPES))
     }
 

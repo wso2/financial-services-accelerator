@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,12 +18,12 @@
 
 package org.wso2.financial.services.accelerator.is.test.event.notifications.utils
 
-import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.http.ContentType
 import io.restassured.response.Response
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 import java.nio.charset.Charset
 
@@ -89,7 +89,7 @@ class AbstractEventNotificationFlow extends FSConnectorTest {
                 .body(subscriptionPayload)
                 .post(subscriptionPath)
 
-        subscriptionId = OBTestUtil.parseResponseBody(subscriptionResponse,
+        subscriptionId = TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_EVENT_SUBSCRIPTION_ID)
     }
 

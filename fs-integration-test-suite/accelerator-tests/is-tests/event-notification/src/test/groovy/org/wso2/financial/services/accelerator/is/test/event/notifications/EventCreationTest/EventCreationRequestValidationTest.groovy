@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,16 +18,16 @@
 
 package org.wso2.financial.services.accelerator.is.test.event.notifications.EventCreationTest
 
-import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.AbstractEventNotificationFlow
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationConstants
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Creation Request Validation Test
@@ -38,7 +38,7 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
     void setUp() {
 
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = EventNotificationPayloads.accountInitiationPayload
         doDefaultInitiation()
 
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -58,10 +58,10 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
                 .post(eventCreationPath)
 
         Assert.assertEquals(eventCreationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR),
                 EventNotificationConstants.MISSING_REQUEST_HEADER)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR_DESCRIPTION),
-                "Missing header x-wso2-client_id")
+        Assert.assertEquals(TestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR_DESCRIPTION),
+                "Missing header x-wso2-client-id")
     }
 
     @Test
@@ -106,10 +106,10 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
                 .post(eventCreationPath)
 
         Assert.assertEquals(eventCreationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR),
                 EventNotificationConstants.MISSING_REQUEST_HEADER)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR_DESCRIPTION),
-                "Missing header x-wso2-resource_id")
+        Assert.assertEquals(TestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR_DESCRIPTION),
+                "Missing header x-wso2-resource-id")
     }
 
     @Test
@@ -122,9 +122,9 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
                 .post(eventCreationPath)
 
         Assert.assertEquals(eventCreationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR),
                 EventNotificationConstants.MISSING_REQUEST_PAYLOAD)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(eventCreationResponse, EventNotificationConstants.ERROR_DESCRIPTION),
                 "No request payload found")
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,15 +18,15 @@
 
 package org.wso2.financial.services.accelerator.is.test.event.notifications.EventPollingTest
 
-import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.AbstractEventNotificationFlow
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationConstants
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Polling Request Validation Test
@@ -106,9 +106,9 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
                 .post(pollingPath)
 
         Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR),
                 EventNotificationConstants.MISSING_REQUEST_PAYLOAD)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR_DESCRIPTION),
                 "No request payload found")
     }
 
@@ -120,9 +120,9 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
         doDefaultEventPolling()
 
         Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR),
+        Assert.assertEquals(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR),
                 EventNotificationConstants.INVALID_REQUEST_PAYLOAD)
-        Assert.assertEquals(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.ERROR_DESCRIPTION),
                 "Request payload cannot be empty")
     }
 }

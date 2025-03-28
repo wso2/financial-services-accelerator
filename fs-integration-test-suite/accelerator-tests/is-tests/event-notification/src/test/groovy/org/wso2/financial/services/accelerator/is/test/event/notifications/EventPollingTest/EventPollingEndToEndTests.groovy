@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,14 +18,13 @@
 
 package org.wso2.financial.services.accelerator.is.test.event.notifications.EventPollingTest
 
-import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.AbstractEventNotificationFlow
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationConstants
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Aggregated Polling Flow SCA Tests.
@@ -36,7 +35,7 @@ class EventPollingEndToEndTests extends AbstractEventNotificationFlow {
     void "Create events before polling"() {
 
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
+        initiationPayload = EventNotificationPayloads.accountInitiationPayload
         doDefaultInitiation()
 
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -47,7 +46,7 @@ class EventPollingEndToEndTests extends AbstractEventNotificationFlow {
         doDefaultEventCreation()
 
         Assert.assertEquals(eventCreationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(eventCreationResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(eventCreationResponse,
                 EventNotificationConstants.NOTIFICATION_ID))
 
     }
@@ -60,8 +59,8 @@ class EventPollingEndToEndTests extends AbstractEventNotificationFlow {
         doDefaultEventPolling()
 
         Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.SETS))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.MORE_AVAILABLE))
+        Assert.assertNotNull(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.SETS))
+        Assert.assertNotNull(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.MORE_AVAILABLE))
     }
 
     @Test(groups = "SmokeTest", dependsOnMethods = "Initial Event polling request with valid inputs")
@@ -72,8 +71,8 @@ class EventPollingEndToEndTests extends AbstractEventNotificationFlow {
         doDefaultEventPolling()
 
         Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.SETS))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.MORE_AVAILABLE))
+        Assert.assertNotNull(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.SETS))
+        Assert.assertNotNull(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.MORE_AVAILABLE))
     }
 
     @Test (groups = "SmokeTest", dependsOnMethods = "Acknowledgement and poll for events Event polling request with valid inputs")
@@ -84,8 +83,8 @@ class EventPollingEndToEndTests extends AbstractEventNotificationFlow {
         doDefaultEventPolling()
 
         Assert.assertEquals(pollingResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.SETS))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.MORE_AVAILABLE))
+        Assert.assertNotNull(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.SETS))
+        Assert.assertNotNull(TestUtil.parseResponseBody(pollingResponse, EventNotificationConstants.MORE_AVAILABLE))
     }
 
 }

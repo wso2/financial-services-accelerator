@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,13 +18,13 @@
 
 package org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest
 
-import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.AbstractEventNotificationFlow
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationConstants
-import org.wso2.financial.services.accelerator.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
+import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Subscription Flow  Tests.
@@ -40,11 +40,11 @@ class EventSubscriptionEndToEndTest extends AbstractEventNotificationFlow {
 
         Assert.assertEquals(subscriptionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
         Assert.assertNotNull(subscriptionId)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_CALLBACK_URL))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_VERSION))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_EVENT_TYPES))
     }
 
@@ -54,11 +54,11 @@ class EventSubscriptionEndToEndTest extends AbstractEventNotificationFlow {
         doDefaultSubscriptionRetrieval()
 
         Assert.assertEquals(subscriptionRetrievalResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_CALLBACK_URL))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_VERSION))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_EVENT_TYPES))
     }
 
@@ -68,11 +68,11 @@ class EventSubscriptionEndToEndTest extends AbstractEventNotificationFlow {
         doDefaultSubscriptionBulkRetrieval()
 
         Assert.assertEquals(subscriptionRetrievalResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_CALLBACK_URL))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_VERSION))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_EVENT_TYPES))
     }
 
@@ -82,11 +82,11 @@ class EventSubscriptionEndToEndTest extends AbstractEventNotificationFlow {
         doDefaultSubscriptionRetrievalByEventType()
 
         Assert.assertEquals(subscriptionRetrievalResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_CALLBACK_URL))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_VERSION))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionResponse,
                 EventNotificationConstants.PATH_EVENT_TYPES))
     }
 
@@ -98,13 +98,13 @@ class EventSubscriptionEndToEndTest extends AbstractEventNotificationFlow {
         doDefaultSubscriptionUpdate()
 
         Assert.assertEquals(subscriptionUpdateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        String callbackUrl = OBTestUtil.parseResponseBody(subscriptionUpdateResponse,
+        String callbackUrl = TestUtil.parseResponseBody(subscriptionUpdateResponse,
                 EventNotificationConstants.PATH_CALLBACK_URL)
         Assert.assertNotNull(callbackUrl)
         Assert.assertEquals(callbackUrl, EventNotificationConstants.CALLBACK_URL_UPDATE)
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionUpdateResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionUpdateResponse,
                 EventNotificationConstants.PATH_VERSION))
-        Assert.assertNotNull(OBTestUtil.parseResponseBody(subscriptionUpdateResponse,
+        Assert.assertNotNull(TestUtil.parseResponseBody(subscriptionUpdateResponse,
                 EventNotificationConstants.PATH_EVENT_TYPES))
     }
 

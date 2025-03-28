@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -19,8 +19,10 @@
 package org.wso2.financial.services.accelerator.is.test.event.notifications.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.json.JsonOutput
 import io.restassured.response.Response
 import org.json.JSONObject
+import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 
 /**
  * Event Notification Payloads
@@ -162,4 +164,20 @@ class EventNotificationPayloads {
             ]
         }
     """.stripIndent()
+
+    final static String accountInitiationPayload = """
+            {
+                "Data":{
+                "Permissions": ${JsonOutput.toJson([ConnectorTestConstants.READ_ACCOUNTS_BASIC,
+                                                    ConnectorTestConstants.READ_ACCOUNTS_DETAIL,
+                                                    ConnectorTestConstants.READ_BALANCES])},
+                "ExpirationDateTime":"${ConnectorTestConstants.expirationInstant}",
+                "TransactionFromDateTime":"${ConnectorTestConstants.fromInstant}",
+                "TransactionToDateTime":"${ConnectorTestConstants.toInstant}"
+            },
+                "Risk":{
+
+                }
+            }
+""".stripIndent()
 }
