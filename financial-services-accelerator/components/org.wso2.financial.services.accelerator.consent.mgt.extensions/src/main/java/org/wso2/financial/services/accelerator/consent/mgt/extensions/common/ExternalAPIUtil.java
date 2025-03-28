@@ -18,6 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 
 import java.util.Map;
@@ -49,7 +50,10 @@ public class ExternalAPIUtil {
                 responseData = new JSONObject(data.toString());
             }
         }
-        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), responseData);
+
+        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getData()
+                .path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION));
     }
 
     /**
