@@ -22,7 +22,7 @@ import org.wso2.financial.services.accelerator.common.caching.FinancialServicesB
 import org.wso2.financial.services.accelerator.gateway.internal.GatewayDataHolder;
 
 /**
- * Cache definition to store API Resource Security Schemes
+ * Cache definition to store API Resource Security Schemes.
  */
 public class GatewayCache extends FinancialServicesBaseCache<GatewayCacheKey, Object> {
 

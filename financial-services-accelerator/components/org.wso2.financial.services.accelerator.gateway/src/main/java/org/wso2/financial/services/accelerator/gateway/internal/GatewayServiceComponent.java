@@ -31,7 +31,7 @@ import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 
 /**
- * Service class for executor core
+ * Service class for executor core.
  */
 @Component(
         name = "org.wso2.financial.services.accelerator.gateway.internal.GatewayServiceComponent",
