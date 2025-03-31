@@ -72,16 +72,16 @@ public class FinancialServicesConstants {
     public static final String DCR_TAG = "DCR";
     public static final String DCR_PARAMS_TAG = "Params";
     public static final String DCR_VALIDATORS_TAG = "Validators";
-    public static final String DCR_VALIDATORS_ENABLED_TAG = "Enabled";
     public static final String DCR_PARAM_ALLOWED_VALUE_TAG = "AllowedValues";
     public static final String DCR_PARAM_NAME_TAG = "Name";
     public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
-    public static final String DCR_ADDITIONAL_ATTRIBUTE_FILTER = "AppRegistration.DCR.AdditionalAttributeFilter";
+    public static final String DCR_SERVICE_EXTENSION = "AppRegistration.DCR.DCRServiceExtension";
     public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
             ".DisplayName";
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
     public static final String IDENTITY_PROVIDER_NAME = "AppRegistration.SCA.IdpName";
     public static final String IDENTITY_PROVIDER_STEP = "AppRegistration.SCA.IdpStep";
+    public static final String CONDITIONAL_AUTH_SCRIPT_NAME = "AppRegistration.ConditionalAuthScriptFileName";
     public static final String JTI_CACHE_ACCESS_EXPIRY = "AppRegistration.DCR.JTICache.CacheAccessExpiry";
     public static final String JTI_CACHE_MODIFY_EXPIRY = "AppRegistration.DCR.JTICache.CacheModifiedExpiry";
     public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";
