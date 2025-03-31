@@ -135,10 +135,10 @@ public class FinancialServicesConstants {
     public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ExtensionsEndpoint.Security.Password";
     public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ExtensionsEndpoint.Security.Token";
     public static final String CONSENT_TYPE = "consentType";
-    public static final String ACTION_STATUS = "actionStatus";
-    public static final String ACTION_STATUS_SUCCESS = "SUCCESS";
     public static final String ERROR_DESCRIPTION = "errorDescription";
-    public  static final String ERROR_MESSAGE = "errorMessage";
+    public static final String DEFAULT_ERROR_DESCRIPTION = "Unexpected error occurred";
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String DEFAULT_ERROR_MESSAGE = "server_error";
     public static final String BASIC_AUTH = "Basic-Auth";
     public static final String OAUTH2 = "OAuth2";
 

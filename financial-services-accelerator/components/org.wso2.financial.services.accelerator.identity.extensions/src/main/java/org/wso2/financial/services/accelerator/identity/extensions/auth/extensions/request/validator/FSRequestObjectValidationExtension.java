@@ -309,7 +309,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
             IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
             return new ValidationResponse(true);
         } catch (IdentityOAuth2Exception e) {
-            String errorDescription = response.getErrorDescription();
+            String errorDescription = e.getMessage();
             log.error(errorDescription.replaceAll("[\r\n]", ""));
             return new ValidationResponse(false, errorDescription);
         }
