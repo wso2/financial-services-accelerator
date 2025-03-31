@@ -98,7 +98,6 @@ public class ConsentMgtCommonDBQueries {
                 "WHERE CONSENT_ID = ?";
     }
 
-
     public String getStoreAuthorizationPreparedStatement() {
 
         return "INSERT INTO FS_CONSENT_AUTH_RESOURCE (AUTH_ID, CONSENT_ID, AUTH_TYPE, USER_ID, AUTH_STATUS, " +
