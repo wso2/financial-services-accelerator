@@ -34,7 +34,8 @@ public enum ServiceExtensionTypeEnum {
     POST_USER_AUTHORIZATION("post-user-authorization"),
     PRE_ID_TOKEN_GENERATION("pre-id-token-generation"),
     VALIDATE_DCR_CREATE_REQUEST("validate-dcr-app-creation"),
-    VALIDATE_DCR_UPDATE_REQUEST("validate-dcr-app-update");
+    VALIDATE_DCR_UPDATE_REQUEST("validate-dcr-app-update"),
+    ERROR_MAPPER("error-mapper");
 
     private final String type;
 

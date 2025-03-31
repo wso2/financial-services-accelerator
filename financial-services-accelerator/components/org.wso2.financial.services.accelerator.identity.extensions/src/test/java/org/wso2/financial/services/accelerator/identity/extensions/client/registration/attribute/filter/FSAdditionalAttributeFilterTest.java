@@ -18,6 +18,9 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.client.registration.attribute.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -32,6 +35,9 @@ import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.attribute.filter.FSAdditionalAttributeFilter;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
@@ -44,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -58,10 +65,11 @@ public class FSAdditionalAttributeFilterTest {
     private static MockedStatic<IdentityExtensionsDataHolder> identityExtensionsDataHolderMockedStatic;
     private MockedStatic<FinancialServicesConfigParser> configParserMockedStatic;
     private static MockedStatic<JwtJtiCache> jwtJtiCacheMockedStatic;
+    MockedStatic<ServiceExtensionUtils> serviceExtensionUtilsMockedStatic;
     private static final Gson gson = new Gson();
 
     @BeforeClass
-    public void beforeClass() {
+    public void beforeClass() throws JsonProcessingException {
 
         identityExtensionsDataHolder = IdentityExtensionsDataHolder.getInstance();
         Map<String, Object> confMap = new HashMap<>();
@@ -93,7 +101,21 @@ public class FSAdditionalAttributeFilterTest {
         configParserMockedStatic = Mockito.mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
         doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        doReturn(new ArrayList<>()).when(configParserMock).getServiceExtensionTypes();
         configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree("{" +
+            "   \"attributesToStore\": {" +
+            "       \"software_id\": \"testSoftwareId\"" +
+            "   }" +
+            "}");
+        serviceExtensionUtilsMockedStatic = Mockito.mockStatic(ServiceExtensionUtils.class);
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(true);
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .invokeExternalServiceCall(any(), any())).thenReturn(new ExternalServiceResponse("testId",
+                StatusEnum.SUCCESS, rootNode));
 
         JwtJtiCache jwtJtiCache = Mockito.mock(JwtJtiCache.class);
         Mockito.doReturn(null).when(jwtJtiCache).getFromCache(JwtJtiCacheKey.of(anyString()));
@@ -111,6 +133,7 @@ public class FSAdditionalAttributeFilterTest {
         identityExtensionsDataHolderMockedStatic.close();
         configParserMockedStatic.close();
         jwtJtiCacheMockedStatic.close();
+        serviceExtensionUtilsMockedStatic.close();
     }
 
     @Test

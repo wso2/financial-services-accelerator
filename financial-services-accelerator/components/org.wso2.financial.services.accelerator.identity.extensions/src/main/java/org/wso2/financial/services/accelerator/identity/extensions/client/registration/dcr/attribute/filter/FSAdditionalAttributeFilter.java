@@ -258,7 +258,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                             .toString());
                     return attributesToStoreJson.toMap();
                 } else {
-                    throw new DCRMClientException(response.getErrorMessage(), response.getErrorDescription());
+                    String errMsg = response.getData().get(FinancialServicesConstants.ERROR_MESSAGE)
+                            .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE);
+                    String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                            .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+                    throw new DCRMClientException(errMsg, errDesc);
                 }
             } catch (FinancialServicesException e) {
                 throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
