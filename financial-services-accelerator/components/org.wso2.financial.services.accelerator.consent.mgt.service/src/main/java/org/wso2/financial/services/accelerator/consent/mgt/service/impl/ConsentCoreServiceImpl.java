@@ -225,8 +225,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             try {
                 // Convert and store basic consent
-                ConsentResource consentResource =
-                        ConsentCoreServiceUtil.getbasicConsentResource(detailedConsentResource);
+                ConsentResource consentResource = new ConsentResource(detailedConsentResource);
                 consentCoreDAO.storeConsentResource(connection, consentResource);
 
                 // Store consent attributes

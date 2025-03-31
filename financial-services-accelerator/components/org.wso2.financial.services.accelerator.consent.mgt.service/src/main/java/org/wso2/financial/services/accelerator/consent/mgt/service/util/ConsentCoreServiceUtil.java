@@ -736,21 +736,6 @@ public class ConsentCoreServiceUtil {
         }
     }
 
-    public static ConsentResource getbasicConsentResource(DetailedConsentResource detailedConsentResource) {
-        return new ConsentResource(
-                detailedConsentResource.getConsentID(),
-                detailedConsentResource.getClientID(),
-                detailedConsentResource.getReceipt(),
-                detailedConsentResource.getConsentType(),
-                detailedConsentResource.getConsentFrequency(),
-                detailedConsentResource.getValidityPeriod(),
-                detailedConsentResource.isRecurringIndicator(),
-                detailedConsentResource.getCurrentStatus(),
-                detailedConsentResource.getCreatedTime(),
-                detailedConsentResource.getUpdatedTime()
-        );
-    }
-
     public static ConsentAttributes getConsentAttributes(DetailedConsentResource detailedConsentResource) {
 
         ConsentAttributes attr = new ConsentAttributes();
