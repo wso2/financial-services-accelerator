@@ -52,7 +52,7 @@ public class ConsentValidateBuilder {
         Map<String, Object> configs =  configurationService.getConfigurations();
         Map<String, Object> serviceExtensionConfigs =  configurationService.getServiceExtensionConfigs();
         List<ServiceExtensionTypeEnum> supportedServiceTypes = (List<ServiceExtensionTypeEnum>)
-                serviceExtensionConfigs.get(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
+                serviceExtensionConfigs.get(FinancialServicesConstants.SERVICE_EXTENSIONS_EXTENSION);
 
         if ((boolean) serviceExtensionConfigs.get(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_ENABLED) &&
                 supportedServiceTypes.contains(ServiceExtensionTypeEnum.CONSENT_VALIDATION)) {

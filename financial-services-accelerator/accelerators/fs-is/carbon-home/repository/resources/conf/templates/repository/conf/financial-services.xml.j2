@@ -391,35 +391,35 @@
             {% endif %}
         </Realtime>
     </EventNotifications>
-    <ServiceExtensionsEndpoint>
-        {% if financial_services.service.extensions.endpoint.enabled is defined %}
-        <Enable>{{financial_services.service.extensions.endpoint.enabled}}</Enable>
+    <ExtensionsEndpoint>
+        {% if financial_services.extensions.endpoint.enabled is defined %}
+        <Enable>{{financial_services.extensions.endpoint.enabled}}</Enable>
         {% else %}
         <Enable>false</Enable>
         {% endif %}
-        {% if financial_services.service.extensions.endpoint.base_url is defined %}
-        <BaseURL>{{financial_services.service.extensions.endpoint.base_url}}</BaseURL>
+        {% if financial_services.extensions.endpoint.base_url is defined %}
+        <BaseURL>{{financial_services.extensions.endpoint.base_url}}</BaseURL>
         {% endif %}
-        <ExtensionTypes>
-            {% for type in financial_services.service.extensions.endpoint.extension_types %}
-            <Type>{{type}}</Type>
+        <AllowedExtensions>
+            {% for allowed_extension in financial_services.extensions.endpoint.allowed_extensions %}
+            <AllowedExtension>{{allowed_extension}}</AllowedExtension>
             {% endfor %}
-        </ExtensionTypes>
+        </AllowedExtensions>
         <Security>
-            {% if financial_services.service.extensions.endpoint.security.type is defined %}
-            <Type>{{financial_services.service.extensions.endpoint.security.type}}</Type>
+            {% if financial_services.extensions.endpoint.security.type is defined %}
+            <Type>{{financial_services.extensions.endpoint.security.type}}</Type>
             {% else %}
             <Type>Basic-Auth</Type>
             {% endif %}
-            {% if financial_services.service.extensions.endpoint.security.username is defined %}
-            <Username>{{financial_services.service.extensions.endpoint.security.username}}</Username>
+            {% if financial_services.extensions.endpoint.security.username is defined %}
+            <Username>{{financial_services.extensions.endpoint.security.username}}</Username>
             {% endif %}
-            {% if financial_services.service.extensions.endpoint.security.password is defined %}
-            <Password>{{financial_services.service.extensions.endpoint.security.password}}</Password>
+            {% if financial_services.extensions.endpoint.security.password is defined %}
+            <Password>{{financial_services.extensions.endpoint.security.password}}</Password>
             {% endif %}
-            {% if financial_services.service.extensions.endpoint.security.token is defined %}
-            <Token>{{financial_services.service.extensions.endpoint.security.token}}</UserName>
+            {% if financial_services.extensions.endpoint.security.token is defined %}
+            <Token>{{financial_services.extensions.endpoint.security.token}}</UserName>
             {% endif %}
         </Security>
-    </ServiceExtensionsEndpoint>
+    </ExtensionsEndpoint>
 </Server>

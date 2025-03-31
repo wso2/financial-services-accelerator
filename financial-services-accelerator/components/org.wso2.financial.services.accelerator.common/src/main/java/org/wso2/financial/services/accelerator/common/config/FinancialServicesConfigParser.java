@@ -819,7 +819,7 @@ public final class FinancialServicesConfigParser {
      */
     public List<ServiceExtensionTypeEnum> getServiceExtensionTypes() {
         Object serviceExtensionTypesObj = configuration.get(
-                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE);
+                FinancialServicesConstants.SERVICE_EXTENSIONS_EXTENSION);
 
         List<String> serviceExtensionTypes = serviceExtensionTypesObj instanceof List<?>
                 ? (List<String>) serviceExtensionTypesObj
@@ -828,7 +828,7 @@ public final class FinancialServicesConfigParser {
         return serviceExtensionTypes.stream()
                 .map(ServiceExtensionTypeEnum::fromString)
                 .collect(Collectors.toList());
-    }
+    }X
 
     /**
      * Method to get service extensions endpoint security type.

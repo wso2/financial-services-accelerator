@@ -313,13 +313,13 @@ maxHttpHeaderSize = "65536"
 ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
 #================configs related to financial-services.xml=============
-[financial_services.service.extensions.endpoint]
+[financial_services.extensions.endpoint]
 enabled = false
 base_url = ""
-# allowed extension_types: "post-token-generation", "pre-consent-authorization"
-extension_types = ["post-token-generation"]
+# allowed extensions: "post-token-generation", "pre-consent-authorization"
+allowed_extensions = ["post-token-generation"]
 
-[financial_services.service.extensions.endpoint.security]
+[financial_services.extensions.endpoint.security]
 # supported types : Basic-Auth or OAuth2
 type = "Basic-Auth"
 username = ""
