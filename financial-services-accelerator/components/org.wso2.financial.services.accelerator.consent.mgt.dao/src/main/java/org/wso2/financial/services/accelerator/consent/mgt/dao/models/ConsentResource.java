@@ -75,6 +75,26 @@ public class ConsentResource {
         this.updatedTime = updatedTime;
     }
 
+    /**
+     * Constructor to create a consent resource from a detailed consent resource.
+     * @param detailedConsentResource Detailed consent resource
+     */
+    public ConsentResource(DetailedConsentResource detailedConsentResource) {
+
+        this.consentID = detailedConsentResource.getConsentID();
+        this.clientID = detailedConsentResource.getClientID();
+        this.receipt = detailedConsentResource.getReceipt();
+        this.consentType = detailedConsentResource.getConsentType();
+        this.consentFrequency = detailedConsentResource.getConsentFrequency();
+        this.validityPeriod = detailedConsentResource.getValidityPeriod();
+        this.recurringIndicator = detailedConsentResource.isRecurringIndicator();
+        this.currentStatus = detailedConsentResource.getCurrentStatus();
+        this.createdTime = detailedConsentResource.getCreatedTime();
+        this.updatedTime = detailedConsentResource.getUpdatedTime();
+        this.consentAttributes = detailedConsentResource.getConsentAttributes();
+
+    }
+
     public long getUpdatedTime() {
 
         return updatedTime;

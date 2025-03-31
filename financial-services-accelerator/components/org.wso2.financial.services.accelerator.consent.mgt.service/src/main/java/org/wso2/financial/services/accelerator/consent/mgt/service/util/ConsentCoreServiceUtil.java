@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -735,4 +735,54 @@ public class ConsentCoreServiceUtil {
             }
         }
     }
+
+    public static ConsentResource getbasicConsentResource(DetailedConsentResource detailedConsentResource) {
+        return new ConsentResource(
+                detailedConsentResource.getConsentID(),
+                detailedConsentResource.getClientID(),
+                detailedConsentResource.getReceipt(),
+                detailedConsentResource.getConsentType(),
+                detailedConsentResource.getConsentFrequency(),
+                detailedConsentResource.getValidityPeriod(),
+                detailedConsentResource.isRecurringIndicator(),
+                detailedConsentResource.getCurrentStatus(),
+                detailedConsentResource.getCreatedTime(),
+                detailedConsentResource.getUpdatedTime()
+        );
+    }
+
+    public static ConsentAttributes getConsentAttributes(DetailedConsentResource detailedConsentResource) {
+
+        ConsentAttributes attr = new ConsentAttributes();
+        attr.setConsentID(detailedConsentResource.getConsentID());
+        attr.setConsentAttributes(detailedConsentResource.getConsentAttributes());
+        return attr;
+    }
+
+    /**
+     * Resolves the user ID to be used for audit or action tracking.
+     * <p>
+     * Priority is given to the user with authorization type "primary". If no such user is found,
+     * the user from the first authorization (if available) will be returned. If no authorizations exist,
+     * an empty string is returned.
+     *
+     * @param detailedConsentResource the detailed consent resource
+     * @return resolved user ID or empty string if none found
+     */
+    public static String resolveActionByUser(DetailedConsentResource detailedConsentResource) {
+
+        if (detailedConsentResource.getAuthorizationResources() != null) {
+            for (AuthorizationResource auth : detailedConsentResource.getAuthorizationResources()) {
+                // ToDo: Get primary auth type from config?
+                if ("primary".equals(auth.getAuthorizationType())) {
+                    return auth.getUserID();
+                }
+            }
+            if (!detailedConsentResource.getAuthorizationResources().isEmpty()) {
+                return detailedConsentResource.getAuthorizationResources().get(0).getUserID();
+            }
+        }
+        return "";
+    }
+
 }
