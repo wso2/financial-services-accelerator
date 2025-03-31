@@ -137,8 +137,10 @@ public class FinancialServicesConstants {
     public static final String CONSENT_TYPE = "consentType";
     public static final String ERROR_DESCRIPTION = "errorDescription";
     public static final String DEFAULT_ERROR_DESCRIPTION = "Unexpected error occurred";
+    public static final String ERROR_CODE = "errorCode";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String DEFAULT_ERROR_MESSAGE = "server_error";
+    public static final String RESPONSE_DATA = "responseData";;
     public static final String BASIC_AUTH = "Basic-Auth";
     public static final String OAUTH2 = "OAuth2";
 

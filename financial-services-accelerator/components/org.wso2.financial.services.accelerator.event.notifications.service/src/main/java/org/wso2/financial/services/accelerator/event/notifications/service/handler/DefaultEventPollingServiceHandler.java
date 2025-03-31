@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -128,7 +129,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
     private static void handleValidation(JSONObject eventPolling) throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put("eventPollingPayload", eventPolling);
+        data.put(EventNotificationConstants.EVENT_POLLING_PAYLOAD, eventPolling);
 
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_POLLING)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
@@ -138,8 +139,8 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
                         ServiceExtensionTypeEnum.PRE_EVENT_POLLING);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
-                    throw new FSEventNotificationException(dataObj.getInt("errorCode"),
-                            dataObj.getString("errorMessage"));
+                    throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
+                            dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
                 }
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -158,7 +159,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
             throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put("eventPolling", aggregatedPollingResponse);
+        data.put(EventNotificationConstants.EVENT_POLLING, new JSONObject(aggregatedPollingResponse));
 
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_EVENT_POLLING)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
@@ -167,11 +168,11 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
                         ServiceExtensionTypeEnum.POST_EVENT_POLLING);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
-                    throw new FSEventNotificationException(dataObj.getInt("errorCode"),
-                            dataObj.getString("errorMessage"));
+                    throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
+                            dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
                 }
 
-                return new JSONObject(response.getData().get("responseData").toString());
+                return new JSONObject(response.getData().get(FinancialServicesConstants.RESPONSE_DATA).toString());
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }

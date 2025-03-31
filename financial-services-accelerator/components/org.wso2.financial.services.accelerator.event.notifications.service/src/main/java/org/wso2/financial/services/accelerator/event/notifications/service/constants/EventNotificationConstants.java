@@ -157,6 +157,14 @@ public class EventNotificationConstants {
     public static final String ERROR_HANDLING_EVENT_SUBSCRIPTION = "Error occurred while handling the event " +
             "subscription request";
 
+    public static final String EVENT_CREATION_PAYLOAD = "eventCreationPayload";
+    public static final String EVENT_POLLING_PAYLOAD = "eventPollingPayload";
+    public static final String EVENT_POLLING = "eventPolling";
+    public static final String EVENT_SUBSCRIPTION_PAYLOAD = "eventSubscriptionPayload";
+    public static final String API_OPERATION = "apiOperation";
+    public static final String EVENT_SUBSCRIPTION = "eventSubscription";
+
+
     /**
      * Specifies the Schema Names of Event subscription operations.
      */

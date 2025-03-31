@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -125,18 +126,18 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
     private static void handleValidation(JSONObject eventCreationPayload) throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put("eventCreationPayload", eventCreationPayload);
+        data.put(EventNotificationConstants.EVENT_CREATION_PAYLOAD, eventCreationPayload);
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_POLLING)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_CREATION)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
                     data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.PRE_EVENT_POLLING);
+                        ServiceExtensionTypeEnum.PRE_EVENT_CREATION);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
-                    throw new FSEventNotificationException(dataObj.getInt("errorCode"),
-                            dataObj.getString("errorMessage"));
+                    throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
+                            dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
                 }
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
