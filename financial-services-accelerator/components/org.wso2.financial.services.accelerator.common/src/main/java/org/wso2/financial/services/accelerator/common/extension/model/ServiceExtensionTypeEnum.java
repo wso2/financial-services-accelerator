@@ -38,7 +38,8 @@ public enum ServiceExtensionTypeEnum {
     GET_DCR_ADDITIONAL_REQ_PARAMS("get-additional-dcr-request-parameters"),
     GET_DCR_RESPONSE_PARAMS("get-dcr-response-parameters"),
     GET_DCR_AUTH_SCRIPT("get-dcr-auth-script"),
-    POST_DCR_APP_DELETE("post-dcr-app-delete");
+    POST_DCR_APP_DELETE("post-dcr-app-delete"),
+    ERROR_MAPPER("error-mapper");
 
     private final String type;
 
