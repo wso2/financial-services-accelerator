@@ -35,15 +35,12 @@ public enum ServiceExtensionTypeEnum {
     PRE_ID_TOKEN_GENERATION("pre-id-token-generation"),
     VALIDATE_DCR_CREATE_REQUEST("validate-dcr-app-creation"),
     VALIDATE_DCR_UPDATE_REQUEST("validate-dcr-app-update"),
-    GET_DCR_ADDITIONAL_REQ_PARAMS("get-additional-dcr-request-parameters"),
-    GET_DCR_RESPONSE_PARAMS("get-dcr-response-parameters"),
-    GET_DCR_AUTH_SCRIPT("get-dcr-auth-script"),
-    POST_DCR_APP_DELETE("post-dcr-app-delete"),
     PRE_EVENT_SUBSCRIPTION("pre-event-subscription"),
     POST_EVENT_SUBSCRIPTION("post-event-subscription"),
     PRE_EVENT_CREATION("pre-event-creation"),
     PRE_EVENT_POLLING("pre-event-polling"),
-    POST_EVENT_POLLING("ppst-event-polling");
+    POST_EVENT_POLLING("post-event-polling"),
+    ERROR_MAPPER("error-mapper");
 
     private final String type;
 
