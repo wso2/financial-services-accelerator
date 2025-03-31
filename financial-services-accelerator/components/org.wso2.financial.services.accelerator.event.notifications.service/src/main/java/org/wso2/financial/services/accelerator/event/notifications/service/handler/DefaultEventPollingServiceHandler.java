@@ -23,7 +23,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventPollingService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventPollingDTO;
@@ -32,6 +38,8 @@ import org.wso2.financial.services.accelerator.event.notifications.service.model
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventPolling;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventPollingResponse;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
+
+import java.util.UUID;
 
 /**
  * This is the service handler for event polling.
@@ -67,15 +75,16 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         EventPolling eventPolling = mapEventPollingDtoToModel(eventPollingDTO);
         //Poll events
         try {
+            handleValidation(new JSONObject(eventPolling));
             AggregatedPollingResponse aggregatedPollingResponse = eventPollingService.pollEvents(eventPolling);
 
             EventPollingResponse eventPollingResponse = new EventPollingResponse();
             eventPollingResponse.setStatus(aggregatedPollingResponse.getStatus());
-            eventPollingResponse.setResponseBody(getPollingResponseJSON(aggregatedPollingResponse));
+            eventPollingResponse.setResponseBody(handleResponseGeneration(aggregatedPollingResponse));
             return eventPollingResponse;
         } catch (FSEventNotificationException e) {
-            log.error("OB Event Notification error" , e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, e.getMessage(), e);
+            log.error("Error occurred while polling events" , e);
+            throw new FSEventNotificationException(e.getStatus(), e.getMessage(), e);
         }
 
     }
@@ -110,4 +119,63 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         return responseJSON;
     }
 
+    /**
+     * Method to invoke the external service for validation.
+     *
+     * @param eventPolling     Event polling JSON payload
+     * @throws FSEventNotificationException  Exception when handling validation
+     */
+    private static void handleValidation(JSONObject eventPolling) throws FSEventNotificationException {
+
+        JSONObject data = new JSONObject();
+        data.put("eventPollingPayload", eventPolling);
+
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_POLLING)) {
+            ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
+                    data);
+            try {
+                ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
+                        ServiceExtensionTypeEnum.PRE_EVENT_POLLING);
+                if (StatusEnum.ERROR.equals(response.getStatus())) {
+                    JSONObject dataObj = new JSONObject(response.getData().toString());
+                    throw new FSEventNotificationException(dataObj.getInt("errorCode"),
+                            dataObj.getString("errorMessage"));
+                }
+            } catch (FinancialServicesException e) {
+                throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Method to handle the response generation.
+     *
+     * @param aggregatedPollingResponse   Aggregated polling response
+     * @return     Generated response JSON
+     * @throws FSEventNotificationException Exception when handling response generation
+     */
+    private JSONObject handleResponseGeneration(AggregatedPollingResponse aggregatedPollingResponse)
+            throws FSEventNotificationException {
+
+        JSONObject data = new JSONObject();
+        data.put("eventPolling", aggregatedPollingResponse);
+
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_EVENT_POLLING)) {
+            ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
+            try {
+                ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
+                        ServiceExtensionTypeEnum.POST_EVENT_POLLING);
+                if (StatusEnum.ERROR.equals(response.getStatus())) {
+                    JSONObject dataObj = new JSONObject(response.getData().toString());
+                    throw new FSEventNotificationException(dataObj.getInt("errorCode"),
+                            dataObj.getString("errorMessage"));
+                }
+
+                return new JSONObject(response.getData().get("responseData").toString());
+            } catch (FinancialServicesException e) {
+                throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+        }
+        return getPollingResponseJSON(aggregatedPollingResponse);
+    }
 }

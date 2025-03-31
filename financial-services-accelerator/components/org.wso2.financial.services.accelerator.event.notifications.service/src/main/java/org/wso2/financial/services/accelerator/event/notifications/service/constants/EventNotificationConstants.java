@@ -156,4 +156,45 @@ public class EventNotificationConstants {
     public static final String EVENT_SUBSCRIPTIONS_NOT_FOUND = "Event subscriptions not found for the given client id.";
     public static final String ERROR_HANDLING_EVENT_SUBSCRIPTION = "Error occurred while handling the event " +
             "subscription request";
+
+    /**
+     * Specifies the Schema Names of Event subscription operations.
+     */
+    public enum EventSubscriptionOperationEnum {
+
+        SubscriptionCreation("SubscriptionCreation"),
+
+        SingleSubscriptionRetrieval("SingleSubscriptionRetrieval"),
+
+        BulkSubscriptionRetrieval("BulkSubscriptionRetrieval"),
+
+        SubscriptionRetrievalForEventTypes("SubscriptionRetrievalForEventTypes"),
+
+        SubscriptionUpdate("SubscriptionUpdate"),
+
+        SubscriptionDelete("SubscriptionDelete");
+
+        private String value;
+
+        EventSubscriptionOperationEnum(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        public static EventSubscriptionOperationEnum fromValue(String text) {
+
+            List<EventSubscriptionOperationEnum> accountList = Arrays.asList(EventSubscriptionOperationEnum.values());
+            Optional<EventSubscriptionOperationEnum> accountOpt = accountList
+                    .stream()
+                    .filter(i -> String.valueOf(i.value).equals(text))
+                    .findAny();
+
+            return accountOpt.orElse(null);
+        }
+
+    }
 }

@@ -38,7 +38,12 @@ public enum ServiceExtensionTypeEnum {
     GET_DCR_ADDITIONAL_REQ_PARAMS("get-additional-dcr-request-parameters"),
     GET_DCR_RESPONSE_PARAMS("get-dcr-response-parameters"),
     GET_DCR_AUTH_SCRIPT("get-dcr-auth-script"),
-    POST_DCR_APP_DELETE("post-dcr-app-delete");
+    POST_DCR_APP_DELETE("post-dcr-app-delete"),
+    PRE_EVENT_SUBSCRIPTION("pre-event-subscription"),
+    POST_EVENT_SUBSCRIPTION("post-event-subscription"),
+    PRE_EVENT_CREATION("pre-event-creation"),
+    PRE_EVENT_POLLING("pre-event-polling"),
+    POST_EVENT_POLLING("ppst-event-polling");
 
     private final String type;
 
