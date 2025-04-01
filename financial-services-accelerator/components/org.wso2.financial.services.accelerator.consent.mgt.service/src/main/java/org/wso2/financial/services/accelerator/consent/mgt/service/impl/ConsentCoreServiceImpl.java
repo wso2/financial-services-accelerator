@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -209,6 +209,144 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             DatabaseUtils.closeConnection(connection);
         }
     }
+
+    @Override
+    public DetailedConsentResource storeDetailedConsentResource(DetailedConsentResource detailedConsentResource)
+            throws ConsentManagementException {
+
+        if (detailedConsentResource == null || StringUtils.isBlank(detailedConsentResource.getConsentID())) {
+            log.error("Detailed consent or consent ID is missing");
+            throw new ConsentManagementException("Detailed consent or consent ID is missing");
+        }
+
+        Connection connection = DatabaseUtils.getDBConnection();
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+
+            try {
+                // Convert and store basic consent
+                ConsentResource consentResource = new ConsentResource(detailedConsentResource);
+                consentCoreDAO.storeConsentResource(connection, consentResource);
+
+                // Store consent attributes
+                if (MapUtils.isNotEmpty(detailedConsentResource.getConsentAttributes())) {
+                    ConsentAttributes attributes =
+                            ConsentCoreServiceUtil.getConsentAttributes(detailedConsentResource);
+                    consentCoreDAO.storeConsentAttributes(connection, attributes);
+                }
+
+                // Store authorization resources
+                if (CollectionUtils.isNotEmpty(detailedConsentResource.getAuthorizationResources())) {
+                    for (AuthorizationResource auth : detailedConsentResource.getAuthorizationResources()) {
+                        consentCoreDAO.storeAuthorizationResource(connection, auth);
+                    }
+                }
+
+                // Store account mapping resources
+                if (CollectionUtils.isNotEmpty(detailedConsentResource.getConsentMappingResources())) {
+                    for (ConsentMappingResource mapping : detailedConsentResource.getConsentMappingResources()) {
+                        consentCoreDAO.storeConsentMappingResource(connection, mapping);
+                    }
+                }
+
+                // Add audit record
+                HashMap<String, Object> consentDataMap = new HashMap<>();
+                consentDataMap.put(ConsentCoreServiceConstants.DETAILED_CONSENT_RESOURCE, detailedConsentResource);
+                String actionByUser = ConsentCoreServiceUtil.resolveActionByUser(detailedConsentResource);
+
+                ConsentCoreServiceUtil.postStateChange(
+                        connection, consentCoreDAO, detailedConsentResource.getConsentID(), actionByUser,
+                        detailedConsentResource.getCurrentStatus(), null,
+                        ConsentCoreServiceConstants.CREATE_CONSENT_REASON, detailedConsentResource.getClientID(),
+                        consentDataMap
+                );
+
+                DatabaseUtils.commitTransaction(connection);
+                log.debug("Stored DetailedConsentResource with audit successfully");
+                return detailedConsentResource;
+
+            } catch (ConsentDataInsertionException e) {
+                log.error("Consent data insert failed, rolling back", e);
+                DatabaseUtils.rollbackTransaction(connection);
+                throw new ConsentManagementException("Consent data insert failed", e);
+            }
+
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtils.closeConnection(connection);
+        }
+    }
+
+    @Override
+    public DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource)
+            throws ConsentManagementException {
+
+        if (detailedConsentResource == null || StringUtils.isBlank(detailedConsentResource.getConsentID())) {
+            log.error("Detailed consent or consent ID is missing");
+            throw new ConsentManagementException("Detailed consent or consent ID is missing");
+        }
+
+        Connection connection = DatabaseUtils.getDBConnection();
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+
+            try {
+                ConsentResource previousConsent = getConsent(detailedConsentResource.getConsentID(), false);
+                /* Update the base consent using updated values from DetailedConsentResource.
+                   Immutable parameters are ignored in the update (i.e. clientId, createdTime) at DAO level.*/
+                ConsentResource updatedConsent = new ConsentResource(detailedConsentResource);
+                consentCoreDAO.updateConsentResource(connection, updatedConsent);
+
+                // Store consent attributes
+                if (MapUtils.isNotEmpty(detailedConsentResource.getConsentAttributes())) {
+                    ConsentAttributes attributes = new ConsentAttributes();
+                    attributes.setConsentID(detailedConsentResource.getConsentID());
+                    attributes.setConsentAttributes(detailedConsentResource.getConsentAttributes());
+                    consentCoreDAO.storeConsentAttributes(connection, attributes);
+                }
+
+                // Store authorization resources
+                if (CollectionUtils.isNotEmpty(detailedConsentResource.getAuthorizationResources())) {
+                    for (AuthorizationResource auth : detailedConsentResource.getAuthorizationResources()) {
+                        consentCoreDAO.storeAuthorizationResource(connection, auth);
+                    }
+                }
+
+                // Store account mapping resources
+                if (CollectionUtils.isNotEmpty(detailedConsentResource.getConsentMappingResources())) {
+                    for (ConsentMappingResource mapping : detailedConsentResource.getConsentMappingResources()) {
+                        consentCoreDAO.storeConsentMappingResource(connection, mapping);
+                    }
+                }
+
+                // Add audit record
+                HashMap<String, Object> consentDataMap = new HashMap<>();
+                consentDataMap.put(ConsentCoreServiceConstants.DETAILED_CONSENT_RESOURCE, detailedConsentResource);
+
+                String actionByUser = ConsentCoreServiceUtil.resolveActionByUser(detailedConsentResource);
+
+                ConsentCoreServiceUtil.postStateChange(connection, consentCoreDAO,
+                        detailedConsentResource.getConsentID(), actionByUser,
+                        detailedConsentResource.getCurrentStatus(), previousConsent.getCurrentStatus(),
+                        ConsentCoreServiceConstants.USER_ACCOUNTS_BINDING_REASON, detailedConsentResource.getClientID(),
+                        consentDataMap
+                );
+
+                DatabaseUtils.commitTransaction(connection);
+                log.debug("Updated consent and created authorization and mapping records successfully.");
+                return detailedConsentResource;
+
+            } catch (ConsentDataInsertionException | ConsentDataUpdationException e) {
+                log.error("Error during updating consent, rolling back", e);
+                DatabaseUtils.rollbackTransaction(connection);
+                throw new ConsentManagementException("Failed to update consent and create related records", e);
+            }
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtils.closeConnection(connection);
+        }
+    }
+
 
     @Override
     public DetailedConsentResource getDetailedConsent(String consentID) throws ConsentManagementException {

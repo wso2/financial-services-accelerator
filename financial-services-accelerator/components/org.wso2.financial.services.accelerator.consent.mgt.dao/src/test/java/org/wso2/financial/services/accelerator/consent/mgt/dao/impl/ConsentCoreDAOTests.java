@@ -2242,4 +2242,53 @@ public class ConsentCoreDAOTests {
         }
     }
 
+    @Test
+    public void testUpdateConsentResource() throws Exception {
+
+        // Setup test data
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setConsentID("12345");
+        consentResource.setReceipt("updatedReceipt");
+        consentResource.setConsentType("updatedConsentType");
+        consentResource.setCurrentStatus("updatedStatus");
+        consentResource.setConsentFrequency(5);
+        consentResource.setValidityPeriod(1638337852L);
+        consentResource.setRecurringIndicator(true);
+
+        // Mock connection and PreparedStatement
+        Connection connection = Mockito.mock(Connection.class);
+        PreparedStatement mockedPreparedStatement = Mockito.mock(PreparedStatement.class);
+        Mockito.doReturn(mockedPreparedStatement).when(connection).prepareStatement(Mockito.anyString());
+
+        // Mocking the execution of the update
+        Mockito.doReturn(1).when(mockedPreparedStatement).executeUpdate();
+
+        // Call updateConsentResource()
+        consentCoreDAO.updateConsentResource(connection, consentResource);
+
+        // Assert that the updated time is set correctly
+        Assert.assertTrue(consentResource.getUpdatedTime() > 0, "Updated time should be set");
+
+    }
+
+    @Test(expectedExceptions = ConsentDataUpdationException.class)
+    public void testUpdateConsentResourceSQLException() throws Exception {
+
+        // Setup test data
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setConsentID("12345");
+        consentResource.setReceipt("{sample receipt}");
+
+        // Mock connection and PreparedStatement
+        Connection connection = Mockito.mock(Connection.class);
+        PreparedStatement mockedPreparedStatement = Mockito.mock(PreparedStatement.class);
+        Mockito.doReturn(mockedPreparedStatement).when(connection).prepareStatement(Mockito.anyString());
+
+        // Mocking SQLException during the update
+        Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeUpdate();
+
+        // Call updateConsentResource()
+        consentCoreDAO.updateConsentResource(connection, consentResource);
+    }
+
 }
