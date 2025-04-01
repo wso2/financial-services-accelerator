@@ -81,6 +81,8 @@ class FSConnectorTest extends CommonTest{
     final String incorrectConsentPath = ConnectorTestConstants.INCORRECT_CONSENT_PATH
     final userId = "${configuration.getUserPSUName()}"
     def automation
+    String dcrPath
+    String clientId
 
     String eventCreationPayload
     final String eventCreationPath = ConnectorTestConstants.URL_EVENT_CREATE
