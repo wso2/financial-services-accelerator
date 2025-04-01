@@ -59,7 +59,7 @@ public interface ConsentCoreDAO {
      * This method is used to update an existing consent resource in the database.
      * The following fields will be updated: receipt, consent type, current status,
      * consent frequency, validity period, recurring indicator, and updated time.
-     * The client ID adn created time will not be updated, as they are considered immutable.
+     * The client ID and created time will not be updated, as they are considered immutable.
      *
      * @param connection      connection object
      * @param consentResource the consent resource object containing updated values
