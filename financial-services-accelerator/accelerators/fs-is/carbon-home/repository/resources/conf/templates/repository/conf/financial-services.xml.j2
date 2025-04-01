@@ -188,8 +188,6 @@
             {% endif %}
             {% if financial_services.identity.extensions.introspection_data_provider is defined %}
             <IntrospectionDataProvider>{{financial_services.identity.extensions.introspection_data_provider}}</IntrospectionDataProvider>
-            {% else %}
-            <IntrospectionDataProvider>org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSDefaultIntrospectionDataProvider</IntrospectionDataProvider>
             {% endif %}
         </Extensions>
         <TokenSubject>

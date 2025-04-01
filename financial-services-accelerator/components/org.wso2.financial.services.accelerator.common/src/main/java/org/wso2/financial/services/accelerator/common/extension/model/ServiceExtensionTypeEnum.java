@@ -33,6 +33,7 @@ public enum ServiceExtensionTypeEnum {
     PRE_USER_AUTHORIZATION("pre-user-authorization"),
     POST_USER_AUTHORIZATION("post-user-authorization"),
     PRE_ID_TOKEN_GENERATION("pre-id-token-generation"),
+    PRE_TOKEN_INTROSPECTION("pre-token-introspection"),
     VALIDATE_DCR_CREATE_REQUEST("validate-dcr-app-creation"),
     VALIDATE_DCR_UPDATE_REQUEST("validate-dcr-app-update"),
     GET_DCR_ADDITIONAL_REQ_PARAMS("get-additional-dcr-request-parameters"),

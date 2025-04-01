@@ -491,6 +491,7 @@ servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extension
 #response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
 #claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
 #grant_handler="org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSDefaultGrantHandler"
+#introspection_data_provider="org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSDefaultIntrospectionDataProvider"
 
 [financial_services.identity.token]
 remove_user_store_domain_from_subject=false
