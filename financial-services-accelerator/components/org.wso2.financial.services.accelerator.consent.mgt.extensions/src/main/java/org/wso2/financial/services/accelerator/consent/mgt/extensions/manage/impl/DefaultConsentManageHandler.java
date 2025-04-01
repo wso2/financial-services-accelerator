@@ -136,6 +136,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 }
 
                 if (isExtensionsEnabled && isExternalPreConsentRetrievalEnabled) {
+                    // Call external service before retrieving consent.
+                    Map<String, String> consentAttributes =
+                            consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                    consent.setConsentAttributes(consentAttributes);
                     ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
                             consentId, consent, resourcePath);
                     ExternalAPIConsentRetrieveResponseDTO responseDTO = ExternalAPIConsentManageUtils.
