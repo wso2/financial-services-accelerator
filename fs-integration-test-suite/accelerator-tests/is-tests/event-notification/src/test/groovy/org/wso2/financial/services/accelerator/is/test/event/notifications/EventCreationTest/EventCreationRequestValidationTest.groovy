@@ -22,17 +22,17 @@ import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Creation Request Validation Test
  */
-class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
+class EventCreationRequestValidationTest extends FSConnectorTest {
 
     @BeforeClass(alwaysRun = true)
     void setUp() {
@@ -50,7 +50,7 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
 
         eventCreationPayload = EventNotificationPayloads.eventCreationRequestPayload(resourceID)
 
-        eventCreationResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        eventCreationResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutClientID()
                 .contentType(ContentType.URLENC)
                 .header(EventNotificationConstants.X_WSO2_RESOURCE_ID, resourceID)
                 .baseUri(configuration.getISServerUrl())
@@ -69,7 +69,7 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
 
         eventCreationPayload = EventNotificationPayloads.eventCreationRequestPayload(resourceID)
 
-        eventCreationResponse = requestBuilder.buildEventNotificationRequestWithoutAuthHeader()
+        eventCreationResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutAuthHeader()
                 .contentType(ContentType.URLENC)
                 .header(EventNotificationConstants.X_WSO2_RESOURCE_ID, resourceID)
                 .baseUri(configuration.getISServerUrl())
@@ -84,7 +84,7 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
 
         eventCreationPayload = EventNotificationPayloads.eventCreationRequestPayload(resourceID)
 
-        eventCreationResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+        eventCreationResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
                 .contentType(ContentType.URLENC)
                 .header(EventNotificationConstants.X_WSO2_RESOURCE_ID, resourceID)
                 .baseUri(configuration.getISServerUrl())
@@ -99,7 +99,7 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
 
         eventCreationPayload = EventNotificationPayloads.eventCreationRequestPayload(resourceID)
 
-        eventCreationResponse = requestBuilder.buildEventNotificationRequest()
+        eventCreationResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.URLENC)
                 .baseUri(configuration.getISServerUrl())
                 .body(constructEventCreationPayload(eventCreationPayload))
@@ -115,7 +115,7 @@ class EventCreationRequestValidationTest extends AbstractEventNotificationFlow {
     @Test
     void "Initial Event creation request without payload"() {
 
-        eventCreationResponse = requestBuilder.buildEventNotificationRequest()
+        eventCreationResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.URLENC)
                 .header(EventNotificationConstants.X_WSO2_RESOURCE_ID, resourceID)
                 .baseUri(configuration.getISServerUrl())

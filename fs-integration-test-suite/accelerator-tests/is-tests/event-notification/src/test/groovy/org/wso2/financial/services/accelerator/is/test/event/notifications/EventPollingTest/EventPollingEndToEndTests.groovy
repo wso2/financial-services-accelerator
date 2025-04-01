@@ -20,16 +20,16 @@ package org.wso2.financial.services.accelerator.is.test.event.notifications.Even
 
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Aggregated Polling Flow SCA Tests.
  */
-class EventPollingEndToEndTests extends AbstractEventNotificationFlow {
+class EventPollingEndToEndTests extends FSConnectorTest {
 
     @Test(groups = "SmokeTest", invocationCount = 6)
     void "Create events before polling"() {

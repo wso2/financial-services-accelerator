@@ -23,12 +23,6 @@ package org.wso2.financial.services.accelerator.is.test.event.notifications.util
  */
 class EventNotificationConstants {
 
-    final static String URL_EVENT_NOTIFICATION = "/api/fs/event-notifications"
-    final static String URL_EVENT_CREATE = URL_EVENT_NOTIFICATION + "/create-events"
-    final static String URL_EVENT_POLLING = URL_EVENT_NOTIFICATION + "/events"
-    final static String URL_EVENT_SUBSCRIPTION = URL_EVENT_NOTIFICATION + "/subscription"
-    final static String URL_EVENT_SUBSCRIPTION_BY_EVENT_TYPE = "/type/" + RESOURCE_UPDATE_EVENT_TYPE
-
     //Event Creation Constants
     final static String X_WSO2_RESOURCE_ID = "x-wso2-resource-id"
     final static String NOTIFICATION_ID = "notificationsID"
@@ -47,7 +41,6 @@ class EventNotificationConstants {
     final static String CONSENT_AUTHORIZATION_REVOKED_EVENT_TYPE = "urn_uk_org_openbanking_events_consent-authorization-revoked"
     final static String RESOURCE_UPDATE_EVENT_TYPE = "urn_uk_org_openbanking_events_resource-update"
     final static String CREATE_EVENT_TYPE = "urn:ietf:params:scim:event:create"
-    final static String PATH_EVENT_SUBSCRIPTION_ID = "subscriptionId"
     final static String PATH_CALLBACK_URL = "callbackUrl"
     final static String PATH_VERSION = "version"
     final static String PATH_EVENT_TYPES = "eventTypes"

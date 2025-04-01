@@ -20,16 +20,16 @@ package org.wso2.financial.services.accelerator.is.test.event.notifications.Even
 
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Subscription Flow  Tests.
  */
-class EventSubscriptionEndToEndTest extends AbstractEventNotificationFlow {
+class EventSubscriptionEndToEndTest extends FSConnectorTest {
 
     @Test(groups = "SmokeTest")
     void "Event Subscription creation request with valid inputs"() {

@@ -19,21 +19,26 @@
 package org.wso2.financial.services.accelerator.is.test.event.notifications.EventSubscriptionTest
 
 import io.restassured.http.ContentType
+import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
 
 /**
  * Event Subscription Update Validation Tests
  */
-class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFlow {
+class EventSubscriptionUpdateValidationTests extends FSConnectorTest {
+
+    Response subscriptionUpdateResponse
 
     @BeforeClass (alwaysRun = true)
     void createSubscriptionBeforeTests() {
         subscriptionPayload = EventNotificationPayloads.creationPayloadEventSubscription
+        subscriptionUpdatePayload = EventNotificationPayloads.getSubscriptionUpdatePayload(subscriptionId)
         doDefaultSubscriptionCreation()
 
         Assert.assertEquals(subscriptionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -42,11 +47,17 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
     @Test
     void "Event Subscription update request with invalid access token"() {
 
-        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
-                .contentType(ContentType.JSON)
+//        subscriptionUpdateResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+//                .contentType(ContentType.JSON)
 //                .baseUri(configuration.getISServerUrl())
+//                .body(subscriptionUpdatePayload)
+//                .put(subscriptionPath + "/" + subscriptionId)
+
+        subscriptionUpdateResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+                .contentType(ContentType.JSON)
+                .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
-                .put(subscriptionPath + "/" + subscriptionId)
+                .post(subscriptionPath + "/" + subscriptionId)
 
         Assert.assertEquals(subscriptionUpdateResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
@@ -54,7 +65,7 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
     @Test
     void "Event subscription update request without authorization header"() {
 
-        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequestWithoutAuthHeader()
+        subscriptionUpdateResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutAuthHeader()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
@@ -66,7 +77,7 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
     @Test
     void "Event subscription update request without client Id"() {
 
-        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        subscriptionUpdateResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutClientID()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
@@ -78,7 +89,7 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
     @Test
     void "Event subscription update request with wrong content type"() {
 
-        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequest()
+        subscriptionUpdateResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.XML)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
@@ -90,7 +101,7 @@ class EventSubscriptionUpdateValidationTests extends AbstractEventNotificationFl
     @Test
     void "Event subscription update request without content type header"() {
 
-        subscriptionUpdateResponse = requestBuilder.buildEventNotificationRequest()
+        subscriptionUpdateResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionUpdatePayload)
                 .put(subscriptionPath + "/" + subscriptionId)

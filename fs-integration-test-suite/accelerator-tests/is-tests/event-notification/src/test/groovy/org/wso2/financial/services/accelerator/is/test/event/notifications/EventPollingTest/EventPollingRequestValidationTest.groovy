@@ -22,16 +22,17 @@ import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Polling Request Validation Test
  */
-class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
+class EventPollingRequestValidationTest extends FSConnectorTest {
 
     @BeforeClass(alwaysRun = true)
     void initializePayloadBeforeTests() {
@@ -41,7 +42,7 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
     @Test
     void "Event Polling request with invalid access token"() {
 
-        pollingResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+        pollingResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
                 .contentType(ContentType.URLENC)
                 .baseUri(configuration.getISServerUrl())
                 .body(constructPollingPayload(pollingPayload))
@@ -53,7 +54,7 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
     @Test
     void "Event Polling request request without authorization header"() {
 
-        pollingResponse = requestBuilder.buildEventNotificationRequestWithoutAuthHeader()
+        pollingResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutAuthHeader()
                 .contentType(ContentType.URLENC)
                 .baseUri(configuration.getISServerUrl())
                 .body(constructPollingPayload(pollingPayload))
@@ -65,7 +66,7 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
     @Test
     void "Event Polling request request without client id"() {
 
-        pollingResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        pollingResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutClientID()
                 .contentType(ContentType.URLENC)
                 .baseUri(configuration.getISServerUrl())
                 .body(constructPollingPayload(pollingPayload))
@@ -77,7 +78,7 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
     @Test
     void "Event polling request with wrong content type"() {
 
-        pollingResponse = requestBuilder.buildEventNotificationRequest()
+        pollingResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(constructPollingPayload(pollingPayload))
@@ -89,7 +90,7 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
     @Test
     void "Event polling request without content type header"() {
 
-        pollingResponse = requestBuilder.buildEventNotificationRequest()
+        pollingResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .baseUri(configuration.getISServerUrl())
                 .body(constructPollingPayload(pollingPayload))
                 .post(pollingPath)
@@ -100,7 +101,7 @@ class EventPollingRequestValidationTest extends AbstractEventNotificationFlow {
     @Test
     void "Event polling request Without request Payload"() {
 
-        pollingResponse = requestBuilder.buildEventNotificationRequest()
+        pollingResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.URLENC)
                 .baseUri(configuration.getISServerUrl())
                 .post(pollingPath)

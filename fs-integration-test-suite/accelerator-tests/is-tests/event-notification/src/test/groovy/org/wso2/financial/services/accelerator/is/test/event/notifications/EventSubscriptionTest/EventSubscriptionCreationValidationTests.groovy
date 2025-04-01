@@ -21,23 +21,24 @@ package org.wso2.financial.services.accelerator.is.test.event.notifications.Even
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Subscription Creation Validation Tests
  */
-class EventSubscriptionCreationValidationTests extends AbstractEventNotificationFlow {
+class EventSubscriptionCreationValidationTests extends FSConnectorTest {
 
     @Test
     void "Event Subscription creation request with invalid access token"() {
 
         subscriptionPayload = EventNotificationPayloads.creationPayloadEventSubscription
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)
@@ -51,7 +52,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
 
         subscriptionPayload = EventNotificationPayloads.creationPayloadEventSubscription
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequestWithoutAuthHeader()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutAuthHeader()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)
@@ -65,7 +66,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
 
         subscriptionPayload = EventNotificationPayloads.creationPayloadEventSubscription
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequest()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.XML)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)
@@ -79,7 +80,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
 
         subscriptionPayload = EventNotificationPayloads.creationPayloadEventSubscription
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequest()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)
                 .post(subscriptionPath)
@@ -92,7 +93,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
 
         subscriptionPayload = EventNotificationPayloads.creationPayloadEventSubscription
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutClientID()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)
@@ -106,7 +107,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
 
         subscriptionPayload = EventNotificationPayloads.subscriptionCreationPayloadWithNoCallbackUrl
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequest()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)
@@ -122,7 +123,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
 
         subscriptionPayload = EventNotificationPayloads.creationPayloadEventSubscriptionWithNoEventTypes
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequest()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)
@@ -138,7 +139,7 @@ class EventSubscriptionCreationValidationTests extends AbstractEventNotification
 
         subscriptionPayload = EventNotificationPayloads.subscriptionCreationPayloadWithoutCallbackUrl
 
-        subscriptionResponse = requestBuilder.buildEventNotificationRequest()
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
                 .contentType(ContentType.JSON)
                 .baseUri(configuration.getISServerUrl())
                 .body(subscriptionPayload)

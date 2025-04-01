@@ -20,13 +20,15 @@ package org.wso2.financial.services.accelerator.is.test.event.notifications.Even
 
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
+
 /**
  * Event Subscription Deletion Validation Tests
  */
-class EventSubscriptionDeletionValidationTest extends AbstractEventNotificationFlow {
+class EventSubscriptionDeletionValidationTest extends FSConnectorTest {
 
 
     @Test
@@ -37,7 +39,7 @@ class EventSubscriptionDeletionValidationTest extends AbstractEventNotificationF
 
         Assert.assertEquals(subscriptionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
-        subscriptionDeletionResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+        subscriptionDeletionResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
                 .baseUri(configuration.getISServerUrl())
                 .delete(subscriptionPath + "/" + subscriptionId)
 
@@ -52,7 +54,7 @@ class EventSubscriptionDeletionValidationTest extends AbstractEventNotificationF
 
         Assert.assertEquals(subscriptionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
-        subscriptionDeletionResponse = requestBuilder.buildEventNotificationRequestWithoutAuthHeader()
+        subscriptionDeletionResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutAuthHeader()
                 .baseUri(configuration.getISServerUrl())
                 .delete(subscriptionPath + "/" + subscriptionId)
 
@@ -67,7 +69,7 @@ class EventSubscriptionDeletionValidationTest extends AbstractEventNotificationF
 
         Assert.assertEquals(subscriptionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
-        subscriptionDeletionResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        subscriptionDeletionResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutClientID()
                 .baseUri(configuration.getISServerUrl())
                 .delete(subscriptionPath + "/" + subscriptionId)
 

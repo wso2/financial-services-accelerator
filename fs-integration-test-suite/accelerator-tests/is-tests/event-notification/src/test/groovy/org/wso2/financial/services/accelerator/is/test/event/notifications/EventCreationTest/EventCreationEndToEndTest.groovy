@@ -20,17 +20,16 @@ package org.wso2.financial.services.accelerator.is.test.event.notifications.Even
 
 import org.testng.Assert
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationConstants
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Event Creation Flow  Tests.
  */
-class EventCreationEndToEndTest extends AbstractEventNotificationFlow {
+class EventCreationEndToEndTest extends FSConnectorTest {
 
     @Test
     void "Initiate an Account Consent"() {

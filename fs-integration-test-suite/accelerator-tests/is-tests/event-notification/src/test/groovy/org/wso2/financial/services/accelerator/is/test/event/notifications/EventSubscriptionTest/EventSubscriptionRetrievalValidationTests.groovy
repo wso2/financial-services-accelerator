@@ -21,13 +21,15 @@ package org.wso2.financial.services.accelerator.is.test.event.notifications.Even
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.AbstractEventNotificationFlow
 import org.wso2.financial.services.accelerator.is.test.event.notifications.utils.EventNotificationPayloads
+import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
+
 /**
  * Event Subscription Retrieval Validation Tests
  */
-class EventSubscriptionRetrievalValidationTests extends AbstractEventNotificationFlow {
+class EventSubscriptionRetrievalValidationTests extends FSConnectorTest {
 
     @BeforeClass (alwaysRun = true)
     void createSubscriptionBeforeTests() {
@@ -40,7 +42,7 @@ class EventSubscriptionRetrievalValidationTests extends AbstractEventNotificatio
     @Test
     void "Event Subscription retrieval with invalid access token"() {
 
-        subscriptionRetrievalResponse = requestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
+        subscriptionRetrievalResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithInvalidAuthHeader()
                 .baseUri(configuration.getISServerUrl())
                 .get(subscriptionPath + "/" + subscriptionId)
 
@@ -50,7 +52,7 @@ class EventSubscriptionRetrievalValidationTests extends AbstractEventNotificatio
     @Test
     void "Event subscription retrieval request without authorization header"() {
 
-        subscriptionRetrievalResponse = requestBuilder.buildEventNotificationRequestWithoutAuthHeader()
+        subscriptionRetrievalResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutAuthHeader()
                 .baseUri(configuration.getISServerUrl())
                 .get(subscriptionPath + "/" + subscriptionId)
 
@@ -60,7 +62,7 @@ class EventSubscriptionRetrievalValidationTests extends AbstractEventNotificatio
     @Test
     void "Event subscription retrieval request without client Id"() {
 
-        subscriptionRetrievalResponse = requestBuilder.buildEventNotificationRequestWithoutClientID()
+        subscriptionRetrievalResponse = EventNotificationRequestBuilder.buildEventNotificationRequestWithoutClientID()
                 .baseUri(configuration.getISServerUrl())
                 .get(subscriptionPath + "/" + subscriptionId)
 
