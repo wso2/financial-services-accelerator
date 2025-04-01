@@ -828,7 +828,7 @@ public final class FinancialServicesConfigParser {
         return serviceExtensionTypes.stream()
                 .map(ServiceExtensionTypeEnum::fromString)
                 .collect(Collectors.toList());
-    }X
+    }
 
     /**
      * Method to get service extensions endpoint security type.
