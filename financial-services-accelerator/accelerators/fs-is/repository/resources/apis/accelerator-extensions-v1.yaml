@@ -104,6 +104,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response200ForDcrValidation'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data: {attributesToStore:{
+                      key: value
+                    }}
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorMessage: Invalid dcr payload, errorDescription: Invalid scope values found}
         "400":
           description: Bad Request
           content:
@@ -113,8 +128,7 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data : { errorMessage: Bad request, errorDescription: Request does not comply with the schema}
         "500":
           description: Server Error
           content:
@@ -124,9 +138,8 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
-              
+                data : { errorMessage: Internal server error, errorDescription: Error occurred while handling the request}
+
   /pre-dynamic-client-update:
     post:
       tags:
@@ -145,6 +158,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response200ForDcrUpdate'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data: {attributesToStore:{
+                      key: value
+                    }}
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorMessage: Invalid dcr payload, errorDescription: Invalid scope values found}
         "400":
           description: Bad Request
           content:
@@ -154,8 +182,7 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data : { errorMessage: Bad request, errorDescription: Request does not comply with the schema}
         "500":
           description: Server Error
           content:
@@ -165,8 +192,7 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data : { errorMessage: Internal server error, errorDescription: Error occurred while handling the request}
   /pre-consent-generation:
     post:
       tags:
@@ -602,6 +628,12 @@ paths:
                   value:
                     responseId: Ec1wMjmiG8
                     status: SUCCESS
+                successExampleWithDetails:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data : { callbackUrl: "https://test.com", version: "3.1", eventTypes:["eventType"]}
                 failedExample:
                   summary: Failed response
                   value:
@@ -856,17 +888,7 @@ components:
         data:
           type: object  
           description: Defines the custom error response.
-  
-    Response200ForDcrValidation:
-      oneOf:
-      - $ref: '#/components/schemas/SuccessResponseDCRValidation'
-      - $ref: '#/components/schemas/FailedResponseDCRValidation'
-      
-    Response200ForDcrUpdate:
-      oneOf:
-      - $ref: '#/components/schemas/SuccessResponseDCRUpdate'
-      - $ref: '#/components/schemas/FailedResponseDCRValidation'
-      
+
     ErrorMapperRequestBody:
       type: object
       properties:
@@ -876,7 +898,7 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/ErrorMapperData'
-    
+
     AppCreationValidationRequestBody:
       type: object
       properties:
@@ -907,7 +929,15 @@ components:
         operation:
           type: string
           description: The operation where the error occurred.
-          
+
+    Response200ForDcrValidation:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponseDCRValidation'
+        - $ref: '#/components/schemas/FailedResponseDCRValidation'
+    Response200ForDcrUpdate:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponseDCRUpdate'
+        - $ref: '#/components/schemas/FailedResponseDCRValidation'
     AppCreationValidationData:
       type: object
       description: Defines the context data related to the app creation validation.
@@ -976,9 +1006,8 @@ components:
     
     FailedResponseDCRValidation:
       required:
-      - errorDescription
-      - errorMessage
-      - status
+        - data
+        - status
       type: object
       properties:
         status:
@@ -989,13 +1018,16 @@ components:
         errorCode:
           type: string
           description: If any custom error code to return.
-        errorMessage:
-          type: string
-          description: Provides the reason for error.
-        errorDescription:
-          type: string
-          description: Offers a detailed explanation of the error.
-    
+        data:
+          type: object
+          properties:
+            errorMessage:
+              type: string
+              description: Provides the reason for error.
+            errorDescription:
+              type: string
+              description: Offers a detailed explanation of the error.
+
     RequestBase:
       type: object
       properties:
@@ -1656,6 +1688,7 @@ components:
     Response200ForEvent:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponseForEvent'
+        - $ref: '#/components/schemas/SuccessResponseForEventWithDetails'
         - $ref: '#/components/schemas/FailedResponseForEvent'
     Response200ForPostEvent:
       oneOf:
@@ -1670,6 +1703,26 @@ components:
           type: string
           enum:
             - SUCCESS
+    SuccessResponseForEventWithDetails:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+            - SUCCESS
+        data:
+          type: object
+          properties:
+            callbackUrl:
+              type: string
+            version:
+              type: string
+            eventTypes:
+              type: array
+              items:
+                type: string
     SuccessResponseForPostEvent:
       type: object
       properties:
