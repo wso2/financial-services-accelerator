@@ -16,24 +16,24 @@ security:
 - BasicAuth: []
 - OAuth2: []
 tags:
-  - name: Client Registration
-    description: APIs for dynamic client registration flow extensions
-  - name: Consent
-    description: APIs for consent flow extensions
-  - name: Token
-    description: APIs for token flow extensions
-  - name: Authorize
-    description: APIs for authorize flow extensions
-  - name: Token & Authorize
-    description: APIs for token & authorize flow extensions
-  - name: Event Subscription
-    description: APIs for Event Subscription extensions
-  - name: Event Creation
-    description: APIs for Event Creation extensions
-  - name: Event Polling
-    description: APIs for Event Polling extensions
-  - name: Error Handling
-    description: APIs for handling accelerator errors
+- name: Client Registration
+  description: APIs for dynamic client registration flow extensions
+- name: Consent
+  description: APIs for consent flow extensions
+- name: Token
+  description: APIs for token flow extensions
+- name: Authorize
+  description: APIs for authorize flow extensions
+- name: Token & Authorize
+  description: APIs for token & authorize flow extensions
+- name: Event Subscription
+  description: APIs for Event Subscription extensions
+- name: Event Creation
+  description: APIs for Event Creation extensions
+- name: Event Polling
+  description: APIs for Event Polling extensions
+- name: Error Handling
+  description: APIs for handling accelerator errors
 paths:
   /error-mapper:
     post:
@@ -1559,84 +1559,6 @@ components:
     PreUserAuthorizationRequestBodyData:
       type: object
       description: full request object
-    PreConsentPersistenceRequestBody:
-      type: object
-      properties:
-        requestId:
-          type: string
-          example: Ec1wMjmiG8
-        data:
-          $ref: '#/components/schemas/PreConsentPersistenceData'
-    PreConsentPersistenceData:
-      type: object
-      properties:
-        consentId:
-          type: string
-        approved:
-          type: boolean
-        consentType:
-          type: string
-        metadata:
-          type: object
-          description: Custom metadata related to the consent, flexible structure
-    Response200ForConsentPersistence:
-      oneOf:
-        - $ref: '#/components/schemas/SuccessResponsePreConsentPersistence'
-        - $ref: '#/components/schemas/FailedResponseInConsent'
-
-    SuccessResponsePreConsentPersistence:
-      type: object
-      properties:
-        responseId:
-          type: string
-        status:
-          type: string
-          enum:
-            - SUCCESS
-        data:
-          $ref: '#/components/schemas/ConsentPersistenceSuccessData'
-    ConsentPersistenceSuccessData:
-      type: object
-      properties:
-        consentType:
-          type: string
-        consentStatus:
-          type: string
-        validityTime:
-          type: integer
-          format: int64
-        recurringIndicator:
-          type: boolean
-        consentFrequency:
-          type: integer
-        consentPayload:
-          type: object
-        authorizations:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorizationResource'
-    AuthorizationResource:
-      type: object
-      properties:
-        userId:
-          type: string
-        authorizationType:
-          type: string
-        authorizationStatus:
-          type: string
-        consentedResources:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConsentedResource'
-    ConsentedResource:
-      type: object
-      properties:
-        accountId:
-          type: string
-        permission:
-          type: string
-        status:
-          type: string
 
     EventSubscriptionRequestBody:
       type: object
