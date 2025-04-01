@@ -91,6 +91,13 @@ public class ConsentMgtCommonDBQueries {
         return "UPDATE FS_CONSENT SET VALIDITY_TIME = ?, UPDATED_TIME = ? WHERE CONSENT_ID = ?";
     }
 
+    public String getUpdateConsentResourcePreparedStatement() {
+
+        return "UPDATE FS_CONSENT SET RECEIPT = ?, CONSENT_TYPE = ?, CURRENT_STATUS = ?, " +
+                "CONSENT_FREQUENCY = ?, VALIDITY_TIME = ?, RECURRING_INDICATOR = ?, UPDATED_TIME = ? " +
+                "WHERE CONSENT_ID = ?";
+    }
+
     public String getStoreAuthorizationPreparedStatement() {
 
         return "INSERT INTO FS_CONSENT_AUTH_RESOURCE (AUTH_ID, CONSENT_ID, AUTH_TYPE, USER_ID, AUTH_STATUS, " +
