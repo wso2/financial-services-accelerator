@@ -40,10 +40,12 @@ import org.wso2.financial.services.accelerator.test.framework.constant.PageObjec
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ConsentRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
+import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -81,6 +83,22 @@ class FSConnectorTest extends CommonTest{
     def automation
     String dcrPath
     String clientId
+
+    String eventCreationPayload
+    final String eventCreationPath = ConnectorTestConstants.URL_EVENT_CREATE
+    Response eventCreationResponse
+    String resourceID
+    String pollingPayload
+    final String pollingPath = ConnectorTestConstants.URL_EVENT_POLLING
+    Response pollingResponse
+    String subscriptionPayload
+    String subscriptionUpdatePayload
+    final String subscriptionPath = ConnectorTestConstants.URL_EVENT_SUBSCRIPTION
+    String subscriptionId
+    Response subscriptionResponse
+    Response subscriptionRetrievalResponse
+    Response subscriptionUpdateResponse
+    Response subscriptionDeletionResponse
 
     //Consent scopes
     public List<ConnectorTestConstants.ApiScope> consentScopes = [
@@ -812,5 +830,117 @@ class FSConnectorTest extends CommonTest{
         def basicHeader = "Basic ${authToken}"
 
         return basicHeader
+    }
+
+    /**
+     * Event polling
+     */
+    void doDefaultEventCreation() {
+        //initiation
+        eventCreationResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .contentType(ContentType.URLENC)
+                .header(ConnectorTestConstants.X_WSO2_RESOURCE_ID, resourceID)
+                .baseUri(configuration.getISServerUrl())
+                .body(constructEventCreationPayload(eventCreationPayload))
+                .post(eventCreationPath)
+
+    }
+
+    /**
+     * Event polling
+     */
+    void doDefaultEventPolling() {
+        //initiation
+        pollingResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .contentType(ContentType.URLENC)
+                .baseUri(configuration.getISServerUrl())
+                .body(constructPollingPayload(pollingPayload))
+                .post(pollingPath)
+    }
+
+    /**
+     * Event Subscription Creation
+     */
+    void doDefaultSubscriptionCreation() {
+
+        subscriptionResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .contentType(ContentType.JSON)
+                .baseUri(configuration.getISServerUrl())
+                .body(subscriptionPayload)
+                .post(subscriptionPath)
+
+        subscriptionId = TestUtil.parseResponseBody(subscriptionResponse,
+                ConnectorTestConstants.PATH_EVENT_SUBSCRIPTION_ID)
+    }
+
+    /**
+     * Event Subscription Retrieval
+     */
+    void doDefaultSubscriptionRetrieval() {
+
+        subscriptionRetrievalResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .baseUri(configuration.getISServerUrl())
+                .get(subscriptionPath + "/" + subscriptionId)
+    }
+
+    /**
+     * Bulk Event Subscription Retrieval
+     */
+    void doDefaultSubscriptionBulkRetrieval() {
+
+        subscriptionRetrievalResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .baseUri(configuration.getISServerUrl())
+                .get(subscriptionPath)
+    }
+
+    /**
+     * Bulk Event Subscription Retrieval
+     */
+    void doDefaultSubscriptionRetrievalByEventType() {
+
+        subscriptionRetrievalResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .baseUri(configuration.getISServerUrl())
+                .get(subscriptionPath + ConnectorTestConstants.URL_EVENT_SUBSCRIPTION_BY_EVENT_TYPE)
+    }
+
+    /**
+     * Event Subscription Update
+     */
+    void doDefaultSubscriptionUpdate() {
+
+        subscriptionUpdateResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .contentType(ContentType.JSON)
+                .baseUri(configuration.getISServerUrl())
+                .body(subscriptionUpdatePayload)
+                .put(subscriptionPath + "/" + subscriptionId)
+    }
+
+    /**
+     * Event Subscription Deletion
+     */
+    void doDefaultSubscriptionDeletion() {
+
+        subscriptionDeletionResponse = EventNotificationRequestBuilder.buildEventNotificationRequest()
+                .baseUri(configuration.getISServerUrl())
+                .delete(subscriptionPath + "/" + subscriptionId)
+    }
+
+    static String constructEventCreationPayload(String jsonPayload) {
+
+        return "request=" + getBase64EncodedPayload(jsonPayload)
+    }
+
+    static String constructPollingPayload(String jsonPayload) {
+
+        return "request=" + getBase64EncodedPayload(jsonPayload)
+    }
+
+    /**
+     * Method to get the Base64 encoded the payload
+     * @param payload  Payload to be encoded
+     * @return Base64 encoded payload
+     */
+    static String getBase64EncodedPayload(String payload) {
+        return Base64.encoder.encodeToString(payload.getBytes(Charset.defaultCharset()))
     }
 }
