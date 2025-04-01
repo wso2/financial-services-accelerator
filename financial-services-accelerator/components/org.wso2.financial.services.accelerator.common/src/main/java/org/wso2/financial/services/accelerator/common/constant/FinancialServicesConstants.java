@@ -127,13 +127,13 @@ public class FinancialServicesConstants {
             "EventNotifications.Realtime.RequestGenerator";
 
     // Service Extensions Constants
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ServiceExtensionsEndpoint.Enable";
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ServiceExtensionsEndpoint.BaseURL";
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_TYPE = "ServiceExtensionsEndpoint.ExtensionTypes.Type";
-    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ServiceExtensionsEndpoint.Security.Type";
-    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ServiceExtensionsEndpoint.Security.Username";
-    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ServiceExtensionsEndpoint.Security.Password";
-    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ServiceExtensionsEndpoint.Security.Token";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ExtensionsEndpoint.Enable";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_EXTENSION = "ExtensionsEndpoint.AllowedExtensions.AllowedExtension";
+    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ExtensionsEndpoint.Security.Type";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ExtensionsEndpoint.Security.Username";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ExtensionsEndpoint.Security.Password";
+    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ExtensionsEndpoint.Security.Token";
     public static final String CONSENT_TYPE = "consentType";
     public static final String ERROR_DESCRIPTION = "errorDescription";
     public static final String DEFAULT_ERROR_DESCRIPTION = "Unexpected error occurred";

@@ -136,6 +136,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 }
 
                 if (isExtensionsEnabled && isExternalPreConsentRetrievalEnabled) {
+                    // Call external service before retrieving consent.
+                    Map<String, String> consentAttributes =
+                            consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                    consent.setConsentAttributes(consentAttributes);
                     ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
                             consentId, consent, resourcePath);
                     ExternalAPIConsentRetrieveResponseDTO responseDTO = ExternalAPIConsentManageUtils.
@@ -143,7 +147,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     consentManageData.setResponsePayload(responseDTO.getResponseData());
                 } else {
                     JSONObject receiptJSON = new JSONObject(consent.getReceipt());
-                    ;
                     consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(
                             receiptJSON, consent));
                 }
@@ -382,14 +385,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             ConsentResource consentResource = new ConsentResource(clientId,
                     new Gson().toJson(responseDTO.getConsentPayload()), responseDTO.getConsentType(),
                     responseDTO.getConsentFrequency(), responseDTO.getValidityTime(),
-                    responseDTO.getRecurringIndicator(), responseDTO.getConsentStatus());
+                    responseDTO.getRecurringIndicator(), responseDTO.getConsentStatus(),
+                    responseDTO.getConsentAttributes());
 
-            // ToDo: Get proper auth type and status from external service.
-            DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
-                    consentResource, null, "created",
-                    "authorisation", true
-            );
-            return createdConsent;
+            return consentCoreService.createAuthorizableConsent(
+                    consentResource, null, responseDTO.getAuthorizationStatus(),
+                    responseDTO.getAuthorizationType(), true);
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent");

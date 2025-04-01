@@ -44,7 +44,7 @@ public class FinancialServicesConfigurationServiceImpl implements FinancialServi
                 configParser.isServiceExtensionsEndpointEnabled());
         serviceExtensionConfigs.put(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_BASE_URL,
                 configParser.getServiceExtensionsEndpointBaseUrl());
-        serviceExtensionConfigs.put(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_TYPE,
+        serviceExtensionConfigs.put(FinancialServicesConstants.SERVICE_EXTENSIONS_EXTENSION,
                 configParser.getServiceExtensionTypes());
         return serviceExtensionConfigs;
     }

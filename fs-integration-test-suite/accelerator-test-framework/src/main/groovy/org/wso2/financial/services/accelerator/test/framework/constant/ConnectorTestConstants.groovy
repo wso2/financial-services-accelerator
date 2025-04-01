@@ -295,4 +295,13 @@ class ConnectorTestConstants extends Constants{
     final static String SUBMISSION_PATH_INTERNATIONAL_STANDING_ORDERS = "/open-banking/v3.1/pisp/international-standing-orders"
     final static String SUBMISSION_PATH_INTERNATIONAL_SCHEDULE = "/open-banking/v3.1/pisp/international-scheduled-payments"
     final static String SUBMISSION_PATH_FILE_PAYMENTS = "/open-banking/v3.1/pisp/file-payments"
+
+    final static String URL_EVENT_NOTIFICATION = "/api/fs/event-notifications"
+    final static String URL_EVENT_CREATE = URL_EVENT_NOTIFICATION + "/create-events"
+    final static String URL_EVENT_POLLING = URL_EVENT_NOTIFICATION + "/events"
+    final static String URL_EVENT_SUBSCRIPTION = URL_EVENT_NOTIFICATION + "/subscription"
+    final static String RESOURCE_UPDATE_EVENT_TYPE = "urn_uk_org_openbanking_events_resource-update"
+    final static String URL_EVENT_SUBSCRIPTION_BY_EVENT_TYPE = "/type/" + RESOURCE_UPDATE_EVENT_TYPE
+    final static String X_WSO2_RESOURCE_ID = "x-wso2-resource-id"
+    final static String PATH_EVENT_SUBSCRIPTION_ID = "subscriptionId"
 }
