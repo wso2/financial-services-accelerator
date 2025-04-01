@@ -165,7 +165,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 consentAdminData.setResponsePayload(responseDTO.getResponsePayload());
             } catch (FinancialServicesException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Exception occurred while revoking consents", e);
+                        "Exception occurred while searching consents", e);
             }
         }
     }
