@@ -123,6 +123,41 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
+    public void updateConsentResource(Connection connection, ConsentResource consentResource)
+            throws ConsentDataUpdationException {
+
+        long updatedTime = System.currentTimeMillis() / 1000;
+        String updateConsentResourceQuery = sqlStatements.getUpdateConsentResourcePreparedStatement();
+
+        try (PreparedStatement updateStmt = connection.prepareStatement(updateConsentResourceQuery)) {
+
+            log.debug("Setting parameters to prepared statement to update consent resource");
+
+            updateStmt.setString(1, consentResource.getReceipt());
+            updateStmt.setString(2, consentResource.getConsentType());
+            updateStmt.setString(3, consentResource.getCurrentStatus());
+            updateStmt.setInt(4, consentResource.getConsentFrequency());
+            updateStmt.setLong(5, consentResource.getValidityPeriod());
+            updateStmt.setBoolean(6, consentResource.isRecurringIndicator());
+            updateStmt.setLong(7, updatedTime);
+            updateStmt.setString(8, consentResource.getConsentID());
+
+            int result = updateStmt.executeUpdate();
+
+            if (result > 0) {
+                log.debug("Updated the consent resource successfully");
+                consentResource.setUpdatedTime(updatedTime);
+            } else {
+                throw new ConsentDataUpdationException("Failed to update consent resource properly.");
+            }
+
+        } catch (SQLException e) {
+            log.error("Error while updating consent resource", e);
+            throw new ConsentDataUpdationException("Error while updating consent resource", e);
+        }
+    }
+
+    @Override
     public ConsentResource getConsentResource(Connection connection, String consentID)
             throws ConsentDataRetrievalException {
 

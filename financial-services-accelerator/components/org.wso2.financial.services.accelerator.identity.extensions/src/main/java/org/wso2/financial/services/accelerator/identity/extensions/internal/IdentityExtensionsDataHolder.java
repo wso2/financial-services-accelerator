@@ -29,14 +29,14 @@ import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.AbstractApplicationUpdater;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.AbstractApplicationUpdater;
 import org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSGrantHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSIntrospectionDataProvider;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.Map;
 
@@ -148,18 +148,18 @@ public class IdentityExtensionsDataHolder {
 
         IdentityExtensionsDataHolder.configurationService = configurationService;
         this.configurationMap = configurationService.getConfigurations();
-        abstractApplicationUpdater = (AbstractApplicationUpdater) IdentityCommonUtils.getClassInstanceFromFQN
+        abstractApplicationUpdater = (AbstractApplicationUpdater) FinancialServicesUtils.getClassInstanceFromFQN
                 (configurationService.getConfigurations().get(FinancialServicesConstants.POST_APPLICATION_LISTENER));
-        fsRequestObjectValidator = (FSRequestObjectValidator) IdentityCommonUtils.getClassInstanceFromFQN(
+        fsRequestObjectValidator = (FSRequestObjectValidator) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.REQUEST_VALIDATOR));
-        fsResponseTypeHandler = (FSResponseTypeHandler) IdentityCommonUtils.getClassInstanceFromFQN(
+        fsResponseTypeHandler = (FSResponseTypeHandler) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.RESPONSE_HANDLER));
-        fsGrantHandler = (FSGrantHandler) IdentityCommonUtils.getClassInstanceFromFQN(
+        fsGrantHandler = (FSGrantHandler) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.GRANT_HANDLER));
-        this.setClaimProvider((ClaimProvider) IdentityCommonUtils.getClassInstanceFromFQN(
+        this.setClaimProvider((ClaimProvider) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.CLAIM_PROVIDER)));
         FSClaimProvider.setClaimProvider(getClaimProvider());
-        this.setIntrospectionDataProvider((IntrospectionDataProvider) IdentityCommonUtils.getClassInstanceFromFQN(
+        this.setIntrospectionDataProvider((IntrospectionDataProvider) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.INTROSPECTION_DATA_PROVIDER)));
         FSIntrospectionDataProvider.setIntrospectionDataProvider(getIntrospectionDataProvider());
     }
