@@ -70,7 +70,8 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     public JSONObject toJson() {
 
         JSONObject dtoJson = new JSONObject(this);
-        JSONObject consentResourceJson = this.consentResource.toJson();
+        JSONObject consentResourceJson = this.consentResource != null ? this.consentResource.toJson() :
+                new JSONObject();
         dtoJson.put("consentResource", consentResourceJson);
         return dtoJson;
     }

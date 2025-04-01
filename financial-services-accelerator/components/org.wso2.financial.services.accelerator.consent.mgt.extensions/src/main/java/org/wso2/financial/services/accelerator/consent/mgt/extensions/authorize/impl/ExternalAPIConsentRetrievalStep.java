@@ -50,11 +50,12 @@ import java.util.UUID;
 public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
+    private final boolean isInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
-    private static final String CONSENT_DATA_OBJECT_KEY = "consent_data";
 
     public ExternalAPIConsentRetrievalStep() {
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
+        isInitiatedConsent = true;
     }
 
     @Override
@@ -64,10 +65,17 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-        String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+        String consentId;
 
         try {
-            setMandatoryConsentData(consentId, consentData);
+            if (isInitiatedConsent) {
+                consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+                setMandatoryConsentData(consentId, consentData);
+            } else {
+                consentId = UUID.randomUUID().toString();
+                consentData.setConsentId(consentId);
+                consentData.setType("accounts"); // ToDo: How to decide consent type?
+            }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
                     consentData);
 
