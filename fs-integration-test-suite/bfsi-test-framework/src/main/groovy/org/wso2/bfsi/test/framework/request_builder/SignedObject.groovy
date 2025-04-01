@@ -141,7 +141,7 @@ class SignedObject {
             throws TestFrameworkException {
         try {
 
-            KeyStore keyStore = KeyStore.getKeyStore(appKeystoreLocation, appKeystorePassword)
+            java.security.KeyStore keyStore = KeyStore.getKeyStore(appKeystoreLocation, appKeystorePassword)
             Certificate certificate = KeyStore.getCertificate(keyStore, appKeystoreAlias, appKeystorePassword)
             Key signingKey = KeyStore.getSigningKey(appKeystoreLocation, appKeystorePassword, appKeystoreAlias)
 

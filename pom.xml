@@ -87,7 +87,8 @@
 
     <modules>
         <module>financial-services-accelerator</module>
-        <module>fs-integration-test-suite</module>
+        <module>fs-integration-test-suite/bfsi-test-framework</module>
+        <module>fs-integration-test-suite/accelerator-test-framework</module>
     </modules>
 
     <repositories>
