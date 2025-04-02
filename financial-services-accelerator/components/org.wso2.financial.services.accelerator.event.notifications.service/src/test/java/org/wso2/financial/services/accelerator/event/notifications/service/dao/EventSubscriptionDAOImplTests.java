@@ -57,7 +57,7 @@ public class EventSubscriptionDAOImplTests {
     @BeforeClass
     public void initTest() throws Exception {
         EventNotificationTestUtils.initializeDataSource(DB_NAME,
-                EventNotificationTestUtils.getFilePath("dbScripts/h2.sql"));
+                EventNotificationTestUtils.getFilePath("dbscripts/h2.sql"));
 
         mockedConnection = Mockito.mock(Connection.class);
         mockedPreparedStatement = Mockito.mock(PreparedStatement.class);
