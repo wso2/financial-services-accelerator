@@ -22,7 +22,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventCreationService;
@@ -31,6 +38,8 @@ import org.wso2.financial.services.accelerator.event.notifications.service.dto.N
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventCreationResponse;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
+
+import java.util.UUID;
 
 /**
  * This is to handle FS Event Creation.
@@ -83,6 +92,13 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
             throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
         }
 
+        try {
+            handleValidation(new JSONObject(notificationCreationDTO));
+        } catch (FSEventNotificationException e) {
+            log.error("Error occurred while validating the event", e);
+            throw new FSEventNotificationException(e.getStatus(), e.getMessage(), e);
+        }
+
         String registrationResponse = "";
         try {
             registrationResponse = eventCreationService.publishEventNotification(notificationCreationDTO);
@@ -98,6 +114,34 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
             log.error("FS Event Notification Creation error", e);
             throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, "FS Event Notification Creation error",
                     e);
+        }
+    }
+
+    /**
+     * Method to invoke the external service for validation.
+     *
+     * @param eventCreationPayload     Event creation JSON payload
+     * @throws FSEventNotificationException  Exception when handling validation
+     */
+    private static void handleValidation(JSONObject eventCreationPayload) throws FSEventNotificationException {
+
+        JSONObject data = new JSONObject();
+        data.put(EventNotificationConstants.EVENT_CREATION_PAYLOAD, eventCreationPayload);
+
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_CREATION)) {
+            ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
+                    data);
+            try {
+                ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
+                        ServiceExtensionTypeEnum.PRE_EVENT_CREATION);
+                if (StatusEnum.ERROR.equals(response.getStatus())) {
+                    JSONObject dataObj = new JSONObject(response.getData().toString());
+                    throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
+                            dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
+                }
+            } catch (FinancialServicesException e) {
+                throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         }
     }
 }

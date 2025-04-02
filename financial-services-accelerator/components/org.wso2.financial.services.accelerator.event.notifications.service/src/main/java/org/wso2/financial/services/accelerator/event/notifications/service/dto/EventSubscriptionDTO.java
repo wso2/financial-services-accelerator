@@ -18,7 +18,7 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.dto;
 
-import java.util.List;
+import org.json.JSONObject;
 
 /**
  * Event Subscription DTO.
@@ -26,10 +26,7 @@ import java.util.List;
 public class EventSubscriptionDTO {
     private String clientId = null;
     private String subscriptionId = null;
-    private String callbackUrl = null;
-    private String specVersion = null;
-    private List<String> eventTypes = null;
-    private String requestData = null;
+    private JSONObject requestData = null;
 
     public String getClientId() {
         return clientId;
@@ -47,35 +44,11 @@ public class EventSubscriptionDTO {
         this.subscriptionId = subscriptionId;
     }
 
-    public String getCallbackUrl() {
-        return callbackUrl;
-    }
-
-    public void setCallbackUrl(String callbackUrl) {
-        this.callbackUrl = callbackUrl;
-    }
-
-    public String getSpecVersion() {
-        return specVersion;
-    }
-
-    public void setSpecVersion(String specVersion) {
-        this.specVersion = specVersion;
-    }
-
-    public List<String> getEventTypes() {
-        return eventTypes;
-    }
-
-    public void setEventTypes(List<String> eventTypes) {
-        this.eventTypes = eventTypes;
-    }
-
-    public String getRequestData() {
+    public JSONObject getRequestData() {
         return requestData;
     }
 
-    public void setRequestData(String requestData) {
+    public void setRequestData(JSONObject requestData) {
         this.requestData = requestData;
     }
 }
