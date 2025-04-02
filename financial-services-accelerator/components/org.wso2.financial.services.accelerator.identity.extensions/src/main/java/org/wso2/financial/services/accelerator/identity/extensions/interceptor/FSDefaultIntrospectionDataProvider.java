@@ -36,10 +36,6 @@ public class FSDefaultIntrospectionDataProvider extends FSIntrospectionDataProvi
                                                     OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO)
             throws IdentityOAuth2Exception {
 
-        if (oAuth2IntrospectionResponseDTO.isActive()) {
-            return oAuth2IntrospectionResponseDTO.getProperties();
-        } else {
-            return new HashMap<>();
-        }
+        return new HashMap<>();
     }
 }
