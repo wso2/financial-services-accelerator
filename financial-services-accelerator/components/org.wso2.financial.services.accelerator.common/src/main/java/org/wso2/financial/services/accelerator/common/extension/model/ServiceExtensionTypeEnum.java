@@ -41,7 +41,7 @@ public enum ServiceExtensionTypeEnum {
     PRE_EVENT_POLLING("pre_event_polling"),
     POST_EVENT_POLLING("post_event_polling"),
     CONSENT_REVOCATION_BY_ADMIN("consent_revocation_admin"),
-    CONSENT_SEARCH_BY_ADMIN("consent_search_admin"),
+    CONSENT_SEARCH_BY_ADMIN("consent_search_enrich"),
     ERROR_MAPPER("error_mapper");
 
     private final String type;

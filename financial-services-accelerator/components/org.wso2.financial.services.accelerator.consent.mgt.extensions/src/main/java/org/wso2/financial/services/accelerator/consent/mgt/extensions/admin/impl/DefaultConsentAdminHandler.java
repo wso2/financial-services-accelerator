@@ -382,7 +382,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                                                                  requestDTO)
             throws FinancialServicesException {
         JSONObject requestJson = requestDTO.toJson();
-        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
+        JSONObject responseJson = callExternalService(requestJson,
+                ServiceExtensionTypeEnum.CONSENT_REVOCATION_BY_ADMIN);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIAdminConsentRevokeResponseDTO.class);
     }
 
@@ -390,7 +391,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                                                                  requestDTO)
             throws FinancialServicesException {
         JSONObject requestJson = requestDTO.toJson();
-        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
+        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.CONSENT_SEARCH_BY_ADMIN);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIAdminConsentSearchResponseDTO.class);
     }
 
