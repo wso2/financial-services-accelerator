@@ -52,13 +52,11 @@ import java.util.UUID;
 public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
 
     private final ConsentCoreService consentCoreService;
-    private final boolean isInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentPersistStep.class);
 
     public ExternalAPIConsentPersistStep() {
 
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
-        isInitiatedConsent = true; // ToDo: Get from config
     }
 
     @Override
@@ -77,7 +75,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Consent Id is not available in consent data", consentData.getState());
             }
-            if (isInitiatedConsent && consentData.getAuthResource() == null) {
+            if (consentData.getAuthResource() == null) {
                 log.error("Authorization resource is not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Authorization resource is not available in consent data", consentData.getState());
@@ -135,19 +133,12 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
      */
     private void persistConsent(ExternalAPIPreConsentPersistResponseDTO responseDTO,
                                 ConsentData consentData) throws ConsentManagementException {
-
-        if (isInitiatedConsent) {
-            String primaryUserId = consentData.getUserId();
-            String primaryAuthId = consentCoreService.getDetailedConsent(consentData.getConsentId()).
-                    getAuthorizationResources().get(0).getAuthorizationID();
-            DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
-                    responseDTO, consentData.getConsentResource(), primaryAuthId, primaryUserId);
-            consentCoreService.updateConsentAndCreateAuthResources(detailedConsentResource, consentData.getUserId());
-        } else {
-            DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
-                    responseDTO, consentData);
-            consentCoreService.storeDetailedConsentResource(detailedConsentResource);
-        }
+        String primaryUserId = consentData.getUserId();
+        String primaryAuthId = consentCoreService.getDetailedConsent(consentData.getConsentId()).
+                getAuthorizationResources().get(0).getAuthorizationID();
+        DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
+                responseDTO, consentData.getConsentResource(), primaryAuthId, primaryUserId);
+        consentCoreService.updateConsentAndCreateAuthResources(detailedConsentResource, consentData.getUserId());
     }
 
     /**
