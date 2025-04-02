@@ -140,7 +140,7 @@ public class ServiceExtensionUtils {
     private static String constructExtensionEndpoint(ServiceExtensionTypeEnum serviceType) {
 
         String baseUrl = FinancialServicesConfigParser.getInstance().getServiceExtensionsEndpointBaseUrl();
-        return baseUrl + "/" + serviceType.toString();
+        return baseUrl + "/" + serviceType.toString().replaceAll("_", "-");
     }
 
     public static void setBasicAuthHeader(HttpPost httpPost, String userName, String password) {

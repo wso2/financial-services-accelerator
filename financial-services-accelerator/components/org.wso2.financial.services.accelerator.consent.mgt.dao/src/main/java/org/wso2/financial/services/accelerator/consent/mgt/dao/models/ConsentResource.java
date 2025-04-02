@@ -50,7 +50,8 @@ public class ConsentResource {
     }
 
     public ConsentResource(String clientID, String receipt, String consentType, int consentFrequency,
-                           long validityPeriod, boolean recurringIndicator, String currentStatus) {
+                           long validityPeriod, boolean recurringIndicator, String currentStatus,
+                           Map<String, String> consentAttributes) {
         this.clientID = clientID;
         this.receipt = receipt;
         this.consentType = consentType;
@@ -58,6 +59,7 @@ public class ConsentResource {
         this.validityPeriod = validityPeriod;
         this.recurringIndicator = recurringIndicator;
         this.currentStatus = currentStatus;
+        this.consentAttributes = consentAttributes;
     }
 
     public ConsentResource(String consentID, String clientID, String receipt, String consentType,
