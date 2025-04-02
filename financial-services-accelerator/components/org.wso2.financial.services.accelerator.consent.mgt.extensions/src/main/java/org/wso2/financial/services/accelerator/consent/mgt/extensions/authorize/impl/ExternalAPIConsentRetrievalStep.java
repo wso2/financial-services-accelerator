@@ -51,7 +51,6 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
-    private static final String CONSENT_DATA_OBJECT_KEY = "consent_data";
 
     public ExternalAPIConsentRetrievalStep() {
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
@@ -64,9 +63,10 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-        String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+        String consentId;
 
         try {
+            consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
             setMandatoryConsentData(consentId, consentData);
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
                     consentData);
