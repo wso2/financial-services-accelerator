@@ -31,6 +31,6 @@ public class ExternalAPIAdminConsentSearchResponseDTO {
     }
 
     public void setResponsePayload(JSONObject searchResult) {
-        this.searchResult= searchResult;
+        this.searchResult = searchResult;
     }
 }
