@@ -65,4 +65,8 @@ function validateFrm() {
         document.getElementById("oauth2_authz_confirm").submit();
     }
 
+    if (document.getElementById('type').value === "default") {
+            document.getElementById("oauth2_authz_confirm").submit()
+    }
+
 }

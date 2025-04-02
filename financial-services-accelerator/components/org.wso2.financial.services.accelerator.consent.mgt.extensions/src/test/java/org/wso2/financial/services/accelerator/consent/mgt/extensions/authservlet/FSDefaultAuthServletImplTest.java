@@ -20,12 +20,17 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservl
 
 import org.json.JSONObject;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -44,17 +49,34 @@ import static org.testng.Assert.assertTrue;
  */
 public class FSDefaultAuthServletImplTest {
 
-    FSDefaultAuthServletImpl servletImpl = new FSDefaultAuthServletImpl();
+    FSDefaultAuthServletImpl servletImpl;
     @Mock
     HttpServletRequest httpServletRequestMock;
     @Mock
     ResourceBundle resourceBundle;
+
+    private static MockedStatic<FinancialServicesConfigParser> configParser;
+
     @BeforeClass
     public void initClass() {
 
         httpServletRequestMock = mock(HttpServletRequest.class);
         resourceBundle = mock(ResourceBundle.class);
+        configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Map<String, Object> configs = new HashMap<String, Object>();
+        Mockito.doReturn(configs).when(configParserMock).getConfiguration();
+        Mockito.doReturn(true).when(configParserMock).isPreInitiatedConsent();
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+        servletImpl = new FSDefaultAuthServletImpl();
     }
+
+    @AfterClass
+    public void tearDown() {
+        configParser.close();
+    }
+
     @Test
     public void testUpdateRequestAttributeForAccounts() {
 

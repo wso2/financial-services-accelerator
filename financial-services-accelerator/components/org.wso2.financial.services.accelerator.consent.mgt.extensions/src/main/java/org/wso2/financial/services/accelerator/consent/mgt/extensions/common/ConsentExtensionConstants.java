@@ -27,6 +27,7 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS = "accounts";
     public static final String PAYMENTS = "payments";
     public static final String FUNDS_CONFIRMATIONS = "fundsconfirmations";
+    public static final String DEFAULT = "default";
     public static final String ACCOUNT_CONSENT_PATH = "account-access-consents";
     public static final String COF_CONSENT_PATH = "funds-confirmation-consents";
     public static final String PAYMENT_CONSENT_PATH = "payment-consents";
@@ -78,6 +79,8 @@ public class ConsentExtensionConstants {
     public static final String CURRENCY_TITLE = "Currency";
     public static final String AMOUNT = "Amount";
     public static final String AMOUNT_TITLE = "Amount";
+    public static final String COMMON_AUTH_ID = "commonAuthId";
+
 
     //Consent Auth Servlet Constants
     public static final String DEBTOR_ACCOUNT_ID = "AccountId";
