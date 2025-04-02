@@ -48,6 +48,21 @@ public class EventSubscriptionService {
     public EventSubscription createEventSubscription(EventSubscription eventSubscription)
             throws FSEventNotificationException {
 
+        if (eventSubscription.getClientId() == null) {
+            log.error("Mandatory field client id is null");
+            throw new FSEventNotificationException("Mandatory field client id is null");
+        }
+
+        if (eventSubscription.getRequestData() == null) {
+            log.error("Mandatory field request data is null");
+            throw new FSEventNotificationException("Mandatory field request data is null");
+        }
+
+        if (eventSubscription.getStatus() == null) {
+            log.error("Mandatory field status is null");
+            throw new FSEventNotificationException("Mandatory field status is null");
+        }
+
         EventSubscriptionDAO eventSubscriptionDAO = EventNotificationStoreInitializer.getEventSubscriptionDAO();
 
         Connection connection = DatabaseUtils.getDBConnection();
@@ -85,6 +100,11 @@ public class EventSubscriptionService {
     public EventSubscription getEventSubscriptionBySubscriptionId(String subscriptionId)
             throws FSEventNotificationException {
 
+        if (subscriptionId == null) {
+            log.error("Mandatory field subscriptionId is null");
+            throw new FSEventNotificationException("Mandatory field subscriptionId is null");
+        }
+
         EventSubscriptionDAO eventSubscriptionDAO = EventNotificationStoreInitializer.getEventSubscriptionDAO();
 
         Connection connection = DatabaseUtils.getDBConnection();
@@ -118,6 +138,11 @@ public class EventSubscriptionService {
     public List<EventSubscription> getEventSubscriptionsByClientId(String clientId)
             throws FSEventNotificationException {
 
+        if (clientId == null) {
+            log.error("Mandatory field clientId is null");
+            throw new FSEventNotificationException("Mandatory field clientId is null");
+        }
+
         Connection connection = DatabaseUtils.getDBConnection();
         try {
             EventSubscriptionDAO eventSubscriptionDAO = EventNotificationStoreInitializer.getEventSubscriptionDAO();
@@ -149,6 +174,10 @@ public class EventSubscriptionService {
     public List<EventSubscription> getEventSubscriptionsByEventType(String eventType)
             throws FSEventNotificationException {
 
+        if (eventType == null) {
+            log.error("Mandatory field eventType is null");
+            throw new FSEventNotificationException("Mandatory field eventType is null");
+        }
 
         Connection connection = DatabaseUtils.getDBConnection();
         try {
@@ -180,6 +209,26 @@ public class EventSubscriptionService {
      */
     public Boolean updateEventSubscription(EventSubscription eventSubscription)
             throws FSEventNotificationException {
+
+        if (eventSubscription.getSubscriptionId() == null) {
+            log.error("Mandatory field subscription id is null");
+            throw new FSEventNotificationException("Mandatory field subscription id is null");
+        }
+
+        if (eventSubscription.getClientId() == null) {
+            log.error("Mandatory field client id is null");
+            throw new FSEventNotificationException("Mandatory field client id is null");
+        }
+
+        if (eventSubscription.getRequestData() == null) {
+            log.error("Mandatory field request data is null");
+            throw new FSEventNotificationException("Mandatory field request data is null");
+        }
+
+        if (eventSubscription.getStatus() == null) {
+            log.error("Mandatory field status is null");
+            throw new FSEventNotificationException("Mandatory field status is null");
+        }
 
         Connection connection = DatabaseUtils.getDBConnection();
 
@@ -240,6 +289,11 @@ public class EventSubscriptionService {
      * @throws FSEventNotificationException if an error occurred while deleting the event subscription
      */
     public Boolean deleteEventSubscription(String subscriptionId) throws FSEventNotificationException {
+
+        if (subscriptionId == null) {
+            log.error("Mandatory field subscriptionId is null");
+            throw new FSEventNotificationException("Mandatory field subscriptionId is null");
+        }
 
         Connection connection = DatabaseUtils.getDBConnection();
 
