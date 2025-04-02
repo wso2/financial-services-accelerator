@@ -58,11 +58,6 @@ public class EventSubscriptionService {
             throw new FSEventNotificationException("Mandatory field request data is null");
         }
 
-        if (eventSubscription.getStatus() == null) {
-            log.error("Mandatory field status is null");
-            throw new FSEventNotificationException("Mandatory field status is null");
-        }
-
         EventSubscriptionDAO eventSubscriptionDAO = EventNotificationStoreInitializer.getEventSubscriptionDAO();
 
         Connection connection = DatabaseUtils.getDBConnection();
@@ -223,11 +218,6 @@ public class EventSubscriptionService {
         if (eventSubscription.getRequestData() == null) {
             log.error("Mandatory field request data is null");
             throw new FSEventNotificationException("Mandatory field request data is null");
-        }
-
-        if (eventSubscription.getStatus() == null) {
-            log.error("Mandatory field status is null");
-            throw new FSEventNotificationException("Mandatory field status is null");
         }
 
         Connection connection = DatabaseUtils.getDBConnection();

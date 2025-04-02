@@ -27,6 +27,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventPollingService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationTestConstants;
@@ -48,21 +49,27 @@ import static org.mockito.ArgumentMatchers.anyString;
 public class DefaultEventPollingServiceHandlerTests {
 
     private MockedStatic<FinancialServicesConfigParser> configParserMockedStatic;
+    private MockedStatic<ServiceExtensionUtils> serviceExtensionUtilsMockedStatic;
 
     @BeforeClass
     public void initTest() {
         configParserMockedStatic = Mockito.mockStatic(FinancialServicesConfigParser.class);
+        serviceExtensionUtilsMockedStatic = Mockito.mockStatic(ServiceExtensionUtils.class);
 
         Map<String, Object> configs = new HashMap<String, Object>();
         configs.put(FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_ENABLED, false);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
         configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
+                .thenReturn(false);
     }
 
     @AfterClass
     public void tearDown() {
         configParserMockedStatic.close();
+        serviceExtensionUtilsMockedStatic.close();
     }
 
     DefaultEventPollingServiceHandler defaultEventPollingServiceHandler = new DefaultEventPollingServiceHandler();

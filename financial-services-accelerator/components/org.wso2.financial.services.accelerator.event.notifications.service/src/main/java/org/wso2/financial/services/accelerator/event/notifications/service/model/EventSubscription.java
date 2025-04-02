@@ -29,7 +29,7 @@ public class EventSubscription {
     private String clientId = null;
     private String callbackUrl = null;
     private Long timeStamp = null;
-    private String specVersion = null;
+    private String version = null;
     private String status = null;
     private List<String> eventTypes = null;
     private String requestData = null;
@@ -66,12 +66,12 @@ public class EventSubscription {
         this.timeStamp = timeStamp;
     }
 
-    public String getSpecVersion() {
-        return specVersion;
+    public String getVersion() {
+        return version;
     }
 
-    public void setSpecVersion(String specVersion) {
-        this.specVersion = specVersion;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public String getStatus() {

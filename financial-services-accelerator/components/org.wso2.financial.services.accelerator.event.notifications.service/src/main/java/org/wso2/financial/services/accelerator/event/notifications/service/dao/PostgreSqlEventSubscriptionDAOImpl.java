@@ -63,7 +63,7 @@ public class PostgreSqlEventSubscriptionDAOImpl extends EventSubscriptionDAOImpl
             storeEventSubscriptionStatement.setString(2, eventSubscription.getClientId());
             storeEventSubscriptionStatement.setString(3, eventSubscription.getCallbackUrl());
             storeEventSubscriptionStatement.setLong(4, eventSubscription.getTimeStamp());
-            storeEventSubscriptionStatement.setString(5, eventSubscription.getSpecVersion());
+            storeEventSubscriptionStatement.setString(5, eventSubscription.getVersion());
             storeEventSubscriptionStatement.setString(6, eventSubscription.getStatus());
             storeEventSubscriptionStatement.setObject(7, eventSubscription.getRequestData(),
                     java.sql.Types.OTHER);
@@ -191,7 +191,7 @@ public class PostgreSqlEventSubscriptionDAOImpl extends EventSubscriptionDAOImpl
         response.setClientId(resultSet.getString(EventNotificationConstants.CLIENT_ID));
         response.setCallbackUrl(resultSet.getString(EventNotificationConstants.CALLBACK_URL));
         response.setTimeStamp(resultSet.getLong(EventNotificationConstants.TIME_STAMP));
-        response.setSpecVersion(resultSet.getString(EventNotificationConstants.SPEC_VERSION));
+        response.setVersion(resultSet.getString(EventNotificationConstants.SPEC_VERSION));
         response.setStatus(resultSet.getString(EventNotificationConstants.STATUS));
         response.setRequestData(resultSet.getString(EventNotificationConstants.REQUEST));
     }

@@ -22,6 +22,8 @@ import org.json.JSONObject;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.event.notifications.service.DefaultEventNotificationGenerator;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
@@ -31,6 +33,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.inter
 import org.wso2.financial.services.accelerator.event.notifications.service.model.Notification;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.NotificationResponse;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.RealtimeEventNotification;
+import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator;
 import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.EventNotificationProducerService;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationTestUtils;
@@ -46,49 +49,49 @@ import static org.mockito.Mockito.doReturn;
  */
 public class EventNotificationProducerServiceTests {
 
-//    private MockedStatic<EventNotificationServiceUtil> notificationServiceUtilMockedStatic;
-//    private MockedStatic<EventNotificationDataHolder> eventNotificationDataHolderMockedStatic;
-    //    DefaultRealtimeEventNotificationRequestGenerator mockedRealtimeEventNotificationRequestGenerator;
-//private LinkedBlockingQueue<RealtimeEventNotification> eventQueue;
+    private MockedStatic<EventNotificationServiceUtil> notificationServiceUtilMockedStatic;
+    private MockedStatic<EventNotificationDataHolder> eventNotificationDataHolderMockedStatic;
+        DefaultRealtimeEventNotificationRequestGenerator mockedRealtimeEventNotificationRequestGenerator;
+private LinkedBlockingQueue<RealtimeEventNotification> eventQueue;
 
-//    @BeforeClass
-//    public void initTest() throws FSEventNotificationException {
-//
-//        NotificationResponse testNotification = new NotificationResponse();
-//        String testEventSET = EventNotificationTestConstants.SAMPLE_SET;
-//        JSONObject testPayload = EventNotificationTestConstants.SAMPLE_NOTIFICATION_PAYLOAD;
-////
-//        DefaultEventNotificationGenerator mockedEventNotificationGenerator =
-//                Mockito.mock(DefaultEventNotificationGenerator.class);
-////        mockedRealtimeEventNotificationRequestGenerator =
-////                Mockito.mock(DefaultRealtimeEventNotificationRequestGenerator.class);
-//////
-//        doReturn(testNotification).when(mockedEventNotificationGenerator).generateEventNotificationBody(any(), any());
-//        doReturn(testEventSET).when(mockedEventNotificationGenerator).generateEventNotification(any());
-////        doReturn(testPayload).when(mockedRealtimeEventNotificationRequestGenerator)
-////                .getRealtimeEventNotificationPayload(any(), any());
-////
-//        notificationServiceUtilMockedStatic = Mockito.mockStatic(EventNotificationServiceUtil.class);
-//        notificationServiceUtilMockedStatic.when(EventNotificationServiceUtil::getEventNotificationGenerator)
-//                .thenReturn(mockedEventNotificationGenerator);
-////        notificationServiceUtilMockedStatic
-////                .when(EventNotificationServiceUtil::getRealtimeEventNotificationRequestGenerator)
-////                .thenReturn(mockedRealtimeEventNotificationRequestGenerator);
-////
-//        eventQueue = new LinkedBlockingQueue<>();
-//        EventNotificationDataHolder eventNotificationDataHolder = Mockito.mock(EventNotificationDataHolder.class);
-//        eventNotificationDataHolder.setRealtimeEventNotificationQueue(eventQueue);
-//
-//        eventNotificationDataHolderMockedStatic = Mockito.mockStatic(EventNotificationDataHolder.class);
-//        eventNotificationDataHolderMockedStatic.when(EventNotificationDataHolder::getInstance)
-//                .thenReturn(eventNotificationDataHolder);
-//    }
+    @BeforeClass
+    public void initTest() throws FSEventNotificationException {
 
-//    @AfterClass
-//    public void tearDown() {
-//        notificationServiceUtilMockedStatic.close();
-//        eventNotificationDataHolderMockedStatic.close();
-//    }
+        NotificationResponse testNotification = new NotificationResponse();
+        String testEventSET = EventNotificationTestConstants.SAMPLE_SET;
+        JSONObject testPayload = EventNotificationTestConstants.SAMPLE_NOTIFICATION_PAYLOAD;
+//
+        DefaultEventNotificationGenerator mockedEventNotificationGenerator =
+                Mockito.mock(DefaultEventNotificationGenerator.class);
+        mockedRealtimeEventNotificationRequestGenerator =
+                Mockito.mock(DefaultRealtimeEventNotificationRequestGenerator.class);
+////
+        doReturn(testNotification).when(mockedEventNotificationGenerator).generateEventNotificationBody(any(), any());
+        doReturn(testEventSET).when(mockedEventNotificationGenerator).generateEventNotification(any());
+        doReturn(testPayload).when(mockedRealtimeEventNotificationRequestGenerator)
+                .getRealtimeEventNotificationPayload(any(), any());
+//
+        notificationServiceUtilMockedStatic = Mockito.mockStatic(EventNotificationServiceUtil.class);
+        notificationServiceUtilMockedStatic.when(EventNotificationServiceUtil::getEventNotificationGenerator)
+                .thenReturn(mockedEventNotificationGenerator);
+        notificationServiceUtilMockedStatic
+                .when(EventNotificationServiceUtil::getRealtimeEventNotificationRequestGenerator)
+                .thenReturn(mockedRealtimeEventNotificationRequestGenerator);
+
+        eventQueue = new LinkedBlockingQueue<>();
+        EventNotificationDataHolder eventNotificationDataHolder = Mockito.mock(EventNotificationDataHolder.class);
+        eventNotificationDataHolder.setRealtimeEventNotificationQueue(eventQueue);
+
+        eventNotificationDataHolderMockedStatic = Mockito.mockStatic(EventNotificationDataHolder.class);
+        eventNotificationDataHolderMockedStatic.when(EventNotificationDataHolder::getInstance)
+                .thenReturn(eventNotificationDataHolder);
+    }
+
+    @AfterClass
+    public void tearDown() {
+        notificationServiceUtilMockedStatic.close();
+        eventNotificationDataHolderMockedStatic.close();
+    }
 
     @Test
     public void testRun() throws FSEventNotificationException, InterruptedException {
@@ -100,25 +103,25 @@ public class EventNotificationProducerServiceTests {
 
             NotificationResponse testNotification = new NotificationResponse();
             String testEventSET = EventNotificationTestConstants.SAMPLE_SET;
-//            JSONObject testPayload = EventNotificationTestConstants.SAMPLE_NOTIFICATION_PAYLOAD;
-//
+            JSONObject testPayload = EventNotificationTestConstants.SAMPLE_NOTIFICATION_PAYLOAD;
+
             DefaultEventNotificationGenerator mockedEventNotificationGenerator =
                     Mockito.mock(DefaultEventNotificationGenerator.class);
-//        mockedRealtimeEventNotificationRequestGenerator =
-//                Mockito.mock(DefaultRealtimeEventNotificationRequestGenerator.class);
-////
+            mockedRealtimeEventNotificationRequestGenerator =
+                Mockito.mock(DefaultRealtimeEventNotificationRequestGenerator.class);
+
             doReturn(testNotification).when(mockedEventNotificationGenerator)
                     .generateEventNotificationBody(any(), any());
             doReturn(testEventSET).when(mockedEventNotificationGenerator).generateEventNotification(any());
-//        doReturn(testPayload).when(mockedRealtimeEventNotificationRequestGenerator)
-//                .getRealtimeEventNotificationPayload(any(), any());
-//
+            doReturn(testPayload).when(mockedRealtimeEventNotificationRequestGenerator)
+                .getRealtimeEventNotificationPayload(any(), any());
+
             notificationStatic.when(EventNotificationServiceUtil::getEventNotificationGenerator)
                     .thenReturn(mockedEventNotificationGenerator);
-//        notificationServiceUtilMockedStatic
-//                .when(EventNotificationServiceUtil::getRealtimeEventNotificationRequestGenerator)
-//                .thenReturn(mockedRealtimeEventNotificationRequestGenerator);
-//
+            notificationServiceUtilMockedStatic
+                .when(EventNotificationServiceUtil::getRealtimeEventNotificationRequestGenerator)
+                .thenReturn(mockedRealtimeEventNotificationRequestGenerator);
+
             LinkedBlockingQueue<RealtimeEventNotification> eventQueue = new LinkedBlockingQueue<>();
             EventNotificationDataHolder eventNotificationDataHolder = Mockito.mock(EventNotificationDataHolder.class);
             eventNotificationDataHolder.setRealtimeEventNotificationQueue(eventQueue);
@@ -126,12 +129,9 @@ public class EventNotificationProducerServiceTests {
             eventStatic.when(EventNotificationDataHolder::getInstance)
                     .thenReturn(eventNotificationDataHolder);
 
-
             Notification notificationDTO = new Notification();
             notificationDTO.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
             notificationDTO.setNotificationId(EventNotificationTestConstants.SAMPLE_NOTIFICATION_ID);
-
-            JSONObject testPayload = EventNotificationTestConstants.SAMPLE_NOTIFICATION_PAYLOAD;
 
             EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
             doReturn(EventNotificationTestUtils.getEventSubscrptionList()).when(eventSubscriptionService)

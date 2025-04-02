@@ -97,6 +97,7 @@
                     <excludes>
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants.class</exclude>
+                        <exclude>**/*Enum.class</exclude>
                         <exclude>**/*Component.class</exclude>
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*SqlStatements.class</exclude>
@@ -104,6 +105,8 @@
                         <exclude>**/EventNotificationStoreInitializer.class</exclude>
                         <exclude>**/PostgreSqlEventNotificationDAOImpl.class</exclude>
                         <exclude>**/PostgreSqlEventSubscriptionDAOImpl.class</exclude>
+                        <exclude>**/*Realtime*.class</exclude>
+                        <exclude>**/*Producer*.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

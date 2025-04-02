@@ -18,9 +18,14 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationTestConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventSubscriptionDTO;
@@ -190,7 +195,7 @@ public class EventNotificationTestUtils {
         EventSubscription eventSubscription = new EventSubscription();
         eventSubscription.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
         eventSubscription.setCallbackUrl(EventNotificationTestConstants.SAMPLE_CALLBACK_URL);
-        eventSubscription.setSpecVersion(EventNotificationTestConstants.SAMPLE_SPEC_VERSION);
+        eventSubscription.setVersion(EventNotificationTestConstants.SAMPLE_SPEC_VERSION);
         eventSubscription.setEventTypes(EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPES);
         eventSubscription.setRequestData(EventNotificationTestConstants.SUBSCRIPTION_PAYLOAD);
         eventSubscription.setStatus(EventNotificationTestConstants.SUBSCRIPTION_STATUS);
@@ -202,7 +207,7 @@ public class EventNotificationTestUtils {
         eventSubscription.setSubscriptionId(EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
         eventSubscription.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
         eventSubscription.setCallbackUrl(EventNotificationTestConstants.SAMPLE_CALLBACK_URL);
-        eventSubscription.setSpecVersion(EventNotificationTestConstants.SAMPLE_SPEC_VERSION);
+        eventSubscription.setVersion(EventNotificationTestConstants.SAMPLE_SPEC_VERSION);
         eventSubscription.setTimeStamp(1626480000L);
         eventSubscription.setEventTypes(EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPES);
         eventSubscription.setStatus("CREATED");
@@ -227,7 +232,7 @@ public class EventNotificationTestUtils {
         eventSubscription.setSubscriptionId(EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_2);
         eventSubscription.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
         eventSubscription.setCallbackUrl(EventNotificationTestConstants.SAMPLE_CALLBACK_URL);
-        eventSubscription.setSpecVersion(EventNotificationTestConstants.SAMPLE_SPEC_VERSION);
+        eventSubscription.setVersion(EventNotificationTestConstants.SAMPLE_SPEC_VERSION);
         eventSubscription.setEventTypes(EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPES);
         eventSubscription.setStatus("CREATED");
         return eventSubscription;
@@ -270,7 +275,7 @@ public class EventNotificationTestUtils {
         request.put("version", EventNotificationTestConstants.SAMPLE_SPEC_VERSION);
         eventSubscriptionDTO.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
         eventSubscriptionDTO.setSubscriptionId(EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
-        eventSubscriptionDTO.setRequestData(request.toString());
+        eventSubscriptionDTO.setRequestData(request);
         return eventSubscriptionDTO;
     }
 
@@ -282,7 +287,7 @@ public class EventNotificationTestUtils {
         request.put("eventTypes", eventTypes);
         eventSubscriptionDTO.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
         eventSubscriptionDTO.setSubscriptionId(EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
-        eventSubscriptionDTO.setRequestData(request.toString());
+        eventSubscriptionDTO.setRequestData(request);
         return eventSubscriptionDTO;
     }
 
@@ -329,5 +334,34 @@ public class EventNotificationTestUtils {
         notifications.add(notificationDTO2);
 
         return notifications;
+    }
+
+    public static ExternalServiceResponse getExternalServiceResponse() throws JsonProcessingException {
+        ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
+        externalServiceResponse.setResponseId("123456789876543");
+        externalServiceResponse.setStatus(StatusEnum.SUCCESS);
+
+        JSONObject data = new JSONObject();
+        data.put("responseData", new JSONObject());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(data.toString());
+        externalServiceResponse.setData(jsonNode);
+        return externalServiceResponse;
+    }
+
+    public static ExternalServiceResponse getExternalServiceResponseWithData() throws JsonProcessingException {
+        ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
+        externalServiceResponse.setResponseId("123456789876543");
+        externalServiceResponse.setStatus(StatusEnum.SUCCESS);
+
+        JSONObject data = new JSONObject();
+        data.put("callbackUrl", "https://test.com");
+        data.put("version", "3.1");
+        data.put("eventTypes", new ArrayList<>(Arrays.asList("eventType")));
+        data.put("responseData", new JSONObject());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(data.toString());
+        externalServiceResponse.setData(jsonNode);
+        return externalServiceResponse;
     }
 }
