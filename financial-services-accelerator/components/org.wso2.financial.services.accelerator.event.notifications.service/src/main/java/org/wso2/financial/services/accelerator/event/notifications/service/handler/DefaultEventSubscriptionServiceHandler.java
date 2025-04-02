@@ -312,7 +312,7 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         }
         if (externalServiceResponse.has(EventNotificationConstants.VERSION_PARAM) &&
                 externalServiceResponse.get(EventNotificationConstants.VERSION_PARAM) != null) {
-            eventSubscription.setSpecVersion(externalServiceResponse.
+            eventSubscription.setVersion(externalServiceResponse.
                     getString(EventNotificationConstants.VERSION_PARAM));
         }
         eventSubscription.setClientId(eventSubscriptionDTO.getClientId());
@@ -342,12 +342,19 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                     eventTypes.add((String) item);
                 }
             }
+        } else if (eventTypesObj instanceof JSONArray) {
+            JSONArray eventTypesList = (JSONArray) eventTypesObj;
+            for (Object item : eventTypesList) {
+                if (item instanceof String) {
+                    eventTypes.add((String) item);
+                }
+            }
         }
         eventSubscription.setEventTypes(eventTypes);
         eventSubscription.setCallbackUrl(payload.has(EventNotificationConstants.CALLBACK_URL_PARAM) ?
                 payload.get(EventNotificationConstants.CALLBACK_URL_PARAM).toString() : null);
-        eventSubscription.setSpecVersion(payload.get(EventNotificationConstants.SPEC_VERSION_PARAM) != null ?
-                payload.get(EventNotificationConstants.SPEC_VERSION_PARAM).toString() : null);
+        eventSubscription.setVersion(payload.has(EventNotificationConstants.VERSION_PARAM) ?
+                payload.get(EventNotificationConstants.VERSION_PARAM).toString() : null);
         eventSubscription.setClientId(eventSubscriptionDTO.getClientId());
         eventSubscription.setRequestData(payload.toString());
         return eventSubscription;
@@ -369,8 +376,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         if (eventSubscription.getCallbackUrl() != null) {
             responsePayload.put(EventNotificationConstants.CALLBACK_URL_PARAM, eventSubscription.getCallbackUrl());
         }
-        if (eventSubscription.getSpecVersion() != null) {
-            responsePayload.put(EventNotificationConstants.SPEC_VERSION_PARAM, eventSubscription.getSpecVersion());
+        if (eventSubscription.getVersion() != null) {
+            responsePayload.put(EventNotificationConstants.VERSION_PARAM, eventSubscription.getVersion());
         }
         if (eventSubscription.getEventTypes() != null) {
             responsePayload.put(EventNotificationConstants.EVENT_TYPES_PARAM, eventSubscription.getEventTypes());

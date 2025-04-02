@@ -449,6 +449,15 @@ enable = true
 priority = 9
 
 #================consent management==============
+[financial_services.consent]
+is_pre_initiated_consent=true # Set to true if the consent is pre-initiated by the TPP
+auth_flow_consent_id_source="requestObject" # can be one of "requestObject" or "requestParam"
+
+[financial_services.consent.consent_id_extraction]
+json_path="$.id_token.openbanking_intent_id.value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"
+# key="key-name" # Must be configured if "auth_flow_consent_id_source" is set to "requestParam"
+# regex_pattern="regex-pattern" # Optionally configure a regex pattern to further extract the consent id from the extracted value
+
 [financial_services.consent.manage]
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler"
 validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator"
@@ -498,9 +507,12 @@ consent_id_claim_name="consent_id"
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
 
 [financial_services.identity.extensions]
-request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
-response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
-claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
+# Uncomment these to get a default implementation of identity extensions
+#request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
+#response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
+#claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
+#grant_handler="org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSDefaultGrantHandler"
+#introspection_data_provider="org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSDefaultIntrospectionDataProvider"
 
 [financial_services.identity.token]
 remove_user_store_domain_from_subject=false
