@@ -30,6 +30,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
@@ -43,6 +44,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -133,9 +135,14 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
      */
     private void persistConsent(ExternalAPIPreConsentPersistResponseDTO responseDTO,
                                 ConsentData consentData) throws ConsentManagementException {
+
+        // Get the existing authorization resource for the initiated consent
         String primaryUserId = consentData.getUserId();
-        String primaryAuthId = consentCoreService.getDetailedConsent(consentData.getConsentId()).
-                getAuthorizationResources().get(0).getAuthorizationID();
+        ArrayList<AuthorizationResource> existingAuthResources =
+                consentCoreService.searchAuthorizations(consentData.getConsentId());
+        String primaryAuthId = existingAuthResources != null && !existingAuthResources.isEmpty() ?
+                existingAuthResources.get(0).getAuthorizationID() : null;
+
         DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
                 responseDTO, consentData.getConsentResource(), primaryAuthId, primaryUserId);
         consentCoreService.updateConsentAndCreateAuthResources(detailedConsentResource, consentData.getUserId());
