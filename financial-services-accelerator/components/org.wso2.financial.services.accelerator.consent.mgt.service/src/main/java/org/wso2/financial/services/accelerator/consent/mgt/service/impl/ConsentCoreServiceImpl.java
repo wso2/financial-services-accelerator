@@ -278,12 +278,13 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource)
-            throws ConsentManagementException {
+    public DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource,
+            String primaryUserId) throws ConsentManagementException {
 
-        if (detailedConsentResource == null || StringUtils.isBlank(detailedConsentResource.getConsentID())) {
-            log.error("Detailed consent or consent ID is missing");
-            throw new ConsentManagementException("Detailed consent or consent ID is missing");
+        if (detailedConsentResource == null || StringUtils.isBlank(detailedConsentResource.getConsentID()) ||
+                StringUtils.isBlank(primaryUserId)) {
+            log.error("Detailed consent, consentId or primary userId is missing");
+            throw new ConsentManagementException("Detailed consent, consentId or primary userId is missing");
         }
 
         Connection connection = DatabaseUtils.getDBConnection();
@@ -305,10 +306,16 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     consentCoreDAO.storeConsentAttributes(connection, attributes);
                 }
 
-                // Store authorization resources
+                // Update the status of existing authorization resource and store other authorization resources
                 if (CollectionUtils.isNotEmpty(detailedConsentResource.getAuthorizationResources())) {
-                    for (AuthorizationResource auth : detailedConsentResource.getAuthorizationResources()) {
-                        consentCoreDAO.storeAuthorizationResource(connection, auth);
+                    for (AuthorizationResource authResource : detailedConsentResource.getAuthorizationResources()) {
+                        if (primaryUserId.equals(authResource.getUserID())) {
+                            updateAuthorizationStatus(authResource.getAuthorizationID(),
+                                    authResource.getAuthorizationStatus());
+                            updateAuthorizationUser(authResource.getAuthorizationID(), authResource.getUserID());
+                        } else {
+                            consentCoreDAO.storeAuthorizationResource(connection, authResource);
+                        }
                     }
                 }
 

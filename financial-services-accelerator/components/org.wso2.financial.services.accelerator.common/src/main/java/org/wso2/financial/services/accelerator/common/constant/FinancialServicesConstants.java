@@ -144,6 +144,13 @@ public class FinancialServicesConstants {
     public static final String BASIC_AUTH = "Basic-Auth";
     public static final String OAUTH2 = "OAuth2";
 
+    // Consent ID extraction Constants
+    public static final String IS_PRE_INITIATED_CONSENT = "Consent.PreInitiatedConsent";
+    public static final String AUTH_FLOW_CONSENT_ID_SOURCE = "Consent.AuthFlowConsentIdSource";
+    public static final String CONSENT_ID_EXTRACTION_JSON_PATH = "Consent.ConsentIdExtraction.JsonPath";
+    public static final String CONSENT_ID_EXTRACTION_KEY = "Consent.ConsentIdExtraction.Key";
+    public static final String CONSENT_ID_EXTRACTION_REGEX_PATTERN = "Consent.ConsentIdExtraction.RegexPattern";
+
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
     public static final String NEW_LINE = "[\r\n]";

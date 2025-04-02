@@ -147,7 +147,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     consentManageData.setResponsePayload(responseDTO.getResponseData());
                 } else {
                     JSONObject receiptJSON = new JSONObject(consent.getReceipt());
-                    ;
                     consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(
                             receiptJSON, consent));
                 }
@@ -389,11 +388,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     responseDTO.getRecurringIndicator(), responseDTO.getConsentStatus(),
                     responseDTO.getConsentAttributes());
 
-            DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
+            return consentCoreService.createAuthorizableConsent(
                     consentResource, null, responseDTO.getAuthorizationStatus(),
-                    responseDTO.getAuthorizationType(), true
-            );
-            return createdConsent;
+                    responseDTO.getAuthorizationType(), true);
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent");

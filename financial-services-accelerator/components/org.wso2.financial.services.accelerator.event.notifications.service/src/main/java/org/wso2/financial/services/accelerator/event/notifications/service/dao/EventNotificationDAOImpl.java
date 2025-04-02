@@ -32,9 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,6 +57,8 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
         String persistEventNotification = sqlStatements.getStoreNotification();
         String persistEvents = sqlStatements.getStoreNotificationEvents();
 
+        long currentTimestamp = System.currentTimeMillis() / 1000;
+
         try (PreparedStatement persistEventNotificationStmnt =
                      connection.prepareStatement(persistEventNotification);
              PreparedStatement persistEventsStmt = connection.prepareStatement(persistEvents)) {
@@ -69,6 +69,7 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
             persistEventNotificationStmnt.setString(2, notification.getClientId());
             persistEventNotificationStmnt.setString(3, notification.getResourceId());
             persistEventNotificationStmnt.setString(4, notification.getStatus());
+            persistEventNotificationStmnt.setLong(5, currentTimestamp);
 
             // with result, we can determine whether the insertion was successful or not
             result = persistEventNotificationStmnt.executeUpdate();
@@ -102,9 +103,9 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
         String sql = sqlStatements.updateNotificationStatusQueryById();
 
         try (PreparedStatement updateNotificationStatusById = connection.prepareStatement(sql)) {
-            Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+            long currentTimestamp = System.currentTimeMillis() / 1000;
             updateNotificationStatusById.setString(1, notificationStatus);
-            updateNotificationStatusById.setTimestamp(2, currentTimeStamp);
+            updateNotificationStatusById.setLong(2, currentTimestamp);
             updateNotificationStatusById.setString(3, notificationId);
 
             int affectedRows = updateNotificationStatusById.executeUpdate();
@@ -182,12 +183,7 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
             getNotificationsPreparedStatement.setInt(3, max);
 
             try (ResultSet notificationResultSet = getNotificationsPreparedStatement.executeQuery()) {
-                if (notificationResultSet.next()) {
-
-                    //bring pointer back to the top of the result set if not on the top
-                    if (!notificationResultSet.isBeforeFirst()) {
-                        notificationResultSet.beforeFirst();
-                    }
+                if (notificationResultSet.isBeforeFirst()) {
 
                     //read event notifications from the result set
                     while (notificationResultSet.next()) {
@@ -201,13 +197,11 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
                                 (EventNotificationConstants.RESOURCE_ID));
                         notification.setStatus(notificationResultSet.getString
                                 (EventNotificationConstants.STATUS));
-                        notification.setUpdatedTimeStamp((notificationResultSet.getTimestamp(
-                                (EventNotificationConstants.UPDATED_TIMESTAMP)).getTime()));
+                        notification.setUpdatedTimeStamp((notificationResultSet.getLong(
+                                (EventNotificationConstants.UPDATED_TIMESTAMP))));
 
                         notificationList.add(notification);
                     }
-                    notificationResultSet.close();
-                    getNotificationsPreparedStatement.close();
 
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(EventNotificationConstants.RETRIEVED_NOTIFICATION_CLIENT,
@@ -240,12 +234,7 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
             getEventsPreparedStatement.setString(1, notificationId);
 
             try (ResultSet eventsResultSet = getEventsPreparedStatement.executeQuery()) {
-                if (eventsResultSet.next()) {
-
-                    //bring pointer back to the top of the result set if not on the top
-                    if (!eventsResultSet.isBeforeFirst()) {
-                        eventsResultSet.beforeFirst();
-                    }
+                if (eventsResultSet.isBeforeFirst()) {
 
                     //read event notifications from the result set
                     while (eventsResultSet.next()) {
@@ -259,8 +248,6 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
                                         (EventNotificationConstants.EVENT_INFO)));
                         eventList.add(event);
                     }
-                    eventsResultSet.close();
-                    getEventsPreparedStatement.close();
 
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(EventNotificationConstants.RETRIEVED_EVENTS_NOTIFICATION,
@@ -299,11 +286,7 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
             getNotificationsPreparedStatement.setString(1, status);
 
             try (ResultSet notificationResultSet = getNotificationsPreparedStatement.executeQuery()) {
-                if (notificationResultSet.next()) {
-                    //bring pointer back to the top of the result set if not on the top
-                    if (!notificationResultSet.isBeforeFirst()) {
-                        notificationResultSet.beforeFirst();
-                    }
+                if (notificationResultSet.isBeforeFirst()) {
                     //read event notifications from the result set
                     while (notificationResultSet.next()) {
                         Notification notification = new Notification();
@@ -315,15 +298,12 @@ public class EventNotificationDAOImpl implements EventNotificationDAO {
                                 (EventNotificationConstants.RESOURCE_ID));
                         notification.setStatus(notificationResultSet.getString
                                 (EventNotificationConstants.STATUS));
-                        notification.setUpdatedTimeStamp((notificationResultSet.getTimestamp(
-                                (EventNotificationConstants.UPDATED_TIMESTAMP)).getTime()));
+                        notification.setUpdatedTimeStamp((notificationResultSet.getLong(
+                                (EventNotificationConstants.UPDATED_TIMESTAMP))));
                         notificationList.add(notification);
                     }
-                    notificationResultSet.close();
-                    getNotificationsPreparedStatement.close();
                     if (log.isDebugEnabled()) {
-                        log.debug(
-                                EventNotificationConstants.RETRIEVED_NOTIFICATION_CLIENT);
+                        log.debug(EventNotificationConstants.RETRIEVED_NOTIFICATION_CLIENT);
                     }
                 } else {
                     if (log.isDebugEnabled()) {
