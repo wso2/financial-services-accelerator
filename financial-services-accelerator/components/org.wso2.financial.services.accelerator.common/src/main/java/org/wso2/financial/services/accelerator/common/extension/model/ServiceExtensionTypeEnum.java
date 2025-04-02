@@ -23,19 +23,25 @@ package org.wso2.financial.services.accelerator.common.extension.model;
  */
 public enum ServiceExtensionTypeEnum {
 
-    PRE_CONSENT_GENERATION("pre-consent-generation"),
-    POST_CONSENT_GENERATION("post-consent-generation"),
-    PRE_CONSENT_RETRIEVAL("pre-consent-retrieval"),
-    PRE_CONSENT_REVOCATION("pre-consent-revocation"),
-    PRE_CONSENT_AUTHORIZATION("pre-consent-authorization"),
-    CONSENT_VALIDATION("consent-validation"),
-    PRE_ACCESS_TOKEN_GENERATION("pre-access-token-generation"),
-    PRE_USER_AUTHORIZATION("pre-user-authorization"),
-    POST_USER_AUTHORIZATION("post-user-authorization"),
-    PRE_ID_TOKEN_GENERATION("pre-id-token-generation"),
-    VALIDATE_DCR_CREATE_REQUEST("validate-dcr-app-creation"),
-    VALIDATE_DCR_UPDATE_REQUEST("validate-dcr-app-update"),
-    ERROR_MAPPER("error-mapper");
+    PRE_CONSENT_GENERATION("pre_consent_generation"),
+    POST_CONSENT_GENERATION("post_consent_generation"),
+    PRE_CONSENT_RETRIEVAL("pre_consent_retrieval"),
+    PRE_CONSENT_REVOCATION("pre_consent_revocation"),
+    PRE_CONSENT_AUTHORIZATION("pre_consent_authorization"),
+    PRE_CONSENT_PERSISTENCE("pre_consent_persistence"),
+    CONSENT_VALIDATION("consent_validation"),
+    PRE_ACCESS_TOKEN_GENERATION("pre_access_token_generation"),
+    PRE_USER_AUTHORIZATION("pre_user_authorization"),
+    POST_USER_AUTHORIZATION("post_user_authorization"),
+    PRE_ID_TOKEN_GENERATION("pre_id_token_generation"),
+    VALIDATE_DCR_CREATE_REQUEST("validate_dcr_app_creation"),
+    VALIDATE_DCR_UPDATE_REQUEST("validate_dcr_app_update"),
+    PRE_EVENT_SUBSCRIPTION("pre_event_subscription"),
+    POST_EVENT_SUBSCRIPTION("post_event_subscription"),
+    PRE_EVENT_CREATION("pre_event_creation"),
+    PRE_EVENT_POLLING("pre_event_polling"),
+    POST_EVENT_POLLING("post_event_polling"),
+    ERROR_MAPPER("error_mapper");
 
     private final String type;
 

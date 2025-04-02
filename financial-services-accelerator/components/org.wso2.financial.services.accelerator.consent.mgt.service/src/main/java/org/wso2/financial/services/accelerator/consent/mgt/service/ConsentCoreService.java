@@ -125,11 +125,12 @@ public interface ConsentCoreService {
      * Consent attributes are also stored if provided. An audit record will be created.
      *
      * @param detailedConsentResource the detailed consent resource with updated values and new associations
+     * @param primaryUserId the user ID of the primary user
      * @return the updated detailed consent resource
      * @throws ConsentManagementException thrown if an error occurs during the operation
      */
-    DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource)
-            throws ConsentManagementException;
+    DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource,
+                                                                String primaryUserId) throws ConsentManagementException;
 
     /**
      * This method is used to create a consent file. The following functionality contains in this method.

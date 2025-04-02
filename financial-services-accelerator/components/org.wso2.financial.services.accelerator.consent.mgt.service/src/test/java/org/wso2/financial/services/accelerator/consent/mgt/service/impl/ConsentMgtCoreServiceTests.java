@@ -545,7 +545,7 @@ public class ConsentMgtCoreServiceTests {
                 .when(mockedConsentCoreDAO).storeConsentMappingResource(any(), any());
 
         DetailedConsentResource result = consentCoreServiceImpl.updateConsentAndCreateAuthResources(
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource(), "test-user");
         Assert.assertNotNull(result);
     }
 
@@ -555,7 +555,7 @@ public class ConsentMgtCoreServiceTests {
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(null);
         // Should throw an exception
-        consentCoreServiceImpl.updateConsentAndCreateAuthResources(detailedConsentResource);
+        consentCoreServiceImpl.updateConsentAndCreateAuthResources(detailedConsentResource, "test-user");
     }
 
 

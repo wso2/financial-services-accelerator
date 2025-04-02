@@ -30,6 +30,9 @@ public class ExternalAPIPreConsentGenerateResponseDTO {
     private boolean recurringIndicator;
     private String consentStatus;
     private String consentType;
+    private String authorizationStatus;
+    private String authorizationType;
+    Map<String, String> consentAttributes;
 
     public Map<String, Object> getConsentPayload() {
         return consentPayload;
@@ -79,4 +82,28 @@ public class ExternalAPIPreConsentGenerateResponseDTO {
         this.consentType = consentType;
     }
 
+
+    public String getAuthorizationStatus() {
+        return authorizationStatus;
+    }
+
+    public void setAuthorizationStatus(String authorizationStatus) {
+        this.authorizationStatus = authorizationStatus;
+    }
+
+    public String getAuthorizationType() {
+        return authorizationType;
+    }
+
+    public void setAuthorizationType(String authorizationType) {
+        this.authorizationType = authorizationType;
+    }
+
+    public Map<String, String> getConsentAttributes() {
+        return consentAttributes;
+    }
+
+    public void setConsentAttributes(Map<String, String> consentAttributes) {
+        this.consentAttributes = consentAttributes;
+    }
 }

@@ -127,20 +127,29 @@ public class FinancialServicesConstants {
             "EventNotifications.Realtime.RequestGenerator";
 
     // Service Extensions Constants
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ServiceExtensionsEndpoint.Enable";
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ServiceExtensionsEndpoint.BaseURL";
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_TYPE = "ServiceExtensionsEndpoint.ExtensionTypes.Type";
-    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ServiceExtensionsEndpoint.Security.Type";
-    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ServiceExtensionsEndpoint.Security.Username";
-    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ServiceExtensionsEndpoint.Security.Password";
-    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ServiceExtensionsEndpoint.Security.Token";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ExtensionsEndpoint.Enable";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_EXTENSION = "ExtensionsEndpoint.AllowedExtensions.AllowedExtension";
+    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ExtensionsEndpoint.Security.Type";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ExtensionsEndpoint.Security.Username";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ExtensionsEndpoint.Security.Password";
+    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ExtensionsEndpoint.Security.Token";
     public static final String CONSENT_TYPE = "consentType";
     public static final String ERROR_DESCRIPTION = "errorDescription";
     public static final String DEFAULT_ERROR_DESCRIPTION = "Unexpected error occurred";
+    public static final String ERROR_CODE = "errorCode";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String DEFAULT_ERROR_MESSAGE = "server_error";
+    public static final String RESPONSE_DATA = "responseData";;
     public static final String BASIC_AUTH = "Basic-Auth";
     public static final String OAUTH2 = "OAuth2";
+
+    // Consent ID extraction Constants
+    public static final String IS_PRE_INITIATED_CONSENT = "Consent.PreInitiatedConsent";
+    public static final String AUTH_FLOW_CONSENT_ID_SOURCE = "Consent.AuthFlowConsentIdSource";
+    public static final String CONSENT_ID_EXTRACTION_JSON_PATH = "Consent.ConsentIdExtraction.JsonPath";
+    public static final String CONSENT_ID_EXTRACTION_KEY = "Consent.ConsentIdExtraction.Key";
+    public static final String CONSENT_ID_EXTRACTION_REGEX_PATTERN = "Consent.ConsentIdExtraction.RegexPattern";
 
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
