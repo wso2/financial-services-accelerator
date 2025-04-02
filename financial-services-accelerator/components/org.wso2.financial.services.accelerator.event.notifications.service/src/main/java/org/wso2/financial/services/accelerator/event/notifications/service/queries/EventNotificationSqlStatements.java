@@ -25,7 +25,8 @@ public class EventNotificationSqlStatements {
 
     public String getStoreNotification() {
 
-        return "INSERT INTO FS_NOTIFICATION (NOTIFICATION_ID, CLIENT_ID, RESOURCE_ID, STATUS) VALUES (?,?,?,?)";
+        return "INSERT INTO FS_NOTIFICATION (NOTIFICATION_ID, CLIENT_ID, RESOURCE_ID, STATUS, UPDATED_TIMESTAMP) " +
+                "VALUES (?,?,?,?,?)";
     }
 
     public String getStoreNotificationEvents() {
