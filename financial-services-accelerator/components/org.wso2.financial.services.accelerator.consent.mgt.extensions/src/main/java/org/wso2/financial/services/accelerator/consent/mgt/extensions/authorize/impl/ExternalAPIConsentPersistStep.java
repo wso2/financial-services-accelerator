@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Consent persist step default implementation.
+ * Consent persist step external service implementation.
  */
 public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
 

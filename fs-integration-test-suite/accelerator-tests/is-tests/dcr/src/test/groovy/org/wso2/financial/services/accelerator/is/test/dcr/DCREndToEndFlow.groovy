@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.is.test.dcr
 
+import io.restassured.response.Response
+import org.json.JSONObject
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -26,7 +28,6 @@ import org.wso2.financial.services.accelerator.test.framework.configuration.Conf
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.financial.services.accelerator.is.test.dcr.util.DCRConstants
 
 /**
  * Dynamic Client Registration End to End Flow Tests.
@@ -36,45 +37,50 @@ class DCREndToEndFlow extends FSConnectorTest {
     ConfigurationService configuration = new ConfigurationService()
     private String accessToken
     private String clientId
-    private List<ConnectorTestConstants.ApiScope> scopes = [ConnectorTestConstants.ApiScope.ACCOUNTS]
+    private List<ConnectorTestConstants.ApiScope> consentScopes = [ConnectorTestConstants.ApiScope.ACCOUNTS]
     private String registrationPath
-    String SSA
+    String ssa
+    ClientRegistrationRequestBuilder registrationRequestBuilder
 
     @BeforeClass(alwaysRun = true)
     void setup() {
 
-        registrationPath = configuration.getISServerUrl() + DCRConstants.REGISTRATION_ENDPOINT
+        dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
         configuration.setTppNumber(1)
-        SSA = new File(configuration.getAppDCRSSAPath()).text
+        ssa = new File(configuration.getAppDCRSSAPath()).text
+        registrationRequestBuilder = new ClientRegistrationRequestBuilder()
     }
 
     @Test(groups = "SmokeTest")
     void "Invoke registration request structured as a JWS"() {
 
-        def registrationResponse = ClientRegistrationRequestBuilder
-                .buildKeyManageRegistrationRequestWithClaims(ClientRegistrationRequestBuilder.getRegularClaimsForISDcr(SSA))
-                .when()
-                .post(registrationPath)
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(registrationRequestBuilder.getRegularClaims(ssa))
+                .post(dcrPath)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
-
-
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_secret"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_secret_expires_at"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"))
     }
 
     @Test(groups = "SmokeTest", dependsOnMethods = "Invoke registration request structured as a JWS")
     void "Get access token"() {
 
-        accessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, scopes)
+        Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                clientId, consentScopes)
+
+        accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
         Assert.assertNotNull(accessToken)
     }
 
@@ -83,38 +89,42 @@ class DCREndToEndFlow extends FSConnectorTest {
 
         def registrationResponse = ClientRegistrationRequestBuilder
                 .buildKeyManagerRegistrationRequest()
-                .get(registrationPath + "/" + clientId)
+                .get(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"))
     }
 
     @Test(groups = "SmokeTest", dependsOnMethods = "Retrieve registration details with a valid clientId and access token")
     void "Update client request with a valid details"() {
 
-        def registrationResponse = ClientRegistrationRequestBuilder
-                .buildKeyManagerRegistrationRequest()
-                .body(ClientRegistrationRequestBuilder.getRegularClaimsForISDcr(SSA))
-                .put(registrationPath + "/" + clientId)
+        def ssa = new File(configuration.getAppDCRSSAPath()).text
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
+        payload.put("scope", "fundsconfirmations")
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .put(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
-        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"redirect_uris"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_auth_method"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"))
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,"scope"), "fundsconfirmations")
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"))
     }
 
     @Test (groups = "SmokeTest", dependsOnMethods = "Update client request with a valid details")
@@ -122,7 +132,7 @@ class DCREndToEndFlow extends FSConnectorTest {
 
         def registrationResponse = ClientRegistrationRequestBuilder
                 .buildKeyManagerRegistrationRequest()
-                .delete(registrationPath + "/" + clientId)
+                .delete(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }
