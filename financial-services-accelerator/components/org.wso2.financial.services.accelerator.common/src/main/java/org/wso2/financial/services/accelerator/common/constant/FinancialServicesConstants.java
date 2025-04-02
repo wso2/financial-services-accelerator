@@ -72,16 +72,16 @@ public class FinancialServicesConstants {
     public static final String DCR_TAG = "DCR";
     public static final String DCR_PARAMS_TAG = "Params";
     public static final String DCR_VALIDATORS_TAG = "Validators";
-    public static final String DCR_VALIDATORS_ENABLED_TAG = "Enabled";
     public static final String DCR_PARAM_ALLOWED_VALUE_TAG = "AllowedValues";
     public static final String DCR_PARAM_NAME_TAG = "Name";
     public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
-    public static final String DCR_ADDITIONAL_ATTRIBUTE_FILTER = "AppRegistration.DCR.AdditionalAttributeFilter";
+    public static final String DCR_SERVICE_EXTENSION = "AppRegistration.DCR.DCRServiceExtension";
     public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
             ".DisplayName";
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
     public static final String IDENTITY_PROVIDER_NAME = "AppRegistration.SCA.IdpName";
     public static final String IDENTITY_PROVIDER_STEP = "AppRegistration.SCA.IdpStep";
+    public static final String CONDITIONAL_AUTH_SCRIPT_NAME = "AppRegistration.ConditionalAuthScriptFileName";
     public static final String JTI_CACHE_ACCESS_EXPIRY = "AppRegistration.DCR.JTICache.CacheAccessExpiry";
     public static final String JTI_CACHE_MODIFY_EXPIRY = "AppRegistration.DCR.JTICache.CacheModifiedExpiry";
     public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";
@@ -127,20 +127,29 @@ public class FinancialServicesConstants {
             "EventNotifications.Realtime.RequestGenerator";
 
     // Service Extensions Constants
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ServiceExtensionsEndpoint.Enable";
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ServiceExtensionsEndpoint.BaseURL";
-    public static final String SERVICE_EXTENSIONS_ENDPOINT_TYPE = "ServiceExtensionsEndpoint.ExtensionTypes.Type";
-    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ServiceExtensionsEndpoint.Security.Type";
-    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ServiceExtensionsEndpoint.Security.Username";
-    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ServiceExtensionsEndpoint.Security.Password";
-    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ServiceExtensionsEndpoint.Security.Token";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ExtensionsEndpoint.Enable";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_EXTENSION = "ExtensionsEndpoint.AllowedExtensions.AllowedExtension";
+    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ExtensionsEndpoint.Security.Type";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ExtensionsEndpoint.Security.Username";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ExtensionsEndpoint.Security.Password";
+    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ExtensionsEndpoint.Security.Token";
     public static final String CONSENT_TYPE = "consentType";
-    public static final String ACTION_STATUS = "actionStatus";
-    public static final String ACTION_STATUS_SUCCESS = "SUCCESS";
     public static final String ERROR_DESCRIPTION = "errorDescription";
-    public  static final String ERROR_MESSAGE = "errorMessage";
+    public static final String DEFAULT_ERROR_DESCRIPTION = "Unexpected error occurred";
+    public static final String ERROR_CODE = "errorCode";
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String DEFAULT_ERROR_MESSAGE = "server_error";
+    public static final String RESPONSE_DATA = "responseData";;
     public static final String BASIC_AUTH = "Basic-Auth";
     public static final String OAUTH2 = "OAuth2";
+
+    // Consent ID extraction Constants
+    public static final String IS_PRE_INITIATED_CONSENT = "Consent.PreInitiatedConsent";
+    public static final String AUTH_FLOW_CONSENT_ID_SOURCE = "Consent.AuthFlowConsentIdSource";
+    public static final String CONSENT_ID_EXTRACTION_JSON_PATH = "Consent.ConsentIdExtraction.JsonPath";
+    public static final String CONSENT_ID_EXTRACTION_KEY = "Consent.ConsentIdExtraction.Key";
+    public static final String CONSENT_ID_EXTRACTION_REGEX_PATTERN = "Consent.ConsentIdExtraction.RegexPattern";
 
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";

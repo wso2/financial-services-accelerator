@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: API contract for open data extension points
+  title: API contract for financial accelerator extension points in WSO2 IS
   description: This API defines the REST API contract for services that implements logic to extend the Open Data accelerator flow.
   contact:
     name: WSO2
@@ -8,7 +8,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v1.0.0-M3
+  version: v1.0.0-M4
 servers:
 - url: https://virtserver.swaggerhub.com/wso2-f5b/OB4/1.0.0
   description: SwaggerHub API Auto Mocking
@@ -16,6 +16,8 @@ security:
 - BasicAuth: []
 - OAuth2: []
 tags:
+- name: Client Registration
+  description: APIs for dynamic client registration flow extensions
 - name: Consent
   description: APIs for consent flow extensions
 - name: Token
@@ -24,7 +26,173 @@ tags:
   description: APIs for authorize flow extensions
 - name: Token & Authorize
   description: APIs for token & authorize flow extensions
+- name: Event Subscription
+  description: APIs for Event Subscription extensions
+- name: Event Creation
+  description: APIs for Event Creation extensions
+- name: Event Polling
+  description: APIs for Event Polling extensions
+- name: Error Handling
+  description: APIs for handling accelerator errors
 paths:
+  /error-mapper:
+    post:
+      tags:
+      - Error Handling
+      summary: map accelerator level error formats to custom error formats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorMapperRequestBody'
+            example:
+              requestId: Ec1wMjmiG8
+              data: 
+                error:
+                    code: "401"
+                    description: Invalid client ID provided.
+                    operation: consent_create
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForErrorMapper'
+              example:
+                responseId: Ec1wMjmiG8
+                data: 
+                  customErrorCode: invalid
+                  customErrorDescription: Invalid client ID provided. 
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                errorMessage: invalid_request
+                errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+
+  /pre-dynamic-client-registration:
+    post:
+      tags:
+      - Client Registration
+      summary: handle pre validations & define data to store in dynamic client registration step
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppCreationValidationRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForDcrValidation'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data: {attributesToStore:{
+                      key: value
+                    }}
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorMessage: Invalid dcr payload, errorDescription: Invalid scope values found}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data : { errorMessage: Bad request, errorDescription: Request does not comply with the schema}
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data : { errorMessage: Internal server error, errorDescription: Error occurred while handling the request}
+
+  /pre-dynamic-client-update:
+    post:
+      tags:
+      - Client Registration
+      summary: handle pre validations & define data to store in dynamic client update step
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppUpdateValidationRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForDcrUpdate'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data: {attributesToStore:{
+                      key: value
+                    }}
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorMessage: Invalid dcr payload, errorDescription: Invalid scope values found}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data : { errorMessage: Bad request, errorDescription: Request does not comply with the schema}
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data : { errorMessage: Internal server error, errorDescription: Error occurred while handling the request}
   /pre-consent-generation:
     post:
       tags:
@@ -42,7 +210,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_consent_creation'
+                $ref: '#/components/schemas/Response200ForConsentCreation'
         "400":
           description: Bad Request
           content:
@@ -52,8 +220,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: invalid_request
+                  errorDescription: Data is missing
         "500":
           description: Server Error
           content:
@@ -82,7 +251,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_response_alternation'
+                $ref: '#/components/schemas/Response200ForResponseAlternation'
         "400":
           description: Bad Request
           content:
@@ -122,7 +291,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_response_alternation'
+                $ref: '#/components/schemas/Response200ForResponseAlternation'
              
         "400":
           description: Bad Request
@@ -164,7 +333,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_consent_revocation'
+                $ref: '#/components/schemas/Response200ForConsentRevocation'
         "400":
           description: Bad Request
           content:
@@ -203,7 +372,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_pre_consent_authorization'
+                $ref: '#/components/schemas/Response200ForPreConsentAuthorization'
         "400":
           description: Bad Request
           content:
@@ -243,7 +412,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200'
+                $ref: '#/components/schemas/Response200'
               examples:
                 successExample:
                   summary: Success response
@@ -255,8 +424,8 @@ paths:
                   value:
                     status: ERROR
                     errorCode: 401
-                    errorMessage: invalid_permissions
-                    erroreDescription: "The requested  permissions are invalid, unknown"
+                    data: {errorMessage: invalid_permissions,
+                           erroreDescription: "The requested  permissions are invalid, unknown"}
         "400":
           description: Bad Request
           content:
@@ -266,8 +435,8 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Permissions are missing
+                data: {errorMessage: invalid_request,
+                       errorDescription: Permissions are missing}
         "500":
           description: Server Error
           content:
@@ -277,8 +446,8 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data: {errorMessage: server_error,
+                       errorDescription: Failed to process the response}
   /pre-access-token-generation:
     post:
       tags:
@@ -297,7 +466,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_token_generation'
+                $ref: '#/components/schemas/Response200ForTokenGeneration'
         "400":
           description: Bad Request
           content:
@@ -338,7 +507,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200'
+                $ref: '#/components/schemas/Response200'
               examples:
                 successExample:
                   summary: Success response
@@ -384,7 +553,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/postuserauthorization_body'
+              $ref: '#/components/schemas/PostUserAuthorizationBody'
         required: true
       responses:
         "200":
@@ -392,7 +561,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_post_user_authorization'
+                $ref: '#/components/schemas/Response200ForPostUserAuthorization'
         "400":
           description: Bad Request
           content:
@@ -425,7 +594,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/preidtokengeneration_body'
+              $ref: '#/components/schemas/PreIdtokenGenerationBody'
         required: true
       responses:
         "200":
@@ -433,9 +602,432 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response_200_for_idtoken_generation'
+                $ref: '#/components/schemas/Response200ForIdtokenGeneration'
+
+  /pre-event-subscription:
+    post:
+      tags:
+        - Event Subscription
+      summary: handle event subscription validations & storing data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventSubscriptionRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForEvent'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                successExampleWithDetails:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data : { callbackUrl: "https://test.com", version: "3.1", eventTypes:["eventType"]}
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorCode: 400, errorMessage: Invalid event subscription payload}
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: invalid_request
+                  errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+  /post-event-subscription:
+    post:
+      tags:
+        - Event Subscription
+      summary: "handle post event-subscription-creation response generation"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostEventSubscriptionRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForPostEvent'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data : {responseData:{}}
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorCode: 400, errorMessage: Invalid event subscription payload}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: invalid_request
+                errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+  /pre-event-creation:
+    post:
+      tags:
+        - Event Creation
+      summary: handle event creation validations & storing data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreationRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForEvent'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorCode: 400, errorMessage: Invalid event subscription payload}
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: invalid_request
+                  errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+  /pre-event-polling:
+    post:
+      tags:
+        - Event Polling
+      summary: handle event polling validations & storing data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPollingRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForEvent'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                failedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorCode: 400, errorMessage: Invalid event subscription payload}
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: invalid_request
+                  errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+  /post-event-polling:
+    post:
+      tags:
+        - Event Polling
+      summary: "handle post event-polling response generation"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostEventPollingRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForPostEvent'
+              examples:
+                successExample:
+                  summary: Success response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: SUCCESS
+                    data : {responseData:{}}
+                ffailedExample:
+                  summary: Failed response
+                  value:
+                    responseId: Ec1wMjmiG8
+                    status: ERROR
+                    data : { errorCode: 400, errorMessage: Invalid event subscription payload}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: invalid_request
+                errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
 components:
   schemas:
+    Response200ForErrorMapper:
+      type: object
+      properties:
+        responseId:
+          type: string
+        data:
+          type: object  
+          description: Defines the custom error response.
+
+    ErrorMapperRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/ErrorMapperData'
+
+    AppCreationValidationRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/AppCreationValidationData'
+          
+    ErrorMapperData:
+      type: object
+      description: Defines the context data related to the errors.
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+            
+    Error:
+      type: object
+      description: Defines an error object with details.
+      properties:
+        code:
+          type: string
+          description: Error code identifying the specific issue.
+        description:
+          type: string
+          description: Detailed description of the error.
+        operation:
+          type: string
+          description: The operation where the error occurred.
+
+    Response200ForDcrValidation:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponseDCRValidation'
+        - $ref: '#/components/schemas/FailedResponseDCRValidation'
+    Response200ForDcrUpdate:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponseDCRUpdate'
+        - $ref: '#/components/schemas/FailedResponseDCRValidation'
+    AppCreationValidationData:
+      type: object
+      description: Defines the context data related to the app creation validation.
+      properties:
+        clientRegistration:
+          type: object
+          description: DCR registration request
+        softwareStatement:
+          type: object
+          description: Parameters of the decoded SSA.
+    AppUpdateValidationRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/AppUpdateValidationData'
+          
+    AppUpdateValidationData:
+      type: object
+      description: Defines the context data related to the app creation validation.
+      properties:
+        clientUpdate:
+          type: object
+          description: DCR registration request
+        softwareStatement:
+          type: object
+          description: Parameters of the decoded SSA.
+        clientAppProperties:
+          type: object
+          description: properties of the existing client application.
+    
+    SuccessResponseDCRValidation:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+          - SUCCESS
+        data:
+          type: object  
+          description: Defines the success response.
+          properties:
+            attributesToStore:
+              type: object
+              
+    SuccessResponseDCRUpdate:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+          - SUCCESS
+        data:
+          type: object  
+          description: Defines the success response.
+          properties:
+            attributesToUpdate:
+              type: object      
+    
+    FailedResponseDCRValidation:
+      required:
+        - data
+        - status
+      type: object
+      properties:
+        status:
+          type: string
+          description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
+          enum:
+          - ERROR
+        errorCode:
+          type: string
+          description: If any custom error code to return.
+        data:
+          type: object
+          properties:
+            errorMessage:
+              type: string
+              description: Provides the reason for error.
+            errorDescription:
+              type: string
+              description: Offers a detailed explanation of the error.
+
     RequestBase:
       type: object
       properties:
@@ -443,7 +1035,7 @@ components:
           type: string
           example: Ec1wMjmiG8
         data:
-          $ref: '#/components/schemas/RequestBase_data'
+          $ref: '#/components/schemas/RequestBaseData'
     AdditionalClaimsTokenRequest:
       allOf:
       - $ref: '#/components/schemas/RequestBase'
@@ -470,7 +1062,7 @@ components:
           type: string
           example: SUCCESS
         data:
-          $ref: '#/components/schemas/ResponseBase_data'
+          $ref: '#/components/schemas/ResponseBaseData'
     AdditionalClaimsTokenResponse:
       allOf:
       - $ref: '#/components/schemas/ResponseBase'
@@ -489,7 +1081,7 @@ components:
           type: string
           example: Ec1wMjmiG8
         data:
-          $ref: '#/components/schemas/PostUserAuthRequestBase_data'
+          $ref: '#/components/schemas/PostUserAuthRequestBaseData'
     PostUserAuthRefreshTokenRequest:
       allOf:
       - $ref: '#/components/schemas/PostUserAuthRequestBase'
@@ -514,14 +1106,15 @@ components:
           example: Ec1wMjmiG8
         status:
           type: string
-          example: SUCCESS
+          enum:
+          - SUCCESS
     PostUserAuthRefreshTokenResponse:
       allOf:
       - $ref: '#/components/schemas/PostUserAuthResponseBase'
       - type: object
         properties:
           data:
-            $ref: '#/components/schemas/PostUserAuthRefreshTokenResponse_data'
+            $ref: '#/components/schemas/PostUserAuthRefreshTokenResponseData'
           
     PostUserAuthApprovedScopesResponse:
       allOf:
@@ -529,7 +1122,7 @@ components:
       - type: object
         properties:
           data:
-            $ref: '#/components/schemas/PostUserAuthApprovedScopesResponse_data'
+            $ref: '#/components/schemas/PostUserAuthApprovedScopesResponseData'
     Request:
       type: object
       properties:
@@ -560,18 +1153,6 @@ components:
         consentResource:
           type: object
           description: The  consent resource containing receipt,attributes
-        resourcePath:
-          type: string
-          description: Resource url
-    PostConsentRetrievalData:
-      type: object
-      properties:
-        consentId:
-          type: string
-          description: The consent id
-        consentResource:
-          type: object
-          description: Detailed consent resource
         resourcePath:
           type: string
           description: Resource url
@@ -622,7 +1203,19 @@ components:
           enum:
           - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponseTokenGeneration_data'
+          $ref: '#/components/schemas/SuccessResponseTokenGenerationData'
+          
+    SuccessResponseIssueRefreshTokenGeneration:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+          - SUCCESS
+        data:
+          $ref: '#/components/schemas/SuccessResponseIssueRefreshTokenGenerationData'
 
     SuccessResponseConsentRevocation:
       type: object
@@ -634,7 +1227,7 @@ components:
           enum:
           - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponseConsentRevocation_data'
+          $ref: '#/components/schemas/SuccessResponseConsentRevocationData'
     SuccessResponsePreConsentAuthorization:
       type: object
       properties:
@@ -645,7 +1238,7 @@ components:
           enum:
           - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponsePreConsentAuthorization_data'
+          $ref: '#/components/schemas/SuccessResponsePreConsentAuthorizationData'
     SuccessResponseForResponseAlternation:
       type: object
       properties:
@@ -656,7 +1249,7 @@ components:
           enum:
           - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponseForResponseAlternation_data'
+          $ref: '#/components/schemas/SuccessResponseForResponseAlternationData'
     SuccessResponsePreConsentGeneration:
       type: object
       properties:
@@ -667,12 +1260,12 @@ components:
           enum:
           - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponsePreConsentGeneration_data'
+          $ref: '#/components/schemas/SuccessResponsePreConsentGenerationData'
     FailedResponse:
       required:
-      - errorDescription
-      - errorMessage
+      - data
       - status
+      - errorCode
       type: object
       properties:
         status:
@@ -683,13 +1276,10 @@ components:
         errorCode:
           type: integer
           description: If any custom error code to return.
-        errorMessage:
-          type: string
-          description: Provides the reason for error.
-        errorDescription:
-          type: string
-          description: Offers a detailed explanation of the error.
-    
+        data:
+          type: object
+          description: :"Custom error object to response back"
+
     FailedResponseInConsent:
       required:
       - data
@@ -710,19 +1300,18 @@ components:
           description: :"Custom error object to response back"
     ErrorResponse:
       type: object
+      required:
+      - data
+      - status
       properties:
         status:
           type: string
           description: "Indicates the outcome of the request. For an error operation, this should be set to ERROR."
           enum:
           - ERROR
-        errorMessage:
-          type: string
-          description: The cause of the error.
-        errorDescription:
-          type: string
-          description: A detailed description of the error.
-      description: "When the external service responds with an ERROR state, it can return an HTTP status code of 400, 401, or 500, indicating either a validation failure or an issue processing the request. \n"
+        data:
+          type: object
+          description: :"Custom error object to response back"
     ConsentCreationRequestBody:
       type: object
       properties:
@@ -825,54 +1414,51 @@ components:
           type: string
           example: Ec1wMjmiG8
         data:
-          $ref: '#/components/schemas/PreUserAuthorizationRequestBody_data'
-    response_200_for_consent_creation:
+          $ref: '#/components/schemas/PreUserAuthorizationRequestBodyData'
+    Response200ForConsentCreation:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponsePreConsentGeneration'
       - $ref: '#/components/schemas/FailedResponseInConsent'
-    response_200_for_response_alternation:
+    Response200ForResponseAlternation:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponseForResponseAlternation'
       - $ref: '#/components/schemas/FailedResponseInConsent'
-    response_200:
+    Response200:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponse'
       - $ref: '#/components/schemas/FailedResponse'
-    response_200_for_consent_retrieval:
-      oneOf:
-      - $ref: '#/components/schemas/SuccessResponse'
-      - $ref: '#/components/schemas/FailedResponseInConsent'
-    response_200_for_consent_revocation:
+    Response200ForConsentRevocation:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponseConsentRevocation'
       - $ref: '#/components/schemas/FailedResponse'
-    response_200_for_pre_consent_authorization:
+    Response200ForPreConsentAuthorization:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponsePreConsentAuthorization'
       - $ref: '#/components/schemas/FailedResponse'
-    response_200_for_token_generation:
+    Response200ForTokenGeneration:
       oneOf:
       - $ref: '#/components/schemas/SuccessResponseTokenGeneration'
+      - $ref: '#/components/schemas/SuccessResponseIssueRefreshTokenGeneration'
       - $ref: '#/components/schemas/FailedResponse'
-    postuserauthorization_body:
+    PostUserAuthorizationBody:
       oneOf:
       - $ref: '#/components/schemas/PostUserAuthRefreshTokenRequest'
       - $ref: '#/components/schemas/PostUserAuthApprovedScopesRequest'
-    response_200_for_post_user_authorization:
+    Response200ForPostUserAuthorization:
       oneOf:
       - $ref: '#/components/schemas/PostUserAuthRefreshTokenResponse'
       - $ref: '#/components/schemas/PostUserAuthApprovedScopesResponse'
       - $ref: '#/components/schemas/FailedResponse'
-    preidtokengeneration_body:
+    PreIdtokenGenerationBody:
       oneOf:
       - $ref: '#/components/schemas/AdditionalClaimsTokenRequest'
       - $ref: '#/components/schemas/AdditionalClaimsAuthzRequest'
-    response_200_for_idtoken_generation:
+    Response200ForIdtokenGeneration:
       oneOf:
       - $ref: '#/components/schemas/AdditionalClaimsTokenResponse'
       - $ref: '#/components/schemas/AdditionalClaimsAuthzResponse'
       - $ref: '#/components/schemas/FailedResponse'
-    RequestBase_data:
+    RequestBaseData:
       type: object
       properties:
         userId:
@@ -890,7 +1476,7 @@ components:
         value:
           type: string
           example: "123"
-    ResponseBase_data:
+    ResponseBaseData:
       type: object
       properties:
         claims:
@@ -902,7 +1488,7 @@ components:
             value: "456"
           items:
             $ref: '#/components/schemas/ResponseBase_data_claims'
-    PostUserAuthRequestBase_data:
+    PostUserAuthRequestBaseData:
       type: object
       properties:
         scopes:
@@ -918,13 +1504,13 @@ components:
         validityPeriod:
           type: integer
           example: 1000
-    PostUserAuthRefreshTokenResponse_data:
+    PostUserAuthRefreshTokenResponseData:
       type: object
       properties:
         refreshTokenValidityPeriod:
           type: integer
           example: 1000
-    PostUserAuthApprovedScopesResponse_data:
+    PostUserAuthApprovedScopesResponseData:
       type: object
       properties:
         approvedScopes:
@@ -935,7 +1521,7 @@ components:
           - consentId
           items:
             type: string
-    SuccessResponseTokenGeneration_data_parameters:
+    SuccessResponseTokenGenerationDataParameters:
       type: object
       properties:
         key:
@@ -944,14 +1530,19 @@ components:
         value:
           type: string
           example: "123"
-    SuccessResponseTokenGeneration_data:
+    SuccessResponseTokenGenerationData:
       type: object
       properties:
         parameters:
           type: array
           items:
-            $ref: '#/components/schemas/SuccessResponseTokenGeneration_data_parameters'
-    SuccessResponseConsentRevocation_data:
+            $ref: '#/components/schemas/SuccessResponseTokenGenerationDataParameters'
+    SuccessResponseIssueRefreshTokenGenerationData:
+      type: object
+      properties:
+        issueRefreshToken:
+          type: boolean
+    SuccessResponseConsentRevocationData:
       type: object
       properties:
         revocationStatusName:
@@ -960,7 +1551,7 @@ components:
         requireTokenRevocation:
           type: string
           description: Require access token to be revoked
-    SuccessResponsePreConsentAuthorization_data:
+    SuccessResponsePreConsentAuthorizationData:
       type: object
       properties:
         consentData:
@@ -969,13 +1560,13 @@ components:
         consumerData:
           type: object
           description: Data provider's backend data
-    SuccessResponseForResponseAlternation_data:
+    SuccessResponseForResponseAlternationData:
       type: object
       properties:
         responseData:
           type: object
           description: Generated custom response body
-    SuccessResponsePreConsentGeneration_data:
+    SuccessResponsePreConsentGenerationData:
       type: object
       properties:
         consentType:
@@ -997,9 +1588,176 @@ components:
         consentPayload:
           type: object
           description: Modified consent receipt
-    PreUserAuthorizationRequestBody_data:
+    PreUserAuthorizationRequestBodyData:
       type: object
       description: full request object
+
+    EventSubscriptionRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/EventSubscriptionRequest'
+    EventSubscriptionRequest:
+      type: object
+      properties:
+        apiOperation:
+          type: string
+          enum:
+            - SubscriptionCreation
+            - SingleSubscriptionRetrieval
+            - BulkSubscriptionRetrieval
+            - SubscriptionRetrievalForEventTypes
+            - SubscriptionUpdate
+            - SubscriptionDelete
+        eventSubscriptionPayload:
+          type: object
+          description: Event Subscription Payload
+    PostEventSubscriptionRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/PostEventSubscriptionRequest'
+    PostEventSubscriptionRequest:
+      type: object
+      properties:
+        apiOperation:
+          type: string
+          enum:
+            - SubscriptionCreation
+            - SingleSubscriptionRetrieval
+            - BulkSubscriptionRetrieval
+            - SubscriptionRetrievalForEventTypes
+            - SubscriptionUpdate
+            - SubscriptionDelete
+        eventSubscription:
+          type: object
+          description: Event Subscription Payload
+    EventCreationRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/EventCreationRequest'
+    EventCreationRequest:
+      type: object
+      properties:
+        eventCreationPayload:
+          type: object
+          description: Event creation Payload
+    EventPollingRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/EventPollingRequest'
+    EventPollingRequest:
+      type: object
+      properties:
+        eventPollingPayload:
+          type: object
+          description: Event polling Payload
+    PostEventPollingRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/PostEventPollingRequest'
+    PostEventPollingRequest:
+      type: object
+      properties:
+        eventPolling:
+          type: object
+          description: Event polling Payload
+    Response200ForEvent:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponseForEvent'
+        - $ref: '#/components/schemas/SuccessResponseForEventWithDetails'
+        - $ref: '#/components/schemas/FailedResponseForEvent'
+    Response200ForPostEvent:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponseForPostEvent'
+        - $ref: '#/components/schemas/FailedResponseForEvent'
+    SuccessResponseForEvent:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+            - SUCCESS
+    SuccessResponseForEventWithDetails:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+            - SUCCESS
+        data:
+          type: object
+          properties:
+            callbackUrl:
+              type: string
+            version:
+              type: string
+            eventTypes:
+              type: array
+              items:
+                type: string
+    SuccessResponseForPostEvent:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+            - SUCCESS
+        data:
+          type: object
+          properties:
+            responseData:
+              type: object
+              description: Event Response Paylaod
+    FailedResponseForEvent:
+      required:
+        - data
+        - status
+      type: object
+      properties:
+        status:
+          type: string
+          description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
+          enum:
+            - ERROR
+        data:
+          type: object
+          properties:
+            errorCode:
+              type: integer
+              description: If any custom error code to return.
+            errorMessage:
+              type: string
+              description: Error Message to be returned.
   securitySchemes:
     BasicAuth:
       type: http

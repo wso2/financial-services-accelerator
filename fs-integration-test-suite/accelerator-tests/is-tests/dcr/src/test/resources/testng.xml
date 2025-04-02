@@ -21,6 +21,10 @@
     <test name="Dynamic Client Registration Flow" parallel="false" enabled="true" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.is.test.dcr.DCREndToEndFlow"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.dcr.ClientRegistrationTests"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.dcr.RegistrationDetailsRetrievalTests"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.dcr.UpdateRegistrationTests"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.dcr.DeleteRegistrationTests"/>
         </classes>
     </test>
 </suite>

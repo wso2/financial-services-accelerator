@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -50,7 +51,6 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
-    private static final String CONSENT_DATA_OBJECT_KEY = "consent_data";
 
     public ExternalAPIConsentRetrievalStep() {
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
@@ -63,9 +63,10 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-        String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+        String consentId;
 
         try {
+            consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
             setMandatoryConsentData(consentId, consentData);
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
                     consentData);
@@ -128,7 +129,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
                 externalServiceRequest, ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
-            throw new FinancialServicesException(externalServiceResponse.getErrorMessage());
+            throw new FinancialServicesException(externalServiceResponse.getData()
+                    .path(FinancialServicesConstants.ERROR_MESSAGE)
+                    .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);

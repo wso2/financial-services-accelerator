@@ -238,7 +238,8 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Simulate external service failure
         ExternalServiceResponse errorResponse = new ExternalServiceResponse();
         errorResponse.setStatus(StatusEnum.ERROR);
-        errorResponse.setErrorMessage("Something went wrong");
+        ObjectMapper mapper = new ObjectMapper();
+        errorResponse.setData(mapper.readTree("{\"data\": { \"errorMessage\" : \"Something went wrong\" } }"));
 
         serviceUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
                 .thenReturn(errorResponse);

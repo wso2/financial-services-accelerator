@@ -28,8 +28,6 @@ public class ExternalServiceResponse {
     private String responseId;
     private StatusEnum status;
     private String errorCode;
-    private String errorMessage;
-    private String errorDescription;
     private JsonNode data;
 
     // No-Args Constructor (Required for Jackson)
@@ -43,13 +41,10 @@ public class ExternalServiceResponse {
         this.data = data;
     }
 
-    public ExternalServiceResponse(String responseId, StatusEnum status, String errorCode, String errorMessage,
-                                   String errorDescription) {
+    public ExternalServiceResponse(String responseId, StatusEnum status, String errorCode) {
         this.responseId = responseId;
         this.status = status;
         this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-        this.errorDescription = errorDescription;
     }
 
     public String getResponseId() {
@@ -74,22 +69,6 @@ public class ExternalServiceResponse {
 
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public String getErrorDescription() {
-        return errorDescription;
-    }
-
-    public void setErrorDescription(String errorDescription) {
-        this.errorDescription = errorDescription;
     }
 
     public JsonNode getData() {
