@@ -28,7 +28,7 @@ public enum ServiceExtensionTypeEnum {
     PRE_CONSENT_RETRIEVAL("pre_consent_retrieval"),
     PRE_CONSENT_REVOCATION("pre_consent_revocation"),
     PRE_CONSENT_AUTHORIZATION("pre_consent_authorization"),
-    PRE_CONSENT_PERSISTENCE("pre-consent-persistence"),
+    PRE_CONSENT_PERSISTENCE("pre_consent_persistence"),
     CONSENT_VALIDATION("consent_validation"),
     PRE_ACCESS_TOKEN_GENERATION("pre_access_token_generation"),
     PRE_USER_AUTHORIZATION("pre_user_authorization"),
