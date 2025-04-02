@@ -27,6 +27,7 @@ import com.wso2.openbanking.accelerator.data.publisher.common.EventQueue;
 import com.wso2.openbanking.accelerator.data.publisher.common.OBThriftDataPublisher;
 import com.wso2.openbanking.accelerator.data.publisher.common.OpenBankingDataPublisher;
 import com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.util.Map;
@@ -44,7 +45,7 @@ public class OBAnalyticsDataHolder {
     private DataPublisherPool<OpenBankingDataPublisher> pool;
     private int poolSize;
     private EventQueue eventQueue;
-    private String openBankingDataPublisherImplementation;
+    private String openBankingDataPublisherFQN;
 
     public static OBAnalyticsDataHolder getInstance() {
 
@@ -123,8 +124,7 @@ public class OBAnalyticsDataHolder {
     private void setOpenBankingDataPublisher() {
 
         if (this.configurationMap != null && this.configurationMap.get(DATA_PUBLISHING_CONFIG_TAG) != null) {
-            this.setOpenBankingDataPublisherImplementation(
-                    this.configurationMap.get(DATA_PUBLISHING_CONFIG_TAG).toString());
+            this.setOpenBankingDataPublisherFQN(this.configurationMap.get(DATA_PUBLISHING_CONFIG_TAG).toString());
         }
     }
 
@@ -134,23 +134,22 @@ public class OBAnalyticsDataHolder {
      *
      * @return the {@code OpenBankingDataPublisher} instance
      */
-    public OpenBankingDataPublisher getOpenBankingDataPublisherImplementation() {
+    public OpenBankingDataPublisher getOpenBankingDataPublisher() {
 
-        if (this.openBankingDataPublisherImplementation == null) {
+        if (StringUtils.isBlank(this.openBankingDataPublisherFQN)) {
             return new OBThriftDataPublisher();
         } else {
-            return (OpenBankingDataPublisher)
-                    OpenBankingUtils.getClassInstanceFromFQN(openBankingDataPublisherImplementation);
+            return (OpenBankingDataPublisher) OpenBankingUtils.getClassInstanceFromFQN(openBankingDataPublisherFQN);
         }
     }
 
     /**
      * Sets the Data Publisher Implementation class name.
      *
-     * @param openBankingDataPublisherImplementation the Data Publisher Implementation class name
+     * @param openBankingDataPublisherFQN the Data Publisher Implementation class name
      */
-    public void setOpenBankingDataPublisherImplementation(final String openBankingDataPublisherImplementation) {
+    public void setOpenBankingDataPublisherFQN(final String openBankingDataPublisherFQN) {
 
-        this.openBankingDataPublisherImplementation = openBankingDataPublisherImplementation;
+        this.openBankingDataPublisherFQN = openBankingDataPublisherFQN;
     }
 }

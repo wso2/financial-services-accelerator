@@ -33,8 +33,7 @@ public class DataPublisherFactory<OpenBankingDataPublisher> extends BasePooledOb
     @Override
     public OpenBankingDataPublisher create() {
 
-        return (OpenBankingDataPublisher)
-                OBAnalyticsDataHolder.getInstance().getOpenBankingDataPublisherImplementation();
+        return (OpenBankingDataPublisher) OBAnalyticsDataHolder.getInstance().getOpenBankingDataPublisher();
     }
 
     @Override
