@@ -81,7 +81,6 @@ public class ConsentExtensionConstants {
     public static final String AMOUNT_TITLE = "Amount";
     public static final String COMMON_AUTH_ID = "commonAuthId";
 
-
     //Consent Auth Servlet Constants
     public static final String DEBTOR_ACCOUNT_ID = "AccountId";
     public static final String AUTH_ACCOUNT_ID = "account_id";
