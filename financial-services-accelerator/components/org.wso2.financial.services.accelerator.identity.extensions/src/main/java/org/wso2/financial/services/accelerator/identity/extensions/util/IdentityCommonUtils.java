@@ -18,9 +18,12 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.nimbusds.jose.JWSAlgorithm;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -41,10 +44,12 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -57,6 +62,7 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
+import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
@@ -77,7 +83,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.Cookie;
 
 /**
  * Common utility class for Identity Extensions.
@@ -698,6 +708,119 @@ public class IdentityCommonUtils {
             }
         }
         return requestedClaims;
+    }
+
+    /**
+     * Get consent id from the request object or common auth id.
+     *
+     * @param oauthAuthzMsgCtx OAuth authorization message context
+     * @return Consent ID
+     * @throws JsonProcessingException
+     * @throws ConsentManagementException
+     */
+    public static String getConsentId(OAuthAuthzReqMessageContext oauthAuthzMsgCtx) throws JsonProcessingException,
+            ConsentManagementException {
+
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        if (!configParser.isPreInitiatedConsent()) {
+            String commonAuthId = getCommonAuthId(oauthAuthzMsgCtx);
+            return getConsentIdFromCommonAuthId(commonAuthId);
+        }
+
+        if ("requestObject".equals(configParser.getAuthFlowConsentIdSource())) {
+            return getConsentIdFromRequestObject(oauthAuthzMsgCtx.getAuthorizationReqDTO());
+        }
+
+        if ("requestParam".equals(configParser.getAuthFlowConsentIdSource())) {
+            return getConsentIdFromRequestParam(oauthAuthzMsgCtx.getAuthorizationReqDTO());
+        }
+
+        return null;
+    }
+
+    private static String getConsentIdFromCommonAuthId(String commonAuthId) throws ConsentManagementException {
+
+        return new ConsentCoreServiceImpl()
+                .getConsentIdByConsentAttributeNameAndValue(IdentityCommonConstants.COMMON_AUTH_ID, commonAuthId)
+                .get(0);
+    }
+
+    @SuppressFBWarnings("COOKIE_USAGE")
+    private static String getCommonAuthId(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
+
+        Cookie[] cookies = oAuthAuthzReqMessageContext.getAuthorizationReqDTO().getCookie();
+        String commonAuthId = StringUtils.EMPTY;
+        ArrayList<Cookie> cookieList = new ArrayList<>(Arrays.asList(cookies));
+        for (Cookie cookie : cookieList) {
+            if (IdentityCommonConstants.COMMON_AUTH_ID.equals(cookie.getName())) {
+                commonAuthId = cookie.getValue();
+                break;
+            }
+        }
+        return commonAuthId;
+    }
+
+    private static String getConsentIdFromRequestObject(OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO)
+            throws JsonProcessingException {
+
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        String json = oAuth2AuthorizeReqDTO.getEssentialClaims();
+        String jsonPath = configParser.getConsentIdExtractionJsonPath();
+
+        if (json == null || json.isEmpty() || jsonPath == null || jsonPath.isEmpty()) {
+            return null; // Return null if input is invalid
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(json);
+        JsonNode targetNode = node.at(jsonPath);
+        return extractFromRegex(targetNode.asText());
+    }
+
+    private static String getConsentIdFromRequestParam(OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO) {
+
+        // TODO: need to support other request parameters based on the requirements
+        StringBuilder scopesString = new StringBuilder();
+        for (String scope : oAuth2AuthorizeReqDTO.getScopes()) {
+            scopesString.append(scope).append(" ");
+        }
+        return extractFromRegex(scopesString.toString().trim());
+    }
+
+    private static String extractFromRegex(String text) {
+        if (text == null || text.isEmpty()) {
+            return null;
+        }
+
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        Pattern pattern = configParser.getConsentIdExtractionRegexPattern();
+
+        if (pattern == null) {
+            return text;
+        }
+
+        Matcher matcher = pattern.matcher(text);
+        return matcher.find() ? matcher.group() : null;
+    }
+
+    /**
+     * Get consent id from the scopes.
+     *
+     * @param scopes Scopes
+     * @return Consent ID
+     */
+    public static String getConsentId(String[] scopes) {
+
+        String consentIdClaim = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
+                .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
+
+        for (String scope : scopes) {
+            if (scope.startsWith(consentIdClaim)) {
+                return scope.substring(consentIdClaim.length());
+            }
+        }
+
+        return null;
     }
 
 }

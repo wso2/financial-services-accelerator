@@ -79,6 +79,9 @@ public class FSClaimProviderTest {
         externalServiceResponse.setStatus(StatusEnum.SUCCESS);
         externalServiceResponse.setData(data);
         response = externalServiceResponse;
+
+        mockedIdentityCommonUtils.when(() -> IdentityCommonUtils
+                .removeInternalScopes(Mockito.any())).thenReturn(new String[]{"accounts", "payments"});
     }
 
     @AfterClass
@@ -103,6 +106,7 @@ public class FSClaimProviderTest {
         OAuthTokenReqMessageContext oAuthTokenReqMessageContext = new OAuthTokenReqMessageContext(
                 new OAuth2AccessTokenReqDTO());
         OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = new OAuth2AccessTokenRespDTO();
+        oAuth2AccessTokenRespDTO.setAuthorizedScopes("accounts payments");
 
         fsClaimProvider.getAdditionalClaims(oAuthTokenReqMessageContext, oAuth2AccessTokenRespDTO);
     }
@@ -122,6 +126,7 @@ public class FSClaimProviderTest {
         OAuthTokenReqMessageContext oAuthTokenReqMessageContext = new OAuthTokenReqMessageContext(
                 new OAuth2AccessTokenReqDTO());
         OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = new OAuth2AccessTokenRespDTO();
+        oAuth2AccessTokenRespDTO.setAuthorizedScopes("accounts payments");
 
         FSClaimProvider.setClaimProvider(new FSDefaultClaimProvider());
         fsClaimProvider.getAdditionalClaims(oAuthTokenReqMessageContext, oAuth2AccessTokenRespDTO);
@@ -174,6 +179,7 @@ public class FSClaimProviderTest {
         oAuthTokenReqMessageContext.setAuthorizedUser(user);
         OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO =
                 new OAuth2AccessTokenRespDTO();
+        oAuth2AccessTokenRespDTO.setAuthorizedScopes("accounts payments");
 
         Map<String, Object> claims = fsClaimProvider.getAdditionalClaims(oAuthTokenReqMessageContext,
                 oAuth2AccessTokenRespDTO);

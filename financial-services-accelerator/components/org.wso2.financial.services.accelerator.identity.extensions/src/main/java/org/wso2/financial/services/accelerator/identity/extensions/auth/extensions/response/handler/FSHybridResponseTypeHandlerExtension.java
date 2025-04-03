@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -58,8 +59,7 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
             }
 
             // Perform FS default behaviour
-            String sessionDataKey = oauthAuthzMsgCtx.getAuthorizationReqDTO().getSessionDataKey();
-            String consentId = IdentityCommonUtils.getConsentIDFromSessionData(sessionDataKey);
+            String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
             String[] updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
             long refreshTokenValidityPeriod = oauthAuthzMsgCtx.getRefreshTokenvalidityPeriod();
 
@@ -93,6 +93,9 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
         } catch (FinancialServicesException e) {
             log.error("Error while invoking external service extension", e);
             throw new IdentityOAuth2Exception("Error while invoking external service extension");
+        } catch (JsonProcessingException e) {
+            log.error("Error while processing json", e);
+            throw new IdentityOAuth2Exception("Error while processing json");
         }
     }
 
