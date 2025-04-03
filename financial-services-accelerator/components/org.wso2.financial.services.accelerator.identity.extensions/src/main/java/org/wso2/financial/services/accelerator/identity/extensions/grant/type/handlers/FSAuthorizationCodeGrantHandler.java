@@ -66,7 +66,6 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
                     fsGrantHandler.appendParametersToTokenResponse(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 }
 
-                tokReqMsgCtx.setScope(IdentityCommonUtils.removeInternalScopes(tokReqMsgCtx.getScope()));
                 return oAuth2AccessTokenRespDTO;
             }
         } catch (RequestObjectException e) {
