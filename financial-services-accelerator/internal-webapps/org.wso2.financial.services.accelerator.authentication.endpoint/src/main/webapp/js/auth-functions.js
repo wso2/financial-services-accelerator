@@ -46,7 +46,7 @@ function approvedConsent() {
 // Submit data sharing from
 function validateFrm() {
     if (document.getElementById('type').value === "accounts") {
-        document.getElementById("oauth2_authz_confirm").submit()
+        document.getElementById("oauth2_authz_confirm").submit();
     }
 
     if (document.getElementById('type').value === "payments") {
@@ -66,7 +66,7 @@ function validateFrm() {
     }
 
     if (document.getElementById('type').value === "default") {
-            document.getElementById("oauth2_authz_confirm").submit()
+            document.getElementById("oauth2_authz_confirm").submit();
     }
 
 }
