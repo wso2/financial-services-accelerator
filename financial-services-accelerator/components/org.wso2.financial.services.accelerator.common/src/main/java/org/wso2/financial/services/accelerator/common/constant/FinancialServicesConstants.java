@@ -169,4 +169,5 @@ public class FinancialServicesConstants {
     public static final String BEARER_TAG = "Bearer ";
     public static final String BASIC_TAG = "Basic ";
     public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    public static final String SCOPE = "scope";
 }
