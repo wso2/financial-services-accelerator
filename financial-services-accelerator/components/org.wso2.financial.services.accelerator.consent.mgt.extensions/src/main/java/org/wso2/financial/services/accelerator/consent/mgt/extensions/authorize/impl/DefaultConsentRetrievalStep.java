@@ -53,6 +53,12 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         try {
             String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
             String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+
+            if (consentId == null) {
+                log.error("intent_id not found in request object");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "intent_id not found in request object");
+            }
+
             consentData.setConsentId(consentId);
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
 

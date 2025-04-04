@@ -98,13 +98,7 @@ public class ConsentAuthorizeUtil {
                     }
                 }
             }
-
-            if (consentId == null) {
-                log.error("intent_id not found in request object");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "intent_id not found in request object");
-            }
             return consentId;
-
         } catch (JSONException e) {
             log.error("Payload is not a JSON object", e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not a JSON object");

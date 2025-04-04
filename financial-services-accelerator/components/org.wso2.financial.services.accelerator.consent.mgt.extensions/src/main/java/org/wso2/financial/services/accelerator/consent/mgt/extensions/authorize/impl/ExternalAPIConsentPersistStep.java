@@ -70,15 +70,22 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
 
         ConsentData consentData = consentPersistData.getConsentData();
+        String consentId;
+        DetailedConsentResource detailedConsentResource = null;
         try {
             if (consentData == null) {
                 log.error("Consent data is not available");
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, AuthErrorCode.SERVER_ERROR.name(),
                         "Consent data is not available");
             }
-            String consentId;
+            if (consentData.getConsentId() == null) {
+                log.error("Consent Id is not available");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, AuthErrorCode.SERVER_ERROR.name(),
+                        "Consent Id is not available");
+            }
             if (isPreInitiatedConsent) {
                 consentId = consentData.getConsentId();
+                 detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
                 if (consentId == null) {
                     log.error("Consent Id is not available in consent data");
                     throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
@@ -89,6 +96,9 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                             "Authorization resource is not available in consent data", consentData.getState());
                 }
+            } else if (consentData.getConsentId() != null) {
+                consentId = consentData.getConsentId();
+                detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
             } else {
                 consentId = UUID.randomUUID().toString();
                 consentData.setConsentId(consentId);
@@ -102,12 +112,11 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                 }
             }
             // Call external service
-            Map<String, Object> metadata = consentPersistData.getMetadata();
-            metadata.put("persist-payload", consentPersistData.getPayload());
+            Map<String, Object> consumerInputData = consentPersistData.getMetadata();
+            consumerInputData.put("persist-payload", consentPersistData.getPayload());
 
             ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
-                    consentId, consentPersistData.getApproval(), consentData.getType(),
-                    consentPersistData.getMetadata());
+                    consentId, detailedConsentResource, consumerInputData, consentPersistData.getApproval());
             ExternalAPIPreConsentPersistResponseDTO responseDTO = callExternalService(requestDTO);
 
             persistConsent(responseDTO, consentData);
