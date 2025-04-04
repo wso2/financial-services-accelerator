@@ -142,9 +142,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 } else {
                     String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
                     if (!consentType.equals(consent.getConsentType())) {
-                        log.error("Consent Type mismatch");
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
-                                ConsentOperationEnum.CONSENT_RETRIEVE);
+                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
                     }
                     JSONObject receiptJSON = new JSONObject(consent.getReceipt());
                     consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(
@@ -312,9 +312,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 } else {
                     String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
                     if (!consentType.equals(consentResource.getConsentType())) {
-                        log.error("Consent Type mismatch");
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
-                                ConsentOperationEnum.CONSENT_DELETE);
+                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_DELETE);
                     }
 
                     if (ConsentExtensionConstants.REVOKED_STATUS.equals(consentResource.getCurrentStatus()) ||
