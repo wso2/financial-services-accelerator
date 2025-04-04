@@ -21,7 +21,7 @@ package org.wso2.financial.services.accelerator.identity.extensions.client.regis
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 
 import java.util.Map;
 
@@ -37,18 +37,18 @@ public interface DynamicClientRegistrationValidator {
      *
      * @param applicationRegistrationRequest  Application registration request.
      * @param ssaParams                       SSA parameters.
-     * @throws FinancialServicesException When an error occurs while validating the request.
+     * @throws FinancialServicesDCRException When an error occurs while validating the request.
      */
     void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                      Map<String, Object> ssaParams) throws FinancialServicesException;
+                      Map<String, Object> ssaParams) throws FinancialServicesDCRException;
 
     /**
      * Validate the get request.
      *
      * @param ssaParams  SSA parameters.
-     * @throws FinancialServicesException When an error occurs while validating the request.
+     * @throws FinancialServicesDCRException When an error occurs while validating the request.
      */
-    void validateGet(Map<String, String> ssaParams) throws FinancialServicesException;
+    void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException;
 
     /**
      * Validate the update request.
@@ -56,10 +56,10 @@ public interface DynamicClientRegistrationValidator {
      * @param applicationUpdateRequest   Application update request.
      * @param ssaParams                  SSA parameters.
      * @param serviceProviderProperties  Service provider properties.
-     * @throws FinancialServicesException When an error occurs while validating the request.
+     * @throws FinancialServicesDCRException When an error occurs while validating the request.
      */
     void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest,
                         Map<String, Object> ssaParams, ServiceProviderProperty[] serviceProviderProperties)
-            throws FinancialServicesException;
+            throws FinancialServicesDCRException;
 
 }

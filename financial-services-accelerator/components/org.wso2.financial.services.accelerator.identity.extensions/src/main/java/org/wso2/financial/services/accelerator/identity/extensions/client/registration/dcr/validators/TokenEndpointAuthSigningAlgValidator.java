@@ -24,7 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class TokenEndpointAuthSigningAlgValidator implements DynamicClientRegist
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         String tokenEndpointAuthMethod = applicationRegistrationRequest.getTokenEndpointAuthMethod();
         String tokenEndpointAuthSigningAlg = applicationRegistrationRequest.getTokenEndpointAuthSignatureAlgorithm();
@@ -47,13 +48,14 @@ public class TokenEndpointAuthSigningAlgValidator implements DynamicClientRegist
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
 
         String tokenEndpointAuthMethod = applicationUpdateRequest.getTokenEndpointAuthMethod();
         String tokenEndpointAuthSigningAlg = applicationUpdateRequest.getTokenEndpointAuthSignatureAlgorithm();
@@ -66,18 +68,19 @@ public class TokenEndpointAuthSigningAlgValidator implements DynamicClientRegist
      *
      * @param tokenEndpointAuthMethod        Token endpoint authentication method
      * @param tokenEndpointAuthSigningAlg    Token endpoint authentication signing algorithm
-     * @throws FinancialServicesException When the issuer is not equal to the software id
+     * @throws FinancialServicesDCRException When the issuer is not equal to the software id
      */
     private static void validateTokenEPAuthSigningAlg(String tokenEndpointAuthMethod,
-                                          String tokenEndpointAuthSigningAlg) throws FinancialServicesException {
+                                          String tokenEndpointAuthSigningAlg) throws FinancialServicesDCRException {
 
         // token_endpoint_auth_signing_alg must be specified if token_endpoint_auth_method is private_key_jwt.
         if (StringUtils.equals(tokenEndpointAuthMethod, AUTH_METHOD_PRIVATE_KEY_JWT) &&
                 StringUtils.isBlank(tokenEndpointAuthSigningAlg)) {
             log.debug("Token endpoint auth signing alg must be specified if token_endpoint_auth_method is " +
                     "private_key_jwt.");
-            throw new FinancialServicesException("Token endpoint auth signing alg must be specified if " +
-                    "token_endpoint_auth_method is private_key_jwt.");
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    "Token endpoint auth signing alg must be specified if token_endpoint_auth_method " +
+                            "is private_key_jwt.");
         }
     }
 

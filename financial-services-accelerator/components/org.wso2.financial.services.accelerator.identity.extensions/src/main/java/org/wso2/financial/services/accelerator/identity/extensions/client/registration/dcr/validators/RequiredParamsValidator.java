@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
@@ -46,20 +46,21 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         Map<String, Object> requestParameterMap = gson.fromJson(gson.toJson(applicationRegistrationRequest), Map.class);
         validateRequiredAttributes(requestParameterMap, ssaParams);
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
 
 
         Map<String, Object> requestParameterMap = gson.fromJson(gson.toJson(applicationUpdateRequest), Map.class);
@@ -70,7 +71,7 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
      * Validate the required parameters.
      */
     private static void validateRequiredAttributes(Map<String, Object> requestParamMap, Map<String, Object> ssaParams)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
 
         Map<String, Map<String, Object>> dcrConfigs = IdentityExtensionsDataHolder.getInstance()
                 .getConfigurationService().getDCRParamsConfig();
@@ -98,11 +99,11 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
      * @param requestParamMap  Request parameter map
      * @param camelCaseConfig  Camel case config
      * @param paramConfig      Parameter config
-     * @throws FinancialServicesException  when the required attribute is not present
+     * @throws FinancialServicesDCRException  when the required attribute is not present
      */
     private static void validateRequiredAttributesPresence(Map<String, Object> requestParamMap, String camelCaseConfig,
                                                            Map.Entry<String, Map<String, Object>> paramConfig)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
 
         Map additionalAttributes = (Map) requestParamMap.get(IdentityCommonConstants.ADDITIONAL_ATTRIBUTES);
 
@@ -124,7 +125,8 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
                     String errorMessage = String.format("Required parameter %s cannot be empty",
                             camelCaseConfig.replaceAll("[\r\n]", ""));
                     log.debug(errorMessage);
-                    throw  new FinancialServicesException(errorMessage);
+                    throw  new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                            errorMessage);
                 }
 
                 boolean isAnyEmpty = param.stream().anyMatch(Objects::isNull);
@@ -132,7 +134,8 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
                     String errorMessage = String.format("Required parameter %s cannot be empty",
                             camelCaseConfig.replaceAll("[\r\n]", ""));
                     log.debug(errorMessage);
-                    throw new FinancialServicesException(errorMessage);
+                    throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                            errorMessage);
                 }
 
             }
@@ -143,7 +146,12 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
                     String errorMessage = String.format("Required parameter %s cannot be empty",
                             camelCaseConfig.replaceAll("[\r\n]", ""));
                     log.debug(errorMessage);
-                    throw new FinancialServicesException(errorMessage);
+                    if (IdentityCommonConstants.SOFTWARE_STATEMENT_CC.equals(camelCaseConfig)) {
+                        throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_SOFTWARE_STATEMENT,
+                                errorMessage);
+                    }
+                    throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                            errorMessage);
                 }
             }
         }
@@ -155,11 +163,11 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
      * @param requestParamMap        Request parameter map
      * @param camelCaseConfigParam   Camel case config parameter
      * @param paramConfig            Parameter config
-     * @throws FinancialServicesException  when the allowed values are not valid
+     * @throws FinancialServicesDCRException  when the allowed values are not valid
      */
     private static void validatedAllowedValues(Map<String, Object> requestParamMap, String camelCaseConfigParam,
                                                Map.Entry<String, Map<String, Object>> paramConfig)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
 
         Map additionalAttributes = (Map) requestParamMap.get(IdentityCommonConstants.ADDITIONAL_ATTRIBUTES);
         Object value;
@@ -195,12 +203,12 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
      * @param camelCaseConfig        Camel case config
      * @param additionalAttributes   Additional attributes
      * @param paramConfig            Parameter config
-     * @throws FinancialServicesException when the required parameter is not present
+     * @throws FinancialServicesDCRException when the required parameter is not present
      */
     private static void containsRequiredParam(Map<String, Object> requestParamMap, String camelCaseConfig,
                                   Map<String, String> additionalAttributes,
                                   Map.Entry<String, Map<String, Object>> paramConfig)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
 
         String attributeKey = (String) paramConfig.getValue().get(IdentityCommonConstants.KEY);
         if (!requestParamMap.containsKey(camelCaseConfig) &&
@@ -208,7 +216,12 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
             String errorMessage = String.format("Required parameter %s not found in the request",
                     camelCaseConfig.replaceAll("[\r\n]", ""));
             log.debug(errorMessage);
-            throw new FinancialServicesException(errorMessage);
+            if (IdentityCommonConstants.SOFTWARE_STATEMENT.equals(attributeKey)) {
+                throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_SOFTWARE_STATEMENT,
+                        errorMessage);
+            }
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    errorMessage);
         }
     }
 
@@ -218,10 +231,10 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
      * @param value                  object containing values
      * @param camelCaseConfigParam   Camel case config parameter
      * @param allowedList            Allowed list
-     * @throws FinancialServicesException
+     * @throws FinancialServicesDCRException
      */
     private static void checkAllowedValuesInList(Object value, String camelCaseConfigParam, List allowedList)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
         List<String> params = (ArrayList<String>) value;
         for (Object paramObject : params) {
             if (paramObject instanceof String) {
@@ -230,7 +243,8 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
                     String errorMessage = String.format("Invalid %s provided",
                             camelCaseConfigParam.replaceAll("[\r\n]", ""));
                     log.debug(errorMessage);
-                    throw new FinancialServicesException(errorMessage);
+                    throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                            errorMessage);
                 }
             }
         }
@@ -242,10 +256,10 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
      * @param param                 parameter
      * @param camelCaseConfigParam  Camel case config parameter
      * @param allowedList           Allowed list
-     * @throws FinancialServicesException
+     * @throws FinancialServicesDCRException
      */
     private static void checkAllowedValuesInString(String param, String camelCaseConfigParam, List allowedList)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
 
         //check scope validation since request is sending a space separated scopes list
         if (camelCaseConfigParam.equals(IdentityCommonConstants.SCOPE)) {
@@ -255,14 +269,16 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
                     String errorMessage = String.format("Invalid %s provided",
                             camelCaseConfigParam.replaceAll("[\r\n]", ""));
                     log.debug(errorMessage);
-                    throw new FinancialServicesException(errorMessage);
+                    throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                            errorMessage);
                 }
             }
         } else if (!allowedList.contains(param)) {
             String errorMessage = String.format("Invalid %s provided",
                     camelCaseConfigParam.replaceAll("[\r\n]", ""));
             log.debug(errorMessage);
-            throw new FinancialServicesException(errorMessage);
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    errorMessage);
         }
     }
 }

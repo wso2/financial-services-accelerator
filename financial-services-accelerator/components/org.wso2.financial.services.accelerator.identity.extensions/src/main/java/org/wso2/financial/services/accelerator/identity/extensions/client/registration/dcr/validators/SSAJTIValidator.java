@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -38,29 +38,32 @@ public class SSAJTIValidator implements DynamicClientRegistrationValidator {
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         String ssaJtiValue = (String) ssaParams.get(IdentityCommonConstants.JTI);
         if (IdentityCommonUtils.isJTIReplayed(ssaJtiValue)) {
             log.debug("Rejected the replayed jti in the software statement");
-            throw new FinancialServicesException("Rejected the replayed jti in the software statement");
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_SOFTWARE_STATEMENT,
+                    "Rejected the replayed jti in the software statement");
         }
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
 
 
         String ssaJtiValue = (String) ssaParams.get(IdentityCommonConstants.JTI);
         if (IdentityCommonUtils.isJTIReplayed(ssaJtiValue)) {
             log.debug("Rejected the replayed jti in the software statement");
-            throw new FinancialServicesException("Rejected the replayed jti in the software statement");
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_SOFTWARE_STATEMENT,
+                    "Rejected the replayed jti in the software statement");
         }
     }
 }

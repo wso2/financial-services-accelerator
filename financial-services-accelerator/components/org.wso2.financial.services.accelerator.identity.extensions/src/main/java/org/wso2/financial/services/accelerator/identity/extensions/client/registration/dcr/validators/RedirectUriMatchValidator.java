@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 import java.util.List;
@@ -39,19 +39,20 @@ public class RedirectUriMatchValidator implements DynamicClientRegistrationValid
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         validateRedirectUrls(applicationRegistrationRequest.getRedirectUris(), ssaParams);
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
 
         validateRedirectUrls(applicationUpdateRequest.getRedirectUris(), ssaParams);
     }
@@ -61,10 +62,10 @@ public class RedirectUriMatchValidator implements DynamicClientRegistrationValid
      *
      * @param redirectUris   Redirect URIs in the request.
      * @param ssaParams      SSA parameters.
-     * @throws FinancialServicesException When an error occurs while validating the request.
+     * @throws FinancialServicesDCRException When an error occurs while validating the request.
      */
     public static void validateRedirectUrls(List<String> redirectUris, Map<String, Object> ssaParams)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
         if (redirectUris != null && !redirectUris.isEmpty()) {
 
             AtomicReference<Object> redirectURISoftwareStatement = new AtomicReference<>();
@@ -76,7 +77,8 @@ public class RedirectUriMatchValidator implements DynamicClientRegistrationValid
 
             if (!matchRedirectURI(redirectUris, redirectURISoftwareStatement.get())) {
                 log.debug("Redirect URIs do not match with the software statement");
-                throw new FinancialServicesException("Redirect URIs do not match with the software statement");
+                throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_REDIRECT_URI,
+                        "Redirect URIs do not match with the software statement");
             }
         }
     }

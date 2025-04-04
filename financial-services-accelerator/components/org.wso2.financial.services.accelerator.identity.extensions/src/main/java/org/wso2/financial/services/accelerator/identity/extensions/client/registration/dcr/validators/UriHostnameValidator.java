@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 import java.net.URI;
@@ -42,30 +42,33 @@ public class UriHostnameValidator implements DynamicClientRegistrationValidator 
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         if (!validateURIHostNames(ssaParams)) {
             log.debug("Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the " +
                     "redirect_uris");
-            throw new FinancialServicesException("Host names of logo_uri/tos_uri/policy_uri/client_uri does not " +
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    "Host names of logo_uri/tos_uri/policy_uri/client_uri does not " +
                     "match with the redirect_uris");
         }
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
 
 
         if (!validateURIHostNames(ssaParams)) {
             log.debug("Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the " +
                     "redirect_uris");
-            throw new FinancialServicesException("Host names of logo_uri/tos_uri/policy_uri/client_uri does not " +
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    "Host names of logo_uri/tos_uri/policy_uri/client_uri does not " +
                     "match with the redirect_uris");
         }
     }

@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 import java.util.List;
@@ -39,7 +39,14 @@ public class RedirectUriFormatValidator implements DynamicClientRegistrationVali
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
+
+        List<String> redirectURIRequest = applicationRegistrationRequest.getRedirectUris();
+        if (!validateRedirectURIs(redirectURIRequest)) {
+            log.debug("Invalid redirect_uris found in the Request");
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_REDIRECT_URI,
+                    "Invalid redirect_uris found in the Request");
+        }
 
         AtomicReference<Object> redirectURISoftwareStatement = new AtomicReference<>();
         ssaParams.keySet().forEach(key -> {
@@ -51,19 +58,28 @@ public class RedirectUriFormatValidator implements DynamicClientRegistrationVali
             List<String> callbackUrisSoftwareStatementValues = (List<String>) redirectURISoftwareStatement.get();
             if (!validateRedirectURIs(callbackUrisSoftwareStatementValues)) {
                 log.debug("Invalid redirect_uris found in the SSA");
-                throw new FinancialServicesException("Invalid redirect_uris found in the SSA");
+                throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_REDIRECT_URI,
+                        "Invalid redirect_uris found in the SSA");
             }
         }
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
+
+        List<String> redirectURIRequest = applicationUpdateRequest.getRedirectUris();
+        if (!validateRedirectURIs(redirectURIRequest)) {
+            log.debug("Invalid redirect_uris found in the Request");
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_REDIRECT_URI,
+                    "Invalid redirect_uris found in the Request");
+        }
 
         AtomicReference<Object> redirectURISoftwareStatement = new AtomicReference<>();
         ssaParams.keySet().forEach(key -> {
@@ -75,7 +91,8 @@ public class RedirectUriFormatValidator implements DynamicClientRegistrationVali
             List<String> callbackUrisSoftwareStatementValues = (List<String>) redirectURISoftwareStatement.get();
             if (!validateRedirectURIs(callbackUrisSoftwareStatementValues)) {
                 log.error("Invalid redirect_uris found in the SSA");
-                throw new FinancialServicesException("Invalid redirect_uris found in the SSA");
+                throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_REDIRECT_URI,
+                        "Invalid redirect_uris found in the SSA");
             }
         }
     }
