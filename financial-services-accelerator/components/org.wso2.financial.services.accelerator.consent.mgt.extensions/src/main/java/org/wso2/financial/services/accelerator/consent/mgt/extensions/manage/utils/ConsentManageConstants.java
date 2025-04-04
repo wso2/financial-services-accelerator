@@ -24,4 +24,5 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ut
 public class ConsentManageConstants {
 
     public static final String NO_CONSENT_FOR_CLIENT_ERROR = "No valid consent found for given information";
+    public static final String CONSENT_TYPE_MISMATCH_ERROR = "Consent Type mismatch";
 }
