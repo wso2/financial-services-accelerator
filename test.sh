@@ -550,7 +550,8 @@ EOF
 # Send the email with mutt
 mutt -e "set content_type=text/html" \
   -s "Accelerator 4 M3 Test Reports" \
-  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" \
+  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html"
+  "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" "${RUNNER_HOME}/wso2.log" \
   -- ${USERNAME} < "$EMAIL_BODY"
 
 exit 0
