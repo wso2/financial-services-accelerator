@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+# Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
 #
 # WSO2 LLC. licenses this file to you under the Apache License,
 # Version 2.0 (the "License"); you may not use this file except
@@ -235,42 +235,12 @@ bash configure.sh
 
 echo '======================= Update deployment.toml ======================='
 
-## delete the existing deployment.toml
-#rm -f $TEST_HOME/wso2is-7.0.0/repository/conf/deployment.toml
-## copy the new deployment.toml
-#cp $RUNNER_HOME/deployment.toml $TEST_HOME/wso2is-7.0.0/repository/conf
-#cat $TEST_HOME/wso2is-7.0.0/repository/conf/deployment.toml
-
-#
-#DEPLOYMENT_TOML="$TEST_HOME/wso2is-7.0.0/repository/conf/deployment.toml"
-#BACKUP_TOML="deployment.toml.bak"
-#
-#
-## Backup the original file
-#cp "$DEPLOYMENT_TOML" "$BACKUP_TOML"
-#
-#
-## Replace specific sections using awk
-#awk '
-#BEGIN { in_block = 0; }
-#/\[financial_services\.service\.extensions\.endpoint\]/ { print "[financial_services.service.extensions.endpoint]"; print "enabled = false"; print "base_url = \"http://localhost:9446/api/financialservices/uk/consent/endpoints\""; print
-#"extension_types = [\"pre-consent-generation\", \"post-consent-generation\", \"pre-consent-retrieval\", \"pre-consent-revocation\", \"pre-consent-authorization\", \"consent-validation\", \"pre-user-authorization\", \"post-user-authorization\", \"pre-id-token-generation\"]"; in_block = 1; next; }
-#/\[financial_services\.service\.extensions\.endpoint\.security\]/ { print "[financial_services.service.extensions.endpoint.security]"; print "type = \"Basic-Auth\""; print "username = \"is_admin@wso2.com\""; print "password = \"wso2123\""; in_block = 1; next; }
-#/\[oauth\.oidc\]/ { print "[oauth.oidc]"; print "id_token.signature_algorithm=\"PS256\""; print "enable_claims_separation_for_access_tokens = false"; print "enable_hybrid_flow_app_level_validation = false";
-#in_block = 1; next; }
-#/^$/ { in_block = 0; }
-#!in_block { print $0; }
-#' "$BACKUP_TOML" > "$DEPLOYMENT_TOML"
-
-# Filename of the config file to update
 CONFIG_FILE="$TEST_HOME/wso2is-7.0.0/repository/conf/deployment.toml"
 
 sed -i -e  's|username = ""|username = "is_admin@wso2.com"|g' ${CONFIG_FILE}
 sed -i -e 's|password = ""|password = "wso2123"|g' ${CONFIG_FILE}
 sed -i -e 's|base_url = ""|base_url = "http://localhost:9446/api/financialservices/uk/consent/endpoints"|g' ${CONFIG_FILE}
 sed -i -e 's|allowed_extensions = \["post_token_generation"\]|extension_types = \["pre-consent-generation", "post-consent-generation", "pre-consent-retrieval", "pre-consent-revocation", "pre-consent-authorization", "consent-validation", "pre-user-authorization", "post-user-authorization", "pre-id-token-generation"\]|g' ${CONFIG_FILE}
-
-
 
 echo "deployment.toml has been updated in place and a backup is saved as deployment.toml.bak."
 
@@ -413,7 +383,7 @@ export DEBIAN_FRONTEND=noninteractive
 wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz
 tar xvzf geckodriver*
 rm ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
-cp geckodriver ${TEST_ARTIFACTS}/selenium-libs/
+cp geckodriver ${TEST_ARTIFACTS}/selenium-libs/ubuntu/
 chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 
 
@@ -486,32 +456,6 @@ sudo apt install -y ssmtp
 sudo touch /etc/msmtprc
 echo -e "root=psajeendran@gmail.com\nmailhub=smtp.gmail.com:587\nAuthUser=psajeendran@gmail.com\nAuthPass=${STMP_ROOT_PASSWORD}\nUseTLS=YES\nUseSTARTTLS=YES\nFromLineOverride=YES" > /etc/msmtprc
 
-
-# remove the existing ssmtp.conf
-sudo rm -f /etc/ssmtp/ssmtp.conf
-# add the new ssmtp.conf
-
-
-
-
-# add the follwing
-#root=sajeenthiranp.21@cse.mrt.ac.lk
- #mailhub=smtp.gmail.com:587
- #AuthUser=sajeenthiranp.21@cse.mrt.ac.lk
- #AuthPass=sgdrqiuqoyueumkz
- #
- #UseTLS=YES
- #UseSTARTTLS=YES
- #FromLineOverride=YES
-
-
-
-
-#cat /etc/ssmtp/ssmtp.conf
-
-#sudo nano /etc/ssmtp/ssmtp.conf
-
-
 TO="sajeenthiran@wso2.com"
 SUBJECT="Accelerator 4 M3 Test Reports"
 BODY="Please find the attached test reports."
@@ -521,8 +465,12 @@ TOKEN="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/token/t
 CONSENT="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/consent-management/target/surefire-reports/emailable-report.html"
 EVENT_NOTIFICATION="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/event-notification/target/surefire-reports/emailable-report.html"
 
-#echo "$BODY" | mailx -s "$SUBJECT" -a "$API_PUBLISH" -a "$DCR"  -a $TOKEN -a $CONSENT -a $EVENT_NOTIFICATION  "$TO"
-#tail -1000f ${RUNNER_HOME}/wso2.log
+cp "$API_PUBLISH" ${TEST_HOME}/API_Publish_Report.html
+cp "$DCR" ${TEST_HOME}/DCR_Report.html
+cp "$TOKEN" ${TEST_HOME}/Token_Report.html
+cp "$CONSENT" ${TEST_HOME}/Consent_Report.html
+cp "$EVENT_NOTIFICATION" ${TEST_HOME}/Event_Notification_Report.html
+
 
 # simle test
 
@@ -542,107 +490,11 @@ from psajeendran@gmail.com
 account default : gmail
 " | sudo tee -a /etc/msmtprc
 
-#echo "Test mail"
-#
-#(
-#echo "To: sajeenthiran@wso2.com"
-#echo "From: your-email@example.com"
-#echo "Subject: Accelerator 4 M3 Test Reports"
-#echo "Content-Type: text/html"
-#echo ""
-#cat $RUNNER_HOME/emailable-report.html
-#) | msmtp sajeenthiran@wso2.com
-#
-
-#cat $API_PUBLISH \
-#    $DCR \
-#    $CONSENT \
-#    $EVENT_NOTIFICATION \
-#    $TOKEN | \
-#    mutt -e "set content_type=text/html" -s "Accelerator 4 M3 Test Reports" -- sajeenthiran@wso2.com
-#
-
-
-#cat $API_PUBLISH \
-#    $DCR \
-#    $CONSENT \
-#    $EVENT_NOTIFICATION \
-#    $TOKEN | \
-#    mutt -e "set content_type=text/html" -s "Accelerator 4 M3 Test Reports" -- sajeenthiran@wso2.com
-
-# print the /etc/ssmtp/ssmtp.conf
 cat /etc/ssmtp/ssmtp.conf
 #
 strip_html_wrappers() {
   sed '/<!DOCTYPE/,/<body[^>]*>/d; /<\/body>/,/<\/html>/d' "$1"
 }
-
-#(
-#  echo "To: sajeenthiran@wso2.com"
-#  echo "From: your-email@example.com"
-#  echo "Subject: Accelerator 4 M3 Test Reports"
-#  echo "MIME-Version: 1.0"
-#  echo "Content-Type: text/html; charset=UTF-8"
-#  echo ""
-#
-#  echo "<!DOCTYPE html>"
-#  echo "<html lang=\"en\">"
-#  echo "<head>"
-#  echo "<meta charset=\"UTF-8\">"
-#  echo "<style type="text/css">table {margin-bottom:10px;border-collapse:collapse;empty-cells:show}th,td {border:1px solid #009;padding:.25em .5em}th {vertical-align:bottom}td {vertical-align:top}table a {font-weight:bold}.stripe td {background-color: #E6EBF9}.num {text-align:right}.passedodd td {background-color: #3F3}.passedeven td {background-color: #0A0}.skippedodd td {background-color: #DDD}.skippedeven td {background-color: #CCC}.failedodd td,.attn {background-color: #F33}.failedeven td,.stripe .attn {background-color: #D00}.stacktrace {white-space:pre;font-family:monospace}.totop {font-size:85%;text-align:center;border-bottom:2px solid #000}.invisible {display:none}</style>"
-#  echo "</head>"
-#  echo "<body style=\"font-family: Arial, sans-serif; font-size: 14px; color: #333;\">"
-#  echo "<h2>API PUBLISH</h2>"
-#  strip_html_wrappers "$API_PUBLISH"
-#  echo "<hr>"
-#
-#  echo "<h2>DCR</h2>"
-#  strip_html_wrappers "$DCR"
-#  echo "<hr>"
-#
-#  echo "<h2>TOKEN</h2>"
-#  strip_html_wrappers "$TOKEN"
-#  echo "<hr>"
-#
-#  echo "<h2>CONSENT</h2>"
-#  strip_html_wrappers "$CONSENT"
-#  echo "<hr>"
-#
-#  echo "<h2>EVENT NOTIFICATION</h2>"
-#  strip_html_wrappers "$EVENT_NOTIFICATION"
-#
-#  echo "</body>"
-#  echo "</html>"
-#) | msmtp sajeenthiran@wso2.com
-#
-#(
-#  echo "To: sajeenthiran@wso2.com"
-#  echo "From: your-email@example.com"
-#  echo "Subject: Accelerator 4 M3 Test Reports"
-#  echo "Content-Type: text/html"
-#  echo ""
-#  cat $API_PUBLISH
-#  echo "<hr>"
-#  cat $DCR
-#  echo "<hr>"
-#  cat $TOKEN
-#  echo "<hr>"
-#  cat $CONSENT
-#  echo "<hr>"
-#  cat $EVENT_NOTIFICATION
-#) | msmtp sajeenthiran@wso2.com
-
-
-
-
-#echo "Please find the Accelerator 4 M3 Test Reports attached." | mutt \
-#  -s "Accelerator 4 M3 Test Reports" \
-#  -a "$API_PUBLISH" "$DCR" "$CONSENT" "$TOKEN" "$EVENT_NOTIFICATION" \
-#  -- sajeenthiran@wso2.com
-
-
-
-#( echo "To: sajeenthiran@wso2.com"; echo "From: your-email@example.com"; echo "Subject: Accelerator 4 M3 Test Reports"; echo "Content-Type: text/html"; echo ""; cat $RUNNER_HOME/emailable-report.html; ) | msmtp sajeenthiran@wso2.com
 
 
 # Create temporary HTML body file
@@ -698,11 +550,9 @@ EOF
 # Send the email with mutt
 mutt -e "set content_type=text/html" \
   -s "Accelerator 4 M3 Test Reports" \
-  -a "$API_PUBLISH" "$DCR" "$CONSENT" "$TOKEN" "$EVENT_NOTIFICATION" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" \
-  -- sajeenthiran@wso2.com < "$EMAIL_BODY"
+  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" \
+  -- ${USERNAME} < "$EMAIL_BODY"
 
-sleep 20
-
-exit 1
+exit 0
 
 #
