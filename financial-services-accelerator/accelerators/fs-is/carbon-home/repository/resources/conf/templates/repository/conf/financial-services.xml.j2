@@ -17,7 +17,7 @@
  ~ under the License.
  -->
 
-<Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
+<Server xmlns="http://wso2.org/projects/carbon/financial-services.xml"  xmlns:svns="http://org.wso2.securevault/configuration">
     <JDBCPersistenceManager>
         <DataSource>
             <!-- Include a data source name (jndiConfigName) from the set of data
@@ -205,8 +205,6 @@
             {% endif %}
             {% if financial_services.identity.extensions.introspection_data_provider is defined %}
             <IntrospectionDataProvider>{{financial_services.identity.extensions.introspection_data_provider}}</IntrospectionDataProvider>
-            {% else %}
-            <IntrospectionDataProvider>org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSDefaultIntrospectionDataProvider</IntrospectionDataProvider>
             {% endif %}
         </Extensions>
         <TokenSubject>

@@ -53,6 +53,9 @@
 
                                                 <%-- Change heading based on the consent type --%>
                                                 <c:choose>
+                                                    <c:when test="${consent_type eq 'default'}">
+                                                        <strong>${app}</strong> requests following details.
+                                                    </c:when>
                                                     <c:when test="${consent_type eq 'accounts'}">
                                                         <strong>${app}</strong> requests account details on your account.
                                                     </c:when>
@@ -82,7 +85,7 @@
                                         <%-- Setting data based on the consent type --%>
                                         <c:choose>
                                             <%-- Setting accounts related data --%>
-                                            <c:when test="${consent_type eq 'accounts'}">
+                                            <c:when test="${consent_type eq 'accounts' || consent_type eq 'default'}">
                                                 <div class="form-group ui form select">
                                                     <c:if test="${not empty account_data}">
                                                         <h5 class="ui body col-md-12">

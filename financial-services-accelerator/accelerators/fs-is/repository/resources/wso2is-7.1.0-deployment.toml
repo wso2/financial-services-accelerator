@@ -138,12 +138,12 @@ pool_options.commitOnReturn=true
 [keystore.primary]
 file_name = "wso2carbon.p12"
 password = "wso2carbon"
-type="JKS"
+type="PKCS12"
 
 [truststore]
 file_name="client-truststore.p12"
 password="wso2carbon"
-type="JKS"
+type="PKCS12"
 
 [account_recovery.endpoint.auth]
 hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
@@ -512,6 +512,7 @@ servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extension
 #response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
 #claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
 #grant_handler="org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSDefaultGrantHandler"
+#introspection_data_provider="org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSDefaultIntrospectionDataProvider"
 
 [financial_services.identity.token]
 remove_user_store_domain_from_subject=false

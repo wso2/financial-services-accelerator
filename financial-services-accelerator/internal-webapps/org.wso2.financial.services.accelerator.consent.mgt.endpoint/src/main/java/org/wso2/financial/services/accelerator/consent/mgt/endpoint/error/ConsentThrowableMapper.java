@@ -132,15 +132,17 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
     }
 
     private boolean isConsentManageException(JSONObject payload) {
-
-        JSONObject error = (JSONObject) payload.get(ConsentExtensionConstants.ERROR);
-        String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
-
-        if (ConsentOperationEnum.CONSENT_DEFAULT.toString().equals(message)) {
+        if (!payload.has(ConsentExtensionConstants.ERROR)) {
             return false;
         }
 
-        return true;
+        JSONObject error = payload.optJSONObject(ConsentExtensionConstants.ERROR);
+        if (error == null || !error.has(ConsentExtensionConstants.ERROR_MSG)) {
+            return false;
+        }
+
+        String message = error.optString(ConsentExtensionConstants.ERROR_MSG, "");
+        return !ConsentOperationEnum.CONSENT_DEFAULT.toString().equals(message);
     }
 
 }

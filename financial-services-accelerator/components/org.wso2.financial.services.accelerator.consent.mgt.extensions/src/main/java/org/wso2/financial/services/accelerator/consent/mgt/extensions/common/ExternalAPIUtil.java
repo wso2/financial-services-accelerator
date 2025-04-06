@@ -18,7 +18,6 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
@@ -29,6 +28,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -61,9 +61,7 @@ public class ExternalAPIUtil {
             }
         }
 
-        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), response.getData()
-                .path(FinancialServicesConstants.ERROR_DESCRIPTION)
-                .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION));
+        throw new ConsentException(ResponseStatus.fromStatusCode(httpErrorCode), responseData);
     }
 
     /**
@@ -136,9 +134,18 @@ public class ExternalAPIUtil {
 
         String consentID = consentData.getConsentId();
         String clientID = consentData.getClientId();
-        String receipt = responseDTO.getConsentPayload().toString();
+        String receipt = new JSONObject(responseDTO.getConsentPayload()).toString();
         long createdTime = System.currentTimeMillis();
         long updatedTime = System.currentTimeMillis();
+
+        // Add common auth ID to consent attributes if available.
+        Object commonAuthId = consentData.getMetaDataMap().get(ConsentExtensionConstants.COMMON_AUTH_ID);
+        if (commonAuthId != null) {
+            if (responseDTO.getConsentAttributes() == null) {
+                responseDTO.setConsentAttributes(new HashMap<>());
+            }
+            responseDTO.getConsentAttributes().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId.toString());
+        }
 
         List<AuthorizationResource> authorizationResources =
                 buildAuthorizationResources(responseDTO.getAuthorizations(), consentID, null, null, updatedTime);

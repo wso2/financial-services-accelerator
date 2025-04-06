@@ -30,6 +30,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.ServiceExt
 import org.wso2.financial.services.accelerator.common.util.CarbonUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+import org.wso2.securevault.commons.MiscellaneousUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -399,9 +400,8 @@ public final class FinancialServicesConfigParser {
                 String key = getKey(nameStack);
                 Object currentObject = configuration.get(key);
                 String value = replaceSystemProperty(element.getText());
-                if (secretResolver != null && secretResolver.isInitialized() &&
-                        secretResolver.isTokenProtected(key)) {
-                    value = secretResolver.resolve(key);
+                if (secretResolver != null && secretResolver.isInitialized()) {
+                    value = MiscellaneousUtil.resolve(element, secretResolver);
                 }
                 if (currentObject == null) {
                     configuration.put(key, value);

@@ -209,6 +209,42 @@ public class Utils {
     }
 
     /**
+     * Method to populate data to be sent to consent page in non-initiated consent scenarios.
+     *
+     * @param request  HttpServletRequest
+     * @param dataSet  Request payload JSONObject
+     * @return  Map of Accounts data
+     */
+    public static Map<String, Object> populateResourceData(HttpServletRequest request, JSONObject dataSet) {
+
+        Map<String, Object> returnMaps = new HashMap<>();
+
+        //Sets "data_requested" that contains the human-readable scope-requested information
+        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
+        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
+
+        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
+            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
+            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
+            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
+
+            ArrayList<String> listData = new ArrayList<>();
+            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
+                listData.add(dataArray.get(dataIndex).toString());
+            }
+            dataRequested.put(title, listData);
+        }
+        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+
+        // add accounts list
+        request.setAttribute(ConsentExtensionConstants.ACCOUNT_DATA, addAccList(dataSet));
+        request.setAttribute(ConsentExtensionConstants.CONSENT_TYPE, ConsentExtensionConstants.DEFAULT);
+
+        return returnMaps;
+
+    }
+
+    /**
      * Method to retrieve debtor account from consent data object.
      *
      * @param consentDataObject Object containing consent related data
