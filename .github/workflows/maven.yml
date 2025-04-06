@@ -14,6 +14,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+#test
 name: Build Financial Services Repository
 
 on:
@@ -24,57 +25,311 @@ on:
 
 jobs:
 
-  Build-repo-check:
-
+  Run-Test-Suite:
     runs-on: ubuntu-latest
+    env: # Or as an environment variable
+      WSO2_PASSWORD: ${{ secrets.WSO2_PASSWORD }}
+      STMP_ROOT_PASSWORD: ${{ secrets.STMP_ROOT_PASSWORD }}
+
+
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Adopt JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: 11.0.16+8
-          distribution: 'temurin'
       - uses: actions/checkout@v3
-      - name: Set up Node 16
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: Cache local Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Setup Maven settings.xml
-        uses: whelk-io/maven-settings-xml-action@v11
-        with:
-          mirrors: >
-            [
-              {
-                "id": "wso2-nexus",
-                "mirrorOf": "wso2-nexus",
-                "url": "http://maven.wso2.org/nexus/content/groups/wso2-public/"
-              },
-              {
-                "id": "wso2.releases",
-                "mirrorOf": "wso2.releases",
-                "url": "http://maven.wso2.org/nexus/content/repositories/releases/"
-              },
-              {
-                "id": "wso2.snapshots",
-                "mirrorOf": "wso2.snapshots",
-                "url": "http://maven.wso2.org/nexus/content/repositories/snapshots/"
-              },
-              {
-                "id": "knopflerfish",
-                "mirrorOf": "knopflerfish",
-                "url": "http://resources.knopflerfish.org/repo/maven2/release"
-              }
-            ]
-      - name: Build with Maven
+      - name: Run Tests
         run: |
-          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
-          mvn -B install --file pom.xml
+          RUNNER_HOME=`pwd`
+          bash $RUNNER_HOME/test.sh  -u sajeenthiran@wso2.com -p $WSO2_PASSWORD -o "$HOME" -h "$HOME"
+
+
+
+
+
+
+
+
+
+
+#  Build-repo-check:
+#
+#    runs-on: ubuntu-latest
+#    env: # Or as an environment variable
+#      WSO2_PASSWORD: ${{ secrets.WSO2_PASSWORD }}
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Set up Adopt JDK 11
+#        uses: actions/setup-java@v2
+#        with:
+#          java-version: 11.0.16+8
+#          distribution: 'temurin'
+#      - uses: actions/checkout@v3
+#      - name: Set up Node 16
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: 16
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#
+#      - name: Setup Maven settings.xml
+#        uses: whelk-io/maven-settings-xml-action@v11
+#        with:
+#          mirrors: >
+#            [
+#              {
+#                "id": "wso2-nexus",
+#                "mirrorOf": "wso2-nexus",
+#                "url": "http://maven.wso2.org/nexus/content/groups/wso2-public/"
+#              },
+#              {
+#                "id": "wso2.releases",
+#                "mirrorOf": "wso2.releases",
+#                "url": "http://maven.wso2.org/nexus/content/repositories/releases/"
+#              },
+#              {
+#                "id": "wso2.snapshots",
+#                "mirrorOf": "wso2.snapshots",
+#                "url": "http://maven.wso2.org/nexus/content/repositories/snapshots/"
+#              },
+#              {
+#                "id": "knopflerfish",
+#                "mirrorOf": "knopflerfish",
+#                "url": "http://resources.knopflerfish.org/repo/maven2/release"
+#              }
+#            ]
+#
+#      - name: Build with Maven
+#        run: |
+#          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
+#          mvn -B install --file pom.xml
+
+#
+#      - name: SetUp base Products
+#        run: |
+#          wget "https://dms.uom.lk/s/si6eAy3D32KcFj8/download" -O wso2is-7.0.0.zip
+#          mv wso2is-7.0.0.zip $HOME
+#          unzip $HOME/wso2is-7.0.0.zip -d $HOME
+#
+#      - name: Install WSO2 Updates
+#        run: |
+#
+#          echo "sajeenthiran@wso2.com" > email.txt
+#          echo "$WSO2_PASSWORD" > password.txt
+#          WSO2_UPDATES_HOME=home/sajeenthiran/.wso2updates
+#          sudo mkdir -p /home/sajeenthiran/.wso2-updates/docker && sudo chmod -R 777 /home/sajeenthiran/.wso2-updates
+#
+#          $HOME/wso2is-7.0.0/bin/wso2update_linux --username sajeenthiran@wso2.com --password $WSO2_PASSWORD || ($HOME/wso2is-7.0.0/bin/wso2update_linux --username sajeenthiran@wso2.com --password $WSO2_PASSWORD)
+#
+#
+#
+#
+#
+#
+#      - name: Move the artifacts to the base products
+#        run: |
+#          wget https://github.com/ParameswaranSajeenthiran/files/raw/master/wso2-fsiam-accelerator-4.0.0-M3.zip -O wso2-fsiam-accelerator-4.0.0-M3.zip
+#          cp -r financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip $HOME/wso2is-7.0.0/
+#          unzip $HOME/wso2is-7.0.0/wso2-fsiam-accelerator-4.0.0-M3.zip -d $HOME/wso2is-7.0.0/
+#
+#
+#
+#      - name: Install MySQL 8.0
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y mysql-server
+#          sudo systemctl start mysql
+#          mysql --version
+#
+##      - name: Configure MySQL Database
+##        run: |
+##          mysql -u root -p'root' -e "
+##          CREATE DATABASE IF NOT EXISTS wso2ob;
+##          CREATE USER IF NOT EXISTS 'wso2user'@'localhost' IDENTIFIED BY 'wso2password';
+##          GRANT ALL PRIVILEGES ON wso2ob.* TO 'wso2user'@'localhost';
+##          FLUSH PRIVILEGES;"
+#
+#      - name: Download and Add MySQL JDBC Driver
+#        run: |
+#          wget -q https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/9.2.0/mysql-connector-j-9.2.0.jar
+#          mv mysql-connector-j-9.2.0.jar $HOME/wso2is-7.0.0/repository/components/lib
+#
+##      - name: Configure Identity Server Settings
+##        run: |
+##          CONFIG_FILE="$HOME/wso2is-7.0.0/wso2-fsiam-accelerator-4.0.0/repository/conf/configure.properties"
+###          echo "is_host=localhost" >> "$CONFIG_FILE"
+###          echo "admin_username=admin" >> "$CONFIG_FILE"
+###          echo "admin_password=admin" >> "$CONFIG_FILE"
+###          echo "database_name=wso2ob" >> "$CONFIG_FILE"
+###          echo "database_username=wso2user" >> "$CONFIG_FILE"
+###          echo "database_password=wso2password" >> "$CONFIG_FILE"
+#
+#      - name: Verify Configuration
+#        run: cat $HOME/wso2is-7.0.0/wso2-fs-iam-accelerator-4.0.0-M3/repository/conf/configure.properties
+#
+#
+#      - name: Generate and Export Certificates for Secure Communication
+#        run: |
+#          storepass="wso2carbon"
+#
+#          declare -A servers
+#          servers["wso2"]="$HOME/wso2is-7.0.0/repository/resources/security/wso2carbon.jks"
+#
+#          cert_dir="$HOME/certs"
+#          mkdir -p $cert_dir
+#
+#          for alias in "${!servers[@]}"; do
+#            keystore="${servers[$alias]}"
+#
+#            echo "removing old key pair if exists"
+#            # Remove old key pair if exists
+#            keytool -delete -alias wso2carbon -keystore $keystore -storepass wso2carbon
+#
+#            echo "generating new key pair"
+#
+#            # Generate new key pair
+#            keytool -genkey -alias wso2carbon -keystore $keystore -keysize 2048 -keyalg RSA -validity 9999 -dname   "CN=obiam, O=OB, L=WSO2, S=COL, C=LK, OU=OB" -ext san=ip:127.0.0.1,dns:localhost,dns:$alias -keypass  wso2carbon -storepass wso2carbon
+#
+#            echo "exporting public certificate"
+#            # Export public certificate
+#            keytool -export -alias wso2carbon -keystore $keystore -file $cert_dir/$alias.pem -storepass wso2carbon
+#          done
+#
+#      - name: Import Certificates into Truststores
+#        run: |
+#          storepass="wso2carbon"
+#          cert_dir="$HOME/certs"
+#           aliases=("wso2")
+#
+#          truststores=(
+#            "$HOME/wso2is-7.0.0/repository/resources/security/client-truststore.jks"
+#          )
+#
+#          # Import certificates into truststores
+#          for alias in "${aliases[@]}"; do
+#            cert="$cert_dir/$alias.pem"
+#            for truststore in "${truststores[@]}"; do
+#              echo "Importing certificate for alias '$alias' into truststore: $truststore"
+#              keytool -import -alias $alias -file $cert_dir/$alias.pem -keystore $truststore -storepass wso2carbon -keypass  wso2carbon -noprompt
+#            done
+#          done
+#
+#      - name: Verify Imported Certificates
+#        run: |
+#          # Define the truststores
+#          storepass="wso2carbon"
+#          truststores=(
+#            "$HOME/wso2is-7.0.0/repository/resources/security/client-truststore.jks"
+#          )
+#
+#          # Expected aliases (Modify based on actual aliases)
+#          cert_dir="$HOME/certs"
+#          aliases=("wso2")
+#
+#          # Function to check if alias exists in the truststore
+#          check_alias() {
+#            local truststore=$1
+#            local alias=$2
+#            echo "Checking alias '$alias' in truststore: $truststore"
+#
+#            keytool -list -keystore $truststore -storepass "$storepass" -alias $alias
+#            if [ $? -eq 0 ]; then
+#              echo "[✔] Alias '$alias' found in truststore: $truststore"
+#            else
+#              echo "[✘] Alias '$alias' NOT found in truststore: $truststore"
+#              exit 1  # Fail the workflow if a certificate is missing
+#            fi
+#          }
+#
+#          # Function to display certificate details
+#          show_certificate_details() {
+#            local truststore=$1
+#            local alias=$2
+#
+#            echo "-------------------------------"
+#            echo "Details for alias '$alias' in truststore: $truststore"
+#            keytool -list -v -keystore "$truststore" -storepass "$storepass" -alias "$alias" | grep -E "Alias|Valid from|Issuer|Subject"
+#            echo "-------------------------------"
+#          }
+#
+#          # Verify imported certificates
+#          for truststore in "${truststores[@]}"; do
+#            echo "Checking truststore: $truststore"
+#
+#
+#
+#            for alias in "${aliases[@]}"; do
+#              check_alias "$truststore" "$alias"
+#              show_certificate_details "$truststore" "$alias"
+#            done
+#          done
+#
+#
+#      - name: Run Merge and Configuration Scripts
+#        run: |
+#          cd $HOME/wso2is-7.0.0/wso2-fs-iam-accelerator-4.0.0-M3/bin
+#          bash $HOME/wso2is-7.0.0/wso2-fs-iam-accelerator-4.0.0-M3/bin/merge.sh
+#          bash $HOME/wso2is-7.0.0/wso2-fs-iam-accelerator-4.0.0-M3/bin/configure.sh
+#
+#      - name: Update deployment.toml
+#        run: |
+#
+#          sed -i '/\[oauth\.oidc\]/,/^\s*$/d' $HOME/wso2is-7.0.0/repository/conf/deployment.toml
+#          sed -i '/\[financial_services\.service\.extensions\.endpoint\.security\]/,/^\s*$/d' $HOME/wso2is-7.0.0/repository/conf/deployment.toml
+#          sed -i '/\[financial_services\.service\.extensions\.endpoint\.security]/,/^\s*$/d' $HOME/wso2is-7.0.0/repository/conf/deployment.toml
+#
+#          cat <<EOL >> deployment.toml
+#          [financial_services.service.extensions.endpoint]
+#          enabled = true
+#          base_url = "http://<hostname of external service>:<port of the external service>/api/financialservices/uk/consent/endpoints"
+#          extension_types = ["pre-consent-generation", "post-consent-generation", "pre-consent-retrieval", "pre-consent-revocation", "pre-consent-authorization", "consent-validation", "pre-user-authorization", "post-user-authorization", "pre-id-token-generation"]
+#
+#          [financial_services.service.extensions.endpoint.security]
+#          type = "Basic-Auth"
+#          username = "is_admin@wso2.com"
+#          password = "wso2123"
+#
+#          [oauth.oidc]
+#          id_token.signature_algorithm="PS256"
+#          enable_claims_separation_for_access_tokens = false
+#          EOL
+#
+#
+#          cat $HOME/wso2is-7.0.0/repository/conf/deployment.toml
+#
+#
+#
+#      - name: Start WSO2 Identity Server
+#        run: |
+#          cd $HOME/wso2is-7.0.0/bin
+#          nohup ./wso2server.sh > wso2.log 2>&1 &
+#          sleep 120
+#
+#      # Run the curl command to test the API
+#      - name: Test API Request
+#        run: |
+#          curl -X GET "https://localhost:9446/api/server/v1/applications?limit=30&offset=0" \
+#            -H "accept: application/json" \
+#            -H "Authorization: Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==" \
+#            -k
+#
+#      # run tests
+#
+#      - name: Run Tests
+#        run: |
+#          cd fs-integration-test-suite
+#          mvn test
+#
+#
+#
+#
+#
+
+
+
+
+
+
