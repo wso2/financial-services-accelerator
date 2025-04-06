@@ -519,6 +519,9 @@ class CommonConfigurationService {
      */
     String getAppInfoClientID(Integer appIndex = null) {
         if (appIndex == null) {
+            print("##################3")
+            print(applicationConfig.get(configParser.getTppNumber()))
+            print(applicationConfig.get(configParser.getTppNumber()).get(ConfigConstants.APPLICATION_APP_INFO))
             return applicationConfig.get(configParser.getTppNumber()).get(ConfigConstants.APPLICATION_APP_INFO)
                     .get(ConfigConstants.APPLICATION_APP_INFO_CLIENT_ID)
         }

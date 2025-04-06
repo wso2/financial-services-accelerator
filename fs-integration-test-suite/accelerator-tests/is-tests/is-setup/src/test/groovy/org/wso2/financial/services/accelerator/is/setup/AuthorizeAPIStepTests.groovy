@@ -193,6 +193,9 @@ class AuthorizeAPIStepTests {
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
         clientSecret = TestUtil.parseResponseBody(registrationResponse, "client_secret")
 
+        if(registrationResponse.statusCode() != 201) {
+            Assert.fail("Client registration failed with status code: " + registrationResponse.statusCode())
+        }
         File xmlFile = new File(System.getProperty("user.dir").toString().concat("/../../../accelerator-test-framework/src/main/resources/TestConfiguration.xml"))
 //        print(xmlFile)
         TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
