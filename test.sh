@@ -408,6 +408,13 @@ sed -i '/<\/ConsentApi>/a \
     </ISSetup>' ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 
 
+#----------------Install geckodriver------------------------#
+export DEBIAN_FRONTEND=noninteractive
+wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz
+tar xvzf geckodriver*
+rm ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
+cp geckodriver ${TEST_ARTIFACTS}/selenium-libs/
+chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 
 
 echo '======================= Setup Mail ======================='
