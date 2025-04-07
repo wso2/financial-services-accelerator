@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -45,7 +45,7 @@ public class ConsentAuthorizeUtil {
      * Method to extract request object from query params.
      *
      * @param spQueryParams  Query params
-     * @return  requestObject
+     * @return requestObject
      * @throws ConsentException Consent Exception
      */
     public static String extractRequestObject(String spQueryParams) throws ConsentException {
@@ -108,6 +108,26 @@ public class ConsentAuthorizeUtil {
         } catch (JSONException e) {
             log.error("Payload is not a JSON object", e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not a JSON object");
+        }
+    }
+
+    /**
+     * Extracts a top-level string field from the request object payload.
+     * Returns an empty string if the field is not found or if the payload is invalid.
+     *
+     * @param requestObject The signed JWT request object (in format header.payload.signature)
+     * @param fieldName     The name of the field to extract
+     * @return The string value of the field, or an empty string if the field is not found
+     */
+    public static String extractField(String requestObject, String fieldName) {
+        try {
+            String payloadJson = decodeRequestObjectPayload(requestObject);
+            JSONObject payload = new JSONObject(payloadJson);
+            return payload.optString(fieldName, "");
+        } catch (JSONException e) {
+            log.warn("Failed to parse JWT payload as JSON or extract field: " +
+                    fieldName.replaceAll("[\r\n]", ""), e);
+            return "";
         }
     }
 
