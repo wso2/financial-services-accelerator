@@ -250,7 +250,7 @@ sed -i -e 's|allowed_extensions = \["post_token_generation"\]|extension_types = 
 
 sed -i '/name = "SSAJTIValidator"/,/priority = 8/ {
     s/enable = true/enable = false/
-}' deployment.toml
+}' "$TEST_HOME/wso2is-7.0.0/repository/conf/deployment.toml"
 
 echo "deployment.toml has been updated in place and a backup is saved as deployment.toml.bak."
 
