@@ -27,7 +27,6 @@ import org.wso2.financial.services.accelerator.event.notifications.endpoint.cons
 import org.wso2.financial.services.accelerator.event.notifications.endpoint.util.EventNotificationUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.NotificationCreationDTO;
-import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.handler.EventCreationServiceHandler;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventCreationResponse;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
@@ -103,7 +102,7 @@ public class EventCreationEndpoint {
                 log.error(EventNotificationEndPointConstants.MISSING_REQUEST_PAYLOAD);
                 return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil
                         .getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_PAYLOAD,
-                        EventNotificationConstants.MISSING_REQ_PAYLOAD)).build();
+                        EventNotificationConstants.MISSING_REQ_PAYLOAD).toString()).build();
             }
 
             //check if the client id is present in the header
@@ -114,7 +113,7 @@ public class EventCreationEndpoint {
             } else {
                 return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil
                         .getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                        EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                        EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID).toString()).build();
             }
 
             //check if the resource id is present in the header
@@ -123,14 +122,14 @@ public class EventCreationEndpoint {
                 if (StringUtils.containsAny(resourceId, specialChars)) {
                     return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                             getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST_HEADER,
-                            EventNotificationConstants.INVALID_CHARS_IN_HEADER_ERROR)).build();
+                            EventNotificationConstants.INVALID_CHARS_IN_HEADER_ERROR).toString()).build();
                 }
                 notificationCreationDTO.setResourceId(request.getHeader(
                         EventNotificationEndPointConstants.X_WSO2_RESOURCE_ID));;
             } else {
                 return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                         getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                        EventNotificationConstants.MISSING_HEADER_PARAM_RESOURCE_ID)).build();
+                        EventNotificationConstants.MISSING_HEADER_PARAM_RESOURCE_ID).toString()).build();
             }
 
             //set events to notificationCreationDTO
@@ -149,12 +148,7 @@ public class EventCreationEndpoint {
             log.error(EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil
                     .getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
-                            EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
-        } catch (FSEventNotificationException e) {
-            log.error(EventNotificationEndPointConstants.EVENT_CREATION_ERROR_RESPONSE, e);
-            return Response.status(e.getStatus()).entity(EventNotificationServiceUtil
-                    .getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST,
-                            e.getMessage())).build();
+                            EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR).toString()).build();
         }
 
     }

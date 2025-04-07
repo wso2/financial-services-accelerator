@@ -75,13 +75,13 @@ public class ExternalAPIUtil {
     private static int getHttpErrorCode(ExternalServiceResponse response) throws ConsentException {
         int httpErrorCode;
 
-        if (response == null || response.getErrorCode() == null) {
+        if (response == null) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error occurred while calling the external service");
         }
 
         try {
-            httpErrorCode = Integer.parseInt(response.getErrorCode());
+            httpErrorCode = response.getErrorCode();
         } catch (NumberFormatException e) {
             httpErrorCode = 500;
         }

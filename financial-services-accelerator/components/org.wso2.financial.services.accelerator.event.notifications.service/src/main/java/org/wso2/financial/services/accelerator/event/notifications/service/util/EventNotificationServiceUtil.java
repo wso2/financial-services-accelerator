@@ -35,8 +35,10 @@ import org.wso2.financial.services.accelerator.event.notifications.service.Event
 import org.wso2.financial.services.accelerator.event.notifications.service.RealtimeNotificationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
+import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscription;
 import org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.RealtimeEventNotificationRequestGenerator;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -135,11 +137,11 @@ public class EventNotificationServiceUtil {
      * @param errorDescription  Error description
      * @return String error response
      */
-    public static String getErrorDTO(String error, String errorDescription) {
+    public static JSONObject getErrorDTO(String error, String errorDescription) {
         JSONObject eventNotificationError = new JSONObject();
         eventNotificationError.put(EventNotificationConstants.ERROR_FIELD, error);
         eventNotificationError.put(EventNotificationConstants.ERROR_DESCRIPTION_FIELD, errorDescription);
-        return eventNotificationError.toString();
+        return eventNotificationError;
     }
 
     public static EventSubscriptionService getEventSubscriptionService() {
@@ -148,6 +150,26 @@ public class EventNotificationServiceUtil {
 
     public static RealtimeNotificationService getRealtimeNotificationService() {
         return new RealtimeNotificationService();
+    }
+
+    /**
+     * Check whether an Event Subscription Resource already exists in the database for the given client
+     * by calling the service level method.
+     *
+     * @param clientId - ID used to identify the TPP
+     * @return True if subscription exists else returns false
+     * @throws FSEventNotificationException    - Exception when checking subscription existence
+     */
+    public static boolean isSubscriptionExist(EventSubscriptionService eventSubscriptionService, String clientId)
+            throws FSEventNotificationException {
+
+        List<EventSubscription> subscriptions = eventSubscriptionService.getEventSubscriptionsByClientId(clientId);
+        if (subscriptions != null && !subscriptions.isEmpty()) {
+            Optional<EventSubscription> activeSubscription = subscriptions.stream().filter(t -> t.getStatus()
+                    .equals(EventNotificationConstants.CREATED)).findFirst();
+            return activeSubscription.isPresent();
+        }
+        return false;
     }
 
 }

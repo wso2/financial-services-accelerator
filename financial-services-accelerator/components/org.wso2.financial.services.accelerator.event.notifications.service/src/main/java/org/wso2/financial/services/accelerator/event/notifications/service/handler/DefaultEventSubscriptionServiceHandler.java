@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -40,6 +41,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.util.
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,8 +51,9 @@ import static org.wso2.financial.services.accelerator.event.notifications.servic
  * This is the default service handler for event notification subscription.
  */
 public class DefaultEventSubscriptionServiceHandler implements EventSubscriptionServiceHandler {
-    private static final Log log = LogFactory.getLog(DefaultEventSubscriptionServiceHandler.class);
 
+    private static final Log log = LogFactory.getLog(DefaultEventSubscriptionServiceHandler.class);
+    Map<String, Object> configs = FinancialServicesConfigParser.getInstance().getConfiguration();
     private EventSubscriptionService eventSubscriptionService = new EventSubscriptionService();
 
     public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
@@ -58,84 +61,83 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     }
 
    @Override
-    public EventSubscriptionResponse createEventSubscription(EventSubscriptionDTO eventSubscriptionRequestDto)
-            throws FSEventNotificationException {
+    public EventSubscriptionResponse createEventSubscription(EventSubscriptionDTO eventSubscriptionRequestDto) {
 
-       try {
-           EventNotificationServiceUtil.validateClientId(eventSubscriptionRequestDto.getClientId());
+        EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
 
-       } catch (FSEventNotificationException e) {
-           String errorMsg = String.format("A client was not found" + " for the client id : '%s' in the database. ",
-                   eventSubscriptionRequestDto.getClientId().replaceAll("[\r\n]", ""));
-           log.error(errorMsg, e);
-           throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
-       }
+        EventSubscriptionResponse clientIdValidation = validateClientId(eventSubscriptionRequestDto.getClientId());
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
+        }
 
-       try {
-
-           JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionRequestDto),
-                   EventSubscriptionOperationEnum.SubscriptionCreation);
-           if (externalServiceResponse.has("isError")) {
-                if (externalServiceResponse.getBoolean("isError")) {
-                     EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
-                            .getInt(FinancialServicesConstants.ERROR_CODE));
-                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
-                            .get("error"));
-                    return eventSubscriptionResponse;
+        try {
+            if (!Boolean.parseBoolean(configs.get(FinancialServicesConstants.ALLOW_MULTIPLE_SUBSCRIPTION).toString()) &&
+                   EventNotificationServiceUtil.isSubscriptionExist(eventSubscriptionService,
+                           eventSubscriptionRequestDto.getClientId())) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("'%s' with clientId '%s'.", EventNotificationConstants.SUBSCRIPTION_EXISTS,
+                            eventSubscriptionRequestDto.getClientId().replaceAll("[\r\n]", "")));
                 }
-           }
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_CONFLICT);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST, EventNotificationConstants.SUBSCRIPTION_EXISTS));
+                return eventSubscriptionResponse;
+            }
 
-           EventSubscription eventSubscription = mapEventSubscriptionDtoToModel(
-                   ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION, eventSubscriptionRequestDto,
-                   externalServiceResponse);
+            EventSubscriptionResponse externalServiceResponse = handleValidation(
+                    new JSONObject(eventSubscriptionRequestDto),
+                   EventSubscriptionOperationEnum.SubscriptionCreation);
 
-           EventSubscription eventSubscriptionCreateResponse = eventSubscriptionService.
+            EventSubscription eventSubscription;
+            if (externalServiceResponse == null) {
+                eventSubscription = mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                        eventSubscriptionRequestDto, null);
+            } else {
+                if (HttpStatus.SC_OK != externalServiceResponse.getResponseStatus()) {
+                    return externalServiceResponse;
+                }
+                eventSubscription = mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                        eventSubscriptionRequestDto, (JSONObject) externalServiceResponse.getResponseBody());
+            }
+
+            EventSubscription eventSubscriptionCreateResponse = eventSubscriptionService.
                    createEventSubscription(eventSubscription);
 
-           EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-           eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_CREATED);
-           eventSubscriptionResponse.setResponseBody(handleResponseGeneration(eventSubscriptionCreateResponse,
+            eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_CREATED);
+            eventSubscriptionResponse.setResponseBody(handleResponseGeneration(eventSubscriptionCreateResponse,
                    EventSubscriptionOperationEnum.SubscriptionCreation));
-           return eventSubscriptionResponse;
+            return eventSubscriptionResponse;
        } catch (FSEventNotificationException e) {
            log.error("Error occurred while creating event subscription", e);
-           throw new FSEventNotificationException(e.getStatus(), e.getMessage(), e);
+           eventSubscriptionResponse.setResponseStatus(e.getStatus());
+           eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                   EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+           return eventSubscriptionResponse;
        }
    }
 
     @Override
-    public EventSubscriptionResponse getEventSubscription(String clientId, String subscriptionId)
-            throws FSEventNotificationException {
+    public EventSubscriptionResponse getEventSubscription(String clientId, String subscriptionId) {
 
-        try {
-            EventNotificationServiceUtil.validateClientId(clientId);
+        EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
 
-        } catch (FSEventNotificationException e) {
-            String errorMsg = String.format("A client was not found" + " for the client id : '%s' in the database. ",
-                    clientId.replaceAll("[\r\n]", ""));
-            log.error(errorMsg, e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
+        EventSubscriptionResponse clientIdValidation = validateClientId(clientId);
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
         }
 
         try {
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
 
-            JSONObject externalServiceResponse =  handleValidation(new JSONObject(eventSubscription),
+            EventSubscriptionResponse externalServiceResponse =  handleValidation(new JSONObject(eventSubscription),
                     EventSubscriptionOperationEnum.SingleSubscriptionRetrieval);
-            if (externalServiceResponse.has("isError")) {
-                if (externalServiceResponse.getBoolean("isError")) {
-                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
-                            .getInt(FinancialServicesConstants.ERROR_CODE));
-                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
-                            .get("error"));
-                    return eventSubscriptionResponse;
-                }
+            if (externalServiceResponse != null) {
+                return externalServiceResponse;
             }
 
-            EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
             eventSubscriptionResponse.setResponseBody(handleResponseGeneration(eventSubscription,
                     EventSubscriptionOperationEnum.SingleSubscriptionRetrieval));
@@ -143,25 +145,28 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while retrieving event subscription", e);
             if (e.getMessage().equals(EventNotificationConstants.EVENT_SUBSCRIPTION_NOT_FOUND)) {
-                throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, e.getMessage(), e);
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_BAD_REQUEST);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+                return eventSubscriptionResponse;
             } else {
-                throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+                return eventSubscriptionResponse;
             }
         }
     }
 
     @Override
-    public EventSubscriptionResponse getAllEventSubscriptions(String clientId)
-            throws FSEventNotificationException {
+    public EventSubscriptionResponse getAllEventSubscriptions(String clientId) {
 
-        try {
-            EventNotificationServiceUtil.validateClientId(clientId);
+        EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
 
-        } catch (FSEventNotificationException e) {
-            String errorMsg = String.format("A client was not found" + " for the client id : '%s' in the database. ",
-                    clientId.replaceAll("[\r\n]", ""));
-            log.error(errorMsg, e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
+        EventSubscriptionResponse clientIdValidation = validateClientId(clientId);
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
         }
 
         try {
@@ -172,43 +177,35 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
 
-            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionList),
+            EventSubscriptionResponse externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionList),
                     EventSubscriptionOperationEnum.BulkSubscriptionRetrieval);
-            if (externalServiceResponse.has("isError")) {
-                if (externalServiceResponse.getBoolean("isError")) {
-                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
-                            .getInt(FinancialServicesConstants.ERROR_CODE));
-                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
-                            .get("error"));
-                    return eventSubscriptionResponse;
-                }
+            if (externalServiceResponse != null) {
+                return externalServiceResponse;
             }
 
-            EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
             eventSubscriptionResponse.setResponseBody(handleResponseGeneration(eventSubscriptionResponseList,
                     EventSubscriptionOperationEnum.BulkSubscriptionRetrieval));
             return eventSubscriptionResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while retrieving event subscriptions", e);
-            throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+            return eventSubscriptionResponse;
 
         }
     }
 
     @Override
-    public EventSubscriptionResponse getEventSubscriptionsByEventType(String clientId, String eventType)
-            throws FSEventNotificationException {
+    public EventSubscriptionResponse getEventSubscriptionsByEventType(String clientId, String eventType) {
 
-        try {
-            EventNotificationServiceUtil.validateClientId(clientId);
+        EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
 
-        } catch (FSEventNotificationException e) {
-            String errorMsg = String.format("A client was not found" + " for the client id : '%s' in the database. ",
-                    clientId.replaceAll("[\r\n]", ""));
-            log.error(errorMsg, e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
+        EventSubscriptionResponse clientIdValidation = validateClientId(clientId);
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
         }
 
         try {
@@ -219,69 +216,65 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
 
-            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionList),
+            EventSubscriptionResponse externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionList),
                     EventSubscriptionOperationEnum.SubscriptionRetrievalForEventTypes);
-            if (externalServiceResponse.has("isError")) {
-                if (externalServiceResponse.getBoolean("isError")) {
-                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
-                            .getInt(FinancialServicesConstants.ERROR_CODE));
-                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
-                            .get("error"));
-                    return eventSubscriptionResponse;
-                }
+            if (externalServiceResponse != null) {
+                return externalServiceResponse;
             }
 
-            EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
             eventSubscriptionResponse.setResponseBody(handleResponseGeneration(eventSubscriptionResponseList,
                     EventSubscriptionOperationEnum.SubscriptionRetrievalForEventTypes));
             return eventSubscriptionResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while retrieving event subscriptions", e);
-            throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+            return eventSubscriptionResponse;
         }
     }
 
     @Override
-    public EventSubscriptionResponse updateEventSubscription(EventSubscriptionDTO eventSubscriptionUpdateRequestDto)
-            throws FSEventNotificationException {
+    public EventSubscriptionResponse updateEventSubscription(EventSubscriptionDTO eventSubscriptionUpdateRequestDto) {
 
-        try {
-            EventNotificationServiceUtil.validateClientId(eventSubscriptionUpdateRequestDto.getClientId());
+        EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
 
-        } catch (FSEventNotificationException e) {
-            String errorMsg = String.format("A client was not found" + " for the client id : '%s' in the database. ",
-                    eventSubscriptionUpdateRequestDto.getClientId().replaceAll("[\r\n]", ""));
-            log.error(errorMsg, e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
+        EventSubscriptionResponse clientIdValidation = validateClientId(
+                eventSubscriptionUpdateRequestDto.getClientId());
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
         }
 
         try {
 
-            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionUpdateRequestDto),
-                    EventSubscriptionOperationEnum.SubscriptionCreation);
-            if (externalServiceResponse.has("isError")) {
-                if (externalServiceResponse.getBoolean("isError")) {
-                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
-                            .getInt(FinancialServicesConstants.ERROR_CODE));
-                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
-                            .get("error"));
-                    return eventSubscriptionResponse;
+            EventSubscriptionResponse externalServiceResponse = handleValidation(
+                    new JSONObject(eventSubscriptionUpdateRequestDto),
+                    EventSubscriptionOperationEnum.SubscriptionUpdate);
+
+            EventSubscription eventSubscription;
+            if (externalServiceResponse == null) {
+                eventSubscription =  mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                        eventSubscriptionUpdateRequestDto, null);
+            } else {
+                if (HttpStatus.SC_OK != externalServiceResponse.getResponseStatus()) {
+                    return externalServiceResponse;
                 }
+                eventSubscription =  mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                        eventSubscriptionUpdateRequestDto, (JSONObject) externalServiceResponse.getResponseBody());
             }
 
-            EventSubscription eventSubscription = mapEventSubscriptionDtoToModel(
-                    ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION, eventSubscriptionUpdateRequestDto,
-                    externalServiceResponse);
             Boolean isUpdated = eventSubscriptionService.updateEventSubscription(eventSubscription);
             if (!isUpdated) {
-                log.error("Event subscription not found.");
-                throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, "Event subscription not found.");
+                log.error(EventNotificationConstants.EVENT_SUBSCRIPTION_NOT_FOUND);
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_BAD_REQUEST);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST,
+                        EventNotificationConstants.EVENT_SUBSCRIPTION_NOT_FOUND));
+                return eventSubscriptionResponse;
             }
 
-            EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
             EventSubscription eventSubscriptionUpdateResponse = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(eventSubscriptionUpdateRequestDto.getSubscriptionId());
@@ -290,22 +283,22 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             return eventSubscriptionResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while updating event subscription", e);
-            throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+            return eventSubscriptionResponse;
         }
     }
 
     @Override
-    public EventSubscriptionResponse deleteEventSubscription(String clientId, String subscriptionId)
-            throws FSEventNotificationException {
+    public EventSubscriptionResponse deleteEventSubscription(String clientId, String subscriptionId) {
 
-        try {
-            EventNotificationServiceUtil.validateClientId(clientId);
+        EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
 
-        } catch (FSEventNotificationException e) {
-            String errorMsg = String.format("A client was not found" + " for the client id : '%s' in the database. ",
-                    clientId.replaceAll("[\r\n]", ""));
-            log.error(errorMsg, e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMsg, e);
+        EventSubscriptionResponse clientIdValidation = validateClientId(clientId);
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
         }
 
         try {
@@ -313,17 +306,10 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
 
-            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscription),
+            EventSubscriptionResponse externalServiceResponse = handleValidation(new JSONObject(eventSubscription),
                     EventSubscriptionOperationEnum.SubscriptionDelete);
-            if (externalServiceResponse.has("isError")) {
-                if (externalServiceResponse.getBoolean("isError")) {
-                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
-                            .getInt(FinancialServicesConstants.ERROR_CODE));
-                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
-                            .get("error"));
-                    return eventSubscriptionResponse;
-                }
+            if (externalServiceResponse != null) {
+                return  externalServiceResponse;
             }
 
             Boolean isDeleted = eventSubscriptionService.deleteEventSubscription(subscriptionId);
@@ -332,12 +318,21 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                 throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, "Event subscription not found");
             }
 
-            EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_NO_CONTENT);
             return eventSubscriptionResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while deleting event subscription", e);
-            throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            if (e.getMessage().equals(EventNotificationConstants.EVENT_SUBSCRIPTION_NOT_FOUND)) {
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_BAD_REQUEST);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+                return eventSubscriptionResponse;
+            } else {
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+                return eventSubscriptionResponse;
+            }
         }
     }
 
@@ -464,7 +459,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
      * @param operation           Operation to be performed
      * @throws FSEventNotificationException  Exception when handling validation
      */
-    private static JSONObject handleValidation(JSONObject eventSubscription, EventSubscriptionOperationEnum operation)
+    private static EventSubscriptionResponse handleValidation(JSONObject eventSubscription,
+                                                              EventSubscriptionOperationEnum operation)
             throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
@@ -478,13 +474,17 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
                         ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
-                    JSONObject dataObj = new JSONObject(response.getData().toString());
-                    dataObj.put("isError", true);
-                    return dataObj;
+                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(response.getErrorCode());
+                    eventSubscriptionResponse.setErrorResponse(new JSONObject(response.getData().toString()));
+                    return eventSubscriptionResponse;
                 }
                 if (EventSubscriptionOperationEnum.SubscriptionCreation.equals(operation) ||
                         EventSubscriptionOperationEnum.SubscriptionUpdate.equals(operation)) {
-                    return new JSONObject(response.getData().toString());
+                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
+                    eventSubscriptionResponse.setResponseBody(new JSONObject(response.getData().toString()));
+                    return eventSubscriptionResponse;
                 }
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -561,5 +561,26 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             }
         }
         return new JSONObject(eventSubscriptionList);
+    }
+
+    /**
+     * This method is used to validate the client ID.
+     *
+     * @param clientId                      Client ID
+     * @return EventSubscriptionResponse    Return EventSubscriptionResponse if the client ID is
+     *                                      invalid, if the client ID is valid, null will be returned.
+     */
+    private EventSubscriptionResponse validateClientId(String clientId) {
+        try {
+            EventNotificationServiceUtil.validateClientId(clientId);
+        } catch (FSEventNotificationException e) {
+            log.error("Invalid client ID", e);
+            EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+            eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_BAD_REQUEST);
+            eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+            return eventSubscriptionResponse;
+        }
+        return null;
     }
 }

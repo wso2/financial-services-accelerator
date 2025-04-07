@@ -126,7 +126,7 @@ public class EventNotificationTestUtils {
         sets.put("4f312007-4d3f-40e4-a525-0f6ee8bb54d9", EventNotificationTestConstants.SAMPLE_SET);
         AggregatedPollingResponse aggregatedPollingResponse = new AggregatedPollingResponse();
         aggregatedPollingResponse.setCount(0);
-        aggregatedPollingResponse.setStatus("OK");
+        aggregatedPollingResponse.setStatus(200);
         aggregatedPollingResponse.setSets(sets);
         return aggregatedPollingResponse;
     }

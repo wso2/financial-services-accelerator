@@ -32,6 +32,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventPollingService;
+import org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventPollingDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
@@ -40,6 +41,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.model
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventPollingResponse;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -48,6 +50,7 @@ import java.util.UUID;
 public class DefaultEventPollingServiceHandler implements EventPollingServiceHandler {
 
     private static final Log log = LogFactory.getLog(DefaultEventPollingServiceHandler.class);
+    Map<String, Object> configs = FinancialServicesConfigParser.getInstance().getConfiguration();
 
     public void setEventPollingService(EventPollingService eventPollingService) {
         this.eventPollingService = eventPollingService;
@@ -61,7 +64,9 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
      * @param eventPollingDTO Event polling DTO
      * @return  EventPollingResponse
      */
-    public EventPollingResponse pollEvents(EventPollingDTO eventPollingDTO) throws FSEventNotificationException {
+    public EventPollingResponse pollEvents(EventPollingDTO eventPollingDTO) {
+
+        EventPollingResponse eventPollingResponse = new EventPollingResponse();
 
         //Validate clientID of the polling request
         try {
@@ -70,24 +75,45 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
             String errorMessage = String.format("A client was not found for the client id : '%s' in the database. ",
                     eventPollingDTO.getClientId().replaceAll("[\r\n]", ""));
             log.error(errorMessage, e);
-            throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, errorMessage, e);
+            eventPollingResponse.setStatus(HttpStatus.SC_BAD_REQUEST);
+            eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, errorMessage));
         }
 
         EventPolling eventPolling = mapEventPollingDtoToModel(eventPollingDTO);
         //Poll events
         try {
-            handleValidation(new JSONObject(eventPolling));
+
+            if (Boolean.parseBoolean(configs.get(FinancialServicesConstants.REQUIRE_SUBSCRIPTION_TO_POLL).toString()) &&
+                    !EventNotificationServiceUtil.isSubscriptionExist(new EventSubscriptionService(),
+                            eventPollingDTO.getClientId())) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("'%s' with clientId '%s'.", EventNotificationConstants.SUBSCRIPTION_EXISTS,
+                            eventPollingDTO.getClientId().replaceAll("[\r\n]", "")));
+                }
+                eventPollingResponse.setStatus(HttpStatus.SC_CONFLICT);
+                eventPollingResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST,
+                        EventNotificationConstants.SUBSCRIPTION_RESOURCE_NOT_FOUND));
+                return eventPollingResponse;
+            }
+
+            EventPollingResponse validationResponse = handleValidation(new JSONObject(eventPolling));
+            if (validationResponse != null) {
+                return validationResponse;
+            }
             AggregatedPollingResponse aggregatedPollingResponse = eventPollingService.pollEvents(eventPolling);
 
-            EventPollingResponse eventPollingResponse = new EventPollingResponse();
             eventPollingResponse.setStatus(aggregatedPollingResponse.getStatus());
             eventPollingResponse.setResponseBody(handleResponseGeneration(aggregatedPollingResponse));
             return eventPollingResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while polling events" , e);
-            throw new FSEventNotificationException(e.getStatus(), e.getMessage(), e);
+            eventPollingResponse.setStatus(e.getStatus());
+            eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+            return eventPollingResponse;
         }
-
     }
 
     /**
@@ -126,7 +152,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
      * @param eventPolling     Event polling JSON payload
      * @throws FSEventNotificationException  Exception when handling validation
      */
-    private static void handleValidation(JSONObject eventPolling) throws FSEventNotificationException {
+    private static EventPollingResponse handleValidation(JSONObject eventPolling) throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
         data.put(EventNotificationConstants.EVENT_POLLING_PAYLOAD, eventPolling);
@@ -138,14 +164,16 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
                         ServiceExtensionTypeEnum.PRE_EVENT_POLLING);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
-                    JSONObject dataObj = new JSONObject(response.getData().toString());
-                    throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
-                            dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
+                    EventPollingResponse eventPollingResponse = new EventPollingResponse();
+                    eventPollingResponse.setStatus(response.getErrorCode());
+                    eventPollingResponse.setErrorResponse(new JSONObject(response.getData().toString()));
+                    return eventPollingResponse;
                 }
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }
         }
+        return null;
     }
 
     /**

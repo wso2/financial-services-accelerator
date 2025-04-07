@@ -52,6 +52,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
     private MockedStatic<FinancialServicesConfigParser> configParserMockedStatic;
     private MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic;
     private MockedStatic<ServiceExtensionUtils> serviceExtensionUtilsMockedStatic;
+    DefaultEventSubscriptionServiceHandler defaultEventSubscriptionServiceHandler;
 
     @BeforeClass
     public void initTest() {
@@ -67,6 +68,8 @@ public class DefaultEventSubscriptionServiceHandlerTests {
 
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(false);
+
+        defaultEventSubscriptionServiceHandler = new DefaultEventSubscriptionServiceHandler();
     }
 
     @AfterClass
@@ -75,9 +78,6 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         eventNotificationUtilMockedStatic.close();
         serviceExtensionUtilsMockedStatic.close();
     }
-
-    DefaultEventSubscriptionServiceHandler defaultEventSubscriptionServiceHandler =
-            new DefaultEventSubscriptionServiceHandler();
 
     @Test
     public void testCreateEventSubscription() throws Exception {
