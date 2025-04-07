@@ -369,6 +369,7 @@ echo '======================= Updating PSUList, TPPInfo, KeyManagerAdmin =======
 
 #----------------- Update PSUInfo Users and Passwords -----------------#
 
+
 # Update all PSUInfo <User> tags
 sed -i '/<PSUList>/,/<\/PSUList>/ s|<User>.*</User>|<User>testUser@wso2.com</User>|g' ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 # Update all PSUInfo <Password> tags
