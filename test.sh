@@ -252,10 +252,13 @@ echo "deployment.toml has been updated in place and a backup is saved as deploym
 
 rm $BACKUP_TOML
 cd $TEST_HOME/wso2is-7.0.0/bin
-nohup ./wso2server.sh > ${RUNNER_HOME}/wso2.log 2>&1 &
+
+./wso2server.sh  start
+
+#nohup ./wso2server.sh > ${RUNNER_HOME}/wso2.log 2>&1 &
 sleep 120
 
-cat ${RUNNER_HOME}/wso2.log
+#cat ${RUNNER_HOME}/wso2.log
 #./wso2server.sh
 ###
 echo '======================= Test Setup ======================='
@@ -561,8 +564,11 @@ cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
 # Send the email with mutt
 mutt -e "set content_type=text/html" \
   -s "Accelerator 4 M3 Test Reports" \
-  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" "${RUNNER_HOME}/wso2ServerLogs.txt" \
+  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" "${TEST_HOME}/wso2is-7.0.0/repository/logs/wso2carbon.log" \
   -- ${USERNAME} < "$EMAIL_BODY"
+
+
+./wso2server.sh  stop
 
 exit 0
 
