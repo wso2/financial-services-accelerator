@@ -405,10 +405,6 @@ echo '======================= Setup Mail ======================='
 sudo apt update && sudo apt install mailutils
 sudo yum install mailx
 
-
-
-
-
 cat ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 #
 echo '======================= Build the Test framework ======================='
@@ -437,7 +433,7 @@ cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-test-framework
 mvn clean install
 
 if [ $? -eq 0 ]; then
-  echo "Build succeeded"
+  echo "Accelerator Framework Build succeeded"
 else
   echo "Build failed"
   exit 1  # To stop the pipeline if the build fails
@@ -448,18 +444,43 @@ cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/dcr
 
 mvn clean test -X > ${TEST_HOME}/DCR.txt 2>&1
 
+if [ $? -eq 0 ]; then
+  echo "DCR Tests Passed"
+else
+  echo "DCR Tests failed"
+  exit 1  # To stop the pipeline if the build fails
+fi
 echo '======================= Token ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/token
 mvn clean test -X > ${TEST_HOME}/TokenTest.txt 2>&1
+if [ $? -eq 0 ]; then
+  echo "Token Tests Passed"
+else
+  echo "Token Tests failed"
+  exit 1  # To stop the pipeline if the build fails
+fi
 
 echo '======================= Consent Management ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/consent-management
 mvn clean test -X > ${TEST_HOME}/ConsentTest.txt 2>&1
 
+if [ $? -eq 0 ]; then
+  echo "Consent Management Tests Passed"
+else
+  echo "Consent Management Tests failed"
+  exit 1  # To stop the pipeline if the build fails
+fi
 
 echo '======================= Event Notification ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/event-notification
 mvn clean test -X > ${TEST_HOME}/EventNotification.txt  2>&1
+
+if [ $? -eq 0 ]; then
+  echo "Event Notification Tests Passed"
+else
+  echo "Event Notification Tests failed"
+  exit 1  # To stop the pipeline if the build fails
+fi
 
 sudo apt install -y mutt
 sudo apt install -y ssmtp
