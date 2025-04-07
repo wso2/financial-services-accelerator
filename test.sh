@@ -38,6 +38,7 @@ do
     esac
 done
 
+
 # ====== variables ======
 # Username and Password for WSO2 Updates
 # TEST_HOME : Folder to install IS server
@@ -45,6 +46,20 @@ done
 echo "Username: $USERNAME"
 echo "Password: $PASSWORD"
 echo "TEST_HOME:  $TEST_HOME"
+
+# handle empty variables
+if [ -z "$USERNAME" ]; then
+    echo "Username is empty. Please provide a username using the -u flag."
+    exit 1
+fi
+if [ -z "$PASSWORD" ]; then
+    echo "Password is empty. Please provide a password using the -p flag."
+    exit 1
+fi
+if [ -z "$TEST_HOME" ]; then
+    echo "TEST_HOME is empty. Please provide a TEST_HOME using the -o flag."
+    exit 1
+fi
 
 
 echo '=================== setup Firefox ==================='
