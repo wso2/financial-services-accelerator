@@ -19,6 +19,34 @@ MVNSTATE=1 #This variable is read by the test-grid to determine success or failu
 RUNNER_HOME=`pwd`
 
 
+#=== FUNCTION ==================================================================
+# NAME: get_prop
+# DESCRIPTION: Retrieve specific property from deployment.properties.sample
+# PARAMETER 1: property_value
+#===============================================================================
+function get_prop {
+    local prop=$(grep -w "${1}" "${RUNNER_HOME}/deployment.properties" | cut -d'=' -f2)
+    echo $prop
+}
+
+while getopts u:p:o:h flag
+do
+    case "${flag}" in
+        u) USERNAME=${OPTARG};;
+        p) PASSWORD=${OPTARG};;
+        o) TEST_HOME=${OPTARG};;
+    esac
+done
+
+# ====== variables ======
+# Username and Password for WSO2 Updates
+# TEST_HOME : Folder to install IS server
+
+echo "Username: $USERNAME"
+echo "Password: $PASSWORD"
+echo "TEST_HOME:  $TEST_HOME"
+
+
 echo '=================== setup Firefox ==================='
 
 if command -v firefox &> /dev/null
@@ -66,34 +94,6 @@ else
 fi
 
 
-#=== FUNCTION ==================================================================
-# NAME: get_prop
-# DESCRIPTION: Retrieve specific property from deployment.properties.sample
-# PARAMETER 1: property_value
-#===============================================================================
-function get_prop {
-    local prop=$(grep -w "${1}" "${RUNNER_HOME}/deployment.properties" | cut -d'=' -f2)
-    echo $prop
-}
-
-while getopts u:p:o:h flag
-do
-    case "${flag}" in
-        u) USERNAME=${OPTARG};;
-        p) PASSWORD=${OPTARG};;
-        o) TEST_HOME=${OPTARG};;
-    esac
-done
-
-# ====== variables ======
-# Username and Password for WSO2 Updates
-# TEST_HOME : Folder to install IS server
-
-echo "Username: $USERNAME"
-echo "Password: $PASSWORD"
-echo "TEST_HOME:  $TEST_HOME"
-
-#
 
 echo '======================= Building packs ======================='
 
