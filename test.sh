@@ -232,6 +232,12 @@ echo '======================= Run merge and Config scripts =====================
 cd $TEST_HOME/wso2is-7.0.0/wso2-fsiam-accelerator-4.0.0-M3/bin
 bash merge.sh
 bash configure.sh
+SQL_SCRIPT="$RUNNER_HOME/financial-services-accelerator/accelerators/fs-is/carbon-home/dbscripts/financial-services/event-notifications/mysql.sql"
+
+source $(pwd)/../repository/conf/configure.properties
+
+mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$SQL_SCRIPT"
+
 
 echo '======================= Update deployment.toml ======================='
 

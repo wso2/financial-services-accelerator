@@ -170,7 +170,7 @@ class AuthorizeAPIStepTests {
 
     @Test(groups = "api")
     void "Create API Resource"() {
-        Response response = createAPIResource("https://apiscopes","apiscopes",["accounts","payments","fundsconfirmations"])
+        Response response = createAPIResource("User-defined-oauth2-resource","User-defined-oauth2-resource",["accounts","payments","fundsconfirmations"])
         print(response.prettyPrint())
 
         apiResourceId = response.header("Location").split("/").last()
