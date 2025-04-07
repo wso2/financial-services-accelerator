@@ -59,7 +59,7 @@ public class FSClaimProvider implements ClaimProvider {
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
             try {
-                return additionalIdTokenClaimsAuthzResponseWithServiceExtension(
+                return getAdditionalIdTokenClaimsWithServiceExtension(
                         authAuthzReqMessageContext, authorizeRespDTO);
             } catch (FinancialServicesException e) {
                 log.error("Error while invoking external service extension", e);
@@ -73,7 +73,7 @@ public class FSClaimProvider implements ClaimProvider {
             return getClaimProvider().getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO);
         } else {
             // Perform FS default behaviour
-            return defaultAdditionalIdTokenClaimsAuthzResponse(authAuthzReqMessageContext, authorizeRespDTO);
+            return getDefaultAdditionalIdTokenClaims(authAuthzReqMessageContext, authorizeRespDTO);
         }
     }
 
@@ -87,7 +87,7 @@ public class FSClaimProvider implements ClaimProvider {
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
             try {
-                additionalClaims = additionalIdTokenClaimsTokenResponseWithServiceExtension(
+                additionalClaims = getAdditionalIdTokenClaimsWithServiceExtension(
                         tokenReqMessageContext, tokenRespDTO);
             } catch (FinancialServicesException e) {
                 log.error("Error while invoking external service extension", e);
@@ -98,14 +98,20 @@ public class FSClaimProvider implements ClaimProvider {
             additionalClaims = getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
         } else {
             // Perform FS default behaviour
-            additionalClaims = defaultAdditionalIdTokenClaimsTokenResponse(tokenReqMessageContext, tokenRespDTO);
+            additionalClaims = getDefaultAdditionalIdTokenClaims(tokenReqMessageContext, tokenRespDTO);
         }
 
-        tokenRespDTO.setAuthorizedScopes(updateScopeInTokenResponse(tokenRespDTO.getAuthorizedScopes()));
+        tokenRespDTO.setAuthorizedScopes(updateScopeInTokenResponseBody(tokenRespDTO.getAuthorizedScopes()));
         return additionalClaims;
     }
 
-    private String updateScopeInTokenResponse(String scopes) {
+    /**
+     * Update the scope attribute in the token response body by removing internal scopes.
+     *
+     * @param scopes
+     * @return updated scopes
+     */
+    private String updateScopeInTokenResponseBody(String scopes) {
 
         String[] updatedScopesArray = IdentityCommonUtils.removeInternalScopes(scopes.split(" "));
 
@@ -127,7 +133,7 @@ public class FSClaimProvider implements ClaimProvider {
         return claimProvider;
     }
 
-    private Map<String, Object> defaultAdditionalIdTokenClaimsAuthzResponse(
+    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
             OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
             throws IdentityOAuth2Exception {
 
@@ -135,13 +141,13 @@ public class FSClaimProvider implements ClaimProvider {
         return new HashMap<>();
     }
 
-    private Map<String, Object> defaultAdditionalIdTokenClaimsTokenResponse(
+    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
             OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO) {
 
         return new HashMap<>();
     }
 
-    private Map<String, Object> additionalIdTokenClaimsAuthzResponseWithServiceExtension(
+    private Map<String, Object> getAdditionalIdTokenClaimsWithServiceExtension(
             OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
             throws IdentityOAuth2Exception, FinancialServicesException, JsonProcessingException {
 
@@ -161,7 +167,7 @@ public class FSClaimProvider implements ClaimProvider {
         return processResponseAndGetClaims(response);
     }
 
-    private Map<String, Object> additionalIdTokenClaimsTokenResponseWithServiceExtension(
+    private Map<String, Object> getAdditionalIdTokenClaimsWithServiceExtension(
             OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO)
             throws IdentityOAuth2Exception, FinancialServicesException {
 
