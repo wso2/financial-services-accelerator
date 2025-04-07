@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservl
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils;
@@ -39,20 +40,31 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
 
+    private final FinancialServicesConfigParser configParser;
+    private final boolean isPreInitiatedConsent;
+
+    public FSDefaultAuthServletImpl() {
+        configParser = FinancialServicesConfigParser.getInstance();
+        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+    }
+
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest request, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
 
-        switch (dataSet.getString("type")) {
-
-            case ConsentExtensionConstants.ACCOUNTS:
-                return Utils.populateAccountsData(request, dataSet);
-            case ConsentExtensionConstants.PAYMENTS:
-                return Utils.populatePaymentsData(request, dataSet);
-            case ConsentExtensionConstants.FUNDS_CONFIRMATIONS:
-                return Utils.populateCoFData(request, dataSet);
-            default:
-                return Collections.emptyMap();
+        if (isPreInitiatedConsent) {
+            switch (dataSet.getString("type")) {
+                case ConsentExtensionConstants.ACCOUNTS:
+                    return Utils.populateAccountsData(request, dataSet);
+                case ConsentExtensionConstants.PAYMENTS:
+                    return Utils.populatePaymentsData(request, dataSet);
+                case ConsentExtensionConstants.FUNDS_CONFIRMATIONS:
+                    return Utils.populateCoFData(request, dataSet);
+                default:
+                    return Collections.emptyMap();
+            }
+        } else {
+            return Utils.populateResourceData(request, dataSet);
         }
     }
 

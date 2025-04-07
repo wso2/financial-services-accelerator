@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -50,10 +51,14 @@ import java.util.UUID;
 public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
+    private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
 
     public ExternalAPIConsentRetrievalStep() {
+
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
     }
 
     @Override
@@ -63,13 +68,16 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
+        String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
         String consentId;
 
         try {
-            consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
-            setMandatoryConsentData(consentId, consentData);
+            if (isPreInitiatedConsent) {
+                consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+                setMandatoryConsentData(consentId, consentData);
+            }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
-                    consentData);
+                    consentData, scope);
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
