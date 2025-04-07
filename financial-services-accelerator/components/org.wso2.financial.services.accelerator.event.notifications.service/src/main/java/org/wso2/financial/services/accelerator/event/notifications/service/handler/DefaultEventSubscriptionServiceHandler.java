@@ -75,6 +75,16 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
 
            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionRequestDto),
                    EventSubscriptionOperationEnum.SubscriptionCreation);
+           if (externalServiceResponse.has("isError")) {
+                if (externalServiceResponse.getBoolean("isError")) {
+                     EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
+                            .getInt(FinancialServicesConstants.ERROR_CODE));
+                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
+                            .get("error"));
+                    return eventSubscriptionResponse;
+                }
+           }
 
            EventSubscription eventSubscription = mapEventSubscriptionDtoToModel(
                    ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION, eventSubscriptionRequestDto,
@@ -112,8 +122,18 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
 
-            handleValidation(new JSONObject(eventSubscription),
+            JSONObject externalServiceResponse =  handleValidation(new JSONObject(eventSubscription),
                     EventSubscriptionOperationEnum.SingleSubscriptionRetrieval);
+            if (externalServiceResponse.has("isError")) {
+                if (externalServiceResponse.getBoolean("isError")) {
+                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
+                            .getInt(FinancialServicesConstants.ERROR_CODE));
+                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
+                            .get("error"));
+                    return eventSubscriptionResponse;
+                }
+            }
 
             EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
@@ -152,8 +172,18 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
 
-            handleValidation(new JSONObject(eventSubscriptionList),
+            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionList),
                     EventSubscriptionOperationEnum.BulkSubscriptionRetrieval);
+            if (externalServiceResponse.has("isError")) {
+                if (externalServiceResponse.getBoolean("isError")) {
+                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
+                            .getInt(FinancialServicesConstants.ERROR_CODE));
+                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
+                            .get("error"));
+                    return eventSubscriptionResponse;
+                }
+            }
 
             EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
@@ -189,8 +219,18 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                 eventSubscriptionResponseList.add(mapSubscriptionModelToResponseJson(eventSubscription));
             }
 
-            handleValidation(new JSONObject(eventSubscriptionList),
+            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionList),
                     EventSubscriptionOperationEnum.SubscriptionRetrievalForEventTypes);
+            if (externalServiceResponse.has("isError")) {
+                if (externalServiceResponse.getBoolean("isError")) {
+                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
+                            .getInt(FinancialServicesConstants.ERROR_CODE));
+                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
+                            .get("error"));
+                    return eventSubscriptionResponse;
+                }
+            }
 
             EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
@@ -207,8 +247,6 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
     public EventSubscriptionResponse updateEventSubscription(EventSubscriptionDTO eventSubscriptionUpdateRequestDto)
             throws FSEventNotificationException {
 
-        EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
-
         try {
             EventNotificationServiceUtil.validateClientId(eventSubscriptionUpdateRequestDto.getClientId());
 
@@ -223,6 +261,16 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
 
             JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscriptionUpdateRequestDto),
                     EventSubscriptionOperationEnum.SubscriptionCreation);
+            if (externalServiceResponse.has("isError")) {
+                if (externalServiceResponse.getBoolean("isError")) {
+                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
+                            .getInt(FinancialServicesConstants.ERROR_CODE));
+                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
+                            .get("error"));
+                    return eventSubscriptionResponse;
+                }
+            }
 
             EventSubscription eventSubscription = mapEventSubscriptionDtoToModel(
                     ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION, eventSubscriptionUpdateRequestDto,
@@ -232,6 +280,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                 log.error("Event subscription not found.");
                 throw new FSEventNotificationException(HttpStatus.SC_BAD_REQUEST, "Event subscription not found.");
             }
+
+            EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
             eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_OK);
             EventSubscription eventSubscriptionUpdateResponse = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(eventSubscriptionUpdateRequestDto.getSubscriptionId());
@@ -263,7 +313,18 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
 
-            handleValidation(new JSONObject(eventSubscription), EventSubscriptionOperationEnum.SubscriptionDelete);
+            JSONObject externalServiceResponse = handleValidation(new JSONObject(eventSubscription),
+                    EventSubscriptionOperationEnum.SubscriptionDelete);
+            if (externalServiceResponse.has("isError")) {
+                if (externalServiceResponse.getBoolean("isError")) {
+                    EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
+                    eventSubscriptionResponse.setResponseStatus(externalServiceResponse
+                            .getInt(FinancialServicesConstants.ERROR_CODE));
+                    eventSubscriptionResponse.setResponseBody(externalServiceResponse
+                            .get("error"));
+                    return eventSubscriptionResponse;
+                }
+            }
 
             Boolean isDeleted = eventSubscriptionService.deleteEventSubscription(subscriptionId);
             if (!isDeleted) {
@@ -418,8 +479,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                         ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
-                    throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
-                            dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
+                    dataObj.put("isError", true);
+                    return dataObj;
                 }
                 if (EventSubscriptionOperationEnum.SubscriptionCreation.equals(operation) ||
                         EventSubscriptionOperationEnum.SubscriptionUpdate.equals(operation)) {
