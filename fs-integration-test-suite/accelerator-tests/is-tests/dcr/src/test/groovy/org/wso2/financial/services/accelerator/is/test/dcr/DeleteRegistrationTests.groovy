@@ -33,8 +33,8 @@ class DeleteRegistrationTests extends FSConnectorTest {
 
     @BeforeClass
     void generateAccessToken() {
-        configuration.setTppNumber(1)
 
+        configuration.setTppNumber(1)
         dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 

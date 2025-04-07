@@ -98,12 +98,8 @@ echo "TEST_HOME:  $TEST_HOME"
 echo '======================= Building packs ======================='
 
 mvn -B install --file pom.xml
-if [ $? -eq 0 ]; then
-  echo "Build succeeded"
-else
-  echo "Build failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
+MVNSTATE=$?
+
 echo '======================= SetUp base Products ======================='
 
 # Create the test home directory if it doesn't exist
@@ -409,78 +405,42 @@ cat ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 #
 echo '======================= Build the Test framework ======================='
 mvn clean install  -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+MVNSTATE=$((MVNSTATE+$?))
 
-if [ $? -eq 0 ]; then
-  echo "Build succeeded"
-else
-  echo "Build failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
-#
 echo '======================= API Publish and Subscribe Step ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/is-setup
 mvn clean test -X
-
-if [ $? -eq 0 ]; then
-  echo "Build succeeded"
-else
-  echo "Build failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
+MVNSTATE=$((MVNSTATE+$?))
 
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-test-framework
 
 mvn clean install
+MVNSTATE=$((MVNSTATE+$?))
 
-if [ $? -eq 0 ]; then
-  echo "Accelerator Framework Build succeeded"
-else
-  echo "Build failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
 
 echo '======================= DCR ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/dcr
 
 mvn clean test -X > ${TEST_HOME}/DCR.txt 2>&1
+MVNSTATE=$((MVNSTATE+$?))
 
-if [ $? -eq 0 ]; then
-  echo "DCR Tests Passed"
-else
-  echo "DCR Tests failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
 echo '======================= Token ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/token
 mvn clean test -X > ${TEST_HOME}/TokenTest.txt 2>&1
-if [ $? -eq 0 ]; then
-  echo "Token Tests Passed"
-else
-  echo "Token Tests failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
+MVNSTATE=$((MVNSTATE+$?))
+
 
 echo '======================= Consent Management ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/consent-management
 mvn clean test -X > ${TEST_HOME}/ConsentTest.txt 2>&1
+MVNSTATE=$((MVNSTATE+$?))
 
-if [ $? -eq 0 ]; then
-  echo "Consent Management Tests Passed"
-else
-  echo "Consent Management Tests failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
 
 echo '======================= Event Notification ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/event-notification
 mvn clean test -X > ${TEST_HOME}/EventNotification.txt  2>&1
+MVNSTATE=$((MVNSTATE+$?))
 
-if [ $? -eq 0 ]; then
-  echo "Event Notification Tests Passed"
-else
-  echo "Event Notification Tests failed"
-  exit 1  # To stop the pipeline if the build fails
-fi
 
 sudo apt install -y mutt
 sudo apt install -y ssmtp
@@ -488,9 +448,6 @@ sudo apt install -y ssmtp
 sudo touch /etc/msmtprc
 echo -e "root=psajeendran@gmail.com\nmailhub=smtp.gmail.com:587\nAuthUser=psajeendran@gmail.com\nAuthPass=${STMP_ROOT_PASSWORD}\nUseTLS=YES\nUseSTARTTLS=YES\nFromLineOverride=YES" > /etc/msmtprc
 
-TO="sajeenthiran@wso2.com"
-SUBJECT="Accelerator 4 M3 Test Reports"
-BODY="Please find the attached test reports."
 API_PUBLISH="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/is-setup/target/surefire-reports/emailable-report.html"
 DCR="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/dcr/target/surefire-reports/emailable-report.html"
 TOKEN="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/token/target/surefire-reports/emailable-report.html"
@@ -593,6 +550,11 @@ mutt -e "set content_type=text/html" \
 
 ./wso2server.sh  stop
 
-exit 0
+
+if [ $MVNSTATE -ne 0 ]; then
+  exist 1
+else
+  exist 0
+fi
 
 #
