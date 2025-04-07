@@ -20,6 +20,8 @@ package org.wso2.financial.services.accelerator.is.test.dcr
 
 import io.restassured.response.Response
 import org.json.JSONObject
+import org.junit.After
+import org.junit.AfterClass
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -51,6 +53,9 @@ class DCREndToEndFlow extends FSConnectorTest {
         ssa = new File(configuration.getAppDCRSSAPath()).text
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
     }
+
+
+
 
     @Test(groups = "SmokeTest")
     void "Invoke registration request structured as a JWS"() {

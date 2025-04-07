@@ -248,6 +248,10 @@ sed -i -e 's|password = ""|password = "wso2123"|g' ${CONFIG_FILE}
 sed -i -e 's|base_url = ""|base_url = "http://localhost:9446/api/financialservices/uk/consent/endpoints"|g' ${CONFIG_FILE}
 sed -i -e 's|allowed_extensions = \["post_token_generation"\]|extension_types = \["pre-consent-generation", "post-consent-generation", "pre-consent-retrieval", "pre-consent-revocation", "pre-consent-authorization", "consent-validation", "pre-user-authorization", "post-user-authorization", "pre-id-token-generation"\]|g' ${CONFIG_FILE}
 
+sed -i '/name = "SSAJTIValidator"/,/priority = 8/ {
+    s/enable = true/enable = false/
+}' deployment.toml
+
 echo "deployment.toml has been updated in place and a backup is saved as deployment.toml.bak."
 
 rm $BACKUP_TOML
