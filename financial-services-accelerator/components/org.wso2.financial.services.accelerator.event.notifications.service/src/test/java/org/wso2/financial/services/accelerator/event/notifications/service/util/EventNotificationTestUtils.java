@@ -349,6 +349,20 @@ public class EventNotificationTestUtils {
         return externalServiceResponse;
     }
 
+    public static ExternalServiceResponse getExternalServiceResponseError() throws JsonProcessingException {
+        ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
+        externalServiceResponse.setResponseId("123456789876543");
+        externalServiceResponse.setStatus(StatusEnum.ERROR);
+
+        JSONObject data = new JSONObject();
+        data.put("responseData", new JSONObject());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(data.toString());
+        externalServiceResponse.setData(jsonNode);
+        externalServiceResponse.setErrorCode(400);
+        return externalServiceResponse;
+    }
+
     public static ExternalServiceResponse getExternalServiceResponseWithData() throws JsonProcessingException {
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
         externalServiceResponse.setResponseId("123456789876543");

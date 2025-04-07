@@ -18,9 +18,9 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
@@ -68,16 +68,10 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
 
         EventPollingResponse eventPollingResponse = new EventPollingResponse();
 
-        //Validate clientID of the polling request
-        try {
-            EventNotificationServiceUtil.validateClientId(eventPollingDTO.getClientId());
-        } catch (FSEventNotificationException e) {
-            String errorMessage = String.format("A client was not found for the client id : '%s' in the database. ",
-                    eventPollingDTO.getClientId().replaceAll("[\r\n]", ""));
-            log.error(errorMessage, e);
-            eventPollingResponse.setStatus(HttpStatus.SC_BAD_REQUEST);
-            eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST, errorMessage));
+        EventPollingResponse clientIdValidation = validateClientId(eventPollingDTO.getClientId());
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
         }
 
         EventPolling eventPolling = mapEventPollingDtoToModel(eventPollingDTO);
@@ -109,7 +103,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
             return eventPollingResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while polling events" , e);
-            eventPollingResponse.setStatus(e.getStatus());
+            eventPollingResponse.setStatus(e.getStatus() == 0 ? HttpStatus.SC_INTERNAL_SERVER_ERROR : e.getStatus());
             eventPollingResponse.setErrorResponse(EventNotificationServiceUtil.getErrorDTO(
                     EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
             return eventPollingResponse;
@@ -206,5 +200,26 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
             }
         }
         return getPollingResponseJSON(aggregatedPollingResponse);
+    }
+
+    /**
+     * This method is used to validate the client ID.
+     *
+     * @param clientId                      Client ID
+     * @return EventPollingResponse    Return EventPollingResponse if the client ID is
+     *                                      invalid, if the client ID is valid, null will be returned.
+     */
+    private EventPollingResponse validateClientId(String clientId) {
+        try {
+            EventNotificationServiceUtil.validateClientId(clientId);
+        } catch (FSEventNotificationException e) {
+            log.error("Invalid client ID", e);
+            EventPollingResponse eventPollingResponse = new EventPollingResponse();
+            eventPollingResponse.setStatus(HttpStatus.SC_BAD_REQUEST);
+            eventPollingResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+            return eventPollingResponse;
+        }
+        return null;
     }
 }

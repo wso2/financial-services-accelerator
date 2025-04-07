@@ -18,9 +18,9 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
@@ -110,7 +110,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             return eventSubscriptionResponse;
        } catch (FSEventNotificationException e) {
            log.error("Error occurred while creating event subscription", e);
-           eventSubscriptionResponse.setResponseStatus(e.getStatus());
+           eventSubscriptionResponse.setResponseStatus(e.getStatus() != 0 ? e.getStatus() :
+                   HttpStatus.SC_INTERNAL_SERVER_ERROR);
            eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
            return eventSubscriptionResponse;

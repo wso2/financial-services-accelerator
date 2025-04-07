@@ -120,17 +120,6 @@ public class EventNotificationServiceUtil {
     }
 
     /**
-     * Get the callback URL of the TPP from the Subscription Object.
-     *
-     * @param clientID client ID of the TPP
-     * @return callback URL of the TPP
-     */
-    public static String getCallbackURL(String clientID) {
-
-        return "http://localhost:8080/sample-tpp-server";
-    }
-
-    /**
      * Method to map Event subscription Service error to API response.
      *
      * @param error             Error code

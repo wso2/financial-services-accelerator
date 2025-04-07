@@ -18,9 +18,9 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -61,6 +61,12 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
     public EventCreationResponse publishEvent(NotificationCreationDTO notificationCreationDTO) {
 
         EventCreationResponse eventCreationResponse = new EventCreationResponse();
+
+        EventCreationResponse clientIdValidation = validateClientId(notificationCreationDTO.getClientId());
+        // check whether clientIdValidation is not null, then return the error response
+        if (clientIdValidation != null) {
+            return clientIdValidation;
+        }
 
         //validate if the resourceID is existing
         ConsentResource consentResource = null;
@@ -158,6 +164,27 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }
+        }
+        return null;
+    }
+
+    /**
+     * This method is used to validate the client ID.
+     *
+     * @param clientId                      Client ID
+     * @return EventCreationResponse    Return EventCreationResponse if the client ID is
+     *                                      invalid, if the client ID is valid, null will be returned.
+     */
+    private EventCreationResponse validateClientId(String clientId) {
+        try {
+            EventNotificationServiceUtil.validateClientId(clientId);
+        } catch (FSEventNotificationException e) {
+            log.error("Invalid client ID", e);
+            EventCreationResponse eventCreationResponse = new EventCreationResponse();
+            eventCreationResponse.setStatus(HttpStatus.SC_BAD_REQUEST);
+            eventCreationResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+            return eventCreationResponse;
         }
         return null;
     }
