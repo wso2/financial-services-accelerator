@@ -440,24 +440,21 @@ fi
 
 echo '======================= DCR ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/dcr
-mvn clean test -X
-MVNSTATE=$?
+
+mvn clean test -X > ${TEST_HOME}/DCR.txt 2>&1
 
 echo '======================= Token ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/token
-mvn clean test -X
-MVNSTATE=$?
+mvn clean test -X > ${TEST_HOME}/TokenTest.txt 2>&1
 
 echo '======================= Consent Management ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/consent-management
-mvn clean test -X
-MVNSTATE=$?
+mvn clean test -X > ${TEST_HOME}/ConsentTest.txt 2>&1
 
 
 echo '======================= Event Notification ======================='
 cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/event-notification
-mvn clean test -X
-MVNSTATE=$?
+mvn clean test -X > ${TEST_HOME}/EventNotification.txt  2>&1
 
 sudo apt install -y mutt
 sudo apt install -y ssmtp
@@ -564,7 +561,7 @@ cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
 # Send the email with mutt
 mutt -e "set content_type=text/html" \
   -s "Accelerator 4 M3 Test Reports" \
-  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" "${TEST_HOME}/wso2is-7.0.0/repository/logs/wso2carbon.log" \
+  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" "${TEST_HOME}/wso2is-7.0.0/repository/logs/wso2carbon.log" "${TEST_HOME}/DCR.txt" "${TEST_HOME}/TokenTest.txt" "${TEST_HOME}/ConsentTest.txt" "${TEST_HOME}/EventNotification.txt" \
   -- ${USERNAME} < "$EMAIL_BODY"
 
 
