@@ -44,6 +44,7 @@ class DCREndToEndFlow extends FSConnectorTest {
 
     @BeforeClass(alwaysRun = true)
     void setup() {
+        configuration.setTppNumber(1)
 
         dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
         configuration.setTppNumber(1)
