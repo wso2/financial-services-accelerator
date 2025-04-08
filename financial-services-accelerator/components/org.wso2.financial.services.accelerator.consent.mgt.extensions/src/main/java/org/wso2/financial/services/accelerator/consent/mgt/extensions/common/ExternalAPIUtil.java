@@ -18,13 +18,16 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AmendedResources;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
 
 import java.util.ArrayList;
@@ -296,6 +299,114 @@ public class ExternalAPIUtil {
                 resolvedFrequency, resolvedValidity, createdTime, updatedTime, resolvedRecurring,
                 responseDTO.getConsentAttributes(), new ArrayList<>(authResources), new ArrayList<>(mappingResources)
         );
+    }
+
+    /**
+     * Create request object to be sent to the external service using ExternalAPIPreConsentPersistRequestDTO.
+     *
+     * @param requestDTO ExternalAPIPreConsentPersistRequestDTO object
+     * @return ExternalServiceRequest object
+     */
+    public static ExternalServiceRequest createExternalServiceRequest(
+            ExternalAPIPreConsentPersistRequestDTO requestDTO) {
+
+        JSONObject requestJson = new JSONObject(requestDTO);
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), requestJson);
+    }
+
+    /**
+     * Constructs the amended resources from the amended authorizations.
+     *
+     * @param amendedAuthorizations List of amended authorizations
+     * @return AmendedResources object containing the amended authorizations and mapping resources
+     */
+    public static AmendedResources constructAmendedResources(
+            List<ExternalAPIPreConsentPersistResponseDTO.AmendedAuthorization> amendedAuthorizations) {
+
+        AmendedResources amendedResources = new AmendedResources();
+        List<AuthorizationResource> amendedAuthResources = new ArrayList<>();
+        List<ConsentMappingResource> newMappingResources = new ArrayList<>();
+        List<ConsentMappingResource> amendedMappingResources = new ArrayList<>();
+
+        for (ExternalAPIPreConsentPersistResponseDTO.AmendedAuthorization amendedAuthorization :
+                amendedAuthorizations) {
+            String authorizationId = amendedAuthorization.getAuthorizationId();
+            AuthorizationResource amendedAuthResource = constructAmendedAuthorizationResource(amendedAuthorization);
+            amendedAuthResources.add(amendedAuthResource);
+
+            // New mapping resources
+            for (ExternalAPIPreConsentPersistResponseDTO.Resource newMappingResource :
+                    amendedAuthorization.getConsentedResources()) {
+                ConsentMappingResource consentMappingResource = constructNewMappingResource(newMappingResource,
+                        authorizationId);
+                newMappingResources.add(consentMappingResource);
+            }
+
+            // Amended mapping resources
+            for (ExternalAPIPreConsentPersistResponseDTO.AmendedResource amendedMappingResource :
+                    amendedAuthorization.getAmendedResources()) {
+                ConsentMappingResource consentMappingResource = constructAmendedMappingResource(
+                        amendedMappingResource, authorizationId);
+                amendedMappingResources.add(consentMappingResource);
+            }
+        }
+        amendedResources.setAmendedAuthResources(amendedAuthResources);
+        amendedResources.setNewMappingResources(newMappingResources);
+        amendedResources.setAmendedMappingResources(amendedMappingResources);
+
+        return amendedResources;
+    }
+
+    /**
+     * Constructs the amended authorization resource from the amended authorization.
+     *
+     * @param amendedAuthorization The amended authorization
+     * @return AuthorizationResource object
+     */
+    private static AuthorizationResource constructAmendedAuthorizationResource(
+            ExternalAPIPreConsentPersistResponseDTO.AmendedAuthorization amendedAuthorization) {
+
+        AuthorizationResource resource = new AuthorizationResource();
+        resource.setAuthorizationID(amendedAuthorization.getAuthorizationId());
+        resource.setAuthorizationType(amendedAuthorization.getAuthorizationType());
+        resource.setAuthorizationStatus(amendedAuthorization.getAuthorizationStatus());
+        return resource;
+    }
+
+    /**
+     * Constructs a ConsentMappingResource object for new consent mappings.
+     *
+     * @param newMappingResource New mapping resource
+     * @param authorizationId    Authorization ID the mapping belongs to
+     * @return ConsentMappingResource object
+     */
+    private static ConsentMappingResource constructNewMappingResource(
+            ExternalAPIPreConsentPersistResponseDTO.Resource newMappingResource, String authorizationId) {
+
+        ConsentMappingResource resource = new ConsentMappingResource();
+        resource.setAuthorizationID(authorizationId);
+        resource.setAccountID(newMappingResource.getResourceId());
+        resource.setPermission(newMappingResource.getPermission());
+        resource.setMappingStatus(newMappingResource.getStatus());
+        return resource;
+    }
+
+    /**
+     * Constructs a ConsentMappingResource object for amended consent mappings.
+     *
+     * @param amendedMappingResource The amended mapping resource
+     * @param authorizationId        Authorization ID the mapping belongs to
+     * @return ConsentMappingResource object
+     */
+    private static ConsentMappingResource constructAmendedMappingResource(
+            ExternalAPIPreConsentPersistResponseDTO.AmendedResource amendedMappingResource, String authorizationId) {
+
+        ConsentMappingResource resource = new ConsentMappingResource();
+        resource.setAuthorizationID(authorizationId);
+        resource.setMappingID(amendedMappingResource.getMappingId());
+        resource.setPermission(amendedMappingResource.getPermission());
+        resource.setMappingStatus(amendedMappingResource.getStatus());
+        return resource;
     }
 
 }

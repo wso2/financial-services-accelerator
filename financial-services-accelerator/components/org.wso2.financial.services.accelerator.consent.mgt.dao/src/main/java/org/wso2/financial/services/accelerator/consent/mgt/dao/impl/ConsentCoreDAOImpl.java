@@ -524,28 +524,26 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             for (AuthorizationResource resource : authorizationResources) {
                 updateAuthorizationResourcePreparedStmt.setString(1, resource.getAuthorizationType());
-                updateAuthorizationResourcePreparedStmt.setString(2, resource.getUserID());
-                updateAuthorizationResourcePreparedStmt.setString(3, resource.getAuthorizationStatus());
-                updateAuthorizationResourcePreparedStmt.setLong(4, updatedTime);
-                updateAuthorizationResourcePreparedStmt.setString(5, resource.getAuthorizationID());
+                updateAuthorizationResourcePreparedStmt.setString(2, resource.getAuthorizationStatus());
+                updateAuthorizationResourcePreparedStmt.setLong(3, updatedTime);
+                updateAuthorizationResourcePreparedStmt.setString(4, resource.getAuthorizationID());
 
                 updateAuthorizationResourcePreparedStmt.addBatch();
             }
 
             int[] results = updateAuthorizationResourcePreparedStmt.executeBatch();
-
             boolean allUpdated = Arrays.stream(results).allMatch(result -> result > 0);
             if (allUpdated) {
                 log.debug("Batch update for authorization resources completed successfully.");
-                return true;
             } else {
-                throw new ConsentDataUpdationException("Batch update failed for one or more authorization resources.");
+                log.debug("Some or all rows were not updated in batch update for authorization resources.");
             }
         } catch (SQLException e) {
             log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG, e);
             throw new ConsentDataUpdationException(
                     ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG, e);
         }
+        return true;
     }
 
 
@@ -589,7 +587,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public boolean storeConsentMappingResources(Connection connection,
+    public List<ConsentMappingResource> storeConsentMappingResources(Connection connection,
         List<ConsentMappingResource> consentMappingResources) throws ConsentDataInsertionException {
 
         String storeConsentMappingPrepStatement = sqlStatements.getStoreConsentMappingPreparedStatement();
@@ -615,7 +613,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             boolean allInserted = Arrays.stream(results).allMatch(result -> result > 0);
             if (allInserted) {
                 log.debug("Batch insert for consent mapping resources completed successfully.");
-                return true;
+                return consentMappingResources;
             } else {
                 throw new ConsentDataInsertionException("Batch insert failed for one or more consent mapping " +
                         "resources.");
@@ -721,20 +719,18 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             }
 
             int[] results = updateConsentMappingResourcePreparedStmt.executeBatch();
-
             boolean allUpdated = Arrays.stream(results).allMatch(result -> result > 0);
             if (allUpdated) {
                 log.debug("Batch update for consent mapping resources completed successfully.");
-                return true;
             } else {
-                throw new ConsentDataUpdationException("Batch update failed for one or more consent mapping " +
-                        "resources.");
+                log.debug("Some or all rows were not updated in batch update for consent mapping resources.");
             }
         } catch (SQLException e) {
             log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_UPDATE_ERROR_MSG, e);
             throw new ConsentDataUpdationException(
                     ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_UPDATE_ERROR_MSG, e);
         }
+        return true;
     }
 
 

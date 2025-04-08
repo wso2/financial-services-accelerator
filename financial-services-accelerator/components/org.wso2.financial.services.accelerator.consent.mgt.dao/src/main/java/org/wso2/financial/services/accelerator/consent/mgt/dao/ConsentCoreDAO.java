@@ -186,11 +186,13 @@ public interface ConsentCoreDAO {
             throws ConsentDataUpdationException;
 
     /**
-     * This method is used to update the authorization resource.
+     * This method is used to update the given list of authorization resources.
+     * Only the auth-type and auth-status will be updated. Other values sent in the
+     * AuthorizationResource object will be ignored.
      *
-     * @param connection
-     * @param authorizationResources
-     * @throws ConsentDataUpdationException
+     * @param connection connection object
+     * @param authorizationResources a list of authorization resources that should be updated
+     * @throws ConsentDataUpdationException thrown if a database error occurs
      */
     boolean updateAuthorizationResources(Connection connection, List<AuthorizationResource> authorizationResources)
             throws ConsentDataUpdationException;
@@ -217,8 +219,8 @@ public interface ConsentCoreDAO {
      * @return
      * @throws ConsentDataInsertionException
      */
-    boolean storeConsentMappingResources(Connection connection, List<ConsentMappingResource> consentMappingResources)
-            throws ConsentDataInsertionException;
+    List<ConsentMappingResource> storeConsentMappingResources(Connection connection, List<ConsentMappingResource>
+            consentMappingResources) throws ConsentDataInsertionException;
 
     /**
      * This method is used to retrieve consent mapping resources for a given authorization ID.
@@ -244,12 +246,15 @@ public interface ConsentCoreDAO {
             throws ConsentDataUpdationException;
 
     /**
-     * This method is used to update the consent mapping resource.
+     * This method is used to update the given consent mapping resources.
+     * Parameters allowed to update are mapping-status and permission.
+     * Other fields sent in the ConsentMappingResource object will be ignored.
+     * Consent mapping resources will be identified using the mapping ID.
      *
-     * @param connection
-     * @param consentMappingResources
-     * @return
-     * @throws ConsentDataUpdationException
+     * @param connection connection object
+     * @param consentMappingResources a list of consent mapping resources that should be updated
+     * @return true if the update is successful
+     * @throws ConsentDataUpdationException thrown if a database error occurs
      */
     public boolean updateConsentMappingResources(Connection connection, List<ConsentMappingResource>
             consentMappingResources) throws ConsentDataUpdationException;

@@ -707,9 +707,9 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             throws ConsentManagementException {
 
         for (AuthorizationResource resource : authorizationResources) {
-            if (StringUtils.isBlank(resource.getAuthorizationID()) || StringUtils.isBlank(resource.getUserID())) {
-                log.error(ConsentCoreServiceConstants.AUTH_USER_ID_MISSING_ERROR_MSG);
-                throw new ConsentManagementException(ConsentCoreServiceConstants.AUTH_USER_ID_MISSING_ERROR_MSG);
+            if (StringUtils.isBlank(resource.getAuthorizationID())) {
+                log.error(ConsentCoreServiceConstants.AUTH_ID_MISSING_ERROR_MSG);
+                throw new ConsentManagementException(ConsentCoreServiceConstants.AUTH_ID_MISSING_ERROR_MSG);
             }
         }
 
@@ -958,7 +958,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public boolean createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+    public List<ConsentMappingResource> createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
             throws ConsentManagementException {
 
         for (ConsentMappingResource consentMappingResource : consentMappingResources) {
@@ -980,10 +980,11 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 if (log.isDebugEnabled()) {
                     log.debug("Creating consent mapping resources in batch");
                 }
-                boolean result = consentCoreDAO.storeConsentMappingResources(connection, consentMappingResources);
+                List<ConsentMappingResource> storedConsentMappingResources =
+                        consentCoreDAO.storeConsentMappingResources(connection, consentMappingResources);
                 DatabaseUtils.commitTransaction(connection);
                 log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
-                return result;
+                return storedConsentMappingResources;
             } catch (ConsentDataInsertionException e) {
                 log.error(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG, e);
                 DatabaseUtils.rollbackTransaction(connection);
@@ -1071,10 +1072,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         for (ConsentMappingResource consentMappingResource : consentMappingResources) {
             String mappingID = consentMappingResource.getMappingID();
             String authID = consentMappingResource.getAuthorizationID();
-            String accountID = consentMappingResource.getAccountID();
 
-            if (mappingID == null || mappingID.isEmpty() || authID == null || authID.isEmpty() || accountID == null ||
-                    accountID.isEmpty()) {
+            if (mappingID == null || mappingID.isEmpty() || authID == null || authID.isEmpty()) {
                 log.error(ConsentCoreServiceConstants.UPDATE_MAPPING_MANDATORY_PARAMETERS_MISSING_ERROR_MSG);
                 throw new ConsentManagementException(
                         ConsentCoreServiceConstants.UPDATE_MAPPING_MANDATORY_PARAMETERS_MISSING_ERROR_MSG);

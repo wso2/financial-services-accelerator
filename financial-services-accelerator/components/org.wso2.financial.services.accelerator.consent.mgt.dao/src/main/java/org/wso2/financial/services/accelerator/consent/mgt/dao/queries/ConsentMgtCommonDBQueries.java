@@ -121,7 +121,7 @@ public class ConsentMgtCommonDBQueries {
 
     public String getUpdateAuthorizationResourcePreparedStatement() {
 
-        return "UPDATE FS_CONSENT_AUTH_RESOURCE SET AUTH_TYPE = ?, USER_ID = ?, AUTH_STATUS = ?, UPDATED_TIME = ? " +
+        return "UPDATE FS_CONSENT_AUTH_RESOURCE SET AUTH_TYPE = ?, AUTH_STATUS = ?, UPDATED_TIME = ? " +
                 "WHERE AUTH_ID = ?";
     }
 

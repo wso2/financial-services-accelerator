@@ -237,11 +237,13 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
-     * This method is used to update existing authorization resources.
+     * This method is used to update the given list of authorization resources.
+     * Only the auth-type and auth-status will be updated. Other values sent in the
+     * AuthorizationResource object will be ignored.
      *
-     * @param authorizationResources
-     * @return
-     * @throws ConsentManagementException
+     * @param authorizationResources list of authorization resources to be updated
+     * @return true if the transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occurs
      */
     boolean updateAuthorizationResources(List<AuthorizationResource> authorizationResources)
             throws ConsentManagementException;
@@ -303,7 +305,15 @@ public interface ConsentCoreService {
                                                                            accountIDsMapWithPermissions)
             throws ConsentManagementException;
 
-    boolean createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+    /**
+     * This method is used to create consent mapping resources by providing a list of ConsentMappingResource objects.
+     * The mapping ID will be generated automatically and returned with the created resources.
+     *
+     * @param consentMappingResources list of consent mapping resources to be created
+     * @return list of created consent mapping resources with generated mapping IDs
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    List<ConsentMappingResource> createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
             throws ConsentManagementException;
 
     /**
@@ -327,11 +337,14 @@ public interface ConsentCoreService {
             ConsentManagementException;
 
     /**
-     * This method is used to update a set of existing consent mapping resources.
+     * This method is used to update the given consent mapping resources.
+     * Parameters allowed to update are mapping-status and permission.
+     * Other fields sent in the ConsentMappingResource object will be ignored.
+     * Consent mapping resources will be identified using the mapping ID.
      *
-     * @param consentMappingResources
-     * @return
-     * @throws ConsentManagementException
+     * @param consentMappingResources list of consent mapping resources to be updated
+     * @return true if the transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occurs
      */
     boolean updateConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
             throws ConsentManagementException;
