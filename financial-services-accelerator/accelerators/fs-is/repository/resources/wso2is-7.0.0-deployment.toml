@@ -347,7 +347,7 @@ application_updater = "org.wso2.financial.services.accelerator.identity.extensio
 [[financial_services.app_registration.dcr.params]]
 name = "SoftwareId"
 key = "software_id"
-required = true
+required = false
 include_in_response = true
 
 [[financial_services.app_registration.dcr.params]]

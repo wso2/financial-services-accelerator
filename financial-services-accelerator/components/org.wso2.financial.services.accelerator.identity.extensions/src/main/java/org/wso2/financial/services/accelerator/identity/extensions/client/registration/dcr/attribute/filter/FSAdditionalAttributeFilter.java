@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
@@ -80,6 +81,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        validateRequireRequestObject(appRegistrationRequest.isRequireSignedRequestObject());
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> attributesToStore = null;
@@ -132,6 +135,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                 throw new DCRMClientException(e.getErrorCode(), e.getMessage(), e);
             }
         }
+
+        validateRequireRequestObject(applicationUpdateRequest.isRequireSignedRequestObject());
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestMap = objectMapper.convertValue(applicationUpdateRequest, Map.class);
@@ -352,5 +357,19 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             spPropertyList.add(propertyObject);
         }
         return spPropertyList;
+    }
+
+    /**
+     * Validate the require request object. value in the payload. This value should be trie for FAPI applications
+     *
+     * @param requireRequestObject  Require request object value
+     * @throws DCRMClientException When the require request object value is not compatible with FAPI requirements
+     */
+    private void validateRequireRequestObject(boolean requireRequestObject) throws DCRMClientException {
+        if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement")) &&
+                !requireRequestObject) {
+            throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    "Require request object value is incompatible with FAPI requirements");
+        }
     }
 }
