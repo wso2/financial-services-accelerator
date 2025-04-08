@@ -679,8 +679,13 @@ public class IdentityCommonUtils {
     @SuppressFBWarnings("COOKIE_USAGE")
     private static String getCommonAuthId(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
-        Cookie[] cookies = oAuthAuthzReqMessageContext.getAuthorizationReqDTO().getCookie();
         String commonAuthId = StringUtils.EMPTY;
+        Cookie[] cookies = oAuthAuthzReqMessageContext.getAuthorizationReqDTO().getCookie();
+
+        if (cookies == null || cookies.length == 0) {
+            return commonAuthId;
+        }
+
         ArrayList<Cookie> cookieList = new ArrayList<>(Arrays.asList(cookies));
         for (Cookie cookie : cookieList) {
             if (IdentityCommonConstants.COMMON_AUTH_ID.equals(cookie.getName())) {

@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.authz.handlers.HybridResponseTypeHandler;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -91,11 +92,11 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception("Error while reading regulatory property");
         } catch (FinancialServicesException e) {
-            log.error("Error while invoking external service extension", e);
-            throw new IdentityOAuth2Exception("Error while invoking external service extension");
+            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
         } catch (JsonProcessingException e) {
-            log.error("Error while processing json", e);
-            throw new IdentityOAuth2Exception("Error while processing json");
+            log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR);
         }
     }
 

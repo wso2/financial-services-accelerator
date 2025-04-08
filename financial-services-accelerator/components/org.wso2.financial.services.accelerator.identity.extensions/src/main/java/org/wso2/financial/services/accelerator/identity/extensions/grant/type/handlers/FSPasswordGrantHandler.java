@@ -25,6 +25,7 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.token.handlers.grant.PasswordGrantHandler;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -63,8 +64,8 @@ public class FSPasswordGrantHandler extends PasswordGrantHandler {
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception(e.getMessage());
         } catch (FinancialServicesException e) {
-            log.error("Error while invoking external service extension", e);
-            throw new IdentityOAuth2Exception("Error while invoking external service extension");
+            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
         }
         return super.issue(tokReqMsgCtx);
     }

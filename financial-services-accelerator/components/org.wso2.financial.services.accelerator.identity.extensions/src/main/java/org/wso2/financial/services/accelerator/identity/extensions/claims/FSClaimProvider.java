@@ -29,6 +29,7 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -62,11 +63,11 @@ public class FSClaimProvider implements ClaimProvider {
                 return getAdditionalIdTokenClaimsWithServiceExtension(
                         authAuthzReqMessageContext, authorizeRespDTO);
             } catch (FinancialServicesException e) {
-                log.error("Error while invoking external service extension", e);
-                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+                log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
             } catch (JsonProcessingException e) {
-                log.error("Error while processing json", e);
-                throw new IdentityOAuth2Exception("Error while processing json");
+                log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
+                throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR);
             }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
@@ -90,8 +91,8 @@ public class FSClaimProvider implements ClaimProvider {
                 additionalClaims = getAdditionalIdTokenClaimsWithServiceExtension(
                         tokenReqMessageContext, tokenRespDTO);
             } catch (FinancialServicesException e) {
-                log.error("Error while invoking external service extension", e);
-                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+                log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
             }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
