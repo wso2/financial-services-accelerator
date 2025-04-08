@@ -126,7 +126,7 @@ public class EventNotificationTestUtils {
         sets.put("4f312007-4d3f-40e4-a525-0f6ee8bb54d9", EventNotificationTestConstants.SAMPLE_SET);
         AggregatedPollingResponse aggregatedPollingResponse = new AggregatedPollingResponse();
         aggregatedPollingResponse.setCount(0);
-        aggregatedPollingResponse.setStatus("OK");
+        aggregatedPollingResponse.setStatus(200);
         aggregatedPollingResponse.setSets(sets);
         return aggregatedPollingResponse;
     }
@@ -346,6 +346,20 @@ public class EventNotificationTestUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(data.toString());
         externalServiceResponse.setData(jsonNode);
+        return externalServiceResponse;
+    }
+
+    public static ExternalServiceResponse getExternalServiceResponseError() throws JsonProcessingException {
+        ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
+        externalServiceResponse.setResponseId("123456789876543");
+        externalServiceResponse.setStatus(StatusEnum.ERROR);
+
+        JSONObject data = new JSONObject();
+        data.put("responseData", new JSONObject());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(data.toString());
+        externalServiceResponse.setData(jsonNode);
+        externalServiceResponse.setErrorCode(400);
         return externalServiceResponse;
     }
 

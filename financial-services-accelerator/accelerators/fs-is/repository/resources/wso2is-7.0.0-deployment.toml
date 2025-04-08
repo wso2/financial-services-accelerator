@@ -533,6 +533,8 @@ event_subscription_handler="org.wso2.financial.services.accelerator.event.notifi
 set_sub_claim_included=true
 set_txn_claim_included=true
 set_toe_cliam_included=true
+require_subscription_to_poll= false
+allow_multiple_subscription= true
 
 [financial_services.event.notifications.realtime]
 enable=false

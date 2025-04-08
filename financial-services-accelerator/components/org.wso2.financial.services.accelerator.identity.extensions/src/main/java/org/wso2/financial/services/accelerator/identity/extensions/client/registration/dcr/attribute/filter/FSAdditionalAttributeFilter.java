@@ -272,10 +272,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                             .toString());
                     return attributesToStoreJson.toMap();
                 } else {
-                    String errorCode = response.getErrorCode();
+                    int errorCode = response.getErrorCode();
                     String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
                             .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
-                    throw new DCRMClientException(errorCode, errDesc);
+                    //TODO:
+                    throw new DCRMClientException(String.valueOf(errorCode), errDesc);
                 }
             } catch (FinancialServicesException e) {
                 throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
