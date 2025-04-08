@@ -30,6 +30,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -236,6 +237,16 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
+     * This method is used to update existing authorization resources.
+     *
+     * @param authorizationResources
+     * @return
+     * @throws ConsentManagementException
+     */
+    boolean updateAuthorizationResources(List<AuthorizationResource> authorizationResources)
+            throws ConsentManagementException;
+
+    /**
      * This method is used to bind user and accounts to the consent.
      *
      * @param consentResource consent resource
@@ -292,6 +303,9 @@ public interface ConsentCoreService {
                                                                            accountIDsMapWithPermissions)
             throws ConsentManagementException;
 
+    boolean createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+            throws ConsentManagementException;
+
     /**
      * This method is used to deactivate account bindings of provided account mapping IDs.
      *
@@ -311,6 +325,16 @@ public interface ConsentCoreService {
      */
     boolean updateAccountMappingStatus(ArrayList<String> accountMappingIDs, String newMappingStatus) throws
             ConsentManagementException;
+
+    /**
+     * This method is used to update a set of existing consent mapping resources.
+     *
+     * @param consentMappingResources
+     * @return
+     * @throws ConsentManagementException
+     */
+    boolean updateConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+            throws ConsentManagementException;
 
     /**
      * This method is used to revoke a consent. The following functionality contains in this method.
