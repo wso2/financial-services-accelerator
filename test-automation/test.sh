@@ -121,7 +121,7 @@ echo '======================= SetUp base Products ======================='
 if [ ! -d "$TEST_HOME" ]; then
     mkdir -p $TEST_HOME
 fi
-wget "https://filebin.net/ezmc7r5vlk4al2t9/wso2is-7.0.0.zip" -O $TEST_HOME/wso2is-7.0.0.zip
+wget "https://github.com/wso2/product-is/releases/download/v7.0.0/wso2is-7.0.0.zip" -O $TEST_HOME/wso2is-7.0.0.zip
 unzip $TEST_HOME/wso2is-7.0.0.zip -d $TEST_HOME
 
 echo '======================= Installing WSO2 Updates ======================='
@@ -129,6 +129,7 @@ name=$(echo "$USERNAME" | cut -d'@' -f1)
 WSO2_UPDATES_HOME=home/$name/.wso2updates
 sudo mkdir -p /home/$name/.wso2-updates/docker && sudo chmod -R 777 /home/$name/.wso2-updates
 
+cp ${RUNNER_HOME}/test-automation/wso2update_linux $TEST_HOME/wso2is-7.0.0/bin/
 $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $USERNAME --password $PASSWORD ||  ($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $USERNAME --password $PASSWORD )
 #
 echo '======================= Moving Packs to RUNNER_HOME ======================='
@@ -295,11 +296,10 @@ TEST_ARTIFACTS="${ACCELERATION_INTEGRATION_TESTS_HOME}/test-artifacts"
 
 cp ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-test-framework/src/main/resources/TestConfigurationExample.xml ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 
-#--------------Server Configurations-----------------#
-sed -i -e "s|Server.BaseUrl|https://localhost:9446|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|Server.BaseUrl|$(get_prop "BaseUrl")|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 echo $ACCELERATION_INTEGRATION_TESTS_CONFIG
-sed -i -e "s|Server.ISServerUrl|https://localhost:9446|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
-sed -i -e "s|Server.APIMServerUrl|https://localhost:9446|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|Server.ISServerUrl|$(get_prop "ISServerUrl")|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|Server.APIMServerUrl|$(get_prop "APIMServerUrl")|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 
 #--------------IS Setup Configurations-----------------#
 sed -i -e "s|ISSetup.ISAdminUserName|is_admin@wso2.com|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
