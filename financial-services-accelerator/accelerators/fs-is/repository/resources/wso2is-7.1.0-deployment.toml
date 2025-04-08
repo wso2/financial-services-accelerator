@@ -315,9 +315,12 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #================configs related to financial-services.xml=============
 [financial_services.extensions.endpoint]
 enabled = false
-base_url = ""
 # allowed extensions: "post_token_generation", "pre_consent_authorization"
 allowed_extensions = ["post_token_generation"]
+base_url = ""
+retry_count = 5
+connect_timeout = 5
+read_timeout = 5
 
 [financial_services.extensions.endpoint.security]
 # supported types : Basic-Auth or OAuth2
