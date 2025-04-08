@@ -563,8 +563,7 @@ mutt -e "set content_type=text/html" \
   -- ${USERNAME} < "$EMAIL_BODY"
 
 
-./wso2server.sh  stop
-
+$TEST_HOME/wso2is-7.0.0/bin/wso2server.sh  stop
 
 if [ $MVNSTATE -ne 0 ]; then
   exist 1
@@ -572,4 +571,4 @@ else
   exist 0
 fi
 
-#
+
