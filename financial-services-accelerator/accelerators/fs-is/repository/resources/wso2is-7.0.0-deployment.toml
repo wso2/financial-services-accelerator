@@ -401,6 +401,36 @@ key = "request_object_signing_alg"
 required = true
 include_in_response = true
 
+[[financial_services.app_registration.dcr.params]]
+name = "Iss"
+key = "iss"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Iat"
+key = "iat"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Exp"
+key = "exp"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Jti"
+key = "jti"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Aud"
+key = "aud"
+required = true
+include_in_response = false
+
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RequiredParamsValidator"
 class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.RequiredParamsValidator"

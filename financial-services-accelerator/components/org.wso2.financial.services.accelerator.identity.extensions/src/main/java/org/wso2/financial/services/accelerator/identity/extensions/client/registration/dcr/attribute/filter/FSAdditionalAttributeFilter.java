@@ -112,6 +112,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
+        //Setting the software statement to null to avoid sending software statement twice in the response.
+        appRegistrationRequest.setSoftwareStatement(null);
         return filteredAttributes;
     }
 
@@ -162,6 +164,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
+        //Setting the software statement to null to avoid sending software statement twice in the response.
+        applicationUpdateRequest.setSoftwareStatement(null);
         return filteredAttributes;
     }
 
@@ -187,7 +191,6 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         //  Adding BFSI specific fields to be returned in the response.
         Set<String> responseAttributeKeys = getResponseParamsFromConfig();
-        responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_STATEMENT);
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_ID);
         responseAttributeKeys.add(IdentityCommonConstants.SCOPE);
         responseAttributeKeys.add(IdentityCommonConstants.RESPONSE_TYPES);
@@ -272,11 +275,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                             .toString());
                     return attributesToStoreJson.toMap();
                 } else {
-                    int errorCode = response.getErrorCode();
+                    String dcrErrorCode = response.getData().path(FinancialServicesConstants.ERROR_CODE)
+                            .asText(IdentityCommonConstants.INVALID_CLIENT_METADATA);
                     String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
                             .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
-                    //TODO:
-                    throw new DCRMClientException(String.valueOf(errorCode), errDesc);
+                    throw new DCRMClientException(dcrErrorCode, errDesc);
                 }
             } catch (FinancialServicesException e) {
                 throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());

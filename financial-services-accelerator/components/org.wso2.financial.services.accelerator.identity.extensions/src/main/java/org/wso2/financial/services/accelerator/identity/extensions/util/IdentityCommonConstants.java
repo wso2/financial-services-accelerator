@@ -18,8 +18,6 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
-import org.wso2.carbon.identity.oauth.dcr.DCRMConstants;
-
 /**
  * Class containing the constants for Open Banking Common module.
  */
@@ -51,6 +49,7 @@ public class IdentityCommonConstants {
     public static final String CONDITIONAL_COMMON_AUTH_SCRIPT_FILE_NAME = "common.auth.script.js";
     public static final String ARRAY_ELEMENT_SEPARATOR = "#";
     public static final String SOFTWARE_STATEMENT = "software_statement";
+    public static final String SOFTWARE_STATEMENT_STORE_VALUE = "softwareStatementValue";
     public static final String SOFTWARE_ID = "software_id";
     public static final String ISS = "iss";
     public static final String ORGANIZATION = "ORGANIZATION";
@@ -63,8 +62,7 @@ public class IdentityCommonConstants {
     public static final String SSA_POLICY_URI = "policy_uri";
     public static final String SSA_TOS_URI = "tos_uri";
     public static final String SSA_CLIENT_URI = "client_uri";
-    public static final String INVALID_REDIRECT_URI = DCRMConstants.ErrorMessages.BAD_REQUEST_INVALID_REDIRECT_URI
-            .toString();
+    public static final String INVALID_REDIRECT_URI = "invalid_redirect_uri";
     public static final String INVALID_CLIENT_METADATA = "invalid_client_metadata";
     public static final String INVALID_SOFTWARE_STATEMENT = "invalid_software_statement";
     public static final String SERVER_ERROR = "server_error";
