@@ -48,7 +48,7 @@ public class TestConstants {
     public static final String SAMPLE_AUTH_ID = "88888";
     public static final String SAMPLE_AUTH_TYPE = "authorizationType";
     public static final String SAMPLE_USER_ID = "admin@wso2.com";
-    public static final String SAMPLE_AUTHORIZATION_STATUS = "created";
+    public static final String SAMPLE_AUTHORIZATION_STATUS = "Created";
     public static final String SAMPLE_MAPPING_ID = "sampleMappingId";
     public static final String SAMPLE_MAPPING_ID_2 = "sampleMappingId2";
     public static final String SAMPLE_ACCOUNT_ID = "123456789";
@@ -57,7 +57,7 @@ public class TestConstants {
     public static final String SAMPLE_PERMISSION = "samplePermission";
     public static final String AUTHORISED_STATUS = "Authorised";
     public static final String AWAITING_AUTH_STATUS = "AwaitingAuthorisation";
-    public static final String CREATED_STATUS = "created";
+    public static final String CREATED_STATUS = "Created";
     public static final String ACCOUNTS = "accounts";
     public static final String PAYMENTS = "payments";
     public static final String FUNDS_CONFIRMATIONS = "fundsconfirmations";

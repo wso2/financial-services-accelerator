@@ -105,7 +105,7 @@ public class ConsentMgtServiceTestData {
             (List.of("accounts", "payments", "cof"));
 
     public static final ArrayList<String> SAMPLE_CONSENT_STATUSES_LIST = new ArrayList<>
-            (List.of("created", "authorised", "awaitingAuthorization"));
+            (List.of("Created", "Authorised", "AwaitingAuthorization"));
 
     public static final Map<String, ArrayList<String>> SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP3 = Map.of(
             "mismatching account ID", new ArrayList<> (List.of("permission5", "permission6")));

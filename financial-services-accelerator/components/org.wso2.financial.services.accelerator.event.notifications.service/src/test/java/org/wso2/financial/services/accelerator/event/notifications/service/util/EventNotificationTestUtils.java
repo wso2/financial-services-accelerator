@@ -250,7 +250,7 @@ public class EventNotificationTestUtils {
         eventSubscription.setSubscriptionId(subscriptionId);
         eventSubscription.setCallbackUrl("test.com");
         eventSubscription.setEventTypes(EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPES);
-        eventSubscription.setStatus("created");
+        eventSubscription.setStatus("Created");
         eventSubscription.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
 
         JSONObject requestData = new JSONObject();
