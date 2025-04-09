@@ -360,7 +360,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
     }
 
     /**
-     * Validates the "require request object" value in the payload. This value must be true for FAPI-compliant applications.
+     * Validates the "require request object" value in the payload. This value must be true for
+     * FAPI-compliant applications.
      *
      * @param requireRequestObject  The value indicating whether the request object is required.
      * @throws DCRMClientException If the "require request object" value does not meet FAPI requirements.
