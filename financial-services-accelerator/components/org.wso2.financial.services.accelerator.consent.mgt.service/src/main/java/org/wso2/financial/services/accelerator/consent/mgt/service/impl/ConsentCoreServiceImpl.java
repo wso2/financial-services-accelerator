@@ -958,8 +958,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public List<ConsentMappingResource> createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
-            throws ConsentManagementException {
+    public List<ConsentMappingResource> createConsentMappingResources(
+            List<ConsentMappingResource> consentMappingResources) throws ConsentManagementException {
 
         for (ConsentMappingResource consentMappingResource : consentMappingResources) {
             String authID = consentMappingResource.getAuthorizationID();
