@@ -215,9 +215,10 @@ public class ConsentAuthorizeUtil {
             String[] scopeItems = scope.trim().split("\\s+");
             for (String item : scopeItems) {
                 // Skip openid scope since it is not relevant to the consent.
-                if (!"openid".equals(item)) {
-                    permissions.put(item);
+                if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
+                   continue;
                 }
+                permissions.put(item);
             }
         }
 
@@ -561,9 +562,10 @@ public class ConsentAuthorizeUtil {
             String[] scopeItems = scope.trim().split("\\s+");
             for (String item : scopeItems) {
                 // Skip openid scope since it is not relevant to the consent.
-                if (!"openid".equals(item)) {
-                    permissions.put(item.toUpperCase(Locale.ROOT));
+                if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
+                    continue;
                 }
+                permissions.put(item.toUpperCase(Locale.ROOT));
             }
         }
 
