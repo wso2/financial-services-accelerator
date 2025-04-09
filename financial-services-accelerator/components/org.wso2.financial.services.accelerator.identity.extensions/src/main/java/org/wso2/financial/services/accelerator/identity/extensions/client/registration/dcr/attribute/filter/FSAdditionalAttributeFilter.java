@@ -360,10 +360,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
     }
 
     /**
-     * Validate the require request object. value in the payload. This value should be trie for FAPI applications
+     * Validates the "require request object" value in the payload. This value must be true for FAPI-compliant applications.
      *
-     * @param requireRequestObject  Require request object value
-     * @throws DCRMClientException When the require request object value is not compatible with FAPI requirements
+     * @param requireRequestObject  The value indicating whether the request object is required.
+     * @throws DCRMClientException If the "require request object" value does not meet FAPI requirements.
      */
     private void validateRequireRequestObject(boolean requireRequestObject) throws DCRMClientException {
         if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement")) &&
