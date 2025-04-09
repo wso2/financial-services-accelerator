@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 import java.util.Map;
@@ -37,19 +37,20 @@ public class IssuerValidator implements DynamicClientRegistrationValidator {
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         validateSoftwareId(applicationRegistrationRequest.getAdditionalAttributes(), ssaParams);
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
 
         validateSoftwareId(applicationUpdateRequest.getAdditionalAttributes(), ssaParams);
     }
@@ -59,10 +60,10 @@ public class IssuerValidator implements DynamicClientRegistrationValidator {
      *
      * @param additionalAttributes      Additional Attributes
      * @param ssaParams                 SSA Parameters
-     * @throws FinancialServicesException When the issuer is not equal to the software id
+     * @throws FinancialServicesDCRException When the issuer is not equal to the software id
      */
     private static void validateSoftwareId(Map<String, Object> additionalAttributes, Map<String, Object> ssaParams)
-            throws FinancialServicesException {
+            throws FinancialServicesDCRException {
 
         String issuer = (String) additionalAttributes.get(IdentityCommonConstants.ISS);
         String softwareId = (String) ssaParams.get(IdentityCommonConstants.SOFTWARE_ID);
@@ -70,7 +71,8 @@ public class IssuerValidator implements DynamicClientRegistrationValidator {
         if (softwareId != null && !softwareId.equals(issuer)) {
             log.debug(String.format("Invalid issuer, issuer value %s is not same as the software id value %s",
                     issuer.replaceAll("[\r\n]+", ""), softwareId.replaceAll("[\r\n]+", "")));
-            throw new FinancialServicesException("Invalid issuer, issuer should be the same as the software id");
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    "Invalid issuer, issuer should be the same as the software id");
         }
     }
 

@@ -112,6 +112,10 @@ public class FinancialServicesConstants {
     public static final String EVENT_CREATION_HANDLER = "EventNotifications.EventCreationHandler";
     public static final String EVENT_POLLING_HANDLER = "EventNotifications.EventPollingHandler";
     public static final String EVENT_SUBSCRIPTION_HANDLER = "EventNotifications.EventSubscriptionHandler";
+    public static final String REQUIRE_SUBSCRIPTION_TO_POLL =
+            "EventNotifications.EventSubscription.RequireSubscriptionToPoll";
+    public static final String ALLOW_MULTIPLE_SUBSCRIPTION =
+            "EventNotifications.EventSubscription.AllowMultipleSubscription";
     public static final String REALTIME_EVENT_NOTIFICATION_ENABLED = "EventNotifications.Realtime.Enable";
     public static final String PERIODIC_CRON_EXPRESSION = "EventNotifications.Realtime.PeriodicCronExpression";
     public static final String TIMEOUT_IN_SECONDS = "EventNotifications.Realtime.TimeoutInSeconds";
@@ -169,4 +173,5 @@ public class FinancialServicesConstants {
     public static final String BEARER_TAG = "Bearer ";
     public static final String BASIC_TAG = "Basic ";
     public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    public static final String SCOPE = "scope";
 }

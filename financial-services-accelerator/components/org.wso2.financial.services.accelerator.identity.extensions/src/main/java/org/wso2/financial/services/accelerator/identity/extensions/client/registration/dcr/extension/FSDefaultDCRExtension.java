@@ -32,14 +32,14 @@ import java.util.Map;
 public class FSDefaultDCRExtension extends FSAbstractDCRExtension {
 
     @Override
-    public Map<String, Object> validateDCRRegisterAttributes(Map<String, Object> appRegistrationRequest,
+    public Map<String, Object> validateDCRRegisterAttributes(JSONObject appRegistrationRequest,
                                                       Map<String, Object> ssaClaims)
             throws FinancialServicesException {
         return new HashMap<>();
     }
 
     @Override
-    public Map<String, Object> validateDCRUpdateAttributes(Map<String, Object> applicationUpdateRequest,
+    public Map<String, Object> validateDCRUpdateAttributes(JSONObject applicationUpdateRequest,
                                                       Map<String, Object> ssaClaims, List<JSONObject> spProperties)
             throws FinancialServicesException {
         return new HashMap<>();

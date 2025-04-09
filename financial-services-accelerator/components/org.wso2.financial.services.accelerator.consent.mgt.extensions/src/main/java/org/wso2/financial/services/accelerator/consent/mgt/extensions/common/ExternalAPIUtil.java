@@ -28,6 +28,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -74,13 +75,13 @@ public class ExternalAPIUtil {
     private static int getHttpErrorCode(ExternalServiceResponse response) throws ConsentException {
         int httpErrorCode;
 
-        if (response == null || response.getErrorCode() == null) {
+        if (response == null) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error occurred while calling the external service");
         }
 
         try {
-            httpErrorCode = Integer.parseInt(response.getErrorCode());
+            httpErrorCode = response.getErrorCode();
         } catch (NumberFormatException e) {
             httpErrorCode = 500;
         }
@@ -133,9 +134,18 @@ public class ExternalAPIUtil {
 
         String consentID = consentData.getConsentId();
         String clientID = consentData.getClientId();
-        String receipt = responseDTO.getConsentPayload().toString();
+        String receipt = new JSONObject(responseDTO.getConsentPayload()).toString();
         long createdTime = System.currentTimeMillis();
         long updatedTime = System.currentTimeMillis();
+
+        // Add common auth ID to consent attributes if available.
+        Object commonAuthId = consentData.getMetaDataMap().get(ConsentExtensionConstants.COMMON_AUTH_ID);
+        if (commonAuthId != null) {
+            if (responseDTO.getConsentAttributes() == null) {
+                responseDTO.setConsentAttributes(new HashMap<>());
+            }
+            responseDTO.getConsentAttributes().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId.toString());
+        }
 
         List<AuthorizationResource> authorizationResources =
                 buildAuthorizationResources(responseDTO.getAuthorizations(), consentID, null, null, updatedTime);
