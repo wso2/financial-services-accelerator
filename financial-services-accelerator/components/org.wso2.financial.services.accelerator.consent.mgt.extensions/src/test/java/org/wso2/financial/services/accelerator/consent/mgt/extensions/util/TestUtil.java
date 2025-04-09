@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Class of test utilities.
+ */
 public class TestUtil {
 
     public static AuthorizationResource getSampleAuthorizationResource(String consentID, String authorizationID) {

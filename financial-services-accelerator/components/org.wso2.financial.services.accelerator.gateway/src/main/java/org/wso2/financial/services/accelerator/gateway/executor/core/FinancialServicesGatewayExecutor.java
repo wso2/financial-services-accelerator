@@ -27,28 +27,28 @@ import org.wso2.financial.services.accelerator.gateway.executor.model.FSAPIRespo
 public interface FinancialServicesGatewayExecutor {
 
     /**
-     * Method to handle pre request
+     * Method to handle pre request.
      *
      * @param fsapiRequestContext FS request context object
      */
     public void preProcessRequest(FSAPIRequestContext fsapiRequestContext);
 
     /**
-     * Method to handle post request
+     * Method to handle post request.
      *
      * @param fsapiRequestContext FS request context object
      */
     public void postProcessRequest(FSAPIRequestContext fsapiRequestContext);
 
     /**
-     * Method to handle pre response
+     * Method to handle pre response.
      *
      * @param fsapiResponseContext FS response context object
      */
     public void preProcessResponse(FSAPIResponseContext fsapiResponseContext);
 
     /**
-     * Method to handle post response
+     * Method to handle post response.
      *
      * @param fsapiResponseContext FS response context object
      */
