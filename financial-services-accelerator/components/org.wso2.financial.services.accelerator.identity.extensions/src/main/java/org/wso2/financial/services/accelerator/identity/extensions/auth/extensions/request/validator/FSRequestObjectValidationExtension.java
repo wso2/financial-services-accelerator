@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.identity.openidconnect.RequestObjectValidatorImpl;
 import org.wso2.carbon.identity.openidconnect.model.RequestObject;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -96,8 +97,8 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
             log.error("Error while retrieving regulatory property from sp metadata", e);
             throw new RequestObjectException(RequestObjectException.ERROR_CODE_INVALID_REQUEST, e.getErrorMessage());
         } catch (FinancialServicesException e) {
-            log.error("Error while invoking external service extension", e);
-            throw new RequestObjectException("Error while invoking external service extension", e.getMessage());
+            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+            throw new RequestObjectException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e.getMessage());
         }
     }
 

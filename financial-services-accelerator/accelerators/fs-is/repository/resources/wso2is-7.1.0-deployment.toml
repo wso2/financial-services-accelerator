@@ -454,7 +454,7 @@ is_pre_initiated_consent=true # Set to true if the consent is pre-initiated by t
 auth_flow_consent_id_source="requestObject" # can be one of "requestObject" or "requestParam"
 
 [financial_services.consent.consent_id_extraction]
-json_path="$.id_token.openbanking_intent_id.value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"
+json_path="/id_token/openbanking_intent_id/value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"
 # key="key-name" # Must be configured if "auth_flow_consent_id_source" is set to "requestParam"
 # regex_pattern="regex-pattern" # Optionally configure a regex pattern to further extract the consent id from the extracted value
 
