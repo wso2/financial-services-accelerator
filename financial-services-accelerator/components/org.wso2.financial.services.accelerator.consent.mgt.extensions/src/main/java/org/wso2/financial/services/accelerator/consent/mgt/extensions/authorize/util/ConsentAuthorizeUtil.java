@@ -567,17 +567,17 @@ public class ConsentAuthorizeUtil {
             }
         }
 
-        // Generate expiration timestamp (server time + 1 hour)
+        // Default expiration timestamp (current time + 1 hour)
         OffsetDateTime expirationTime = OffsetDateTime.now(ZoneId.systemDefault()).plusHours(1);
         String expirationDateTime = expirationTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
         // Build the JSON object
-        JSONObject accountData = new JSONObject();
-        accountData.put("permissions", permissions);
-        accountData.put("expirationDateTime", expirationDateTime);
+        JSONObject receiptData = new JSONObject();
+        receiptData.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+        receiptData.put(ConsentExtensionConstants.EXPIRATION_DATE, expirationDateTime);
 
         JSONObject receipt = new JSONObject();
-        receipt.put("accountData", accountData);
+        receipt.put(ConsentExtensionConstants.DATA, receiptData);
 
         return receipt.toString();
     }
