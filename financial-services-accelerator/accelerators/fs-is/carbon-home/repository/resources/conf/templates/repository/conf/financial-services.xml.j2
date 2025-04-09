@@ -17,7 +17,7 @@
  ~ under the License.
  -->
 
-<Server xmlns="http://wso2.org/projects/carbon/financial-services.xml">
+<Server xmlns="http://wso2.org/projects/carbon/financial-services.xml"  xmlns:svns="http://org.wso2.securevault/configuration">
     <JDBCPersistenceManager>
         <DataSource>
             <!-- Include a data source name (jndiConfigName) from the set of data
@@ -35,6 +35,23 @@
         {% endif %}
     </JDBCPersistenceManager>
     <Consent>
+        {% if financial_services.consent.is_pre_initiated_consent is defined %}
+        <PreInitiatedConsent>{{financial_services.consent.is_pre_initiated_consent}}</PreInitiatedConsent>
+        {% endif %}
+        {% if financial_services.consent.auth_flow_consent_id_source is defined %}
+        <AuthFlowConsentIdSource>{{financial_services.consent.auth_flow_consent_id_source}}</AuthFlowConsentIdSource>
+        {% endif %}
+        <ConsentIdExtraction>
+            {% if financial_services.consent.consent_id_extraction.json_path is defined %}
+            <JsonPath>{{financial_services.consent.consent_id_extraction.json_path}}</JsonPath>
+            {% endif %}
+            {% if financial_services.consent.consent_id_extraction.key is defined %}
+            <Key>{{financial_services.consent.consent_id_extraction.key}}</Key>
+            {% endif %}
+            {% if financial_services.consent.consent_id_extraction.regex_pattern is defined %}
+            <RegexPattern>{{financial_services.consent.consent_id_extraction.regex_pattern}}</RegexPattern>
+            {% endif %}
+        </ConsentIdExtraction>
         {% if financial_services.consent.manage.handler is defined %}
         <ManageHandler>{{financial_services.consent.manage.handler}}</ManageHandler>
         {% else %}
@@ -176,18 +193,18 @@
         <Extensions>
             {% if financial_services.identity.extensions.request_object_validator is defined %}
             <RequestObjectValidator>{{financial_services.identity.extensions.request_object_validator}}</RequestObjectValidator>
-            {% else %}
-            <RequestObjectValidator>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator</RequestObjectValidator>
             {% endif %}
             {% if financial_services.identity.extensions.response_type_handler is defined %}
             <ResponseTypeHandler>{{financial_services.identity.extensions.response_type_handler}}</ResponseTypeHandler>
-            {% else %}
-            <ResponseTypeHandler>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
             {% endif %}
             {% if financial_services.identity.extensions.claim_provider is defined %}
             <ClaimProvider>{{financial_services.identity.extensions.claim_provider}}</ClaimProvider>
-            {% else %}
-            <ClaimProvider>org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider</ClaimProvider>
+            {% endif %}
+            {% if financial_services.identity.extensions.grant_handler is defined %}
+            <GrantHandler>{{financial_services.identity.extensions.grant_handler}}</GrantHandler>
+            {% endif %}
+            {% if financial_services.identity.extensions.introspection_data_provider is defined %}
+            <IntrospectionDataProvider>{{financial_services.identity.extensions.introspection_data_provider}}</IntrospectionDataProvider>
             {% endif %}
         </Extensions>
         <TokenSubject>
@@ -204,10 +221,10 @@
         </TokenSubject>
     </Identity>
     <AppRegistration>
-        {% if financial_services.app_registration.applicationupdater is defined %}
-        <ApplicationUpdaterImpl>{{financial_services.app_registration.applicationupdater}}</ApplicationUpdaterImpl>
+        {% if financial_services.app_registration.application_updater is defined %}
+        <ApplicationUpdaterImpl>{{financial_services.app_registration.application_updater}}</ApplicationUpdaterImpl>
         {% else %}
-        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
+        <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}
         <SCA>
             <PrimaryAuthenticator>
@@ -229,13 +246,13 @@
             <IdpStep>{{financial_services.app_registration.sca.idp.step}}</IdpStep>
             {% endif %}
         </SCA>
+        {% if financial_services.app_registration.conditional.auth.script.filename is defined %}
+        <ConditionalAuthScriptFileName>{{financial_services.app_registration.conditional.auth.script.filename}}</ConditionalAuthScriptFileName>
+        {% else %}
+        <ConditionalAuthScriptFileName>common.auth.script.js</ConditionalAuthScriptFileName>
+        {% endif %}
         {% if financial_services.app_registration.dcr.params is defined %}
         <DCR>
-            {% if financial_services.app_registration.dcr.additional_attribute_filter is defined %}
-            <AdditionalAttributeFilter>{{financial_services.app_registration.dcr.additional_attribute_filter}}</AdditionalAttributeFilter>
-            {% else %}
-            <AdditionalAttributeFilter>org.wso2.financial.services.accelerator.identity.extensions.dcr.attribute.filter.FSAdditionalAttributeFilter</AdditionalAttributeFilter>
-            {% endif %}
             <Params>
                 {% for param in financial_services.app_registration.dcr.params %}
                     <Param>
@@ -266,6 +283,9 @@
                 </Validator>
                 {% endfor %}
             </Validators>
+            {% if financial_services.app_registration.dcr.service_extension is defined %}
+            <DCRServiceExtension>{{financial_services.app_registration.dcr.service_extension}}</DCRServiceExtension>
+            {% endif %}
             <JTICache>
                 {% if financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes is defined %}
                 <CacheAccessExpiry>{{financial_services.app_registration.dcr.jti_cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
@@ -322,6 +342,18 @@
         {% else %}
         <EventSubscriptionHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
         {% endif %}
+        <EventSubscription>
+            {% if financial_services.event.notifications.require_subscription_to_poll is defined %}
+            <RequireSubscriptionToPoll>{{financial_services.event.notifications.require_subscription_to_poll}}</RequireSubscriptionToPoll>
+            {% else %}
+            <RequireSubscriptionToPoll>false</RequireSubscriptionToPoll>
+            {% endif %}
+            {% if financial_services.event.notifications.allow_multiple_subscription is defined %}
+            <AllowMultipleSubscription>{{financial_services.event.notifications.allow_multiple_subscription}}</AllowMultipleSubscription>
+            {% else %}
+            <AllowMultipleSubscription>false</AllowMultipleSubscription>
+            {% endif %}
+        </EventSubscription>
         <PollingResponseParams>
             {% if financial_services.event.notifications.set_sub_claim_included is defined%}
             <IsSubClaimAvailable>{{financial_services.event.notifications.set_sub_claim_included}}</IsSubClaimAvailable>
@@ -387,4 +419,35 @@
             {% endif %}
         </Realtime>
     </EventNotifications>
+    <ExtensionsEndpoint>
+        {% if financial_services.extensions.endpoint.enabled is defined %}
+        <Enable>{{financial_services.extensions.endpoint.enabled}}</Enable>
+        {% else %}
+        <Enable>false</Enable>
+        {% endif %}
+        {% if financial_services.extensions.endpoint.base_url is defined %}
+        <BaseURL>{{financial_services.extensions.endpoint.base_url}}</BaseURL>
+        {% endif %}
+        <AllowedExtensions>
+            {% for allowed_extension in financial_services.extensions.endpoint.allowed_extensions %}
+            <AllowedExtension>{{allowed_extension}}</AllowedExtension>
+            {% endfor %}
+        </AllowedExtensions>
+        <Security>
+            {% if financial_services.extensions.endpoint.security.type is defined %}
+            <Type>{{financial_services.extensions.endpoint.security.type}}</Type>
+            {% else %}
+            <Type>Basic-Auth</Type>
+            {% endif %}
+            {% if financial_services.extensions.endpoint.security.username is defined %}
+            <Username>{{financial_services.extensions.endpoint.security.username}}</Username>
+            {% endif %}
+            {% if financial_services.extensions.endpoint.security.password is defined %}
+            <Password>{{financial_services.extensions.endpoint.security.password}}</Password>
+            {% endif %}
+            {% if financial_services.extensions.endpoint.security.token is defined %}
+            <Token>{{financial_services.extensions.endpoint.security.token}}</UserName>
+            {% endif %}
+        </Security>
+    </ExtensionsEndpoint>
 </Server>

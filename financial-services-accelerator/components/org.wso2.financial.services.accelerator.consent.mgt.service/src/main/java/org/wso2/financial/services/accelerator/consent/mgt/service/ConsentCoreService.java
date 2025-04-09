@@ -109,6 +109,30 @@ public interface ConsentCoreService {
     DetailedConsentResource getDetailedConsent(String consentID) throws ConsentManagementException;
 
     /**
+     * This method is used to store a detailed consent along with its associated authorizations,
+     * account mappings, and attributes. An audit record will be created after storage.
+     *
+     * @param detailedConsentResource the complete consent resource with nested data
+     * @return the stored detailed consent resource
+     * @throws ConsentManagementException thrown if an error occurs during the operation
+     */
+    DetailedConsentResource storeDetailedConsentResource(DetailedConsentResource detailedConsentResource)
+            throws ConsentManagementException;
+
+    /**
+     * This method is used to update an existing consent (excluding client ID and CreatedTime) and create
+     * new authorization and mapping records based on the given detailed consent.
+     * Consent attributes are also stored if provided. An audit record will be created.
+     *
+     * @param detailedConsentResource the detailed consent resource with updated values and new associations
+     * @param primaryUserId the user ID of the primary user
+     * @return the updated detailed consent resource
+     * @throws ConsentManagementException thrown if an error occurs during the operation
+     */
+    DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource,
+                                                                String primaryUserId) throws ConsentManagementException;
+
+    /**
      * This method is used to create a consent file. The following functionality contains in this method.
      *
      * 1. Get the existing consent to validate the status according to the attribute "applicableStatusToFileUpload"

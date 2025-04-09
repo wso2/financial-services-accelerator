@@ -18,7 +18,7 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
@@ -32,6 +32,9 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 /**
@@ -64,19 +67,47 @@ public class FinancialServicesUtils {
      * Method to obtain the Object when the full class path is given.
      *
      * @param classpath full class path
+     * @param className  class name
      * @return new object instance
      */
     @Generated(message = "Ignoring since method contains no logics")
-    public static Object getClassInstanceFromFQN(String classpath) {
+    public static <T> T  getClassInstanceFromFQN(String classpath, Class<T> className) {
 
+        try {
+            Object classObj = Class.forName(classpath).getDeclaredConstructor().newInstance();
+            return className.cast(classObj);
+        } catch (ClassNotFoundException e) {
+            log.error(String.format("Class not found: %s", classpath.replaceAll("[\r\n]", "")));
+            throw new FinancialServicesRuntimeException("Cannot find the defined class", e);
+        } catch (InstantiationException | InvocationTargetException |
+                 NoSuchMethodException | IllegalAccessException e) {
+            //Throwing a runtime exception since we cannot proceed with invalid objects
+            throw new FinancialServicesRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
+        }
+    }
+
+    /**
+     * Method to obtain the Object when the full class path object config is given.
+     *
+     * @param configObject full class path config object
+     * @return new object instance
+     */
+    @Generated(message = "Ignoring since method contains no logics")
+    public static Object getClassInstanceFromFQN(Object configObject) {
+
+        if (configObject == null || StringUtils.isBlank(configObject.toString())) {
+            return null;
+        }
+
+        String classpath = configObject.toString();
         try {
             return Class.forName(classpath).getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
-            log.error("Class not found: " + classpath.replaceAll("[\r\n]", ""));
+            log.error(String.format("Class not found: %s",  classpath.replaceAll("[\r\n]", "")));
             throw new FinancialServicesRuntimeException("Cannot find the defined class", e);
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException
-                | IllegalAccessException e) {
-            // Throwing a runtime exception since we cannot proceed with invalid objects
+        } catch (InstantiationException | InvocationTargetException |
+                 NoSuchMethodException | IllegalAccessException e) {
+            //Throwing a runtime exception since we cannot proceed with invalid objects
             throw new FinancialServicesRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
     }
@@ -155,5 +186,17 @@ public class FinancialServicesUtils {
     public static boolean startsWithUUID(String input) {
         Pattern uuidPattern = Pattern.compile("^" + FinancialServicesConstants.UUID_REGEX + ".*$");
         return uuidPattern.matcher(input).matches();
+    }
+
+    /**
+     * Convert long date values to ISO 8601 format.
+     * @param dateValue  Date value in long
+     * @return ISO 8601 formatted date
+     */
+    public static String convertToISO8601(long dateValue) {
+
+        DateFormat simple = new SimpleDateFormat(FinancialServicesConstants.ISO_FORMAT);
+        Date simpleDateVal = new Date(dateValue * 1000);
+        return simple.format(simpleDateVal);
     }
 }

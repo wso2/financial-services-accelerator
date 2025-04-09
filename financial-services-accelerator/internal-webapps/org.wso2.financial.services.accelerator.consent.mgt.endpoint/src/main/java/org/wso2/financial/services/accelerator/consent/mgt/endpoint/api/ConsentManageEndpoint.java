@@ -79,7 +79,7 @@ public class ConsentManageEndpoint {
             log.info(String.format("Consent manage handler %s initialized",
                     consentManageHandler.getClass().getName().replaceAll("\n\r", "")));
         } else {
-            log.warn("Consent manage handler is null");
+            log.warn("Consent manage handler initialization failed");
         }
     }
 

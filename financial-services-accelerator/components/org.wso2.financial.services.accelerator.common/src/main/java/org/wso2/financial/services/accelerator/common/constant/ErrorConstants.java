@@ -222,6 +222,8 @@ public class ErrorConstants {
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
     public static final String CONSENT_ATTRIBUTE_RETRIEVAL_ERROR = "Error occurred while retrieving the consent " +
             "attributes";
+    public static final String JSON_PROCESSING_ERROR = "Error while processing json";
+    public static final String EXTERNAL_SERVICE_DEFAULT_ERROR = "Error while invoking external service extension";
 
     // VRP error constants
 

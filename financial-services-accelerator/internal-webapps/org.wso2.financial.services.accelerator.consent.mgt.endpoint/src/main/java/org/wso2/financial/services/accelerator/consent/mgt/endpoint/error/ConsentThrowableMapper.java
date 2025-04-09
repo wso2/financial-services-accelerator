@@ -20,9 +20,19 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.error;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.wso2.carbon.consent.mgt.core.constant.ConsentConstants;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+
+import java.util.UUID;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.Response;
@@ -43,12 +53,37 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
             if (((ConsentException) throwable).getErrorRedirectURI() != null) {
                 return Response.status(((ConsentException) throwable).getStatus().getStatusCode())
                         .location(((ConsentException) throwable).getErrorRedirectURI()).build();
-            } else {
-                return Response.status(((ConsentException) throwable).getStatus().getStatusCode())
-                        .entity(((ConsentException) throwable).getPayload().toString())
-                        .header(ConsentConstants.HEADER_CONTENT_TYPE, ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
-                        .build();
             }
+
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.ERROR_MAPPER)) {
+                // Perform FS customized error response mapping with service extension
+                try {
+                    JSONObject payload = ((ConsentException) throwable).getPayload();
+                    if (!isConsentManageException(payload)) {
+                        return Response.status(((ConsentException) throwable).getStatus().getStatusCode())
+                                .entity(((ConsentException) throwable).getPayload().toString())
+                                .header(ConsentConstants.HEADER_CONTENT_TYPE,
+                                        ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
+                                .build();
+                    }
+
+                    payload = updateErrorMessageField(payload);
+                    return customErrorResponseWithServiceExtension(payload);
+                } catch (FinancialServicesException e) {
+                    log.error("Error occurred while invoking the external service", e);
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(e.getMessage())
+                            .header(ConsentConstants.HEADER_CONTENT_TYPE,
+                                    ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
+                            .build();
+                }
+            }
+
+            return Response.status(((ConsentException) throwable).getStatus().getStatusCode())
+                    .entity(((ConsentException) throwable).getPayload().toString())
+                    .header(ConsentConstants.HEADER_CONTENT_TYPE,
+                            ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
+                    .build();
         } else {
             log.error(String.format("Generic exception. Cause: %s", throwable.getMessage().replaceAll("[\r\n]", "")),
                     throwable);
@@ -60,4 +95,54 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
             }
         }
     }
+
+    private JSONObject updateErrorMessageField(JSONObject payload) {
+
+        JSONObject error = (JSONObject) payload.get(ConsentExtensionConstants.ERROR);
+
+        String code = error.getString(ConsentExtensionConstants.ERROR_CODE);
+        String description = error.getString(ConsentExtensionConstants.ERROR_DESCRIPTION);
+        String message = error.getString(ConsentExtensionConstants.ERROR_MSG);
+
+        JSONObject updatedError = new JSONObject();
+        updatedError.put(ConsentExtensionConstants.ERROR_CODE, code);
+        updatedError.put(ConsentExtensionConstants.ERROR_DESCRIPTION, description);
+        updatedError.put(ConsentExtensionConstants.OPERATION, message);
+
+        JSONObject updatedPayload = new JSONObject();
+        updatedPayload.put(ConsentExtensionConstants.ERROR, updatedError);
+        return updatedPayload;
+    }
+
+    private Response customErrorResponseWithServiceExtension(JSONObject payload) throws FinancialServicesException {
+
+        // Construct the payload
+        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
+                payload);
+
+        // Invoke external service
+        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
+                ServiceExtensionTypeEnum.ERROR_MAPPER);
+
+        return Response.status(response.getErrorCode())
+                .entity(response.getData().toString())
+                .header(ConsentConstants.HEADER_CONTENT_TYPE,
+                        ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
+                .build();
+    }
+
+    private boolean isConsentManageException(JSONObject payload) {
+        if (!payload.has(ConsentExtensionConstants.ERROR)) {
+            return false;
+        }
+
+        JSONObject error = payload.optJSONObject(ConsentExtensionConstants.ERROR);
+        if (error == null || !error.has(ConsentExtensionConstants.ERROR_MSG)) {
+            return false;
+        }
+
+        String message = error.optString(ConsentExtensionConstants.ERROR_MSG, "");
+        return !ConsentOperationEnum.CONSENT_DEFAULT.toString().equals(message);
+    }
+
 }

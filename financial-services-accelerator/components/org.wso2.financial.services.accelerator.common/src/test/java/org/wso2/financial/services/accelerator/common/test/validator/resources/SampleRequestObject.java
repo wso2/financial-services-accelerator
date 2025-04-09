@@ -19,11 +19,12 @@ package org.wso2.financial.services.accelerator.common.test.validator.resources;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.wso2.financial.services.accelerator.common.validator.annotation.ValidScopeFormat;
+import org.wso2.financial.services.accelerator.common.validator.validationgroups.AttributeChecks;
 
 /**
  * Sample request object resource.
  */
-@ValidScopeFormat(scope = "claimsSet.claims.scope", message = "Non Confirming Scope")
+@ValidScopeFormat(scope = "claimsSet.claims.scope", message = "Non Confirming Scope", groups = AttributeChecks.class)
 public class SampleRequestObject {
 
     private JWTClaimsSet claimsSet;

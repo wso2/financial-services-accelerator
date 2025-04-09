@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,6 +17,8 @@
  */
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
+
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -35,6 +37,7 @@ public class ConsentResource {
     private String currentStatus;
     private long createdTime;
     private long updatedTime;
+    private Map<String, String> consentAttributes;
 
     public ConsentResource() {
     }
@@ -44,6 +47,19 @@ public class ConsentResource {
         this.receipt = receipt;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
+    }
+
+    public ConsentResource(String clientID, String receipt, String consentType, int consentFrequency,
+                           long validityPeriod, boolean recurringIndicator, String currentStatus,
+                           Map<String, String> consentAttributes) {
+        this.clientID = clientID;
+        this.receipt = receipt;
+        this.consentType = consentType;
+        this.consentFrequency = consentFrequency;
+        this.validityPeriod = validityPeriod;
+        this.recurringIndicator = recurringIndicator;
+        this.currentStatus = currentStatus;
+        this.consentAttributes = consentAttributes;
     }
 
     public ConsentResource(String consentID, String clientID, String receipt, String consentType,
@@ -61,7 +77,25 @@ public class ConsentResource {
         this.updatedTime = updatedTime;
     }
 
-    private Map<String, String> consentAttributes;
+    /**
+     * Constructor to create a consent resource from a detailed consent resource.
+     * @param detailedConsentResource Detailed consent resource
+     */
+    public ConsentResource(DetailedConsentResource detailedConsentResource) {
+
+        this.consentID = detailedConsentResource.getConsentID();
+        this.clientID = detailedConsentResource.getClientID();
+        this.receipt = detailedConsentResource.getReceipt();
+        this.consentType = detailedConsentResource.getConsentType();
+        this.consentFrequency = detailedConsentResource.getConsentFrequency();
+        this.validityPeriod = detailedConsentResource.getValidityPeriod();
+        this.recurringIndicator = detailedConsentResource.isRecurringIndicator();
+        this.currentStatus = detailedConsentResource.getCurrentStatus();
+        this.createdTime = detailedConsentResource.getCreatedTime();
+        this.updatedTime = detailedConsentResource.getUpdatedTime();
+        this.consentAttributes = detailedConsentResource.getConsentAttributes();
+
+    }
 
     public long getUpdatedTime() {
 
@@ -172,4 +206,18 @@ public class ConsentResource {
 
         this.createdTime = createdTime;
     }
+
+    /**
+     * Convert to JSON object with correct receipt format.
+     *
+     * @return JSON object
+     */
+    public JSONObject toJson() {
+
+        JSONObject consentResourceJson = new JSONObject(this);
+        JSONObject receiptJson = new JSONObject(this.getReceipt());
+        consentResourceJson.put("receipt", receiptJson);
+        return consentResourceJson;
+    }
+
 }

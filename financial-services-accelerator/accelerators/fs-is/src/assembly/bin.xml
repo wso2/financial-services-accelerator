@@ -20,7 +20,7 @@
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <id>fs.iam.accelerator</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>wso2-fs-iam-accelerator-${project.version}</baseDirectory>
+    <baseDirectory>wso2-fsiam-accelerator-${project.version}</baseDirectory>
 
     <formats>
         <format>zip</format>

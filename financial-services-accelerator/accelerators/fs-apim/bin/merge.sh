@@ -42,6 +42,11 @@ else
   echo -e "\nValid carbon product path.\n";
 fi
 
+echo -e "\nRemoving old financial services artifacts from base product\n"
+echo -e "================================================\n"
+find "${WSO2_APIM_HOME}"/repository/components/dropins -name "org.wso2.financial.services.accelerator.*" -exec rm -rf {} \;
+find "${WSO2_APIM_HOME}"/repository/components/lib -name "org.wso2.financial.services.accelerator.*" -exec rm -rf {} \;
+
 echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
 cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_APIM_HOME}"/

@@ -35,16 +35,18 @@ import org.wso2.carbon.identity.application.mgt.listener.ApplicationMgtListener;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
 import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
+import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
+import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImpl;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.FSApplicationManagementListener;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.FSApplicationManagementListener;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.attribute.filter.FSAdditionalAttributeFilter;
+import org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSIntrospectionDataProvider;
 
 /**
  * Identity common data holder.
@@ -63,17 +65,37 @@ public class IdentityExtensionsServiceComponent {
         log.debug("Identity Extensions component activated.");
         BundleContext bundleContext = context.getBundleContext();
         bundleContext.registerService(ApplicationMgtListener.class, new FSApplicationManagementListener(), null);
+        bundleContext.registerService(ClaimProvider.class.getName(), new FSClaimProvider(), null);
+        bundleContext.registerService(IntrospectionDataProvider.class.getName(),
+                new FSIntrospectionDataProvider(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
 
         if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement"))) {
-            String filterConfig = (String) FinancialServicesConfigParser.getInstance().getConfiguration()
-                    .get(FinancialServicesConstants.DCR_ADDITIONAL_ATTRIBUTE_FILTER);
-            AdditionalAttributeFilter attributeFilter = (AdditionalAttributeFilter) FinancialServicesUtils
-                    .getClassInstanceFromFQN(filterConfig);
+            AdditionalAttributeFilter attributeFilter = new FSAdditionalAttributeFilter();
             bundleContext.registerService(AdditionalAttributeFilter.class.getName(), attributeFilter, null);
         }
 
         log.debug("Registered FS related Identity services.");
+    }
+
+    @Reference(
+            name = "ConsentCoreService",
+            service = ConsentCoreService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetConsentCoreService"
+    )
+    public void setConsentCoreService(ConsentCoreService consentCoreService) {
+
+        log.debug("Setting the Consent Core Service");
+        IdentityExtensionsDataHolder.getInstance().setConsentCoreService(consentCoreService);
+    }
+
+    public void unsetConsentCoreService(ConsentCoreService consentCoreService) {
+
+        log.debug("UnSetting the Consent Core Service");
+        IdentityExtensionsDataHolder.getInstance().setConsentCoreService(null);
+
     }
 
     @Reference(

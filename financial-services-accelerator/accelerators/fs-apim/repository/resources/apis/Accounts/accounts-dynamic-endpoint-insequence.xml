@@ -23,7 +23,7 @@
     <property name="Authorization" scope="transport" action="remove"/>
     <!-- Replace the  <AUTH_HEADER_VALUE> with Base64 encoded "username:password" value.
     i.e Base64(username:password) -->
-    <property name="Authorization" value="<AUTH_HEADER_VALUE>" scope="transport"/>
+    <property name="Authorization" value="Basic <AUTH_HEADER_VALUE>" scope="transport"/>
     
     <filter regex=".*\/account-access-consents.*" source="$ctx:endpointURI">
         <then>

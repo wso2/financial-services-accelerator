@@ -1,0 +1,18 @@
+<suite name="org.wso2.financial.services.accelerator.event-notifications" verbose="1">
+    <test name="org.wso2.financial.services.accelerator.event-notifications" preserve-order="false" parallel="false">
+        <parameter name="log-level" value="info"/>
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.DefaultEventNotificationGeneratorTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.EventCreationServiceTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.EventPollingServiceTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.EventSubscriptionServiceTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventCreationServiceHandlerTest" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventPollingServiceHandlerTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandlerTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.dao.EventNotificationDAOImplTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.dao.EventSubscriptionDAOImplTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.realtime.DefaultRealtimeEventNotificationPayloadGeneratorTests" />
+            <class name="org.wso2.financial.services.accelerator.event.notifications.service.EventNotificationServiceUtilTest" />
+        </classes>
+    </test>
+</suite>

@@ -21,7 +21,7 @@
     <groupId>org.wso2.financial.services.accelerator</groupId>
     <artifactId>financial-services</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-M2</version>
+    <version>4.0.0-M3</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -42,8 +42,7 @@
             </activation>
             <modules>
                 <module>financial-services-accelerator</module>
-                <module>react-apps</module>
-                <module>integration-test-framework</module>
+                <module>financial-services-accelerator/accelerators</module>
             </modules>
             <build>
                 <plugins>
@@ -69,39 +68,17 @@
             </properties>
         </profile>
         <profile>
-            <id>solution</id>
+            <id>test-suite</id>
             <activation>
+                <activeByDefault>false</activeByDefault>
                 <property>
                     <name>profile</name>
-                    <value>solution</value>
+                    <value>test-suite</value>
                 </property>
             </activation>
             <modules>
-                <module>financial-services-accelerator</module>
-                <module>financial-services-accelerator/accelerators</module>
+                <module>fs-integration-test-suite</module>
             </modules>
-            <properties>
-                <npm.executable>npm</npm.executable>
-            </properties>
-        </profile>
-        <profile>
-            <id>open-banking-test-suite</id>
-            <activation>
-                <property>
-                    <name>profile</name>
-                    <value>open-banking-test-suite</value>
-                </property>
-            </activation>
-        </profile>
-        <profile>
-            <id>integration-test-suite</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>profile</name>
-                    <value>integration-test-suite</value>
-                </property>
-            </activation>
         </profile>
     </profiles>
 
@@ -110,7 +87,8 @@
 
     <modules>
         <module>financial-services-accelerator</module>
-        <module>react-apps</module>
+        <module>fs-integration-test-suite/bfsi-test-framework</module>
+        <module>fs-integration-test-suite/accelerator-test-framework</module>
     </modules>
 
     <repositories>

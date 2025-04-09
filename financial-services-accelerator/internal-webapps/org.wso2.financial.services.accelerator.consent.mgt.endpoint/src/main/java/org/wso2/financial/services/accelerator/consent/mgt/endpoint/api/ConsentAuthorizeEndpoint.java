@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -30,6 +30,7 @@ import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentCache;
@@ -82,36 +83,41 @@ import javax.ws.rs.core.Response;
 public class ConsentAuthorizeEndpoint {
 
     private static final Log log = LogFactory.getLog(ConsentAuthorizeEndpoint.class);
+    private static FinancialServicesConfigParser configParser = null;
+    private static boolean isPreInitiatedConsent = false;
     private static List<ConsentPersistStep> consentPersistSteps = null;
     private static List<ConsentRetrievalStep> consentRetrievalSteps = null;
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
 
     public ConsentAuthorizeEndpoint() {
+
+        configParser = FinancialServicesConfigParser.getInstance();
+        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
         initializeConsentSteps();
     }
 
     private static synchronized void initializeConsentSteps() {
 
-        if (consentRetrievalSteps == null || consentPersistSteps == null) {
-            ConsentStepsBuilder consentStepsBuilder = ConsentExtensionExporter.getConsentStepsBuilder();
+        if (consentRetrievalSteps != null && consentPersistSteps != null) {
+            log.info("Retrieval and persist steps are already initialized.");
+            return;
+        }
+        ConsentStepsBuilder consentStepsBuilder = ConsentExtensionExporter.getConsentStepsBuilder();
 
-            if (consentStepsBuilder != null) {
-                consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
-                consentPersistSteps = consentStepsBuilder.getConsentPersistSteps();
-            }
+        if (consentStepsBuilder != null) {
+            consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
+            consentPersistSteps = consentStepsBuilder.getConsentPersistSteps();
+        }
 
-            if (consentRetrievalSteps != null && !consentRetrievalSteps.isEmpty()) {
-                log.info("Consent retrieval steps are not null or empty");
-            } else {
-                log.warn("Consent retrieval steps are null or empty");
-            }
-            if (consentPersistSteps != null && !consentPersistSteps.isEmpty()) {
-                log.info("Consent persist steps are not null or empty");
-            } else {
-                log.warn("Consent persist steps are null or empty");
-            }
+        if (consentRetrievalSteps != null && !consentRetrievalSteps.isEmpty()) {
+            log.info("Consent retrieval steps successfully initialized.");
         } else {
-            log.debug("Retrieval and persist steps are available");
+            log.warn("Consent retrieval steps have not been initialized.");
+        }
+        if (consentPersistSteps != null && !consentPersistSteps.isEmpty()) {
+            log.info("Consent persist steps successfully initialized.");
+        } else {
+            log.warn("Consent persist steps have not been initialized.");
         }
     }
 
@@ -120,10 +126,10 @@ public class ConsentAuthorizeEndpoint {
      */
     @GET
     @Path("/retrieve/{session-data-key}")
-    @Consumes({ "application/x-www-form-urlencoded" })
-    @Produces({ "application/json; charset=utf-8" })
+    @Consumes({"application/x-www-form-urlencoded"})
+    @Produces({"application/json; charset=utf-8"})
     public Response retrieve(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("session-data-key") String sessionDataKey) throws ConsentException,
+                             @PathParam("session-data-key") String sessionDataKey) throws ConsentException,
             ConsentManagementException, UserStoreException {
 
         String loggedInUser;
@@ -194,8 +200,13 @@ public class ConsentAuthorizeEndpoint {
         }
 
         executeRetrieval(consentData, jsonObject);
-        if (consentData.getType() == null || consentData.getApplication() == null) {
-            log.error(ConsentConstants.ERROR_NO_TYPE_AND_APP_DATA);
+        if (isPreInitiatedConsent && consentData.getType() == null) {
+            log.error(ConsentConstants.ERROR_NO_CONSENT_TYPE);
+            throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
+                    ConsentConstants.ERROR_SERVER_ERROR, state);
+        }
+        if (consentData.getApplication() == null) {
+            log.error(ConsentConstants.ERROR_NO_APP_DATA);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
                     ConsentConstants.ERROR_SERVER_ERROR, state);
         }
@@ -218,11 +229,11 @@ public class ConsentAuthorizeEndpoint {
      */
     @PATCH
     @Path("/persist/{session-data-key}")
-    @Consumes({ "application/json; charset=utf-8" })
-    @Produces({ "application/json; charset=utf-8" })
+    @Consumes({"application/json; charset=utf-8"})
+    @Produces({"application/json; charset=utf-8"})
     public Response persist(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("session-data-key") String sessionDataKey,
-            @QueryParam("authorize") String authorize)
+                            @PathParam("session-data-key") String sessionDataKey,
+                            @QueryParam("authorize") String authorize)
             throws ConsentException, ConsentManagementException, URISyntaxException {
 
         ConsentData consentData = ConsentCache.getConsentDataFromCache(sessionDataKey);
@@ -300,6 +311,7 @@ public class ConsentAuthorizeEndpoint {
                         String value = cookiesJson.getString(key);
                         cookiesMap.put(key, value);
                     });
+                    consentPersistData.setBrowserCookies(cookiesMap);
                 }
             }
 

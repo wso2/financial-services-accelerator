@@ -40,6 +40,12 @@ fi
 
 echo -e "================================================\n"
 
+echo -e "\nRemoving old financial services artifacts from base product\n"
+echo -e "================================================\n"
+find "${WSO2_IS_HOME}"/repository/components/dropins -name "org.wso2.financial.services.accelerator.*" -exec rm -rf {} \;
+find "${WSO2_IS_HOME}"/repository/components/lib -name "org.wso2.financial.services.accelerator.*" -exec rm -rf {} \;
+
+
 # Setting path for webapps folder and consentmgr folder
 WEBAPPS_PATH=${WSO2_IS_HOME}/repository/deployment/server/webapps
 CONSENTMGR_PATH=${WEBAPPS_PATH}/consentmgr
@@ -64,19 +70,20 @@ echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
 cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_IS_HOME}"/
 
+# TODO: Uncomment after adding the consent manager app
 # Updating consent manager app
-echo -e "\nUpdating Consentmgr webapp...\n"
-echo -e "\nWARNING: This will replace the current consentmgr web-app with the updated one\n"
-echo -e "\nMake sure to rebuild the web app if you have any customizations in the toolkit/src directory.\n"
-echo -e "\nPlease refer to the ReadMe file in ${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr/self-care-portal-frontend\n"
+#echo -e "\nUpdating Consentmgr webapp...\n"
+#echo -e "\nWARNING: This will replace the current consentmgr web-app with the updated one\n"
+#echo -e "\nMake sure to rebuild the web app if you have any customizations in the toolkit/src directory.\n"
+#echo -e "\nPlease refer to the ReadMe file in ${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr/self-care-portal-frontend\n"
 
-echo -e "\nExtracting consentmgr.war\n"
-echo -e "================================================\n"
-unzip -q "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr.war" -d "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr"
-rm -f "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr.war"
+#echo -e "\nExtracting consentmgr.war\n"
+#echo -e "================================================\n"
+#unzip -q "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr.war" -d "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr"
+#rm -f "${WSO2_IS_HOME}/repository/deployment/server/webapps/consentmgr.war"
 
 # Restoring runtime-config.js
-if [ -f "${WEBAPPS_PATH}/runtime-config.js" ]; then
-  mv -f ${WEBAPPS_PATH}/runtime-config.js ${CONSENTMGR_PATH}
-  echo -e "Restoring backup runtime-config.js file complete!"
-fi
+#if [ -f "${WEBAPPS_PATH}/runtime-config.js" ]; then
+  #mv -f ${WEBAPPS_PATH}/runtime-config.js ${CONSENTMGR_PATH}
+  #echo -e "Restoring backup runtime-config.js file complete!"
+#fi

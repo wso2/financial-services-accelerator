@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.event.notifications.endpoint.uti
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -50,9 +51,9 @@ public class EventNotificationUtils {
      */
     public static EventCreationServiceHandler getEventNotificationCreationServiceHandler() {
 
-        return (EventCreationServiceHandler)
-                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
-                        getConfiguration().get(FinancialServicesConstants.EVENT_CREATION_HANDLER).toString());
+        return FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
+                        getConfiguration().get(FinancialServicesConstants.EVENT_CREATION_HANDLER).toString(),
+                EventCreationServiceHandler.class);
     }
 
     /**
@@ -61,9 +62,9 @@ public class EventNotificationUtils {
      */
     public static EventPollingServiceHandler getEventPollingServiceHandler() {
 
-        return (EventPollingServiceHandler)
-                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
-                        getConfiguration().get(FinancialServicesConstants.EVENT_POLLING_HANDLER).toString());
+        return FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance().
+                        getConfiguration().get(FinancialServicesConstants.EVENT_POLLING_HANDLER).toString(),
+                EventPollingServiceHandler.class);
     }
 
     /**
@@ -73,16 +74,19 @@ public class EventNotificationUtils {
      */
     public static Response mapEventCreationServiceResponse(EventCreationResponse eventCreationResponse) {
 
-        if (EventNotificationConstants.CREATED.equals(eventCreationResponse.getStatus())) {
-
+        if (HttpStatus.SC_CREATED == eventCreationResponse.getStatus()) {
             return Response.status(Response.Status.CREATED)
                     .entity(eventCreationResponse.getResponseBody().toString()).build();
-
+        } else {
+            if (eventCreationResponse.getStatus() > 0) {
+                return Response.status(Response.Status.fromStatusCode(eventCreationResponse.getStatus()))
+                        .entity(eventCreationResponse.getErrorResponse().toString()).build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationEndPointConstants.INVALID_REQUEST,
+                        EventNotificationEndPointConstants.EVENT_CREATION_ERROR_RESPONSE)).build();
+            }
         }
-
-        return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.getErrorDTO(
-                EventNotificationEndPointConstants.INVALID_REQUEST,
-                EventNotificationEndPointConstants.EVENT_CREATION_ERROR_RESPONSE)).build();
     }
 
     /**
@@ -93,10 +97,13 @@ public class EventNotificationUtils {
     public static Response mapEventPollingServiceResponse(EventPollingResponse eventPollingResponse) {
 
         String responseBody = eventPollingResponse.getResponseBody().toString();
-        if (EventNotificationConstants.OK.equals(eventPollingResponse.getStatus())) {
+        if (HttpStatus.SC_OK == eventPollingResponse.getStatus()) {
             return Response.status(Response.Status.OK).entity(responseBody).build();
-        } else if (EventNotificationConstants.NOT_FOUND.equals(eventPollingResponse.getStatus())) {
+        } else if (HttpStatus.SC_NOT_FOUND == eventPollingResponse.getStatus()) {
             return Response.status(Response.Status.NOT_FOUND).entity(responseBody).build();
+        } else if (eventPollingResponse.getErrorResponse() != null) {
+            return Response.status(Response.Status.fromStatusCode(eventPollingResponse.getStatus()))
+                        .entity(eventPollingResponse.getErrorResponse()).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }

@@ -28,6 +28,8 @@ public interface FinancialServicesConfigurationService {
 
     public Map<String, Object> getConfigurations();
 
+    public Map<String, Object> getServiceExtensionConfigs();
+
     public Map<String, Map<Integer, String>> getExecutors();
 
     public Map<String, Map<Integer, String>> getAuthorizeSteps();

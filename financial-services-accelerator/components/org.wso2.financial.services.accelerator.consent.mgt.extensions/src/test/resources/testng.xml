@@ -24,8 +24,10 @@
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.DefaultConsentManageHandlerTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSDefaultAuthServletImplTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.DefaultConsentRetrievalStepTest"/>
+            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ExternalAPIConsentRetrievalStepTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.DefaultConsentPersistStepTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.DefaultConsentValidatorTest"/>
+            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidatorServiceExtensionTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.DefaultConsentAdminHandlerTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.idempotency.IdempotencyValidatorTests"/>
         </classes>

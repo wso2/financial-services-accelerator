@@ -26,9 +26,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.CarbonUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+import org.wso2.securevault.commons.MiscellaneousUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
@@ -396,9 +400,8 @@ public final class FinancialServicesConfigParser {
                 String key = getKey(nameStack);
                 Object currentObject = configuration.get(key);
                 String value = replaceSystemProperty(element.getText());
-                if (secretResolver != null && secretResolver.isInitialized() &&
-                        secretResolver.isTokenProtected(key)) {
-                    value = secretResolver.resolve(key);
+                if (secretResolver != null && secretResolver.isInitialized()) {
+                    value = MiscellaneousUtil.resolve(element, secretResolver);
                 }
                 if (currentObject == null) {
                     configuration.put(key, value);
@@ -787,4 +790,185 @@ public final class FinancialServicesConfigParser {
                 "realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
     }
 
+    /**
+     * Method to determine service extensions feature is enabled or not from the configurations.
+     *
+     * @return boolean value indicating the state
+     */
+    public boolean isServiceExtensionsEndpointEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get service extensions endpoint base url.
+     *
+     * @return String service extensions endpoint base url
+     */
+    public String getServiceExtensionsEndpointBaseUrl() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_BASE_URL);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extension types.
+     *
+     * @return List of service extensions
+     */
+    public List<ServiceExtensionTypeEnum> getServiceExtensionTypes() {
+        Object serviceExtensionTypesObj = configuration.get(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_EXTENSION);
+
+        List<String> serviceExtensionTypes = serviceExtensionTypesObj instanceof List<?>
+                ? (List<String>) serviceExtensionTypesObj
+                : Collections.singletonList((String) serviceExtensionTypesObj);
+
+        return serviceExtensionTypes.stream()
+                .map(ServiceExtensionTypeEnum::fromString)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Method to get service extensions endpoint security type.
+     *
+     * @return String service extensions endpoint security type
+     */
+    public String getServiceExtensionsEndpointSecurityType() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_SECURITY_TYPE);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security basic auth username.
+     *
+     * @return String service extensions endpoint security basic auth username
+     */
+    public String getServiceExtensionsEndpointSecurityBasicAuthUsername() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security basic auth password.
+     *
+     * @return String service extensions endpoint security basic auth password
+     */
+    public String getServiceExtensionsEndpointSecurityBasicAuthPassword() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security oauth2 token.
+     *
+     * @return String service extensions endpoint security oauth2 token
+     */
+    public String getServiceExtensionsEndpointSecurityOauth2Token() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_OAUTH2_TOKEN);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get if consents are pre initiated.
+     *
+     * @return boolean
+     */
+    public boolean isPreInitiatedConsent() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT);
+        return config.map(Boolean::parseBoolean).orElse(true);
+    }
+
+    /**
+     * Method to get auth flow consent id source.
+     *
+     * @return String consent id source
+     */
+    public String getAuthFlowConsentIdSource() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.AUTH_FLOW_CONSENT_ID_SOURCE);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get consent id extraction json path.
+     *
+     * @return String consent id extraction json path
+     */
+    public String getConsentIdExtractionJsonPath() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get consent id extraction key.
+     *
+     * @return String consent id extraction key
+     */
+    public String getConsentIdExtractionKey() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_ID_EXTRACTION_KEY);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get consent id extraction regex pattern.
+     *
+     * @return String consent id extraction regex pattern
+     */
+    public Pattern getConsentIdExtractionRegexPattern() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN);
+
+        return config.map(String::trim)
+                .filter(pattern -> !pattern.isEmpty())
+                .map(pattern -> {
+                    try {
+                        return Pattern.compile(pattern);
+                    } catch (PatternSyntaxException e) {
+                        throw new IllegalArgumentException("Invalid regex pattern configured: " + pattern, e);
+                    }
+                })
+                .orElse(null);
+    }
+
+    /**
+     * Get config related for checking whether PSU is a federated user or not.
+     *
+     * @return Boolean value indicating whether PSU is a federated user or not
+     */
+    public boolean isPSUFederated() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_PSU_FEDERATED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Get Federated PSU IDP Name.
+     *
+     * @return String Federated IDP name
+     */
+    public String getFederatedIDPName() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.PSU_FEDERATED_IDP_NAME);
+        return config.map(String::trim).orElse(null);
+    }
 }

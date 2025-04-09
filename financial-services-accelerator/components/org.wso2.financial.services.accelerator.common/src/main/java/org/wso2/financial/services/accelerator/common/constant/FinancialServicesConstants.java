@@ -60,7 +60,9 @@ public class FinancialServicesConstants {
     public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
+    public static final String GRANT_HANDLER = "Identity.Extensions.GrantHandler";
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
+    public static final String INTROSPECTION_DATA_PROVIDER = "Identity.Extensions.IntrospectionDataProvider";
     public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
     public static final String REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
@@ -70,16 +72,16 @@ public class FinancialServicesConstants {
     public static final String DCR_TAG = "DCR";
     public static final String DCR_PARAMS_TAG = "Params";
     public static final String DCR_VALIDATORS_TAG = "Validators";
-    public static final String DCR_VALIDATORS_ENABLED_TAG = "Enabled";
     public static final String DCR_PARAM_ALLOWED_VALUE_TAG = "AllowedValues";
     public static final String DCR_PARAM_NAME_TAG = "Name";
     public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
-    public static final String DCR_ADDITIONAL_ATTRIBUTE_FILTER = "AppRegistration.DCR.AdditionalAttributeFilter";
+    public static final String DCR_SERVICE_EXTENSION = "AppRegistration.DCR.DCRServiceExtension";
     public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
             ".DisplayName";
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
     public static final String IDENTITY_PROVIDER_NAME = "AppRegistration.SCA.IdpName";
     public static final String IDENTITY_PROVIDER_STEP = "AppRegistration.SCA.IdpStep";
+    public static final String CONDITIONAL_AUTH_SCRIPT_NAME = "AppRegistration.ConditionalAuthScriptFileName";
     public static final String JTI_CACHE_ACCESS_EXPIRY = "AppRegistration.DCR.JTICache.CacheAccessExpiry";
     public static final String JTI_CACHE_MODIFY_EXPIRY = "AppRegistration.DCR.JTICache.CacheModifiedExpiry";
     public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";
@@ -110,6 +112,10 @@ public class FinancialServicesConstants {
     public static final String EVENT_CREATION_HANDLER = "EventNotifications.EventCreationHandler";
     public static final String EVENT_POLLING_HANDLER = "EventNotifications.EventPollingHandler";
     public static final String EVENT_SUBSCRIPTION_HANDLER = "EventNotifications.EventSubscriptionHandler";
+    public static final String REQUIRE_SUBSCRIPTION_TO_POLL =
+            "EventNotifications.EventSubscription.RequireSubscriptionToPoll";
+    public static final String ALLOW_MULTIPLE_SUBSCRIPTION =
+            "EventNotifications.EventSubscription.AllowMultipleSubscription";
     public static final String REALTIME_EVENT_NOTIFICATION_ENABLED = "EventNotifications.Realtime.Enable";
     public static final String PERIODIC_CRON_EXPRESSION = "EventNotifications.Realtime.PeriodicCronExpression";
     public static final String TIMEOUT_IN_SECONDS = "EventNotifications.Realtime.TimeoutInSeconds";
@@ -124,6 +130,31 @@ public class FinancialServicesConstants {
     public static final String REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR =
             "EventNotifications.Realtime.RequestGenerator";
 
+    // Service Extensions Constants
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ExtensionsEndpoint.Enable";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_EXTENSION = "ExtensionsEndpoint.AllowedExtensions.AllowedExtension";
+    public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ExtensionsEndpoint.Security.Type";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ExtensionsEndpoint.Security.Username";
+    public static final String SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD = "ExtensionsEndpoint.Security.Password";
+    public static final String SERVICE_EXTENSIONS_OAUTH2_TOKEN = "ExtensionsEndpoint.Security.Token";
+    public static final String CONSENT_TYPE = "consentType";
+    public static final String ERROR_DESCRIPTION = "errorDescription";
+    public static final String DEFAULT_ERROR_DESCRIPTION = "Unexpected error occurred";
+    public static final String ERROR_CODE = "errorCode";
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String DEFAULT_ERROR_MESSAGE = "server_error";
+    public static final String RESPONSE_DATA = "responseData";;
+    public static final String BASIC_AUTH = "Basic-Auth";
+    public static final String OAUTH2 = "OAuth2";
+
+    // Consent ID extraction Constants
+    public static final String IS_PRE_INITIATED_CONSENT = "Consent.PreInitiatedConsent";
+    public static final String AUTH_FLOW_CONSENT_ID_SOURCE = "Consent.AuthFlowConsentIdSource";
+    public static final String CONSENT_ID_EXTRACTION_JSON_PATH = "Consent.ConsentIdExtraction.JsonPath";
+    public static final String CONSENT_ID_EXTRACTION_KEY = "Consent.ConsentIdExtraction.Key";
+    public static final String CONSENT_ID_EXTRACTION_REGEX_PATTERN = "Consent.ConsentIdExtraction.RegexPattern";
+
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
     public static final String NEW_LINE = "[\r\n]";
@@ -133,4 +164,14 @@ public class FinancialServicesConstants {
     public static final String TENANT_DOMAIN = "carbon.super";
     public static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+    public static final String CONTENT_TYPE_TAG = "Content-Type";
+    public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    public static final String ACCEPT = "Accept";
+    public static final String COLON = ":";
+    public static final String AUTH_HEADER = "Authorization";
+    public static final String BEARER_TAG = "Bearer ";
+    public static final String BASIC_TAG = "Basic ";
+    public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    public static final String SCOPE = "scope";
 }

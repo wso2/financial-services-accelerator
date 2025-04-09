@@ -55,8 +55,8 @@ public class ResponseTypeHandlerTest {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(999L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd"});
+        when(fsResponseTypeHandler.getRefreshTokenValidityPeriod(any())).thenReturn(999L);
+        when(fsResponseTypeHandler.getApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd"});
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
@@ -83,8 +83,8 @@ public class ResponseTypeHandlerTest {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(999L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd"});
+        when(fsResponseTypeHandler.getRefreshTokenValidityPeriod(any())).thenReturn(999L);
+        when(fsResponseTypeHandler.getApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd"});
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
@@ -110,8 +110,8 @@ public class ResponseTypeHandlerTest {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(999L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(null);
+        when(fsResponseTypeHandler.getRefreshTokenValidityPeriod(any())).thenReturn(999L);
+        when(fsResponseTypeHandler.getApprovedScopes(any())).thenReturn(null);
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
@@ -135,8 +135,8 @@ public class ResponseTypeHandlerTest {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(109L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd", "rr"});
+        when(fsResponseTypeHandler.getRefreshTokenValidityPeriod(any())).thenReturn(109L);
+        when(fsResponseTypeHandler.getApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd", "rr"});
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
@@ -163,8 +163,8 @@ public class ResponseTypeHandlerTest {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(109L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd", "rr"});
+        when(fsResponseTypeHandler.getRefreshTokenValidityPeriod(any())).thenReturn(109L);
+        when(fsResponseTypeHandler.getApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd", "rr"});
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
@@ -190,8 +190,8 @@ public class ResponseTypeHandlerTest {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(109L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd", "rr"});
+        when(fsResponseTypeHandler.getRefreshTokenValidityPeriod(any())).thenReturn(109L);
+        when(fsResponseTypeHandler.getApprovedScopes(any())).thenReturn(new String[]{"Asd", "addd", "rr"});
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
@@ -216,8 +216,8 @@ public class ResponseTypeHandlerTest {
 
         // Mock
         FSResponseTypeHandler fsResponseTypeHandler = mock(FSDefaultResponseTypeHandlerImpl.class);
-        when(fsResponseTypeHandler.updateRefreshTokenValidityPeriod(any())).thenReturn(109L);
-        when(fsResponseTypeHandler.updateApprovedScopes(any())).thenReturn(null);
+        when(fsResponseTypeHandler.getRefreshTokenValidityPeriod(any())).thenReturn(109L);
+        when(fsResponseTypeHandler.getApprovedScopes(any())).thenReturn(null);
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
@@ -247,7 +247,7 @@ public class ResponseTypeHandlerTest {
 
         FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
 
-        assertEquals(6666L, uut.updateRefreshTokenValidityPeriod(oAuthAuthzContext));
+        assertEquals(6666L, uut.getRefreshTokenValidityPeriod(oAuthAuthzContext));
 
     }
 
@@ -279,7 +279,7 @@ public class ResponseTypeHandlerTest {
                     .thenReturn(Map.of("Identity.ConsentIDClaimName", "consent_id"));
 
             FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
-            String[] result = uut.updateApprovedScopes(oAuthAuthzContext);
+            String[] result = uut.getApprovedScopes(oAuthAuthzContext);
 
             assertEquals(2, result.length);
         }
@@ -311,7 +311,7 @@ public class ResponseTypeHandlerTest {
             identityDataHolderMock.when(IdentityExtensionsDataHolder::getInstance).thenReturn(dataHolder);
 
             FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
-            String[] result = uut.updateApprovedScopes(oAuthAuthzContext);
+            String[] result = uut.getApprovedScopes(oAuthAuthzContext);
 
             assertEquals(1, result.length);
         }
@@ -327,7 +327,7 @@ public class ResponseTypeHandlerTest {
         oAuthAuthzContext.setApprovedScope(new String[]{"1"});
 
         FSResponseTypeHandler uut = new FSDefaultResponseTypeHandlerImpl();
-        String[] result = uut.updateApprovedScopes(oAuthAuthzContext);
+        String[] result = uut.getApprovedScopes(oAuthAuthzContext);
 
         assertEquals(1, result.length);
 

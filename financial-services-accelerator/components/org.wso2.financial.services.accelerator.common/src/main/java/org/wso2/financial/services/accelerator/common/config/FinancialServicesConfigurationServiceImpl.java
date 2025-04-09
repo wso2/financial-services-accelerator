@@ -18,6 +18,9 @@
 
 package org.wso2.financial.services.accelerator.common.config;
 
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,18 @@ public class FinancialServicesConfigurationServiceImpl implements FinancialServi
     public Map<String, Object> getConfigurations() {
 
         return configParser.getConfiguration();
+    }
+
+    public Map<String, Object> getServiceExtensionConfigs() {
+
+        Map<String, Object> serviceExtensionConfigs = new HashMap<String, Object>();
+        serviceExtensionConfigs.put(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_ENABLED,
+                configParser.isServiceExtensionsEndpointEnabled());
+        serviceExtensionConfigs.put(FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_BASE_URL,
+                configParser.getServiceExtensionsEndpointBaseUrl());
+        serviceExtensionConfigs.put(FinancialServicesConstants.SERVICE_EXTENSIONS_EXTENSION,
+                configParser.getServiceExtensionTypes());
+        return serviceExtensionConfigs;
     }
 
     @Override

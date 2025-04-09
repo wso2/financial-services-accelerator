@@ -18,14 +18,22 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.authz.handlers.HybridResponseTypeHandler;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 /**
  * Extension to append scope with FS_ prefix at the end of auth flow, before offering auth code.
@@ -34,6 +42,7 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
 
     static FSResponseTypeHandler fsResponseTypeHandler =
             IdentityExtensionsDataHolder.getInstance().getObResponseTypeHandler();
+    private static final Log log = LogFactory.getLog(FSHybridResponseTypeHandlerExtension.class);
 
     /**
      * Extension point to get updated scope and refresh token validity period.
@@ -49,19 +58,46 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
             if (!isRegulatory(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
                 return issueCode(oauthAuthzMsgCtx);
             }
-        } catch (RequestObjectException e) {
-            throw  new IdentityOAuth2Exception("Error while reading regulatory property");
-        }
 
-        oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(
-                fsResponseTypeHandler.updateRefreshTokenValidityPeriod(oauthAuthzMsgCtx));
-        String[] approvedScopes = fsResponseTypeHandler.updateApprovedScopes(oauthAuthzMsgCtx);
-        if (approvedScopes != null) {
-            oauthAuthzMsgCtx.setApprovedScope(approvedScopes);
-        } else {
-            throw new IdentityOAuth2Exception("Error while updating scopes");
+            // Perform FS default behaviour
+            String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
+            String[] updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
+            long refreshTokenValidityPeriod = oauthAuthzMsgCtx.getRefreshTokenvalidityPeriod();
+
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION)) {
+                // Perform FS customized behaviour with service extension
+                updatedApprovedScopes = IdentityCommonUtils
+                        .getApprovedScopesWithServiceExtension(oauthAuthzMsgCtx, consentId);
+            } else if (fsResponseTypeHandler != null) {
+                // Perform FS customized behaviour
+                updatedApprovedScopes = fsResponseTypeHandler.getApprovedScopes(oauthAuthzMsgCtx);
+            }
+
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION)) {
+                // Perform FS customized behaviour with service extension
+                refreshTokenValidityPeriod = IdentityCommonUtils
+                        .getRefreshTokenValidityPeriodWithServiceExtension(oauthAuthzMsgCtx, consentId);
+            } else if (fsResponseTypeHandler != null) {
+                // Perform FS customized behaviour
+                refreshTokenValidityPeriod = fsResponseTypeHandler.getRefreshTokenValidityPeriod(oauthAuthzMsgCtx);
+            }
+
+            oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(refreshTokenValidityPeriod);
+            if (updatedApprovedScopes != null) {
+                oauthAuthzMsgCtx.setApprovedScope(updatedApprovedScopes);
+            } else {
+                throw new IdentityOAuth2Exception("Error while updating scopes");
+            }
+            return issueCode(oauthAuthzMsgCtx);
+        } catch (RequestObjectException e) {
+            throw new IdentityOAuth2Exception("Error while reading regulatory property");
+        } catch (FinancialServicesException e) {
+            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
+        } catch (JsonProcessingException e) {
+            log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR);
         }
-        return issueCode(oauthAuthzMsgCtx);
     }
 
     /**
@@ -72,8 +108,8 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
      * @throws IdentityOAuth2Exception
      */
     @Generated(message = "cant unit test super calls")
-    OAuth2AuthorizeRespDTO issueCode(
-            OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) throws IdentityOAuth2Exception {
+    OAuth2AuthorizeRespDTO issueCode(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext)
+            throws IdentityOAuth2Exception {
 
         return super.issue(oAuthAuthzReqMessageContext);
     }
@@ -83,4 +119,5 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
 
         return FinancialServicesUtils.isRegulatoryApp(clientId);
     }
+
 }
