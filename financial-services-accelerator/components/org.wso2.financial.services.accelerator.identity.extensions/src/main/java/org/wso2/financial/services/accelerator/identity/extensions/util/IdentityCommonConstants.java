@@ -49,7 +49,6 @@ public class IdentityCommonConstants {
     public static final String CONDITIONAL_COMMON_AUTH_SCRIPT_FILE_NAME = "common.auth.script.js";
     public static final String ARRAY_ELEMENT_SEPARATOR = "#";
     public static final String SOFTWARE_STATEMENT = "software_statement";
-    public static final String SOFTWARE_STATEMENT_STORE_VALUE = "softwareStatementValue";
     public static final String SOFTWARE_ID = "software_id";
     public static final String ISS = "iss";
     public static final String ORGANIZATION = "ORGANIZATION";

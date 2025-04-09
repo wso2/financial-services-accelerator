@@ -94,7 +94,7 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
         try {
             ServiceProviderProperty[] spProperties = serviceProvider.getSpProperties();
             Optional<ServiceProviderProperty> scopeProperty = Arrays.stream(spProperties)
-                    .filter(spProperty -> "scope".equals(spProperty.getName()))
+                    .filter(spProperty -> IdentityCommonConstants.SCOPE.equals(spProperty.getName()))
                     .findFirst();
 
             // In IS 7.0 and upwards, scopes should be bind to the application via API Resources. When IS as a
