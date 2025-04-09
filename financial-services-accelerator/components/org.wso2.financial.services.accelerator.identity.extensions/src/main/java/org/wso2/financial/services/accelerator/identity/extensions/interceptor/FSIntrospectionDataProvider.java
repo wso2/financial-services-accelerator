@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -62,8 +63,8 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
                 additionalDataMap = getIntrospectionDataWithServiceExtension(
                         oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO);
             } catch (FinancialServicesException e) {
-                log.error("Error while invoking external service extension", e);
-                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+                log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
             }
         } else if (getIntrospectionDataProvider() != null) {
             // Perform FS customized behaviour

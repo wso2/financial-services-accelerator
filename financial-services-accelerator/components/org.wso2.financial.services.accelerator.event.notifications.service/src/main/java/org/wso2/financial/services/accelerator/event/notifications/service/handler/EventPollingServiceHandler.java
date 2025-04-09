@@ -19,7 +19,6 @@
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventPollingDTO;
-import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventPollingResponse;
 
 /**
@@ -34,8 +33,7 @@ public interface EventPollingServiceHandler {
      * Also, can be used to POLL for available OPEN notifications.
      * @param eventPollingDTO  Event polling DTO
      * @return EventPollingResponse to the polling endpoint.
-     * @throws FSEventNotificationException Exception when polling events
      */
-    EventPollingResponse pollEvents(EventPollingDTO eventPollingDTO) throws FSEventNotificationException;
+    EventPollingResponse pollEvents(EventPollingDTO eventPollingDTO);
 
 }

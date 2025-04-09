@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.attribute.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +30,7 @@ import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
 import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -72,17 +74,24 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         for (DynamicClientRegistrationValidator validator : enabledDcrValidators) {
             try {
                 validator.validatePost(appRegistrationRequest, ssaParams);
-            } catch (FinancialServicesException e) {
+            } catch (FinancialServicesDCRException e) {
                 log.error(e.getMessage().replaceAll("[\r\n]", ""));
-                throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
+                throw new DCRMClientException(e.getErrorCode(), e.getMessage(), e);
             }
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> requestMap = objectMapper.convertValue(appRegistrationRequest, Map.class);
 
-        Map<String, Object> attributesToStore = getCustomAttributesToStore(requestMap, ssaParams, null,
-                IdentityCommonConstants.APP_REG_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+        Map<String, Object> attributesToStore = null;
+        try {
+            JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(appRegistrationRequest));
+            attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, null,
+                    IdentityCommonConstants.APP_REG_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+        } catch (JsonProcessingException e) {
+            throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
+        }
+
+        Map<String, Object> requestMap = objectMapper.convertValue(appRegistrationRequest, Map.class);
 
         Map<String, Object> filteredAttributes = new HashMap<>();
         Map<String, Object> additionalAttributes = appRegistrationRequest.getAdditionalAttributes();
@@ -99,9 +108,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                 .filter(requestMap::containsKey)
                 .forEach((key) -> filteredAttributes.put(key, requestMap.get(key)));
 
+        Map<String, Object> finalAttributesToStore = attributesToStore;
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
-                .forEach((key) -> filteredAttributes.put(key, attributesToStore.get(key)));
+                .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
         return filteredAttributes;
     }
 
@@ -115,9 +125,9 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         for (DynamicClientRegistrationValidator validator : enabledDcrValidators) {
             try {
                 validator.validateUpdate(applicationUpdateRequest, ssaParams, serviceProviderProperties);
-            } catch (FinancialServicesException e) {
+            } catch (FinancialServicesDCRException e) {
                 log.error(e.getMessage().replaceAll("[\r\n]", ""));
-                throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
+                throw new DCRMClientException(e.getErrorCode(), e.getMessage(), e);
             }
         }
 
@@ -125,9 +135,14 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         Map<String, Object> requestMap = objectMapper.convertValue(applicationUpdateRequest, Map.class);
         List<JSONObject> spProperties = constructSPPropertyList(serviceProviderProperties);
 
-        Map<String, Object> attributesToStore = getCustomAttributesToStore(requestMap, ssaParams, spProperties,
-                IdentityCommonConstants.APP_UPDATE_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST);
-
+        Map<String, Object> attributesToStore = null;
+        try {
+            JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(applicationUpdateRequest));
+            attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, spProperties,
+                    IdentityCommonConstants.APP_UPDATE_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST);
+        } catch (JsonProcessingException e) {
+            throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
+        }
         Map<String, Object> filteredAttributes = new HashMap<>();
         Map<String, Object> additionalAttributes = applicationUpdateRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
@@ -143,9 +158,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                 .filter(requestMap::containsKey)
                 .forEach((key) -> filteredAttributes.put(key, requestMap.get(key)));
 
+        Map<String, Object> finalAttributesToStore = attributesToStore;
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
-                .forEach((key) -> filteredAttributes.put(key, attributesToStore.get(key)));
+                .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
         return filteredAttributes;
     }
 
@@ -156,16 +172,14 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         for (DynamicClientRegistrationValidator validator : enabledDcrValidators) {
             try {
                 validator.validateGet(ssaParams);
-            } catch (FinancialServicesException e) {
+            } catch (FinancialServicesDCRException e) {
                 log.error(e.getMessage().replaceAll("[\r\n]", ""));
-                throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
+                throw new DCRMClientException(e.getErrorCode(), e.getMessage(), e);
             }
         }
 
         // Filtering the attributes to be returned in the response.
-        Map<String, Object> filteredAttributes = new HashMap<>();
-        filteredAttributes.putAll(ssaParams);
-        return filteredAttributes;
+        return new HashMap<>(ssaParams);
     }
 
     @Override
@@ -183,7 +197,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
     /**
      * Get the response parameters from the configuration.
-     * @return List of response parameters.
+     * @return Set of response parameters.
      */
     private Set<String> getResponseParamsFromConfig() {
 
@@ -240,7 +254,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
      * @return                         Custom attributes to store.
      * @throws DCRMClientException      When an error occurs while getting custom attributes to store.
      */
-    private static Map<String, Object> getCustomAttributesToStore(Map<String, Object> appRequest,
+    private static Map<String, Object> getCustomAttributesToStore(JSONObject appRequest,
                                                                 Map<String, Object> ssaParams,
                                                                 List<JSONObject> spProperties, String operation,
                                                                 ServiceExtensionTypeEnum serviceExtensionTypeEnum)
@@ -258,11 +272,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                             .toString());
                     return attributesToStoreJson.toMap();
                 } else {
-                    String errMsg = response.getData().get(FinancialServicesConstants.ERROR_MESSAGE)
-                            .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE);
+                    int errorCode = response.getErrorCode();
                     String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
                             .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
-                    throw new DCRMClientException(errMsg, errDesc);
+                    //TODO:
+                    throw new DCRMClientException(String.valueOf(errorCode), errDesc);
                 }
             } catch (FinancialServicesException e) {
                 throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
@@ -291,7 +305,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
      * @param operation       Operation type.
      * @return               External service request.
      */
-    private static ExternalServiceRequest getExternalServiceRequest(Map<String, Object> appRequest,
+    private static ExternalServiceRequest getExternalServiceRequest(JSONObject appRequest,
                                                                     Map<String, Object> ssaParams,
                                                                     List<JSONObject> spProperties, String operation) {
         JSONObject data = new JSONObject();

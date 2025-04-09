@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,21 +29,18 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
-import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
-import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -62,18 +60,21 @@ public class FSClaimProvider implements ClaimProvider {
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
             try {
-                return additionalIdTokenClaimsAuthzResponseWithServiceExtension(
+                return getAdditionalIdTokenClaimsWithServiceExtension(
                         authAuthzReqMessageContext, authorizeRespDTO);
             } catch (FinancialServicesException e) {
-                log.error("Error while invoking external service extension", e);
-                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+                log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
+            } catch (JsonProcessingException e) {
+                log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
+                throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR);
             }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
             return getClaimProvider().getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO);
         } else {
             // Perform FS default behaviour
-            return defaultAdditionalIdTokenClaimsAuthzResponse(authAuthzReqMessageContext, authorizeRespDTO);
+            return getDefaultAdditionalIdTokenClaims(authAuthzReqMessageContext, authorizeRespDTO);
         }
     }
 
@@ -82,23 +83,45 @@ public class FSClaimProvider implements ClaimProvider {
                                                    OAuth2AccessTokenRespDTO tokenRespDTO)
             throws IdentityOAuth2Exception {
 
+        Map<String, Object> additionalClaims;
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
                 .PRE_ID_TOKEN_GENERATION)) {
             // Perform FS customized behaviour with service extension
             try {
-                return additionalIdTokenClaimsTokenResponseWithServiceExtension(
+                additionalClaims = getAdditionalIdTokenClaimsWithServiceExtension(
                         tokenReqMessageContext, tokenRespDTO);
             } catch (FinancialServicesException e) {
-                log.error("Error while invoking external service extension", e);
-                throw new IdentityOAuth2Exception("Error while invoking external service extension");
+                log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
             }
         } else if (getClaimProvider() != null) {
             // Perform FS customized behaviour
-            return getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
+            additionalClaims = getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
         } else {
             // Perform FS default behaviour
-            return defaultAdditionalIdTokenClaimsTokenResponse(tokenReqMessageContext, tokenRespDTO);
+            additionalClaims = getDefaultAdditionalIdTokenClaims(tokenReqMessageContext, tokenRespDTO);
         }
+
+        tokenRespDTO.setAuthorizedScopes(updateScopeInTokenResponseBody(tokenRespDTO.getAuthorizedScopes()));
+        return additionalClaims;
+    }
+
+    /**
+     * Update the scope attribute in the token response body by removing internal scopes.
+     *
+     * @param scopes
+     * @return updated scopes
+     */
+    private String updateScopeInTokenResponseBody(String scopes) {
+
+        String[] updatedScopesArray = IdentityCommonUtils.removeInternalScopes(scopes.split(" "));
+
+        StringBuilder scopesString = new StringBuilder();
+        for (String scope : updatedScopesArray) {
+            scopesString.append(scope).append(" ");
+        }
+
+        return scopesString.toString().trim();
     }
 
     public static void setClaimProvider(ClaimProvider claimProvider) {
@@ -111,7 +134,7 @@ public class FSClaimProvider implements ClaimProvider {
         return claimProvider;
     }
 
-    private Map<String, Object> defaultAdditionalIdTokenClaimsAuthzResponse(
+    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
             OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
             throws IdentityOAuth2Exception {
 
@@ -119,21 +142,21 @@ public class FSClaimProvider implements ClaimProvider {
         return new HashMap<>();
     }
 
-    private Map<String, Object> defaultAdditionalIdTokenClaimsTokenResponse(
+    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
             OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO) {
 
         return new HashMap<>();
     }
 
-    private Map<String, Object> additionalIdTokenClaimsAuthzResponseWithServiceExtension(
+    private Map<String, Object> getAdditionalIdTokenClaimsWithServiceExtension(
             OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
-            throws IdentityOAuth2Exception, FinancialServicesException {
+            throws IdentityOAuth2Exception, FinancialServicesException, JsonProcessingException {
 
         // Construct the payload
         JSONObject data = new JSONObject();
         data.put(IdentityCommonConstants.USER_ID, authAuthzReqMessageContext.getAuthorizationReqDTO()
                 .getUser().getUserName());
-        data.put(IdentityCommonConstants.CONSENT_ID, getConsentIdFromAuthzFlow(authAuthzReqMessageContext));
+        data.put(IdentityCommonConstants.CONSENT_ID, IdentityCommonUtils.getConsentId(authAuthzReqMessageContext));
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
                 UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
@@ -145,14 +168,15 @@ public class FSClaimProvider implements ClaimProvider {
         return processResponseAndGetClaims(response);
     }
 
-    private Map<String, Object> additionalIdTokenClaimsTokenResponseWithServiceExtension(
+    private Map<String, Object> getAdditionalIdTokenClaimsWithServiceExtension(
             OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO)
             throws IdentityOAuth2Exception, FinancialServicesException {
 
         // Construct the payload
         JSONObject data = new JSONObject();
         data.put(IdentityCommonConstants.USER_ID, tokenReqMessageContext.getAuthorizedUser().getUserName());
-        data.put(IdentityCommonConstants.CONSENT_ID, getConsentIdFromTokenFlow(tokenRespDTO));
+        data.put(IdentityCommonConstants.CONSENT_ID, IdentityCommonUtils
+                .getConsentId(tokenReqMessageContext.getScope()));
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
                 UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE);
@@ -190,48 +214,6 @@ public class FSClaimProvider implements ClaimProvider {
         }
 
         return additionalClaims;
-    }
-
-    private String getConsentIdFromAuthzFlow(OAuthAuthzReqMessageContext authAuthzReqMessageContext)
-            throws IdentityOAuth2Exception {
-
-        // Obtaining session data key from Authorization Request
-        String sessionDataKey = authAuthzReqMessageContext.getAuthorizationReqDTO().getSessionDataKey();
-
-        // Retrieving open banking intent id claim
-        Optional<RequestedClaim> intentClaim = IdentityCommonUtils.retrieveIntentIDFromReqObjService(sessionDataKey,
-                "authorize");
-
-        if (intentClaim.isPresent()) {
-            return intentClaim.get().getValue();
-        }
-
-        return null;
-    }
-
-    private String getConsentIdFromTokenFlow(OAuth2AccessTokenRespDTO tokenRespDTO)
-            throws IdentityOAuth2Exception {
-
-        //retrieving open banking intent id claim
-        String accessTokenReference = null;
-
-        // retrieve oauth2 access token from JTI value.
-        try {
-            JSONObject decodedRequestObj = new JSONObject(JWTUtils.decodeRequestJWT(tokenRespDTO.getAccessToken(),
-                    "body"));
-            accessTokenReference = decodedRequestObj.getString("jti");
-        } catch (ParseException e) {
-            throw new IdentityOAuth2Exception("Failed to retrieve Access Token Reference.", e);
-        }
-
-        Optional<RequestedClaim> intentClaim = IdentityCommonUtils
-                .retrieveIntentIDFromReqObjService(accessTokenReference, "token");
-
-        if (intentClaim.isPresent()) {
-            return intentClaim.get().getValue();
-        }
-
-        return null;
     }
 
 }

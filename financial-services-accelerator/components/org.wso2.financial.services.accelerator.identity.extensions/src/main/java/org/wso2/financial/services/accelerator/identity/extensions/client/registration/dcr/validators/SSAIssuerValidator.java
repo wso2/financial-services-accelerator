@@ -24,7 +24,7 @@ import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
@@ -40,24 +40,25 @@ public class SSAIssuerValidator implements DynamicClientRegistrationValidator {
 
     @Override
     public void validatePost(ApplicationRegistrationRequest applicationRegistrationRequest,
-                             Map<String, Object> ssaParams) throws FinancialServicesException {
+                             Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         validateSSAIssuer(ssaParams);
     }
 
     @Override
-    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesException {
+    public void validateGet(Map<String, String> ssaParams) throws FinancialServicesDCRException {
 
     }
 
     @Override
     public void validateUpdate(ApplicationUpdateRequest applicationUpdateRequest, Map<String, Object> ssaParams,
-                               ServiceProviderProperty[] serviceProviderProperties) throws FinancialServicesException {
+                               ServiceProviderProperty[] serviceProviderProperties)
+            throws FinancialServicesDCRException {
 
         validateSSAIssuer(ssaParams);
     }
 
-    private static void validateSSAIssuer(Map<String, Object> ssaParams) throws FinancialServicesException {
+    private static void validateSSAIssuer(Map<String, Object> ssaParams) throws FinancialServicesDCRException {
 
         FinancialServicesConfigurationService configurationService = IdentityExtensionsDataHolder.getInstance()
                 .getConfigurationService();
@@ -66,7 +67,8 @@ public class SSAIssuerValidator implements DynamicClientRegistrationValidator {
         List<String> allowedValues = (List<String>) configs.get(IdentityCommonConstants.ALLOWED_VALUES);
         if (!allowedValues.contains(ssaParams.get(IdentityCommonConstants.ISS))) {
             log.debug("Invalid issuer in software statement");
-            throw new FinancialServicesException("Invalid issuer in software statement");
+            throw new FinancialServicesDCRException(IdentityCommonConstants.INVALID_SOFTWARE_STATEMENT,
+                    "Invalid issuer in software statement");
         }
     }
 }
