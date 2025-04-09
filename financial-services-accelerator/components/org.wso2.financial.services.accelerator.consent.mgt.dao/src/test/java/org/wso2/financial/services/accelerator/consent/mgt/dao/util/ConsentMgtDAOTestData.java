@@ -45,7 +45,7 @@ public class ConsentMgtDAOTestData {
     public static final String SAMPLE_CONSENT_ID = "2222";
     public static final String SAMPLE_AUTHORIZATION_ID = "3333";
     public static final boolean SAMPLE_RECURRING_INDICATOR = true;
-    public static final String SAMPLE_CURRENT_STATUS = "authorised";
+    public static final String SAMPLE_CURRENT_STATUS = "Authorised";
     public static final String  SAMPLE_PREVIOUS_STATUS = "Received";
     public static final String SAMPLE_AUTHORIZATION_TYPE = "authorizationType";
     public static final String SAMPLE_USER_ID = "admin@wso2.com";
@@ -106,9 +106,9 @@ public class ConsentMgtDAOTestData {
     };
     public static final ArrayList<String> SAMPLE_CONSENT_STATUSES_LIST = new ArrayList<String>() {
         {
-            add("created");
-            add("authorised");
-            add("awaitingAuthorisation");
+            add("Created");
+            add("Authorised");
+            add("AwaitingAuthorisation");
 
         }
     };

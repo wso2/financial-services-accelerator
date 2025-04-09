@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +37,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
+import java.util.Locale;
 
 /**
  * Util class for consent authorize operations.
@@ -212,7 +214,10 @@ public class ConsentAuthorizeUtil {
         if (scope != null && !scope.trim().isEmpty()) {
             String[] scopeItems = scope.trim().split("\\s+");
             for (String item : scopeItems) {
-                permissions.put(item);
+                // Skip openid scope since it is not relevant to the consent.
+                if (!"openid".equals(item)) {
+                    permissions.put(item);
+                }
             }
         }
 
@@ -541,20 +546,24 @@ public class ConsentAuthorizeUtil {
 
     /**
      * Method to create the consent receipt using the request object.
+     *
      * @param requestObject request object
-     * @return
+     * @return Consent receipt
      */
+    @SuppressFBWarnings("IMPROPER_UNICODE")
     public static String getReceiptFromRequestObject(String requestObject) {
 
         // Extract the space-separated scopes from the request
         String scope = extractField(requestObject, FinancialServicesConstants.SCOPE);
 
-        // Convert scope to uppercase JSON array
         JSONArray permissions = new JSONArray();
         if (scope != null && !scope.trim().isEmpty()) {
             String[] scopeItems = scope.trim().split("\\s+");
             for (String item : scopeItems) {
-                permissions.put(item.toUpperCase());
+                // Skip openid scope since it is not relevant to the consent.
+                if (!"openid".equals(item)) {
+                    permissions.put(item.toUpperCase(Locale.ROOT));
+                }
             }
         }
 

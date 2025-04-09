@@ -95,7 +95,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                 consentData.setAuthResource(authorizationResource);
                 consentDataJSON = ConsentAuthorizeUtil.getConsentDataForPreInitiatedConsent(consentResource);
             } else {
-                // Create the consent resource using data from request object
+                // Create a default type consent resource using data from request object.
                 String consentId = UUID.randomUUID().toString();
                 consentData.setConsentId(consentId);
                 String receipt = ConsentAuthorizeUtil.getReceiptFromRequestObject(requestObject);
@@ -108,11 +108,12 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             }
             consentData.setType(consentResource.getConsentType());
             consentData.setConsentResource(consentResource);
-            jsonObject.put("consentData", consentDataJSON);
+            jsonObject.put(ConsentExtensionConstants.CONSENT_DATA, consentDataJSON);
 
-            //Appending Dummy data for Accounts consent. Ideally should be separate step calling accounts service
+            /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
+             calling accounts service */
             JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
-            jsonObject.put("accounts", accountsJSON);
+            jsonObject.put(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
 
         } catch (ConsentManagementException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
