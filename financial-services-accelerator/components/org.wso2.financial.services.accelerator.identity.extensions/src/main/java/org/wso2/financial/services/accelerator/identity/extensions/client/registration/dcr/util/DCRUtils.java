@@ -30,7 +30,7 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 /**
- * DCR Utils Class
+ * DCR Utils Class.
  */
 public class DCRUtils {
 
@@ -38,7 +38,7 @@ public class DCRUtils {
     private static final IdentityExtensionsDataHolder identityDataHolder = IdentityExtensionsDataHolder.getInstance();
 
     /**
-     * Method to extract Fapi Compliant Property From Service Provider
+     * Method to extract Fapi Compliant Property From Service Provider.
      * @param serviceProvider   Service Provider
      *
      * @return Fapi Compliant Property

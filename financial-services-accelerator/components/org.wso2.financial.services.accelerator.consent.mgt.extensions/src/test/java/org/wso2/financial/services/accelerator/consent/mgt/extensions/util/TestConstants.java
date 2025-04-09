@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class of constants for tests.
+ */
 public class TestConstants {
 
     public static final OffsetDateTime EXP_DATE = OffsetDateTime.now().plusDays(50);
