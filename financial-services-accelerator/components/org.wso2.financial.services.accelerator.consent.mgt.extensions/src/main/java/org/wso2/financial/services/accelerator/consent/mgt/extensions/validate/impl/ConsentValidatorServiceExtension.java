@@ -117,7 +117,7 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
                 consentValidationResult.setErrorCode(response.getData()
                         .path(FinancialServicesConstants.ERROR_MESSAGE)
                         .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
-                consentValidationResult.setHttpCode(Integer.parseInt(response.getErrorCode()));
+                consentValidationResult.setHttpCode(response.getErrorCode());
             }
         } catch (FinancialServicesException e) {
             consentValidationResult.setValid(false);

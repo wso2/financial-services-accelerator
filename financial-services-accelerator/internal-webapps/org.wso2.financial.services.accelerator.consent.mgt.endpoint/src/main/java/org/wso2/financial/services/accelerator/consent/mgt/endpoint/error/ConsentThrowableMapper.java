@@ -124,7 +124,7 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
                 ServiceExtensionTypeEnum.ERROR_MAPPER);
 
-        return Response.status(Integer.parseInt(response.getErrorCode()))
+        return Response.status(response.getErrorCode())
                 .entity(response.getData().toString())
                 .header(ConsentConstants.HEADER_CONTENT_TYPE,
                         ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)

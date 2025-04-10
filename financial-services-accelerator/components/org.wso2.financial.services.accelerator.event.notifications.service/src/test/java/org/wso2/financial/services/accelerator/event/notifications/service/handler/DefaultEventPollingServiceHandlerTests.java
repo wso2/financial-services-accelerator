@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -29,7 +30,6 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.EventPollingService;
-import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationTestConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventPollingDTO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
@@ -50,6 +50,7 @@ public class DefaultEventPollingServiceHandlerTests {
 
     private MockedStatic<FinancialServicesConfigParser> configParserMockedStatic;
     private MockedStatic<ServiceExtensionUtils> serviceExtensionUtilsMockedStatic;
+    private DefaultEventPollingServiceHandler defaultEventPollingServiceHandler;
 
     @BeforeClass
     public void initTest() {
@@ -58,12 +59,16 @@ public class DefaultEventPollingServiceHandlerTests {
 
         Map<String, Object> configs = new HashMap<String, Object>();
         configs.put(FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_ENABLED, false);
+        configs.put(FinancialServicesConstants.REQUIRE_SUBSCRIPTION_TO_POLL, false);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
         configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(false);
+
+        defaultEventPollingServiceHandler = new DefaultEventPollingServiceHandler();
+
     }
 
     @AfterClass
@@ -71,8 +76,6 @@ public class DefaultEventPollingServiceHandlerTests {
         configParserMockedStatic.close();
         serviceExtensionUtilsMockedStatic.close();
     }
-
-    DefaultEventPollingServiceHandler defaultEventPollingServiceHandler = new DefaultEventPollingServiceHandler();
 
     @Test
     public void testPollEvents() throws Exception {
@@ -96,13 +99,75 @@ public class DefaultEventPollingServiceHandlerTests {
             EventPollingResponse eventPollingResponse =
                     defaultEventPollingServiceHandler.pollEvents(eventPollingRequest);
 
-            Assert.assertEquals(eventPollingResponse.getStatus(), "OK");
+            Assert.assertEquals(eventPollingResponse.getStatus(), HttpStatus.SC_OK);
             Assert.assertTrue(eventPollingResponse.getResponseBody().has("moreAvailable"));
             Assert.assertTrue(eventPollingResponse.getResponseBody().has("sets"));
         }
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
+    public void testPollEventsWithExternalService() throws Exception {
+
+        try (MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic =
+                     Mockito.mockStatic(EventNotificationServiceUtil.class)) {
+
+            serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
+                    .thenReturn(true);
+            serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
+                    .thenReturn(EventNotificationTestUtils.getExternalServiceResponse());
+
+            EventPollingDTO eventPollingRequest = new EventPollingDTO();
+            eventPollingRequest.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
+            eventPollingRequest.setMaxEvents(5);
+
+            EventPollingService eventPollingService = Mockito.mock(EventPollingService.class);
+            Mockito.when(eventPollingService.pollEvents(any())).thenReturn(EventNotificationTestUtils.
+                    getAggregatedPollingResponse());
+
+            defaultEventPollingServiceHandler.setEventPollingService(eventPollingService);
+
+            eventNotificationUtilMockedStatic.when(() -> EventNotificationServiceUtil.validateClientId(anyString()))
+                    .thenAnswer((Answer<Void>) invocation -> null);
+
+            EventPollingResponse eventPollingResponse =
+                    defaultEventPollingServiceHandler.pollEvents(eventPollingRequest);
+
+            Assert.assertEquals(eventPollingResponse.getStatus(), HttpStatus.SC_OK);
+        }
+    }
+
+    @Test
+    public void testPollEventsWithExternalServiceError() throws Exception {
+
+        try (MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic =
+                     Mockito.mockStatic(EventNotificationServiceUtil.class)) {
+
+            serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
+                    .thenReturn(true);
+            serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
+                    .thenReturn(EventNotificationTestUtils.getExternalServiceResponseError());
+
+            EventPollingDTO eventPollingRequest = new EventPollingDTO();
+            eventPollingRequest.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
+            eventPollingRequest.setMaxEvents(5);
+
+            EventPollingService eventPollingService = Mockito.mock(EventPollingService.class);
+            Mockito.when(eventPollingService.pollEvents(any())).thenReturn(EventNotificationTestUtils.
+                    getAggregatedPollingResponse());
+
+            defaultEventPollingServiceHandler.setEventPollingService(eventPollingService);
+
+            eventNotificationUtilMockedStatic.when(() -> EventNotificationServiceUtil.validateClientId(anyString()))
+                    .thenAnswer((Answer<Void>) invocation -> null);
+
+            EventPollingResponse eventPollingResponse =
+                    defaultEventPollingServiceHandler.pollEvents(eventPollingRequest);
+
+            Assert.assertEquals(eventPollingResponse.getStatus(), HttpStatus.SC_BAD_REQUEST);
+        }
+    }
+
+    @Test
     public void testPollEventsInvalidClient() throws Exception {
 
         try (MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic =
@@ -124,11 +189,11 @@ public class DefaultEventPollingServiceHandlerTests {
             EventPollingResponse eventPollingResponse =
                     defaultEventPollingServiceHandler.pollEvents(eventPollingRequest);
 
-            Assert.assertEquals(eventPollingResponse.getStatus(), EventNotificationConstants.BAD_REQUEST);
+            Assert.assertEquals(eventPollingResponse.getStatus(), HttpStatus.SC_BAD_REQUEST);
         }
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testPollEventsServiceError() throws Exception {
 
         try (MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic =
@@ -150,7 +215,7 @@ public class DefaultEventPollingServiceHandlerTests {
             EventPollingResponse eventPollingResponse =
                     defaultEventPollingServiceHandler.pollEvents(eventPollingRequest);
 
-            Assert.assertEquals(eventPollingResponse.getStatus(), EventNotificationConstants.BAD_REQUEST);
+            Assert.assertEquals(eventPollingResponse.getStatus(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }
