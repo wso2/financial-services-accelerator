@@ -107,7 +107,7 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         // AuthorizationResource
         AuthorizationResource authResource = new AuthorizationResource();
-        authResource.setAuthorizationStatus("created");
+        authResource.setAuthorizationStatus("Created");
         ArrayList<AuthorizationResource> authList = new ArrayList<>();
         authList.add(authResource);
         when(consentCoreService.searchAuthorizations(anyString())).thenReturn(authList);
@@ -176,7 +176,7 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         // Mock AuthorizationResource
         AuthorizationResource mockAuthResource = new AuthorizationResource();
-        mockAuthResource.setAuthorizationStatus("created");
+        mockAuthResource.setAuthorizationStatus("Created");
 
         ArrayList<AuthorizationResource> authList = new ArrayList<>();
         authList.add(mockAuthResource);
@@ -229,7 +229,7 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         // Mock searchAuthorizations() to return a valid AuthorizationResource
         AuthorizationResource mockAuthResource = new AuthorizationResource();
-        mockAuthResource.setAuthorizationStatus("created");
+        mockAuthResource.setAuthorizationStatus("Created");
         ArrayList<AuthorizationResource> authList = new ArrayList<>();
         authList.add(mockAuthResource);
         when(consentCoreService.searchAuthorizations(anyString()))

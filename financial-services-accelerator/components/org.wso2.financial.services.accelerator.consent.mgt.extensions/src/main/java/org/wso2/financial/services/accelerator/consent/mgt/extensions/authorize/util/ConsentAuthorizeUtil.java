@@ -18,12 +18,14 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -31,8 +33,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
+import java.util.Locale;
 
 /**
  * Util class for consent authorize operations.
@@ -155,7 +160,8 @@ public class ConsentAuthorizeUtil {
      *                        from database.
      * @return ConsentDataJson array
      */
-    public static JSONArray getConsentData(ConsentResource consentResource) throws ConsentException {
+    public static JSONArray getConsentDataForPreInitiatedConsent(ConsentResource consentResource)
+            throws ConsentException {
 
         JSONArray consentDataJSON = new JSONArray();
         try {
@@ -188,6 +194,41 @@ public class ConsentAuthorizeUtil {
         } catch (JSONException e) {
             log.error("Payload is not in JSON Format", e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not in JSON Format");
+        }
+        return consentDataJSON;
+    }
+
+    /**
+     * Returns consent data to be displayed based on the requested scopes.
+     *
+     * @param scope Scopes given in the request
+     * @return ConsentDataJson array
+     */
+    public static JSONArray getConsentDataForScope(String scope)
+            throws ConsentException {
+
+        JSONArray consentDataJSON = new JSONArray();
+        JSONArray permissions = new JSONArray();
+
+        // Convert space-separated scopes into JSON array
+        if (scope != null && !scope.trim().isEmpty()) {
+            String[] scopeItems = scope.trim().split("\\s+");
+            for (String item : scopeItems) {
+                // Skip openid scope since it is not relevant to the consent.
+                if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
+                   continue;
+                }
+                permissions.put(item);
+            }
+        }
+
+        if (!permissions.isEmpty()) {
+            JSONObject jsonElementPermissions = new JSONObject();
+            jsonElementPermissions.put(ConsentExtensionConstants.TITLE,
+                    ConsentExtensionConstants.PERMISSIONS);
+            jsonElementPermissions.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
+                    permissions);
+            consentDataJSON.put(jsonElementPermissions);
         }
         return consentDataJSON;
     }
@@ -502,5 +543,44 @@ public class ConsentAuthorizeUtil {
             throw new ConsentException(ResponseStatus.BAD_REQUEST,
                     ConsentAuthorizeConstants.ACC_CONSENT_RETRIEVAL_ERROR);
         }
+    }
+
+    /**
+     * Method to create the consent receipt using the request object.
+     *
+     * @param requestObject request object
+     * @return Consent receipt
+     */
+    @SuppressFBWarnings("IMPROPER_UNICODE")
+    public static String getReceiptFromRequestObject(String requestObject) {
+
+        // Extract the space-separated scopes from the request
+        String scope = extractField(requestObject, FinancialServicesConstants.SCOPE);
+
+        JSONArray permissions = new JSONArray();
+        if (scope != null && !scope.trim().isEmpty()) {
+            String[] scopeItems = scope.trim().split("\\s+");
+            for (String item : scopeItems) {
+                // Skip openid scope since it is not relevant to the consent.
+                if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
+                    continue;
+                }
+                permissions.put(item.toUpperCase(Locale.ROOT));
+            }
+        }
+
+        // Default expiration timestamp (current time + 1 hour)
+        OffsetDateTime expirationTime = OffsetDateTime.now(ZoneId.systemDefault()).plusHours(1);
+        String expirationDateTime = expirationTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        // Build the JSON object
+        JSONObject receiptData = new JSONObject();
+        receiptData.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+        receiptData.put(ConsentExtensionConstants.EXPIRATION_DATE, expirationDateTime);
+
+        JSONObject receipt = new JSONObject();
+        receipt.put(ConsentExtensionConstants.DATA, receiptData);
+
+        return receipt.toString();
     }
 }
