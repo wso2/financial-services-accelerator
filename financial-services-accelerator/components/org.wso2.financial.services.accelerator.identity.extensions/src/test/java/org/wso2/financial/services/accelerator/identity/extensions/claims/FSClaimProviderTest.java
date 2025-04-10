@@ -30,13 +30,8 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
-
-import static org.mockito.Mockito.mockStatic;
 
 /**
  * Test class for FSClaimProvider.
@@ -44,19 +39,17 @@ import static org.mockito.Mockito.mockStatic;
 public class FSClaimProviderTest {
 
     private FSClaimProvider fsClaimProvider;
-    private static MockedStatic<FinancialServicesConfigParser> mockedConfigParser;
     private static MockedStatic<JWTUtils> mockedJwtUtils;
     private static MockedStatic<IdentityCommonUtils> mockedIdentityCommonUtils;
-    private static MockedStatic<ServiceExtensionUtils> mockedServiceExtensionUtils;
-    private ExternalServiceResponse response;
+
+
 
     @BeforeClass
     public void setUp() {
         fsClaimProvider = new FSClaimProvider();
-        mockedConfigParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
         mockedJwtUtils = Mockito.mockStatic(JWTUtils.class);
         mockedIdentityCommonUtils = Mockito.mockStatic(IdentityCommonUtils.class);
-        mockedServiceExtensionUtils = mockStatic(ServiceExtensionUtils.class);
+
 
         mockedIdentityCommonUtils.when(() -> IdentityCommonUtils
                 .removeInternalScopes(Mockito.any())).thenReturn(new String[]{"accounts", "payments"});
@@ -64,10 +57,9 @@ public class FSClaimProviderTest {
 
     @AfterClass
     public static void afterClass() {
-        mockedConfigParser.close();
         mockedJwtUtils.close();
         mockedIdentityCommonUtils.close();
-        mockedServiceExtensionUtils.close();
+
     }
 
     @Test

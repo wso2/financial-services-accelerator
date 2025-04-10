@@ -71,6 +71,10 @@ public class EventSubscriptionUtils {
             return Response.status(eventSubscriptionResponse.getResponseStatus())
                     .entity(eventSubscriptionResponse.getResponseBody().toString())
                     .build();
+        } else if (eventSubscriptionResponse.getErrorResponse() != null) {
+            return Response.status(eventSubscriptionResponse.getResponseStatus())
+                    .entity(eventSubscriptionResponse.getErrorResponse().toString())
+                    .build();
         } else {
             return Response.status(eventSubscriptionResponse.getResponseStatus())
                     .build();

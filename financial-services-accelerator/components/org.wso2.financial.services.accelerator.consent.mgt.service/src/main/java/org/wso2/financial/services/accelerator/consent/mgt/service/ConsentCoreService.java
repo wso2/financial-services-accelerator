@@ -30,6 +30,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -236,6 +237,18 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
+     * This method is used to update the given list of authorization resources.
+     * Only the auth-type and auth-status will be updated. Other values sent in the
+     * AuthorizationResource object will be ignored.
+     *
+     * @param authorizationResources list of authorization resources to be updated
+     * @return true if the transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    boolean updateAuthorizationResources(List<AuthorizationResource> authorizationResources)
+            throws ConsentManagementException;
+
+    /**
      * This method is used to bind user and accounts to the consent.
      *
      * @param consentResource consent resource
@@ -293,6 +306,17 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
+     * This method is used to create consent mapping resources by providing a list of ConsentMappingResource objects.
+     * The mapping ID will be generated automatically and returned with the created resources.
+     *
+     * @param consentMappingResources list of consent mapping resources to be created
+     * @return list of created consent mapping resources with generated mapping IDs
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    List<ConsentMappingResource> createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+            throws ConsentManagementException;
+
+    /**
      * This method is used to deactivate account bindings of provided account mapping IDs.
      *
      * @param accountMappingIDs     list of account mapping IDs to be deactivated
@@ -311,6 +335,19 @@ public interface ConsentCoreService {
      */
     boolean updateAccountMappingStatus(ArrayList<String> accountMappingIDs, String newMappingStatus) throws
             ConsentManagementException;
+
+    /**
+     * This method is used to update the given consent mapping resources.
+     * Parameters allowed to update are mapping-status and permission.
+     * Other fields sent in the ConsentMappingResource object will be ignored.
+     * Consent mapping resources will be identified using the mapping ID.
+     *
+     * @param consentMappingResources list of consent mapping resources to be updated
+     * @return true if the transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    boolean updateConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+            throws ConsentManagementException;
 
     /**
      * This method is used to revoke a consent. The following functionality contains in this method.

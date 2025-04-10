@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.event.notifications.service;
 import com.nimbusds.jose.JOSEException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.financial.services.accelerator.common.util.DatabaseUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
@@ -92,7 +93,7 @@ public class EventPollingService {
 
                 if (maxEvents == 0) {
                     aggregatedPollingResponse.setSets(sets);
-                    aggregatedPollingResponse.setStatus(EventNotificationConstants.OK);
+                    aggregatedPollingResponse.setStatus(HttpStatus.SC_OK);
                 } else {
 
                     int setsToReturn = eventPolling.getSetsToReturn();
@@ -113,13 +114,13 @@ public class EventPollingService {
                             log.debug(String.format("No FS Event Notifications available for for the client " +
                                     "with ID : '%s'.", eventPolling.getClientId().replaceAll("[\r\n]", "")));
                         }
-                        aggregatedPollingResponse.setStatus(EventNotificationConstants.NOT_FOUND);
+                        aggregatedPollingResponse.setStatus(HttpStatus.SC_NOT_FOUND);
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("FS Event Notifications available for the client " +
                                     "with ID : '%s'.", eventPolling.getClientId().replaceAll("[\r\n]", "")));
                         }
-                        aggregatedPollingResponse.setStatus(EventNotificationConstants.OK);
+                        aggregatedPollingResponse.setStatus(HttpStatus.SC_OK);
 
                         for (Notification notification : notificationList) {
 

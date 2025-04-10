@@ -441,7 +441,7 @@ public class IdentityCommonUtils {
 
         // Invoke external service
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION);
+                ServiceExtensionTypeEnum.VALIDATE_REFRESH_TOKEN_ISSUANCE);
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 

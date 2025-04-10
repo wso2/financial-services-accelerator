@@ -155,6 +155,9 @@ public class EventNotificationConstants {
     public static final String EVENT_SUBSCRIPTIONS_NOT_FOUND = "Event subscriptions not found for the given client id.";
     public static final String ERROR_HANDLING_EVENT_SUBSCRIPTION = "Error occurred while handling the event " +
             "subscription request";
+    public static final String SUBSCRIPTION_EXISTS = "Subscription Resource already exists for the client";
+    public static final String SUBSCRIPTION_RESOURCE_NOT_FOUND = "A subscription Resource does not exists for" +
+            " the client";
 
     public static final String EVENT_CREATION_PAYLOAD = "eventCreationPayload";
     public static final String EVENT_POLLING_PAYLOAD = "eventPollingPayload";

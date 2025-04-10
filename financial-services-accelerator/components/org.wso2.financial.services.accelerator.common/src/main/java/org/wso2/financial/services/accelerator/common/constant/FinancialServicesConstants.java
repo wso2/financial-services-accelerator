@@ -112,6 +112,10 @@ public class FinancialServicesConstants {
     public static final String EVENT_CREATION_HANDLER = "EventNotifications.EventCreationHandler";
     public static final String EVENT_POLLING_HANDLER = "EventNotifications.EventPollingHandler";
     public static final String EVENT_SUBSCRIPTION_HANDLER = "EventNotifications.EventSubscriptionHandler";
+    public static final String REQUIRE_SUBSCRIPTION_TO_POLL =
+            "EventNotifications.EventSubscription.RequireSubscriptionToPoll";
+    public static final String ALLOW_MULTIPLE_SUBSCRIPTION =
+            "EventNotifications.EventSubscription.AllowMultipleSubscription";
     public static final String REALTIME_EVENT_NOTIFICATION_ENABLED = "EventNotifications.Realtime.Enable";
     public static final String PERIODIC_CRON_EXPRESSION = "EventNotifications.Realtime.PeriodicCronExpression";
     public static final String TIMEOUT_IN_SECONDS = "EventNotifications.Realtime.TimeoutInSeconds";
@@ -129,6 +133,9 @@ public class FinancialServicesConstants {
     // Service Extensions Constants
     public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ExtensionsEndpoint.Enable";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_RETRY_COUNT = "ExtensionsEndpoint.RetryCount";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_CONNECT_TIMEOUT = "ExtensionsEndpoint.ConnectTimeout";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_READ_TIMEOUT = "ExtensionsEndpoint.ReadTimeout";
     public static final String SERVICE_EXTENSIONS_EXTENSION = "ExtensionsEndpoint.AllowedExtensions.AllowedExtension";
     public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ExtensionsEndpoint.Security.Type";
     public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ExtensionsEndpoint.Security.Username";

@@ -18,14 +18,16 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.model;
 
+import org.json.JSONObject;
+
 /**
  * This class is used to map the Event Subscription service response to the API response.
  */
 public class EventSubscriptionResponse {
 
     private int responseStatus;
-    private Object responseBody;
-
+    private JSONObject responseBody;
+    private JSONObject errorResponse;
 
     public int getResponseStatus() {
         return responseStatus;
@@ -39,8 +41,16 @@ public class EventSubscriptionResponse {
         return responseBody;
     }
 
-    public void setResponseBody(Object responseBody) {
+    public void setResponseBody(JSONObject responseBody) {
         this.responseBody = responseBody;
+    }
+
+    public JSONObject getErrorResponse() {
+        return errorResponse;
+    }
+
+    public void setErrorResponse(JSONObject errorResponse) {
+        this.errorResponse = errorResponse;
     }
 
 }

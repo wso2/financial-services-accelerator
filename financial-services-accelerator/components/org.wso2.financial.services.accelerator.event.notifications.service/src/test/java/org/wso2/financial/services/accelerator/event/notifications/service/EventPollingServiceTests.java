@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.testng.Assert;
@@ -27,7 +28,6 @@ import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.DatabaseUtils;
-import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dao.EventNotificationDAO;
 import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.AggregatedPollingResponse;
@@ -96,7 +96,7 @@ public class EventPollingServiceTests {
         AggregatedPollingResponse aggregatedPollingResponse = eventPollingService.pollEvents(
                 EventNotificationTestUtils.getEventPollingDTO());
 
-        Assert.assertEquals(aggregatedPollingResponse.getStatus(), EventNotificationConstants.NOT_FOUND);
+        Assert.assertEquals(aggregatedPollingResponse.getStatus(), HttpStatus.SC_NOT_FOUND);
     }
 
     @Test
@@ -115,6 +115,6 @@ public class EventPollingServiceTests {
         AggregatedPollingResponse aggregatedPollingResponse = eventPollingService.pollEvents(
                 EventNotificationTestUtils.getEventPollingDTO());
 
-        Assert.assertEquals(aggregatedPollingResponse.getStatus(), EventNotificationConstants.OK);
+        Assert.assertEquals(aggregatedPollingResponse.getStatus(), HttpStatus.SC_OK);
     }
 }

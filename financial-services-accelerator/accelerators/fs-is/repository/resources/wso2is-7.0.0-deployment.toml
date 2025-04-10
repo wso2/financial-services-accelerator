@@ -315,9 +315,12 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #================configs related to financial-services.xml=============
 [financial_services.extensions.endpoint]
 enabled = false
+# allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
+allowed_extensions = ["pre_process_client_creation", "pre_process_consent_creation"]
 base_url = ""
-# allowed extension_types: "post_token_generation", "pre_consent_authorization"
-allowed_extensions = ["post_token_generation"]
+retry_count = 5
+connect_timeout = 5
+read_timeout = 5
 
 [financial_services.extensions.endpoint.security]
 # supported types : Basic-Auth or OAuth2
@@ -347,7 +350,7 @@ application_updater = "org.wso2.financial.services.accelerator.identity.extensio
 [[financial_services.app_registration.dcr.params]]
 name = "SoftwareId"
 key = "software_id"
-required = true
+required = false
 include_in_response = true
 
 [[financial_services.app_registration.dcr.params]]
@@ -400,6 +403,36 @@ name = "RequestObjectSignatureAlgorithm"
 key = "request_object_signing_alg"
 required = true
 include_in_response = true
+
+[[financial_services.app_registration.dcr.params]]
+name = "Iss"
+key = "iss"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Iat"
+key = "iat"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Exp"
+key = "exp"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Jti"
+key = "jti"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Aud"
+key = "aud"
+required = true
+include_in_response = false
 
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RequiredParamsValidator"
@@ -533,6 +566,8 @@ event_subscription_handler="org.wso2.financial.services.accelerator.event.notifi
 set_sub_claim_included=true
 set_txn_claim_included=true
 set_toe_cliam_included=true
+require_subscription_to_poll= false
+allow_multiple_subscription= true
 
 [financial_services.event.notifications.realtime]
 enable=false

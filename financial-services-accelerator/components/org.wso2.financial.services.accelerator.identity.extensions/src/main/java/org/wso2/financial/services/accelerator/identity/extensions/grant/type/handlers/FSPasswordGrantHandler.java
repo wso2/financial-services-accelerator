@@ -49,7 +49,7 @@ public class FSPasswordGrantHandler extends PasswordGrantHandler {
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 boolean issueRefreshToken = true;
                 if (ServiceExtensionUtils.isInvokeExternalService(
-                        ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION)) {
+                        ServiceExtensionTypeEnum.VALIDATE_REFRESH_TOKEN_ISSUANCE)) {
                     // Perform FS customized behaviour with service extension
                     issueRefreshToken = IdentityCommonUtils.issueRefreshTokenWithServiceExtension(tokReqMsgCtx);
                 } else if (fsGrantHandler != null) {
