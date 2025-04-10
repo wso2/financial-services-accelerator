@@ -37,10 +37,10 @@ public enum ServiceExtensionTypeEnum {
     VALIDATE_REFRESH_TOKEN_ISSUANCE("validate-refresh-token-issuance"),
     VALIDATE_AUTHORIZATION_REQUEST("validate-authorization-request"),
     VALIDATE_EVENT_SUBSCRIPTION("validate-event-subscription"),
-    ENRICH_EVENT_SUBSCRIPTION_RESPONSE("enrich_event_subscription_response"),
-    VALIDATE_EVENT_CREATION("validate_event_creation"),
-    VALIDATE_EVENT_POLLING("validate_event_polling"),
-    ENRICH_EVENT_POLLING_RESPONSE("enrich_event_polling_response"),
+    ENRICH_EVENT_SUBSCRIPTION_RESPONSE("enrich-event-subscription-response"),
+    VALIDATE_EVENT_CREATION("validate-event-creation"),
+    VALIDATE_EVENT_POLLING("validate-event-polling"),
+    ENRICH_EVENT_POLLING_RESPONSE("enrich-event-polling-response"),
     MAP_ACCELERATOR_ERROR_RESPONSE("map-accelerator-error-response");
 
     private final String type;
