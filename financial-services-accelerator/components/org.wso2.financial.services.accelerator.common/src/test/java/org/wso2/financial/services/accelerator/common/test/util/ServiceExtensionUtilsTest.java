@@ -68,6 +68,12 @@ public class ServiceExtensionUtilsTest {
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
         Mockito.doReturn(FinancialServicesConstants.BASIC_AUTH).when(configParserMock)
                 .getServiceExtensionsEndpointSecurityType();
+        Mockito.doReturn(3).when(configParserMock)
+                .getServiceExtensionsEndpointRetryCount();
+        Mockito.doReturn(5).when(configParserMock)
+                .getServiceExtensionsEndpointConnectTimeoutInSeconds();
+        Mockito.doReturn(5).when(configParserMock)
+                .getServiceExtensionsEndpointReadTimeoutInSeconds();
         Mockito.doReturn("test").when(configParserMock)
                 .getServiceExtensionsEndpointSecurityBasicAuthUsername();
         Mockito.doReturn("test").when(configParserMock)

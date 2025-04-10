@@ -133,6 +133,9 @@ public class FinancialServicesConstants {
     // Service Extensions Constants
     public static final String SERVICE_EXTENSIONS_ENDPOINT_ENABLED = "ExtensionsEndpoint.Enable";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ExtensionsEndpoint.BaseURL";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_RETRY_COUNT = "ExtensionsEndpoint.RetryCount";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_CONNECT_TIMEOUT = "ExtensionsEndpoint.ConnectTimeout";
+    public static final String SERVICE_EXTENSIONS_ENDPOINT_READ_TIMEOUT = "ExtensionsEndpoint.ReadTimeout";
     public static final String SERVICE_EXTENSIONS_EXTENSION = "ExtensionsEndpoint.AllowedExtensions.AllowedExtension";
     public static final String SERVICE_EXTENSIONS_SECURITY_TYPE = "ExtensionsEndpoint.Security.Type";
     public static final String SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME = "ExtensionsEndpoint.Security.Username";
