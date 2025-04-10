@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
@@ -34,6 +35,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +46,15 @@ import java.util.Map;
  */
 public class DefaultConsentPersistStep implements ConsentPersistStep {
 
+    private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(DefaultConsentPersistStep.class);
+
+    public DefaultConsentPersistStep() {
+
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+    }
+
     @Override
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
 
@@ -71,7 +81,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                 consentResource = consentData.getConsentResource();
             }
 
-            if (consentData.getAuthResource() == null) {
+            if (isPreInitiatedConsent && consentData.getAuthResource() == null) {
                 log.error("Auth resource not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Auth resource not available in consent data", consentData.getState());
@@ -91,7 +101,8 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         ConsentData consentData = consentPersistData.getConsentData();
         boolean isApproved = consentPersistData.getApproval();
         JSONObject payload = consentPersistData.getPayload();
-
+        String userId = consentPersistData.getConsentData().getUserId();
+        String authorizationId;
         String consentStatus;
         String authStatus;
 
@@ -100,11 +111,19 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         authStatus = isApproved ? ConsentExtensionConstants.AUTHORIZED_STATUS :
                 ConsentExtensionConstants.REJECTED_STATUS;
 
-        ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
-                .bindUserAccountsToConsent(consentResource, consentData.getUserId(),
-                        consentData.getAuthResource().getAuthorizationID(), getConsentedAccounts(payload, isApproved),
-                        authStatus, consentStatus);
+        ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
 
+        // Create the consent if it is not pre initiated.
+        if (isPreInitiatedConsent) {
+           authorizationId = consentData.getAuthResource().getAuthorizationID();
+        } else {
+            consentCoreService.createAuthorizableConsent(consentResource, userId,
+                    authStatus, ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
+            authorizationId = consentCoreService.searchAuthorizations(
+                    consentResource.getConsentID()).get(0).getAuthorizationID();
+        }
+        consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(), authorizationId,
+                getConsentedAccounts(payload, isApproved), authStatus, consentStatus);
     }
 
     /**
