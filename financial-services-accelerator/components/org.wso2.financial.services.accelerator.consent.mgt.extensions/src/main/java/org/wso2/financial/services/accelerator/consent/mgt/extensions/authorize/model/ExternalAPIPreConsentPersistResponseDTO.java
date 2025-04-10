@@ -33,6 +33,7 @@ public class ExternalAPIPreConsentPersistResponseDTO {
     private String consentType;
     private Map<String, String> consentAttributes;
     private List<Authorization> authorizations;
+    private List<AmendedAuthorization> amendments;
 
     public Map<String, Object> getConsentPayload() {
         return consentPayload;
@@ -99,8 +100,17 @@ public class ExternalAPIPreConsentPersistResponseDTO {
         this.authorizations = authorizations;
     }
 
+    public List<AmendedAuthorization> getAmendments() {
+        return amendments;
+    }
+
+    public void setAmendments(
+            List<AmendedAuthorization> amendments) {
+        this.amendments = amendments;
+    }
+
     /**
-     * ConsentedUser
+     * Authorization
      */
     public static class Authorization {
 
@@ -143,7 +153,60 @@ public class ExternalAPIPreConsentPersistResponseDTO {
     }
 
     /**
-     * Account
+     * Amended Authorization
+     */
+    public static class AmendedAuthorization {
+
+        private String authorizationId;
+        private String authorizationType;
+        private String authorizationStatus;
+        private List<Resource> consentedResources;
+        private List<AmendedResource> amendedResources;
+
+        public String getAuthorizationId() {
+            return authorizationId;
+        }
+
+        public void setAuthorizationId(String userId) {
+            this.authorizationId = userId;
+        }
+
+        public String getAuthorizationType() {
+            return authorizationType;
+        }
+
+        public void setAuthorizationType(String authorizationType) {
+            this.authorizationType = authorizationType;
+        }
+
+        public String getAuthorizationStatus() {
+            return authorizationStatus;
+        }
+
+        public void setAuthorizationStatus(String authorizationStatus) {
+            this.authorizationStatus = authorizationStatus;
+        }
+
+        public List<Resource> getConsentedResources() {
+            return consentedResources;
+        }
+
+        public void setConsentedResources(List<Resource> consentedResources) {
+            this.consentedResources = consentedResources;
+        }
+
+        public List<AmendedResource> getAmendedResources() {
+            return amendedResources;
+        }
+
+        public void setAmendedResources(
+                List<AmendedResource> amendedResources) {
+            this.amendedResources = amendedResources;
+        }
+    }
+
+    /**
+     * Resource
      */
     public static class Resource {
 
@@ -157,6 +220,40 @@ public class ExternalAPIPreConsentPersistResponseDTO {
 
         public void setResourceId(String resourceId) {
             this.resourceId = resourceId;
+        }
+
+        public String getPermission() {
+            return permission;
+        }
+
+        public void setPermission(String permission) {
+            this.permission = permission;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+    }
+
+    /**
+     * Amended Resource
+     */
+    public static class AmendedResource {
+
+        private String mappingId;
+        private String permission;
+        private String status;
+
+        public String getMappingId() {
+            return mappingId;
+        }
+
+        public void setMappingId(String mappingId) {
+            this.mappingId = mappingId;
         }
 
         public String getPermission() {

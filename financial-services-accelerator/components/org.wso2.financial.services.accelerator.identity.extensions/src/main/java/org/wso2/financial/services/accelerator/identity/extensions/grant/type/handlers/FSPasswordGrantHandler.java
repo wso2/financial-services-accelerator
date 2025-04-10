@@ -25,11 +25,7 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.token.handlers.grant.PasswordGrantHandler;
-import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -48,12 +44,7 @@ public class FSPasswordGrantHandler extends PasswordGrantHandler {
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
 
-                if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                        .PRE_ACCESS_TOKEN_GENERATION)) {
-                    // Perform FS customized behaviour with service extension
-                    IdentityCommonUtils.appendParametersToTokenResponseWithServiceExtension(oAuth2AccessTokenRespDTO,
-                            tokReqMsgCtx);
-                } else if (fsGrantHandler != null) {
+                if (fsGrantHandler != null) {
                     // Perform FS customized behaviour
                     fsGrantHandler.appendParametersToTokenResponse(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 }
@@ -63,9 +54,6 @@ public class FSPasswordGrantHandler extends PasswordGrantHandler {
             }
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception(e.getMessage());
-        } catch (FinancialServicesException e) {
-            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
-            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
         }
         return super.issue(tokReqMsgCtx);
     }

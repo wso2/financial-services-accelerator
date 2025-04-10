@@ -89,10 +89,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(appRegistrationRequest));
 
-            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST)) {
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION)) {
                 log.debug("Executing external service call to get custom attributes to store");
                 attributesToStore = callExternalService(appRequestObj, ssaParams, null,
-                        ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+                        ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
             } else if (getFSDCRExtension() != null) {
                 log.debug("Executing custom DCR extension to get custom attributes to store");
                 return getFSDCRExtension().validateDCRRegisterAttributes(appRequestObj, ssaParams);
@@ -156,10 +156,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(applicationUpdateRequest));
 
-            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST)) {
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_UPDATE)) {
                 log.debug("Executing external service call to get custom attributes to store");
                 attributesToStore = callExternalService(appRequestObj, ssaParams, spProperties,
-                        ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST);
+                        ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_UPDATE);
             } else if (getFSDCRExtension() != null) {
                 log.debug("Executing custom DCR extension to get custom attributes to store");
                 return getFSDCRExtension().validateDCRUpdateAttributes(appRequestObj, ssaParams, spProperties);
@@ -209,7 +209,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_RETRIEVAL)) {
             log.debug("Executing external service call to get custom attributes to store");
             return callExternalServiceForRetrieval(ssaParams);
         }
@@ -261,7 +261,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         for (Map<String, Object> validator : dcrValidators.values()) {
             if (Boolean.parseBoolean(validator.get(IdentityCommonConstants.ENABLE).toString())) {
                 DynamicClientRegistrationValidator dcrValidator = FinancialServicesUtils.getClassInstanceFromFQN(
-                                validator.get(IdentityCommonConstants.CLASS).toString(),
+                        validator.get(IdentityCommonConstants.CLASS).toString(),
                         DynamicClientRegistrationValidator.class);
                 validatorMap.put(Integer.parseInt(validator.get(IdentityCommonConstants.PRIORITY).toString()),
                         dcrValidator);
@@ -289,10 +289,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
      * @throws DCRMClientException      When an error occurs while getting custom attributes to store.
      */
     private static Map<String, Object> callExternalService(JSONObject appRequest,
-                                                                Map<String, Object> ssaParams,
-                                                                List<JSONObject> spProperties,
-                                                                ServiceExtensionTypeEnum serviceExtensionTypeEnum)
-                        throws DCRMClientException  {
+                                                           Map<String, Object> ssaParams,
+                                                           List<JSONObject> spProperties,
+                                                           ServiceExtensionTypeEnum serviceExtensionTypeEnum)
+            throws DCRMClientException  {
 
         try {
             log.debug("Executing external service call to get custom attributes to store");
@@ -330,7 +330,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             log.debug("Executing external service call to get custom attributes to store");
             ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(
                     getExternalServiceRequestForRetrieval(ssaParams),
-                    ServiceExtensionTypeEnum.ENRICH_DCR_RETRIEVAL_REQUEST);
+                    ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_RETRIEVAL);
             if (StatusEnum.SUCCESS.equals(response.getStatus())) {
                 JSONObject attributesToStoreJson = new JSONObject(response.getData()
                         .get(IdentityCommonConstants.CLIENT_DATA)

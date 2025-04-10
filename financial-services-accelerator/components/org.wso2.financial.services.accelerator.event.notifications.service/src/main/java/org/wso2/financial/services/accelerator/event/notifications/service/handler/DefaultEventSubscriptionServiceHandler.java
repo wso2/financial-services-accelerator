@@ -91,13 +91,13 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
 
             EventSubscription eventSubscription;
             if (externalServiceResponse == null) {
-                eventSubscription = mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                eventSubscription = mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.VALIDATE_EVENT_SUBSCRIPTION,
                         eventSubscriptionRequestDto, null);
             } else {
                 if (HttpStatus.SC_OK != externalServiceResponse.getResponseStatus()) {
                     return externalServiceResponse;
                 }
-                eventSubscription = mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                eventSubscription = mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.VALIDATE_EVENT_SUBSCRIPTION,
                         eventSubscriptionRequestDto, (JSONObject) externalServiceResponse.getResponseBody());
             }
 
@@ -256,13 +256,15 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
 
             EventSubscription eventSubscription;
             if (externalServiceResponse == null) {
-                eventSubscription =  mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                eventSubscription =  mapEventSubscriptionDtoToModel(
+                        ServiceExtensionTypeEnum.VALIDATE_EVENT_SUBSCRIPTION,
                         eventSubscriptionUpdateRequestDto, null);
             } else {
                 if (HttpStatus.SC_OK != externalServiceResponse.getResponseStatus()) {
                     return externalServiceResponse;
                 }
-                eventSubscription =  mapEventSubscriptionDtoToModel(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION,
+                eventSubscription =  mapEventSubscriptionDtoToModel(
+                        ServiceExtensionTypeEnum.VALIDATE_EVENT_SUBSCRIPTION,
                         eventSubscriptionUpdateRequestDto, (JSONObject) externalServiceResponse.getResponseBody());
             }
 
@@ -468,12 +470,12 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         data.put(EventNotificationConstants.EVENT_SUBSCRIPTION_DATA, eventSubscription);
         data.put(EventNotificationConstants.EVENT_TYPE_PARAM, operation);
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_SUBSCRIPTION)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
                     data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.PRE_EVENT_SUBSCRIPTION);
+                        ServiceExtensionTypeEnum.VALIDATE_EVENT_SUBSCRIPTION);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     EventSubscriptionResponse eventSubscriptionResponse = new EventSubscriptionResponse();
                     eventSubscriptionResponse.setResponseStatus(response.getErrorCode());
@@ -510,11 +512,12 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         data.put(EventNotificationConstants.EVENT_SUBSCRIPTION_DATA, new JSONObject(eventSubscription));
         data.put(EventNotificationConstants.EVENT_TYPE_PARAM, operation);
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_EVENT_SUBSCRIPTION)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(
+                ServiceExtensionTypeEnum.ENRICH_EVENT_SUBSCRIPTION_RESPONSE)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.POST_EVENT_SUBSCRIPTION);
+                        ServiceExtensionTypeEnum.ENRICH_EVENT_SUBSCRIPTION_RESPONSE);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
                     throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
@@ -546,11 +549,12 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
         data.put(EventNotificationConstants.EVENT_SUBSCRIPTION_DATA, eventSubscriptionList);
         data.put(EventNotificationConstants.EVENT_TYPE_PARAM, operation);
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_EVENT_SUBSCRIPTION)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(
+                ServiceExtensionTypeEnum.ENRICH_EVENT_SUBSCRIPTION_RESPONSE)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.POST_EVENT_SUBSCRIPTION);
+                        ServiceExtensionTypeEnum.ENRICH_EVENT_SUBSCRIPTION_RESPONSE);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
                     throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),

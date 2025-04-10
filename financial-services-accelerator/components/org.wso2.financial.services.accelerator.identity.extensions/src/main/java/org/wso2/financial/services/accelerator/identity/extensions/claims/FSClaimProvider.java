@@ -18,30 +18,21 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
-import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
-import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+
 
 /**
  * FS specific claim provider.
@@ -56,20 +47,7 @@ public class FSClaimProvider implements ClaimProvider {
                                                    OAuth2AuthorizeRespDTO authorizeRespDTO)
             throws IdentityOAuth2Exception {
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                .PRE_ID_TOKEN_GENERATION)) {
-            // Perform FS customized behaviour with service extension
-            try {
-                return getAdditionalIdTokenClaimsWithServiceExtension(
-                        authAuthzReqMessageContext, authorizeRespDTO);
-            } catch (FinancialServicesException e) {
-                log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
-                throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
-            } catch (JsonProcessingException e) {
-                log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
-                throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR);
-            }
-        } else if (getClaimProvider() != null) {
+        if (getClaimProvider() != null) {
             // Perform FS customized behaviour
             return getClaimProvider().getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO);
         } else {
@@ -84,17 +62,7 @@ public class FSClaimProvider implements ClaimProvider {
             throws IdentityOAuth2Exception {
 
         Map<String, Object> additionalClaims;
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                .PRE_ID_TOKEN_GENERATION)) {
-            // Perform FS customized behaviour with service extension
-            try {
-                additionalClaims = getAdditionalIdTokenClaimsWithServiceExtension(
-                        tokenReqMessageContext, tokenRespDTO);
-            } catch (FinancialServicesException e) {
-                log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
-                throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
-            }
-        } else if (getClaimProvider() != null) {
+        if (getClaimProvider() != null) {
             // Perform FS customized behaviour
             additionalClaims = getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
         } else {
@@ -148,45 +116,6 @@ public class FSClaimProvider implements ClaimProvider {
         return new HashMap<>();
     }
 
-    private Map<String, Object> getAdditionalIdTokenClaimsWithServiceExtension(
-            OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
-            throws IdentityOAuth2Exception, FinancialServicesException, JsonProcessingException {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.USER_ID, authAuthzReqMessageContext.getAuthorizationReqDTO()
-                .getUser().getUserName());
-        data.put(IdentityCommonConstants.CONSENT_ID, IdentityCommonUtils.getConsentId(authAuthzReqMessageContext));
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_ID_TOKEN_GENERATION);
-
-        return processResponseAndGetClaims(response);
-    }
-
-    private Map<String, Object> getAdditionalIdTokenClaimsWithServiceExtension(
-            OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO)
-            throws IdentityOAuth2Exception, FinancialServicesException {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.USER_ID, tokenReqMessageContext.getAuthorizedUser().getUserName());
-        data.put(IdentityCommonConstants.CONSENT_ID, IdentityCommonUtils
-                .getConsentId(tokenReqMessageContext.getScope()));
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), data, OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_TOKEN_RESPONSE);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_ID_TOKEN_GENERATION);
-
-        return processResponseAndGetClaims(response);
-    }
 
     private Map<String, Object> processResponseAndGetClaims(ExternalServiceResponse response)
             throws IdentityOAuth2Exception {

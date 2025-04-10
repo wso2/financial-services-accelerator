@@ -21,14 +21,12 @@ package org.wso2.financial.services.accelerator.identity.extensions.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.nimbusds.jose.JWSAlgorithm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
@@ -43,23 +41,16 @@ import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
-import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
-import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.Generated;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
@@ -79,7 +70,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -413,126 +403,6 @@ public class IdentityCommonUtils {
             String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
             throw new IdentityOAuth2Exception(errMsg, errDesc);
-        }
-    }
-
-    /**
-     * Get approved scopes by invoking the service extension endpoint
-     *
-     * @param oauthAuthzMsgCtx
-     * @param consentId
-     * @return
-     * @throws IdentityOAuth2Exception
-     */
-    public static String[] getApprovedScopesWithServiceExtension(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
-                                                           String consentId)
-            throws IdentityOAuth2Exception, FinancialServicesException {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
-        data.put(IdentityCommonConstants.CONSENT_ID, consentId);
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
-                data, OperationEnum.GET_APPROVED_SCOPES);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION);
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("approvedScopes")) {
-            throw new IdentityOAuth2Exception("Missing approvedScopes array in response payload.");
-        }
-
-        ArrayNode approvedScopesArray = (ArrayNode) responseData.get("approvedScopes");
-        List<String> scopesList = new ArrayList<>();
-        approvedScopesArray.forEach(node -> scopesList.add(node.asText()));
-
-        return scopesList.toArray(new String[0]);
-    }
-
-    /**
-     * Get refresh token validity period by invoking service extension endpoint
-     *
-     * @param oauthAuthzMsgCtx
-     * @param consentId
-     * @return
-     * @throws IdentityOAuth2Exception
-     */
-    public static long getRefreshTokenValidityPeriodWithServiceExtension(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
-                                                                   String consentId)
-            throws IdentityOAuth2Exception, FinancialServicesException {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
-        data.put(IdentityCommonConstants.CONSENT_ID, consentId);
-
-        ConsentResource consentResource = null;
-        try {
-            consentResource = identityExtensionsDataHolder.getConsentCoreService().getConsent(consentId, false);
-            data.put(IdentityCommonConstants.VALIDITY_PERIOD, consentResource.getValidityPeriod());
-        } catch (ConsentManagementException e) {
-            log.error(String.format("Error while retrieving the consent for consent id: %s",
-                    consentId.replaceAll("[\r\n]", "")));
-            throw new IdentityOAuth2Exception("Error while retrieving the consent");
-        }
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
-                data, OperationEnum.GET_REFRESH_TOKEN_VALIDITY_PERIOD);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION);
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("refreshTokenValidityPeriod")) {
-            throw new IdentityOAuth2Exception("Missing refreshTokenValidityPeriod in response payload.");
-        }
-
-        return responseData.get("refreshTokenValidityPeriod").asLong();
-    }
-
-    public static void appendParametersToTokenResponseWithServiceExtension(
-            OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO, OAuthTokenReqMessageContext tokReqMsgCtx)
-            throws FinancialServicesException, IdentityOAuth2Exception {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.GRANT_TYPE, tokReqMsgCtx.getOauth2AccessTokenReqDTO().getGrantType());
-        data.put(IdentityCommonConstants.SCOPES, tokReqMsgCtx.getScope());
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), data, OperationEnum.APPEND_PARAMETERS_TO_TOKEN_RESPONSE);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION);
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("parameters")) {
-            throw new IdentityOAuth2Exception("Missing parameters in response payload.");
-        }
-
-        for (JsonNode claimNode : responseData.get("parameters")) {
-            if (!claimNode.hasNonNull("key") || !claimNode.hasNonNull("value")) {
-                continue;
-            }
-
-            String key = claimNode.get("key").asText();
-            String value = claimNode.get("value").asText();
-
-            // Add only if key is not empty
-            if (!key.isEmpty()) {
-                oAuth2AccessTokenRespDTO.addParameter(key, value);
-            }
         }
     }
 

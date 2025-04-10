@@ -83,7 +83,8 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
                 // Perform FS default validations
                 validate(defaultValidateRequestObject(fsRequestObject, dataMap));
 
-                if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_USER_AUTHORIZATION)) {
+                if (ServiceExtensionUtils.isInvokeExternalService(
+                            ServiceExtensionTypeEnum.VALIDATE_AUTHORIZATION_REQUEST)) {
                     // Perform FS customized validations with service extension
                     validate(validateRequestObjectWithServiceExtension(fsRequestObject, dataMap));
                 } else if (fsDefaultRequestObjectValidator != null) {
@@ -304,7 +305,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
 
         // Invoke external service
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_USER_AUTHORIZATION);
+                ServiceExtensionTypeEnum.VALIDATE_AUTHORIZATION_REQUEST);
 
         try {
             IdentityCommonUtils.serviceExtensionActionStatusValidation(response);

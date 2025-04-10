@@ -106,7 +106,7 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
         try {
             response = ServiceExtensionUtils.invokeExternalServiceCall(
                     getConsentValidateServiceRequest(consentValidateData),
-                    ServiceExtensionTypeEnum.CONSENT_VALIDATION);
+                    ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS);
             if (StatusEnum.SUCCESS.equals(response.getStatus())) {
                 consentValidationResult.setValid(true);
             } else {

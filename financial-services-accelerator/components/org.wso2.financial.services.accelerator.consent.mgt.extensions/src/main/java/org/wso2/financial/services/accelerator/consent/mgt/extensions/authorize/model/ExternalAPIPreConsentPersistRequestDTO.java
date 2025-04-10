@@ -17,6 +17,8 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+
 import java.util.Map;
 
 /**
@@ -25,16 +27,16 @@ import java.util.Map;
 public class ExternalAPIPreConsentPersistRequestDTO {
 
     private String consentId;
+    private DetailedConsentResource consentResource;
+    private Map<String, Object> consumerInputData;
     private boolean approved;
-    private String consentType;
-    private Map<String, Object> metadata;
 
-    public ExternalAPIPreConsentPersistRequestDTO(String consentId, boolean approved, String consentType,
-                                                  Map<String, Object> metadata) {
+    public ExternalAPIPreConsentPersistRequestDTO(String consentId, DetailedConsentResource consentResource,
+                                                  Map<String, Object> consumerInputData, boolean approved) {
         this.consentId = consentId;
+        this.consentResource = consentResource;
+        this.consumerInputData = consumerInputData;
         this.approved = approved;
-        this.consentType = consentType;
-        this.metadata = metadata;
     }
 
     public String getConsentId() {
@@ -45,27 +47,28 @@ public class ExternalAPIPreConsentPersistRequestDTO {
         this.consentId = consentId;
     }
 
+    public DetailedConsentResource getConsentResource() {
+        return consentResource;
+    }
+
+    public void setConsentResource(
+            DetailedConsentResource consentResource) {
+        this.consentResource = consentResource;
+    }
+
+    public Map<String, Object> getConsumerInputData() {
+        return consumerInputData;
+    }
+
+    public void setConsumerInputData(Map<String, Object> consumerInputData) {
+        this.consumerInputData = consumerInputData;
+    }
+
     public boolean isApproved() {
         return approved;
     }
 
     public void setApproved(boolean approved) {
         this.approved = approved;
-    }
-
-    public String getConsentType() {
-        return consentType;
-    }
-
-    public void setConsentType(String consentType) {
-        this.consentType = consentType;
-    }
-
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
     }
 }

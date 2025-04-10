@@ -72,13 +72,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
         isExternalPreConsentRetrievalEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
         isExternalPreConsentGenerationEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_GENERATION);
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
         isExternalPostConsentGenerationEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.POST_CONSENT_GENERATION);
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOCATION);
     }
 
     @Override
