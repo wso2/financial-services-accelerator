@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.ServiceExt
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.ArrayList;
@@ -52,23 +53,18 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
 
         try {
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
-                OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
-
-                if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                        .PRE_ACCESS_TOKEN_GENERATION)) {
+                boolean issueRefreshToken = true;
+                if (ServiceExtensionUtils.isInvokeExternalService(
+                        ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION)) {
                     // Perform FS customized behaviour with service extension
-                    IdentityCommonUtils.appendParametersToTokenResponseWithServiceExtension(oAuth2AccessTokenRespDTO,
-                            tokReqMsgCtx);
+                    issueRefreshToken = IdentityCommonUtils.issueRefreshTokenWithServiceExtension(tokReqMsgCtx);
                 } else if (fsGrantHandler != null) {
                     // Perform FS customized behaviour
-                    fsGrantHandler.appendParametersToTokenResponse(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
+                    issueRefreshToken = fsGrantHandler.issueRefreshToken(tokReqMsgCtx);
                 }
 
-                tokReqMsgCtx.setScope(IdentityCommonUtils.removeInternalScopes(tokReqMsgCtx.getScope()));
-                if (tokReqMsgCtx.getScope().length == 0) {
-                    oAuth2AccessTokenRespDTO.setAuthorizedScopes("");
-                }
-                return oAuth2AccessTokenRespDTO;
+                tokReqMsgCtx.addProperty(IdentityCommonConstants.ISSUE_REFRESH_TOKEN, issueRefreshToken);
+                return super.issue(tokReqMsgCtx);
             }
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception(e.getMessage());
