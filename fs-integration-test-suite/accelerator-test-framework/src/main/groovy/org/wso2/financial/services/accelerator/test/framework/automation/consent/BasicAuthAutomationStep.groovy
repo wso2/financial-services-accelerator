@@ -18,13 +18,10 @@
 
 package org.wso2.financial.services.accelerator.test.framework.automation.consent
 
-import org.wso2.openbanking.test.framework.automation.AutomationMethod
-import org.wso2.openbanking.test.framework.automation.BrowserAutomationStep
-import org.wso2.openbanking.test.framework.automation.OBBrowserAutomation
-import org.wso2.openbanking.test.framework.constant.OBConstants
-import org.wso2.openbanking.test.framework.constant.OBPageObjects
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import org.wso2.bfsi.test.framework.automation.AutomationMethod
+import org.wso2.bfsi.test.framework.automation.BrowserAutomationStep
+import org.wso2.bfsi.test.framework.automation.BrowserAutomation
+import org.wso2.bfsi.test.framework.constant.Constants
 import org.openqa.selenium.By
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.remote.RemoteWebDriver
@@ -45,24 +42,24 @@ class BasicAuthAutomationStep implements BrowserAutomationStep {
     }
 
     @Override
-    void execute(RemoteWebDriver webDriver, OBBrowserAutomation.AutomationContext context) {
+    void execute(RemoteWebDriver webDriver, BrowserAutomation.AutomationContext context) {
         WebDriverWait wait = new WebDriverWait(webDriver, 30)
         AutomationMethod driver = new AutomationMethod(webDriver)
         webDriver.navigate().to(authorizeUrl)
 
-        driver.executeTextField(OBPageObjects.USERNAME_FIELD_ID, acceleratorConfiguration.getUserPSUName())
-        driver.executeTextField(OBPageObjects.PASSWORD_FIELD_ID, acceleratorConfiguration.getUserPSUPWD())
-        driver.submitButtonXpath(OBPageObjects.AUTH_SIGNIN_XPATH)
+        driver.executeTextField(PageObjects.USERNAME_FIELD_ID, acceleratorConfiguration.getUserPSUName())
+        driver.executeTextField(PageObjects.PASSWORD_FIELD_ID, acceleratorConfiguration.getUserPSUPWD())
+        driver.submitButtonXpath(PageObjects.AUTH_SIGNIN_XPATH)
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id(OBPageObjects.PASSWORD_FIELD_ID)))
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id(PageObjects.PASSWORD_FIELD_ID)))
 
         //Second Factor Authentication Step
         try {
             if (webDriver.findElement(By.xpath(PageObjects.LBL_SMSOTP_AUTHENTICATOR)).isDisplayed()) {
-                driver.executeSMSOTP(OBPageObjects.LBL_SMSOTP_AUTHENTICATOR, OBPageObjects.TXT_OTP_CODE_ID,
-                        OBConstants.OTP_CODE)
-                driver.clickButtonXpath(OBPageObjects.BTN_AUTHENTICATE)
-                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(OBPageObjects.BTN_AUTHENTICATE)))
+                driver.executeSMSOTP(PageObjects.LBL_SMSOTP_AUTHENTICATOR, PageObjects.TXT_OTP_CODE_ID,
+                        Constants.OTP_CODE)
+                driver.clickButtonXpath(PageObjects.BTN_AUTHENTICATE)
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(PageObjects.BTN_AUTHENTICATE)))
             }
         } catch (NoSuchElementException e) {
 //            log.info("Second Factor Authentication Step is not configured")

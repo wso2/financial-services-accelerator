@@ -25,7 +25,7 @@
     <parent>
         <artifactId>financial-services-accelerator-modules</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-M2</version>
+        <version>4.0.0-M3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -130,6 +130,8 @@
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#fs#consent/"/>
                                 <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint/target/fs#authenticationendpoint.war"
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/fs#authenticationendpoint/"/>
+                                <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.event.notifications.endpoint/target/api#fs#event-notifications.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#fs#event-notifications/"/>
                             </target>
                         </configuration>
                         <goals>

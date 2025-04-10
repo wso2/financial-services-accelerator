@@ -18,7 +18,8 @@
 
 package org.wso2.financial.services.accelerator.test.framework.constant
 
-import org.wso2.openbanking.test.framework.configuration.OBConfigurationService
+import org.wso2.bfsi.test.framework.constant.Constants
+import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -27,9 +28,9 @@ import java.time.temporal.ChronoUnit
 /**
  * Common Constants of IAM scenarios.
  */
-class ConnectorTestConstants {
+class ConnectorTestConstants extends Constants{
 
-    static OBConfigurationService configurationService = new OBConfigurationService()
+    static ConfigurationService configurationService = new ConfigurationService()
 
     static final String SIGNING_ALGORITHM = configurationService.getCommonSigningAlgorithm()
     public static final Instant DATE_TIME = Instant.now().plus(5, ChronoUnit.DAYS)
@@ -294,4 +295,14 @@ class ConnectorTestConstants {
     final static String SUBMISSION_PATH_INTERNATIONAL_STANDING_ORDERS = "/open-banking/v3.1/pisp/international-standing-orders"
     final static String SUBMISSION_PATH_INTERNATIONAL_SCHEDULE = "/open-banking/v3.1/pisp/international-scheduled-payments"
     final static String SUBMISSION_PATH_FILE_PAYMENTS = "/open-banking/v3.1/pisp/file-payments"
+    final static String REGISTRATION_ENDPOINT = "/api/identity/oauth2/dcr/v1.1/register/"
+
+    final static String URL_EVENT_NOTIFICATION = "/api/fs/event-notifications"
+    final static String URL_EVENT_CREATE = URL_EVENT_NOTIFICATION + "/create-events"
+    final static String URL_EVENT_POLLING = URL_EVENT_NOTIFICATION + "/events"
+    final static String URL_EVENT_SUBSCRIPTION = URL_EVENT_NOTIFICATION + "/subscription"
+    final static String RESOURCE_UPDATE_EVENT_TYPE = "urn_uk_org_openbanking_events_resource-update"
+    final static String URL_EVENT_SUBSCRIPTION_BY_EVENT_TYPE = "/type/" + RESOURCE_UPDATE_EVENT_TYPE
+    final static String X_WSO2_RESOURCE_ID = "x-wso2-resource-id"
+    final static String PATH_EVENT_SUBSCRIPTION_ID = "subscriptionId"
 }

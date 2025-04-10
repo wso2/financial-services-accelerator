@@ -18,8 +18,8 @@
 
 package org.wso2.financial.services.accelerator.test.framework.automation.consent
 
-import org.wso2.openbanking.test.framework.automation.BrowserAutomationStep
-import org.wso2.openbanking.test.framework.automation.OBBrowserAutomation
+import org.wso2.bfsi.test.framework.automation.BrowserAutomationStep
+import org.wso2.bfsi.test.framework.automation.BrowserAutomation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.openqa.selenium.remote.RemoteWebDriver
@@ -46,7 +46,7 @@ class AuthorizationFlowNavigationAutomationStep implements BrowserAutomationStep
     }
 
     @Override
-    void execute(RemoteWebDriver webDriver, OBBrowserAutomation.AutomationContext context) {
+    void execute(RemoteWebDriver webDriver, BrowserAutomation.AutomationContext context) {
 
         webDriver.navigate().to(authorizeUrl)
         webDriver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS)

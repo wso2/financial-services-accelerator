@@ -22,19 +22,21 @@ import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
+import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.application.listener.AbstractApplicationUpdater;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.AbstractApplicationUpdater;
 import org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSGrantHandler;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSIntrospectionDataProvider;
 
 import java.util.Map;
 
@@ -57,6 +59,7 @@ public class IdentityExtensionsDataHolder {
     private static OAuth2Service oAuth2Service;
     private RequestObjectService requestObjectService;
     private ClaimProvider claimProvider;
+    private IntrospectionDataProvider introspectionDataProvider;
     private OAuthAdminServiceImpl oAuthAdminService;
     private ConsentCoreService consentCoreService;
 
@@ -145,17 +148,20 @@ public class IdentityExtensionsDataHolder {
 
         IdentityExtensionsDataHolder.configurationService = configurationService;
         this.configurationMap = configurationService.getConfigurations();
-        abstractApplicationUpdater = (AbstractApplicationUpdater) IdentityCommonUtils.getClassInstanceFromFQN
+        abstractApplicationUpdater = (AbstractApplicationUpdater) FinancialServicesUtils.getClassInstanceFromFQN
                 (configurationService.getConfigurations().get(FinancialServicesConstants.POST_APPLICATION_LISTENER));
-        fsRequestObjectValidator = (FSRequestObjectValidator) IdentityCommonUtils.getClassInstanceFromFQN(
+        fsRequestObjectValidator = (FSRequestObjectValidator) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.REQUEST_VALIDATOR));
-        fsResponseTypeHandler = (FSResponseTypeHandler) IdentityCommonUtils.getClassInstanceFromFQN(
+        fsResponseTypeHandler = (FSResponseTypeHandler) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.RESPONSE_HANDLER));
-        fsGrantHandler = (FSGrantHandler) IdentityCommonUtils.getClassInstanceFromFQN(
+        fsGrantHandler = (FSGrantHandler) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.GRANT_HANDLER));
-        this.setClaimProvider((ClaimProvider) IdentityCommonUtils.getClassInstanceFromFQN(
+        this.setClaimProvider((ClaimProvider) FinancialServicesUtils.getClassInstanceFromFQN(
                 this.configurationMap.get(FinancialServicesConstants.CLAIM_PROVIDER)));
         FSClaimProvider.setClaimProvider(getClaimProvider());
+        this.setIntrospectionDataProvider((IntrospectionDataProvider) FinancialServicesUtils.getClassInstanceFromFQN(
+                this.configurationMap.get(FinancialServicesConstants.INTROSPECTION_DATA_PROVIDER)));
+        FSIntrospectionDataProvider.setIntrospectionDataProvider(getIntrospectionDataProvider());
     }
 
     public void setConfigurationMap(Map<String, Object> confMap) {
@@ -198,6 +204,16 @@ public class IdentityExtensionsDataHolder {
     public void setClaimProvider(ClaimProvider claimProvider) {
 
         this.claimProvider = claimProvider;
+    }
+
+    public IntrospectionDataProvider getIntrospectionDataProvider() {
+
+        return introspectionDataProvider;
+    }
+
+    public void setIntrospectionDataProvider(IntrospectionDataProvider introspectionDataProvider) {
+
+        this.introspectionDataProvider = introspectionDataProvider;
     }
 
     public RealmService getRealmService() {

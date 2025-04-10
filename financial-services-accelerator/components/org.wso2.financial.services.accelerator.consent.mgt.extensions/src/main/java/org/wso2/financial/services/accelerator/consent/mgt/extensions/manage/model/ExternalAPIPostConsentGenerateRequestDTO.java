@@ -17,7 +17,8 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 
 /**
  * ExternalAPIPostConsentGenerateRequestDTO
@@ -25,18 +26,16 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 public class ExternalAPIPostConsentGenerateRequestDTO {
 
     private String consentId;
-    private String status;
+    private ConsentResource consentResource;
     private String resourcePath;
-    private long createdTime;
-    private Object consentPayload;
 
-    public ExternalAPIPostConsentGenerateRequestDTO(DetailedConsentResource consentResource, String resourcePath) {
+
+    public ExternalAPIPostConsentGenerateRequestDTO(ConsentResource consentResource, String resourcePath) {
 
         this.consentId = consentResource.getConsentID();
-        this.status = consentResource.getCurrentStatus();
+        this.consentResource = consentResource;
         this.resourcePath = resourcePath;
-        this.createdTime = consentResource.getCreatedTime();
-        this.consentPayload = consentResource.getReceipt();
+
     }
 
     public String getConsentId() {
@@ -47,12 +46,13 @@ public class ExternalAPIPostConsentGenerateRequestDTO {
         this.consentId = consentId;
     }
 
-    public String getStatus() {
-        return status;
+    public ConsentResource getConsentResource() {
+        return consentResource;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setConsentResource(
+            ConsentResource consentResource) {
+        this.consentResource = consentResource;
     }
 
     public String getResourcePath() {
@@ -63,19 +63,16 @@ public class ExternalAPIPostConsentGenerateRequestDTO {
         this.resourcePath = resourcePath;
     }
 
-    public long getCreatedTime() {
-        return createdTime;
-    }
+    /**
+     * Convert the dto to a JSON object with correct consent resource format.
+     *
+     * @return JSON object
+     */
+    public JSONObject toJson() {
 
-    public void setCreatedTime(long createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public Object getConsentPayload() {
-        return consentPayload;
-    }
-
-    public void setConsentPayload(Object consentPayload) {
-        this.consentPayload = consentPayload;
+        JSONObject dtoJson = new JSONObject(this);
+        JSONObject consentResourceJson = this.consentResource.toJson();
+        dtoJson.put("consentResource", consentResourceJson);
+        return dtoJson;
     }
 }

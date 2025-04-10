@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
@@ -33,6 +34,7 @@ import org.wso2.carbon.identity.application.common.util.IdentityApplicationConst
 import org.wso2.carbon.identity.base.IdentityRuntimeException;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -46,7 +48,6 @@ import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
@@ -56,12 +57,11 @@ import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCache;
-import org.wso2.financial.services.accelerator.identity.extensions.dcr.cache.JwtJtiCacheKey;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -85,33 +85,6 @@ import java.util.stream.Collectors;
 public class IdentityCommonUtils {
 
     private static final Log log = LogFactory.getLog(IdentityCommonUtils.class);
-
-    /**
-     * Method to obtain the Object when the full class path object config is given.
-     *
-     * @param configObject full class path config object
-     * @return new object instance
-     */
-    @Generated(message = "Ignoring since method contains no logics")
-    public static Object getClassInstanceFromFQN(Object configObject) {
-
-        if (configObject == null || StringUtils.isBlank(configObject.toString())) {
-            return null;
-        }
-
-        String classpath = configObject.toString();
-        try {
-            return Class.forName(classpath).getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException e) {
-            log.error(String.format("Class not found: %s",  classpath.replaceAll("[\r\n]", "")));
-            throw new FinancialServicesRuntimeException("Cannot find the defined class", e);
-        } catch (InstantiationException | InvocationTargetException |
-                 NoSuchMethodException | IllegalAccessException e) {
-            //Throwing a runtime exception since we cannot proceed with invalid objects
-            throw new FinancialServicesRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
-        }
-    }
-
 
     /**
      * Remove the internal scopes from the space delimited list of authorized scopes.
@@ -496,7 +469,17 @@ public class IdentityCommonUtils {
             throws IdentityOAuth2Exception {
 
         if (!StatusEnum.SUCCESS.equals(response.getStatus())) {
-            throw new IdentityOAuth2Exception(response.getErrorMessage(), response.getErrorDescription());
+            if (response.getData() == null) {
+                log.error("Unable to locate \"data\" in the response payload");
+                throw new IdentityOAuth2Exception(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE,
+                        FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+            }
+
+            String errMsg = response.getData().path(FinancialServicesConstants.ERROR_MESSAGE)
+                    .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE);
+            String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                    .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+            throw new IdentityOAuth2Exception(errMsg, errDesc);
         }
     }
 
@@ -514,7 +497,7 @@ public class IdentityCommonUtils {
 
         // Construct the payload
         JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, Arrays.toString(oauthAuthzMsgCtx.getApprovedScope()));
+        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
         data.put(IdentityCommonConstants.CONSENT_ID, consentId);
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
@@ -619,6 +602,102 @@ public class IdentityCommonUtils {
                 oAuth2AccessTokenRespDTO.addParameter(key, value);
             }
         }
+    }
+
+    /**
+     * Call Request Object Service and retrieve openbanking intent id.
+     *
+     * @param key session data key
+     * @return openbanking intent id
+     */
+    public static Optional<RequestedClaim>  retrieveIntentIDFromReqObjService(String key, String request)
+            throws IdentityOAuth2Exception {
+        Optional<RequestedClaim> intentClaim;
+        List<RequestedClaim> requestedClaimsForIDToken;
+        String errorMsg = "";
+        try {
+            if ("authorize".equals(request)) {
+                requestedClaimsForIDToken = getRequestedClaims(
+                        new SessionDataCacheKey(key).getSessionDataId(), false);
+                errorMsg = "Failed to obtain Claims from session data key :";
+            } else {
+                requestedClaimsForIDToken = getRequestedClaims(key);
+                errorMsg = "Failed to obtain Claims from token id :";
+            }
+
+            intentClaim = requestedClaimsForIDToken.stream()
+                    .filter(claimParam -> IdentityCommonConstants.OPENBANKING_INTENT_ID.equals(claimParam.getName()))
+                    .findFirst();
+        } catch (IdentityOAuth2Exception e) {
+            throw new IdentityOAuth2Exception(errorMsg + key);
+        }
+
+        return intentClaim;
+    }
+
+    /**
+     * Method to obtain Claims from request object.
+     *
+     * @param sessionDataKey session data key of request
+     * @param isUserInfo     boolean value indicating whether user info claims are required or not
+     * @return List of claims
+     * @throws IdentityOAuth2Exception when failed to obtain claims using the service
+     */
+    @Generated(message = "Ignoring since the method require OSGi services to function.")
+    public static List<RequestedClaim> getRequestedClaims(String sessionDataKey, boolean isUserInfo)
+            throws IdentityOAuth2Exception {
+
+        List<RequestedClaim> requestedClaims = new ArrayList<>();
+        if (sessionDataKey != null && !sessionDataKey.isEmpty()) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Obtaining request claims (without userinfo values ) from OSGi Service");
+                }
+
+                Object serviceObj = PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                        .getOSGiService(RequestObjectService.class, null);
+
+                if (serviceObj instanceof RequestObjectService) {
+                    RequestObjectService requestObjectService = (RequestObjectService) serviceObj;
+                    requestedClaims = requestObjectService.getRequestedClaimsForSessionDataKey(sessionDataKey,
+                            isUserInfo);
+                }
+            } catch (RequestObjectException e) {
+                throw new IdentityOAuth2Exception("Failed to obtain Claims from session data key :" +
+                        sessionDataKey);
+            }
+        }
+        return requestedClaims;
+    }
+
+    /**
+     * Method to obtain Claims from request object.
+     *
+     * @param token token
+     * @return List of claims
+     * @throws IdentityOAuth2Exception when failed to obtain claims using the service
+     */
+    @Generated(message = "Ignoring since the method require OSGi services to function.")
+    public static List<RequestedClaim> getRequestedClaims(String token) throws IdentityOAuth2Exception {
+
+        List<RequestedClaim> requestedClaims = new ArrayList<>();
+        if (token != null && !token.isEmpty()) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Obtaining request claims from OSGi Service");
+                }
+                Object serviceObj = PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                        .getOSGiService(RequestObjectService.class, null);
+
+                if (serviceObj instanceof RequestObjectService) {
+                    RequestObjectService requestObjectService = (RequestObjectService) serviceObj;
+                    requestedClaims = requestObjectService.getRequestedClaimsForIDToken(token);
+                }
+            } catch (RequestObjectException e) {
+                throw new IdentityOAuth2Exception("Failed to obtain Claims from token", e);
+            }
+        }
+        return requestedClaims;
     }
 
 }

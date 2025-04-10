@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentCache;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentConstants;
@@ -41,7 +40,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.builder.ConsentStepsBuilder;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
@@ -54,7 +52,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,12 +83,16 @@ import javax.ws.rs.core.Response;
 public class ConsentAuthorizeEndpoint {
 
     private static final Log log = LogFactory.getLog(ConsentAuthorizeEndpoint.class);
+    private static FinancialServicesConfigParser configParser = null;
+    private static boolean isPreInitiatedConsent = false;
     private static List<ConsentPersistStep> consentPersistSteps = null;
     private static List<ConsentRetrievalStep> consentRetrievalSteps = null;
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public ConsentAuthorizeEndpoint() {
+
+        configParser = FinancialServicesConfigParser.getInstance();
+        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
         initializeConsentSteps();
     }
 
@@ -103,17 +104,8 @@ public class ConsentAuthorizeEndpoint {
         }
         ConsentStepsBuilder consentStepsBuilder = ConsentExtensionExporter.getConsentStepsBuilder();
 
-        boolean isExternalConsentRetrievalEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
-        boolean isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
-
-        if (isExtensionsEnabled && isExternalConsentRetrievalEnabled) {
-            consentRetrievalSteps = Collections.singletonList(new ExternalAPIConsentRetrievalStep());
-        } else if (consentStepsBuilder != null) {
-            consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
-        }
-
         if (consentStepsBuilder != null) {
+            consentRetrievalSteps = consentStepsBuilder.getConsentRetrievalSteps();
             consentPersistSteps = consentStepsBuilder.getConsentPersistSteps();
         }
 
@@ -208,8 +200,13 @@ public class ConsentAuthorizeEndpoint {
         }
 
         executeRetrieval(consentData, jsonObject);
-        if (consentData.getType() == null || consentData.getApplication() == null) {
-            log.error(ConsentConstants.ERROR_NO_TYPE_AND_APP_DATA);
+        if (isPreInitiatedConsent && consentData.getType() == null) {
+            log.error(ConsentConstants.ERROR_NO_CONSENT_TYPE);
+            throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
+                    ConsentConstants.ERROR_SERVER_ERROR, state);
+        }
+        if (consentData.getApplication() == null) {
+            log.error(ConsentConstants.ERROR_NO_APP_DATA);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
                     ConsentConstants.ERROR_SERVER_ERROR, state);
         }
@@ -314,6 +311,7 @@ public class ConsentAuthorizeEndpoint {
                         String value = cookiesJson.getString(key);
                         cookiesMap.put(key, value);
                     });
+                    consentPersistData.setBrowserCookies(cookiesMap);
                 }
             }
 

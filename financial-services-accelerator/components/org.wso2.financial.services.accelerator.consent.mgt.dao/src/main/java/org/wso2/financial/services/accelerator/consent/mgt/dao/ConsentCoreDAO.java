@@ -56,6 +56,19 @@ public interface ConsentCoreDAO {
             throws ConsentDataInsertionException;
 
     /**
+     * This method is used to update an existing consent resource in the database.
+     * The following fields will be updated: receipt, consent type, current status,
+     * consent frequency, validity period, recurring indicator, and updated time.
+     * The client ID and created time will not be updated, as they are considered immutable.
+     *
+     * @param connection      connection object
+     * @param consentResource the consent resource object containing updated values
+     * @throws ConsentDataUpdationException thrown if a database error occurs or the update fails
+     */
+    void updateConsentResource(Connection connection, ConsentResource consentResource)
+            throws ConsentDataUpdationException;
+
+    /**
      * This method is used to retrieve a consent resource for the provided consent ID (without associated consent
      * attributes).
      *

@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
 
+import org.json.JSONObject;
+
 import java.util.Map;
 
 /**
@@ -48,7 +50,8 @@ public class ConsentResource {
     }
 
     public ConsentResource(String clientID, String receipt, String consentType, int consentFrequency,
-                           long validityPeriod, boolean recurringIndicator, String currentStatus) {
+                           long validityPeriod, boolean recurringIndicator, String currentStatus,
+                           Map<String, String> consentAttributes) {
         this.clientID = clientID;
         this.receipt = receipt;
         this.consentType = consentType;
@@ -56,6 +59,7 @@ public class ConsentResource {
         this.validityPeriod = validityPeriod;
         this.recurringIndicator = recurringIndicator;
         this.currentStatus = currentStatus;
+        this.consentAttributes = consentAttributes;
     }
 
     public ConsentResource(String consentID, String clientID, String receipt, String consentType,
@@ -71,6 +75,26 @@ public class ConsentResource {
         this.currentStatus = currentStatus;
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
+    }
+
+    /**
+     * Constructor to create a consent resource from a detailed consent resource.
+     * @param detailedConsentResource Detailed consent resource
+     */
+    public ConsentResource(DetailedConsentResource detailedConsentResource) {
+
+        this.consentID = detailedConsentResource.getConsentID();
+        this.clientID = detailedConsentResource.getClientID();
+        this.receipt = detailedConsentResource.getReceipt();
+        this.consentType = detailedConsentResource.getConsentType();
+        this.consentFrequency = detailedConsentResource.getConsentFrequency();
+        this.validityPeriod = detailedConsentResource.getValidityPeriod();
+        this.recurringIndicator = detailedConsentResource.isRecurringIndicator();
+        this.currentStatus = detailedConsentResource.getCurrentStatus();
+        this.createdTime = detailedConsentResource.getCreatedTime();
+        this.updatedTime = detailedConsentResource.getUpdatedTime();
+        this.consentAttributes = detailedConsentResource.getConsentAttributes();
+
     }
 
     public long getUpdatedTime() {
@@ -182,4 +206,18 @@ public class ConsentResource {
 
         this.createdTime = createdTime;
     }
+
+    /**
+     * Convert to JSON object with correct receipt format.
+     *
+     * @return JSON object
+     */
+    public JSONObject toJson() {
+
+        JSONObject consentResourceJson = new JSONObject(this);
+        JSONObject receiptJson = new JSONObject(this.getReceipt());
+        consentResourceJson.put("receipt", receiptJson);
+        return consentResourceJson;
+    }
+
 }

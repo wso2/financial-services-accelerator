@@ -104,8 +104,8 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
      * @throws IdentityOAuth2Exception If an error occurred while issuing the code.
      */
     @Generated(message = "Cannot test super calls")
-    OAuth2AuthorizeRespDTO issueCode(
-            OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) throws IdentityOAuth2Exception {
+    OAuth2AuthorizeRespDTO issueCode(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext)
+            throws IdentityOAuth2Exception {
 
         return super.issue(oAuthAuthzReqMessageContext);
     }
