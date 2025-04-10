@@ -151,12 +151,12 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         JSONObject data = new JSONObject();
         data.put(EventNotificationConstants.EVENT_POLLING_PAYLOAD, eventPolling);
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_POLLING)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
                     data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.PRE_EVENT_POLLING);
+                        ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     EventPollingResponse eventPollingResponse = new EventPollingResponse();
                     eventPollingResponse.setStatus(response.getErrorCode());
@@ -183,11 +183,11 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         JSONObject data = new JSONObject();
         data.put(EventNotificationConstants.EVENT_POLLING, new JSONObject(aggregatedPollingResponse));
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_EVENT_POLLING)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.POST_EVENT_POLLING);
+                        ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
                     throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),

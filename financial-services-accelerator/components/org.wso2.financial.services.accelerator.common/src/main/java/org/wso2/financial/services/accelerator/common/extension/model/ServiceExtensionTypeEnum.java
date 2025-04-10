@@ -45,6 +45,7 @@ public enum ServiceExtensionTypeEnum {
     CONSENT_REVOCATION_BY_ADMIN("consent_revocation_admin"),
     CONSENT_SEARCH_BY_ADMIN("consent_search_admin"),
     ERROR_MAPPER("error_mapper");
+    MAP_ACCELERATOR_ERROR_RESPONSE("map-accelerator-error-response");
 
     private final String type;
 

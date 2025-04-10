@@ -57,12 +57,7 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
 
-                if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                        .PRE_ACCESS_TOKEN_GENERATION)) {
-                    // Perform FS customized behaviour with service extension
-                    IdentityCommonUtils.appendParametersToTokenResponseWithServiceExtension(oAuth2AccessTokenRespDTO,
-                            tokReqMsgCtx);
-                } else if (fsGrantHandler != null) {
+                if (fsGrantHandler != null) {
                     // Perform FS customized behaviour
                     fsGrantHandler.appendParametersToTokenResponse(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 }
@@ -71,9 +66,6 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
             }
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception(e.getMessage());
-        } catch (FinancialServicesException e) {
-            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
-            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
         }
         return super.issue(tokReqMsgCtx);
     }
@@ -91,7 +83,7 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
         if (isRegulatory(tokenReqMessageContext)) {
             String grantType = tokenReqMessageContext.getOauth2AccessTokenReqDTO().getGrantType();
             if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                    .PRE_ACCESS_TOKEN_GENERATION)) {
+                    .VALIDATE_REFRESH_TOKEN_ISSUANCE)) {
                 // Perform FS customized behaviour with service extension
                 try {
                     return issueRefreshTokenWithServiceExtension(grantType);
@@ -138,7 +130,7 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
 
         // Invoke external service
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION);
+                ServiceExtensionTypeEnum.VALIDATE_REFRESH_TOKEN_ISSUANCE);
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
