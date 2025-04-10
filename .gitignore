@@ -68,4 +68,4 @@ node_modules/
 **/package-lock.json
 
 
-/financial-services-accelerator/components/org.wso2.financial.services.accelerator.consent.mgt.api/.smarttomcat/
+/.smarttomcat/
