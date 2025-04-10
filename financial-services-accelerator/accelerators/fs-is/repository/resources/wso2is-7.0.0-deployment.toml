@@ -316,8 +316,8 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 [financial_services.extensions.endpoint]
 enabled = false
 base_url = ""
-# allowed extension_types: "post_token_generation", "pre_consent_authorization"
-allowed_extensions = ["post_token_generation"]
+# allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
+allowed_extensions = ["pre_process_client_creation", "pre_process_consent_creation"]
 
 [financial_services.extensions.endpoint.security]
 # supported types : Basic-Auth or OAuth2
