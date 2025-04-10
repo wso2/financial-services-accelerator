@@ -20,11 +20,13 @@ package com.wso2.openbanking.accelerator.identity.dcr.model;
 import com.google.gson.annotations.SerializedName;
 import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.AttributeChecks;
 import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatorySsaChecks;
 import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.SignatureCheck;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateAlgorithm;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateIssuer;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateRequiredParams;
+import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateRequiredSsaParams;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.annotation.ValidateSignature;
 
 import java.util.List;
@@ -39,6 +41,8 @@ import java.util.Map;
         message = "Invalid issuer:" + DCRCommonConstants.INVALID_META_DATA, groups = AttributeChecks.class)
 @ValidateSignature(ssaBody = "softwareStatementBody", ssa = "softwareStatement", message = "Invalid signature for SSA:"
         + DCRCommonConstants.INVALID_SSA, groups = SignatureCheck.class)
+@ValidateRequiredSsaParams(ssa = "softwareStatement", message = "Missing mandatory parameters in SSA:"
+        + DCRCommonConstants.INVALID_SSA, groups = MandatorySsaChecks.class)
 @ValidateAlgorithm(idTokenAlg = "idTokenSignedResponseAlg", reqObjAlg = "requestObjectSigningAlg",
         tokenAuthAlg = "tokenEndPointAuthSigningAlg",
         message = "Invalid signing algorithm sent:" + DCRCommonConstants.INVALID_META_DATA,
