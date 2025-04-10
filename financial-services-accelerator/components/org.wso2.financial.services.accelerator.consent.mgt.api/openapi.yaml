@@ -1,0 +1,260 @@
+openapi: 3.0.1
+info:
+  title: Consent Management API
+  description: Consent Management application API
+  version: 1.0
+paths:
+  /consent/authorizationResource/{authorizationId}:
+    get:
+      operationId: consentAuthorizationIdGet
+      parameters:
+        - name: authorizationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /consent/{consentId}:
+    get:
+      operationId: consentConsentIdGet
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          schema:
+            type: string
+            default: DEFAULT_ORG
+        - name: withAuthorizationResources
+          in: query
+          schema:
+            type: boolean
+            default: true
+        - name: UserId
+          in: query
+          schema:
+            type: string
+        - name: WithAttributes
+          in: query
+          schema:
+            type: boolean
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    put:
+      operationId: consentConsentIdPut
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmendmentResource"
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    delete:
+      operationId: consentConsentIdDelete
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          schema:
+            type: string
+        - name: userId
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: default response
+          content:
+            "*/*": {}
+  /consent/{consentId}/history:
+    get:
+      operationId: consentConsentIdHistoryGet
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          schema:
+            type: string
+            default: DEFAULT_ORG
+        - name: detailed
+          in: query
+          schema:
+            type: boolean
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: actionBy
+          in: query
+          schema:
+            type: string
+        - name: fromTime
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: toTime
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: statusAuditId
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+components:
+  schemas:
+    AmendmentResource:
+      type: object
+      properties:
+        receipt:
+          type: string
+        validityPeriod:
+          type: integer
+          format: int32
+        consentAttributes:
+          type: object
+        authorizationResources:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReauthorizeResource"
+        currentStatus:
+          type: string
+    ReauthorizeResource:
+      type: object
+      properties:
+        authId:
+          type: string
+        authorizationStatus:
+          type: string
+        authorizationType:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/Resource"
+        userID:
+          type: string
+    Resource:
+      type: object
+      properties:
+        resource:
+          type: string
+        consentMappingStatus:
+          type: string
+        resourceMappingId:
+          type: string
+    ConsentStatusUpdateResource:
+      type: object
+      properties:
+        status:
+          type: string
+        reason:
+          type: string
+        userID:
+          type: string
+    AuthorizationResourceDTO:
+      required:
+        - authorizationStatus
+        - authorizationType
+        - userID
+      type: object
+      properties:
+        authorizationStatus:
+          type: string
+        authorizationType:
+          type: string
+        userID:
+          type: string
+        resources:
+          type: array
+          items:
+            type: string
+    ConsentResourceDTO:
+      required:
+        - clientID
+        - consentType
+        - currentStatus
+        - receipt
+        - recurringIndicator
+        - validityPeriod
+      type: object
+      properties:
+        clientID:
+          type: string
+        consentType:
+          type: string
+        currentStatus:
+          type: string
+        receipt:
+          type: string
+        validityPeriod:
+          type: integer
+          format: int32
+        recurringIndicator:
+          type: boolean
+        consentAttributes:
+          type: object
+        authorizationResources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthorizationResourceDTO"
+    BulkConsentStatusUpdateResource:
+      type: object
+      properties:
+        clientID:
+          type: string
+        consentType:
+          type: string
+        applicableStatusesForStateChange:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        reason:
+          type: string
+        userID:
+          type: string

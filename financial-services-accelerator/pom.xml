@@ -40,6 +40,7 @@
         <module>components/org.wso2.financial.services.accelerator.gateway</module>
         <module>components/org.wso2.financial.services.accelerator.event.notifications.service</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
+        <module>components/org.wso2.financial.services.accelerator.consent.mgt.api</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.event.notifications.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.demo.backend</module>
