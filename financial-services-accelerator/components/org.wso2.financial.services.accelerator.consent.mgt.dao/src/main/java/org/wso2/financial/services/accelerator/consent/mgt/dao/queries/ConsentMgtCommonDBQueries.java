@@ -119,6 +119,12 @@ public class ConsentMgtCommonDBQueries {
         return "UPDATE FS_CONSENT_AUTH_RESOURCE SET USER_ID = ?, UPDATED_TIME = ? WHERE AUTH_ID = ?";
     }
 
+    public String getUpdateAuthorizationResourcePreparedStatement() {
+
+        return "UPDATE FS_CONSENT_AUTH_RESOURCE SET AUTH_TYPE = ?, AUTH_STATUS = ?, UPDATED_TIME = ? " +
+                "WHERE AUTH_ID = ?";
+    }
+
     public String getStoreConsentMappingPreparedStatement() {
 
         return "INSERT INTO FS_CONSENT_MAPPING (MAPPING_ID, AUTH_ID, ACCOUNT_ID, PERMISSION, MAPPING_STATUS) VALUES " +
@@ -133,6 +139,11 @@ public class ConsentMgtCommonDBQueries {
     public String getUpdateConsentMappingStatusPreparedStatement() {
 
         return "UPDATE FS_CONSENT_MAPPING SET MAPPING_STATUS = ? WHERE MAPPING_ID = ?";
+    }
+
+    public String getUpdateConsentMappingResourcePreparedStatement() {
+
+        return "UPDATE FS_CONSENT_MAPPING SET PERMISSION = ?, MAPPING_STATUS = ? WHERE MAPPING_ID = ?";
     }
 
     public String getStoreConsentAttributesPreparedStatement() {
