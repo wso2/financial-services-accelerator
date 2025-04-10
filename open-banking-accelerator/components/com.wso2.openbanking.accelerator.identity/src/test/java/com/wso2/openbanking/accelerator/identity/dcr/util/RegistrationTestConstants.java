@@ -50,6 +50,37 @@ public class RegistrationTestConstants {
             "jFYcv2VewJ7K050JMmdIvdODafGei61JQIDrRUT_w0yU4-8WG9IDBI7G4H_GCPWmckJFApZyCnIWeBaEmfe6l2_GQs9VkQq1U1xJXtd" +
             "WAfrzEjbMMnZSvqdoQAISq0y6mQofA0n5g";
 
+    public static final String SSA_WITHOUT_MANDATORY_PARAM = "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiIsImtpZCI6ImNJWW8tN" +
+            "XpYNE9UV1pwSHJtbWlaRFZ4QUNKTSJ9.eyJpYXQiOjE3NDQyODQyNDMsIm5iZiI6MTc0NDI4NDIzOSwiZXhwIjoxNzQ0Mjg3ODQ0LCJ" +
+            "qdGkiOiIyNDdlNjdmNjBmODA0YTk5MTc0NDI4NDI0MyIsImlzcyI6Ik9wZW5CYW5raW5nIEx0ZCIsInNvZnR3YXJlX2Vudmlyb25tZW" +
+            "50Ijoic2FuZGJveHgiLCJzb2Z0d2FyZV9tb2RlIjoiVGVzdCIsInNvZnR3YXJlX2lkIjoiMTJaekZGQnhTTEdFalBab2dSQWJ2RmRzM" +
+            "TE3NDQyODQyNDMiLCJzb2Z0d2FyZV9jbGllbnRfaWQiOiIxMFp6RkZCeFNMR0VqUFpvZ1JBYnZGZHMxIiwic29mdHdhcmVfY2xpZW50" +
+            "X25hbWUiOiJXU08yIE9wZW4gQmFua2luZyBUUFAgKFNhbmRib3gpIiwic29mdHdhcmVfY2xpZW50X2Rlc2NyaXB0aW9uIjoiV1NPMiB" +
+            "PcGVuIEJhbmtpbmcgVFBQIGZvciB0ZXN0aW5nIiwic29mdHdhcmVfdmVyc2lvbiI6MS41LCJzb2Z0d2FyZV9jbGllbnRfdXJpIjoiaH" +
+            "R0cHM6Ly93d3cuZ29vZ2xlLmNvbSIsInNvZnR3YXJlX3JlZGlyZWN0X3VyaXMiOlsiaHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS9yZWRpc" +
+            "mVjdHMvcmVkaXJlY3QxIl0sInNvZnR3YXJlX3JvbGVzIjpbIlBJU1AiLCJBSVNQIiwiQ0JQSUkiXSwidGVzdF9wYXJhbTEiOiIiLCJ0" +
+            "ZXN0X3BhcmFtMiI6bnVsbCwidGVzdF9wYXJhbTMiOjAsInRlc3RfcGFyYW00Ijp7fSwidGVzdF9wYXJhbTUiOltdLCJsb2dvX3VyaSI" +
+            "6InRlc3QiLCJqd2tzX3VyaSI6InRlc3QiLCJzY29wZSI6InRlc3QiLCJvcmdhbmlzYXRpb25fY29tcGV0ZW50X2F1dGhvcml0eV9jbG" +
+            "FpbXMiOnsiYXV0aG9yaXR5X2lkIjoiT0JHQlIiLCJyZWdpc3RyYXRpb25faWQiOiJVbmtub3duMDAxNTgwMDAwMUhRUXJaQUFYIiwic" +
+            "3RhdHVzIjoiQWN0aXZlIiwiYXV0aG9yaXNhdGlvbnMiOlt7Im1lbWJlcl9zdGF0ZSI6IkdCIiwicm9sZXMiOlsiUElTUCIsIkFJU1Ai" +
+            "LCJDQlBJSSJdfSx7Im1lbWJlcl9zdGF0ZSI6IklFIiwicm9sZXMiOlsiUElTUCIsIkNCUElJIiwiQUlTUCJdfSx7Im1lbWJlcl9zdGF" +
+            "0ZSI6Ik5MIiwicm9sZXMiOlsiUElTUCIsIkFJU1AiLCJDQlBJSSJdfV19LCJzb2Z0d2FyZV9sb2dvX3VyaSI6Imh0dHBzOi8vd3d3Lm" +
+            "dvb2dsZS5jb20iLCJvcmdfc3RhdHVzIjoiQWN0aXZlIiwib3JnX2lkIjoiMDAxNTgwMDAwMUhRUXJaQUFYIiwib3JnX25hbWUiOiJXU" +
+            "08yIChVSykgTElNSVRFRCIsIm9yZ19jb250YWN0cyI6W3sibmFtZSI6IlRlY2huaWNhbCIsImVtYWlsIjoic2FjaGluaXNAd3NvMi5j" +
+            "b20iLCJwaG9uZSI6Iis5NDc3NDI3NDM3NCIsInR5cGUiOiJUZWNobmljYWwifSx7Im5hbWUiOiJCdXNpbmVzcyIsImVtYWlsIjoic2F" +
+            "jaGluaXNAd3NvMi5jb20iLCJwaG9uZSI6Iis5NDc3NDI3NDM3NCIsInR5cGUiOiJCdXNpbmVzcyJ9XSwib3JnX2p3a3NfZW5kcG9pbn" +
+            "QiOiJodHRwczovL2tleXN0b3JlLm9wZW5iYW5raW5ndGVzdC5vcmcudWsvMDAxNTgwMDAwMUhRUXJaQUFYLzAwMTU4MDAwMDFIUVFyW" +
+            "kFBWC5qd2tzIiwib3JnX2p3a3NfcmV2b2tlZF9lbmRwb2ludCI6Imh0dHBzOi8va2V5c3RvcmUub3BlbmJhbmtpbmd0ZXN0Lm9yZy51" +
+            "ay8wMDE1ODAwMDAxSFFRclpBQVgvcmV2b2tlZC8wMDE1ODAwMDAxSFFRclpBQVguandrcyIsInNvZnR3YXJlX2p3a3NfZW5kcG9pbnQ" +
+            "iOiJodHRwczovL2tleXN0b3JlLm9wZW5iYW5raW5ndGVzdC5vcmcudWsvMDAxNTgwMDAwMUhRUXJaQUFYLzAwMTU4MDAwMDFIUVFyWk" +
+            "FBWC5qd2tzIiwic29mdHdhcmVfandrc19yZXZva2VkX2VuZHBvaW50IjoiaHR0cHM6Ly9rZXlzdG9yZS5vcGVuYmFua2luZ3Rlc3Qub" +
+            "3JnLnVrLzAwMTU4MDAwMDFIUVFyWkFBWC9yZXZva2VkLzlaekZGQnhTTEdFalBab2dSQWJ2RmQuandrcyIsInNvZnR3YXJlX3BvbGlj" +
+            "eV91cmkiOiJodHRwczovL3d3dy5nb29nbGUuY29tIiwic29mdHdhcmVfdG9zX3VyaSI6Imh0dHBzOi8vd3d3Lmdvb2dsZS5jb20iLCJ" +
+            "zb2Z0d2FyZV9vbl9iZWhhbGZfb2Zfb3JnIjpudWxsfQ.W1SPCi5K3Z1_vboOVNQIpNM648pIAu5TKM0CmvvVfTaC3J9HzqpsePF_jsZ" +
+            "5FFmkAcLJbBx5DOhhxbFIuRBQ-zObxdT0dTCKJfG00OuoRZbefebMzQdzbhqkX304Da0FV03J7YDs4LIMnUk0r_GubdfmOhZtHpfrdY" +
+            "icURlJiR4UvsXc5wub2VmyjFiAriQNsOI137vx0gTHTaAYCazia0C9gQQIy6SW8G0ck53SqoEdrowHlFVUpnrfzI0Y5LGc0zGftpDT7" +
+            "nqpq3dJt7NpxGEzuUO8r3xPDFj6RgTXqpdpQooZ3jfvjHiVFjkM36aGvz8bPSMoWu2uub7DUrlqWA";
+
     public static String registrationRequestJson = "{\n" +
             "  \"iss\": \"9b5usDpbNtmxDcTzs7GzKp\",\n" +
             "  \"iat\": 1593752054,\n" +

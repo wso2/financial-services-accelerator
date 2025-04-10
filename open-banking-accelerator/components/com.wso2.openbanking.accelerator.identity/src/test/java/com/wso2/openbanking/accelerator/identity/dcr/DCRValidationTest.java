@@ -18,6 +18,7 @@
 package com.wso2.openbanking.accelerator.identity.dcr;
 
 import com.google.gson.Gson;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
@@ -32,8 +33,14 @@ import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsData
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.text.ParseException;
@@ -46,13 +53,17 @@ import java.util.Map;
 /**
  * Test for DCR validation.
  */
-public class DCRValidationTest {
+@PrepareForTest({OpenBankingConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
+public class DCRValidationTest extends PowerMockTestCase {
 
     private static final Log log = LogFactory.getLog(DCRValidationTest.class);
-
+    OpenBankingConfigParser openBankingConfigParserMock;
     private RegistrationValidator registrationValidator;
     private RegistrationRequest registrationRequest;
     private static final String NULL = "null";
+    Map<String, Object> configMap = new HashMap<>();
+
 
     @BeforeClass
     public void beforeClass() {
@@ -81,9 +92,79 @@ public class DCRValidationTest {
         IdentityExtensionsDataHolder.getInstance().setDcrRegistrationConfigMap(dcrRegistrationConfMap);
     }
 
+    @BeforeMethod
+    public void mockOpenBankingConfigParser() {
+        openBankingConfigParserMock = Mockito.mock(OpenBankingConfigParser.class);
+        configMap.remove(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS);
+        Mockito.when(openBankingConfigParserMock.getConfiguration()).thenReturn(configMap);
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
+    }
+
+
+    @Test()
+    public void testSSAMandatoryParams() {
+
+        configMap.put(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS, "test_param");
+        registrationRequest.setSoftwareStatement(RegistrationTestConstants.SSA_WITHOUT_MANDATORY_PARAM);
+        try {
+            ValidatorUtils.getValidationViolations(registrationRequest);
+        } catch (OpenBankingException e) {
+            Assert.assertTrue(e.getMessage().contains("Required SSA parameter `test_param` not found"));
+        }
+    }
+    @Test()
+    public void testSSAMandatoryParamsWhenNull() {
+
+        configMap.put(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS, "test_param2");
+        registrationRequest.setSoftwareStatement(RegistrationTestConstants.SSA_WITHOUT_MANDATORY_PARAM);
+        try {
+            ValidatorUtils.getValidationViolations(registrationRequest);
+        } catch (OpenBankingException e) {
+            Assert.assertTrue(e.getMessage().contains("Required SSA parameter `test_param2` is null"));
+        }
+    }
+
+    @Test()
+    public void testSSAMandatoryParamsWhenBlank() {
+
+        configMap.put(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS, "test_param1");
+        registrationRequest.setSoftwareStatement(RegistrationTestConstants.SSA_WITHOUT_MANDATORY_PARAM);
+        try {
+            ValidatorUtils.getValidationViolations(registrationRequest);
+        } catch (OpenBankingException e) {
+            Assert.assertTrue(e.getMessage().contains("Required SSA parameter `test_param1` is blank"));
+        }
+    }
+
+    @Test()
+    public void testSSAMandatoryParamsWhenEmpty() {
+
+        configMap.put(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS, "test_param4");
+        registrationRequest.setSoftwareStatement(RegistrationTestConstants.SSA_WITHOUT_MANDATORY_PARAM);
+        try {
+            ValidatorUtils.getValidationViolations(registrationRequest);
+        } catch (OpenBankingException e) {
+            Assert.assertTrue(e.getMessage().contains("Required SSA parameter `test_param4` is empty"));
+        }
+    }
+
+    @Test()
+    public void testSSAMandatoryParamsWhenEmptyArray() {
+
+        configMap.put(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS, "test_param5");
+        registrationRequest.setSoftwareStatement(RegistrationTestConstants.SSA_WITHOUT_MANDATORY_PARAM);
+        try {
+            ValidatorUtils.getValidationViolations(registrationRequest);
+        } catch (OpenBankingException e) {
+            Assert.assertTrue(e.getMessage().contains("Required SSA parameter `test_param5` is empty"));
+        }
+    }
+
     @Test
     public void testInvalidAlgorithm() {
 
+        registrationRequest.setSoftwareStatement(RegistrationTestConstants.SSA);
         registrationRequest.setIdTokenSignedResponseAlg("RS256");
 
         String decodedSSA = null;
@@ -235,7 +316,7 @@ public class DCRValidationTest {
         try {
             ValidatorUtils.getValidationViolations(registrationRequest);
         } catch (OpenBankingException e) {
-            Assert.assertTrue(e.getMessage().contains("Invalid issuer"));
+            Assert.assertTrue(e.getMessage().contains("Missing mandatory parameters in SSA"));
         }
     }
 
