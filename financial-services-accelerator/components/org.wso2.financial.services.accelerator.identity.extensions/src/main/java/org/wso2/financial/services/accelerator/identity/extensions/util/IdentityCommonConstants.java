@@ -84,10 +84,8 @@ public class IdentityCommonConstants {
     public static final String CONSENT_ID = "consentId";
     public static final String VALIDITY_PERIOD = "validityPeriod";
     public static final String GRANT_TYPE = "grantType";
-    public static final String APP_REG_REQUEST = "clientRegistration";
-    public static final String APP_UPDATE_REQUEST = "clientUpdate";
+    public static final String CLIENT_DATA = "clientData";
     public static final String SSA_PARAMS = "softwareStatement";
-    public static final String SP_PROPERTIES = "clientAppProperties";
-    public static final String ATTRIBUTES_TO_STORE = "attributesToStore";
+    public static final String EXISTING_CLIENT_DATA = "existingClientData";
 }
 

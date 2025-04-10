@@ -37,6 +37,7 @@ public enum ServiceExtensionTypeEnum {
     PRE_TOKEN_INTROSPECTION("pre_token_introspection"),
     VALIDATE_DCR_CREATE_REQUEST("validate_dcr_app_creation"),
     VALIDATE_DCR_UPDATE_REQUEST("validate_dcr_app_update"),
+    ENRICH_DCR_RETRIEVAL_REQUEST("enrich_dcr_app_retrieval"),
     PRE_EVENT_SUBSCRIPTION("pre_event_subscription"),
     POST_EVENT_SUBSCRIPTION("post_event_subscription"),
     PRE_EVENT_CREATION("pre_event_creation"),

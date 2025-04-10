@@ -342,7 +342,7 @@ public class EventNotificationTestUtils {
         externalServiceResponse.setStatus(StatusEnum.SUCCESS);
 
         JSONObject data = new JSONObject();
-        data.put("responseData", new JSONObject());
+        data.put(EventNotificationConstants.EVENT_POLLING_RESPONSE, new JSONObject());
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(data.toString());
         externalServiceResponse.setData(jsonNode);
@@ -355,7 +355,8 @@ public class EventNotificationTestUtils {
         externalServiceResponse.setStatus(StatusEnum.ERROR);
 
         JSONObject data = new JSONObject();
-        data.put("responseData", new JSONObject());
+        data.put("error", "invalid_request");
+        data.put("errorDescription", "Invalid request payload");
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(data.toString());
         externalServiceResponse.setData(jsonNode);
@@ -369,10 +370,12 @@ public class EventNotificationTestUtils {
         externalServiceResponse.setStatus(StatusEnum.SUCCESS);
 
         JSONObject data = new JSONObject();
-        data.put("callbackUrl", "https://test.com");
-        data.put("version", "3.1");
-        data.put("eventTypes", new ArrayList<>(Arrays.asList("eventType")));
-        data.put("responseData", new JSONObject());
+
+        JSONObject eventSubscriptionResponse = new JSONObject();
+        eventSubscriptionResponse.put("callbackUrl", "https://test.com");
+        eventSubscriptionResponse.put("version", "3.1");
+        eventSubscriptionResponse.put("eventTypes", new ArrayList<>(Arrays.asList("eventType")));
+        data.put("eventSubscriptionResponse", eventSubscriptionResponse);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(data.toString());
         externalServiceResponse.setData(jsonNode);

@@ -106,7 +106,7 @@ public class FSAdditionalAttributeFilterTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree("{" +
-            "   \"attributesToStore\": {" +
+            "   \"clientData\": {" +
             "       \"software_id\": \"testSoftwareId\"" +
             "   }" +
             "}");

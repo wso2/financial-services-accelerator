@@ -234,7 +234,7 @@ permissions=[]
 scopes=[]
 
 [oauth]
-drop_unregistered_scopes = false
+drop_unregistered_scopes = true
 authorize_all_scopes = true
 
 [oauth.endpoints.v2]

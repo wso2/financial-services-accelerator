@@ -191,7 +191,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(true);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
-                .thenReturn(EventNotificationTestUtils.getExternalServiceResponse());
+                .thenReturn(EventNotificationTestUtils.getExternalServiceResponseWithData());
 
         defaultEventSubscriptionServiceHandler.setEventSubscriptionService(eventSubscriptionService);
 
@@ -273,7 +273,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(true);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
-                .thenReturn(EventNotificationTestUtils.getExternalServiceResponse());
+                .thenReturn(EventNotificationTestUtils.getExternalServiceResponseWithData());
 
         defaultEventSubscriptionServiceHandler.setEventSubscriptionService(eventSubscriptionService);
 
@@ -353,7 +353,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(true);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
-                .thenReturn(EventNotificationTestUtils.getExternalServiceResponse());
+                .thenReturn(EventNotificationTestUtils.getExternalServiceResponseWithData());
 
         defaultEventSubscriptionServiceHandler.setEventSubscriptionService(eventSubscriptionService);
 
