@@ -89,7 +89,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(appRegistrationRequest));
             attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, null,
-                    IdentityCommonConstants.APP_REG_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+                    IdentityCommonConstants.APP_REG_REQUEST,
+                    ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
         } catch (JsonProcessingException e) {
             throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
         }
@@ -146,7 +147,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(applicationUpdateRequest));
             attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, spProperties,
-                    IdentityCommonConstants.APP_UPDATE_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST);
+                    IdentityCommonConstants.APP_UPDATE_REQUEST,
+                    ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_UPDATE);
         } catch (JsonProcessingException e) {
             throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
         }

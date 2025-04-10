@@ -83,7 +83,7 @@ public class ExternalAPIConsentRetrievalStepTest {
                 .getServiceExtensionsEndpointSecurityBasicAuthPassword();
         Mockito.doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
         List<ServiceExtensionTypeEnum> serviceExtensionTypes = new ArrayList<>();
-        serviceExtensionTypes.add(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+        serviceExtensionTypes.add(ServiceExtensionTypeEnum.POPULATE_CONSENT_AUTHORIZE_SCREEN);
         Mockito.doReturn(serviceExtensionTypes).when(configParserMock).getServiceExtensionTypes();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 

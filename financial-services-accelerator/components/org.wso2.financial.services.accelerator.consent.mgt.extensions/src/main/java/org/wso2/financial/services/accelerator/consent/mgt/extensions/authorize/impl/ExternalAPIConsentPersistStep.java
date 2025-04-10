@@ -132,7 +132,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
 
         try {
             externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
-                    externalServiceRequest, ServiceExtensionTypeEnum.PRE_CONSENT_PERSISTENCE);
+                    externalServiceRequest, ServiceExtensionTypeEnum.PERSIST_AUTHORIZED_CONSENT);
         } catch (FinancialServicesException e) {
             throw new ConsentManagementException(e.getMessage());
         }

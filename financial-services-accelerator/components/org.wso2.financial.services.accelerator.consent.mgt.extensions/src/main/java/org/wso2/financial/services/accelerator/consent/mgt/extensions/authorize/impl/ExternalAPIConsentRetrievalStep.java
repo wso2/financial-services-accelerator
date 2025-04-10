@@ -135,7 +135,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
         ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(requestDTO);
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
-                externalServiceRequest, ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
+                externalServiceRequest, ServiceExtensionTypeEnum.POPULATE_CONSENT_AUTHORIZE_SCREEN);
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
             throw new FinancialServicesException(externalServiceResponse.getData()
                     .path(FinancialServicesConstants.ERROR_MESSAGE)

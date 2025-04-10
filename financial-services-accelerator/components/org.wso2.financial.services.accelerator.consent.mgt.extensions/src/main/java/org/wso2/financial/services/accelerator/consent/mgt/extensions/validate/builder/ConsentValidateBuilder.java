@@ -50,7 +50,7 @@ public class ConsentValidateBuilder {
                 .getConfigurationService();
         Map<String, Object> configs =  configurationService.getConfigurations();
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.CONSENT_VALIDATION)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS)) {
             log.debug("Service extensions endpoint is enabled. Loading configurations from service extensions.");
             consentValidator = new ConsentValidatorServiceExtension();
         } else {
