@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
@@ -80,13 +81,16 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        validateRequireRequestObject(appRegistrationRequest.isRequireSignedRequestObject());
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> attributesToStore = null;
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(appRegistrationRequest));
             attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, null,
-                    IdentityCommonConstants.APP_REG_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+                    IdentityCommonConstants.APP_REG_REQUEST,
+                    ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
         } catch (JsonProcessingException e) {
             throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
         }
@@ -112,6 +116,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
+        //Setting the software statement to null to avoid sending software statement twice in the response.
+        appRegistrationRequest.setSoftwareStatement(null);
         return filteredAttributes;
     }
 
@@ -131,6 +137,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        validateRequireRequestObject(applicationUpdateRequest.isRequireSignedRequestObject());
+
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestMap = objectMapper.convertValue(applicationUpdateRequest, Map.class);
         List<JSONObject> spProperties = constructSPPropertyList(serviceProviderProperties);
@@ -139,7 +147,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(applicationUpdateRequest));
             attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, spProperties,
-                    IdentityCommonConstants.APP_UPDATE_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST);
+                    IdentityCommonConstants.APP_UPDATE_REQUEST,
+                    ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_UPDATE);
         } catch (JsonProcessingException e) {
             throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
         }
@@ -162,6 +171,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
+        //Setting the software statement to null to avoid sending software statement twice in the response.
+        applicationUpdateRequest.setSoftwareStatement(null);
         return filteredAttributes;
     }
 
@@ -187,7 +198,6 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         //  Adding BFSI specific fields to be returned in the response.
         Set<String> responseAttributeKeys = getResponseParamsFromConfig();
-        responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_STATEMENT);
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_ID);
         responseAttributeKeys.add(IdentityCommonConstants.SCOPE);
         responseAttributeKeys.add(IdentityCommonConstants.RESPONSE_TYPES);
@@ -272,11 +282,11 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
                             .toString());
                     return attributesToStoreJson.toMap();
                 } else {
-                    int errorCode = response.getErrorCode();
+                    String dcrErrorCode = response.getData().path(FinancialServicesConstants.ERROR_CODE)
+                            .asText(IdentityCommonConstants.INVALID_CLIENT_METADATA);
                     String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
                             .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
-                    //TODO:
-                    throw new DCRMClientException(String.valueOf(errorCode), errDesc);
+                    throw new DCRMClientException(dcrErrorCode, errDesc);
                 }
             } catch (FinancialServicesException e) {
                 throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
@@ -349,5 +359,20 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             spPropertyList.add(propertyObject);
         }
         return spPropertyList;
+    }
+
+    /**
+     * Validates the "require request object" value in the payload. This value must be true for
+     * FAPI-compliant applications.
+     *
+     * @param requireRequestObject  The value indicating whether the request object is required.
+     * @throws DCRMClientException If the "require request object" value does not meet FAPI requirements.
+     */
+    private void validateRequireRequestObject(boolean requireRequestObject) throws DCRMClientException {
+        if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement")) &&
+                !requireRequestObject) {
+            throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    "Require request object value is incompatible with FAPI requirements");
+        }
     }
 }

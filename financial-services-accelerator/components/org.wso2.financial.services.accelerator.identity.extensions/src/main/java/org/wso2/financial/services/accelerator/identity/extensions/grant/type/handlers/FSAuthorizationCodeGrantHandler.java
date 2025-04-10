@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.token.handlers.grant.AuthorizationCodeGrantHandler;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -56,24 +57,15 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
 
-                if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                        .PRE_ACCESS_TOKEN_GENERATION)) {
-                    // Perform FS customized behaviour with service extension
-                    IdentityCommonUtils.appendParametersToTokenResponseWithServiceExtension(oAuth2AccessTokenRespDTO,
-                            tokReqMsgCtx);
-                } else if (fsGrantHandler != null) {
+                if (fsGrantHandler != null) {
                     // Perform FS customized behaviour
                     fsGrantHandler.appendParametersToTokenResponse(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 }
 
-                tokReqMsgCtx.setScope(IdentityCommonUtils.removeInternalScopes(tokReqMsgCtx.getScope()));
                 return oAuth2AccessTokenRespDTO;
             }
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception(e.getMessage());
-        } catch (FinancialServicesException e) {
-            log.error("Error while invoking external service extension", e);
-            throw new IdentityOAuth2Exception("Error while invoking external service extension");
         }
         return super.issue(tokReqMsgCtx);
     }
@@ -91,13 +83,13 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
         if (isRegulatory(tokenReqMessageContext)) {
             String grantType = tokenReqMessageContext.getOauth2AccessTokenReqDTO().getGrantType();
             if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                    .PRE_ACCESS_TOKEN_GENERATION)) {
+                    .VALIDATE_REFRESH_TOKEN_ISSUANCE)) {
                 // Perform FS customized behaviour with service extension
                 try {
                     return issueRefreshTokenWithServiceExtension(grantType);
                 } catch (FinancialServicesException e) {
-                    log.error("Error while invoking external service extension", e);
-                    throw new IdentityOAuth2Exception("Error while invoking external service extension");
+                    log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                    throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
                 }
             } else if (fsGrantHandler != null) {
                 // Perform FS customized behaviour
@@ -138,7 +130,7 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
 
         // Invoke external service
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION);
+                ServiceExtensionTypeEnum.VALIDATE_REFRESH_TOKEN_ISSUANCE);
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 

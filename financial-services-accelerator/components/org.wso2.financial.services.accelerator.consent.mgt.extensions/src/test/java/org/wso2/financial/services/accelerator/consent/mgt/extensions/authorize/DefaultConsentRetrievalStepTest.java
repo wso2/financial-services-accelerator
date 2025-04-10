@@ -21,9 +21,11 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
@@ -57,11 +59,18 @@ public class DefaultConsentRetrievalStepTest {
     ConsentFile consentFileMock;
     @Mock
     ConsentCoreServiceImpl consentCoreServiceMock;
+
     ArrayList<AuthorizationResource> authResources;
+    private static MockedStatic<FinancialServicesConfigParser> configParser;
     private MockedStatic<ConsentExtensionsDataHolder> consentExtensionsDataHolder;
 
     @BeforeClass
     public void initClass() throws ConsentManagementException {
+
+        configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(true).when(configParserMock).isPreInitiatedConsent();
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         consentRetrievalStep = new DefaultConsentRetrievalStep();
         consentDataMock = mock(ConsentData.class);
@@ -87,6 +96,7 @@ public class DefaultConsentRetrievalStepTest {
     public void tearDown() {
         // Closing the mockStatic after each test
         consentExtensionsDataHolder.close();
+        configParser.close();
     }
 
     @Test

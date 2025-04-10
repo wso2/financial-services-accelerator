@@ -315,8 +315,8 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #================configs related to financial-services.xml=============
 [financial_services.extensions.endpoint]
 enabled = false
-# allowed extensions: "post_token_generation", "pre_consent_authorization"
-allowed_extensions = ["post_token_generation"]
+# allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
+allowed_extensions = ["pre_process_client_creation", "pre_process_consent_creation"]
 base_url = ""
 retry_count = 5
 connect_timeout = 5
@@ -350,7 +350,7 @@ application_updater = "org.wso2.financial.services.accelerator.identity.extensio
 [[financial_services.app_registration.dcr.params]]
 name = "SoftwareId"
 key = "software_id"
-required = true
+required = false
 include_in_response = true
 
 [[financial_services.app_registration.dcr.params]]
@@ -403,6 +403,36 @@ name = "RequestObjectSignatureAlgorithm"
 key = "request_object_signing_alg"
 required = true
 include_in_response = true
+
+[[financial_services.app_registration.dcr.params]]
+name = "Iss"
+key = "iss"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Iat"
+key = "iat"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Exp"
+key = "exp"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Jti"
+key = "jti"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Aud"
+key = "aud"
+required = true
+include_in_response = false
 
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RequiredParamsValidator"
@@ -457,7 +487,7 @@ is_pre_initiated_consent=true # Set to true if the consent is pre-initiated by t
 auth_flow_consent_id_source="requestObject" # can be one of "requestObject" or "requestParam"
 
 [financial_services.consent.consent_id_extraction]
-json_path="$.id_token.openbanking_intent_id.value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"
+json_path="/id_token/openbanking_intent_id/value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"
 # key="key-name" # Must be configured if "auth_flow_consent_id_source" is set to "requestParam"
 # regex_pattern="regex-pattern" # Optionally configure a regex pattern to further extract the consent id from the extracted value
 

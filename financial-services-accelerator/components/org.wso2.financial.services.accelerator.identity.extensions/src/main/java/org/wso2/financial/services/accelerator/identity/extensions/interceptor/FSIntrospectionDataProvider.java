@@ -22,23 +22,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 import org.wso2.carbon.identity.core.handler.AbstractIdentityHandler;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * FS specific introspection data provider
@@ -55,17 +49,7 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
 
         Map<String, Object> additionalDataMap = new HashMap<>();
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                .PRE_TOKEN_INTROSPECTION)) {
-            // Perform FS customized behaviour with service extension
-            try {
-                additionalDataMap = getIntrospectionDataWithServiceExtension(
-                        oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO);
-            } catch (FinancialServicesException e) {
-                log.error("Error while invoking external service extension", e);
-                throw new IdentityOAuth2Exception("Error while invoking external service extension");
-            }
-        } else if (getIntrospectionDataProvider() != null) {
+        if (getIntrospectionDataProvider() != null) {
             // Perform FS customized behaviour
             additionalDataMap = getIntrospectionDataProvider()
                     .getIntrospectionData(oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO);
@@ -83,25 +67,6 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
                 IdentityCommonConstants.SPACE_SEPARATOR));
         oAuth2IntrospectionResponseDTO.setProperties(additionalDataMap);
         return additionalDataMap;
-    }
-
-    private Map<String, Object> getIntrospectionDataWithServiceExtension(
-            OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
-            OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO)
-            throws FinancialServicesException, IdentityOAuth2Exception {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, oAuth2IntrospectionResponseDTO.getScope()
-                .split(IdentityCommonConstants.SPACE_SEPARATOR));
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_TOKEN_INTROSPECTION);
-
-        return processResponseAndGetData(response);
     }
 
     private Map<String, Object> processResponseAndGetData(ExternalServiceResponse response)

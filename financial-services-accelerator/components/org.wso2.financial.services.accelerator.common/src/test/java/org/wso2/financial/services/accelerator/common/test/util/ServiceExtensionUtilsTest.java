@@ -80,7 +80,7 @@ public class ServiceExtensionUtilsTest {
                 .getServiceExtensionsEndpointSecurityBasicAuthPassword();
         Mockito.doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
         List<ServiceExtensionTypeEnum> serviceExtensionTypes = new ArrayList<>();
-        serviceExtensionTypes.add(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+        serviceExtensionTypes.add(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
         Mockito.doReturn(serviceExtensionTypes).when(configParserMock).getServiceExtensionTypes();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
@@ -116,13 +116,13 @@ public class ServiceExtensionUtilsTest {
     @Test
     public void testIsInvokeExternalService() {
         Assert.assertTrue(ServiceExtensionUtils
-                .isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST));
+                .isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION));
     }
 
     @Test
     public void testInvokeExternalServiceCall() throws FinancialServicesException {
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
-                ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
 
         Assert.assertNotNull(response);
     }
@@ -141,7 +141,7 @@ public class ServiceExtensionUtilsTest {
 
         httpClientUtilsMockedStatic.when(() -> HTTPClientUtils.getHttpClient()).thenReturn(httpClient);
         ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
-                ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
     }
 
     @Test

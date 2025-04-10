@@ -30,7 +30,9 @@ import org.wso2.carbon.identity.application.common.model.APIResource;
 import org.wso2.carbon.identity.application.common.model.AssociatedRolesConfig;
 import org.wso2.carbon.identity.application.common.model.AuthorizedAPI;
 import org.wso2.carbon.identity.application.common.model.LocalAndOutboundAuthenticationConfig;
+import org.wso2.carbon.identity.application.common.model.Scope;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
+import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.listener.AbstractApplicationMgtListener;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
@@ -41,7 +43,10 @@ import org.wso2.financial.services.accelerator.identity.extensions.internal.Iden
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Application listener.
@@ -87,6 +92,11 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
             throws IdentityApplicationManagementException {
 
         try {
+            ServiceProviderProperty[] spProperties = serviceProvider.getSpProperties();
+            Optional<ServiceProviderProperty> scopeProperty = Arrays.stream(spProperties)
+                    .filter(spProperty -> IdentityCommonConstants.SCOPE.equals(spProperty.getName()))
+                    .findFirst();
+
             // In IS 7.0 and upwards, scopes should be bind to the application via API Resources. When IS as a
             // Key Manager is configured it will automatically create API resource binding the scopes in IS when
             // publishing APIs in API Manager.
@@ -95,19 +105,25 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
             APIResourceManager resourceManager = IdentityExtensionsDataHolder.getInstance().getApiResourceManager();
             APIResource apiResource = resourceManager
                     .getAPIResourceByIdentifier(IdentityCommonConstants.USER_DEFINED_RESOURCE, tenantDomain);
-            if (apiResource == null) {
-                return false;
+            if (apiResource != null) {
+                List<Scope> scopes = apiResource.getScopes();
+                if (scopeProperty.isPresent()) {
+                    String scopesStringFromRequest = scopeProperty.get().getValue();
+                    if (scopesStringFromRequest != null) {
+                        List<String> scopesListFromRequest = List.of(scopesStringFromRequest.split(" "));
+                        scopes.removeIf(scope -> !scopesListFromRequest.contains(scope.getName()));
+                    }
+                }
+                // Created authorized API object to store the API resource details
+                AuthorizedAPI authorizedAPI = new AuthorizedAPI();
+                authorizedAPI.setAPIId(apiResource.getId());
+                authorizedAPI.setScopes(scopes);
+                authorizedAPI.setPolicyId(IdentityCommonConstants.RBAC_POLICY);
+
+                // Add the authorized API to the application
+                IdentityExtensionsDataHolder.getInstance().getAuthorizedAPIManagementService()
+                        .addAuthorizedAPI(serviceProvider.getApplicationResourceId(), authorizedAPI, tenantDomain);
             }
-
-            // Created authorized API object to store the API resource details
-            AuthorizedAPI authorizedAPI = new AuthorizedAPI();
-            authorizedAPI.setAPIId(apiResource.getId());
-            authorizedAPI.setScopes(apiResource.getScopes());
-            authorizedAPI.setPolicyId(IdentityCommonConstants.RBAC_POLICY);
-
-            // Add the authorized API to the application
-            IdentityExtensionsDataHolder.getInstance().getAuthorizedAPIManagementService()
-                    .addAuthorizedAPI(serviceProvider.getApplicationResourceId(), authorizedAPI, tenantDomain);
 
             identityDataHolder.getAbstractApplicationUpdater().doPostCreateApplication(serviceProvider,
                     serviceProvider.getLocalAndOutBoundAuthenticationConfig(), tenantDomain, userName);

@@ -145,7 +145,6 @@ public class FSAdditionalAttributeFilterTest {
                 TestConstants.getSSAParamMap());
 
         Assert.assertNotNull(resultMap);
-        Assert.assertNotNull(resultMap.get(IdentityCommonConstants.SOFTWARE_STATEMENT));
         Assert.assertNotNull(resultMap.get(IdentityCommonConstants.SOFTWARE_ID));
         Assert.assertNotNull(resultMap.get(IdentityCommonConstants.APPLICATION_TYPE));
     }
@@ -186,7 +185,6 @@ public class FSAdditionalAttributeFilterTest {
                 TestConstants.getSSAParamMap(), serviceProviderProperties);
 
         Assert.assertNotNull(resultMap);
-        Assert.assertNotNull(resultMap.get(IdentityCommonConstants.SOFTWARE_STATEMENT));
         Assert.assertNotNull(resultMap.get(IdentityCommonConstants.SOFTWARE_ID));
         Assert.assertNotNull(resultMap.get(IdentityCommonConstants.APPLICATION_TYPE));
     }
@@ -206,7 +204,6 @@ public class FSAdditionalAttributeFilterTest {
         List<String> resultMap = fsAdditionalAttributeFilter.getResponseAttributeKeys();
 
         Assert.assertNotNull(resultMap);
-        Assert.assertTrue(resultMap.contains(IdentityCommonConstants.SOFTWARE_STATEMENT));
         Assert.assertTrue(resultMap.contains(IdentityCommonConstants.SOFTWARE_ID));
         Assert.assertTrue(resultMap.contains(IdentityCommonConstants.APPLICATION_TYPE));
         Assert.assertTrue(resultMap.contains(IdentityCommonConstants.SCOPE));
