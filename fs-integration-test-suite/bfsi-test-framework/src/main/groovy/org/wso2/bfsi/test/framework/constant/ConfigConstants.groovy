@@ -116,5 +116,10 @@ class ConfigConstants {
     // Internal API config constants
     public static final String INTERNAL_API = "InternalApiContext";
     public static final String INTERNAL_API_CONSENT_MGT = "Consent-Mgt";
+
+    // IS Setup config constants
+    public static final String ISSetup = "ISSetup";
+    public static final String ISAdminUserName = "ISAdminUserName";
+    public static final String ISAdminPassword = "ISAdminPassword";
 }
 

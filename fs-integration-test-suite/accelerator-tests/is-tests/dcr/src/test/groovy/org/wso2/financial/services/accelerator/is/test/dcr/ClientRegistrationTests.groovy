@@ -36,6 +36,7 @@ class ClientRegistrationTests extends FSConnectorTest {
 
     @BeforeClass
     void init() {
+        configuration.setTppNumber(1)
         dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
         ssa = new File(configuration.getAppDCRSSAPath()).text
