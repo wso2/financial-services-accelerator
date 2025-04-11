@@ -8,36 +8,15 @@ import java.util.Map;
  */
 public class ExternalAPIConsentResourceResponseDTO {
 
-    private String id;
-    private String clientId;
     private String type;
     private String status;
     private Integer frequency;
     private Long validityTime;
-    private Long createdTime;
-    private Long updatedTime;
     private Boolean recurringIndicator;
     private Map<String, Object> receipt;
     private Map<String, String> attributes;
     private List<Authorization> authorizations;
     private List<AmendedAuthorization> amendments;
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
 
     public String getType() {
         return type;
@@ -69,22 +48,6 @@ public class ExternalAPIConsentResourceResponseDTO {
 
     public void setValidityTime(Long validityTime) {
         this.validityTime = validityTime;
-    }
-
-    public long getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Long createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public long getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(Long updatedTime) {
-        this.updatedTime = updatedTime;
     }
 
     public Boolean getRecurringIndicator() {
