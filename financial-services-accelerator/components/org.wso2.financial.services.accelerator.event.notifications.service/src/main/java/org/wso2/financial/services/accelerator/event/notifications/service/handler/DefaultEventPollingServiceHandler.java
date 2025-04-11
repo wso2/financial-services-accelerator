@@ -183,11 +183,11 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
         JSONObject data = new JSONObject();
         data.put(EventNotificationConstants.EVENT_POLLING_DATA, new JSONObject(aggregatedPollingResponse));
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.ENRICH_EVENT_POLLING_RESPONSE)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING);
+                        ServiceExtensionTypeEnum.ENRICH_EVENT_POLLING_RESPONSE);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
                     throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
