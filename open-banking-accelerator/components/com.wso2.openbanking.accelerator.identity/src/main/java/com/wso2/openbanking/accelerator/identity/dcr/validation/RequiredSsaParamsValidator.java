@@ -57,48 +57,28 @@ public class RequiredSsaParamsValidator implements ConstraintValidator<ValidateR
         try {
             String softwareStatement = BeanUtils.getProperty(registrationRequest, softwareStatementPath);
             JSONObject softwareStatementJsonObject = JWTUtils.decodeRequestJWT(softwareStatement, "body");
-            Map<String, Object> configuration = OpenBankingConfigParser.getInstance().getConfiguration();
-            Object mandatorySsaParameterObjects = configuration.get(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS);
-            List<String> mandatorySsaParameters = new ArrayList<>();
-            if (mandatorySsaParameterObjects instanceof ArrayList) {
-                mandatorySsaParameters = (ArrayList<String>) mandatorySsaParameterObjects;
-            } else if (mandatorySsaParameterObjects instanceof String) {
-                mandatorySsaParameters.add((String) mandatorySsaParameterObjects);
-            }
-
+            List<String> mandatorySsaParameters = getMandatorySsaParameters();
             for (String parameter : mandatorySsaParameters) {
                 if (softwareStatementJsonObject.containsKey(parameter)) {
 
                     Object ssaValue = softwareStatementJsonObject.get(parameter);
                     if (ssaValue == null) {
-                        constraintValidatorContext.disableDefaultConstraintViolation();
-                        constraintValidatorContext
-                                .buildConstraintViolationWithTemplate("Required SSA parameter `" + parameter +
-                                        "` is null:" + DCRCommonConstants.INVALID_META_DATA)
-                                .addConstraintViolation();
+                        setErrorToContext(constraintValidatorContext,
+                                "Required SSA parameter `" + parameter + "` is null:");
                         return false;
                     } else if (ssaValue instanceof String && StringUtils.isBlank(ssaValue.toString())) {
-                        constraintValidatorContext.disableDefaultConstraintViolation();
-                        constraintValidatorContext
-                                .buildConstraintViolationWithTemplate("Required SSA parameter `" + parameter +
-                                        "` is blank:" + DCRCommonConstants.INVALID_META_DATA)
-                                .addConstraintViolation();
+                        setErrorToContext(constraintValidatorContext,
+                                "Required SSA parameter `" + parameter + "` is blank:");
                         return false;
                     } else if ((ssaValue instanceof ArrayList && ((ArrayList<?>) ssaValue).isEmpty()) ||
                             (ssaValue instanceof JSONObject && ((JSONObject) ssaValue).isEmpty())) {
-                        constraintValidatorContext.disableDefaultConstraintViolation();
-                        constraintValidatorContext
-                                .buildConstraintViolationWithTemplate("Required SSA parameter `" + parameter +
-                                        "` is empty:" + DCRCommonConstants.INVALID_META_DATA)
-                                .addConstraintViolation();
+                        setErrorToContext(constraintValidatorContext,
+                                "Required SSA parameter `" + parameter + "` is empty:");
                         return false;
                     }
                 } else {
-                    constraintValidatorContext.disableDefaultConstraintViolation();
-                    constraintValidatorContext
-                            .buildConstraintViolationWithTemplate("Required SSA parameter `" + parameter +
-                                    "` not found:" + DCRCommonConstants.INVALID_META_DATA)
-                            .addConstraintViolation();
+                    setErrorToContext(constraintValidatorContext,
+                            "Required SSA parameter `" + parameter + "` not found:");
                     return false;
                 }
             }
@@ -111,5 +91,36 @@ public class RequiredSsaParamsValidator implements ConstraintValidator<ValidateR
             log.error("Error while parsing the softwareStatement", e);
         }
         return false;
+    }
+
+    /**
+     * Set errorMessage message to the context.
+     *
+     * @param constraintValidatorContext ConstraintValidatorContext
+     * @param errorMessage               Error message
+     */
+    private static void setErrorToContext(ConstraintValidatorContext constraintValidatorContext, String errorMessage) {
+        constraintValidatorContext.disableDefaultConstraintViolation();
+        constraintValidatorContext
+                .buildConstraintViolationWithTemplate(errorMessage + DCRCommonConstants.INVALID_META_DATA)
+                .addConstraintViolation();
+    }
+
+    /**
+     * Get the mandatory parameters from the configuration.
+     *
+     * @return List of mandatory parameters
+     */
+    private static List<String> getMandatorySsaParameters() {
+
+        List<String> mandatorySsaParameters = new ArrayList<>();
+        Map<String, Object> configuration = OpenBankingConfigParser.getInstance().getConfiguration();
+        Object mandatorySsaParameterObjects = configuration.get(OpenBankingConstants.DCR_SSA_MANDATORY_PARAMETERS);
+        if (mandatorySsaParameterObjects instanceof ArrayList) {
+            mandatorySsaParameters = (ArrayList<String>) mandatorySsaParameterObjects;
+        } else if (mandatorySsaParameterObjects instanceof String) {
+            mandatorySsaParameters.add((String) mandatorySsaParameterObjects);
+        }
+        return mandatorySsaParameters;
     }
 }
