@@ -17,21 +17,21 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 
 /**
  * ExternalAPIPreConsentGenerateResponseDTO
  */
 public class ExternalAPIPreConsentGenerateResponseDTO {
 
-    private ExternalAPIConsentResource consentResource;
+    private ExternalAPIConsentResourceResponseDTO consentResource;
 
-    public ExternalAPIConsentResource getConsentResource() {
+    public ExternalAPIConsentResourceResponseDTO getConsentResource() {
         return consentResource;
     }
 
     public void setConsentResource(
-            ExternalAPIConsentResource consentResource) {
+            ExternalAPIConsentResourceResponseDTO consentResource) {
         this.consentResource = consentResource;
     }
 }

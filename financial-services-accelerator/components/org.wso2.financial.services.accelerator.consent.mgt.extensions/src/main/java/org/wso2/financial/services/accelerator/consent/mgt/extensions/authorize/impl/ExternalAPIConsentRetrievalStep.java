@@ -41,6 +41,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
@@ -77,12 +78,15 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                 setMandatoryConsentData(consentId, consentData);
             }
 
-            DetailedConsentResource detailedConsentResource = null;
+            ExternalAPIConsentResourceRequestDTO externalAPIConsentResource = null;
             if (consentId != null) {
-               detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+                DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+                if (detailedConsentResource != null) {
+                    externalAPIConsentResource = new ExternalAPIConsentResourceRequestDTO(detailedConsentResource);
+                }
             }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
-                    consentData, detailedConsentResource, scope);
+                    consentData, externalAPIConsentResource, scope);
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);

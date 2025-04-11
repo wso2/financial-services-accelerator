@@ -34,7 +34,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
@@ -79,7 +80,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         isExternalPostConsentGenerationEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOCATION);
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
     }
 
     @Override
@@ -141,7 +142,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     Map<String, String> consentAttributes =
                             consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
                     consent.setConsentAttributes(consentAttributes);
-                    ExternalAPIConsentResource externalAPIConsentResource = new ExternalAPIConsentResource(consent);
+                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                            new ExternalAPIConsentResourceRequestDTO(consent);
                     ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
                             consentId, externalAPIConsentResource, resourcePath);
                     ExternalAPIConsentRetrieveResponseDTO responseDTO = ExternalAPIConsentManageUtils.
@@ -223,8 +225,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 // Call external service after generating consent
                 DetailedConsentResource createdConsentResource = consentCoreService.getDetailedConsent(
                         createdConsent.getConsentID());
-                ExternalAPIConsentResource externalAPIConsentResource =
-                        new ExternalAPIConsentResource(createdConsentResource);
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(createdConsentResource);
                 ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
                         externalAPIConsentResource, consentManageData.getRequestPath());
                 ExternalAPIPostConsentGenerateResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
@@ -313,8 +315,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     Map<String, String> consentAttributes =
                             consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
                     consentResource.setConsentAttributes(consentAttributes);
-                    ExternalAPIConsentResource externalAPIConsentResource = new ExternalAPIConsentResource(
-                            consentResource);
+                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                            new ExternalAPIConsentResourceRequestDTO(consentResource);
                     ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(
                             externalAPIConsentResource, resourcePath);
                     ExternalAPIConsentRevokeResponseDTO responseDTO = ExternalAPIConsentManageUtils.
@@ -385,7 +387,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     private DetailedConsentResource generateConsent(
             ExternalAPIPreConsentGenerateResponseDTO responseDTO, String clientId) throws ConsentException {
-        ExternalAPIConsentResource externalAPIConsentResource = responseDTO.getConsentResource();
+        ExternalAPIConsentResourceResponseDTO externalAPIConsentResource = responseDTO.getConsentResource();
         try {
             ConsentResource consentResource = new ConsentResource(clientId,
                     new Gson().toJson(externalAPIConsentResource.getReceipt()), externalAPIConsentResource.getType(),
@@ -394,7 +396,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     externalAPIConsentResource.getAttributes());
 
             // Assuming only one authorization is present in initiation
-            ExternalAPIConsentResource.Authorization primaryAuthorization =
+            ExternalAPIConsentResourceResponseDTO.Authorization primaryAuthorization =
                     externalAPIConsentResource.getAuthorizations().get(0);
             String authStatus = primaryAuthorization.getStatus();
             String authType = primaryAuthorization.getType();

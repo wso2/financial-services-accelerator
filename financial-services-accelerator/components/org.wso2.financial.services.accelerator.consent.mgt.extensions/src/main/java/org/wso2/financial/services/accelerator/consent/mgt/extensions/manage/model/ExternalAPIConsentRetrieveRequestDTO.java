@@ -18,7 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
 /**
  * ExternalAPIConsentRetrieveRequestDTO
@@ -26,10 +26,10 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mod
 public class ExternalAPIConsentRetrieveRequestDTO {
 
     private String consentId;
-    private ExternalAPIConsentResource consentResource;
+    private ExternalAPIConsentResourceRequestDTO consentResource;
     private String consentResourcePath;
 
-    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ExternalAPIConsentResource consentResource,
+    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ExternalAPIConsentResourceRequestDTO consentResource,
                                                 String resourcePath) {
         this.consentId = consentId;
         this.consentResourcePath = resourcePath;
@@ -44,12 +44,12 @@ public class ExternalAPIConsentRetrieveRequestDTO {
         this.consentId = consentId;
     }
 
-    public ExternalAPIConsentResource getConsentResource() {
+    public ExternalAPIConsentResourceRequestDTO getConsentResource() {
         return consentResource;
     }
 
     public void setConsentResource(
-            ExternalAPIConsentResource consentResource) {
+            ExternalAPIConsentResourceRequestDTO consentResource) {
         this.consentResource = consentResource;
     }
 

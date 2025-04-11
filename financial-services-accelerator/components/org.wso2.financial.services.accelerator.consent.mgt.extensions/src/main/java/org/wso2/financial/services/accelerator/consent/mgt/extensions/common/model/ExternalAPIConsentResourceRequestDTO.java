@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Consent resource model for the API extension consent management.
  */
-public class ExternalAPIConsentResource {
+public class ExternalAPIConsentResourceRequestDTO {
 
     private String id;
     private String clientId;
@@ -47,7 +47,7 @@ public class ExternalAPIConsentResource {
     private Map<String, String> attributes;
     private List<Authorization> authorizations;
 
-    public ExternalAPIConsentResource(ConsentResource consentResource) {
+    public ExternalAPIConsentResourceRequestDTO(ConsentResource consentResource) {
 
         this.id = consentResource.getConsentID();
         this.clientId = consentResource.getClientID();
@@ -70,7 +70,7 @@ public class ExternalAPIConsentResource {
 
     }
 
-    public ExternalAPIConsentResource(DetailedConsentResource detailedConsent) {
+    public ExternalAPIConsentResourceRequestDTO(DetailedConsentResource detailedConsent) {
 
         this.id = detailedConsent.getConsentID();
         this.clientId = detailedConsent.getClientID();

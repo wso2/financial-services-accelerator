@@ -23,25 +23,25 @@ package org.wso2.financial.services.accelerator.common.extension.model;
  */
 public enum ServiceExtensionTypeEnum {
 
-    PRE_PROCESS_CLIENT_CREATION("pre-process-client-creation"),
-    PRE_PROCESS_CLIENT_UPDATE("pre-process-client-update"),
-    PRE_PROCESS_CLIENT_RETRIEVAL("pre-process-client-retrieval"),
-    PRE_PROCESS_CONSENT_CREATION("pre-process-consent-creation"),
-    ENRICH_CONSENT_CREATION_RESPONSE("enrich-consent-creation-response"),
-    PRE_PROCESS_CONSENT_RETRIEVAL("pre-process-consent-retrieval"),
-    PRE_PROCESS_CONSENT_BULK_RETRIEVAL("pre-process-consent-bulk-retrieval"),
-    PRE_PROCESS_CONSENT_REVOCATION("pre-process-consent-revocation"),
-    POPULATE_CONSENT_AUTHORIZE_SCREEN("populate-consent-authorize-screen"),
-    PERSIST_AUTHORIZED_CONSENT("persist-authorized-consent"),
-    VALIDATE_CONSENT_ACCESS("validate-consent-access"),
-    VALIDATE_REFRESH_TOKEN_ISSUANCE("validate-refresh-token-issuance"),
-    VALIDATE_AUTHORIZATION_REQUEST("validate-authorization-request"),
-    VALIDATE_EVENT_SUBSCRIPTION("validate-event-subscription"),
-    ENRICH_EVENT_SUBSCRIPTION_RESPONSE("enrich-event-subscription-response"),
-    VALIDATE_EVENT_CREATION("validate-event-creation"),
-    VALIDATE_EVENT_POLLING("validate-event-polling"),
-    ENRICH_EVENT_POLLING_RESPONSE("enrich-event-polling-response"),
-    MAP_ACCELERATOR_ERROR_RESPONSE("map-accelerator-error-response");
+    PRE_PROCESS_CLIENT_CREATION("pre_process_client_creation"),
+    PRE_PROCESS_CLIENT_UPDATE("pre_process_client_update"),
+    PRE_PROCESS_CLIENT_RETRIEVAL("pre_process_client_retrieval"),
+    PRE_PROCESS_CONSENT_CREATION("pre_process_consent_creation"),
+    ENRICH_CONSENT_CREATION_RESPONSE("enrich_consent_creation_response"),
+    PRE_PROCESS_CONSENT_RETRIEVAL("pre_process_consent_retrieval"),
+    PRE_PROCESS_CONSENT_BULK_RETRIEVAL("pre_process_consent_bulk_retrieval"),
+    PRE_PROCESS_CONSENT_REVOKE("pre_process_consent_revoke"),
+    POPULATE_CONSENT_AUTHORIZE_SCREEN("populate_consent_authorize_screen"),
+    PERSIST_AUTHORIZED_CONSENT("persist_authorized_consent"),
+    VALIDATE_CONSENT_ACCESS("validate_consent_access"),
+    VALIDATE_REFRESH_TOKEN_ISSUANCE("validate_refresh_token_issuance"),
+    VALIDATE_AUTHORIZATION_REQUEST("validate_authorization_request"),
+    VALIDATE_EVENT_SUBSCRIPTION("validate_event_subscription"),
+    ENRICH_EVENT_SUBSCRIPTION_RESPONSE("enrich_event_subscription_response"),
+    VALIDATE_EVENT_CREATION("validate_event_creation"),
+    VALIDATE_EVENT_POLLING("validate_event_polling"),
+    ENRICH_EVENT_POLLING_RESPONSE("enrich_event_polling_response"),
+    MAP_ACCELERATOR_ERROR_RESPONSE("map_accelerator_error_response");
 
     private final String type;
 
