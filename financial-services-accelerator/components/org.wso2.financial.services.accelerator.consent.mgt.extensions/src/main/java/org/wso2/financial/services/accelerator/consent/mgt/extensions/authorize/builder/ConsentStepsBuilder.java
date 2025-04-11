@@ -54,9 +54,9 @@ public class ConsentStepsBuilder {
 
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         boolean isExternalConsentRetrievalEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
+                .contains(ServiceExtensionTypeEnum.POPULATE_CONSENT_AUTHORIZE_SCREEN);
         boolean isExternalConsentPersistenceEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_PERSISTENCE);
+                .contains(ServiceExtensionTypeEnum.PERSIST_AUTHORIZED_CONSENT);
         boolean isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
 
         try {

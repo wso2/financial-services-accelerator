@@ -126,7 +126,7 @@ public class EventNotificationTestUtils {
         sets.put("4f312007-4d3f-40e4-a525-0f6ee8bb54d9", EventNotificationTestConstants.SAMPLE_SET);
         AggregatedPollingResponse aggregatedPollingResponse = new AggregatedPollingResponse();
         aggregatedPollingResponse.setCount(0);
-        aggregatedPollingResponse.setStatus("OK");
+        aggregatedPollingResponse.setStatus(200);
         aggregatedPollingResponse.setSets(sets);
         return aggregatedPollingResponse;
     }
@@ -250,7 +250,7 @@ public class EventNotificationTestUtils {
         eventSubscription.setSubscriptionId(subscriptionId);
         eventSubscription.setCallbackUrl("test.com");
         eventSubscription.setEventTypes(EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPES);
-        eventSubscription.setStatus("created");
+        eventSubscription.setStatus("Created");
         eventSubscription.setClientId(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
 
         JSONObject requestData = new JSONObject();
@@ -342,10 +342,25 @@ public class EventNotificationTestUtils {
         externalServiceResponse.setStatus(StatusEnum.SUCCESS);
 
         JSONObject data = new JSONObject();
-        data.put("responseData", new JSONObject());
+        data.put(EventNotificationConstants.EVENT_POLLING_RESPONSE, new JSONObject());
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(data.toString());
         externalServiceResponse.setData(jsonNode);
+        return externalServiceResponse;
+    }
+
+    public static ExternalServiceResponse getExternalServiceResponseError() throws JsonProcessingException {
+        ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
+        externalServiceResponse.setResponseId("123456789876543");
+        externalServiceResponse.setStatus(StatusEnum.ERROR);
+
+        JSONObject data = new JSONObject();
+        data.put("error", "invalid_request");
+        data.put("errorDescription", "Invalid request payload");
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(data.toString());
+        externalServiceResponse.setData(jsonNode);
+        externalServiceResponse.setErrorCode(400);
         return externalServiceResponse;
     }
 
@@ -355,10 +370,12 @@ public class EventNotificationTestUtils {
         externalServiceResponse.setStatus(StatusEnum.SUCCESS);
 
         JSONObject data = new JSONObject();
-        data.put("callbackUrl", "https://test.com");
-        data.put("version", "3.1");
-        data.put("eventTypes", new ArrayList<>(Arrays.asList("eventType")));
-        data.put("responseData", new JSONObject());
+
+        JSONObject eventSubscriptionResponse = new JSONObject();
+        eventSubscriptionResponse.put("callbackUrl", "https://test.com");
+        eventSubscriptionResponse.put("version", "3.1");
+        eventSubscriptionResponse.put("eventTypes", new ArrayList<>(Arrays.asList("eventType")));
+        data.put("eventSubscriptionResponse", eventSubscriptionResponse);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(data.toString());
         externalServiceResponse.setData(jsonNode);

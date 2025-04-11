@@ -23,26 +23,25 @@ package org.wso2.financial.services.accelerator.common.extension.model;
  */
 public enum ServiceExtensionTypeEnum {
 
-    PRE_CONSENT_GENERATION("pre_consent_generation"),
-    POST_CONSENT_GENERATION("post_consent_generation"),
-    PRE_CONSENT_RETRIEVAL("pre_consent_retrieval"),
-    PRE_CONSENT_REVOCATION("pre_consent_revocation"),
-    PRE_CONSENT_AUTHORIZATION("pre_consent_authorization"),
-    PRE_CONSENT_PERSISTENCE("pre_consent_persistence"),
-    CONSENT_VALIDATION("consent_validation"),
-    PRE_ACCESS_TOKEN_GENERATION("pre_access_token_generation"),
-    PRE_USER_AUTHORIZATION("pre_user_authorization"),
-    POST_USER_AUTHORIZATION("post_user_authorization"),
-    PRE_ID_TOKEN_GENERATION("pre_id_token_generation"),
-    PRE_TOKEN_INTROSPECTION("pre_token_introspection"),
-    VALIDATE_DCR_CREATE_REQUEST("validate_dcr_app_creation"),
-    VALIDATE_DCR_UPDATE_REQUEST("validate_dcr_app_update"),
-    PRE_EVENT_SUBSCRIPTION("pre_event_subscription"),
-    POST_EVENT_SUBSCRIPTION("post_event_subscription"),
-    PRE_EVENT_CREATION("pre_event_creation"),
-    PRE_EVENT_POLLING("pre_event_polling"),
-    POST_EVENT_POLLING("post_event_polling"),
-    ERROR_MAPPER("error_mapper");
+    PRE_PROCESS_CLIENT_CREATION("pre_process_client_creation"),
+    PRE_PROCESS_CLIENT_UPDATE("pre_process_client_update"),
+    PRE_PROCESS_CLIENT_RETRIEVAL("pre_process_client_retrieval"),
+    PRE_PROCESS_CONSENT_CREATION("pre_process_consent_creation"),
+    ENRICH_CONSENT_CREATION_RESPONSE("enrich_consent_creation_response"),
+    PRE_PROCESS_CONSENT_RETRIEVAL("pre_process_consent_retrieval"),
+    PRE_PROCESS_CONSENT_BULK_RETRIEVAL("pre_process_consent_bulk_retrieval"),
+    PRE_PROCESS_CONSENT_REVOKE("pre_process_consent_revoke"),
+    POPULATE_CONSENT_AUTHORIZE_SCREEN("populate_consent_authorize_screen"),
+    PERSIST_AUTHORIZED_CONSENT("persist_authorized_consent"),
+    VALIDATE_CONSENT_ACCESS("validate_consent_access"),
+    ISSUE_REFRESH_TOKEN("issue_refresh_token"),
+    VALIDATE_AUTHORIZATION_REQUEST("validate_authorization_request"),
+    VALIDATE_EVENT_SUBSCRIPTION("validate_event_subscription"),
+    ENRICH_EVENT_SUBSCRIPTION_RESPONSE("enrich_event_subscription_response"),
+    VALIDATE_EVENT_CREATION("validate_event_creation"),
+    VALIDATE_EVENT_POLLING("validate_event_polling"),
+    ENRICH_EVENT_POLLING_RESPONSE("enrich_event_polling_response"),
+    MAP_ACCELERATOR_ERROR_RESPONSE("map_accelerator_error_response");
 
     private final String type;
 

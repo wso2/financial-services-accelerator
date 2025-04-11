@@ -77,7 +77,7 @@ public class EventCreationServiceTests {
     }
 
     @Test
-    public void testPublishOBEventNotification() throws FSEventNotificationException {
+    public void testPublishFSEventNotification() throws FSEventNotificationException {
 
         mockedEventNotificationDAO = Mockito.mock(EventNotificationDAO.class);
         Mockito.when(mockedEventNotificationDAO.persistEventNotification(any(), any(), any())).thenReturn(

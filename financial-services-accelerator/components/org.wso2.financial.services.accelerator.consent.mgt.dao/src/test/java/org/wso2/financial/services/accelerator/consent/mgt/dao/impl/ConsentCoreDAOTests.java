@@ -2194,7 +2194,7 @@ public class ConsentCoreDAOTests {
             consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
 
             expirationEligibleConsents = consentCoreDAO.getExpiringConsents(connection,
-                    "authorised,awaitingAuthorisation");
+                    "Authorised,AwaitingAuthorisation");
 
         }
         Assert.assertFalse(expirationEligibleConsents.isEmpty());
