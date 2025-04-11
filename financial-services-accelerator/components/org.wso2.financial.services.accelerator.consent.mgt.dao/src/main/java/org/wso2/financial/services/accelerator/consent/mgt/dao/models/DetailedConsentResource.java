@@ -210,4 +210,5 @@ public class DetailedConsentResource {
         consentResourceJson.put("receipt", receiptJson);
         return consentResourceJson;
     }
+
 }

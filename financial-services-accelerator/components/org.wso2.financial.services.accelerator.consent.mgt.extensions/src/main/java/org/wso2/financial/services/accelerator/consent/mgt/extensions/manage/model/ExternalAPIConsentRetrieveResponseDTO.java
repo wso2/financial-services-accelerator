@@ -24,13 +24,13 @@ import com.google.gson.JsonElement;
  */
 public class ExternalAPIConsentRetrieveResponseDTO {
 
-    private JsonElement responseData;
+    private JsonElement modifiedResponse;
 
-    public JsonElement getResponseData() {
-        return responseData;
+    public JsonElement getModifiedResponse() {
+        return modifiedResponse;
     }
 
-    public void setResponseData(JsonElement responseData) {
-        this.responseData = responseData;
+    public void setModifiedResponse(JsonElement modifiedResponse) {
+        this.modifiedResponse = modifiedResponse;
     }
 }
