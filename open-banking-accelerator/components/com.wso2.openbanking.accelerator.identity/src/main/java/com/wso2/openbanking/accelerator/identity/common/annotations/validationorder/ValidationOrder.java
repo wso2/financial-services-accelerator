@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.identity.common.annotations.validationo
 
 import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.AttributeChecks;
 import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatorySsaChecks;
 import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.SignatureCheck;
 
 import javax.validation.GroupSequence;
@@ -27,7 +28,7 @@ import javax.validation.GroupSequence;
 /**
  * Class to define the order of execution for the hibernate validation groups.
  */
-@GroupSequence({MandatoryChecks.class, AttributeChecks.class, SignatureCheck.class})
+@GroupSequence({MandatoryChecks.class, MandatorySsaChecks.class, AttributeChecks.class, SignatureCheck.class})
 public interface ValidationOrder {
 
 }

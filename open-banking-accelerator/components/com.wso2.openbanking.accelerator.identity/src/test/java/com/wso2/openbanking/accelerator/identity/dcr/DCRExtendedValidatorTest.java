@@ -18,6 +18,7 @@
 package com.wso2.openbanking.accelerator.identity.dcr;
 
 import com.google.gson.Gson;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationException;
@@ -29,6 +30,11 @@ import com.wso2.openbanking.accelerator.identity.dcr.util.RegistrationTestConsta
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -42,8 +48,11 @@ import java.util.Map;
 /**
  * Test for DCR extended validator.
  */
-public class DCRExtendedValidatorTest {
+@PrepareForTest({OpenBankingConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
+public class DCRExtendedValidatorTest extends PowerMockTestCase {
 
+    OpenBankingConfigParser openBankingConfigParserMock;
     private RegistrationRequest registrationRequest;
     private ExtendedValidatorImpl extendedValidator = new ExtendedValidatorImpl();
 
@@ -52,6 +61,7 @@ public class DCRExtendedValidatorTest {
     @BeforeClass
     public void beforeClass() {
 
+        mockOpenBankingConfigParser();
         Map<String, Object> confMap = new HashMap<>();
         Map<String, Map<String, Object>> dcrRegistrationConfMap = new HashMap<>();
         Gson gson = new Gson();
@@ -72,6 +82,14 @@ public class DCRExtendedValidatorTest {
         confMap.put(OpenBankingConstants.SIGNATURE_ALGORITHMS, validAlgorithms);
         IdentityExtensionsDataHolder.getInstance().setConfigurationMap(confMap);
         IdentityExtensionsDataHolder.getInstance().setDcrRegistrationConfigMap(dcrRegistrationConfMap);
+    }
+
+    private void mockOpenBankingConfigParser() {
+        openBankingConfigParserMock = Mockito.mock(OpenBankingConfigParser.class);
+        Map<String, Object> configMap = new HashMap<>();
+        Mockito.when(openBankingConfigParserMock.getConfiguration()).thenReturn(configMap);
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
     }
 
     @Test

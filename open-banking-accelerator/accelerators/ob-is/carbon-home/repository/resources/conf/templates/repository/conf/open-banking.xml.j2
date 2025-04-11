@@ -636,6 +636,13 @@
                     {% endfor %}
                 </AllowedValues>
                 {% endif %}
+                {% if open_banking.dcr.registration.software_statement.mandatory_parameters is defined %}
+                    <MandatoryParameters>
+                        {% for value in open_banking.dcr.registration.software_statement.mandatory_parameters %}
+                            <Parameter>{{value}}</Parameter>
+                        {% endfor %}
+                    </MandatoryParameters>
+                {% endif %}
             </SoftwareStatement>
             <ResponseTypes>
                 {% if open_banking.dcr.registration.response_types.required is defined %}

@@ -68,7 +68,8 @@ public class OpenBankingConstants {
             "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyValueForSandbox";
     public static final String DCR_SOFTWARE_ENV_IDENTIFICATION_VALUE_FOR_PRODUCTION =
             "DCR.RegistrationRequestParams.SoftwareEnvironmentIdentification.PropertyValueForProduction";
-
+    public static final String DCR_SSA_MANDATORY_PARAMETERS =
+            "DCR.RegistrationRequestParams.SoftwareStatement.MandatoryParameters.Parameter";
     public static final String APIM_APPCREATION = "DCR.APIMRESTEndPoints.AppCreation";
     public static final String APIM_KEYGENERATION = "DCR.APIMRESTEndPoints.KeyGeneration";
     public static final String APIM_GETAPIS = "DCR.APIMRESTEndPoints.RetrieveAPIS";
