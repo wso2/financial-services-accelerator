@@ -20,7 +20,7 @@
 <suite name="WSO2 Financial Services - Event Notification Flow Test">
     <test name="Event Subscription Validation Flow" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
-            <class name="com.wso2.financial.services.accelerator.is.test.preconfigurationstep.DCREndToEndFlow" />
+            <class name="com.wso2.financial.services.accelerator.is.test.preconfigurationstep.CommonApplicationCreation" />
         </classes>
     </test>
 </suite>

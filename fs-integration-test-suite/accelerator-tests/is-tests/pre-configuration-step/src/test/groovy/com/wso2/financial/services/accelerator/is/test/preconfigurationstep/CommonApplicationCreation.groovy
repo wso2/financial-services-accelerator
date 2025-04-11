@@ -32,7 +32,7 @@ import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 /**
  * Dynamic Client Registration End to End Flow Tests.
  */
-class DCREndToEndFlow extends FSConnectorTest {
+class CommonApplicationCreation extends FSConnectorTest {
 
     ConfigurationService configuration = new ConfigurationService()
     private String accessToken
