@@ -380,7 +380,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             throws FinancialServicesException {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
-                ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOCATION);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIAdminConsentRevokeResponseDTO.class);
     }
 
