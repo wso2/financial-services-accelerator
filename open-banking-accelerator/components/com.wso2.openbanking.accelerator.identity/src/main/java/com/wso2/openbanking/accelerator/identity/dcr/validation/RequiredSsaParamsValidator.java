@@ -63,26 +63,21 @@ public class RequiredSsaParamsValidator implements ConstraintValidator<ValidateR
 
                     Object ssaValue = softwareStatementJsonObject.get(parameter);
                     if (ssaValue == null) {
-                        setErrorToContext(constraintValidatorContext,
+                        return handleValidationError(constraintValidatorContext,
                                 "Required SSA parameter `" + parameter + "` is null:");
-                        return false;
                     } else if (ssaValue instanceof String && StringUtils.isBlank(ssaValue.toString())) {
-                        setErrorToContext(constraintValidatorContext,
+                        return handleValidationError(constraintValidatorContext,
                                 "Required SSA parameter `" + parameter + "` is blank:");
-                        return false;
                     } else if ((ssaValue instanceof ArrayList && ((ArrayList<?>) ssaValue).isEmpty()) ||
                             (ssaValue instanceof JSONObject && ((JSONObject) ssaValue).isEmpty())) {
-                        setErrorToContext(constraintValidatorContext,
+                        return handleValidationError(constraintValidatorContext,
                                 "Required SSA parameter `" + parameter + "` is empty:");
-                        return false;
                     }
                 } else {
-                    setErrorToContext(constraintValidatorContext,
+                    return handleValidationError(constraintValidatorContext,
                             "Required SSA parameter `" + parameter + "` not found:");
-                    return false;
                 }
             }
-
             return true;
 
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -98,12 +93,15 @@ public class RequiredSsaParamsValidator implements ConstraintValidator<ValidateR
      *
      * @param constraintValidatorContext ConstraintValidatorContext
      * @param errorMessage               Error message
+     * @return false as isValid
      */
-    private static void setErrorToContext(ConstraintValidatorContext constraintValidatorContext, String errorMessage) {
+    private static boolean handleValidationError(ConstraintValidatorContext constraintValidatorContext,
+                                                 String errorMessage) {
         constraintValidatorContext.disableDefaultConstraintViolation();
         constraintValidatorContext
                 .buildConstraintViolationWithTemplate(errorMessage + DCRCommonConstants.INVALID_META_DATA)
                 .addConstraintViolation();
+        return false;
     }
 
     /**
