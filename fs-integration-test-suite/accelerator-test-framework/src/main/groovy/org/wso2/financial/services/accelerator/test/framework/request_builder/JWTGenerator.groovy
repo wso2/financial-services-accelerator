@@ -344,7 +344,7 @@ class JWTGenerator {
     String getAppAccessTokenJwt(String authMethodType, String clientId = null) throws TestFrameworkException {
 
         if(authMethodType == ConnectorTestConstants.TLS_AUTH_METHOD){
-            String accessTokenJWT = new PayloadGenerator().addGrantType().addScopes(scopesList).addClientID()
+            String accessTokenJWT = new PayloadGenerator().addGrantType().addScopes(scopesList).addClientID(clientId)
                     .addRedirectUri().getPayload()
             return accessTokenJWT
         } else {
@@ -369,7 +369,7 @@ class JWTGenerator {
             throws TestFrameworkException {
         if(authMethodType == ConnectorTestConstants.TLS_AUTH_METHOD){
             String accessTokenJWT = new PayloadGenerator().addGrantType(ConnectorTestConstants.AUTH_CODE).addCode(code)
-                    .addScopes(scopesList).addClientID().addRedirectUri().getPayload()
+                    .addScopes(scopesList).addClientID(clientId).addRedirectUri().getPayload()
             return accessTokenJWT
         }
 
@@ -448,7 +448,7 @@ class JWTGenerator {
             String accessTokenPayload = new PayloadGenerator()
                     .addGrantType(ConnectorTestConstants.REFRESH_TOKEN)
                     .addScopes(scopesList)
-                    .addClientID()
+                    .addClientID(clientId)
                     .addRedirectUri()
                     .addRefreshToken(refreshToken)
                     .getPayload()
@@ -477,5 +477,80 @@ class JWTGenerator {
                     .getPayload()
             return accessTokenPayload
         }
+    }
+
+    JWT getSignedAuthRequestObjectWithoutConsentId(String scopeString,
+                                   ClientID clientId,
+                                   Issuer iss,
+                                   String state = ConnectorTestConstants.STATE_PARAMETER,
+                                   String nonce = ConnectorTestConstants.NONCE_PARAMETER,
+                                   String response_type = ConnectorTestConstants.RESPONSE_TYPE_PARAMETER,
+                                   String audienceValue = acceleratorConfiguration.getConsentAudienceValue(),
+                                   String redirectUrl = acceleratorConfiguration.getAppDCRRedirectUri()) {
+
+        def expiryDate = Instant.now().plus(58, ChronoUnit.MINUTES)
+        def notBefore = Instant.now()
+
+        JSONObject critString = new ArrayList<String>() {
+            {
+                add(ConnectorTestConstants.B64_PARAMETER)
+                add(ConnectorTestConstants.CRIT_IAT_URL)
+                add(ConnectorTestConstants.CRIT_ISS_URL)
+                add(ConnectorTestConstants.CRIT_TAN_URL)
+            }
+        }
+
+        JSONObject acr = new JSONObject().put(ConnectorTestConstants.ESSENTIAL, true).put(ConnectorTestConstants.VALUES, new ArrayList<String>() {
+            {
+                add(ConnectorTestConstants.ACR_CA_URL)
+                add(ConnectorTestConstants.ACR_SCA_URL)
+            }
+        })
+
+        JSONObject claimsString = new JSONObject().put(
+                ConnectorTestConstants.ID_TOKEN_PARAMETER,
+                new JSONObject().put(ConnectorTestConstants.ACR_PARAMETER, acr)
+        )
+
+        String claims = new JSONRequestGenerator()
+                .addCustomJson(ConnectorTestConstants.CRIT_PARAMETER, critString)
+                .addAudience(audienceValue)
+                .addScope(scopeString)
+                .addExpireDate(expiryDate.getEpochSecond().toLong())
+                .addCustomJson(ConnectorTestConstants.CLAIMS_PARAMETER, claimsString)
+                .addIssuer(iss.toString())
+                .addResponseType()
+                .addRedirectURI()
+                .addState(UUID.randomUUID().toString())
+                .addNonce()
+                .addClientID(clientId.toString())
+                .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                .getJsonObject().toString()
+
+        String payload = getSignedRequestObject(claims)
+
+        Reporter.log("Authorisation Request Object")
+        Reporter.log("JWS Payload ${new Payload(claims).toString()}")
+
+        return SignedJWT.parse(payload)
+    }
+
+    /**
+     * Return payload for refresh token generation
+     * @param authMethodType
+     * @param refreshToken
+     * @return
+     * @throws TestFrameworkException
+     */
+    String getRefreshAccessTokenPayloadWithoutClientId(String refreshToken)
+            throws TestFrameworkException {
+
+        String accessTokenPayload = new PayloadGenerator()
+                .addGrantType(ConnectorTestConstants.REFRESH_TOKEN)
+                .addScopes(scopesList)
+                .addRedirectUri()
+                .addRefreshToken(refreshToken)
+                .getPayload()
+        return accessTokenPayload
     }
 }

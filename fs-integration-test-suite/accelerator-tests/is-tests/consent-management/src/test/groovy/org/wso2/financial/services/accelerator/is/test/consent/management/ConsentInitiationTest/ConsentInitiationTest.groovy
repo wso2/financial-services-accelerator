@@ -185,7 +185,7 @@ class ConsentInitiationTest extends FSConnectorTest {
 
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                "Consent Management Error")
+                "consent_create")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Client ID missing in the request.")
     }
@@ -201,7 +201,7 @@ class ConsentInitiationTest extends FSConnectorTest {
 
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                "Consent Management Error")
+                "consent_default")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Payload is not in the correct format")
     }

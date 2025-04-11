@@ -46,6 +46,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Payload is not in the correct format")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -58,6 +60,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Invalid request payload"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -70,6 +74,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Payload is not in the correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -82,6 +88,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "ExpirationDateTime is invalid"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -101,6 +109,10 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
+                "Debtor Account Scheme Name should be present in the request"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -111,6 +123,10 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
+                "Debtor Account Scheme Name is not in the correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -123,6 +139,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                         .contains("Debtor Account Identification should be present in the request"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -144,6 +162,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Debtor Account Identification is not in the correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -156,6 +176,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Debtor Account Name is not in the correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -168,6 +190,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Debtor Account Secondary Identification is not in the correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -180,5 +204,7 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "ExpirationDateTime should be a future date")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 }

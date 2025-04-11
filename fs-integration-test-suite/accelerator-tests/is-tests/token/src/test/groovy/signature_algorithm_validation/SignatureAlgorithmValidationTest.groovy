@@ -21,6 +21,8 @@ package signature_algorithm_validation
 import io.restassured.RestAssured
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.annotations.AfterClass
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
@@ -43,9 +45,8 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
     ConnectorTestConstants.ApiScope scope = ConnectorTestConstants.ApiScope.ACCOUNTS
     private ConfigurationService configuration = new ConfigurationService()
 
-    void authoriseConsent() {
+    void authoriseConsent(String client_id) {
 
-        clientId = configuration.getAppInfoClientID()
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
         initiationPayload = RequestPayloads.initiationPayload
         //Consent initiation
@@ -53,14 +54,20 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
         Assert.assertNotNull(consentId)
 
         //Consent Authorisation
-        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+        doConsentAuthorisation(client_id, true, consentScopes)
         Assert.assertNotNull(code)
+    }
+
+    @BeforeClass
+    void setup() {
+        //Create Regulatory Application with tls_client_auth method
+        clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
     }
 
     @Test
     void "Validate token request contains client assertion signed with configured signature algorithm"() {
 
-        authoriseConsent()
+        authoriseConsent(clientId)
 
         Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId,
                 code, consentScopes)
@@ -124,5 +131,11 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
                 keystoreLocation, password, alias, consentScopes, clientId, code)
 
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+    }
+
+    @AfterClass
+    void cleanup() {
+        //Delete the application created for the test
+        deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
     }
 }
