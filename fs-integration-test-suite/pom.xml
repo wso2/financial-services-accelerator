@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>financial-services</artifactId>
-        <version>4.0.0-M3</version>
+        <version>4.0.0-M4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -368,7 +368,7 @@
         <org.codehaus.groovy.version>2.4.11</org.codehaus.groovy.version>
         <bcpkix-jdk15on.version>1.59</bcpkix-jdk15on.version>
         <jacoco.version>0.8.3</jacoco.version>
-        <bfsi-test-framework.version>4.0.0-M3</bfsi-test-framework.version>
+        <bfsi-test-framework.version>4.0.0-M4</bfsi-test-framework.version>
         <org.osgi.version>6.0.0</org.osgi.version>
     </properties>
 
