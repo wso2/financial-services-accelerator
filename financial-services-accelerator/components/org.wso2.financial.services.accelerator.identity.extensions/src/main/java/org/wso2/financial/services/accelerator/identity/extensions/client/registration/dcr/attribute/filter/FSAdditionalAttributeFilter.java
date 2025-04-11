@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
 import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
@@ -80,24 +81,36 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        validateRequireRequestObject(appRegistrationRequest.isRequireSignedRequestObject());
+
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Map<String, Object> attributesToStore = null;
+        Map<String, Object> attributesToStore = new HashMap<>();
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(appRegistrationRequest));
-            attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, null,
-                    IdentityCommonConstants.APP_REG_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION)) {
+                log.debug("Executing external service call to get custom attributes to store");
+                attributesToStore = callExternalService(appRequestObj, ssaParams, null,
+                        ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
+            } else if (getFSDCRExtension() != null) {
+                log.debug("Executing custom DCR extension to get custom attributes to store");
+                return getFSDCRExtension().validateDCRRegisterAttributes(appRequestObj, ssaParams);
+            }
         } catch (JsonProcessingException e) {
             throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
+        } catch (FinancialServicesException e) {
+            throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
         }
 
         Map<String, Object> requestMap = objectMapper.convertValue(appRegistrationRequest, Map.class);
-
         Map<String, Object> filteredAttributes = new HashMap<>();
         Map<String, Object> additionalAttributes = appRegistrationRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
-        filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
-                appRegistrationRequest.getSoftwareStatement());
+        if (appRegistrationRequest.getSoftwareStatement() != null) {
+            filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
+                    appRegistrationRequest.getSoftwareStatement());
+        }
         getResponseAttributeKeys()
                 .stream()
                 .filter(additionalAttributes::containsKey)
@@ -112,6 +125,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
+        //Setting the software statement to null to avoid sending software statement twice in the response.
+        appRegistrationRequest.setSoftwareStatement(null);
         return filteredAttributes;
     }
 
@@ -131,23 +146,37 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        validateRequireRequestObject(applicationUpdateRequest.isRequireSignedRequestObject());
+
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestMap = objectMapper.convertValue(applicationUpdateRequest, Map.class);
         List<JSONObject> spProperties = constructSPPropertyList(serviceProviderProperties);
 
-        Map<String, Object> attributesToStore = null;
+        Map<String, Object> attributesToStore = new HashMap<>();
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(applicationUpdateRequest));
-            attributesToStore = getCustomAttributesToStore(appRequestObj, ssaParams, spProperties,
-                    IdentityCommonConstants.APP_UPDATE_REQUEST, ServiceExtensionTypeEnum.VALIDATE_DCR_UPDATE_REQUEST);
+
+            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_UPDATE)) {
+                log.debug("Executing external service call to get custom attributes to store");
+                attributesToStore = callExternalService(appRequestObj, ssaParams, spProperties,
+                        ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_UPDATE);
+            } else if (getFSDCRExtension() != null) {
+                log.debug("Executing custom DCR extension to get custom attributes to store");
+                return getFSDCRExtension().validateDCRUpdateAttributes(appRequestObj, ssaParams, spProperties);
+            }
         } catch (JsonProcessingException e) {
             throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage(), e);
+        } catch (FinancialServicesException e) {
+            throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
         }
+
         Map<String, Object> filteredAttributes = new HashMap<>();
         Map<String, Object> additionalAttributes = applicationUpdateRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
-        filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
-                applicationUpdateRequest.getSoftwareStatement());
+        if (applicationUpdateRequest.getSoftwareStatement() != null) {
+            filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
+                    applicationUpdateRequest.getSoftwareStatement());
+        }
         getResponseAttributeKeys()
                 .stream()
                 .filter(additionalAttributes::containsKey)
@@ -162,6 +191,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         attributesToStore.keySet().stream()
                 .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, finalAttributesToStore.get(key)));
+        //Setting the software statement to null to avoid sending software statement twice in the response.
+        applicationUpdateRequest.setSoftwareStatement(null);
         return filteredAttributes;
     }
 
@@ -178,6 +209,10 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             }
         }
 
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_RETRIEVAL)) {
+            log.debug("Executing external service call to get custom attributes to store");
+            return callExternalServiceForRetrieval(ssaParams);
+        }
         // Filtering the attributes to be returned in the response.
         return new HashMap<>(ssaParams);
     }
@@ -187,7 +222,6 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         //  Adding BFSI specific fields to be returned in the response.
         Set<String> responseAttributeKeys = getResponseParamsFromConfig();
-        responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_STATEMENT);
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_ID);
         responseAttributeKeys.add(IdentityCommonConstants.SCOPE);
         responseAttributeKeys.add(IdentityCommonConstants.RESPONSE_TYPES);
@@ -227,7 +261,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         for (Map<String, Object> validator : dcrValidators.values()) {
             if (Boolean.parseBoolean(validator.get(IdentityCommonConstants.ENABLE).toString())) {
                 DynamicClientRegistrationValidator dcrValidator = FinancialServicesUtils.getClassInstanceFromFQN(
-                                validator.get(IdentityCommonConstants.CLASS).toString(),
+                        validator.get(IdentityCommonConstants.CLASS).toString(),
                         DynamicClientRegistrationValidator.class);
                 validatorMap.put(Integer.parseInt(validator.get(IdentityCommonConstants.PRIORITY).toString()),
                         dcrValidator);
@@ -245,55 +279,73 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
     }
 
     /**
-     * Get the custom attributes to store.
+     * Method to invoke the external service
+     * .
      * @param appRequest                 Application request.
      * @param ssaParams                  SSA parameters.
      * @param spProperties               Service provider properties.
-     * @param operation                  Operation type.
      * @param serviceExtensionTypeEnum   Service extension type.
      * @return                         Custom attributes to store.
      * @throws DCRMClientException      When an error occurs while getting custom attributes to store.
      */
-    private static Map<String, Object> getCustomAttributesToStore(JSONObject appRequest,
-                                                                Map<String, Object> ssaParams,
-                                                                List<JSONObject> spProperties, String operation,
-                                                                ServiceExtensionTypeEnum serviceExtensionTypeEnum)
-                        throws DCRMClientException  {
+    private static Map<String, Object> callExternalService(JSONObject appRequest,
+                                                           Map<String, Object> ssaParams,
+                                                           List<JSONObject> spProperties,
+                                                           ServiceExtensionTypeEnum serviceExtensionTypeEnum)
+            throws DCRMClientException  {
 
-        if (ServiceExtensionUtils.isInvokeExternalService(serviceExtensionTypeEnum)) {
-            try {
-                log.debug("Executing external service call to get custom attributes to store");
-                ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(
-                        getExternalServiceRequest(appRequest, ssaParams, spProperties, operation),
-                        serviceExtensionTypeEnum);
-                if (StatusEnum.SUCCESS.equals(response.getStatus())) {
-                    JSONObject attributesToStoreJson = new JSONObject(response.getData()
-                            .get(IdentityCommonConstants.ATTRIBUTES_TO_STORE)
-                            .toString());
-                    return attributesToStoreJson.toMap();
-                } else {
-                    String errorCode = response.getErrorCode();
-                    String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
-                            .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
-                    throw new DCRMClientException(errorCode, errDesc);
-                }
-            } catch (FinancialServicesException e) {
-                throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
+        try {
+            log.debug("Executing external service call to get custom attributes to store");
+            ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(
+                    getExternalServiceRequest(appRequest, ssaParams, spProperties),
+                    serviceExtensionTypeEnum);
+            if (StatusEnum.SUCCESS.equals(response.getStatus())) {
+                JSONObject attributesToStoreJson = new JSONObject(response.getData()
+                        .get(IdentityCommonConstants.CLIENT_DATA)
+                        .toString());
+                return attributesToStoreJson.toMap();
+            } else {
+                String dcrErrorCode = response.getData().path(FinancialServicesConstants.ERROR_CODE)
+                        .asText(IdentityCommonConstants.INVALID_CLIENT_METADATA);
+                String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                        .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+                throw new DCRMClientException(dcrErrorCode, errDesc);
             }
-        } else if (getFSDCRExtension() != null) {
-            try {
-                log.debug("Executing custom DCR extension to get custom attributes to store");
-                if (IdentityCommonConstants.APP_REG_REQUEST.equals(operation)) {
-                    return getFSDCRExtension().validateDCRRegisterAttributes(appRequest, ssaParams);
-                } else {
-                    return getFSDCRExtension().validateDCRUpdateAttributes(appRequest, ssaParams, spProperties);
-                }
-            } catch (FinancialServicesException e) {
-                throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
-
-            }
+        } catch (FinancialServicesException e) {
+            throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
         }
-        return new HashMap<>();
+    }
+
+    /**
+     * Method to invoke the external service
+     * .
+     * @param ssaParams                  SSA parameters.
+     * @return                         Custom attributes to store.
+     * @throws DCRMClientException      When an error occurs while getting custom attributes to store.
+     */
+    private static Map<String, Object> callExternalServiceForRetrieval(Map<String, String> ssaParams)
+            throws DCRMClientException  {
+
+        try {
+            log.debug("Executing external service call to get custom attributes to store");
+            ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(
+                    getExternalServiceRequestForRetrieval(ssaParams),
+                    ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_RETRIEVAL);
+            if (StatusEnum.SUCCESS.equals(response.getStatus())) {
+                JSONObject attributesToStoreJson = new JSONObject(response.getData()
+                        .get(IdentityCommonConstants.CLIENT_DATA)
+                        .toString());
+                return attributesToStoreJson.toMap();
+            } else {
+                String dcrErrorCode = response.getData().path(FinancialServicesConstants.ERROR_CODE)
+                        .asText(IdentityCommonConstants.INVALID_CLIENT_METADATA);
+                String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                        .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+                throw new DCRMClientException(dcrErrorCode, errDesc);
+            }
+        } catch (FinancialServicesException e) {
+            throw new DCRMClientException(IdentityCommonConstants.SERVER_ERROR, e.getMessage());
+        }
     }
 
     /**
@@ -301,19 +353,29 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
      * @param appRequest      Application request.
      * @param ssaParams       SSA parameters.
      * @param spProperties    Service provider properties.
-     * @param operation       Operation type.
      * @return               External service request.
      */
     private static ExternalServiceRequest getExternalServiceRequest(JSONObject appRequest,
                                                                     Map<String, Object> ssaParams,
-                                                                    List<JSONObject> spProperties, String operation) {
+                                                                    List<JSONObject> spProperties) {
         JSONObject data = new JSONObject();
-        data.put(operation, appRequest);
+        data.put(IdentityCommonConstants.CLIENT_DATA, appRequest);
         data.put(IdentityCommonConstants.SSA_PARAMS, ssaParams);
         if (spProperties != null) {
-            data.put(IdentityCommonConstants.SP_PROPERTIES, spProperties);
+            data.put(IdentityCommonConstants.EXISTING_CLIENT_DATA, spProperties);
         }
 
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), data);
+    }
+
+    /**
+     * Method to get the external service request.
+     * @param ssaParams       SSA parameters.
+     * @return               External service request.
+     */
+    private static ExternalServiceRequest getExternalServiceRequestForRetrieval(Map<String, String> ssaParams) {
+        JSONObject data = new JSONObject();
+        data.put(IdentityCommonConstants.SSA_PARAMS, ssaParams);
         return new ExternalServiceRequest(UUID.randomUUID().toString(), data);
     }
 
@@ -348,5 +410,20 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             spPropertyList.add(propertyObject);
         }
         return spPropertyList;
+    }
+
+    /**
+     * Validates the "require request object" value in the payload. This value must be true for
+     * FAPI-compliant applications.
+     *
+     * @param requireRequestObject  The value indicating whether the request object is required.
+     * @throws DCRMClientException If the "require request object" value does not meet FAPI requirements.
+     */
+    private void validateRequireRequestObject(boolean requireRequestObject) throws DCRMClientException {
+        if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement")) &&
+                !requireRequestObject) {
+            throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA,
+                    "Require request object value is incompatible with FAPI requirements");
+        }
     }
 }

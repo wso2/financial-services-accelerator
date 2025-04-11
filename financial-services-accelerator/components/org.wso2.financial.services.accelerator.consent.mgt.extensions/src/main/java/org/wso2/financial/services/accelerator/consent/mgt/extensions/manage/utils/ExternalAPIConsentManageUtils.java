@@ -54,7 +54,8 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIPreConsentGenerateRequestDTO requestDTO) throws ConsentManagementException {
 
         JSONObject requestJson = new JSONObject(requestDTO);
-        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_GENERATION);
+        JSONObject responseJson = callExternalService(requestJson,
+                   ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentGenerateResponseDTO.class);
     }
 
@@ -69,7 +70,8 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIPostConsentGenerateRequestDTO requestDTO) throws ConsentManagementException {
 
         JSONObject requestJson = requestDTO.toJson();
-        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.POST_CONSENT_GENERATION);
+        JSONObject responseJson = callExternalService(requestJson,
+                   ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPostConsentGenerateResponseDTO.class);
     }
 
@@ -84,7 +86,8 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIConsentRevokeRequestDTO requestDTO) throws ConsentManagementException {
 
         JSONObject requestJson = requestDTO.toJson();
-        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
+        JSONObject responseJson = callExternalService(requestJson,
+                   ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
     }
 
@@ -99,7 +102,8 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIConsentRetrieveRequestDTO requestDTO) throws ConsentManagementException {
 
         JSONObject requestJson = requestDTO.toJson();
-        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
+        JSONObject responseJson = callExternalService(requestJson,
+                   ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
     }
 

@@ -18,14 +18,18 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AmendedResources;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,13 +79,13 @@ public class ExternalAPIUtil {
     private static int getHttpErrorCode(ExternalServiceResponse response) throws ConsentException {
         int httpErrorCode;
 
-        if (response == null || response.getErrorCode() == null) {
+        if (response == null) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error occurred while calling the external service");
         }
 
         try {
-            httpErrorCode = Integer.parseInt(response.getErrorCode());
+            httpErrorCode = response.getErrorCode();
         } catch (NumberFormatException e) {
             httpErrorCode = 500;
         }
@@ -97,25 +101,25 @@ public class ExternalAPIUtil {
      * <p>
      * Fields in the DTO are prioritized; if null, corresponding values from the base consent are used.
      *
-     * @param responseDTO     The DTO received from the external API pre-consent step.
-     * @param consentResource The base consent resource from the persistence layer.
+     * @param responseConsentResource The consent resource received from the external API pre-consent step.
+     * @param consentResource         The base consent resource from the persistence layer.
      * @return A fully populated {@link DetailedConsentResource}.
      */
     public static DetailedConsentResource constructDetailedConsentResource(
-            ExternalAPIPreConsentPersistResponseDTO responseDTO, ConsentResource consentResource, String primaryAuthId,
-            String primaryUserId) {
+            ExternalAPIConsentResourceResponseDTO responseConsentResource, ConsentResource consentResource,
+            String primaryAuthId, String primaryUserId) {
 
         String consentID = consentResource.getConsentID();
         long updatedTime = System.currentTimeMillis();
 
         List<AuthorizationResource> authorizationResources =
-                buildAuthorizationResources(responseDTO.getAuthorizations(), consentID, primaryAuthId, primaryUserId,
-                        updatedTime);
+                buildAuthorizationResources(responseConsentResource.getAuthorizations(), consentID, primaryAuthId,
+                        primaryUserId, updatedTime);
 
         List<ConsentMappingResource> consentMappingResources =
-                buildConsentMappingResources(responseDTO.getAuthorizations(), authorizationResources);
+                buildConsentMappingResources(responseConsentResource.getAuthorizations(), authorizationResources);
 
-        return buildDetailedConsentResource(responseDTO, consentResource, authorizationResources,
+        return buildDetailedConsentResource(responseConsentResource, consentResource, authorizationResources,
                 consentMappingResources);
     }
 
@@ -125,35 +129,37 @@ public class ExternalAPIUtil {
      * <p>
      * Fields in the DTO are prioritized; if null, corresponding values from the base consent are used.
      *
-     * @param responseDTO The DTO received from the external API pre-consent step.
-     * @param consentData Consent data.
+     * @param responseConsentResource The consent resource received from the external API pre-consent step.
+     * @param consentData             Consent data.
      * @return A fully populated {@link DetailedConsentResource}.
      */
     public static DetailedConsentResource constructDetailedConsentResource(
-            ExternalAPIPreConsentPersistResponseDTO responseDTO, ConsentData consentData) {
+            ExternalAPIConsentResourceResponseDTO responseConsentResource, ConsentData consentData) {
 
         String consentID = consentData.getConsentId();
         String clientID = consentData.getClientId();
-        String receipt = new JSONObject(responseDTO.getConsentPayload()).toString();
+        String receipt = new JSONObject(responseConsentResource.getReceipt()).toString();
         long createdTime = System.currentTimeMillis();
         long updatedTime = System.currentTimeMillis();
 
         // Add common auth ID to consent attributes if available.
         Object commonAuthId = consentData.getMetaDataMap().get(ConsentExtensionConstants.COMMON_AUTH_ID);
         if (commonAuthId != null) {
-            if (responseDTO.getConsentAttributes() == null) {
-                responseDTO.setConsentAttributes(new HashMap<>());
+            if (responseConsentResource.getAttributes() == null) {
+                responseConsentResource.setAttributes(new HashMap<>());
             }
-            responseDTO.getConsentAttributes().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId.toString());
+            responseConsentResource.getAttributes().put(ConsentExtensionConstants.COMMON_AUTH_ID,
+                    commonAuthId.toString());
         }
 
         List<AuthorizationResource> authorizationResources =
-                buildAuthorizationResources(responseDTO.getAuthorizations(), consentID, null, null, updatedTime);
+                buildAuthorizationResources(responseConsentResource.getAuthorizations(), consentID, null,
+                        null, updatedTime);
 
         List<ConsentMappingResource> consentMappingResources =
-                buildConsentMappingResources(responseDTO.getAuthorizations(), authorizationResources);
+                buildConsentMappingResources(responseConsentResource.getAuthorizations(), authorizationResources);
 
-        return buildDetailedConsentResource(responseDTO, authorizationResources,
+        return buildDetailedConsentResource(responseConsentResource, authorizationResources,
                 consentMappingResources, consentID, clientID, receipt, createdTime, updatedTime);
     }
 
@@ -167,13 +173,13 @@ public class ExternalAPIUtil {
      * @return A list of {@link AuthorizationResource} objects.
      */
     private static List<AuthorizationResource> buildAuthorizationResources(
-            List<ExternalAPIPreConsentPersistResponseDTO.Authorization> authorizations,
+            List<ExternalAPIConsentResourceResponseDTO.Authorization> authorizations,
             String consentID, String primaryAuthId, String primaryUserId, long updatedTime) {
 
         List<AuthorizationResource> authResources = new ArrayList<>();
 
         if (authorizations != null) {
-            for (ExternalAPIPreConsentPersistResponseDTO.Authorization authorization : authorizations) {
+            for (ExternalAPIConsentResourceResponseDTO.Authorization authorization : authorizations) {
                 AuthorizationResource authResource = new AuthorizationResource();
 
                 /* Set existing primary auth ID if available. This is for initiated consents
@@ -186,8 +192,8 @@ public class ExternalAPIUtil {
 
                 authResource.setConsentID(consentID);
                 authResource.setUserID(authorization.getUserId());
-                authResource.setAuthorizationStatus(authorization.getAuthorizationStatus());
-                authResource.setAuthorizationType(authorization.getAuthorizationType());
+                authResource.setAuthorizationStatus(authorization.getStatus());
+                authResource.setAuthorizationType(authorization.getType());
                 authResource.setUpdatedTime(updatedTime);
                 authResources.add(authResource);
             }
@@ -204,21 +210,21 @@ public class ExternalAPIUtil {
      * @return A list of {@link ConsentMappingResource} entries.
      */
     private static List<ConsentMappingResource> buildConsentMappingResources(
-            List<ExternalAPIPreConsentPersistResponseDTO.Authorization> authorizations,
+            List<ExternalAPIConsentResourceResponseDTO.Authorization> authorizations,
             List<AuthorizationResource> authResources) {
 
         List<ConsentMappingResource> mappingResources = new ArrayList<>();
 
         if (authorizations != null) {
             for (int i = 0; i < authorizations.size(); i++) {
-                ExternalAPIPreConsentPersistResponseDTO.Authorization dtoAuth = authorizations.get(i);
+                ExternalAPIConsentResourceResponseDTO.Authorization dtoAuth = authorizations.get(i);
                 String authID = authResources.get(i).getAuthorizationID();
 
-                if (dtoAuth.getConsentedResources() != null) {
-                    for (ExternalAPIPreConsentPersistResponseDTO.Resource resource : dtoAuth.getConsentedResources()) {
+                if (dtoAuth.getResources() != null) {
+                    for (ExternalAPIConsentResourceResponseDTO.Resource resource : dtoAuth.getResources()) {
                         ConsentMappingResource mapping = new ConsentMappingResource();
                         mapping.setAuthorizationID(authID);
-                        mapping.setAccountID(resource.getResourceId());
+                        mapping.setAccountID(resource.getAccountId());
                         mapping.setPermission(resource.getPermission());
                         mapping.setMappingStatus(resource.getStatus());
                         mappingResources.add(mapping);
@@ -233,14 +239,14 @@ public class ExternalAPIUtil {
     /**
      * Combines all resolved data into a final {@link DetailedConsentResource}.
      *
-     * @param responseDTO      The DTO with potential override values.
-     * @param consentResource  The fallback source of values.
-     * @param authResources    List of resolved authorization entries.
-     * @param mappingResources List of resolved account mapping entries.
+     * @param responseConsentResource The consent resource received from the external API pre-consent step.
+     * @param consentResource         The fallback source of values.
+     * @param authResources           List of resolved authorization entries.
+     * @param mappingResources        List of resolved account mapping entries.
      * @return A fully constructed {@link DetailedConsentResource}.
      */
     private static DetailedConsentResource buildDetailedConsentResource(
-            ExternalAPIPreConsentPersistResponseDTO responseDTO, ConsentResource consentResource,
+            ExternalAPIConsentResourceResponseDTO responseConsentResource, ConsentResource consentResource,
             List<AuthorizationResource> authResources, List<ConsentMappingResource> mappingResources) {
 
         String consentID = consentResource.getConsentID();
@@ -248,22 +254,22 @@ public class ExternalAPIUtil {
         long createdTime = consentResource.getCreatedTime();
         long updatedTime = System.currentTimeMillis();
 
-        String resolvedConsentType = (responseDTO.getConsentType() != null) ? responseDTO.getConsentType() :
+        String resolvedConsentType = (responseConsentResource.getType() != null) ? responseConsentResource.getType() :
                 consentResource.getConsentType();
-        String resolvedConsentStatus = (responseDTO.getConsentStatus() != null) ? responseDTO.getConsentStatus() :
-                consentResource.getCurrentStatus();
-        String resolvedReceipt = (responseDTO.getConsentPayload() != null) ?
-                new JSONObject(responseDTO.getConsentPayload()).toString() : consentResource.getReceipt();
-        int resolvedFrequency = (responseDTO.getConsentFrequency() != null) ? responseDTO.getConsentFrequency() :
-                consentResource.getConsentFrequency();
-        long resolvedValidity = (responseDTO.getValidityTime() != null) ? responseDTO.getValidityTime() :
-                consentResource.getValidityPeriod();
-        boolean resolvedRecurring = (responseDTO.getRecurringIndicator() != null) ?
-                responseDTO.getRecurringIndicator() : consentResource.isRecurringIndicator();
+        String resolvedConsentStatus = (responseConsentResource.getStatus() != null) ?
+                responseConsentResource.getStatus() : consentResource.getCurrentStatus();
+        String resolvedReceipt = (responseConsentResource.getReceipt() != null) ?
+                new JSONObject(responseConsentResource.getReceipt()).toString() : consentResource.getReceipt();
+        int resolvedFrequency = (responseConsentResource.getFrequency() != null) ?
+                responseConsentResource.getFrequency() : consentResource.getConsentFrequency();
+        long resolvedValidity = (responseConsentResource.getValidityTime() != null) ?
+                responseConsentResource.getValidityTime() : consentResource.getValidityPeriod();
+        boolean resolvedRecurring = (responseConsentResource.getRecurringIndicator() != null) ?
+                responseConsentResource.getRecurringIndicator() : consentResource.isRecurringIndicator();
 
         return new DetailedConsentResource(consentID, clientID, resolvedReceipt, resolvedConsentType,
                 resolvedConsentStatus, resolvedFrequency, resolvedValidity, createdTime, updatedTime,
-                resolvedRecurring, responseDTO.getConsentAttributes(), new ArrayList<>(authResources),
+                resolvedRecurring, responseConsentResource.getAttributes(), new ArrayList<>(authResources),
                 new ArrayList<>(mappingResources)
         );
     }
@@ -271,31 +277,140 @@ public class ExternalAPIUtil {
     /**
      * Combines all resolved data into a final {@link DetailedConsentResource}.
      *
-     * @param responseDTO      The DTO with potential override values.
-     * @param authResources    List of resolved authorization entries.
-     * @param mappingResources List of resolved account mapping entries.
-     * @param consentID        Consent ID.
-     * @param clientID         Client ID.
-     * @param receipt          Receipt JSON string.
-     * @param createdTime      Consent creation timestamp.
-     * @param updatedTime      Consent update timestamp.
+     * @param responseConsentResource The consent resource received from the external API pre-consent step.
+     * @param authResources           List of resolved authorization entries.
+     * @param mappingResources        List of resolved account mapping entries.
+     * @param consentID               Consent ID.
+     * @param clientID                Client ID.
+     * @param receipt                 Receipt JSON string.
+     * @param createdTime             Consent creation timestamp.
+     * @param updatedTime             Consent update timestamp.
      * @return A fully constructed {@link DetailedConsentResource}.
      */
     private static DetailedConsentResource buildDetailedConsentResource(
-            ExternalAPIPreConsentPersistResponseDTO responseDTO, List<AuthorizationResource> authResources,
+            ExternalAPIConsentResourceResponseDTO responseConsentResource, List<AuthorizationResource> authResources,
             List<ConsentMappingResource> mappingResources, String consentID, String clientID, String receipt,
             long createdTime, long updatedTime) {
 
-        String resolvedConsentType = responseDTO.getConsentType();
-        String resolvedConsentStatus = responseDTO.getConsentStatus();
-        int resolvedFrequency = responseDTO.getConsentFrequency();
-        long resolvedValidity = responseDTO.getValidityTime();
-        boolean resolvedRecurring = responseDTO.getRecurringIndicator();
+        String resolvedConsentType = responseConsentResource.getType();
+        String resolvedConsentStatus = responseConsentResource.getStatus();
+        int resolvedFrequency = responseConsentResource.getFrequency();
+        long resolvedValidity = responseConsentResource.getValidityTime();
+        boolean resolvedRecurring = responseConsentResource.getRecurringIndicator();
 
         return new DetailedConsentResource(consentID, clientID, receipt, resolvedConsentType, resolvedConsentStatus,
                 resolvedFrequency, resolvedValidity, createdTime, updatedTime, resolvedRecurring,
-                responseDTO.getConsentAttributes(), new ArrayList<>(authResources), new ArrayList<>(mappingResources)
+                responseConsentResource.getAttributes(), new ArrayList<>(authResources),
+                new ArrayList<>(mappingResources)
         );
+    }
+
+    /**
+     * Create request object to be sent to the external service using ExternalAPIPreConsentPersistRequestDTO.
+     *
+     * @param requestDTO ExternalAPIPreConsentPersistRequestDTO object
+     * @return ExternalServiceRequest object
+     */
+    public static ExternalServiceRequest createExternalServiceRequest(
+            ExternalAPIPreConsentPersistRequestDTO requestDTO) {
+
+        JSONObject requestJson = new JSONObject(requestDTO);
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), requestJson);
+    }
+
+    /**
+     * Constructs the amended resources from the amended authorizations.
+     *
+     * @param amendedAuthorizations List of amended authorizations
+     * @return AmendedResources object containing the amended authorizations and mapping resources
+     */
+    public static AmendedResources constructAmendedResources(
+            List<ExternalAPIConsentResourceResponseDTO.AmendedAuthorization> amendedAuthorizations) {
+
+        AmendedResources amendedResources = new AmendedResources();
+        List<AuthorizationResource> amendedAuthResources = new ArrayList<>();
+        List<ConsentMappingResource> newMappingResources = new ArrayList<>();
+        List<ConsentMappingResource> amendedMappingResources = new ArrayList<>();
+
+        for (ExternalAPIConsentResourceResponseDTO.AmendedAuthorization amendedAuthorization :
+                amendedAuthorizations) {
+            String authorizationId = amendedAuthorization.getId();
+            AuthorizationResource amendedAuthResource = constructAmendedAuthorizationResource(amendedAuthorization);
+            amendedAuthResources.add(amendedAuthResource);
+
+            // New mapping resources
+            for (ExternalAPIConsentResourceResponseDTO.Resource newMappingResource :
+                    amendedAuthorization.getResources()) {
+                ConsentMappingResource consentMappingResource = constructNewMappingResource(newMappingResource,
+                        authorizationId);
+                newMappingResources.add(consentMappingResource);
+            }
+
+            // Amended mapping resources
+            for (ExternalAPIConsentResourceResponseDTO.AmendedResource amendedMappingResource :
+                    amendedAuthorization.getAmendedResources()) {
+                ConsentMappingResource consentMappingResource = constructAmendedMappingResource(
+                        amendedMappingResource, authorizationId);
+                amendedMappingResources.add(consentMappingResource);
+            }
+        }
+        amendedResources.setAmendedAuthResources(amendedAuthResources);
+        amendedResources.setNewMappingResources(newMappingResources);
+        amendedResources.setAmendedMappingResources(amendedMappingResources);
+
+        return amendedResources;
+    }
+
+    /**
+     * Constructs the amended authorization resource from the amended authorization.
+     *
+     * @param amendedAuthorization The amended authorization
+     * @return AuthorizationResource object
+     */
+    private static AuthorizationResource constructAmendedAuthorizationResource(
+            ExternalAPIConsentResourceResponseDTO.AmendedAuthorization amendedAuthorization) {
+
+        AuthorizationResource resource = new AuthorizationResource();
+        resource.setAuthorizationID(amendedAuthorization.getId());
+        resource.setAuthorizationType(amendedAuthorization.getType());
+        resource.setAuthorizationStatus(amendedAuthorization.getStatus());
+        return resource;
+    }
+
+    /**
+     * Constructs a ConsentMappingResource object for new consent mappings.
+     *
+     * @param newMappingResource New mapping resource
+     * @param authorizationId    Authorization ID the mapping belongs to
+     * @return ConsentMappingResource object
+     */
+    private static ConsentMappingResource constructNewMappingResource(
+            ExternalAPIConsentResourceResponseDTO.Resource newMappingResource, String authorizationId) {
+
+        ConsentMappingResource resource = new ConsentMappingResource();
+        resource.setAuthorizationID(authorizationId);
+        resource.setAccountID(newMappingResource.getAccountId());
+        resource.setPermission(newMappingResource.getPermission());
+        resource.setMappingStatus(newMappingResource.getStatus());
+        return resource;
+    }
+
+    /**
+     * Constructs a ConsentMappingResource object for amended consent mappings.
+     *
+     * @param amendedMappingResource The amended mapping resource
+     * @param authorizationId        Authorization ID the mapping belongs to
+     * @return ConsentMappingResource object
+     */
+    private static ConsentMappingResource constructAmendedMappingResource(
+            ExternalAPIConsentResourceResponseDTO.AmendedResource amendedMappingResource, String authorizationId) {
+
+        ConsentMappingResource resource = new ConsentMappingResource();
+        resource.setAuthorizationID(authorizationId);
+        resource.setMappingID(amendedMappingResource.getId());
+        resource.setPermission(amendedMappingResource.getPermission());
+        resource.setMappingStatus(amendedMappingResource.getStatus());
+        return resource;
     }
 
 }

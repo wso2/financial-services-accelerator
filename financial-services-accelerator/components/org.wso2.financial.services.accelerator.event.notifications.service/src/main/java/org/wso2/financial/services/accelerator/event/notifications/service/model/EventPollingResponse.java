@@ -25,15 +25,15 @@ import org.json.JSONObject;
  */
 public class EventPollingResponse {
 
-    private String status;
+    private int status;
     private JSONObject responseBody;
     private JSONObject errorResponse;
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

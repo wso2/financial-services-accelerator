@@ -259,7 +259,7 @@ public class ConsentValidatorServiceExtensionTest {
 
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse("testId",
                 StatusEnum.ERROR, rootNode);
-        externalServiceResponse.setErrorCode("400");
+        externalServiceResponse.setErrorCode(400);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
                 .invokeExternalServiceCall(any(), any())).thenReturn(externalServiceResponse);
 

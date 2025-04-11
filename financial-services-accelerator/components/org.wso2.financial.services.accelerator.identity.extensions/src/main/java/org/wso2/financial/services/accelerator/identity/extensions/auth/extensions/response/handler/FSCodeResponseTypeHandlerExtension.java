@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -25,11 +26,10 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.authz.handlers.CodeResponseTypeHandler;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -57,31 +57,18 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
                 return issueCode(oauthAuthzMsgCtx);
             }
 
-            // Perform FS default behaviour
-            String sessionDataKey = oauthAuthzMsgCtx.getAuthorizationReqDTO().getSessionDataKey();
-            String consentId = IdentityCommonUtils.getConsentIDFromSessionData(sessionDataKey);
-            String[] updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
-            long refreshTokenValidityPeriod = oauthAuthzMsgCtx.getRefreshTokenvalidityPeriod();
+            String[] updatedApprovedScopes;
+            if (fsResponseTypeHandler != null) {
 
-            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION)) {
-                // Perform FS customized behaviour with service extension
-                updatedApprovedScopes = IdentityCommonUtils
-                        .getApprovedScopesWithServiceExtension(oauthAuthzMsgCtx, consentId);
-            } else if (fsResponseTypeHandler != null) {
                 // Perform FS customized behaviour
                 updatedApprovedScopes = fsResponseTypeHandler.getApprovedScopes(oauthAuthzMsgCtx);
+            } else {
+
+                // Perform FS default behaviour
+                String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
+                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
             }
 
-            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION)) {
-                // Perform FS customized behaviour with service extension
-                refreshTokenValidityPeriod = IdentityCommonUtils
-                        .getRefreshTokenValidityPeriodWithServiceExtension(oauthAuthzMsgCtx, consentId);
-            } else if (fsResponseTypeHandler != null) {
-                // Perform FS customized behaviour
-                refreshTokenValidityPeriod = fsResponseTypeHandler.getRefreshTokenValidityPeriod(oauthAuthzMsgCtx);
-            }
-
-            oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(refreshTokenValidityPeriod);
             if (updatedApprovedScopes != null) {
                 oauthAuthzMsgCtx.setApprovedScope(updatedApprovedScopes);
             } else {
@@ -89,10 +76,13 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
             }
             return issueCode(oauthAuthzMsgCtx);
         } catch (RequestObjectException e) {
-            throw  new IdentityOAuth2Exception("Error while reading regulatory property");
+            throw new IdentityOAuth2Exception("Error while reading regulatory property");
         } catch (FinancialServicesException e) {
-            log.error("Error while invoking external service extension", e);
-            throw new IdentityOAuth2Exception("Error while invoking external service extension");
+            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
+        } catch (JsonProcessingException e) {
+            log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR);
         }
     }
 

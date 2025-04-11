@@ -815,6 +815,42 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
+     * Method to get service extensions endpoint retry count.
+     *
+     * @return String service extensions endpoint retry count
+     */
+    public int getServiceExtensionsEndpointRetryCount() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_RETRY_COUNT);
+        return retryCount.map(Integer::parseInt).orElse(1);
+    }
+
+    /**
+     * Method to get service extensions endpoint connect timeout in seconds.
+     *
+     * @return String service extensions endpoint read timeout in seconds
+     */
+    public int getServiceExtensionsEndpointConnectTimeoutInSeconds() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_CONNECT_TIMEOUT);
+        return retryCount.map(Integer::parseInt).orElse(3);
+    }
+
+    /**
+     * Method to get service extensions endpoint read timeout in seconds.
+     *
+     * @return String service extensions endpoint read timeout in seconds
+     */
+    public int getServiceExtensionsEndpointReadTimeoutInSeconds() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_READ_TIMEOUT);
+        return retryCount.map(Integer::parseInt).orElse(3);
+    }
+
+    /**
      * Method to get service extension types.
      *
      * @return List of service extensions

@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementRuntimeException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -48,7 +47,8 @@ public class ConsentExtensionUtils {
      * @param requestPath  Request path of the request
      * @return Consent Type
      */
-    public static String getConsentType(String requestPath) throws ConsentManagementException {
+    public static String getConsentType(String requestPath) throws ConsentException {
+
         if (requestPath.contains(ConsentExtensionConstants.ACCOUNT_CONSENT_PATH)) {
             return ConsentExtensionConstants.ACCOUNTS;
         } else if (requestPath.contains(ConsentExtensionConstants.COF_CONSENT_PATH)) {
@@ -56,7 +56,8 @@ public class ConsentExtensionUtils {
         } else if (requestPath.contains(ConsentExtensionConstants.PAYMENT_CONSENT_PATH)) {
             return ConsentExtensionConstants.PAYMENTS;
         } else {
-            throw new ConsentManagementException("Invalid consent type");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid request path found.",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
         }
     }
 
