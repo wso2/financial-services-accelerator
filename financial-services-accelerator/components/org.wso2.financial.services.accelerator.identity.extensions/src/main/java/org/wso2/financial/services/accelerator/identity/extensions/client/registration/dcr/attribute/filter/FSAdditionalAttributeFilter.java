@@ -85,7 +85,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Map<String, Object> attributesToStore = null;
+        Map<String, Object> attributesToStore = new HashMap<>();
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(appRegistrationRequest));
 
@@ -152,7 +152,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         Map<String, Object> requestMap = objectMapper.convertValue(applicationUpdateRequest, Map.class);
         List<JSONObject> spProperties = constructSPPropertyList(serviceProviderProperties);
 
-        Map<String, Object> attributesToStore = null;
+        Map<String, Object> attributesToStore = new HashMap<>();
         try {
             JSONObject appRequestObj = new JSONObject(objectMapper.writeValueAsString(applicationUpdateRequest));
 
