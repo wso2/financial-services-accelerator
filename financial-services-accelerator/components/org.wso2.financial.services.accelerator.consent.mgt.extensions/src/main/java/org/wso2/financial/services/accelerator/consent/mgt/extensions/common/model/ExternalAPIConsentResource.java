@@ -19,6 +19,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mo
 
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
 import java.util.ArrayList;
@@ -45,6 +46,29 @@ public class ExternalAPIConsentResource {
     private Map<String, Object> receipt;
     private Map<String, String> attributes;
     private List<Authorization> authorizations;
+
+    public ExternalAPIConsentResource(ConsentResource consentResource) {
+
+        this.id = consentResource.getConsentID();
+        this.clientId = consentResource.getClientID();
+        this.type = consentResource.getConsentType();
+        this.status = consentResource.getCurrentStatus();
+        this.frequency = consentResource.getConsentFrequency();
+        this.validityTime = consentResource.getValidityPeriod();
+        this.createdTime = consentResource.getCreatedTime();
+        this.updatedTime = consentResource.getUpdatedTime();
+        this.recurringIndicator = consentResource.isRecurringIndicator();
+
+        if (consentResource.getReceipt() != null && !consentResource.getReceipt().isEmpty()) {
+            JSONObject receiptJson = new JSONObject(consentResource.getReceipt());
+            this.receipt = receiptJson.toMap();
+        } else {
+            this.receipt = Collections.emptyMap();
+        }
+
+        this.attributes = consentResource.getConsentAttributes();
+
+    }
 
     public ExternalAPIConsentResource(DetailedConsentResource detailedConsent) {
 

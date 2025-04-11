@@ -18,7 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResource;
 
 /**
  * ExternalAPIConsentRetrieveRequestDTO
@@ -26,13 +26,13 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentRes
 public class ExternalAPIConsentRetrieveRequestDTO {
 
     private String consentId;
-    private ConsentResource consentResource;
-    private String resourcePath;
+    private ExternalAPIConsentResource consentResource;
+    private String consentResourcePath;
 
-    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ConsentResource consentResource,
+    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ExternalAPIConsentResource consentResource,
                                                 String resourcePath) {
         this.consentId = consentId;
-        this.resourcePath = resourcePath;
+        this.consentResourcePath = resourcePath;
         this.consentResource = consentResource;
     }
 
@@ -44,21 +44,21 @@ public class ExternalAPIConsentRetrieveRequestDTO {
         this.consentId = consentId;
     }
 
-    public ConsentResource getConsentResource() {
+    public ExternalAPIConsentResource getConsentResource() {
         return consentResource;
     }
 
     public void setConsentResource(
-            ConsentResource consentResource) {
+            ExternalAPIConsentResource consentResource) {
         this.consentResource = consentResource;
     }
 
-    public String getResourcePath() {
-        return resourcePath;
+    public String getConsentResourcePath() {
+        return consentResourcePath;
     }
 
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
+    public void setConsentResourcePath(String consentResourcePath) {
+        this.consentResourcePath = consentResourcePath;
     }
 
     /**
@@ -69,7 +69,7 @@ public class ExternalAPIConsentRetrieveRequestDTO {
     public JSONObject toJson() {
 
         JSONObject dtoJson = new JSONObject(this);
-        JSONObject consentResourceJson = this.consentResource.toJson();
+        JSONObject consentResourceJson = new JSONObject(consentResource);
         dtoJson.put("consentResource", consentResourceJson);
         return dtoJson;
     }
