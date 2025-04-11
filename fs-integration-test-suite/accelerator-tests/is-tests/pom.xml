@@ -35,6 +35,7 @@
     <modules>
         <module>dcr</module>
         <module>token</module>
+        <module>pre-configuration-step</module>
         <module>consent-management</module>
         <module>event-notification</module>
     </modules>

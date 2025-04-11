@@ -44,7 +44,7 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
 		initiationPayload = RequestPayloads.initiationPayload
 		//Consent initiation
-		consentResponse = doDefaultInitiation(initiationPayload)
+		consentResponse = doConsentInitiation(initiationPayload)
 		consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
 		Assert.assertNotNull(consentId)
 
@@ -213,7 +213,7 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
 	}
 
-	@Test (priority = 3, dependsOnMethods = "Generate authorization code grant access token for Regulatory Application")
+	@Test (priority = 3)
 	void "Generate authorization code grant access token with code bound to deleted app"() {
 
 		//delete application if exist

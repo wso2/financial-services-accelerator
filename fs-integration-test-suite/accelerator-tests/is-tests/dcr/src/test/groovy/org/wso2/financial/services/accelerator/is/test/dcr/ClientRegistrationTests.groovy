@@ -29,17 +29,20 @@ import java.nio.file.Paths
  */
 class ClientRegistrationTests extends FSConnectorTest {
 
+    String ssa
+    private String accessToken
+    private String clientId
     ClientRegistrationRequestBuilder registrationRequestBuilder
     public List<ConnectorTestConstants.ApiScope> consentScopes = [
             ConnectorTestConstants.ApiScope.ACCOUNTS
     ]
 
-    @BeforeClass
-    void init() {
-        configuration.setTppNumber(1)
-        dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
-        registrationRequestBuilder = new ClientRegistrationRequestBuilder()
+    @BeforeClass(alwaysRun = true)
+    void setup() {
+
+        dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
         ssa = new File(configuration.getAppDCRSSAPath()).text
+        registrationRequestBuilder = new ClientRegistrationRequestBuilder()
     }
 
     @Test
@@ -633,7 +636,7 @@ class ClientRegistrationTests extends FSConnectorTest {
     void "TC0101029_Invoke registration request with a software statement having disallowed characters for software_client_name" (){
 
         String invalidSsaPath = Paths.get(configuration.getTestArtifactLocation(),
-                "DynamicClientRegistration", "uk", "tpp2", "ssa_invalidClientName.txt")
+                "DynamicClientRegistration", "uk", "tpp1", "ssa_invalidClientName.txt")
 
         File ssaFile = new File(invalidSsaPath)
 
@@ -710,9 +713,11 @@ class ClientRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .post(dcrPath)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        deleteApplicationIfExist(clientId)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test
@@ -746,11 +751,12 @@ class ClientRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .post(dcrPath)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        deleteApplicationIfExist(clientId)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
-
 
     @Test
     void "Invoke registration request without require_signed_request_object for private_key_jwt method" (){
@@ -763,9 +769,11 @@ class ClientRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .post(dcrPath)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        deleteApplicationIfExist(clientId)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test

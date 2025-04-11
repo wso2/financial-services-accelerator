@@ -1017,4 +1017,20 @@ class FSConnectorTest extends CommonTest{
         return registrationResponse
 
     }
+
+    /**
+     * Account Consent Initiation Step with without ReadAccountsDetail permission .
+     * @permissionsList
+     */
+    Response doConsentInitiation(String payload) {
+
+        //initiation without ReadAccountsDetail
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
+                .body(payload)
+                .baseUri(configuration.getISServerUrl())
+                .post(consentPath)
+
+        return consentResponse
+    }
 }

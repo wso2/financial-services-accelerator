@@ -46,7 +46,7 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
 		initiationPayload = RequestPayloads.initiationPayload
 		//Consent initiation
-		consentResponse = doDefaultInitiation(initiationPayload)
+		consentResponse = doConsentInitiation(initiationPayload)
 		consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
 		Assert.assertNotNull(consentId)
 
@@ -112,14 +112,26 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 		Assert.assertEquals(TestUtil.parseResponseBody(introspectionResponse, "active"), "true")
 		Assert.assertNull(TestUtil.parseResponseBody(introspectionResponse, ConnectorTestConstants.GRANT_TYPE))
 		Assert.assertNotNull(TestUtil.parseResponseBody(introspectionResponse, ConnectorTestConstants.CNF))
+
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
 	@Test
 	void "Generate refresh token grant access token without refresh token"() {
 
-		configuration.setTppNumber(0)
-		//Do Consent Initiation and authorisation
-		authoriseConsent()
+		//Do Consent Initiation
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, code, consentScopes)
@@ -138,14 +150,25 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 				"Missing parameters: refresh_token")
 		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
 				ConnectorTestConstants.INVALID_REQUEST)
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
 	@Test
 	void "Generate refresh token grant access token with invalid refresh token"() {
 
-		configuration.setTppNumber(0)
-		//Do Consent Initiation and authorisation
-		authoriseConsent()
+        //Do Consent Initiation
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
 
 		//Get Refresh Token Grant User Access Token
 		String invalidRefreshToken = "09309de5-b7b5-3310-8767-6b14b3dc7fe8"
@@ -201,7 +224,6 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 	@Test(priority = 2)
 	void "OB-1132_Generate refresh token grant access token without refresh token"() {
 
-		//Do Consent Initiation
 		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
 		initiationPayload = RequestPayloads.initiationPayload
 

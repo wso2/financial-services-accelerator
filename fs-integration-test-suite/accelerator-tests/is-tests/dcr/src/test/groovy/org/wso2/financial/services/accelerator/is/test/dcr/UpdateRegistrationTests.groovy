@@ -33,10 +33,10 @@ class UpdateRegistrationTests extends FSConnectorTest {
             ConnectorTestConstants.ApiScope.ACCOUNTS
     ]
     ClientRegistrationRequestBuilder registrationRequestBuilder
+    String ssa
 
     @BeforeClass
     void generateAccessToken() {
-        configuration.setTppNumber(1)
         dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 
@@ -605,7 +605,11 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .put(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test
@@ -619,7 +623,11 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .put(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test
@@ -787,7 +795,11 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .put(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])

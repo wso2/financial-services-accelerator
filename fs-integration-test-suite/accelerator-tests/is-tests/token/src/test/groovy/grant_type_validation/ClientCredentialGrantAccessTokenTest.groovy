@@ -95,6 +95,8 @@ class ClientCredentialGrantAccessTokenTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "active"), "true")
         Assert.assertNull(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.GRANT_TYPE))
         Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.CNF))
+
+        deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
     }
 
     @Test (priority = 1)
