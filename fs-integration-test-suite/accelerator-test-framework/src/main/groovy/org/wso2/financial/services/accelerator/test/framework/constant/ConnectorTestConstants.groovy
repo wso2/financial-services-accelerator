@@ -75,9 +75,9 @@ class ConnectorTestConstants extends Constants{
     //Error Responses
     static final String ERROR = "error"
     static final String ERROR_DESCRIPTION = "error_description"
-    static final String ERROR_ERRORS_CODE = "errors[0].code"
-    static final String ERROR_ERRORS_MSG = "errors[0].message"
-    static final String ERROR_ERRORS_DESCRIPTION = "errors[0].description"
+    static final String ERROR_ERRORS_CODE = "error.code"
+    static final String ERROR_ERRORS_MSG = "error.message"
+    static final String ERROR_ERRORS_DESCRIPTION = "error.description"
     static final String ERROR_CODE = "errorCode"
     static final String MESSAGE = "message"
     static final String DESCRIPTION = "description"

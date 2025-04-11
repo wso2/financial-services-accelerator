@@ -46,7 +46,7 @@ class DCREndToEndFlow extends FSConnectorTest {
     void setup() {
 
         dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(1)
+        configuration.setTppNumber(0)
         ssa = new File(configuration.getAppDCRSSAPath()).text
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
     }

@@ -441,4 +441,22 @@ class AuthorisationBuilder {
                     .customParameter("nonce", params.get(ConnectorTestConstants.NONCE_PARAMETER))
                     .build()
     }
+
+    AuthorizationRequest getAuthorizationRequestWithoutConsentId(String clientId = getClientID().getValue(),
+                                                 List<ConnectorTestConstants.ApiScope> scopes, boolean isRegulatory) {
+
+        JWTGenerator generator = new JWTGenerator()
+        String scopeString = getScopeString(scopes)
+
+        request = new AuthorizationRequest.Builder(new ResponseType(), new ClientID(clientId))
+                    .responseType(ResponseType.parse(ConnectorTestConstants.AUTH_RESPONSE_TYPE))
+                    .endpointURI(getEndpoint())
+                    .redirectionURI(getRedirectURI())
+                    .requestObject(generator.getSignedAuthRequestObjectWithoutConsentId(scopeString, new ClientID(clientId),
+                            new Issuer(clientId)))
+                    .scope(new Scope(scopeString))
+                    .state(getState())
+                    .customParameter("nonce", ConnectorTestConstants.NONCE_PARAMETER)
+                    .build()
+    }
 }

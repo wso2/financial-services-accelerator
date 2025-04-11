@@ -20,15 +20,13 @@
 <suite name="WSO2 Open Banking - Accelerator Token Flow Test" parallel="tests" >
     <test name="Token Flow - Regulatory Application" enabled="true" group-by-instances="true">
             <classes>
-<!--              <class name="client_authenticator_enforcement.MtlsClientAuthenticationTest"/>-->
-<!--              <class name="client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>-->
-<!--              <class name="mtls_enforcement_validator.MtlsEnforcementValidationTest"/>-->
-<!--              <class name="signature_algorithm_validation.SignatureAlgorithmValidationTest"/>-->
-<!--              <class name="grant_type_validation.ClientCredentialGrantAccessTokenTest"/>-->
+              <class name="client_authenticator_enforcement.MtlsClientAuthenticationTest"/>
+              <class name="client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>
+              <class name="mtls_enforcement_validator.MtlsEnforcementValidationTest"/>
+              <class name="signature_algorithm_validation.SignatureAlgorithmValidationTest"/>
+              <class name="grant_type_validation.ClientCredentialGrantAccessTokenTest"/>
               <class name="grant_type_validation.AuthorisationCodeGrantAccessTokenTest"/>
-              <!--ToDo: Uncomment after resolving https://github.com/wso2-enterprise/financial-open-banking/issues/7783-->
-              <!--class name="grant_type_validation.regulatory_app.org.wso2.financial.services.accelerator.test.token.RefreshTokenGrantAccessToken"/-->
-<!--              <class name="grant_type_validation.RefreshTokenGrantAccessToken"/>-->
+              <class name="grant_type_validation.RefreshTokenGrantAccessToken"/>
             </classes>
     </test>
 </suite>

@@ -115,9 +115,11 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
         Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
     }
 
-    @Test
+    //TODO: Enable after fixing the IS issue:https://github.com/wso2-enterprise/wso2-iam-internal/issues/3473
+    @Test(enabled = false)
     void "Funds Confirmation Initiation With Invalid Authorization Header"() {
 
+        configuration.setPsuNumber(1)
         def accessToken = getBasicAuthHeader(configuration.getUserPSUName(),
                 configuration.getUserPSUPWD())
 
