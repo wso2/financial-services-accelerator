@@ -83,8 +83,12 @@ public class ExternalAPIConsentResource {
         this.recurringIndicator = detailedConsent.isRecurringIndicator();
 
         // Convert receipt String to Map<String, Object>
-        JSONObject receiptJson = new JSONObject(detailedConsent.getReceipt());
-        this.receipt = receiptJson.toMap();
+        if (detailedConsent.getReceipt() != null && !detailedConsent.getReceipt().isEmpty()) {
+            JSONObject receiptJson = new JSONObject(detailedConsent.getReceipt());
+            this.receipt = receiptJson.toMap();
+        } else {
+            this.receipt = Collections.emptyMap();
+        }
 
         this.attributes = detailedConsent.getConsentAttributes();
 
