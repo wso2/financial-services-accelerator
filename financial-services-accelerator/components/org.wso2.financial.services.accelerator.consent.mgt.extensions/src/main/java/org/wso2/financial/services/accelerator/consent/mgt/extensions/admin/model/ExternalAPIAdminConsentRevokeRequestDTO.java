@@ -15,28 +15,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
+package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model;
 
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
 /**
- * Wrapper for pre consent authorize flow external request data.
+ * ExternalAPIAdminConsentRevokeRequestDTO -Request DTO for extension of admin consent revocation
  */
-public class ExternalAPIPreConsentAuthorizeRequestDTO {
+public class ExternalAPIAdminConsentRevokeRequestDTO {
 
     private String consentId;
     private String userId;
-    private String scope;
     private DetailedConsentResource consentResource;
 
-    public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData,
-                                                    DetailedConsentResource detailedConsentResource, String scope) {
-
-        this.consentId = consentData.getConsentId();
-        this.userId = consentData.getUserId();
-        this.consentResource = detailedConsentResource;
-        this.scope = scope;
+    public ExternalAPIAdminConsentRevokeRequestDTO(String consentId, String userId, DetailedConsentResource
+            consentResource) {
+        this.consentId = consentResource.getConsentID();
+        this.userId = userId;
+        this.consentResource = consentResource;
     }
 
     public String getConsentId() {
@@ -53,14 +50,6 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
     }
 
     public DetailedConsentResource getConsentResource() {
@@ -80,9 +69,10 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     public JSONObject toJson() {
 
         JSONObject dtoJson = new JSONObject(this);
-        JSONObject consentResourceJson = this.consentResource != null ? this.consentResource.toJson() :
-                new JSONObject();
+        JSONObject consentResourceJson = this.consentResource.toJson();
         dtoJson.put("consentResource", consentResourceJson);
         return dtoJson;
     }
+
+
 }

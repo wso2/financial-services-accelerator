@@ -149,12 +149,12 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
         JSONObject data = new JSONObject();
         data.put(EventNotificationConstants.EVENT_CREATION_PAYLOAD, eventCreationPayload);
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_EVENT_CREATION)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_CREATION)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
                     data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.PRE_EVENT_CREATION);
+                        ServiceExtensionTypeEnum.VALIDATE_EVENT_CREATION);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     EventCreationResponse eventCreationResponse = new EventCreationResponse();
                     eventCreationResponse.setStatus(response.getErrorCode());

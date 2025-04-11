@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
@@ -59,17 +60,20 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
+        String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
+        String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
         JSONArray consentDataJSON;
         ConsentResource consentResource;
 
         try {
-
-            String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-            String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
-
             if (isPreInitiatedConsent) {
 
                 String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+                if (consentId == null) {
+                    log.error("intent_id not found in request object");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "intent_id not found in request object");
+                }
+
                 consentData.setConsentId(consentId);
                 consentResource = consentCoreService.getConsent(consentId, false);
 

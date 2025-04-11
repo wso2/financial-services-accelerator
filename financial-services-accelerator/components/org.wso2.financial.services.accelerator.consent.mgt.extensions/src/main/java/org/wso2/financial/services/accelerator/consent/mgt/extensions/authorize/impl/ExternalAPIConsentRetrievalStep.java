@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeRequestDTO;
@@ -69,15 +70,19 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         }
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
-        String consentId;
+        String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
 
         try {
             if (isPreInitiatedConsent) {
-                consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
                 setMandatoryConsentData(consentId, consentData);
             }
+
+            DetailedConsentResource detailedConsentResource = null;
+            if (consentId != null) {
+               detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+            }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
-                    consentData, scope);
+                    consentData, detailedConsentResource, scope);
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
@@ -135,7 +140,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
         ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(requestDTO);
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
-                externalServiceRequest, ServiceExtensionTypeEnum.PRE_CONSENT_AUTHORIZATION);
+                externalServiceRequest, ServiceExtensionTypeEnum.POPULATE_CONSENT_AUTHORIZE_SCREEN);
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
             throw new FinancialServicesException(externalServiceResponse.getData()
                     .path(FinancialServicesConstants.ERROR_MESSAGE)
