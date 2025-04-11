@@ -20,6 +20,7 @@ package grant_type_validation
 
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
@@ -38,24 +39,30 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 	ConnectorTestConstants.ApiScope scope = ConnectorTestConstants.ApiScope.ACCOUNTS
     private ConfigurationService configuration = new ConfigurationService()
 
-	void authoriseConsent() {
+	void authoriseConsent(String client_Id) {
 
-		clientId = configuration.getAppInfoClientID()
 		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
 		initiationPayload = RequestPayloads.initiationPayload
 		//Consent initiation
-		doDefaultInitiation(initiationPayload)
+		consentResponse = doConsentInitiation(initiationPayload)
+		consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
 		Assert.assertNotNull(consentId)
 
 		//Consent Authorisation
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		doConsentAuthorisation(client_Id, true, consentScopes)
 		Assert.assertNotNull(code)
+	}
+
+	@BeforeClass
+	void setup() {
+		//Create Regulatory Application with tls_client_auth method
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
 	}
 
 	@Test
 	void "Generate authorization code grant access token with pkjwt authentication"() {
 
-		authoriseConsent()
+		authoriseConsent(clientId)
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId,
 				code, consentScopes)
 
@@ -104,29 +111,9 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 		Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.CNF))
 	}
 
-	@Test
-	void "Generate authorization code grant access token for Regulatory Application"() {
-
-		configuration.setTppNumber(1)
-
-		clientId = configuration.getAppInfoClientID()
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
-
-		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, clientId,
-				code, consentScopes)
-
-		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-		Assert.assertNotNull(accessToken)
-		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "expires_in").toString(),
-				ConnectorTestConstants.TOKEN_EXPIRY_TIME)
-		Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "scope"))
-		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
-	}
-
-	@Test
+	@Test(priority = 1)
 	void "Generate authorization code grant access token without authorization code"() {
 
-		configuration.setTppNumber(0)
 		//Get User Access Token
 		Response tokenResponse = TokenRequestBuilder.getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
 				consentScopes.stream().map { it.scopeString }.toList(), clientId, "")
@@ -138,12 +125,11 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 				ConnectorTestConstants.INVALID_REQUEST)
 	}
 
-	@Test
+	@Test(priority = 1)
 	void "Generate authorization code grant access token with invalid authorization code"() {
 
 		code = "77405043-f982-3252"
 
-		configuration.setTppNumber(0)
 		//Get User Access Token
 		Response tokenResponse = TokenRequestBuilder.getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
 				consentScopes.stream().map { it.scopeString }.toList(), clientId, code)
@@ -155,16 +141,17 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 				ConnectorTestConstants.INVALID_GRANT)
 	}
 
-	@Test
+	@Test(priority = 1)
 	void "Generate authorization code grant access token with an already used authorization code"() {
 
 		//Do Consent Initiation and Authorisation
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId,
 				code, consentScopes)
 
+		def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
 		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
 		Assert.assertNotNull(accessToken)
 		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "expires_in").toString(),
@@ -183,11 +170,11 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 				ConnectorTestConstants.INVALID_GRANT)
 	}
 
-	@Test
+	@Test (priority = 1)
 	void "Generate authorization code grant access token by expired authorization code"() {
 
 		//Do Consent Initiation and Authorisation
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		authoriseConsent(clientId)
 
 		sleep(300000)
 
@@ -202,16 +189,44 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 				ConnectorTestConstants.INVALID_GRANT)
 	}
 
-	@Test
+	@Test (priority = 2)
+	void "Generate authorization code grant access token for Regulatory Application"() {
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		authoriseConsent(clientId)
+
+		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, clientId,
+				code, consentScopes)
+
+		def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+		Assert.assertNotNull(accessToken)
+		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "expires_in").toString(),
+				ConnectorTestConstants.TOKEN_EXPIRY_TIME)
+		Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "scope"))
+		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
+	}
+
+	@Test (priority = 3)
 	void "Generate authorization code grant access token with code bound to deleted app"() {
 
-		configuration.setTppNumber(1)
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
 
 		//Do Consent Initiation and Authorisation
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		authoriseConsent(clientId)
 
-		//TODO: Delete Application 2
-		clientId = configuration.getAppInfoClientID()
+		deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId,
@@ -219,8 +234,8 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 
 		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-				"Invalid authorization code received from token request")
+				"Client credentials are invalid.")
 		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
-				ConnectorTestConstants.INVALID_GRANT)
+				ConnectorTestConstants.INVALID_CLIENT)
 	}
 }

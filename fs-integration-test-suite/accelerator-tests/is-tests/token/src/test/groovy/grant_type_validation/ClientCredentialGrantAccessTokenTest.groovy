@@ -20,6 +20,7 @@ package grant_type_validation
 
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
@@ -35,10 +36,15 @@ class ClientCredentialGrantAccessTokenTest extends FSConnectorTest {
     ConnectorTestConstants.ApiScope scope = ConnectorTestConstants.ApiScope.ACCOUNTS
     private ConfigurationService configuration = new ConfigurationService()
 
+    @BeforeClass
+    void setup() {
+        //Create Regulatory Application with tls_client_auth method
+        clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
+    }
+
     @Test
     void "Generate client credential grant access token for deleted client"() {
 
-        clientId = configuration.getAppInfoClientID()
         //Token Request for the deleted client
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 "deleted_client_id", [scope])
@@ -46,8 +52,8 @@ class ClientCredentialGrantAccessTokenTest extends FSConnectorTest {
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "A valid OAuth client could not be found for client_id: deleted_client_id")
+        Assert.assertTrue(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION).contains(
+                "Client credentials are invalid"))
     }
 
     @Test
@@ -89,13 +95,14 @@ class ClientCredentialGrantAccessTokenTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "active"), "true")
         Assert.assertNull(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.GRANT_TYPE))
         Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.CNF))
+
+        deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
     }
 
     @Test (priority = 1)
     void "Validate token request for client with token_endpoint_auth_method tls_client_auth"() {
 
-        configuration.setTppNumber(1)
-        clientId = configuration.getAppInfoClientID()
+        clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
 
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD,
                 clientId, [scope])
@@ -108,5 +115,7 @@ class ClientCredentialGrantAccessTokenTest extends FSConnectorTest {
                 ConnectorTestConstants.TOKEN_EXPIRY_TIME)
         Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "scope"))
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
+
+        deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
     }
 }

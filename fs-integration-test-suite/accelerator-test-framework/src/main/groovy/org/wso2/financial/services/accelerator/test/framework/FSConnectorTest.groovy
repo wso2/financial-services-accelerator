@@ -18,6 +18,9 @@
 
 package org.wso2.financial.services.accelerator.test.framework
 
+import org.json.JSONObject
+import org.testng.Assert
+import org.testng.annotations.Test
 import org.wso2.bfsi.test.framework.CommonTest
 import org.wso2.bfsi.test.framework.automation.WaitForRedirectAutomationStep
 import org.wso2.bfsi.test.framework.request_builder.SignedObject
@@ -39,6 +42,7 @@ import org.wso2.financial.services.accelerator.test.framework.constant.Connector
 import org.wso2.financial.services.accelerator.test.framework.constant.PageObjects
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ConsentRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.EventNotificationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
@@ -99,6 +103,8 @@ class FSConnectorTest extends CommonTest{
     Response subscriptionRetrievalResponse
     Response subscriptionUpdateResponse
     Response subscriptionDeletionResponse
+    String ssa
+    ClientRegistrationRequestBuilder registrationRequestBuilder
 
     //Consent scopes
     public List<ConnectorTestConstants.ApiScope> consentScopes = [
@@ -942,5 +948,89 @@ class FSConnectorTest extends CommonTest{
      */
     static String getBase64EncodedPayload(String payload) {
         return Base64.encoder.encodeToString(payload.getBytes(Charset.defaultCharset()))
+    }
+
+    void doConsentAuthorisationWithoutConsentId(String clientId, boolean isRegulatory = true, List <ConnectorTestConstants.ApiScope> scopes) {
+
+        AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
+        String authoriseUrl = acceleratorAuthorisationBuilder.getAuthorizationRequestWithoutConsentId(clientId,
+                scopes, true).toURI().toString()
+
+        automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
+
+                    WebDriverWait wait = new WebDriverWait(driver, 10)
+                    if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                    }
+
+                    if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                    }
+                    WebElement btnApprove = wait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
+                    btnApprove.click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        code = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    String createApplication(String softwareId = configuration.getAppDCRSoftwareId(),
+                                    String tokenEndpointAuthMethod = ConnectorTestConstants.PKJWT_AUTH_METHOD) {
+
+        dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
+        ssa = new File(configuration.getAppDCRSSAPath()).text
+        registrationRequestBuilder = new ClientRegistrationRequestBuilder()
+
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa, softwareId,
+                tokenEndpointAuthMethod))
+
+        if(tokenEndpointAuthMethod.equalsIgnoreCase(ConnectorTestConstants.TLS_AUTH_METHOD)) {
+            payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+        }
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .body(payload.toString())
+                .post(dcrPath)
+
+        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+        return clientId
+    }
+
+    Response deleteApplication(String clientId, String tokenEndpointAuthMethod = ConnectorTestConstants.PKJWT_AUTH_METHOD) {
+
+        Response tokenResponse = getApplicationAccessTokenResponse(tokenEndpointAuthMethod, clientId, consentScopes)
+
+        accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(accessToken)
+
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                .delete(dcrPath + clientId)
+
+        return registrationResponse
+
+    }
+
+    /**
+     * Account Consent Initiation Step with without ReadAccountsDetail permission .
+     * @permissionsList
+     */
+    Response doConsentInitiation(String payload) {
+
+        //initiation without ReadAccountsDetail
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
+                .body(payload)
+                .baseUri(configuration.getISServerUrl())
+                .post(consentPath)
+
+        return consentResponse
     }
 }
