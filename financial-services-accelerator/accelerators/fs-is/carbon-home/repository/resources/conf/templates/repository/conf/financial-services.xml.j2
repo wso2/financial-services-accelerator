@@ -191,7 +191,7 @@
         <ConsentIDClaimName>consent_id</ConsentIDClaimName>
         {% endif %}
         {% if financial_services.identity.append_consent_id_to_id_token is defined %}
-        <AppendConsentIdToIdToken>{{financial_services.identity.append_consent_id_claim_name_to_id_token}}</AppendConsentIdToIdToken>
+        <AppendConsentIdToIdToken>{{financial_services.identity.append_consent_id_to_id_token}}</AppendConsentIdToIdToken>
         {% else %}
         <AppendConsentIdToIdToken>false</AppendConsentIdToIdToken>
         {% endif %}
