@@ -181,6 +181,7 @@ public class ConsentExtensionConstants {
     public static final String APPROVAL = "approval";
     public static final String COOKIES = "cookies";
     public static final String OPENID_SCOPE = "openid";
+    public static final String PERSIST_PAYLOAD = "persistPayload";
 
     // Consent Validate Constants
     public static final String HEADERS = "headers";

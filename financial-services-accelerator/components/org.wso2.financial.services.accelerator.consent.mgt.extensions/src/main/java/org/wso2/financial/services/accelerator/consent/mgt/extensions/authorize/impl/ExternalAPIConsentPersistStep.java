@@ -115,7 +115,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             }
             // Call external service
             Map<String, Object> consumerInputData = consentPersistData.getMetadata();
-            consumerInputData.put("persist-payload", consentPersistData.getPayload());
+            consumerInputData.put(ConsentExtensionConstants.PERSIST_PAYLOAD, consentPersistData.getPayload());
+            consumerInputData.put(ConsentExtensionConstants.USER_ID, consentData.getUserId());
 
             ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
                     consentId, externalAPIConsentResource, consumerInputData, consentPersistData.getApproval());
