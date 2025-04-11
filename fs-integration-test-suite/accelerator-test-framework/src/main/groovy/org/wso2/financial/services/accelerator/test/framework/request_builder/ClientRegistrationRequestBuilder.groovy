@@ -45,7 +45,7 @@ class ClientRegistrationRequestBuilder {
 
     static ConfigurationService configurationService = new ConfigurationService()
     static JWTGenerator jwtGenerator = new JWTGenerator()
-    static String DISALLOWED_CHARS_PATTERN = '([~!#$;%^&*+={}\\s\\|\\\\<>\\\"\'\\/,\\]\\[\\(\\)])'
+    static String DISALLOWED_CHARS_PATTERN = '([~!#$@;%^&*+={}\\s\\|\\\\<>\\\"\'\\/,\\]\\[\\(\\)])'
 
     /**
      * Build Client Registration Request.
@@ -383,7 +383,7 @@ class ClientRegistrationRequestBuilder {
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
                "grant_types": [
-                  ${grantType}
+                  "${grantType}"
                ],
                "response_types": [
                   "code id_token"
@@ -929,7 +929,7 @@ class ClientRegistrationRequestBuilder {
                "aud": "https://localbank.com",
                "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
-               "redirect_uris": null,
+               "redirect_uris": ["null"],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
                "grant_types": [
@@ -975,7 +975,7 @@ class ClientRegistrationRequestBuilder {
                "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 ${redirectUri1}, ${redirectUri2}
+                 "${redirectUri1}", "${redirectUri2}"
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",

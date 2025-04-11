@@ -47,6 +47,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Permissions are not in correct format")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -60,6 +62,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Permissions are empty")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test(dataProvider = "InvalidAccountsPermissionsForInitiation", dataProviderClass = AccountsDataProviders.class)
@@ -73,6 +77,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Permissions are invalid")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -81,6 +87,10 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
         doDefaultInitiation(AccountsRequestPayloads.initiationPayloadWithoutExpirationDate)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
+                "ExpirationDateTime is invalid"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -93,6 +103,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "ExpirationDateTime is invalid"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -105,6 +117,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 "ExpirationDateTime should be a future date")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -126,6 +140,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 "TransactionToDateTime is invalid"))
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -147,6 +163,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "TransactionFromDateTime is invalid"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -159,6 +177,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 "TransactionToDateTime should be after TransactionFromDateTime")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -171,6 +191,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Payload is not in the correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -183,6 +205,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Invalid request payload"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -195,6 +219,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Payload is not in the correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test
@@ -215,6 +241,8 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Permissions are not in correct format"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG).contains(
+                "consent_default"))
     }
 
     @Test(dataProvider = "ValidAccountsPermissionsForInitiation", dataProviderClass = AccountsDataProviders.class)

@@ -396,4 +396,14 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
                 ConnectorTestConstants.INVALID_SIG_ALGO_ERROR)
     }
+
+    @Test (enabled = false)
+    void "Consent authorisation without pre step for consent initiation"() {
+
+        //Authorise Consent
+        doConsentAuthorisationWithoutConsentId(configuration.getAppInfoClientID(), true, consentScopes)
+
+        Assert.assertNotNull(code)
+        Assert.assertNotNull(TestUtil.getIdTokenFromUrl(automation.currentUrl.get()))
+    }
 }

@@ -349,13 +349,11 @@ class TokenRequestBuilder {
             tokenResponse = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
-                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                     .body(payload)
                     .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         } else {
             tokenResponse = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                     .body(payload)
                     .post(ConnectorTestConstants.TOKEN_ENDPOINT)
         }
@@ -380,17 +378,14 @@ class TokenRequestBuilder {
      */
     static Response doTokenRevocation(String accessToken, String clientId) {
 
-        JWTGenerator acceleratorJWTGenerator = new JWTGenerator()
-        acceleratorJWTGenerator.setProperty("client_id", clientId)
-
         def payload  = "token=$accessToken&token_type_hint=access_token" +
                 "&client_id=$clientId"
 
         Response response = FSRestAsRequestBuilder.buildRequest()
-                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                    .body(payload)
-                    .baseUri(configuration.getISServerUrl())
-                    .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .body(payload)
+                .baseUri(configuration.getISServerUrl())
+                .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
 
         return response
     }
@@ -435,5 +430,66 @@ class TokenRequestBuilder {
     public static String getScopeString(List<ConnectorTestConstants.ApiScope> scopes) {
         return "${ConnectorTestConstants.ApiScope.OPEN_ID.scopeString} " +
                 "${String.join(" ", scopes.collect({ it.scopeString }))}"
+    }
+
+    /**
+     * Method to get application access token with defined JTI.
+     * @param scopes
+     * @param clientId
+     * @param jti
+     * @return
+     */
+    static Response getApplicationAccessTokenResponseWithDefinedJti(List <ConnectorTestConstants.ApiScope> scopeString,
+                                                                    String clientId, String jti) {
+
+        List<String> scopes = scopeString.collect { it.scopeString }.toList()
+
+        JWTGenerator generator = new JWTGenerator()
+        generator.setScopes(scopes)
+        //Adding Client Assertion for other Auth Method types
+        JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
+                .addSubject(clientId).addAudience().addIssuedAt().addExpireDate().addJti(jti).getJsonObject()
+
+        String payload = generator.getSignedRequestObject(clientAssertion.toString())
+        String accessTokenJWT = new PayloadGenerator().addGrantType().addScopes(scopes).addClientAsType()
+                .addClientAssertion(payload).addRedirectUri().addClientID(clientId).getPayload()
+
+        RestAssured.baseURI = configuration.getISServerUrl()
+        Response response = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .body(accessTokenJWT)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
+
+        return response
+    }
+
+    /**
+     * Method to get refresh token response without client id
+     * @param scopes
+     * @param refreshToken
+     * @return
+     */
+    static Response getRefreshGrantTokenResponseWithoutClientId(List<ConnectorTestConstants.ApiScope> scopeString,
+                                                                String refreshToken) {
+
+        Response tokenResponse
+        List<String> scopes = scopeString.stream().map { it.scopeString }.toList()
+
+        def authToken = "${configuration.getAppInfoClientID()}:${configuration.getAppInfoClientSecret()}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        JWTGenerator generator = new JWTGenerator()
+        generator.setScopes(scopes)
+        String payload = generator.getRefreshAccessTokenPayloadWithoutClientId(refreshToken)
+
+        RestAssured.baseURI = configuration.getISServerUrl()
+        tokenResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
+                .body(payload)
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
+
+        return tokenResponse
     }
 }
