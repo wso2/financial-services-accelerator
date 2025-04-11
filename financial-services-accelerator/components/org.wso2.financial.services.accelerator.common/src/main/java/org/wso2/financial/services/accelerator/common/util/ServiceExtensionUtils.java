@@ -73,6 +73,11 @@ public class ServiceExtensionUtils {
         try {
             String externalServicesPayload = (new JSONObject(externalServiceRequest)).toString();
 
+            if (log.isDebugEnabled()) {
+                log.debug("Invoking external service with payload: " + externalServicesPayload.replaceAll(
+                        "[\r\n]", ""));
+            }
+
             String constructedUrl = constructExtensionEndpoint(serviceType);
             HttpPost httpPost = new HttpPost(constructedUrl);
             StringEntity params = new StringEntity(externalServicesPayload);
@@ -106,6 +111,12 @@ public class ServiceExtensionUtils {
 
             String responseContent = IOUtils.toString(inputStream, String.valueOf(StandardCharsets.UTF_8));
             int statusCode = response.getStatusLine().getStatusCode();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Received response from external service [statusCode=" + statusCode + "]: " +
+                        responseContent.replaceAll("[\r\n]", ""));
+            }
+
             if (statusCode != 200) {
                 log.error(String.format("Error occurred while invoking the external service. " +
                                 "Status code: %s, Error: %s", statusCode,
