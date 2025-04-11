@@ -535,6 +535,9 @@ enabled=false
 
 [financial_services.identity]
 consent_id_claim_name="consent_id"
+append_consent_id_to_id_token=false
+append_consent_id_to_access_token=false
+append_consent_id_to_token_introspect_response=false
 
 [financial_services.identity.authentication_webapp]
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"

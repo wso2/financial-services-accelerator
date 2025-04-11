@@ -77,12 +77,14 @@ public class IdentityCommonConstants {
     public static final String JTI = "jti";
     public static final String COMMON_AUTH_ID = "commonAuthId";
     public static final String SOFTWARE_STATEMENT_CC = "softwareStatement";
+    public static final String REQUEST_OBJECT = "requestObject";
+    public static final String REQUEST_PARAM = "requestParam";
+    public static final String ISSUE_REFRESH_TOKEN = "issueRefreshToken";
 
     // Service Extension constants
-    public static final String USER_ID = "userId";
-    public static final String SCOPES = "scopes";
-    public static final String CONSENT_ID = "consentId";
-    public static final String VALIDITY_PERIOD = "validityPeriod";
+    public static final String CONSENT_CREATED_TIME = "consentCreatedTime";
+    public static final String CONSENT_VALIDITY_PERIOD = "consentValidityPeriod";
+    public static final String DEFAULT_REFRESH_TOKEN_VALIDITY_PERIOD = "defaultRefreshTokenValidityPeriod";
     public static final String GRANT_TYPE = "grantType";
     public static final String APP_REG_REQUEST = "clientRegistration";
     public static final String APP_UPDATE_REQUEST = "clientUpdate";

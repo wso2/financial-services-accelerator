@@ -140,9 +140,10 @@ public class ServiceExtensionUtils {
                     }
 
                     if (statusCode != 200) {
-                        log.error(String.format("External service call failed. Attempt: %d, Status: %d, Response: %s",
-                                attempt, statusCode, responseContent.replaceAll("[\r\n]", "")));
-                        throw new IOException("Received non-200 response from external service");
+                        log.error(String.format("Error occurred while invoking the external service. " +
+                                        "Status code: %s, Error: %s", statusCode,
+                                responseContent.replaceAll("[\r\n]", "")));
+                        throw new FinancialServicesException("Error occurred while invoking the external service");
                     }
 
                     return mapResponse(responseContent, ExternalServiceResponse.class);

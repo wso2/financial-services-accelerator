@@ -57,19 +57,18 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
                 return issueCode(oauthAuthzMsgCtx);
             }
 
-            // Perform FS default behaviour
-            String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
-            String[] updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
-            long refreshTokenValidityPeriod = oauthAuthzMsgCtx.getRefreshTokenvalidityPeriod();
-
+            String[] updatedApprovedScopes;
             if (fsResponseTypeHandler != null) {
+
                 // Perform FS customized behaviour
                 updatedApprovedScopes = fsResponseTypeHandler.getApprovedScopes(oauthAuthzMsgCtx);
-                // Perform FS customized behaviour
-                refreshTokenValidityPeriod = fsResponseTypeHandler.getRefreshTokenValidityPeriod(oauthAuthzMsgCtx);
+            } else {
+
+                // Perform FS default behaviour
+                String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
+                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
             }
 
-            oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(refreshTokenValidityPeriod);
             if (updatedApprovedScopes != null) {
                 oauthAuthzMsgCtx.setApprovedScope(updatedApprovedScopes);
             } else {
@@ -77,7 +76,7 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
             }
             return issueCode(oauthAuthzMsgCtx);
         } catch (RequestObjectException e) {
-            throw  new IdentityOAuth2Exception("Error while reading regulatory property");
+            throw new IdentityOAuth2Exception("Error while reading regulatory property");
         } catch (FinancialServicesException e) {
             log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
             throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
