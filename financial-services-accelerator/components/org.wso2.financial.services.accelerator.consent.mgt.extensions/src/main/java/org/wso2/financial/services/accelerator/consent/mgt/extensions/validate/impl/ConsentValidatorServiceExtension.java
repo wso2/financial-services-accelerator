@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateRequest;
@@ -135,10 +136,10 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
      */
     private ExternalServiceRequest getConsentValidateServiceRequest(ConsentValidateData consentValidateData) {
 
+        ExternalAPIConsentResourceRequestDTO externalAPIConsentResourceRequestDTO =
+                new ExternalAPIConsentResourceRequestDTO(consentValidateData.getComprehensiveConsent());
         ConsentValidateRequest request = new ConsentValidateRequest(consentValidateData.getConsentId(),
-                new JSONObject(consentValidateData.getComprehensiveConsent()),
-                constructDataPayload(consentValidateData),
-                consentValidateData.getComprehensiveConsent().getConsentType());
+                new JSONObject(externalAPIConsentResourceRequestDTO), constructDataPayload(consentValidateData));
 
         return new ExternalServiceRequest(UUID.randomUUID().toString(), new JSONObject(request));
     }

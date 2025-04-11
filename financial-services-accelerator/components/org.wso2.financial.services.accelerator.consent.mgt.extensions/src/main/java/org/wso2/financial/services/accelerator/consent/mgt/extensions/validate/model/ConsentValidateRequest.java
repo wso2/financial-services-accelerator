@@ -24,25 +24,22 @@ import org.json.JSONObject;
  * Consent validate request model.
  */
 public class ConsentValidateRequest {
-    JSONObject consentData;
+    JSONObject consentResource;
     String consentId;
     JSONObject dataRequestPayload;
-    String consentType;
 
-    public ConsentValidateRequest(String consentId, JSONObject consentData, JSONObject dataRequestPayload,
-                                  String consentType) {
-        this.consentData = consentData;
+    public ConsentValidateRequest(String consentId, JSONObject consentResource, JSONObject dataRequestPayload) {
+        this.consentResource = consentResource;
         this.consentId = consentId;
         this.dataRequestPayload = dataRequestPayload;
-        this.consentType = consentType;
     }
 
-    public JSONObject getConsentData() {
-        return consentData;
+    public JSONObject getConsentResource() {
+        return consentResource;
     }
 
-    public void setConsentData(JSONObject consentData) {
-        this.consentData = consentData;
+    public void setConsentResource(JSONObject consentResource) {
+        this.consentResource = consentResource;
     }
 
     public String getConsentId() {
@@ -59,14 +56,6 @@ public class ConsentValidateRequest {
 
     public void setDataRequestPayload(JSONObject dataRequestPayload) {
         this.dataRequestPayload = dataRequestPayload;
-    }
-
-    public String getConsentType() {
-        return consentType;
-    }
-
-    public void setConsentType(String consentType) {
-        this.consentType = consentType;
     }
 
 }
