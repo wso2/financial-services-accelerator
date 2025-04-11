@@ -318,7 +318,7 @@ enabled = false
 # allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
 allowed_extensions = ["pre_process_client_creation", "pre_process_client_update", "pre_process_client_retrieval", "pre_process_consent_creation",
     "enrich_consent_creation_response", "pre_process_consent_retrieval", "pre_process_consent_bulk_retrieval",
-    "pre_process_consent_revoke", "populate_consent_authorize_screen", "persist_authorized_consent", "validate_consent_access"
+    "pre_process_consent_revoke", "populate_consent_authorize_screen", "persist_authorized_consent", "validate_consent_access",
     "validate_refresh_token_issuance", "validate_authorization_request", "enrich_event_subscription_response",
     "validate_event_creation", "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
 base_url = ""
