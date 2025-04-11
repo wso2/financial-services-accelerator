@@ -99,6 +99,11 @@ public class ConsentExtensionConstants {
     public static final String ERROR_DESCRIPTION = "description";
     public static final String STATE = "state";
     public static final String REDIRECT_URI = "redirect_uri";
+
+    public static final String ERROR_URI_FRAGMENT = "#error=";
+    public static final String ERROR_DESCRIPTION_PARAMETER = "&error_description=";
+    public static final String STATE_PARAMETER = "&state=";
+
     //Consent Admin Handler Constants
     public static final String CONSENT_IDS = "consentIds";
     public static final String CLIENT_IDS = "clientIds";
