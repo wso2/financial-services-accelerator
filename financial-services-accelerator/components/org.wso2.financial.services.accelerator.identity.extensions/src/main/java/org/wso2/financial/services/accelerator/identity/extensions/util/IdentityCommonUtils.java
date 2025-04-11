@@ -42,6 +42,7 @@ import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
@@ -441,7 +442,7 @@ public class IdentityCommonUtils {
 
         // Invoke external service
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.VALIDATE_REFRESH_TOKEN_ISSUANCE);
+                ServiceExtensionTypeEnum.ISSUE_REFRESH_TOKEN);
 
         IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
 
@@ -701,6 +702,32 @@ public class IdentityCommonUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Get the consent id claim name from config.
+     * @return consent ID custom claim name
+     */
+    public static String getConsentIdClaimName() {
+
+        return (String) identityExtensionsDataHolder.getConfigurationMap()
+                .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME);
+    }
+
+    /**
+     * Add consent ID to the token response.
+     * @param oAuth2AccessTokenRespDTO
+     */
+    public static void addConsentIdToTokenResponse(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO) {
+
+        boolean shouldAddConsentIdClaimToTokenResponse = Boolean
+                .parseBoolean((String) IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ACCESS_TOKEN));
+        if (shouldAddConsentIdClaimToTokenResponse) {
+            String consentId = getConsentId(oAuth2AccessTokenRespDTO.getAuthorizedScopes().split(" "));
+            String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
+            oAuth2AccessTokenRespDTO.addParameter(consentIdClaimName, consentId);
+        }
     }
 
 }

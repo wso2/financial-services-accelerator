@@ -26,6 +26,8 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -39,6 +41,8 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
 
     private static final Log log = LogFactory.getLog(FSIntrospectionDataProvider.class);
     private static IntrospectionDataProvider introspectionDataProvider;
+    private Map<String, Object> identityConfigurations = IdentityExtensionsDataHolder.getInstance()
+            .getConfigurationMap();
 
     @Override
     public Map<String, Object> getIntrospectionData(OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
@@ -71,13 +75,11 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
 
         if (oAuth2IntrospectionResponseDTO.isActive()) {
 
-            // TODO: read from config
-            boolean shouldAddConsentIdAttributeToTokenIntrospectionResponse = true;
-            if (shouldAddConsentIdAttributeToTokenIntrospectionResponse) {
+            if (Boolean.parseBoolean((String) identityConfigurations
+                    .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_TOKEN_INTROSPECT_RESPONSE))) {
                 Map<String, Object> additionalClaims = new HashMap<>();
 
-                // TODO: read from config
-                String consentIdClaimName = "consent_id";
+                String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
                 additionalClaims.put(consentIdClaimName, IdentityCommonUtils
                         .getConsentId(oAuth2IntrospectionResponseDTO.getScope()
                                 .split(IdentityCommonConstants.SPACE_SEPARATOR)));

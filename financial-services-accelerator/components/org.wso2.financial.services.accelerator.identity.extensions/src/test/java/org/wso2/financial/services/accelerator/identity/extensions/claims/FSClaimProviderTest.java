@@ -30,8 +30,13 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test class for FSClaimProvider.
@@ -42,24 +47,25 @@ public class FSClaimProviderTest {
     private static MockedStatic<JWTUtils> mockedJwtUtils;
     private static MockedStatic<IdentityCommonUtils> mockedIdentityCommonUtils;
 
-
-
     @BeforeClass
     public void setUp() {
         fsClaimProvider = new FSClaimProvider();
         mockedJwtUtils = Mockito.mockStatic(JWTUtils.class);
         mockedIdentityCommonUtils = Mockito.mockStatic(IdentityCommonUtils.class);
 
-
         mockedIdentityCommonUtils.when(() -> IdentityCommonUtils
                 .removeInternalScopes(Mockito.any())).thenReturn(new String[]{"accounts", "payments"});
+
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
+        configMap.put(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN, "true");
+        IdentityExtensionsDataHolder.getInstance().setConfigurationMap(configMap);
     }
 
     @AfterClass
     public static void afterClass() {
         mockedJwtUtils.close();
         mockedIdentityCommonUtils.close();
-
     }
 
     @Test

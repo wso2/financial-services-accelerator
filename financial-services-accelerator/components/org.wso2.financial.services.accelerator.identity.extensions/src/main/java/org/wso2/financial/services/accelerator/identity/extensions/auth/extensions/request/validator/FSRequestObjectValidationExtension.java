@@ -299,7 +299,8 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
             throws FinancialServicesException {
 
         // Construct the payload
-        org.json.JSONObject data = new org.json.JSONObject(fsRequestObject.getClaimsSet().toJSONObject());
+        org.json.JSONObject requestObject = new org.json.JSONObject(fsRequestObject.getClaimsSet().toJSONObject());
+        org.json.JSONObject data = new org.json.JSONObject(requestObject);
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
 

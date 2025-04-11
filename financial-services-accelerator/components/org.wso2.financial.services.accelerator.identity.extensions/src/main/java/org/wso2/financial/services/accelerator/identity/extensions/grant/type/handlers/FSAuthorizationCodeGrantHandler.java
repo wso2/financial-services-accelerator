@@ -50,7 +50,7 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
             if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 boolean issueRefreshToken = true;
                 if (ServiceExtensionUtils.isInvokeExternalService(
-                        ServiceExtensionTypeEnum.VALIDATE_REFRESH_TOKEN_ISSUANCE)) {
+                        ServiceExtensionTypeEnum.ISSUE_REFRESH_TOKEN)) {
                     // Perform FS customized behaviour with service extension
                     issueRefreshToken = IdentityCommonUtils.issueRefreshTokenWithServiceExtension(tokReqMsgCtx);
                 } else if (fsGrantHandler != null) {
@@ -59,7 +59,9 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
                 }
 
                 tokReqMsgCtx.addProperty(IdentityCommonConstants.ISSUE_REFRESH_TOKEN, issueRefreshToken);
-                return super.issue(tokReqMsgCtx);
+                OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
+                IdentityCommonUtils.addConsentIdToTokenResponse(oAuth2AccessTokenRespDTO);
+                return oAuth2AccessTokenRespDTO;
             }
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception(e.getMessage());
@@ -82,7 +84,7 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
 
         if (isRegulatory(tokenReqMessageContext)) {
             if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                    .VALIDATE_REFRESH_TOKEN_ISSUANCE) || fsGrantHandler != null) {
+                    .ISSUE_REFRESH_TOKEN) || fsGrantHandler != null) {
                 // Perform FS customized behaviour
                 return (Boolean) tokenReqMessageContext.getProperty(IdentityCommonConstants.ISSUE_REFRESH_TOKEN);
             } else {

@@ -34,7 +34,7 @@ public enum ServiceExtensionTypeEnum {
     POPULATE_CONSENT_AUTHORIZE_SCREEN("populate-consent-authorize-screen"),
     PERSIST_AUTHORIZED_CONSENT("persist-authorized-consent"),
     VALIDATE_CONSENT_ACCESS("validate-consent-access"),
-    VALIDATE_REFRESH_TOKEN_ISSUANCE("validate-refresh-token-issuance"),
+    ISSUE_REFRESH_TOKEN("issue-refresh-token"),
     VALIDATE_AUTHORIZATION_REQUEST("validate-authorization-request"),
     VALIDATE_EVENT_SUBSCRIPTION("validate-event-subscription"),
     ENRICH_EVENT_SUBSCRIPTION_RESPONSE("enrich-event-subscription-response"),

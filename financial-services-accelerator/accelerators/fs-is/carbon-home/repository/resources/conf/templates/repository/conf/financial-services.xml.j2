@@ -190,6 +190,21 @@
         {% else %}
         <ConsentIDClaimName>consent_id</ConsentIDClaimName>
         {% endif %}
+        {% if financial_services.identity.append_consent_id_to_id_token is defined %}
+        <AppendConsentIdToIdToken>{{financial_services.identity.append_consent_id_claim_name_to_id_token}}</AppendConsentIdToIdToken>
+        {% else %}
+        <AppendConsentIdToIdToken>false</AppendConsentIdToIdToken>
+        {% endif %}
+        {% if financial_services.identity.append_consent_id_to_access_token is defined %}
+        <AppendConsentIdToAccessToken>{{financial_services.identity.append_consent_id_to_access_token}}</AppendConsentIdToAccessToken>
+        {% else %}
+        <AppendConsentIdToAccessToken>false</AppendConsentIdToAccessToken>
+        {% endif %}
+        {% if financial_services.identity.append_consent_id_to_token_introspect_response is defined %}
+        <AppendConsentIdToTokenIntrospectResponse>{{financial_services.identity.append_consent_id_to_token_introspect_response}}</AppendConsentIdToTokenIntrospectResponse>
+        {% else %}
+        <AppendConsentIdToTokenIntrospectResponse>false</AppendConsentIdToTokenIntrospectResponse>
+        {% endif %}
         <Extensions>
             {% if financial_services.identity.extensions.request_object_validator is defined %}
             <RequestObjectValidator>{{financial_services.identity.extensions.request_object_validator}}</RequestObjectValidator>

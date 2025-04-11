@@ -28,7 +28,9 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
@@ -41,6 +43,8 @@ public class FSClaimProvider implements ClaimProvider {
 
     private static final Log log = LogFactory.getLog(FSClaimProvider.class);
     private static ClaimProvider claimProvider;
+    private static final IdentityExtensionsDataHolder identityExtensionsDataHolder =
+            IdentityExtensionsDataHolder.getInstance();
 
     @Override
     public Map<String, Object> getAdditionalClaims(OAuthAuthzReqMessageContext authAuthzReqMessageContext,
@@ -113,11 +117,9 @@ public class FSClaimProvider implements ClaimProvider {
 
         Map<String, Object> additionalClaims = new HashMap<>();
 
-        // TODO: read from config
-        boolean shouldAddConsentIdClaimToIdToken = true;
-        if (shouldAddConsentIdClaimToIdToken) {
-            // TODO: read from config
-            String consentIdClaimName = "consent_id";
+        if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
+            String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
             additionalClaims.put(consentIdClaimName, IdentityCommonUtils.getConsentId(authAuthzReqMessageContext));
         }
 
@@ -129,11 +131,9 @@ public class FSClaimProvider implements ClaimProvider {
 
         Map<String, Object> additionalClaims = new HashMap<>();
 
-        // TODO: read from config
-        boolean shouldAddConsentIdClaimToIdToken = true;
-        if (shouldAddConsentIdClaimToIdToken) {
-            // TODO: read from config
-            String consentIdClaimName = "consent_id";
+        if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
+            String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
             additionalClaims.put(consentIdClaimName, IdentityCommonUtils
                     .getConsentId(tokenReqMessageContext.getScope()));
         }
