@@ -86,8 +86,6 @@ public class ServiceExtensionUtils {
         final int connectTimeoutMillis = configParser.getServiceExtensionsEndpointConnectTimeoutInSeconds() * 1000;
 
         int attempt = 0;
-        Exception lastException = null;
-
         while (attempt < maxRetries) {
             attempt++;
             try {
@@ -154,8 +152,7 @@ public class ServiceExtensionUtils {
                 }
 
             } catch (IOException e) {
-                lastException = e;
-                if (isRetryableException(lastException)) {
+                if (isRetryableException(e)) {
                     log.warn(String.format("Attempt %d failed to call external service: %s",
                             attempt, e.getMessage().replaceAll("[\r\n]", "")));
                     if (attempt >= maxRetries) {
@@ -168,7 +165,7 @@ public class ServiceExtensionUtils {
             }
         }
 
-        throw new FinancialServicesException("External service call failed", lastException);
+        throw new FinancialServicesException("External service call failed");
     }
 
     private static boolean isRetryableException(Exception e) {
