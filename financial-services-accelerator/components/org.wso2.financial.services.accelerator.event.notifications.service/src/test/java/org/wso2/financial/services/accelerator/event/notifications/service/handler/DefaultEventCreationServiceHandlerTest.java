@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -107,7 +108,7 @@ public class DefaultEventCreationServiceHandlerTest {
             EventCreationResponse eventCreationResponse = defaultEventCreationServiceHandler.publishEvent(
                     EventNotificationTestUtils.getNotificationCreationDTO());
 
-            Assert.assertEquals(eventCreationResponse.getStatus(), EventNotificationConstants.CREATED);
+            Assert.assertEquals(eventCreationResponse.getStatus(), HttpStatus.SC_CREATED);
             Assert.assertEquals(eventCreationResponse.getResponseBody()
                             .get(EventNotificationConstants.NOTIFICATIONS_ID),
                     EventNotificationTestConstants.SAMPLE_NOTIFICATION_ID);
@@ -115,7 +116,7 @@ public class DefaultEventCreationServiceHandlerTest {
 
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testPublishEventConsentException() throws Exception {
 
         try (MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic =
@@ -136,12 +137,12 @@ public class DefaultEventCreationServiceHandlerTest {
             EventCreationResponse eventCreationResponse = defaultEventCreationServiceHandler.publishEvent(
                     EventNotificationTestUtils.getNotificationCreationDTO());
 
-            Assert.assertEquals(eventCreationResponse.getStatus(), EventNotificationConstants.BAD_REQUEST);
+            Assert.assertEquals(eventCreationResponse.getStatus(), HttpStatus.SC_BAD_REQUEST);
         }
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
-    public void testPublishOBEventInvalidClient() throws Exception {
+    @Test
+    public void testPublishFSEventInvalidClient() throws Exception {
 
         try (MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic =
                      Mockito.mockStatic(EventNotificationServiceUtil.class)) {
@@ -163,12 +164,12 @@ public class DefaultEventCreationServiceHandlerTest {
                     defaultEventCreationServiceHandler.publishEvent(
                             EventNotificationTestUtils.getNotificationCreationDTO());
 
-            Assert.assertEquals(eventCreationResponse.getStatus(), EventNotificationConstants.BAD_REQUEST);
+            Assert.assertEquals(eventCreationResponse.getStatus(), HttpStatus.SC_BAD_REQUEST);
         }
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
-    public void testPublishOBEventsServiceException() throws Exception {
+    @Test
+    public void testPublishFSEventsServiceException() throws Exception {
 
         try (MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic =
                      Mockito.mockStatic(EventNotificationServiceUtil.class)) {
@@ -191,7 +192,7 @@ public class DefaultEventCreationServiceHandlerTest {
             EventCreationResponse eventCreationResponse = defaultEventCreationServiceHandler.publishEvent(
                     EventNotificationTestUtils.getNotificationCreationDTO());
 
-            Assert.assertEquals(eventCreationResponse.getStatus(), EventNotificationConstants.BAD_REQUEST);
+            Assert.assertEquals(eventCreationResponse.getStatus(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

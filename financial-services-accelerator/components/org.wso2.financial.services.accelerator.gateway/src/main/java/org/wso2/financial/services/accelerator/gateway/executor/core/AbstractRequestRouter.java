@@ -38,7 +38,7 @@ public abstract class AbstractRequestRouter {
     private Map<String, List<FinancialServicesGatewayExecutor>> executorMap = new HashMap<>();
 
     /**
-     * Initiation method of the Router
+     * Initiation method of the Router.
      */
     @Generated(message = "Ignoring since the method require OSGi services to function. This functionality is tested " +
             "in other services")

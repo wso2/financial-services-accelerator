@@ -61,7 +61,9 @@ public class IdentityCommonConstants {
     public static final String SSA_POLICY_URI = "policy_uri";
     public static final String SSA_TOS_URI = "tos_uri";
     public static final String SSA_CLIENT_URI = "client_uri";
+    public static final String INVALID_REDIRECT_URI = "invalid_redirect_uri";
     public static final String INVALID_CLIENT_METADATA = "invalid_client_metadata";
+    public static final String INVALID_SOFTWARE_STATEMENT = "invalid_software_statement";
     public static final String SERVER_ERROR = "server_error";
     public static final String INCLUDE_IN_RESPONSE = "IncludeInResponse";
     public static final String KEY = "Key";
@@ -73,17 +75,19 @@ public class IdentityCommonConstants {
     public static final String ALLOWED_VALUES = "AllowedValues";
     public static final String SSA_ISSUER_VALIDATOR = "SSAIssuerValidator";
     public static final String JTI = "jti";
+    public static final String COMMON_AUTH_ID = "commonAuthId";
+    public static final String SOFTWARE_STATEMENT_CC = "softwareStatement";
+    public static final String REQUEST_OBJECT = "requestObject";
+    public static final String REQUEST_PARAM = "requestParam";
+    public static final String ISSUE_REFRESH_TOKEN = "issueRefreshToken";
 
     // Service Extension constants
-    public static final String USER_ID = "userId";
-    public static final String SCOPES = "scopes";
-    public static final String CONSENT_ID = "consentId";
-    public static final String VALIDITY_PERIOD = "validityPeriod";
+    public static final String CONSENT_CREATED_TIME = "consentCreatedTime";
+    public static final String CONSENT_VALIDITY_PERIOD = "consentValidityPeriod";
+    public static final String DEFAULT_REFRESH_TOKEN_VALIDITY_PERIOD = "defaultRefreshTokenValidityPeriod";
     public static final String GRANT_TYPE = "grantType";
-    public static final String APP_REG_REQUEST = "clientRegistration";
-    public static final String APP_UPDATE_REQUEST = "clientUpdate";
+    public static final String CLIENT_DATA = "clientData";
     public static final String SSA_PARAMS = "softwareStatement";
-    public static final String SP_PROPERTIES = "clientAppProperties";
-    public static final String ATTRIBUTES_TO_STORE = "attributesToStore";
+    public static final String EXISTING_CLIENT_DATA = "existingClientData";
 }
 

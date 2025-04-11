@@ -18,7 +18,7 @@
 
 package org.wso2.financial.services.accelerator.event.notifications.service.handler;
 
-import org.apache.http.HttpStatus;
+import org.apache.commons.httpclient.HttpStatus;
 import org.json.JSONObject;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -52,6 +52,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
     private MockedStatic<FinancialServicesConfigParser> configParserMockedStatic;
     private MockedStatic<EventNotificationServiceUtil> eventNotificationUtilMockedStatic;
     private MockedStatic<ServiceExtensionUtils> serviceExtensionUtilsMockedStatic;
+    DefaultEventSubscriptionServiceHandler defaultEventSubscriptionServiceHandler;
 
     @BeforeClass
     public void initTest() {
@@ -61,12 +62,15 @@ public class DefaultEventSubscriptionServiceHandlerTests {
 
         Map<String, Object> configs = new HashMap<String, Object>();
         configs.put(FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_ENABLED, false);
+        configs.put(FinancialServicesConstants.ALLOW_MULTIPLE_SUBSCRIPTION, true);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
         configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(false);
+
+        defaultEventSubscriptionServiceHandler = new DefaultEventSubscriptionServiceHandler();
     }
 
     @AfterClass
@@ -75,9 +79,6 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         eventNotificationUtilMockedStatic.close();
         serviceExtensionUtilsMockedStatic.close();
     }
-
-    DefaultEventSubscriptionServiceHandler defaultEventSubscriptionServiceHandler =
-            new DefaultEventSubscriptionServiceHandler();
 
     @Test
     public void testCreateEventSubscription() throws Exception {
@@ -119,7 +120,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         Assert.assertEquals(eventSubscriptionCreationResponse.getResponseStatus(), HttpStatus.SC_CREATED);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testCreateEventSubscriptionWithInvalidClientID() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.createEventSubscription(any()))
@@ -135,10 +136,10 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         EventSubscriptionResponse eventSubscriptionCreationResponse = defaultEventSubscriptionServiceHandler
                 .createEventSubscription(EventNotificationTestUtils.getSampleEventSubscriptionDTO());
 
-        Assert.assertEquals(eventSubscriptionCreationResponse.getResponseStatus(), HttpStatus.SC_CREATED);
+        Assert.assertEquals(eventSubscriptionCreationResponse.getResponseStatus(), HttpStatus.SC_BAD_REQUEST);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testCreateEventSubscriptionServiceError() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.createEventSubscription(any()))
@@ -190,7 +191,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(true);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
-                .thenReturn(EventNotificationTestUtils.getExternalServiceResponse());
+                .thenReturn(EventNotificationTestUtils.getExternalServiceResponseWithData());
 
         defaultEventSubscriptionServiceHandler.setEventSubscriptionService(eventSubscriptionService);
 
@@ -201,7 +202,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_OK);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testGetEventSubscriptionWithInvalidClientID() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.getEventSubscriptionBySubscriptionId(any()))
@@ -218,10 +219,10 @@ public class DefaultEventSubscriptionServiceHandlerTests {
                 .getEventSubscription(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
 
-        Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_OK);
+        Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_BAD_REQUEST);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testGetEventSubscriptionServiceError() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.getEventSubscriptionBySubscriptionId(any()))
@@ -272,7 +273,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(true);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
-                .thenReturn(EventNotificationTestUtils.getExternalServiceResponse());
+                .thenReturn(EventNotificationTestUtils.getExternalServiceResponseWithData());
 
         defaultEventSubscriptionServiceHandler.setEventSubscriptionService(eventSubscriptionService);
 
@@ -282,7 +283,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_OK);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testGetAllEventSubscriptionsWithInvalidClientID() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.getEventSubscriptionsByClientId(any()))
@@ -298,10 +299,10 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         EventSubscriptionResponse eventSubscriptionRetrieveResponse = defaultEventSubscriptionServiceHandler
                 .getAllEventSubscriptions(EventNotificationTestConstants.SAMPLE_CLIENT_ID);
 
-        Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_OK);
+        Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_BAD_REQUEST);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testGetAllEventSubscriptionsServiceError() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.getEventSubscriptionsByClientId(any()))
@@ -352,7 +353,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.isInvokeExternalService(any()))
                 .thenReturn(true);
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
-                .thenReturn(EventNotificationTestUtils.getExternalServiceResponse());
+                .thenReturn(EventNotificationTestUtils.getExternalServiceResponseWithData());
 
         defaultEventSubscriptionServiceHandler.setEventSubscriptionService(eventSubscriptionService);
 
@@ -363,7 +364,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_OK);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testGetEventSubscriptionsByEventTypeWithInvalidClientID() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.getEventSubscriptionsByEventType(anyString()))
@@ -380,10 +381,10 @@ public class DefaultEventSubscriptionServiceHandlerTests {
                 .getEventSubscriptionsByEventType(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_NOTIFICATION_EVENT_TYPE_1);
 
-        Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_OK);
+        Assert.assertEquals(eventSubscriptionRetrieveResponse.getResponseStatus(), HttpStatus.SC_BAD_REQUEST);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testGetEventSubscriptionsByEventTypeServiceError() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.getEventSubscriptionsByEventType(anyString()))
@@ -446,7 +447,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         Assert.assertEquals(eventSubscriptionUpdateResponse.getResponseStatus(), HttpStatus.SC_OK);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testUpdateEventSubscriptionWithInvalidClientID() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.updateEventSubscription(any())).thenReturn(true);
@@ -463,10 +464,10 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         EventSubscriptionResponse eventSubscriptionUpdateResponse = defaultEventSubscriptionServiceHandler
                 .updateEventSubscription(EventNotificationTestUtils.getSampleEventSubscriptionUpdateDTO());
 
-        Assert.assertEquals(eventSubscriptionUpdateResponse.getResponseStatus(), HttpStatus.SC_OK);
+        Assert.assertEquals(eventSubscriptionUpdateResponse.getResponseStatus(), HttpStatus.SC_BAD_REQUEST);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testUpdateEventSubscriptionServiceError() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.updateEventSubscription(any())).thenReturn(true);
@@ -531,7 +532,7 @@ public class DefaultEventSubscriptionServiceHandlerTests {
         Assert.assertEquals(eventSubscriptionDeletionResponse.getResponseStatus(), HttpStatus.SC_NO_CONTENT);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testDeleteEventSubscriptionWithInvalidClientID() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.deleteEventSubscription(any())).thenReturn(true);
@@ -547,10 +548,10 @@ public class DefaultEventSubscriptionServiceHandlerTests {
                 .deleteEventSubscription(EventNotificationTestConstants.SAMPLE_CLIENT_ID,
                         EventNotificationTestConstants.SAMPLE_SUBSCRIPTION_ID_1);
 
-        Assert.assertEquals(eventSubscriptionDeletionResponse.getResponseStatus(), HttpStatus.SC_NO_CONTENT);
+        Assert.assertEquals(eventSubscriptionDeletionResponse.getResponseStatus(), HttpStatus.SC_BAD_REQUEST);
     }
 
-    @Test(expectedExceptions = FSEventNotificationException.class)
+    @Test
     public void testDeleteEventSubscriptionServiceError() throws Exception {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.deleteEventSubscription(any()))

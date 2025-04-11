@@ -98,6 +98,11 @@ public class ConsentCoreServiceConstants {
             " is not found, cannot proceed";
     public static final String ACC_MAPPING_ID_MISSING_ERROR_MSG = "Account mapping IDs are not provided, " +
             "cannot proceed";
+    public static final String UPDATE_MAPPING_MANDATORY_PARAMETERS_MISSING_ERROR_MSG = "Consent mapping ID or " +
+            "authorization ID is not provided, cannot proceed";
+    public static final String CREATE_MAPPING_MANDATORY_PARAMETERS_MISSING_ERROR_MSG = "Authorization ID or " +
+            "account ID is not provided, cannot proceed";
+
     public static final String CONSENT_STATUS_MISSING_ERROR_MSG = "Consent ID or new consent status is missing," +
             " cannot proceed";
     public static final String USER_ID_MISSING_ERROR_MSG = "User ID is required for token revocation, cannot proceed";

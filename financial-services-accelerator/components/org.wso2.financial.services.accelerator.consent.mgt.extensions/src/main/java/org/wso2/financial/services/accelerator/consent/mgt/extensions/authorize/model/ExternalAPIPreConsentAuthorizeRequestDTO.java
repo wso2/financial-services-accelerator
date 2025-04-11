@@ -18,7 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
 /**
  * Wrapper for pre consent authorize flow external request data.
@@ -28,15 +28,16 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     private String consentId;
     private String userId;
     private String scope;
-    private ConsentResource consentResource;
+    private ExternalAPIConsentResourceRequestDTO consentResource;
 
-    public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData, String scope) {
+    public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData,
+                                                    ExternalAPIConsentResourceRequestDTO consentResource,
+                                                    String scope) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
+        this.consentResource = consentResource;
         this.scope = scope;
-        this.consentResource = consentData.getConsentResource();
-
     }
 
     public String getConsentId() {
@@ -63,12 +64,12 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.scope = scope;
     }
 
-    public ConsentResource getConsentResource() {
+    public ExternalAPIConsentResourceRequestDTO getConsentResource() {
         return consentResource;
     }
 
     public void setConsentResource(
-            ConsentResource consentResource) {
+            ExternalAPIConsentResourceRequestDTO consentResource) {
         this.consentResource = consentResource;
     }
 
@@ -80,7 +81,7 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     public JSONObject toJson() {
 
         JSONObject dtoJson = new JSONObject(this);
-        JSONObject consentResourceJson = this.consentResource != null ? this.consentResource.toJson() :
+        JSONObject consentResourceJson = this.consentResource != null ? new JSONObject(this.consentResource) :
                 new JSONObject();
         dtoJson.put("consentResource", consentResourceJson);
         return dtoJson;
