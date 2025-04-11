@@ -17,93 +17,21 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import java.util.Map;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResource;
 
 /**
  * ExternalAPIPreConsentGenerateResponseDTO
  */
 public class ExternalAPIPreConsentGenerateResponseDTO {
 
-    private Map<String, Object> consentPayload;
-    private int consentFrequency;
-    private long validityTime;
-    private boolean recurringIndicator;
-    private String consentStatus;
-    private String consentType;
-    private String authorizationStatus;
-    private String authorizationType;
-    Map<String, String> consentAttributes;
+    private ExternalAPIConsentResource consentResource;
 
-    public Map<String, Object> getConsentPayload() {
-        return consentPayload;
+    public ExternalAPIConsentResource getConsentResource() {
+        return consentResource;
     }
 
-    public void setConsentPayload(Map<String, Object> payload) {
-        this.consentPayload = payload;
-    }
-
-    public int getConsentFrequency() {
-        return consentFrequency;
-    }
-
-    public void setConsentFrequency(int consentFrequency) {
-        this.consentFrequency = consentFrequency;
-    }
-
-    public long getValidityTime() {
-        return validityTime;
-    }
-
-    public void setValidityTime(long validityTime) {
-        this.validityTime = validityTime;
-    }
-
-    public boolean getRecurringIndicator() {
-        return recurringIndicator;
-    }
-
-    public void setRecurringIndicator(boolean recurringIndicator) {
-        this.recurringIndicator = recurringIndicator;
-    }
-
-    public String getConsentStatus() {
-        return consentStatus;
-    }
-
-    public void setConsentStatus(String consentStatus) {
-        this.consentStatus = consentStatus;
-    }
-
-    public String getConsentType() {
-        return consentType;
-    }
-
-    public void setConsentType(String consentType) {
-        this.consentType = consentType;
-    }
-
-
-    public String getAuthorizationStatus() {
-        return authorizationStatus;
-    }
-
-    public void setAuthorizationStatus(String authorizationStatus) {
-        this.authorizationStatus = authorizationStatus;
-    }
-
-    public String getAuthorizationType() {
-        return authorizationType;
-    }
-
-    public void setAuthorizationType(String authorizationType) {
-        this.authorizationType = authorizationType;
-    }
-
-    public Map<String, String> getConsentAttributes() {
-        return consentAttributes;
-    }
-
-    public void setConsentAttributes(Map<String, String> consentAttributes) {
-        this.consentAttributes = consentAttributes;
+    public void setConsentResource(
+            ExternalAPIConsentResource consentResource) {
+        this.consentResource = consentResource;
     }
 }
