@@ -31,6 +31,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -39,8 +40,11 @@ import org.wso2.financial.services.accelerator.common.extension.model.ServiceExt
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -140,10 +144,10 @@ public class ServiceExtensionUtils {
                     }
 
                     if (statusCode != 200) {
-                        log.error(String.format("Error occurred while invoking the external service. " +
+                        log.error(String.format(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR +
                                         "Status code: %s, Error: %s", statusCode,
                                 responseContent.replaceAll("[\r\n]", "")));
-                        throw new FinancialServicesException("Error occurred while invoking the external service");
+                        throw new FinancialServicesException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
                     }
 
                     return mapResponse(responseContent, ExternalServiceResponse.class);
@@ -151,15 +155,26 @@ public class ServiceExtensionUtils {
 
             } catch (IOException e) {
                 lastException = e;
-                log.warn(String.format("Attempt %d failed to call external service: %s",
-                        attempt, e.getMessage().replaceAll("[\r\n]", "")));
-                if (attempt >= maxRetries) {
-                    throw new FinancialServicesException("External service call failed after retries", e);
+                if (isRetryableException(lastException)) {
+                    log.warn(String.format("Attempt %d failed to call external service: %s",
+                            attempt, e.getMessage().replaceAll("[\r\n]", "")));
+                    if (attempt >= maxRetries) {
+                        throw new FinancialServicesException("External service call failed after retries", e);
+                    }
+                } else {
+                    log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                    throw new FinancialServicesException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
                 }
             }
         }
 
         throw new FinancialServicesException("External service call failed", lastException);
+    }
+
+    private static boolean isRetryableException(Exception e) {
+        return e instanceof SocketTimeoutException ||
+                e instanceof ConnectException ||
+                e instanceof UnknownHostException;
     }
 
     /**
