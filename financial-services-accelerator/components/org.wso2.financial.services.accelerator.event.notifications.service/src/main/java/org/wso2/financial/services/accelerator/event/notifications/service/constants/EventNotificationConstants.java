@@ -159,12 +159,11 @@ public class EventNotificationConstants {
     public static final String SUBSCRIPTION_RESOURCE_NOT_FOUND = "A subscription Resource does not exists for" +
             " the client";
 
-    public static final String EVENT_CREATION_PAYLOAD = "eventCreationPayload";
-    public static final String EVENT_POLLING_PAYLOAD = "eventPollingPayload";
-    public static final String EVENT_POLLING = "eventPolling";
-    public static final String EVENT_SUBSCRIPTION_PAYLOAD = "eventSubscriptionPayload";
-    public static final String API_OPERATION = "apiOperation";
-    public static final String EVENT_SUBSCRIPTION = "eventSubscription";
+    public static final String EVENT_DATA = "eventData";
+    public static final String EVENT_POLLING_DATA = "eventPollingData";
+    public static final String EVENT_POLLING_RESPONSE = "eventPollingResponse";
+    public static final String EVENT_SUBSCRIPTION_DATA = "eventSubscriptionData";
+    public static final String EVENT_SUBSCRIPTION_RESPONSE = "eventSubscriptionResponse";
 
 
     /**

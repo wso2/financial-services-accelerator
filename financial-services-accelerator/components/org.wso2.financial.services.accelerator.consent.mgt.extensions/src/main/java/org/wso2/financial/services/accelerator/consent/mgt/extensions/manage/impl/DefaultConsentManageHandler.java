@@ -124,12 +124,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
                             ConsentOperationEnum.CONSENT_RETRIEVE);
                 }
-                String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-                if (!consentType.equals(consent.getConsentType())) {
-                    log.error("Consent Type mismatch");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
-                            ConsentOperationEnum.CONSENT_RETRIEVE);
-                }
                 // Check whether the client id is matching
                 if (!consent.getClientID().equals(consentManageData.getClientId())) {
                     log.error("Client ID mismatch");
@@ -150,6 +144,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                             callExternalService(requestDTO);
                     consentManageData.setResponsePayload(responseDTO.getModifiedResponse());
                 } else {
+                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                    if (!consentType.equals(consent.getConsentType())) {
+                        log.error("Consent Type mismatch");
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
+                                ConsentOperationEnum.CONSENT_RETRIEVE);
+                    }
                     JSONObject receiptJSON = new JSONObject(consent.getReceipt());
                     consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(
                             receiptJSON, consent));
@@ -295,13 +295,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                             ConsentOperationEnum.CONSENT_DELETE);
                 }
 
-                String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-                if (!consentType.equals(consentResource.getConsentType())) {
-                    log.error("Consent Type mismatch");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
-                            ConsentOperationEnum.CONSENT_DELETE);
-                }
-
                 if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
                     //Throwing this error in a generic manner since client will not be able to identify if consent
                     // exists if consent does not belong to them
@@ -324,6 +317,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
                     revocationStatusName = responseDTO.getRevocationStatusName();
                 } else {
+
+                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                    if (!consentType.equals(consentResource.getConsentType())) {
+                        log.error("Consent Type mismatch");
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
+                                ConsentOperationEnum.CONSENT_RETRIEVE);
+                    }
                     if (ConsentExtensionConstants.REVOKED_STATUS.equals(consentResource.getCurrentStatus()) ||
                             ConsentExtensionConstants.REJECTED_STATUS.equals(consentResource.getCurrentStatus())) {
                         log.error("Consent is already in revoked or rejected state");

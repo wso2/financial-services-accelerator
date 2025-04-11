@@ -149,7 +149,7 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
     private static EventPollingResponse handleValidation(JSONObject eventPolling) throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put(EventNotificationConstants.EVENT_POLLING_PAYLOAD, eventPolling);
+        data.put(EventNotificationConstants.EVENT_POLLING_DATA, eventPolling);
 
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
@@ -181,20 +181,21 @@ public class DefaultEventPollingServiceHandler implements EventPollingServiceHan
             throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put(EventNotificationConstants.EVENT_POLLING, new JSONObject(aggregatedPollingResponse));
+        data.put(EventNotificationConstants.EVENT_POLLING_DATA, new JSONObject(aggregatedPollingResponse));
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING)) {
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.ENRICH_EVENT_POLLING_RESPONSE)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
             try {
                 ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(request,
-                        ServiceExtensionTypeEnum.VALIDATE_EVENT_POLLING);
+                        ServiceExtensionTypeEnum.ENRICH_EVENT_POLLING_RESPONSE);
                 if (StatusEnum.ERROR.equals(response.getStatus())) {
                     JSONObject dataObj = new JSONObject(response.getData().toString());
                     throw new FSEventNotificationException(dataObj.getInt(FinancialServicesConstants.ERROR_CODE),
                             dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
                 }
 
-                return new JSONObject(response.getData().get(FinancialServicesConstants.RESPONSE_DATA).toString());
+                return new JSONObject(response.getData().get(EventNotificationConstants.EVENT_POLLING_RESPONSE)
+                        .toString());
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }
