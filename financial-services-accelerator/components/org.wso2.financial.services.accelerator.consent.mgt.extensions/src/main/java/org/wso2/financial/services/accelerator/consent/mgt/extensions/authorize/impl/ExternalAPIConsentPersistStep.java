@@ -44,6 +44,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
@@ -74,6 +76,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         ConsentData consentData = consentPersistData.getConsentData();
         String consentId;
         DetailedConsentResource detailedConsentResource = null;
+        ExternalAPIConsentResourceRequestDTO externalAPIConsentResource = null;
         try {
             if (consentData == null) {
                 log.error("Consent data is not available");
@@ -83,6 +86,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             if (isPreInitiatedConsent) {
                 consentId = consentData.getConsentId();
                 detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+                externalAPIConsentResource = new ExternalAPIConsentResourceRequestDTO(detailedConsentResource);
                 if (consentId == null) {
                     log.error("Consent Id is not available in consent data");
                     throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
@@ -96,6 +100,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             } else if (consentData.getConsentId() != null) {
                 consentId = consentData.getConsentId();
                 detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+                externalAPIConsentResource = new ExternalAPIConsentResourceRequestDTO(detailedConsentResource);
             } else {
                 consentId = UUID.randomUUID().toString();
                 consentData.setConsentId(consentId);
@@ -113,10 +118,10 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             consumerInputData.put("persist-payload", consentPersistData.getPayload());
 
             ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
-                    consentId, detailedConsentResource, consumerInputData, consentPersistData.getApproval());
+                    consentId, externalAPIConsentResource, consumerInputData, consentPersistData.getApproval());
             ExternalAPIPreConsentPersistResponseDTO responseDTO = callExternalService(requestDTO);
-
-            persistConsent(responseDTO, consentData);
+            ExternalAPIConsentResourceResponseDTO responseConsentResource = responseDTO.getConsentResource();
+            persistConsent(responseConsentResource, consentData);
 
         } catch (FinancialServicesException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
@@ -154,11 +159,11 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     /**
      * Persist consent data using the consent core service.
      *
-     * @param responseDTO external service response data
-     * @param consentData consent data
+     * @param responseConsentResource updated consent resource received from external service
+     * @param consentData             consent data
      * @throws ConsentManagementException ConsentManagementException
      */
-    private void persistConsent(ExternalAPIPreConsentPersistResponseDTO responseDTO,
+    private void persistConsent(ExternalAPIConsentResourceResponseDTO responseConsentResource,
                                 ConsentData consentData) throws ConsentManagementException {
 
         if (isPreInitiatedConsent) {
@@ -184,18 +189,18 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             }
 
             DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
-                    responseDTO, consentData.getConsentResource(), primaryAuthId, primaryUserId);
+                    responseConsentResource, consentData.getConsentResource(), primaryAuthId, primaryUserId);
             consentCoreService.updateConsentAndCreateAuthResources(detailedConsentResource, consentData.getUserId());
         } else {
             DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
-                    responseDTO, consentData);
+                    responseConsentResource, consentData);
             consentCoreService.storeDetailedConsentResource(detailedConsentResource);
         }
 
-        if (responseDTO.getAmendments() != null && !responseDTO.getAmendments().isEmpty()) {
+        if (responseConsentResource.getAmendments() != null && !responseConsentResource.getAmendments().isEmpty()) {
 
-            List<ExternalAPIPreConsentPersistResponseDTO.AmendedAuthorization> amendedAuthorizations =
-                    responseDTO.getAmendments();
+            List<ExternalAPIConsentResourceResponseDTO.AmendedAuthorization> amendedAuthorizations =
+                    responseConsentResource.getAmendments();
             AmendedResources amendedResources = ExternalAPIUtil.constructAmendedResources(amendedAuthorizations);
             persistAmendedResources(amendedResources);
 
