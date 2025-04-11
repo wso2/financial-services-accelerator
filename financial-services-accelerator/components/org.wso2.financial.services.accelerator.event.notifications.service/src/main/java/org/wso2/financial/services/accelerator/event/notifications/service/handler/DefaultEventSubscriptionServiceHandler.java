@@ -467,8 +467,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put(EventNotificationConstants.EVENT_SUBSCRIPTION_PAYLOAD, eventSubscription);
-        data.put(EventNotificationConstants.API_OPERATION, operation);
+        data.put(EventNotificationConstants.EVENT_SUBSCRIPTION_DATA, eventSubscription);
+        data.put(EventNotificationConstants.EVENT_TYPE_PARAM, operation);
 
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_SUBSCRIPTION)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),
@@ -509,8 +509,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put(EventNotificationConstants.EVENT_SUBSCRIPTION, new JSONObject(eventSubscription));
-        data.put(EventNotificationConstants.API_OPERATION, operation);
+        data.put(EventNotificationConstants.EVENT_SUBSCRIPTION_DATA, new JSONObject(eventSubscription));
+        data.put(EventNotificationConstants.EVENT_TYPE_PARAM, operation);
 
         if (ServiceExtensionUtils.isInvokeExternalService(
                 ServiceExtensionTypeEnum.ENRICH_EVENT_SUBSCRIPTION_RESPONSE)) {
@@ -524,7 +524,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                             dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
                 }
 
-                return new JSONObject(response.getData().get(FinancialServicesConstants.RESPONSE_DATA).toString());
+                return new JSONObject(response.getData().get(EventNotificationConstants.EVENT_SUBSCRIPTION_RESPONSE)
+                        .toString());
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }
@@ -545,8 +546,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put(EventNotificationConstants.EVENT_SUBSCRIPTION, eventSubscriptionList);
-        data.put(EventNotificationConstants.API_OPERATION, operation);
+        data.put(EventNotificationConstants.EVENT_SUBSCRIPTION_DATA, eventSubscriptionList);
+        data.put(EventNotificationConstants.EVENT_TYPE_PARAM, operation);
 
         if (ServiceExtensionUtils.isInvokeExternalService(
                 ServiceExtensionTypeEnum.ENRICH_EVENT_SUBSCRIPTION_RESPONSE)) {
@@ -560,7 +561,8 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
                             dataObj.getString(FinancialServicesConstants.ERROR_MESSAGE));
                 }
 
-                return new JSONObject(response.getData().get(FinancialServicesConstants.RESPONSE_DATA).toString());
+                return new JSONObject(response.getData().get(EventNotificationConstants.EVENT_SUBSCRIPTION_RESPONSE)
+                        .toString());
             } catch (FinancialServicesException e) {
                 throw new FSEventNotificationException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }

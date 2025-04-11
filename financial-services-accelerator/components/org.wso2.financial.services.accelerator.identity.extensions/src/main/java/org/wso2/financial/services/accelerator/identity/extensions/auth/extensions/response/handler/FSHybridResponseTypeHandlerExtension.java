@@ -57,18 +57,18 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
                 return issueCode(oauthAuthzMsgCtx);
             }
 
-            // Perform FS default behaviour
-            String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
-            String[] updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
-            long refreshTokenValidityPeriod = oauthAuthzMsgCtx.getRefreshTokenvalidityPeriod();
-
+            String[] updatedApprovedScopes;
             if (fsResponseTypeHandler != null) {
+
                 // Perform FS customized behaviour
                 updatedApprovedScopes = fsResponseTypeHandler.getApprovedScopes(oauthAuthzMsgCtx);
+            } else {
+
+                // Perform FS default behaviour
+                String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
+                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
             }
 
-
-            oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(refreshTokenValidityPeriod);
             if (updatedApprovedScopes != null) {
                 oauthAuthzMsgCtx.setApprovedScope(updatedApprovedScopes);
             } else {

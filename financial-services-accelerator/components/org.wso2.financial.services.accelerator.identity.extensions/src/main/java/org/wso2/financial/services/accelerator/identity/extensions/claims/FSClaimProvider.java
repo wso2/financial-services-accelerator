@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,7 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -27,12 +27,14 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * FS specific claim provider.
@@ -41,19 +43,35 @@ public class FSClaimProvider implements ClaimProvider {
 
     private static final Log log = LogFactory.getLog(FSClaimProvider.class);
     private static ClaimProvider claimProvider;
+    private static final IdentityExtensionsDataHolder identityExtensionsDataHolder =
+            IdentityExtensionsDataHolder.getInstance();
 
     @Override
     public Map<String, Object> getAdditionalClaims(OAuthAuthzReqMessageContext authAuthzReqMessageContext,
                                                    OAuth2AuthorizeRespDTO authorizeRespDTO)
             throws IdentityOAuth2Exception {
 
+        Map<String, Object> additionalClaims;
+
+        // Perform FS default behaviour
+        try {
+            additionalClaims = new HashMap<>(getDefaultAdditionalIdTokenClaims(
+                    authAuthzReqMessageContext, authorizeRespDTO));
+        } catch (ConsentManagementException e) {
+            log.error("Error while getting consent ID claim.", e);
+            throw new IdentityOAuth2Exception("Error while getting consent ID claim.", e);
+        } catch (JsonProcessingException e) {
+            log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR, e);
+        }
+
         if (getClaimProvider() != null) {
             // Perform FS customized behaviour
-            return getClaimProvider().getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO);
-        } else {
-            // Perform FS default behaviour
-            return getDefaultAdditionalIdTokenClaims(authAuthzReqMessageContext, authorizeRespDTO);
+            additionalClaims.putAll(getClaimProvider()
+                    .getAdditionalClaims(authAuthzReqMessageContext, authorizeRespDTO));
         }
+
+        return additionalClaims;
     }
 
     @Override
@@ -61,13 +79,14 @@ public class FSClaimProvider implements ClaimProvider {
                                                    OAuth2AccessTokenRespDTO tokenRespDTO)
             throws IdentityOAuth2Exception {
 
-        Map<String, Object> additionalClaims;
+        // Perform FS default behaviour
+        Map<String, Object> additionalClaims = new HashMap<>(getDefaultAdditionalIdTokenClaims(
+                tokenReqMessageContext, tokenRespDTO));
+
         if (getClaimProvider() != null) {
             // Perform FS customized behaviour
-            additionalClaims = getClaimProvider().getAdditionalClaims(tokenReqMessageContext, tokenRespDTO);
-        } else {
-            // Perform FS default behaviour
-            additionalClaims = getDefaultAdditionalIdTokenClaims(tokenReqMessageContext, tokenRespDTO);
+            additionalClaims.putAll(getClaimProvider()
+                    .getAdditionalClaims(tokenReqMessageContext, tokenRespDTO));
         }
 
         tokenRespDTO.setAuthorizedScopes(updateScopeInTokenResponseBody(tokenRespDTO.getAuthorizedScopes()));
@@ -92,6 +111,36 @@ public class FSClaimProvider implements ClaimProvider {
         return scopesString.toString().trim();
     }
 
+    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
+            OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
+            throws ConsentManagementException, JsonProcessingException {
+
+        Map<String, Object> additionalClaims = new HashMap<>();
+
+        if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
+            String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
+            additionalClaims.put(consentIdClaimName, IdentityCommonUtils.getConsentId(authAuthzReqMessageContext));
+        }
+
+        return additionalClaims;
+    }
+
+    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
+            OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO) {
+
+        Map<String, Object> additionalClaims = new HashMap<>();
+
+        if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
+            String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
+            additionalClaims.put(consentIdClaimName, IdentityCommonUtils
+                    .getConsentId(tokenReqMessageContext.getScope()));
+        }
+
+        return additionalClaims;
+    }
+
     public static void setClaimProvider(ClaimProvider claimProvider) {
 
         FSClaimProvider.claimProvider = claimProvider;
@@ -100,49 +149,6 @@ public class FSClaimProvider implements ClaimProvider {
     public static ClaimProvider getClaimProvider() {
 
         return claimProvider;
-    }
-
-    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
-            OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
-            throws IdentityOAuth2Exception {
-
-        // Prior to FAPI support in IS, "s_hash" claim was added and "at_hash" claim was removed
-        return new HashMap<>();
-    }
-
-    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
-            OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO) {
-
-        return new HashMap<>();
-    }
-
-
-    private Map<String, Object> processResponseAndGetClaims(ExternalServiceResponse response)
-            throws IdentityOAuth2Exception {
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("claims")) {
-            throw new IdentityOAuth2Exception("Missing claims in response payload.");
-        }
-
-        Map<String, Object> additionalClaims = new HashMap<>();
-        for (JsonNode claimNode : responseData.get("claims")) {
-            if (!claimNode.hasNonNull("key") || !claimNode.hasNonNull("value")) {
-                continue;
-            }
-
-            String key = claimNode.get("key").asText();
-            Object value = claimNode.get("value").asText();
-
-            // Add only if key is not empty
-            if (!key.isEmpty()) {
-                additionalClaims.put(key, value);
-            }
-        }
-
-        return additionalClaims;
     }
 
 }

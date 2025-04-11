@@ -147,7 +147,7 @@ public class DefaultEventCreationServiceHandler implements EventCreationServiceH
             throws FSEventNotificationException {
 
         JSONObject data = new JSONObject();
-        data.put(EventNotificationConstants.EVENT_CREATION_PAYLOAD, eventCreationPayload);
+        data.put(EventNotificationConstants.EVENT_DATA, eventCreationPayload);
 
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_EVENT_CREATION)) {
             ExternalServiceRequest request = new ExternalServiceRequest(UUID.randomUUID().toString(),

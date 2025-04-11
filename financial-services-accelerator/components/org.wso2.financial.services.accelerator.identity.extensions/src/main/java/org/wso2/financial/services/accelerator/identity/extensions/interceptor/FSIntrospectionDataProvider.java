@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.interceptor;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +26,8 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -41,22 +41,22 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
 
     private static final Log log = LogFactory.getLog(FSIntrospectionDataProvider.class);
     private static IntrospectionDataProvider introspectionDataProvider;
+    private Map<String, Object> identityConfigurations = IdentityExtensionsDataHolder.getInstance()
+            .getConfigurationMap();
 
     @Override
     public Map<String, Object> getIntrospectionData(OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
                                                     OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO)
             throws IdentityOAuth2Exception {
 
-        Map<String, Object> additionalDataMap = new HashMap<>();
+        // Perform FS default behaviour
+        Map<String, Object> additionalDataMap = new HashMap<>(getDefaultIntrospectionData(
+                oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO));
 
         if (getIntrospectionDataProvider() != null) {
             // Perform FS customized behaviour
-            additionalDataMap = getIntrospectionDataProvider()
-                    .getIntrospectionData(oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO);
-        } else {
-            // Perform FS default behaviour
-            additionalDataMap = getDefaultIntrospectionData(oAuth2TokenValidationRequestDTO,
-                    oAuth2IntrospectionResponseDTO);
+            additionalDataMap.putAll(getIntrospectionDataProvider()
+                    .getIntrospectionData(oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO));
         }
 
         String[] nonInternalScopes = IdentityCommonUtils.removeInternalScopes(oAuth2IntrospectionResponseDTO.getScope()
@@ -69,40 +69,24 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
         return additionalDataMap;
     }
 
-    private Map<String, Object> processResponseAndGetData(ExternalServiceResponse response)
-            throws IdentityOAuth2Exception {
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("attributes")) {
-            throw new IdentityOAuth2Exception("Missing attributes in response payload.");
-        }
-
-        Map<String, Object> additionalAttributes = new HashMap<>();
-        for (JsonNode attributeNode : responseData.get("attributes")) {
-            if (!attributeNode.hasNonNull("key") || !attributeNode.hasNonNull("value")) {
-                continue;
-            }
-
-            String key = attributeNode.get("key").asText();
-            Object value = attributeNode.get("value").asText();
-
-            // Add only if key is not empty
-            if (!key.isEmpty()) {
-                additionalAttributes.put(key, value);
-            }
-        }
-
-        return additionalAttributes;
-    }
-
     private Map<String, Object> getDefaultIntrospectionData(
             OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
             OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO) {
 
         if (oAuth2IntrospectionResponseDTO.isActive()) {
-            return oAuth2IntrospectionResponseDTO.getProperties();
+
+            if (Boolean.parseBoolean((String) identityConfigurations
+                    .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_TOKEN_INTROSPECT_RESPONSE))) {
+                Map<String, Object> additionalClaims = new HashMap<>();
+
+                String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
+                additionalClaims.put(consentIdClaimName, IdentityCommonUtils
+                        .getConsentId(oAuth2IntrospectionResponseDTO.getScope()
+                                .split(IdentityCommonConstants.SPACE_SEPARATOR)));
+                return additionalClaims;
+            } else {
+                return oAuth2IntrospectionResponseDTO.getProperties();
+            }
         } else {
             return new HashMap<>();
         }
