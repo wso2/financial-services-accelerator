@@ -139,7 +139,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
                             new ExternalAPIConsentResourceRequestDTO(consent);
                     ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
-                            consentId, externalAPIConsentResource, resourcePath);
+                            consentId, externalAPIConsentResource, resourcePath,
+                            consentManageData.getAllowedExtensionHeaders());
                     ExternalAPIConsentRetrieveResponseDTO responseDTO = ExternalAPIConsentManageUtils.
                             callExternalService(requestDTO);
                     consentManageData.setResponsePayload(responseDTO.getModifiedResponse());
@@ -311,7 +312,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
                             new ExternalAPIConsentResourceRequestDTO(consentResource);
                     ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(
-                            externalAPIConsentResource, resourcePath);
+                            externalAPIConsentResource, resourcePath, consentManageData.getAllowedExtensionHeaders());
                     ExternalAPIConsentRevokeResponseDTO responseDTO = ExternalAPIConsentManageUtils.
                             callExternalService(requestDTO);
                     shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
