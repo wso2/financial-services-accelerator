@@ -815,6 +815,25 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
+     * Returns the list of allowed headers in service extension requests.
+     *
+     * @return List of allowed headers.
+     */
+    public List<String> getServiceExtensionAllowedHeaders() {
+
+        Object allowedHeadersObj = configuration.get(FinancialServicesConstants.
+                SERVICE_EXTENSIONS_ENDPOINT_ALLOWED_HEADERS);
+        List<String> allowedHeaders = new ArrayList<>();
+        if (allowedHeadersObj instanceof ArrayList) {
+            allowedHeaders.addAll((ArrayList) allowedHeadersObj);
+        } else if (allowedHeadersObj instanceof String) {
+            allowedHeaders.add((String) allowedHeadersObj);
+        }
+
+        return allowedHeaders;
+    }
+
+    /**
      * Method to get service extensions endpoint retry count.
      *
      * @return String service extensions endpoint retry count
