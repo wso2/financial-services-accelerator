@@ -824,8 +824,8 @@ public final class FinancialServicesConfigParser {
         Object allowedHeadersObj = configuration.get(FinancialServicesConstants.
                 SERVICE_EXTENSIONS_ENDPOINT_ALLOWED_HEADERS);
         List<String> allowedHeaders = new ArrayList<>();
-        if (allowedHeadersObj instanceof ArrayList) {
-            allowedHeaders.addAll((ArrayList) allowedHeadersObj);
+        if (allowedHeadersObj instanceof List) {
+            allowedHeaders.addAll((List) allowedHeadersObj);
         } else if (allowedHeadersObj instanceof String) {
             allowedHeaders.add((String) allowedHeadersObj);
         }
