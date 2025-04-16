@@ -93,8 +93,8 @@ public class ServiceExtensionUtils {
                 String constructedUrl = constructExtensionEndpoint(serviceType);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Invoking external service with payload: " + externalServicesPayload.replaceAll(
-                            "[\r\n]", ""));
+                    String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
+                    log.debug("Invoking external service [requestUrl=" + sanitizedUrl + "]");
                 }
 
                 HttpPost httpPost = new HttpPost(constructedUrl);
@@ -137,8 +137,9 @@ public class ServiceExtensionUtils {
                     int statusCode = response.getStatusLine().getStatusCode();
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Received response from external service [statusCode=" + statusCode + "]: " +
-                                responseContent.replaceAll("[\r\n]", ""));
+                        String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
+                        log.debug("External service response received [requestUrl=" + sanitizedUrl + ", statusCode=" +
+                                statusCode + "]");
                     }
 
                     if (statusCode != 200) {
