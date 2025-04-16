@@ -94,7 +94,7 @@ public class ServiceExtensionUtils {
 
                 if (log.isDebugEnabled()) {
                     String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
-                    log.debug("Invoking external service [url=" + sanitizedUrl + "]");
+                    log.debug("Invoking external service [requestUrl=" + sanitizedUrl + "]");
                 }
 
                 HttpPost httpPost = new HttpPost(constructedUrl);
@@ -138,7 +138,7 @@ public class ServiceExtensionUtils {
 
                     if (log.isDebugEnabled()) {
                         String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
-                        log.debug("External service response received [url=" + sanitizedUrl + ", statusCode=" +
+                        log.debug("External service response received [requestUrl=" + sanitizedUrl + ", statusCode=" +
                                 statusCode + "]");
                     }
 
