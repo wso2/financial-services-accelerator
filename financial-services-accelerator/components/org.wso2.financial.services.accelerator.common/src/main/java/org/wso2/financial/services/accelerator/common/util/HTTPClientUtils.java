@@ -66,6 +66,13 @@ public class HTTPClientUtils {
         // Prevent instantiation
     }
 
+    /**
+     * Initialize the connection manager for HTTPS protocol.
+     *
+     * @param maxTotal     Maximum pool connections
+     * @param maxPerRoute Maximum connections per route
+     * @throws FinancialServicesException FinancialServicesException exception
+     */
     private static void initConnectionManagerForHttpsProtocol(int maxTotal, int maxPerRoute)
             throws FinancialServicesException {
 
@@ -89,6 +96,12 @@ public class HTTPClientUtils {
         }
     }
 
+    /**
+     * Initialize the connection manager for HTTP protocol.
+     *
+     * @param maxTotal     Maximum pool connections
+     * @param maxPerRoute Maximum connections per route
+     */
     private static void initConnectionManagerForHttpProtocol(int maxTotal, int maxPerRoute) {
 
         if (connectionManager == null) {
