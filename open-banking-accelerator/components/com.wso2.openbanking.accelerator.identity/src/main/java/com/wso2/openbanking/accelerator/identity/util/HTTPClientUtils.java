@@ -18,6 +18,7 @@
 
 package com.wso2.openbanking.accelerator.identity.util;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
@@ -56,6 +57,7 @@ import javax.net.ssl.SSLContext;
 /**
  * HTTP Client Utility methods.
  */
+@Deprecated
 public class HTTPClientUtils {
 
     public static final String ALLOW_ALL = "AllowAll";
@@ -65,6 +67,42 @@ public class HTTPClientUtils {
     public static final String HTTPS_PROTOCOL = "https";
     private static final String[] SUPPORTED_HTTP_PROTOCOLS = {"TLSv1.2"};
     private static final Log log = LogFactory.getLog(HTTPClientUtils.class);
+    private static volatile PoolingHttpClientConnectionManager connectionManager;
+    private static volatile CloseableHttpClient httpsClient;
+
+    private HTTPClientUtils() {
+        // Prevent instantiation
+    }
+
+    /**
+     * Initialize the connection manager for HTTPS protocol.
+     *
+     * @param maxTotal     Maximum total connections
+     * @param maxPerRoute  Maximum connections per route
+     * @throws OpenBankingException OpenBankingException exception
+     */
+    private static void initConnectionManagerForHttpsProtocol(int maxTotal, int maxPerRoute)
+            throws OpenBankingException {
+
+        if (connectionManager == null) {
+            synchronized (com.wso2.openbanking.accelerator.common.util.HTTPClientUtils.class) {
+                if (connectionManager == null) {
+                    SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+
+                    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+                            .<ConnectionSocketFactory>create()
+                            .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                            .register(HTTPS_PROTOCOL, sslsf)
+                            .build();
+
+                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+
+                    connectionManager.setMaxTotal(maxTotal);
+                    connectionManager.setDefaultMaxPerRoute(maxPerRoute);
+                }
+            }
+        }
+    }
 
     /**
      * Get closeable https client.
@@ -75,18 +113,19 @@ public class HTTPClientUtils {
     @Generated(message = "Unit testable components are covered")
     public static CloseableHttpClient getHttpsClient() throws OpenBankingException {
 
-        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
-
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                .register(HTTPS_PROTOCOL, sslsf)
-                .build();
-
-        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
-                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
-                new PoolingHttpClientConnectionManager();
-
-        return HttpClients.custom().setConnectionManager(connectionManager).build();
+        if (httpsClient == null) {
+            synchronized (com.wso2.openbanking.accelerator.common.util.HTTPClientUtils.class) {
+                if (httpsClient == null) {
+                    int maxTotal = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections();
+                    int maxPerRoute = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
+                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
+                    httpsClient = HttpClients.custom()
+                            .setConnectionManager(connectionManager)
+                            .build();
+                }
+            }
+        }
+        return httpsClient;
     }
 
     /**
