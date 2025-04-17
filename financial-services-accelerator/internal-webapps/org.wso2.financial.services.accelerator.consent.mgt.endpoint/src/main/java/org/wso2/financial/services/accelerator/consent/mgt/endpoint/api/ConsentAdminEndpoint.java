@@ -168,9 +168,12 @@ public class ConsentAdminEndpoint {
      * @return Response
      */
     private Response sendResponse(ConsentAdminData consentAdminData) {
-        if (consentAdminData.getPayload() != null || consentAdminData.getResponseStatus() != null) {
-            return Response.status(consentAdminData.getResponseStatus().getStatusCode())
-                    .entity(consentAdminData.getResponsePayload().toString()).build();
+        if (consentAdminData.getResponseStatus() != null) {
+            if (consentAdminData.getResponsePayload() != null) {
+                return Response.status(consentAdminData.getResponseStatus().getStatusCode())
+                        .entity(consentAdminData.getResponsePayload().toString()).build();
+            }
+            return Response.status(consentAdminData.getResponseStatus().getStatusCode()).build();
         } else {
             log.debug("Response status or payload unavailable. Throwing exception");
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Response data unavailable");

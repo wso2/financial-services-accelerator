@@ -1,0 +1,74 @@
+/**
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.boxContainer {
+  border-radius: 20px;
+  min-height: 754px;
+  background: white;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 2.25rem;
+  margin-bottom: 2.25rem;
+  width: 100%;
+}
+
+.box {
+  display: inline-block;
+  width: 100%;
+}
+
+@media (max-width: 500px) {
+  .boxContainer {
+    min-height: 200px;
+    min-width: 0;
+    width: 92%;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+  .box{
+    padding: 0.2em;
+    width: 100%;
+  }
+}
+
+.parent-componenet{
+  display: grid;
+  grid-template-columns: 1fr 20fr;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.searchBox {
+  top: 0;
+  right: 0;
+  width: 100%;
+}
+
+.titleBar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.titleName{
+  color: #081247;
+  top:18px;
+  width:300px;
+  font-size: 20px;
+}
