@@ -27,13 +27,6 @@ public class ExternalServiceRequest {
 
     private String requestId;
     private JSONObject data;
-    private String operation;
-
-    public ExternalServiceRequest(String requestId, JSONObject data, OperationEnum operation) {
-        this.requestId = requestId;
-        this.data = data;
-        this.operation = operation.getValue();
-    }
 
     public ExternalServiceRequest(String requestId, JSONObject data) {
         this.requestId = requestId;
@@ -54,13 +47,5 @@ public class ExternalServiceRequest {
 
     public void setData(JSONObject data) {
         this.data = data;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public void setOperation(OperationEnum operation) {
-        this.operation = operation.getValue();
     }
 }

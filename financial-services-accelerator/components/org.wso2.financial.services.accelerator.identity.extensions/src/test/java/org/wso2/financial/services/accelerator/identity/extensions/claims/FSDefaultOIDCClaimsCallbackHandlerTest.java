@@ -36,12 +36,10 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenReqDTO;
 import org.wso2.carbon.identity.oauth2.internal.OAuth2ServiceComponentHolder;
-import org.wso2.carbon.identity.oauth2.model.HttpRequestHeader;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.TestConstants;
 
@@ -115,11 +113,6 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
             JWTClaimsSet.Builder jwtClaimsSetBuilder = new JWTClaimsSet.Builder();
             OAuth2AccessTokenReqDTO oauth2AccessTokenReqDTO = new OAuth2AccessTokenReqDTO();
 
-            HttpRequestHeader[] httpRequestHeaders = new HttpRequestHeader[1];
-            httpRequestHeaders[0] = new HttpRequestHeader(IdentityCommonConstants.CERTIFICATE_HEADER,
-                    TestConstants.CERTIFICATE_CONTENT);
-            oauth2AccessTokenReqDTO.setHttpRequestHeaders(httpRequestHeaders);
-
             oauth2AccessTokenReqDTO.setGrantType("client_credentials");
             oauth2AccessTokenReqDTO.setClientId("123");
             OAuthTokenReqMessageContext oAuthTokenReqMessageContext =
@@ -140,8 +133,6 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
             doReturn(new SingletonMap("scope", "test")).when(jwtClaimsSetInitial).getClaims();
             doReturn(jwtClaimsSetInitial).when(obDefaultOIDCClaimsCallbackHandler)
                     .getJwtClaimsFromSuperClass(jwtClaimsSetBuilder, oAuthTokenReqMessageContext);
-            identityCommonUtilsMock.when(IdentityCommonUtils::getMTLSAuthHeader)
-                    .thenReturn(TestConstants.CERTIFICATE_HEADER);
 
             fsUtilMock.when(() -> FinancialServicesUtils.isRegulatoryApp(anyString())).thenReturn(true);
             frameworkUtilsMock.when(FrameworkUtils::getMultiAttributeSeparator)

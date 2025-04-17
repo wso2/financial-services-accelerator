@@ -26,10 +26,8 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.DefaultOIDCClaimsCallbackHandler;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
-import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -38,34 +36,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This call back handler adds ob specific additional claims to self contained JWT access token.
+ * This call back handler adds FS specific additional claims to the self-contained JWT access token.
  */
 public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbackHandler {
 
     private static Log log = LogFactory.getLog(FSDefaultOIDCClaimsCallbackHandler.class);
-    Map<String, Object> identityConfigurations = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
 
     @Override
     public JWTClaimsSet handleCustomClaims(JWTClaimsSet.Builder jwtClaimsSetBuilder, OAuthTokenReqMessageContext
             tokenReqMessageContext) throws IdentityOAuth2Exception {
 
-        /*  accessToken property check is done to omit the following claims getting bound to id_token
-             The access token property is added to the ID token message context before this method is invoked. */
+        /*
+        accessToken property check is done to omit the following claims getting bound to id_token
+        The access token property is added to the ID token message context before this method is invoked.
+        */
         try {
             if (FinancialServicesUtils.isRegulatoryApp(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
                     .getClientId())
                     && (tokenReqMessageContext.getProperty(IdentityCommonConstants.ACCESS_TOKEN) == null)) {
 
-                Map<String, Object> userClaimsInOIDCDialect = new HashMap<>();
+                Map<String, Object> claimsInJwtToken = new HashMap<>();
                 JWTClaimsSet jwtClaimsSet = getJwtClaimsFromSuperClass(jwtClaimsSetBuilder, tokenReqMessageContext);
                 if (jwtClaimsSet != null) {
-                    userClaimsInOIDCDialect.putAll(jwtClaimsSet.getClaims());
+                    claimsInJwtToken.putAll(jwtClaimsSet.getClaims());
                 }
 
-                addConsentIDClaimToOIDCDialect(tokenReqMessageContext, userClaimsInOIDCDialect);
-                updateSubClaim(tokenReqMessageContext, userClaimsInOIDCDialect);
+                addConsentIDClaim(tokenReqMessageContext, claimsInJwtToken);
 
-                for (Map.Entry<String, Object> claimEntry : userClaimsInOIDCDialect.entrySet()) {
+                /*
+                Removes the consent ID scope from the JWT token's scopes claim before returning the token.
+                The consent ID scope was added during the authorization process in the response type extension
+                for internal use.
+                */
+                for (Map.Entry<String, Object> claimEntry : claimsInJwtToken.entrySet()) {
                     if (IdentityCommonConstants.SCOPE.equals(claimEntry.getKey())) {
                         String[] nonInternalScopes = IdentityCommonUtils
                                 .removeInternalScopes(claimEntry.getValue().toString()
@@ -82,7 +85,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
             log.error("Error while handling custom claims", e);
             throw new IdentityOAuth2Exception(e.getMessage(), e);
         }
-        return super.handleCustomClaims(jwtClaimsSetBuilder, tokenReqMessageContext);
+        return getJwtClaimsFromSuperClass(jwtClaimsSetBuilder, tokenReqMessageContext);
     }
 
     @Generated(message = "Excluding from code coverage since it makes is used to return claims from the super class")
@@ -93,11 +96,15 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
         return super.handleCustomClaims(jwtClaimsSetBuilder, tokenReqMessageContext);
     }
 
-    private void addConsentIDClaimToOIDCDialect(OAuthTokenReqMessageContext tokenReqMessageContext,
-                                                Map<String, Object> userClaimsInOIDCDialect) {
+    /**
+     * This method adds the consent ID claim to the JWT token.
+     * @param tokenReqMessageContext OAuthTokenReqMessageContext
+     * @param claimsInJwtToken Claims in the JWT token
+     */
+    private void addConsentIDClaim(OAuthTokenReqMessageContext tokenReqMessageContext,
+                                   Map<String, Object> claimsInJwtToken) {
 
-        String consentIdClaimName =
-                identityConfigurations.get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
+        String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
         String consentID = Arrays.stream(tokenReqMessageContext.getScope())
                 .filter(scope -> scope.contains(IdentityCommonConstants.FS_PREFIX)).findFirst().orElse(null);
         if (StringUtils.isEmpty(consentID)) {
@@ -110,34 +117,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
         }
 
         if (StringUtils.isNotEmpty(consentID)) {
-            userClaimsInOIDCDialect.put(consentIdClaimName, consentID);
-        }
-    }
-
-    /**
-     * Update the subject claim of the JWT claims set if any of the following configurations are true
-     *  1. Remove tenant domain from subject (fs.identity.token.remove_tenant_domain_from_subject)
-     *  2. Remove user store domain from subject (fs.identity.token.remove_user_store_domain_from_subject)
-     * @param tokenReqMessageContext token request message context
-     * @param userClaimsInOIDCDialect user claims in OIDC dialect as a map
-     */
-    private void updateSubClaim(OAuthTokenReqMessageContext tokenReqMessageContext,
-                                Map<String, Object> userClaimsInOIDCDialect) {
-
-        Object removeTenantDomainConfig =
-                identityConfigurations.get(FinancialServicesConstants.REMOVE_TENANT_DOMAIN_FROM_SUBJECT);
-        Boolean removeTenantDomain = removeTenantDomainConfig != null
-                && Boolean.parseBoolean(removeTenantDomainConfig.toString());
-
-        Object removeUserStoreDomainConfig =
-                identityConfigurations.get(FinancialServicesConstants.REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT);
-        Boolean removeUserStoreDomain = removeUserStoreDomainConfig != null
-                && Boolean.parseBoolean(removeUserStoreDomainConfig.toString());
-
-        if (removeTenantDomain || removeUserStoreDomain) {
-            String subClaim = tokenReqMessageContext.getAuthorizedUser()
-                    .getUsernameAsSubjectIdentifier(!removeUserStoreDomain, !removeTenantDomain);
-            userClaimsInOIDCDialect.put(IdentityCommonConstants.SUBJECT_CLAIM, subClaim);
+            claimsInJwtToken.put(consentIdClaimName, consentID);
         }
     }
 }

@@ -37,7 +37,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -60,7 +59,6 @@ public class ResponseTypeHandlerTest {
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
-        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -88,7 +86,6 @@ public class ResponseTypeHandlerTest {
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
-        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -115,7 +112,6 @@ public class ResponseTypeHandlerTest {
 
         FSHybridResponseTypeHandlerExtension uut = spy(new FSHybridResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
-        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -140,7 +136,6 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
-        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -168,7 +163,6 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
-        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -195,7 +189,6 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
-        doThrow(RequestObjectException.class).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);
@@ -221,7 +214,6 @@ public class ResponseTypeHandlerTest {
 
         FSCodeResponseTypeHandlerExtension uut = spy(new FSCodeResponseTypeHandlerExtension());
         doReturn(null).when(uut).issueCode(any());
-        doReturn(true).when(uut).isRegulatory(any());
 
         ArgumentCaptor<OAuthAuthzReqMessageContext> argument =
                 ArgumentCaptor.forClass(OAuthAuthzReqMessageContext.class);

@@ -49,9 +49,7 @@ public class FSRequestObjectValidationExtensionTest {
                 .thenReturn(new ValidationResponse(true));
 
         FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
-        doReturn(true).when(uut).isRegulatory(any());
         doReturn(true).when(uut).validateIAMConstraints(any(), any());
-        doReturn("accounts payments").when(uut).getAllowedScopes(any());
 
         // Assign
         FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = fsDefaultRequestObjectValidator;
@@ -72,7 +70,6 @@ public class FSRequestObjectValidationExtensionTest {
         // Mock
         FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
         doReturn(true).when(uut).validateIAMConstraints(any(), any());
-        doReturn(true).when(uut).isRegulatory(any());
 
         // Assign
         FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = new DefaultFSRequestObjectValidator();
@@ -96,9 +93,7 @@ public class FSRequestObjectValidationExtensionTest {
                 .thenReturn(new ValidationResponse(true));
 
         FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
-        doReturn(true).when(uut).isRegulatory(any());
         doReturn(true).when(uut).validateIAMConstraints(any(), any());
-        doReturn("accounts payments").when(uut).getAllowedScopes(any());
 
         // Assign
         FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = fsRequestObjectValidator;
