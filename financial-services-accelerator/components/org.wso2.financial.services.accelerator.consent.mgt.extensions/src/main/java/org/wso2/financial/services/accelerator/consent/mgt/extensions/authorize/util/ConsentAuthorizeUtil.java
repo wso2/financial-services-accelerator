@@ -124,8 +124,8 @@ public class ConsentAuthorizeUtil {
             JSONObject payload = new JSONObject(payloadJson);
             return payload.optString(fieldName, "");
         } catch (JSONException e) {
-            log.warn("Failed to parse JWT payload as JSON or extract field: " +
-                    fieldName.replaceAll("[\r\n]", ""), e);
+            /*log.warn("Failed to parse JWT payload as JSON or extract field: " +
+                    fieldName.replaceAll("[\r\n]", ""), e);*/
             return "";
         }
     }
