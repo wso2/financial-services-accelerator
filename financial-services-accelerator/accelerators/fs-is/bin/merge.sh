@@ -16,18 +16,22 @@
  # under the License.
 
 WSO2_IS_HOME=$1
-
-# set accelerator home
-cd ../
-ACCELERATOR_HOME=$(pwd)
-echo "Accelerator home is: ${ACCELERATOR_HOME}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ACCELERATOR_HOME="$(dirname "$SCRIPT_DIR")"
 
 # set product home
 if [ "${WSO2_IS_HOME}" == "" ];
   then
     cd ../
+    # set accelerator home
+    ACCELERATOR_HOME=$(pwd)
+    cd ../
     WSO2_IS_HOME=$(pwd)
     echo "Product home is: ${WSO2_IS_HOME}"
+    echo "Accelerator home is: ${ACCELERATOR_HOME}"
+else
+    echo "Product home is: ${WSO2_IS_HOME}"
+    echo "Accelerator home is: ${ACCELERATOR_HOME}"
 fi
 
 # validate product home
@@ -66,7 +70,7 @@ if [ -d "${CONSENTMGR_PATH}" ]; then
   rm -rf "${CONSENTMGR_PATH}"
 fi
 
-echo -e "\nCopying open banking artifacts\n"
+echo -e "\nCopying financial services artifacts\n"
 echo -e "================================================\n"
 cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_IS_HOME}"/
 

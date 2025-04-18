@@ -20,7 +20,15 @@ Steps:
 2. Extract WSO2 FS APIM Accelerator (wso2-fsam-accelerator-4.0.0.zip) to WSO2_APIM_HOME 
 3. Run <WSO2_FS_APIM_ACC_HOME>/bin/merge.sh. This will copy/install the Financial Services artifacts to 
 the WSO2 API Manager product
+
+```
+sh /<path_to_wso2_apim_accelerator>/bin/merge.sh <path_to_wso2_apim>
+```
 4. Run <WSO2_FS_APIM_ACC_HOME>/bin/configure.sh. This will configure the server and create databases and  tables.
+
+```
+sh /<path_to_wso2_apim_accelerator>/bin/configure.sh <path_to_wso2_apim>
+```
 5. Run <WSO2_APIM_HOME>/bin/wso2server.sh to start the server.
 
 
