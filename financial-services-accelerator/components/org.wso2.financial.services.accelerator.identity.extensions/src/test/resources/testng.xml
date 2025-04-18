@@ -23,7 +23,7 @@
         <classes>
             <!--<class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidationExtensionTest" />-->
             <!--<class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.ResponseTypeHandlerTest" />-->
-            <!--<class name="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultOIDCClaimsCallbackHandlerTest" />-->
+            <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultOIDCClaimsCallbackHandlerTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProviderTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImplTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationManagementListenerTest" />

@@ -27,7 +27,6 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.DefaultOIDCClaimsCallbackHandler;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
-import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -56,7 +55,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
                     && (tokenReqMessageContext.getProperty(IdentityCommonConstants.ACCESS_TOKEN) == null)) {
 
                 Map<String, Object> claimsInJwtToken = new HashMap<>();
-                JWTClaimsSet jwtClaimsSet = getJwtClaimsFromSuperClass(jwtClaimsSetBuilder, tokenReqMessageContext);
+                JWTClaimsSet jwtClaimsSet = super.handleCustomClaims(jwtClaimsSetBuilder, tokenReqMessageContext);
                 if (jwtClaimsSet != null) {
                     claimsInJwtToken.putAll(jwtClaimsSet.getClaims());
                 }
@@ -68,32 +67,30 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
                 The consent ID scope was added during the authorization process in the response type extension
                 for internal use.
                 */
-                for (Map.Entry<String, Object> claimEntry : claimsInJwtToken.entrySet()) {
-                    if (IdentityCommonConstants.SCOPE.equals(claimEntry.getKey())) {
-                        String[] nonInternalScopes = IdentityCommonUtils
-                                .removeInternalScopes(claimEntry.getValue().toString()
-                                        .split(IdentityCommonConstants.SPACE_SEPARATOR));
-                        jwtClaimsSetBuilder.claim(IdentityCommonConstants.SCOPE, StringUtils.join(nonInternalScopes,
-                                IdentityCommonConstants.SPACE_SEPARATOR));
-                    } else {
-                        jwtClaimsSetBuilder.claim(claimEntry.getKey(), claimEntry.getValue());
-                    }
-                }
+                removeConsentIdScope(jwtClaimsSetBuilder, claimsInJwtToken);
                 return jwtClaimsSetBuilder.build();
             }
         } catch (RequestObjectException e) {
             log.error("Error while handling custom claims", e);
             throw new IdentityOAuth2Exception(e.getMessage(), e);
         }
-        return getJwtClaimsFromSuperClass(jwtClaimsSetBuilder, tokenReqMessageContext);
+        return super.handleCustomClaims(jwtClaimsSetBuilder, tokenReqMessageContext);
     }
 
-    @Generated(message = "Excluding from code coverage since it makes is used to return claims from the super class")
-    public JWTClaimsSet getJwtClaimsFromSuperClass(JWTClaimsSet.Builder jwtClaimsSetBuilder,
-                                                   OAuthTokenReqMessageContext tokenReqMessageContext)
-            throws IdentityOAuth2Exception {
+    void removeConsentIdScope(JWTClaimsSet.Builder jwtClaimsSetBuilder,
+                                             Map<String, Object> claimsInJwtToken) {
 
-        return super.handleCustomClaims(jwtClaimsSetBuilder, tokenReqMessageContext);
+        for (Map.Entry<String, Object> claimEntry : claimsInJwtToken.entrySet()) {
+            if (IdentityCommonConstants.SCOPE.equals(claimEntry.getKey())) {
+                String[] nonInternalScopes = IdentityCommonUtils
+                        .removeInternalScopes(claimEntry.getValue().toString()
+                                .split(IdentityCommonConstants.SPACE_SEPARATOR));
+                jwtClaimsSetBuilder.claim(IdentityCommonConstants.SCOPE, StringUtils.join(nonInternalScopes,
+                        IdentityCommonConstants.SPACE_SEPARATOR));
+            } else {
+                jwtClaimsSetBuilder.claim(claimEntry.getKey(), claimEntry.getValue());
+            }
+        }
     }
 
     /**
@@ -101,7 +98,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
      * @param tokenReqMessageContext OAuthTokenReqMessageContext
      * @param claimsInJwtToken Claims in the JWT token
      */
-    private void addConsentIDClaim(OAuthTokenReqMessageContext tokenReqMessageContext,
+    void addConsentIDClaim(OAuthTokenReqMessageContext tokenReqMessageContext,
                                    Map<String, Object> claimsInJwtToken) {
 
         String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();

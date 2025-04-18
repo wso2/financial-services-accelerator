@@ -48,7 +48,7 @@ public class FSClaimProviderTest {
     private static MockedStatic<IdentityCommonUtils> mockedIdentityCommonUtils;
 
     @BeforeClass
-    public void setUp() {
+    public void beforeClass() {
         fsClaimProvider = new FSClaimProvider();
         mockedJwtUtils = Mockito.mockStatic(JWTUtils.class);
         mockedIdentityCommonUtils = Mockito.mockStatic(IdentityCommonUtils.class);
@@ -106,6 +106,22 @@ public class FSClaimProviderTest {
 
         FSClaimProvider.setClaimProvider(new FSDefaultClaimProvider());
         fsClaimProvider.getAdditionalClaims(oAuthTokenReqMessageContext, oAuth2AccessTokenRespDTO);
+    }
+
+    @Test
+    public void testUpdateScopeInTokenResponseBody() throws IdentityOAuth2Exception {
+        OAuthTokenReqMessageContext oAuthTokenReqMessageContext = new OAuthTokenReqMessageContext(
+                new OAuth2AccessTokenReqDTO());
+        OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = new OAuth2AccessTokenRespDTO();
+        oAuth2AccessTokenRespDTO.setAuthorizedScopes("accounts payments internal_scope");
+
+        mockedIdentityCommonUtils.when(() -> IdentityCommonUtils
+                .removeInternalScopes(Mockito.any()))
+                .thenReturn(new String[]{"accounts", "payments"});
+
+        fsClaimProvider.getAdditionalClaims(oAuthTokenReqMessageContext, oAuth2AccessTokenRespDTO);
+
+        assert oAuth2AccessTokenRespDTO.getAuthorizedScopes().equals("accounts payments");
     }
 
 }
