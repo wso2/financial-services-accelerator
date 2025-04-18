@@ -448,6 +448,11 @@
         {% if financial_services.extensions.endpoint.base_url is defined %}
         <BaseURL>{{financial_services.extensions.endpoint.base_url}}</BaseURL>
         {% endif %}
+        <AllowedHeaders>
+            {% for allowed_header in financial_services.extensions.endpoint.allowed_headers %}
+            <AllowedHeader>{{allowed_header}}</AllowedHeader>
+            {% endfor %}
+        </AllowedHeaders>
         {% if financial_services.extensions.endpoint.retry_count is defined %}
         <RetryCount>{{financial_services.extensions.endpoint.retry_count}}</RetryCount>
         {% endif %}

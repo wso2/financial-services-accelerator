@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.api;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -29,6 +30,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
+
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,6 +62,7 @@ public class ConsentManageEndpoint {
 
     private static final Log log = LogFactory.getLog(ConsentManageEndpoint.class);
 
+    private static List<String> allowedHeaderNames;
     private static ConsentManageHandler consentManageHandler = null;
     private static final String CLIENT_ID_HEADER = "x-wso2-client-id";
 
@@ -66,6 +71,8 @@ public class ConsentManageEndpoint {
         if (consentManageHandler == null) {
             initializeConsentManageHandler();
         }
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        allowedHeaderNames = configParser.getServiceExtensionAllowedHeaders();
     }
 
     private static void initializeConsentManageHandler() {
@@ -93,9 +100,11 @@ public class ConsentManageEndpoint {
     public Response manageGet(@Context HttpServletRequest request, @Context HttpServletResponse response,
                               @Context UriInfo uriInfo) {
 
-        ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
+        ConsentManageData consentManageData = new ConsentManageData(headers, uriInfo.getQueryParameters(),
+                uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleGet(consentManageData);
         return sendResponse(consentManageData);
     }
@@ -110,10 +119,11 @@ public class ConsentManageEndpoint {
     public Response managePost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                @Context UriInfo uriInfo) {
 
-        ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
-                uriInfo.getPathParameters().getFirst("s"), request, response);
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
+        ConsentManageData consentManageData = new ConsentManageData(headers, ConsentUtils.getPayload(request),
+                uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handlePost(consentManageData);
         return sendResponse(consentManageData);
     }
@@ -128,10 +138,11 @@ public class ConsentManageEndpoint {
     public Response manageDelete(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                  @Context UriInfo uriInfo) {
 
-        ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                null, uriInfo.getQueryParameters(),
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
+        ConsentManageData consentManageData = new ConsentManageData(headers, null, uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleDelete(consentManageData);
         return sendResponse(consentManageData);
     }

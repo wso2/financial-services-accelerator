@@ -17,6 +17,8 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
+import java.util.Map;
+
 /**
  * ExternalAPIPreConsentGenerateRequestDTO
  */
@@ -25,11 +27,13 @@ public class ExternalAPIPreConsentGenerateRequestDTO {
     //Payload can either be a JSONObject or a JSONArray
     private Object consentInitiationData;
     private String consentResourcePath;
+    private Map<String, String> requestHeaders;
 
     public ExternalAPIPreConsentGenerateRequestDTO(ConsentManageData consentManageData) {
 
         this.consentInitiationData = consentManageData.getPayload();
         this.consentResourcePath = consentManageData.getRequestPath();
+        this.requestHeaders = consentManageData.getAllowedExtensionHeaders();
     }
 
     public Object getConsentInitiationData() {
@@ -48,4 +52,11 @@ public class ExternalAPIPreConsentGenerateRequestDTO {
         this.consentResourcePath = consentResourcePath;
     }
 
+    public Map<String, String> getRequestHeaders() {
+        return requestHeaders;
+    }
+
+    public void setRequestHeaders(Map<String, String> requestHeaders) {
+        this.requestHeaders = requestHeaders;
+    }
 }
