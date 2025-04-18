@@ -19,34 +19,17 @@
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
 /**
- * Class containing the constants for Open Banking Common module.
+ * Class containing the constants for Open Banking Identity extensions module.
  */
 public class IdentityCommonConstants {
 
-    public static final String OPENBANKING_INTENT_ID = "openbanking_intent_id";
-    public static final String CLIENT_ID = "client_id";
-    public static final String REQUEST_URI = "request_uri";
-    public static final String RESPONSE_TYPE = "response_type";
-    public static final String REDIRECT_URI = "redirect_uri";
-    public static final String REQUEST_OBJECT_SIGNING_ALG = "request_object_signing_alg";
-    public static final String CLIENT_ID_ERROR = "Client id not found";
-    public static final String CERTIFICATE_HEADER = "x-wso2-mutual-auth-cert";
-    public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
-    public static final String END_CERT = "-----END CERTIFICATE-----";
-    public static final String MTLS_AUTH_HEADER = "MutualTLS.ClientCertificateHeader";
-    public static final String X509 = "X.509";
     public static final String FS_PREFIX = "FS_";
     public static final String TIME_PREFIX = "TIME_";
     public static final String CERT_PREFIX = "x5t#";
     public static final String SPACE_SEPARATOR = " ";
     public static final String SCOPE = "scope";
     public static final String OPENID_SCOPE = "openid";
-    public static final String S_HASH = "s_hash";
-    public static final String CODE = "code";
-    public static final String SUBJECT_CLAIM = "sub";
-    public static final String CNF_CLAIM = "cnf";
     public static final String ACCESS_TOKEN = "accessToken";
-    public static final String CONDITIONAL_COMMON_AUTH_SCRIPT_FILE_NAME = "common.auth.script.js";
     public static final String ARRAY_ELEMENT_SEPARATOR = "#";
     public static final String SOFTWARE_STATEMENT = "software_statement";
     public static final String SOFTWARE_ID = "software_id";
@@ -77,9 +60,6 @@ public class IdentityCommonConstants {
     public static final String JTI = "jti";
     public static final String COMMON_AUTH_ID = "commonAuthId";
     public static final String SOFTWARE_STATEMENT_CC = "softwareStatement";
-    public static final String REQUEST_OBJECT = "requestObject";
-    public static final String REQUEST_PARAM = "requestParam";
-    public static final String ISSUE_REFRESH_TOKEN = "issueRefreshToken";
 
     // Service Extension constants
     public static final String CONSENT_CREATED_TIME = "consentCreatedTime";
@@ -89,5 +69,8 @@ public class IdentityCommonConstants {
     public static final String CLIENT_DATA = "clientData";
     public static final String SSA_PARAMS = "softwareStatement";
     public static final String EXISTING_CLIENT_DATA = "existingClientData";
+    public static final String ISSUE_REFRESH_TOKEN = "issueRefreshToken";
+    public static final String REQUEST_OBJECT = "requestObject";
+    public static final String REQUEST_PARAM = "requestParam";
 }
 

@@ -43,9 +43,9 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
             IdentityExtensionsDataHolder.getInstance().getObResponseTypeHandler();
 
     /**
-     * Extension point to get updated scope and refresh token validity period.
+     * Extension point to get updated scopes.
      *
-     * @param oauthAuthzMsgCtx  OAuthAuthzReqMessageContext
+     * @param oauthAuthzMsgCtx OAuthAuthzReqMessageContext
      * @return OAuth2AuthorizeRespDTO
      * @throws IdentityOAuth2Exception If an error occurred while issuing the code.
      */
@@ -53,7 +53,7 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
     public OAuth2AuthorizeRespDTO issue(OAuthAuthzReqMessageContext oauthAuthzMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (!isRegulatory(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
+            if (!FinancialServicesUtils.isRegulatoryApp(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
                 return issueCode(oauthAuthzMsgCtx);
             }
 
@@ -65,8 +65,7 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
             } else {
 
                 // Perform FS default behaviour
-                String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
-                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
+                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx);
             }
 
             if (updatedApprovedScopes != null) {
@@ -98,11 +97,5 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
             throws IdentityOAuth2Exception {
 
         return super.issue(oAuthAuthzReqMessageContext);
-    }
-
-    @Generated(message = "Ignoring because it requires a service call")
-    boolean isRegulatory(String clientId) throws RequestObjectException {
-
-        return FinancialServicesUtils.isRegulatoryApp(clientId);
     }
 }

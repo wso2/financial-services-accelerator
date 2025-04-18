@@ -27,7 +27,6 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.token.handlers.grant.RefreshGrantHandler;
 import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -35,6 +34,7 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityServiceExtensionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +57,8 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
                 if (ServiceExtensionUtils.isInvokeExternalService(
                         ServiceExtensionTypeEnum.ISSUE_REFRESH_TOKEN)) {
                     // Perform FS customized behaviour with service extension
-                    issueRefreshToken = IdentityCommonUtils.issueRefreshTokenWithServiceExtension(tokReqMsgCtx);
+                    issueRefreshToken = IdentityServiceExtensionUtils
+                            .issueRefreshTokenWithServiceExtension(tokReqMsgCtx);
                 } else if (fsGrantHandler != null) {
                     // Perform FS customized behaviour
                     issueRefreshToken = fsGrantHandler.issueRefreshToken(tokReqMsgCtx);
@@ -77,6 +78,15 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
         return super.issue(tokReqMsgCtx);
     }
 
+    /**
+     * Override the default behaviour to set the consent ID scope to the token context
+     * before issuing the token since in the default implementation the consent ID scope
+     * bound to the token is removed, and it affects the FS custom token flow.
+     *
+     * @param tokReqMsgCtx
+     * @return
+     * @throws IdentityOAuth2Exception
+     */
     @Override
     public boolean validateScope(OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
 
@@ -89,8 +99,7 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
         if (ArrayUtils.isNotEmpty(requestedScopes)) {
             //Adding internal scopes.
             ArrayList<String> requestedScopeList = new ArrayList<>(Arrays.asList(requestedScopes));
-            String consentIdClaim = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
-                    .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
+            String consentIdClaim = IdentityCommonUtils.getConfiguredConsentIdClaimName();
             for (String scope : grantedScopes) {
                 if (scope.startsWith(consentIdClaim)) {
                     if (log.isDebugEnabled()) {

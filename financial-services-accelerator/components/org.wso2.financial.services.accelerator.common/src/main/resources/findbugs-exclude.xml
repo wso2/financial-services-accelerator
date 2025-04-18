@@ -63,10 +63,6 @@
         <Bug pattern="IMPROPER_UNICODE"/>
     </Match>
     <Match>
-        <Class name="org.wso2.financial.services.accelerator.common.extension.model.OperationEnum"/>
-        <Bug pattern="IMPROPER_UNICODE"/>
-    </Match>
-    <Match>
         <Class name="org.wso2.financial.services.accelerator.common.extension.model.StatusEnum"/>
         <Bug pattern="IMPROPER_UNICODE"/>
     </Match>

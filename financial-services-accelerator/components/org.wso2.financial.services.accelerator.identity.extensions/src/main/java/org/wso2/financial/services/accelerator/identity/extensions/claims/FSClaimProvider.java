@@ -31,6 +31,7 @@ import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 /**
  * FS specific claim provider.
+ * Main purpose of extending this class is to append claims to the ID token of the authorize flow or the token flow.
  */
 public class FSClaimProvider implements ClaimProvider {
 
@@ -55,8 +57,7 @@ public class FSClaimProvider implements ClaimProvider {
 
         // Perform FS default behaviour
         try {
-            additionalClaims = new HashMap<>(getDefaultAdditionalIdTokenClaims(
-                    authAuthzReqMessageContext, authorizeRespDTO));
+            additionalClaims = new HashMap<>(getDefaultAdditionalIdTokenClaims(authAuthzReqMessageContext));
         } catch (ConsentManagementException e) {
             log.error("Error while getting consent ID claim.", e);
             throw new IdentityOAuth2Exception("Error while getting consent ID claim.", e);
@@ -80,8 +81,7 @@ public class FSClaimProvider implements ClaimProvider {
             throws IdentityOAuth2Exception {
 
         // Perform FS default behaviour
-        Map<String, Object> additionalClaims = new HashMap<>(getDefaultAdditionalIdTokenClaims(
-                tokenReqMessageContext, tokenRespDTO));
+        Map<String, Object> additionalClaims = new HashMap<>(getDefaultAdditionalIdTokenClaims(tokenReqMessageContext));
 
         if (getClaimProvider() != null) {
             // Perform FS customized behaviour
@@ -89,6 +89,11 @@ public class FSClaimProvider implements ClaimProvider {
                     .getAdditionalClaims(tokenReqMessageContext, tokenRespDTO));
         }
 
+        /*
+        This is the last place among all the extensions that gets engaged in the token flow,
+        therefore removing the consent ID from the token response scope attribute after all the
+        consent ID requirements in the flow are satisfied.
+        */
         tokenRespDTO.setAuthorizedScopes(updateScopeInTokenResponseBody(tokenRespDTO.getAuthorizedScopes()));
         return additionalClaims;
     }
@@ -101,41 +106,42 @@ public class FSClaimProvider implements ClaimProvider {
      */
     private String updateScopeInTokenResponseBody(String scopes) {
 
-        String[] updatedScopesArray = IdentityCommonUtils.removeInternalScopes(scopes.split(" "));
+        String[] updatedScopesArray = IdentityCommonUtils
+                .removeInternalScopes(scopes.split(IdentityCommonConstants.SPACE_SEPARATOR));
 
         StringBuilder scopesString = new StringBuilder();
         for (String scope : updatedScopesArray) {
-            scopesString.append(scope).append(" ");
+            scopesString.append(scope).append(IdentityCommonConstants.SPACE_SEPARATOR);
         }
 
         return scopesString.toString().trim();
     }
 
     private Map<String, Object> getDefaultAdditionalIdTokenClaims(
-            OAuthAuthzReqMessageContext authAuthzReqMessageContext, OAuth2AuthorizeRespDTO authorizeRespDTO)
-            throws ConsentManagementException, JsonProcessingException {
+            OAuthAuthzReqMessageContext authAuthzReqMessageContext) throws ConsentManagementException,
+            JsonProcessingException {
 
         Map<String, Object> additionalClaims = new HashMap<>();
 
         if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
                         .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
-            String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
-            additionalClaims.put(consentIdClaimName, IdentityCommonUtils.getConsentId(authAuthzReqMessageContext));
+            String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
+            additionalClaims.put(consentIdClaimName, IdentityCommonUtils
+                    .getConsentIdFromAuthzRequestContext(authAuthzReqMessageContext));
         }
 
         return additionalClaims;
     }
 
-    private Map<String, Object> getDefaultAdditionalIdTokenClaims(
-            OAuthTokenReqMessageContext tokenReqMessageContext, OAuth2AccessTokenRespDTO tokenRespDTO) {
+    private Map<String, Object> getDefaultAdditionalIdTokenClaims(OAuthTokenReqMessageContext tokenReqMessageContext) {
 
         Map<String, Object> additionalClaims = new HashMap<>();
 
         if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
                         .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
-            String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
+            String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
             additionalClaims.put(consentIdClaimName, IdentityCommonUtils
-                    .getConsentId(tokenReqMessageContext.getScope()));
+                    .getConsentIdFromScopesArray(tokenReqMessageContext.getScope()));
         }
 
         return additionalClaims;
