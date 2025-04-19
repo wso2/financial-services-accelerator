@@ -21,9 +21,12 @@
 <suite name="consent-extensions-test-suite">
     <test name="consent-extensions-test-all">
         <classes>
+            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtilTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.DefaultConsentManageHandlerTest"/>
+            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtilsTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSDefaultAuthServletImplTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.DefaultConsentRetrievalStepTest"/>
+            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ExternalAPIConsentPersistStepTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ExternalAPIConsentRetrievalStepTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.DefaultConsentPersistStepTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.DefaultConsentValidatorTest"/>

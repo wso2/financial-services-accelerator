@@ -56,10 +56,10 @@ import java.util.List;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         boolean isServiceExtensionsEndpointEnabled = configParser.isServiceExtensionsEndpointEnabled();
         List<ServiceExtensionTypeEnum> serviceExtensionTypes = configParser.getServiceExtensionTypes();
         return isServiceExtensionsEndpointEnabled && serviceExtensionTypes.contains(serviceExtensionTypeEnum);
@@ -77,6 +77,7 @@ public class ServiceExtensionUtils {
                                                                     ServiceExtensionTypeEnum serviceType)
             throws FinancialServicesException {
 
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         final int maxRetries = configParser.getServiceExtensionsEndpointRetryCount();
 
         // Read timeout
