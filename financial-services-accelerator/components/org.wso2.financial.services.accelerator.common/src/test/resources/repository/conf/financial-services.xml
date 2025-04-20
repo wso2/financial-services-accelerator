@@ -175,6 +175,7 @@
 
     </Gateway>
     <Consent>
+        <PreInitiatedConsent>true</PreInitiatedConsent>
         <AuthorizeSteps>
             <Retrieve>
                 <Step class="org.wso2.financial.services.accelerator.common.test.CustomStep1" priority="1"/>
@@ -259,4 +260,21 @@
             <RequestGenerator>org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
         </Realtime>
     </EventNotifications>
+    <ExtensionsEndpoint>
+        <Enable>true</Enable>
+        <AllowedExtensions>
+            <AllowedExtension>issue_refresh_token</AllowedExtension>
+            <AllowedExtension>validate_authorization_request</AllowedExtension>
+            <AllowedExtension>map_accelerator_error_response</AllowedExtension>
+        </AllowedExtensions>
+        <BaseURL>https://www.extension.com</BaseURL>
+        <RetryCount>5</RetryCount>
+        <ConnectTimeout>5</ConnectTimeout>
+        <ReadTimeout>5</ReadTimeout>
+        <Security>
+            <Type>Basic-Auth</Type>
+            <Username>is_admin@wso2.com</Username>
+            <Password>abc</Password>
+        </Security>
+    </ExtensionsEndpoint>
 </Server>

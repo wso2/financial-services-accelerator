@@ -46,8 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
@@ -925,64 +923,6 @@ public final class FinancialServicesConfigParser {
 
         Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT);
         return config.map(Boolean::parseBoolean).orElse(true);
-    }
-
-    /**
-     * Method to get auth flow consent id source.
-     *
-     * @return String consent id source
-     */
-    public String getAuthFlowConsentIdSource() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.AUTH_FLOW_CONSENT_ID_SOURCE);
-        return config.map(String::trim).orElse(null);
-    }
-
-    /**
-     * Method to get consent id extraction json path.
-     *
-     * @return String consent id extraction json path
-     */
-    public String getConsentIdExtractionJsonPath() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH);
-        return config.map(String::trim).orElse(null);
-    }
-
-    /**
-     * Method to get consent id extraction key.
-     *
-     * @return String consent id extraction key
-     */
-    public String getConsentIdExtractionKey() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.CONSENT_ID_EXTRACTION_KEY);
-        return config.map(String::trim).orElse(null);
-    }
-
-    /**
-     * Method to get consent id extraction regex pattern.
-     *
-     * @return String consent id extraction regex pattern
-     */
-    public Pattern getConsentIdExtractionRegexPattern() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN);
-
-        return config.map(String::trim)
-                .filter(pattern -> !pattern.isEmpty())
-                .map(pattern -> {
-                    try {
-                        return Pattern.compile(pattern);
-                    } catch (PatternSyntaxException e) {
-                        throw new IllegalArgumentException("Invalid regex pattern configured: " + pattern, e);
-                    }
-                })
-                .orElse(null);
     }
 
     /**
