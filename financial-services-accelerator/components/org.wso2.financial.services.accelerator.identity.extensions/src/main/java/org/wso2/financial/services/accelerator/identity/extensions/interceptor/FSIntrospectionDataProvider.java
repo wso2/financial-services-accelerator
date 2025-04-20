@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
@@ -91,11 +92,13 @@ public class FSIntrospectionDataProvider implements IntrospectionDataProvider {
         }
     }
 
+    @Generated(message = "Ignoring since method contains no logics")
     public static IntrospectionDataProvider getIntrospectionDataProvider() {
 
         return introspectionDataProvider;
     }
 
+    @Generated(message = "Ignoring since method contains no logics")
     public static void setIntrospectionDataProvider(IntrospectionDataProvider introspectionDataProvider) {
 
         FSIntrospectionDataProvider.introspectionDataProvider = introspectionDataProvider;

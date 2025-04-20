@@ -50,6 +50,7 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
      * @throws IdentityOAuth2Exception If an error occurred while issuing the code.
      */
     @Override
+    @Generated(message = "Ignoring since main logics in util methods are tested")
     public OAuth2AuthorizeRespDTO issue(OAuthAuthzReqMessageContext oauthAuthzMsgCtx) throws IdentityOAuth2Exception {
 
         try {

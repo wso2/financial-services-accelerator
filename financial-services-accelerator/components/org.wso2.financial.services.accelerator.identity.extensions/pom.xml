@@ -151,6 +151,7 @@
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*GrantHandler.class</exclude>
                         <exclude>**/*FSRequestObject.class</exclude>
+                        <exclude>**/*ValidationResponse.class</exclude>
                         <exclude>**/*Cache.class</exclude>
                         <exclude>**/*CacheKey.class</exclude>
                     </excludes>
@@ -193,8 +194,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!--ToDo: Improve Coverage-->
-                                            <minimum>0.6</minimum>
+                                            <minimum>0.7</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

@@ -50,7 +50,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
     // Get extension impl
     static FSRequestObjectValidator fsDefaultRequestObjectValidator =
             IdentityExtensionsDataHolder.getInstance().getObRequestObjectValidator();
-    private static final FinancialServicesValidator fsValidator = FinancialServicesValidator.getInstance();
+    static FinancialServicesValidator fsValidator = FinancialServicesValidator.getInstance();
 
     /**
      * Validates the request object and throws an exception if invalid.
@@ -61,6 +61,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
      * @throws RequestObjectException
      */
     @Override
+    @Generated(message = "Ignoring since main logics in util methods are tested")
     public boolean validateRequestObject(RequestObject initialRequestObject, OAuth2Parameters oAuth2Parameters)
             throws RequestObjectException {
 
@@ -113,7 +114,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
     /**
      * Validates the response and throws an exception if invalid.
      */
-    private void validate(ValidationResponse response) throws RequestObjectException {
+    void validate(ValidationResponse response) throws RequestObjectException {
 
         if (!response.isValid()) {
             String sanitizedMessage = response.getViolationMessage().replaceAll("[\r\n]+", " ");
@@ -128,7 +129,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
      * @param fsRequestObject The request object to be validated.
      * @return A ValidationResponse indicating whether the request is valid.
      */
-    private ValidationResponse defaultValidateRequestObject(FSRequestObject fsRequestObject) {
+    ValidationResponse defaultValidateRequestObject(FSRequestObject fsRequestObject) {
 
         String fsRequestObjectViolation = fsValidator.getFirstViolation(fsRequestObject);
 
