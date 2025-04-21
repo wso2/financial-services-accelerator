@@ -230,7 +230,7 @@ public class ServiceExtensionUtils {
                 FinancialServicesConstants.URL_ENCODED_CONTENT_TYPE);
         httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, getBasicAuthHeader(clientId, clientSecret));
 
-        CloseableHttpResponse response = HTTPClientUtils.getHttpClient().execute(httpPost);
+        CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost);
 
         if (response.getStatusLine().getStatusCode() != 200) {
             throw new FinancialServicesException("Error occurred while obtaining the token");

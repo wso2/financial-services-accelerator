@@ -59,8 +59,7 @@ public class HTTPClientUtils {
     public static final String HTTPS_PROTOCOL = "https";
     private static final String[] SUPPORTED_HTTP_PROTOCOLS = {"TLSv1.2"};
     private static final Log log = LogFactory.getLog(DatabaseUtils.class);
-    private static volatile PoolingHttpClientConnectionManager connectionManager;
-    private static volatile CloseableHttpClient httpsClient;
+    private static PoolingHttpClientConnectionManager connectionManager;
 
     private HTTPClientUtils() {
         // Prevent instantiation
@@ -76,50 +75,32 @@ public class HTTPClientUtils {
     private static void initConnectionManagerForHttpsProtocol(int maxTotal, int maxPerRoute)
             throws FinancialServicesException {
 
-        if (connectionManager == null) {
-            synchronized (HTTPClientUtils.class) {
-                if (connectionManager == null) {
-                    SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
 
-                    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
-                            .<ConnectionSocketFactory>create()
-                            .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                            .register(HTTPS_PROTOCOL, sslsf)
-                            .build();
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+                .<ConnectionSocketFactory>create()
+                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                .register(HTTPS_PROTOCOL, sslsf)
+                .build();
 
-                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 
-                    connectionManager.setMaxTotal(maxTotal);
-                    connectionManager.setDefaultMaxPerRoute(maxPerRoute);
-                }
-            }
-        }
+        connectionManager.setMaxTotal(maxTotal);
+        connectionManager.setDefaultMaxPerRoute(maxPerRoute);
     }
 
     /**
-     * Initialize the connection manager for HTTP protocol.
+     * Get closeable https client.
      *
-     * @param maxTotal     Maximum pool connections
-     * @param maxPerRoute Maximum connections per route
+     * @return Closeable https client
      */
-    private static void initConnectionManagerForHttpProtocol(int maxTotal, int maxPerRoute) {
+    @Generated(message = "Ignoring since method contains no logics")
+    public static CloseableHttpClient getHttpsClient() {
 
-        if (connectionManager == null) {
-            synchronized (HTTPClientUtils.class) {
-                if (connectionManager == null) {
-
-                    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
-                            .<ConnectionSocketFactory>create()
-                            .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                            .build();
-
-                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-
-                    connectionManager.setMaxTotal(maxTotal);
-                    connectionManager.setDefaultMaxPerRoute(maxPerRoute);
-                }
-            }
-        }
+        int maxTotal = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections();
+        int maxPerRoute = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
+        updateConnectionPoolSettings(maxTotal, maxPerRoute);
+        return HttpsClientHolder.INSTANCE;
     }
 
     /**
@@ -129,69 +110,59 @@ public class HTTPClientUtils {
      * @throws FinancialServicesException FinancialServicesException exception
      */
     @Generated(message = "Ignoring since method contains no logics")
-    public static CloseableHttpClient getHttpsClient() throws FinancialServicesException {
-
-        if (httpsClient == null) {
-            synchronized (HTTPClientUtils.class) {
-                if (httpsClient == null) {
-                    int maxTotal = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections();
-                    int maxPerRoute = FinancialServicesConfigParser.getInstance()
-                            .getConnectionPoolMaxConnectionsPerRoute();
-                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
-                    httpsClient = HttpClients.custom()
-                            .setConnectionManager(connectionManager)
-                            .build();
-                }
-            }
-        }
-        return httpsClient;
-    }
-
-    /**
-     * Get closeable https client with given max Total and max per route values.
-     *
-     * @return Closeable https client
-     * @throws FinancialServicesException FinancialServicesException exception
-     */
-    @Generated(message = "Ignoring since method contains no logics")
     public static CloseableHttpClient getHttpsClient(int maxTotal, int maxPerRoute) throws FinancialServicesException {
 
-        if (httpsClient == null) {
-            synchronized (HTTPClientUtils.class) {
-                if (httpsClient == null) {
-                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
-                    httpsClient = HttpClients.custom()
-                            .setConnectionManager(connectionManager)
-                            .build();
-                }
+        updateConnectionPoolSettings(maxTotal, maxPerRoute);
+        return HttpsClientHolder.INSTANCE;
+    }
+
+    private static class HttpsClientHolder {
+        private static final CloseableHttpClient INSTANCE;
+
+        static {
+            try {
+                int maxTotal = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections();
+                int maxPerRoute = FinancialServicesConfigParser.getInstance()
+                        .getConnectionPoolMaxConnectionsPerRoute();
+                initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute);
+
+                INSTANCE = HttpClients.custom()
+                        .setConnectionManager(connectionManager)
+                        .build();
+
+                // Optional: Add shutdown hook to clean up properly
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    try {
+                        INSTANCE.close();
+                        if (connectionManager != null) {
+                            connectionManager.shutdown();
+                        }
+                    } catch (IOException e) {
+                        log.error("Error shutting down HttpClient", e);
+                    }
+                }));
+
+                log.info("HTTPS Client initialized with singleton pattern.");
+            } catch (FinancialServicesException e) {
+                log.error("Failed to initialize HTTPS client", e);
+                throw new RuntimeException("Failed to initialize HTTPS client", e);
             }
         }
-        return httpsClient;
     }
 
     /**
-     * Get closeable http client.
-     *
-     * @return Closeable http client
-     * @throws FinancialServicesException FinancialServicesException exception
+     * Update the connection pool settings.
      */
-    @Generated(message = "Ignoring since method contains no logics")
-    public static CloseableHttpClient getHttpClient() throws FinancialServicesException {
+    private static void updateConnectionPoolSettings(int maxTotal, int maxPerRoute) {
 
-        if (httpsClient == null) {
-            synchronized (HTTPClientUtils.class) {
-                if (httpsClient == null) {
-                    int maxTotal = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections();
-                    int maxPerRoute = FinancialServicesConfigParser.getInstance()
-                            .getConnectionPoolMaxConnectionsPerRoute();
-                    initConnectionManagerForHttpProtocol(maxTotal, maxPerRoute); // init manager before using
-                    httpsClient = HttpClients.custom()
-                            .setConnectionManager(connectionManager)
-                            .build();
-                }
+        if (connectionManager != null) {
+            connectionManager.setMaxTotal(maxTotal);
+            connectionManager.setDefaultMaxPerRoute(maxPerRoute);
+            if (log.isDebugEnabled()) {
+                log.debug("Updated HTTPS client pool settings: maxTotal=" + maxTotal +
+                        ", maxPerRoute=" + maxPerRoute);
             }
         }
-        return httpsClient;
     }
 
     /**
