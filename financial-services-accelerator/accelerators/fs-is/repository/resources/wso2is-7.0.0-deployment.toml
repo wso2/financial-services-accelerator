@@ -500,7 +500,7 @@ handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.i
 validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator"
 
 [financial_services.consent.manage_extension]
-allowed_headers = [""]
+allowed_headers = ["x-wso2-client-id"]
 
 [[financial_services.consent.authorize_steps.retrieve]]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"
