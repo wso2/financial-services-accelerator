@@ -20,6 +20,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
+import java.util.Map;
+
 /**
  * Wrapper for pre consent authorize flow external request data.
  */
@@ -27,17 +29,17 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
 
     private String consentId;
     private String userId;
-    private String scope;
+    private Map<String, Object> requestParameters;
     private ExternalAPIConsentResourceRequestDTO consentResource;
 
     public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData,
                                                     ExternalAPIConsentResourceRequestDTO consentResource,
-                                                    String scope) {
+                                                    Map<String, Object> requestParameters) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
         this.consentResource = consentResource;
-        this.scope = scope;
+        this.requestParameters = requestParameters;
     }
 
     public String getConsentId() {
@@ -56,12 +58,12 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.userId = userId;
     }
 
-    public String getScope() {
-        return scope;
+    public Map<String, Object> getRequestParameters() {
+        return requestParameters;
     }
 
-    public void setScope(String scope) {
-        this.scope = scope;
+    public void setRequestParameters(Map<String, Object> scope) {
+        this.requestParameters = scope;
     }
 
     public ExternalAPIConsentResourceRequestDTO getConsentResource() {

@@ -37,7 +37,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Util class for consent authorize operations.
@@ -49,7 +52,7 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to extract request object from query params.
      *
-     * @param spQueryParams  Query params
+     * @param spQueryParams Query params
      * @return requestObject
      * @throws ConsentException Consent Exception
      */
@@ -75,7 +78,7 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to validate the request object and extract consent ID.
      *
-     * @param requestObject  Request object
+     * @param requestObject Request object
      * @return consentId
      */
     public static String extractConsentId(String requestObject) throws ConsentException {
@@ -131,7 +134,39 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
+     * Extracts multiple top-level fields from the request object payload.
+     * Supports all JSON types (primitives, JSONObject, JSONArray).
+     * Returns a map of field names to their corresponding values. Missing fields are not included.
+     *
+     * @param requestObject The signed JWT request object (in format header.payload.signature)
+     * @param fieldNames    The list of top-level field names to extract
+     * @return A map of field names to their extracted values, or an empty map on failure
+     */
+    public static Map<String, Object> extractFields(String requestObject, List<String> fieldNames) {
+
+        Map<String, Object> extractedFields = new HashMap<>();
+
+        try {
+            String payloadJson = decodeRequestObjectPayload(requestObject);
+            JSONObject payload = new JSONObject(payloadJson);
+
+            for (String fieldName : fieldNames) {
+                if (payload.has(fieldName)) {
+                    extractedFields.put(fieldName, payload.get(fieldName));
+                }
+            }
+
+        } catch (JSONException e) {
+            String sanitizedMessage = e.getMessage() != null ? e.getMessage().replaceAll("[\r\n]", "") : "null";
+            log.warn("Failed to parse JWT payload or extract fields: " + sanitizedMessage, e);
+        }
+
+        return extractedFields;
+    }
+
+    /**
      * Method to decode the request object payload.
+     *
      * @param requestObject
      * @return
      */
@@ -210,7 +245,7 @@ public class ConsentAuthorizeUtil {
             for (String item : scopeItems) {
                 // Skip openid scope since it is not relevant to the consent.
                 if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
-                   continue;
+                    continue;
                 }
                 permissions.put(item);
             }
@@ -457,8 +492,8 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to add debtor account details to consent data to send it to the consent page.
      *
-     * @param initiation     Initiation object from the request
-     * @param consentDataJSON  Consent information object
+     * @param initiation      Initiation object from the request
+     * @param consentDataJSON Consent information object
      */
     public static void populateCreditorAccount(JSONObject initiation, JSONArray consentDataJSON) {
         if (initiation.get(ConsentExtensionConstants.CREDITOR_ACC) != null) {

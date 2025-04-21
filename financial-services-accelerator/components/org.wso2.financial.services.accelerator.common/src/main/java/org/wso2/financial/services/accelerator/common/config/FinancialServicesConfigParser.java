@@ -815,25 +815,6 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Returns the list of allowed headers in service extension requests.
-     *
-     * @return List of allowed headers.
-     */
-    public List<String> getServiceExtensionAllowedHeaders() {
-
-        Object allowedHeadersObj = configuration.get(FinancialServicesConstants.
-                SERVICE_EXTENSIONS_ENDPOINT_ALLOWED_HEADERS);
-        List<String> allowedHeaders = new ArrayList<>();
-        if (allowedHeadersObj instanceof List) {
-            allowedHeaders.addAll((List) allowedHeadersObj);
-        } else if (allowedHeadersObj instanceof String) {
-            allowedHeaders.add((String) allowedHeadersObj);
-        }
-
-        return allowedHeaders;
-    }
-
-    /**
      * Method to get service extensions endpoint retry count.
      *
      * @return String service extensions endpoint retry count
@@ -1025,5 +1006,43 @@ public final class FinancialServicesConfigParser {
         Optional<String> config = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.PSU_FEDERATED_IDP_NAME);
         return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Returns the list of allowed headers to pass in consent manage service extension requests.
+     *
+     * @return List of allowed headers.
+     */
+    public List<String> getConsentManageExtensionAllowedHeaders() {
+
+        Object allowedHeadersObj = configuration.get(FinancialServicesConstants.
+                CONSENT_MANAGE_EXTENSION_ALLOWED_HEADERS);
+        List<String> allowedHeaders = new ArrayList<>();
+        if (allowedHeadersObj instanceof List) {
+            allowedHeaders.addAll((List) allowedHeadersObj);
+        } else if (allowedHeadersObj instanceof String) {
+            allowedHeaders.add((String) allowedHeadersObj);
+        }
+
+        return allowedHeaders;
+    }
+
+    /**
+     * Returns the list of allowed request parameters to pass in consent authorize service extension requests.
+     *
+     * @return List of allowed request parameters.
+     */
+    public List<String> getConsentAuthorizeExtensionAllowedRequestParameters() {
+
+        Object allowedParametersObj = configuration.get(FinancialServicesConstants.
+                CONSENT_AUTHORIZE_EXTENSION_ALLOWED_PARAMETERS);
+        List<String> allowedParameters = new ArrayList<>();
+        if (allowedParametersObj instanceof List) {
+            allowedParameters.addAll((List) allowedParametersObj);
+        } else if (allowedParametersObj instanceof String) {
+            allowedParameters.add((String) allowedParametersObj);
+        }
+
+        return allowedParameters;
     }
 }

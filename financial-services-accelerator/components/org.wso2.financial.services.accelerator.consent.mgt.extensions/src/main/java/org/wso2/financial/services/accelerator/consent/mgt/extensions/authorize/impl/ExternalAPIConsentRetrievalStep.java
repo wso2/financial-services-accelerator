@@ -45,6 +45,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -54,6 +56,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
     private final boolean isPreInitiatedConsent;
+    private final List<String> allowedRequestParameters;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
 
     public ExternalAPIConsentRetrievalStep() {
@@ -61,6 +64,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+        allowedRequestParameters = configParser.getConsentAuthorizeExtensionAllowedRequestParameters();
     }
 
     @Override
@@ -70,7 +74,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-        String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
+        Map<String, Object> requestParameters = ConsentAuthorizeUtil.extractFields(requestObject,
+                allowedRequestParameters);
         String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
 
         try {
@@ -86,7 +91,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                 }
             }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
-                    consentData, externalAPIConsentResource, scope);
+                    consentData, externalAPIConsentResource, requestParameters);
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
