@@ -18,20 +18,17 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator;
 
+import org.mockito.Mockito;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
-import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
-import org.wso2.carbon.identity.openidconnect.model.RequestObject;
+import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 /**
@@ -39,101 +36,76 @@ import static org.testng.AssertJUnit.assertTrue;
  */
 public class FSRequestObjectValidationExtensionTest {
 
-    @Test(dataProvider = "dp-checkValidRequestObject", dataProviderClass = ReqObjectTestDataProvider.class)
-    public void checkValidRequestObject(RequestObject requestObject,
-                                        OAuth2Parameters oAuth2Parameters) throws Exception {
+    @Test
+    public void testValidate_ValidResponse() throws RequestObjectException {
+        // Arrange
+        ValidationResponse mockResponse = mock(ValidationResponse.class);
+        when(mockResponse.isValid()).thenReturn(true);
 
-        // Mock
-        FSRequestObjectValidator fsDefaultRequestObjectValidator = mock(FSRequestObjectValidator.class);
-        when(fsDefaultRequestObjectValidator.validateRequestObject(any(), anyMap()))
-                .thenReturn(new ValidationResponse(true));
+        FSRequestObjectValidationExtension extension = new FSRequestObjectValidationExtension();
 
-        FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
-        doReturn(true).when(uut).isRegulatory(any());
-        doReturn(true).when(uut).validateIAMConstraints(any(), any());
-        doReturn("accounts payments").when(uut).getAllowedScopes(any());
-
-        // Assign
-        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = fsDefaultRequestObjectValidator;
-
-        // Act
-        boolean result = uut.validateRequestObject(requestObject, oAuth2Parameters);
-
-        // Assert
-        assertTrue("Valid request object should pass", result);
+        // Act & Assert
+        extension.validate(mockResponse); // Should not throw an exception
     }
 
+    @Test(expectedExceptions = RequestObjectException.class)
+    public void testValidate_InvalidResponse() throws RequestObjectException {
+        // Arrange
+        ValidationResponse mockResponse = mock(ValidationResponse.class);
+        when(mockResponse.isValid()).thenReturn(false);
+        when(mockResponse.getViolationMessage()).thenReturn("Invalid request object");
 
-    @Test(dataProvider = "dp-checkIncorrectRequestObject", dataProviderClass = ReqObjectTestDataProvider.class,
-            expectedExceptions = RequestObjectException.class)
-    public void checkIncorrectRequestObject(RequestObject requestObject,
-                                          OAuth2Parameters oAuth2Parameters) throws Exception {
-
-        // Mock
-        FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
-        doReturn(true).when(uut).validateIAMConstraints(any(), any());
-        doReturn(true).when(uut).isRegulatory(any());
-
-        // Assign
-        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = new DefaultFSRequestObjectValidator();
+        FSRequestObjectValidationExtension extension = new FSRequestObjectValidationExtension();
 
         // Act
-        boolean result = uut.validateRequestObject(requestObject, oAuth2Parameters);
+        extension.validate(mockResponse);
 
         // Assert
-        assertTrue("InValid request object should throw exception", result);
+        // Exception is expected, so no further assertions are needed
     }
 
+    @Test
+    public void testDefaultValidateRequestObject_ValidRequest() {
+        // Arrange
+        FSRequestObject mockRequestObject = mock(FSRequestObject.class);
+        FSRequestObjectValidationExtension extension = new FSRequestObjectValidationExtension();
 
-    @Test(dataProvider = "dp-checkInValidRequestObject", dataProviderClass = ReqObjectTestDataProvider.class,
-            expectedExceptions = RequestObjectException.class)
-    public void checkInValidRequestObject(RequestObject requestObject,
-                                          OAuth2Parameters oAuth2Parameters) throws Exception {
+        // Inject the mock FS request object validator
+        FSRequestObjectValidator mockFsRequestObjectValidator = mock(FSRequestObjectValidator.class);
+        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = mockFsRequestObjectValidator;
 
-        // Mock
-        FSRequestObjectValidator fsRequestObjectValidator = mock(FSRequestObjectValidator.class);
-        when(fsRequestObjectValidator.validateRequestObject(any(), anyMap()))
-                .thenReturn(new ValidationResponse(true));
-
-        FSRequestObjectValidationExtension uut = spy(new FSRequestObjectValidationExtension());
-        doReturn(true).when(uut).isRegulatory(any());
-        doReturn(true).when(uut).validateIAMConstraints(any(), any());
-        doReturn("accounts payments").when(uut).getAllowedScopes(any());
-
-        // Assign
-        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = fsRequestObjectValidator;
+        // Inject the mock FS validator
+        FinancialServicesValidator mockFsValidator = mock(FinancialServicesValidator.class);
+        when(mockFsValidator.getFirstViolation(Mockito.any())).thenReturn(null);
+        FSRequestObjectValidationExtension.fsValidator = mockFsValidator;
 
         // Act
-        boolean result = uut.validateRequestObject(requestObject, oAuth2Parameters);
+        ValidationResponse response = extension.defaultValidateRequestObject(mockRequestObject);
 
         // Assert
-        assertTrue("InValid request object should throw exception", result);
+        assertTrue(response.isValid());
     }
 
-    @Test(dataProvider = "dp-checkValidRequestObject", dataProviderClass = ReqObjectTestDataProvider.class)
-    public void checkChildClassCreation(RequestObject requestObject,
-                                        OAuth2Parameters oAuth2Parameters) throws RequestObjectException {
+    @Test
+    public void testDefaultValidateRequestObject_InvalidRequest() {
+        // Arrange
+        FSRequestObject mockRequestObject = mock(FSRequestObject.class);
+        FSRequestObjectValidationExtension extension = new FSRequestObjectValidationExtension();
 
-        class UKRequestObject extends FSRequestObject {
-            public UKRequestObject(FSRequestObject childObject) {
-                super(childObject);
-            }
-        }
+        // Inject the mock FS request object validator
+        FSRequestObjectValidator mockFsRequestObjectValidator = mock(FSRequestObjectValidator.class);
+        FSRequestObjectValidationExtension.fsDefaultRequestObjectValidator = mockFsRequestObjectValidator;
 
-        FSRequestObject fsRequestObject = new FSRequestObject(requestObject);
-        UKRequestObject ukRequestObject = new UKRequestObject(fsRequestObject);
+        // Inject the mock FS validator
+        FinancialServicesValidator mockFsValidator = mock(FinancialServicesValidator.class);
+        when(mockFsValidator.getFirstViolation(Mockito.any())).thenReturn("Invalid");
+        FSRequestObjectValidationExtension.fsValidator = mockFsValidator;
 
-        // Assert
-        assertEquals("Inheritance should be preserved in toolkit child classes",
-                8, ukRequestObject.getClaimsSet().getClaims().size());
-
-        // Assert
-        assertEquals(3, ukRequestObject.getRequestedClaims().size());
+        // Act
+        ValidationResponse response = extension.defaultValidateRequestObject(mockRequestObject);
 
         // Assert
-        assertEquals("code id_token", ukRequestObject.getClaim("response_type"));
-
-        // Assert
-        assertEquals("code id_token", ukRequestObject.getClaimValue("response_type"));
+        assertFalse(response.isValid());
+        assertNotNull(response.getViolationMessage());
     }
 }

@@ -269,11 +269,11 @@ grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.gra
 
 [oauth.grant_type.password]
 enable = true
-grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSPasswordGrantHandler"
+grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.PasswordGrantHandler"
 
 [oauth.grant_type.client_credentials]
 enable = true
-grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSClientCredentialsGrantHandler"
+grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.ClientCredentialsGrantHandler"
 
 [oauth.dcr]
 enable_fapi_enforcement=true
@@ -321,6 +321,7 @@ allowed_extensions = ["pre_process_client_creation", "pre_process_client_update"
     "pre_process_consent_revoke", "populate_consent_authorize_screen", "persist_authorized_consent", "validate_consent_access",
     "validate_refresh_token_issuance", "validate_authorization_request", "enrich_event_subscription_response",
     "validate_event_creation", "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
+allowed_headers = [""]
 base_url = ""
 retry_count = 5
 connect_timeout = 5

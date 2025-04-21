@@ -34,9 +34,11 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityServiceExtensionUtils;
 
 /**
  * FS specific authorization code grant handler.
+ * main usage of extending is to handle the refresh token issuance and setting the refresh token validity period.
  */
 public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandler {
 
@@ -52,7 +54,8 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
                 if (ServiceExtensionUtils.isInvokeExternalService(
                         ServiceExtensionTypeEnum.ISSUE_REFRESH_TOKEN)) {
                     // Perform FS customized behaviour with service extension
-                    issueRefreshToken = IdentityCommonUtils.issueRefreshTokenWithServiceExtension(tokReqMsgCtx);
+                    issueRefreshToken = IdentityServiceExtensionUtils
+                            .issueRefreshTokenWithServiceExtension(tokReqMsgCtx);
                 } else if (fsGrantHandler != null) {
                     // Perform FS customized behaviour
                     issueRefreshToken = fsGrantHandler.issueRefreshToken(tokReqMsgCtx);
@@ -73,40 +76,30 @@ public class FSAuthorizationCodeGrantHandler extends AuthorizationCodeGrantHandl
     }
 
     /**
-     * Extend this method to perform any actions related when issuing refresh token.
+     * Override the issueRefreshToken method to handle the refresh token issuance.
      *
-     * @return
+     * @return true if refresh token is issued, false otherwise.
      */
     @Override
     public boolean issueRefreshToken() throws IdentityOAuth2Exception {
 
-        OAuthTokenReqMessageContext tokenReqMessageContext = getTokenMessageContext();
-
-        if (isRegulatory(tokenReqMessageContext)) {
-            if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                    .ISSUE_REFRESH_TOKEN) || fsGrantHandler != null) {
-                // Perform FS customized behaviour
-                return (Boolean) tokenReqMessageContext.getProperty(IdentityCommonConstants.ISSUE_REFRESH_TOKEN);
-            } else {
-                // Perform FS default behaviour
-                return super.issueRefreshToken();
-            }
-        }
-        return super.issueRefreshToken();
-    }
-
-    protected OAuthTokenReqMessageContext getTokenMessageContext() {
-
-        return OAuth2Util.getTokenRequestContext();
-    }
-
-    protected boolean isRegulatory(OAuthTokenReqMessageContext tokenReqMessageContext) throws IdentityOAuth2Exception {
+        OAuthTokenReqMessageContext tokenReqMessageContext = OAuth2Util.getTokenRequestContext();
 
         try {
-            return FinancialServicesUtils.isRegulatoryApp(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
-                    .getClientId());
+            if (FinancialServicesUtils.isRegulatoryApp(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
+                    .getClientId())) {
+                if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
+                        .ISSUE_REFRESH_TOKEN) || fsGrantHandler != null) {
+                    // Perform FS customized behaviour
+                    return (Boolean) tokenReqMessageContext.getProperty(IdentityCommonConstants.ISSUE_REFRESH_TOKEN);
+                } else {
+                    // Perform FS default behaviour
+                    return super.issueRefreshToken();
+                }
+            }
         } catch (RequestObjectException e) {
             throw new IdentityOAuth2Exception("Error occurred while getting sp property from sp meta data");
         }
+        return super.issueRefreshToken();
     }
 }

@@ -21,12 +21,12 @@ package org.wso2.financial.services.accelerator.identity.extensions.interceptor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.core.handler.AbstractIdentityHandler;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
@@ -35,9 +35,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * FS specific introspection data provider
+ * FS specific introspection data provider.
+ * Main purpose of extending this class is to modify the token introspection response.
  */
-public class FSIntrospectionDataProvider extends AbstractIdentityHandler implements IntrospectionDataProvider {
+public class FSIntrospectionDataProvider implements IntrospectionDataProvider {
 
     private static final Log log = LogFactory.getLog(FSIntrospectionDataProvider.class);
     private static IntrospectionDataProvider introspectionDataProvider;
@@ -51,7 +52,7 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
 
         // Perform FS default behaviour
         Map<String, Object> additionalDataMap = new HashMap<>(getDefaultIntrospectionData(
-                oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO));
+                oAuth2IntrospectionResponseDTO));
 
         if (getIntrospectionDataProvider() != null) {
             // Perform FS customized behaviour
@@ -70,7 +71,6 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
     }
 
     private Map<String, Object> getDefaultIntrospectionData(
-            OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
             OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO) {
 
         if (oAuth2IntrospectionResponseDTO.isActive()) {
@@ -79,9 +79,9 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
                     .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_TOKEN_INTROSPECT_RESPONSE))) {
                 Map<String, Object> additionalClaims = new HashMap<>();
 
-                String consentIdClaimName = IdentityCommonUtils.getConsentIdClaimName();
+                String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
                 additionalClaims.put(consentIdClaimName, IdentityCommonUtils
-                        .getConsentId(oAuth2IntrospectionResponseDTO.getScope()
+                        .getConsentIdFromScopesArray(oAuth2IntrospectionResponseDTO.getScope()
                                 .split(IdentityCommonConstants.SPACE_SEPARATOR)));
                 return additionalClaims;
             } else {
@@ -92,11 +92,13 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
         }
     }
 
+    @Generated(message = "Ignoring since method contains no logics")
     public static IntrospectionDataProvider getIntrospectionDataProvider() {
 
         return introspectionDataProvider;
     }
 
+    @Generated(message = "Ignoring since method contains no logics")
     public static void setIntrospectionDataProvider(IntrospectionDataProvider introspectionDataProvider) {
 
         FSIntrospectionDataProvider.introspectionDataProvider = introspectionDataProvider;

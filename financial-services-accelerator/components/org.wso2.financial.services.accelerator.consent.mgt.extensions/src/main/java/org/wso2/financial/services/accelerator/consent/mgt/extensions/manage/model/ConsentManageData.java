@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ConsentManageData {
 
     private Map<String, String> headers;
+    private Map<String, String> allowedExtensionHeaders;
     //Payload can either be a JSONObject or a JSONArray
     private Object payload;
     private Map queryParams;
@@ -79,6 +80,14 @@ public class ConsentManageData {
 
     public Map<String, String> getHeaders() {
         return headers;
+    }
+
+    public Map<String, String> getAllowedExtensionHeaders() {
+        return allowedExtensionHeaders;
+    }
+
+    public void setAllowedExtensionHeaders(Map<String, String> allowedExtensionHeaders) {
+        this.allowedExtensionHeaders = allowedExtensionHeaders;
     }
 
     public void setResponseStatus(ResponseStatus responseStatus) {

@@ -307,4 +307,74 @@ public class FSConfigParserTests {
                 .getDCRResponseParameters());
     }
 
+    @Test(priority = 41)
+    public void testIsServiceExtensionsEndpointEnabled() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isServiceExtensionsEndpointEnabled());
+    }
+
+    @Test(priority = 42)
+    public void testGetServiceExtensionsEndpointBaseUrl() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointBaseUrl());
+    }
+
+    @Test(priority = 43)
+    public void testGetServiceExtensionsEndpointRetryCount() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointRetryCount(), 5);
+    }
+
+    @Test(priority = 44)
+    public void testGetServiceExtensionsEndpointConnectTimeoutInSeconds() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointConnectTimeoutInSeconds(), 5);
+    }
+
+    @Test(priority = 45)
+    public void testGetServiceExtensionsEndpointReadTimeoutInSeconds() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointReadTimeoutInSeconds(), 5);
+    }
+
+    @Test(priority = 46)
+    public void testGetServiceExtensionTypes() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionTypes().size(), 3);
+    }
+
+    @Test(priority = 47)
+    public void testGetServiceExtensionsEndpointSecurityType() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointSecurityType());
+    }
+
+    @Test(priority = 48)
+    public void testGetServiceExtensionsEndpointSecurityBasicAuthUsername() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointSecurityBasicAuthUsername());
+    }
+
+    @Test(priority = 49)
+    public void testGetServiceExtensionsEndpointSecurityBasicAuthPassword() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointSecurityBasicAuthPassword());
+    }
+
+    @Test(priority = 50)
+    public void testIsPreInitiatedConsent() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isPreInitiatedConsent());
+    }
+
 }

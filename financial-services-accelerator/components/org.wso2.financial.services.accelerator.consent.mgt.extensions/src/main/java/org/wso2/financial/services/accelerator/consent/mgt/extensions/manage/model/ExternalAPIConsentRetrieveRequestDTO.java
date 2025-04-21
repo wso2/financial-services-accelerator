@@ -20,6 +20,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
+import java.util.Map;
+
 /**
  * ExternalAPIConsentRetrieveRequestDTO
  */
@@ -28,12 +30,14 @@ public class ExternalAPIConsentRetrieveRequestDTO {
     private String consentId;
     private ExternalAPIConsentResourceRequestDTO consentResource;
     private String consentResourcePath;
+    private Map<String, String> requestHeaders;
 
     public ExternalAPIConsentRetrieveRequestDTO(String consentId, ExternalAPIConsentResourceRequestDTO consentResource,
-                                                String resourcePath) {
+                                                String resourcePath, Map<String, String> requestHeaders) {
         this.consentId = consentId;
         this.consentResourcePath = resourcePath;
         this.consentResource = consentResource;
+        this.requestHeaders = requestHeaders;
     }
 
     public String getConsentId() {
@@ -59,6 +63,14 @@ public class ExternalAPIConsentRetrieveRequestDTO {
 
     public void setConsentResourcePath(String consentResourcePath) {
         this.consentResourcePath = consentResourcePath;
+    }
+
+    public Map<String, String> getRequestHeaders() {
+        return requestHeaders;
+    }
+
+    public void setRequestHeaders(Map<String, String> requestHeaders) {
+        this.requestHeaders = requestHeaders;
     }
 
     /**

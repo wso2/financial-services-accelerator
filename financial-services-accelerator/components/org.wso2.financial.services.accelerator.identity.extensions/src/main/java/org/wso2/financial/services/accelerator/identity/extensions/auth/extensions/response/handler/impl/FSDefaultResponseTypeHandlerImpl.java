@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl;
 
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.FSResponseTypeHandler;
 
 /**
@@ -32,6 +33,7 @@ public class FSDefaultResponseTypeHandlerImpl implements FSResponseTypeHandler {
      * @param oAuthAuthzReqMessageContext
      * @return
      */
+    @Generated(message = "Ignoring since method contains no logics")
     public long getRefreshTokenValidityPeriod(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
         return oAuthAuthzReqMessageContext.getRefreshTokenvalidityPeriod();
@@ -43,6 +45,7 @@ public class FSDefaultResponseTypeHandlerImpl implements FSResponseTypeHandler {
      * @param oAuthAuthzReqMessageContext
      * @return
      */
+    @Generated(message = "Ignoring since method contains no logics")
     public String[] getApprovedScopes(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
         return oAuthAuthzReqMessageContext.getApprovedScope();
