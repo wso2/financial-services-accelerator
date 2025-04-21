@@ -63,7 +63,7 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     }
 
     public void setRequestParameters(Map<String, Object> requestParameters) {
-        this.requestParameters = scope;
+        this.requestParameters = requestParameters;
     }
 
     public ExternalAPIConsentResourceRequestDTO getConsentResource() {
