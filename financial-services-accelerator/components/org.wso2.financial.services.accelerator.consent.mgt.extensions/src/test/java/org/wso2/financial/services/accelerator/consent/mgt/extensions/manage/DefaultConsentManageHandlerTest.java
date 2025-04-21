@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -38,11 +38,21 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.imp
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.DataProviders;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +62,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * Default consent manage handler test.
@@ -59,6 +70,7 @@ import static org.mockito.Mockito.mockStatic;
 public class DefaultConsentManageHandlerTest {
 
     DefaultConsentManageHandler defaultConsentManageHandler;
+    DefaultConsentManageHandler externalServiceConsentManageHandler;
     @Mock
     ConsentManageData consentManageDataMock;
     @Mock
@@ -83,9 +95,13 @@ public class DefaultConsentManageHandlerTest {
         doReturn(TestUtil.getSampleDetailedConsentResource()).when(consentCoreServiceMock)
                 .createAuthorizableConsent(any(), any(), anyString(), anyString(),
                         anyBoolean());
+        doReturn(TestUtil.getSampleDetailedConsentResource()).when(consentCoreServiceMock)
+                .getDetailedConsent(anyString());
         doReturn(TestUtil.getSampleConsentResource(TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock)
                 .getConsent(anyString(), anyBoolean());
-        doReturn(true).when(consentCoreServiceMock).revokeConsent(anyString(), anyString(), any(),
+        doReturn(TestUtil.getSampleConsentAttributeObject()).when(consentCoreServiceMock)
+                .getConsentAttributes(anyString());
+        doReturn(true).when(consentCoreServiceMock).revokeConsent(anyString(), any(), any(),
                 anyBoolean());
 
         configs = new HashMap<String, Object>();
@@ -102,6 +118,13 @@ public class DefaultConsentManageHandlerTest {
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
 
         defaultConsentManageHandler = new DefaultConsentManageHandler();
+
+        externalServiceConsentManageHandler = new DefaultConsentManageHandler();
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExtensionsEnabled", true);
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreConsentRetrievalEnabled", true);
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreConsentGenerationEnabled", true);
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPostConsentGenerationEnabled", true);
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreConsentRevocationEnabled", true);
 
     }
 
@@ -193,6 +216,34 @@ public class DefaultConsentManageHandlerTest {
         doReturn(payload).when(consentManageDataMock).getPayload();
 
         defaultConsentManageHandler.handlePost(consentManageDataMock);
+    }
+
+    @Test
+    public void testHandlePostForAccountsWithExtensionEnabled() {
+
+        setConsentManageBuilder();
+        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+        try (MockedStatic<ExternalAPIConsentManageUtils> mockedStatic = mockStatic(
+                ExternalAPIConsentManageUtils.class)) {
+            ExternalAPIPreConsentGenerateResponseDTO preConsentGenerateResponseDTO =
+                    TestUtil.getSampleExternalAPIPreConsentGenerateResponseDTO();
+            ExternalAPIPostConsentGenerateResponseDTO postConsentGenerateResponseDTO =
+                    new ExternalAPIPostConsentGenerateResponseDTO();
+
+            mockedStatic.when(() -> ExternalAPIConsentManageUtils.callExternalService(any(
+                    ExternalAPIPreConsentGenerateRequestDTO.class))).thenReturn(preConsentGenerateResponseDTO);
+
+            mockedStatic.when(() ->
+                            ExternalAPIConsentManageUtils.callExternalService(
+                                    any(ExternalAPIPostConsentGenerateRequestDTO.class)))
+                    .thenReturn(postConsentGenerateResponseDTO);
+
+            externalServiceConsentManageHandler.handlePost(consentManageDataMock);
+        }
     }
 
     @Test
@@ -291,6 +342,26 @@ public class DefaultConsentManageHandlerTest {
         defaultConsentManageHandler.handleGet(consentManageDataMock);
     }
 
+    @Test
+    public void testHandleGetWithExtensionEnabled() {
+
+        setConsentManageBuilder();
+        JSONObject payload = new JSONObject();
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+        try (MockedStatic<ExternalAPIConsentManageUtils> mockedStatic =
+                     mockStatic(ExternalAPIConsentManageUtils.class)) {
+            ExternalAPIConsentRetrieveResponseDTO mockResponse = new ExternalAPIConsentRetrieveResponseDTO();
+            mockedStatic.when(() ->
+                    ExternalAPIConsentManageUtils.callExternalService(any(ExternalAPIConsentRetrieveRequestDTO.class))
+            ).thenReturn(mockResponse);
+
+            externalServiceConsentManageHandler.handleGet(consentManageDataMock);
+        }
+    }
+
     @Test(expectedExceptions = ConsentException.class)
     public void testHandleDeleteWithoutClientId() {
 
@@ -357,6 +428,27 @@ public class DefaultConsentManageHandlerTest {
         defaultConsentManageHandler.handleDelete(consentManageDataMock);
     }
 
+    @Test
+    public void testHandleDeleteWithExtensionEnabled() {
+
+        setConsentManageBuilder();
+        JSONObject payload = new JSONObject();
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+        try (MockedStatic<ExternalAPIConsentManageUtils> mockedStatic =
+                     mockStatic(ExternalAPIConsentManageUtils.class)) {
+            ExternalAPIConsentRevokeResponseDTO mockResponse = new ExternalAPIConsentRevokeResponseDTO();
+
+            mockedStatic.when(() ->
+                    ExternalAPIConsentManageUtils.callExternalService(any(ExternalAPIConsentRevokeRequestDTO.class))
+            ).thenReturn(mockResponse);
+
+            externalServiceConsentManageHandler.handleDelete(consentManageDataMock);
+        }
+    }
+
     @Test(expectedExceptions = ConsentException.class)
     public void testHandlePut() {
 
@@ -381,21 +473,33 @@ public class DefaultConsentManageHandlerTest {
         defaultConsentManageHandler.handleFileGet(consentManageDataMock);
     }
 
-
     private static void setConsentManageBuilder() {
+
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
         ConsentManageValidator consentManageValidator = Mockito.mock(ConsentManageValidator.class);
-        Mockito.when(consentManageBuilder.getConsentManageValidator()).thenReturn(new DefaultConsentManageValidator());
+        when(consentManageBuilder.getConsentManageValidator()).thenReturn(new DefaultConsentManageValidator());
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
     }
 
     private static void setConsentManageBuilderForErrorScenario() {
+
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
         ConsentManageValidator consentManageValidator = Mockito.mock(ConsentManageValidator.class);
-        Mockito.when(consentManageValidator.validateRequestHeaders(any()))
+        when(consentManageValidator.validateRequestHeaders(any()))
                 .thenReturn(new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                         "Invalid headers", "Invalid headers"));
-        Mockito.when(consentManageBuilder.getConsentManageValidator()).thenReturn(consentManageValidator);
+        when(consentManageBuilder.getConsentManageValidator()).thenReturn(consentManageValidator);
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
+    }
+
+    private void setPrivateBoolean(Object target, String fieldName, boolean value) {
+
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.setBoolean(target, value);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set flag: " + fieldName, e);
+        }
     }
 }

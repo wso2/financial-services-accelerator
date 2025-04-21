@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator;
 
+import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
 
@@ -29,6 +30,7 @@ import java.util.Map;
 public class DefaultFSRequestObjectValidator implements FSRequestObjectValidator {
 
     @Override
+    @Generated(message = "Ignoring since method contains no logics")
     public ValidationResponse validateRequestObject(FSRequestObject fsRequestObject, Map<String, Object> dataMap) {
 
         return new ValidationResponse(true);

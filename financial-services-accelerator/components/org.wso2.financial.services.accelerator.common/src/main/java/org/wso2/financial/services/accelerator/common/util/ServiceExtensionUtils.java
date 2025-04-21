@@ -56,10 +56,10 @@ import java.util.List;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         boolean isServiceExtensionsEndpointEnabled = configParser.isServiceExtensionsEndpointEnabled();
         List<ServiceExtensionTypeEnum> serviceExtensionTypes = configParser.getServiceExtensionTypes();
         return isServiceExtensionsEndpointEnabled && serviceExtensionTypes.contains(serviceExtensionTypeEnum);
@@ -77,6 +77,7 @@ public class ServiceExtensionUtils {
                                                                     ServiceExtensionTypeEnum serviceType)
             throws FinancialServicesException {
 
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         final int maxRetries = configParser.getServiceExtensionsEndpointRetryCount();
 
         // Read timeout
@@ -93,8 +94,8 @@ public class ServiceExtensionUtils {
                 String constructedUrl = constructExtensionEndpoint(serviceType);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Invoking external service with payload: " + externalServicesPayload.replaceAll(
-                            "[\r\n]", ""));
+                    String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
+                    log.debug("Invoking external service [requestUrl=" + sanitizedUrl + "]");
                 }
 
                 HttpPost httpPost = new HttpPost(constructedUrl);
@@ -137,8 +138,9 @@ public class ServiceExtensionUtils {
                     int statusCode = response.getStatusLine().getStatusCode();
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Received response from external service [statusCode=" + statusCode + "]: " +
-                                responseContent.replaceAll("[\r\n]", ""));
+                        String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
+                        log.debug("External service response received [requestUrl=" + sanitizedUrl + ", statusCode=" +
+                                statusCode + "]");
                     }
 
                     if (statusCode != 200) {

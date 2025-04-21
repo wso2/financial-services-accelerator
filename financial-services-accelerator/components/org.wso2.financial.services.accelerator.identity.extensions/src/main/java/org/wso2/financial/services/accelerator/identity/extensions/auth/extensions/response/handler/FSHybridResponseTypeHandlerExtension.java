@@ -38,22 +38,23 @@ import org.wso2.financial.services.accelerator.identity.extensions.util.Identity
  */
 public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHandler {
 
+    private static final Log log = LogFactory.getLog(FSHybridResponseTypeHandlerExtension.class);
     static FSResponseTypeHandler fsResponseTypeHandler =
             IdentityExtensionsDataHolder.getInstance().getObResponseTypeHandler();
-    private static final Log log = LogFactory.getLog(FSHybridResponseTypeHandlerExtension.class);
 
     /**
-     * Extension point to get updated scope and refresh token validity period.
+     * Extension point to get updated scopes.
      *
-     * @param oauthAuthzMsgCtx
-     * @return
-     * @throws IdentityOAuth2Exception
+     * @param oauthAuthzMsgCtx OAuthAuthzReqMessageContext
+     * @return OAuth2AuthorizeRespDTO
+     * @throws IdentityOAuth2Exception If an error occurred while issuing the code.
      */
     @Override
+    @Generated(message = "Ignoring since main logics in util methods are tested")
     public OAuth2AuthorizeRespDTO issue(OAuthAuthzReqMessageContext oauthAuthzMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (!isRegulatory(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
+            if (!FinancialServicesUtils.isRegulatoryApp(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
                 return issueCode(oauthAuthzMsgCtx);
             }
 
@@ -65,8 +66,7 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
             } else {
 
                 // Perform FS default behaviour
-                String consentId = IdentityCommonUtils.getConsentId(oauthAuthzMsgCtx);
-                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx, consentId);
+                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx);
             }
 
             if (updatedApprovedScopes != null) {
@@ -98,12 +98,6 @@ public class FSHybridResponseTypeHandlerExtension extends HybridResponseTypeHand
             throws IdentityOAuth2Exception {
 
         return super.issue(oAuthAuthzReqMessageContext);
-    }
-
-    @Generated(message = "Ignoring because it requires a service call")
-    boolean isRegulatory(String clientId) throws RequestObjectException {
-
-        return FinancialServicesUtils.isRegulatoryApp(clientId);
     }
 
 }
