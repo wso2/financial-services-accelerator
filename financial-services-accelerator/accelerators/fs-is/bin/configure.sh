@@ -18,21 +18,26 @@
 # command to execute
 # ./configure.sh <WSO2_IS_HOME>
 
-source $(pwd)/../repository/conf/configure.properties
 WSO2_IS_HOME=$1
-
-# set accelerator home
-cd ../
-ACCELERATOR_HOME=$(pwd)
-echo "Accelerator Home: ${ACCELERATOR_HOME}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ACCELERATOR_HOME="$(dirname "$SCRIPT_DIR")"
 
 # set product home
-if [ "${WSO2_IS_HOME}" == "" ]
+if [ "${WSO2_IS_HOME}" == "" ];
   then
     cd ../
+    # set accelerator home
+    ACCELERATOR_HOME=$(pwd)
+    cd ../
     WSO2_IS_HOME=$(pwd)
-    echo "Product Home: ${WSO2_IS_HOME}"
+    echo "Product home is: ${WSO2_IS_HOME}"
+    echo "Accelerator home is: ${ACCELERATOR_HOME}"
+else
+    echo "Product home is: ${WSO2_IS_HOME}"
+    echo "Accelerator home is: ${ACCELERATOR_HOME}"
 fi
+
+source "${ACCELERATOR_HOME}/repository/conf/configure.properties"
 
 # validate product home
 if [ ! -d "${WSO2_IS_HOME}/repository/components" ]; then

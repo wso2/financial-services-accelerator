@@ -29,7 +29,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.RealtimeNotificationService;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
@@ -68,14 +67,8 @@ public class RealtimeEventNotificationSenderService implements Runnable {
 
     public RealtimeEventNotificationSenderService(String callbackUrl, JSONObject payloadJson,
                                                   String notificationId) {
-        int maxRetryCount = FinancialServicesConfigParser.getInstance()
-                .getRealtimeEventNotificationMaxRetries() + 1;
 
-        try {
-            this.httpClient = HTTPClientUtils.getHttpsClient(maxRetryCount, maxRetryCount);
-        } catch (FinancialServicesException e) {
-            log.error("Failed to initialize the HTTP client for the realtime event notification", e);
-        }
+        this.httpClient = HTTPClientUtils.getHttpsClient();
 
         this.httpRequestGenerator = EventNotificationServiceUtil.getRealtimeEventNotificationRequestGenerator();
         this.notificationId = notificationId;
