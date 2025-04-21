@@ -502,9 +502,6 @@ validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage
 [financial_services.consent.manage_extension]
 allowed_headers = [""]
 
-[financial_services.consent.authorize_extension]
-allowed_request_parameters = ["scope"]
-
 [[financial_services.consent.authorize_steps.retrieve]]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"
 priority = 1

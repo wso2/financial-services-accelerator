@@ -37,10 +37,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Util class for consent authorize operations.
@@ -134,34 +131,22 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Extracts multiple top-level fields from the request object payload.
-     * Supports all JSON types (primitives, JSONObject, JSONArray).
-     * Returns a map of field names to their corresponding values. Missing fields are not included.
+     * Method to extract the request object payload and convert it to a JSON object.
      *
-     * @param requestObject The signed JWT request object (in format header.payload.signature)
-     * @param fieldNames    The list of top-level field names to extract
-     * @return A map of field names to their extracted values, or an empty map on failure
+     * @param requestObject Request object
+     * @return requestObjectJson
+     * @throws ConsentException Consent Exception
      */
-    public static Map<String, Object> extractFields(String requestObject, List<String> fieldNames) {
+    public static JSONObject getRequestObjectJson(String requestObject) throws ConsentException {
 
-        Map<String, Object> extractedFields = new HashMap<>();
-
+        String payload = decodeRequestObjectPayload(requestObject);
+        JSONObject requestObjectJson;
         try {
-            String payloadJson = decodeRequestObjectPayload(requestObject);
-            JSONObject payload = new JSONObject(payloadJson);
-
-            for (String fieldName : fieldNames) {
-                if (payload.has(fieldName)) {
-                    extractedFields.put(fieldName, payload.get(fieldName));
-                }
-            }
-
+            requestObjectJson = new JSONObject(payload);
         } catch (JSONException e) {
-            String sanitizedMessage = e.getMessage() != null ? e.getMessage().replaceAll("[\r\n]", "") : "null";
-            log.warn("Failed to parse JWT payload or extract fields: " + sanitizedMessage, e);
+            requestObjectJson = new JSONObject();
         }
-
-        return extractedFields;
+        return requestObjectJson;
     }
 
     /**

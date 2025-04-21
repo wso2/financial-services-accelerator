@@ -69,13 +69,6 @@
         {% else %}
         <ManageValidator>org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator</ManageValidator>
         {% endif %}
-        <AuthorizeExtension>
-            <AllowedParameters>
-                {% for allowed_parameter in financial_services.consent.authorize_extension.allowed_parameters %}
-                <AllowedParameter>{{allowed_parameter}}</AllowedParameter>
-                {% endfor %}
-            </AllowedParameters>
-        </AuthorizeExtension>
         <AuthorizeSteps>
             <Retrieve>
                 {% if financial_services.consent.authorize_steps.retrieve is defined %}

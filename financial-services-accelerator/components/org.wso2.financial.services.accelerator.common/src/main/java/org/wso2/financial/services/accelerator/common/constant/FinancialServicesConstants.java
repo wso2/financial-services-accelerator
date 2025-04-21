@@ -139,8 +139,6 @@ public class FinancialServicesConstants {
     public static final String SERVICE_EXTENSIONS_ENDPOINT_BASE_URL = "ExtensionsEndpoint.BaseURL";
     public static final String CONSENT_MANAGE_EXTENSION_ALLOWED_HEADERS =
             "Consent.ManageExtension.AllowedHeaders.AllowedHeader";
-    public static final String CONSENT_AUTHORIZE_EXTENSION_ALLOWED_PARAMETERS =
-            "Consent.AuthorizeExtension.AllowedRequestParameters.AllowedRequestParameter";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_RETRY_COUNT = "ExtensionsEndpoint.RetryCount";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_CONNECT_TIMEOUT = "ExtensionsEndpoint.ConnectTimeout";
     public static final String SERVICE_EXTENSIONS_ENDPOINT_READ_TIMEOUT = "ExtensionsEndpoint.ReadTimeout";

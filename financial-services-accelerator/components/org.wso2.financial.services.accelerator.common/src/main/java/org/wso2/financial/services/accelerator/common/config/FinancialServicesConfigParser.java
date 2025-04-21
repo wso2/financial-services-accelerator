@@ -1027,22 +1027,4 @@ public final class FinancialServicesConfigParser {
         return allowedHeaders;
     }
 
-    /**
-     * Returns the list of allowed request parameters to pass in consent authorize service extension requests.
-     *
-     * @return List of allowed request parameters.
-     */
-    public List<String> getConsentAuthorizeExtensionAllowedRequestParameters() {
-
-        Object allowedParametersObj = configuration.get(FinancialServicesConstants.
-                CONSENT_AUTHORIZE_EXTENSION_ALLOWED_PARAMETERS);
-        List<String> allowedParameters = new ArrayList<>();
-        if (allowedParametersObj instanceof List) {
-            allowedParameters.addAll((List) allowedParametersObj);
-        } else if (allowedParametersObj instanceof String) {
-            allowedParameters.add((String) allowedParametersObj);
-        }
-
-        return allowedParameters;
-    }
 }
