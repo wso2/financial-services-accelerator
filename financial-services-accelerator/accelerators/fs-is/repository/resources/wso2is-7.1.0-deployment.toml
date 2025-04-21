@@ -269,11 +269,11 @@ grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.gra
 
 [oauth.grant_type.password]
 enable = true
-grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSPasswordGrantHandler"
+grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.PasswordGrantHandler"
 
 [oauth.grant_type.client_credentials]
 enable = true
-grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSClientCredentialsGrantHandler"
+grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.ClientCredentialsGrantHandler"
 
 [oauth.dcr]
 enable_fapi_enforcement=true
