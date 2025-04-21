@@ -28,6 +28,22 @@
     </parent>
 
     <name>WSO2 Financial Services Accelerator</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.financial.services.accelerator</groupId>
+            <artifactId>org.wso2.financial.services.accelerator.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.6.14</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
     <artifactId>financial-services-accelerator</artifactId>
     <packaging>pom</packaging>
 

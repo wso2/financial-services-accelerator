@@ -33,8 +33,8 @@ export const getConsentsFromAPI = (user, consentTypes) => {
     var userId = user.email
 
     // Accelerator only supporting the account consents type in SCP.
-    adminUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}`
-    defaultUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}&userIDs=${userId}`
+    adminUrl = `${CONFIG.BACKEND_URL}/api/fs/consent/admin/search?consentTypes=${consentTypes}`
+    defaultUrl = `${CONFIG.BACKEND_URL}/api/fs/consent/admin/search?consentTypes=${consentTypes}&userIDs=${userId}`
 
     var selectedUrl
     if (user.role === "customerCareOfficer") {
@@ -102,7 +102,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
 
     let currentUserEmail = user.email;
 
-    const serverURL = `${CONFIG.BACKEND_URL}/admin/search`;
+    const serverURL = `${CONFIG.BACKEND_URL}/api/fs/consent/admin/search`;
 
     let defaultUrl = `${serverURL}?`;
     let searchUrl
