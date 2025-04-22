@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,17 +19,26 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.util;
 
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class of test utilities.
+ */
 public class TestUtil {
 
     public static AuthorizationResource getSampleAuthorizationResource(String consentID, String authorizationID) {
@@ -152,7 +161,7 @@ public class TestUtil {
     }
 
     public static ConsentStatusAuditRecord getSampleConsentStatusAuditRecord(String consentID,
-                                                                                 String currentStatus) {
+                                                                             String currentStatus) {
 
         return new ConsentStatusAuditRecord(consentID, currentStatus,
                 System.currentTimeMillis() / 1000, TestConstants.SAMPLE_REASON,
@@ -162,5 +171,71 @@ public class TestUtil {
     public static ConsentFile getSampleConsentFileObject(String fileContent) {
 
         return new ConsentFile(UUID.randomUUID().toString(), fileContent);
+    }
+
+    public static ConsentAttributes getSampleConsentAttributeObject() {
+
+        ConsentAttributes consentAttributes = new ConsentAttributes();
+        consentAttributes.setConsentID(TestConstants.SAMPLE_CONSENT_ID);
+        consentAttributes.setConsentAttributes(TestConstants.SAMPLE_CONSENT_ATTRIBUTES_MAP);
+        return consentAttributes;
+    }
+
+    public static ExternalAPIPreConsentGenerateResponseDTO getSampleExternalAPIPreConsentGenerateResponseDTO() {
+
+        ExternalAPIPreConsentGenerateResponseDTO responseDTO = new ExternalAPIPreConsentGenerateResponseDTO();
+
+        ExternalAPIConsentResourceResponseDTO resource = new ExternalAPIConsentResourceResponseDTO();
+        resource.setType("ACCOUNT");
+        resource.setStatus("AWAITING_AUTHORIZATION");
+        resource.setFrequency(3);
+        resource.setValidityTime(3600L);
+        resource.setRecurringIndicator(true);
+
+        // Sample receipt
+        Map<String, Object> receipt = new HashMap<>();
+        receipt.put("confirmationCode", "ABC123");
+        resource.setReceipt(receipt);
+
+        // Sample attributes
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("channel", "MOBILE");
+        resource.setAttributes(attributes);
+
+        // Sample authorization
+        ExternalAPIConsentResourceResponseDTO.Authorization auth =
+                new ExternalAPIConsentResourceResponseDTO.Authorization();
+        auth.setUserId("user-001");
+        auth.setType("PRIMARY");
+        auth.setStatus("ACTIVE");
+
+        ExternalAPIConsentResourceResponseDTO.Resource res = new ExternalAPIConsentResourceResponseDTO.Resource();
+        res.setAccountId("acc-123");
+        res.setPermission("READ");
+        res.setStatus("GRANTED");
+        auth.setResources(Collections.singletonList(res));
+
+        resource.setAuthorizations(Collections.singletonList(auth));
+
+        // Sample amended authorization
+        ExternalAPIConsentResourceResponseDTO.AmendedAuthorization amendedAuth =
+                new ExternalAPIConsentResourceResponseDTO.AmendedAuthorization();
+        amendedAuth.setId("amend-001");
+        amendedAuth.setType("CORRECTION");
+        amendedAuth.setStatus("APPROVED");
+
+        ExternalAPIConsentResourceResponseDTO.AmendedResource amendedRes =
+                new ExternalAPIConsentResourceResponseDTO.AmendedResource();
+        amendedRes.setId("am-res-001");
+        amendedRes.setPermission("WRITE");
+        amendedRes.setStatus("UPDATED");
+
+        amendedAuth.setResources(Collections.singletonList(res));
+        amendedAuth.setAmendedResources(Collections.singletonList(amendedRes));
+
+        resource.setAmendments(Collections.singletonList(amendedAuth));
+
+        responseDTO.setConsentResource(resource);
+        return responseDTO;
     }
 }

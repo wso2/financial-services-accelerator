@@ -34,6 +34,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
@@ -72,13 +74,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
         isExternalPreConsentRetrievalEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_RETRIEVAL);
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
         isExternalPreConsentGenerationEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_GENERATION);
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
         isExternalPostConsentGenerationEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.POST_CONSENT_GENERATION);
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_CONSENT_REVOCATION);
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
     }
 
     @Override
@@ -122,12 +124,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
                             ConsentOperationEnum.CONSENT_RETRIEVE);
                 }
-                String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-                if (!consentType.equals(consent.getConsentType())) {
-                    log.error("Consent Type mismatch");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
-                            ConsentOperationEnum.CONSENT_RETRIEVE);
-                }
                 // Check whether the client id is matching
                 if (!consent.getClientID().equals(consentManageData.getClientId())) {
                     log.error("Client ID mismatch");
@@ -140,12 +136,21 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     Map<String, String> consentAttributes =
                             consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
                     consent.setConsentAttributes(consentAttributes);
+                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                            new ExternalAPIConsentResourceRequestDTO(consent);
                     ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
-                            consentId, consent, resourcePath);
+                            consentId, externalAPIConsentResource, resourcePath,
+                            consentManageData.getAllowedExtensionHeaders());
                     ExternalAPIConsentRetrieveResponseDTO responseDTO = ExternalAPIConsentManageUtils.
                             callExternalService(requestDTO);
-                    consentManageData.setResponsePayload(responseDTO.getResponseData());
+                    consentManageData.setResponsePayload(responseDTO.getModifiedResponse());
                 } else {
+                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                    if (!consentType.equals(consent.getConsentType())) {
+                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
+                    }
                     JSONObject receiptJSON = new JSONObject(consent.getReceipt());
                     consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(
                             receiptJSON, consent));
@@ -219,15 +224,16 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
             if (isExtensionsEnabled && isExternalPostConsentGenerationEnabled) {
                 // Call external service after generating consent
-                ConsentResource createdConsentResource = consentCoreService.getConsent(createdConsent.getConsentID(),
-                        false);
-                createdConsentResource.setConsentAttributes(createdConsent.getConsentAttributes());
+                DetailedConsentResource createdConsentResource = consentCoreService.getDetailedConsent(
+                        createdConsent.getConsentID());
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(createdConsentResource);
                 ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
-                        createdConsentResource, consentManageData.getRequestPath());
+                        externalAPIConsentResource, consentManageData.getRequestPath());
                 ExternalAPIPostConsentGenerateResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
                         callExternalService(postRequestDTO);
 
-                consentManageData.setResponsePayload(postResponseDTO.getResponseData());
+                consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
             } else {
                 consentManageData.setResponsePayload(ConsentExtensionUtils
                         .getInitiationResponse(consentManageData.getPayload(), createdConsent));
@@ -290,13 +296,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                             ConsentOperationEnum.CONSENT_DELETE);
                 }
 
-                String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-                if (!consentType.equals(consentResource.getConsentType())) {
-                    log.error("Consent Type mismatch");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent Type mismatch",
-                            ConsentOperationEnum.CONSENT_DELETE);
-                }
-
                 if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
                     //Throwing this error in a generic manner since client will not be able to identify if consent
                     // exists if consent does not belong to them
@@ -310,13 +309,22 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     Map<String, String> consentAttributes =
                             consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
                     consentResource.setConsentAttributes(consentAttributes);
+                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                            new ExternalAPIConsentResourceRequestDTO(consentResource);
                     ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(
-                            consentResource, resourcePath);
+                            externalAPIConsentResource, resourcePath, consentManageData.getAllowedExtensionHeaders());
                     ExternalAPIConsentRevokeResponseDTO responseDTO = ExternalAPIConsentManageUtils.
                             callExternalService(requestDTO);
                     shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
                     revocationStatusName = responseDTO.getRevocationStatusName();
                 } else {
+                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                    if (!consentType.equals(consentResource.getConsentType())) {
+                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_DELETE);
+                    }
+
                     if (ConsentExtensionConstants.REVOKED_STATUS.equals(consentResource.getCurrentStatus()) ||
                             ConsentExtensionConstants.REJECTED_STATUS.equals(consentResource.getCurrentStatus())) {
                         log.error("Consent is already in revoked or rejected state");
@@ -380,17 +388,22 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     private DetailedConsentResource generateConsent(
             ExternalAPIPreConsentGenerateResponseDTO responseDTO, String clientId) throws ConsentException {
-
+        ExternalAPIConsentResourceResponseDTO externalAPIConsentResource = responseDTO.getConsentResource();
         try {
             ConsentResource consentResource = new ConsentResource(clientId,
-                    new Gson().toJson(responseDTO.getConsentPayload()), responseDTO.getConsentType(),
-                    responseDTO.getConsentFrequency(), responseDTO.getValidityTime(),
-                    responseDTO.getRecurringIndicator(), responseDTO.getConsentStatus(),
-                    responseDTO.getConsentAttributes());
+                    new Gson().toJson(externalAPIConsentResource.getReceipt()), externalAPIConsentResource.getType(),
+                    externalAPIConsentResource.getFrequency(), externalAPIConsentResource.getValidityTime(),
+                    externalAPIConsentResource.getRecurringIndicator(), externalAPIConsentResource.getStatus(),
+                    externalAPIConsentResource.getAttributes());
+
+            // Assuming only one authorization is present in initiation
+            ExternalAPIConsentResourceResponseDTO.Authorization primaryAuthorization =
+                    externalAPIConsentResource.getAuthorizations().get(0);
+            String authStatus = primaryAuthorization.getStatus();
+            String authType = primaryAuthorization.getType();
 
             return consentCoreService.createAuthorizableConsent(
-                    consentResource, null, responseDTO.getAuthorizationStatus(),
-                    responseDTO.getAuthorizationType(), true);
+                    consentResource, null, authStatus, authType, true);
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent");

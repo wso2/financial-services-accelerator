@@ -34,7 +34,6 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
-import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
@@ -68,13 +67,19 @@ public class ServiceExtensionUtilsTest {
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
         Mockito.doReturn(FinancialServicesConstants.BASIC_AUTH).when(configParserMock)
                 .getServiceExtensionsEndpointSecurityType();
+        Mockito.doReturn(3).when(configParserMock)
+                .getServiceExtensionsEndpointRetryCount();
+        Mockito.doReturn(5).when(configParserMock)
+                .getServiceExtensionsEndpointConnectTimeoutInSeconds();
+        Mockito.doReturn(5).when(configParserMock)
+                .getServiceExtensionsEndpointReadTimeoutInSeconds();
         Mockito.doReturn("test").when(configParserMock)
                 .getServiceExtensionsEndpointSecurityBasicAuthUsername();
         Mockito.doReturn("test").when(configParserMock)
                 .getServiceExtensionsEndpointSecurityBasicAuthPassword();
         Mockito.doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
         List<ServiceExtensionTypeEnum> serviceExtensionTypes = new ArrayList<>();
-        serviceExtensionTypes.add(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+        serviceExtensionTypes.add(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
         Mockito.doReturn(serviceExtensionTypes).when(configParserMock).getServiceExtensionTypes();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
@@ -110,13 +115,13 @@ public class ServiceExtensionUtilsTest {
     @Test
     public void testIsInvokeExternalService() {
         Assert.assertTrue(ServiceExtensionUtils
-                .isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST));
+                .isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION));
     }
 
     @Test
     public void testInvokeExternalServiceCall() throws FinancialServicesException {
         ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
-                ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
 
         Assert.assertNotNull(response);
     }
@@ -135,7 +140,7 @@ public class ServiceExtensionUtilsTest {
 
         httpClientUtilsMockedStatic.when(() -> HTTPClientUtils.getHttpClient()).thenReturn(httpClient);
         ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
-                ServiceExtensionTypeEnum.VALIDATE_DCR_CREATE_REQUEST);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
     }
 
     @Test
@@ -167,7 +172,6 @@ public class ServiceExtensionUtilsTest {
         JSONObject appRegistrationRequest = new JSONObject();
         appRegistrationRequest.put("appRegistrationRequest", new HashMap<>());
         appRegistrationRequest.put("ssaParams", new HashMap<>());
-        return new ExternalServiceRequest(UUID.randomUUID().toString(), appRegistrationRequest,
-                OperationEnum.ADDITIONAL_ID_TOKEN_CLAIMS_FOR_AUTHZ_RESPONSE);
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), appRegistrationRequest);
     }
 }

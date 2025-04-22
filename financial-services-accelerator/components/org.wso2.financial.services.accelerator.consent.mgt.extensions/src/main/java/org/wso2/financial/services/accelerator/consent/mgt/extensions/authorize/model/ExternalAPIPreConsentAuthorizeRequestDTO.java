@@ -18,7 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
 /**
  * Wrapper for pre consent authorize flow external request data.
@@ -27,16 +27,17 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
 
     private String consentId;
     private String userId;
-    private String scope;
-    private ConsentResource consentResource;
+    private JSONObject requestParameters;
+    private ExternalAPIConsentResourceRequestDTO consentResource;
 
-    public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData, String scope) {
+    public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData,
+                                                    ExternalAPIConsentResourceRequestDTO consentResource,
+                                                    JSONObject requestParameters) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
-        this.scope = scope;
-        this.consentResource = consentData.getConsentResource();
-
+        this.consentResource = consentResource;
+        this.requestParameters = requestParameters;
     }
 
     public String getConsentId() {
@@ -55,20 +56,20 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.userId = userId;
     }
 
-    public String getScope() {
-        return scope;
+    public JSONObject getRequestParameters() {
+        return requestParameters;
     }
 
-    public void setScope(String scope) {
-        this.scope = scope;
+    public void setRequestParameters(JSONObject requestParameters) {
+        this.requestParameters = requestParameters;
     }
 
-    public ConsentResource getConsentResource() {
+    public ExternalAPIConsentResourceRequestDTO getConsentResource() {
         return consentResource;
     }
 
     public void setConsentResource(
-            ConsentResource consentResource) {
+            ExternalAPIConsentResourceRequestDTO consentResource) {
         this.consentResource = consentResource;
     }
 
@@ -80,7 +81,7 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     public JSONObject toJson() {
 
         JSONObject dtoJson = new JSONObject(this);
-        JSONObject consentResourceJson = this.consentResource != null ? this.consentResource.toJson() :
+        JSONObject consentResourceJson = this.consentResource != null ? new JSONObject(this.consentResource) :
                 new JSONObject();
         dtoJson.put("consentResource", consentResourceJson);
         return dtoJson;

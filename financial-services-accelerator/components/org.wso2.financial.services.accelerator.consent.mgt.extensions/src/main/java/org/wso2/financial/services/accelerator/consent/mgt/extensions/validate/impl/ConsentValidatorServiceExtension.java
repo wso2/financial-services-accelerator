@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateRequest;
@@ -106,7 +107,7 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
         try {
             response = ServiceExtensionUtils.invokeExternalServiceCall(
                     getConsentValidateServiceRequest(consentValidateData),
-                    ServiceExtensionTypeEnum.CONSENT_VALIDATION);
+                    ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS);
             if (StatusEnum.SUCCESS.equals(response.getStatus())) {
                 consentValidationResult.setValid(true);
             } else {
@@ -117,7 +118,7 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
                 consentValidationResult.setErrorCode(response.getData()
                         .path(FinancialServicesConstants.ERROR_MESSAGE)
                         .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
-                consentValidationResult.setHttpCode(Integer.parseInt(response.getErrorCode()));
+                consentValidationResult.setHttpCode(response.getErrorCode());
             }
         } catch (FinancialServicesException e) {
             consentValidationResult.setValid(false);
@@ -135,10 +136,10 @@ public class ConsentValidatorServiceExtension implements ConsentValidator {
      */
     private ExternalServiceRequest getConsentValidateServiceRequest(ConsentValidateData consentValidateData) {
 
+        ExternalAPIConsentResourceRequestDTO externalAPIConsentResourceRequestDTO =
+                new ExternalAPIConsentResourceRequestDTO(consentValidateData.getComprehensiveConsent());
         ConsentValidateRequest request = new ConsentValidateRequest(consentValidateData.getConsentId(),
-                new JSONObject(consentValidateData.getComprehensiveConsent()),
-                constructDataPayload(consentValidateData),
-                consentValidateData.getComprehensiveConsent().getConsentType());
+                new JSONObject(externalAPIConsentResourceRequestDTO), constructDataPayload(consentValidateData));
 
         return new ExternalServiceRequest(UUID.randomUUID().toString(), new JSONObject(request));
     }

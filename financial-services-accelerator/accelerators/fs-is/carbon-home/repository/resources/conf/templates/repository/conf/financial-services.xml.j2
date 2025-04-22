@@ -52,6 +52,13 @@
             <RegexPattern>{{financial_services.consent.consent_id_extraction.regex_pattern}}</RegexPattern>
             {% endif %}
         </ConsentIdExtraction>
+        <ManageExtension>
+            <AllowedHeaders>
+                {% for allowed_header in financial_services.consent.manage_extension.allowed_headers %}
+                <AllowedHeader>{{allowed_header}}</AllowedHeader>
+                {% endfor %}
+            </AllowedHeaders>
+        </ManageExtension>
         {% if financial_services.consent.manage.handler is defined %}
         <ManageHandler>{{financial_services.consent.manage.handler}}</ManageHandler>
         {% else %}
@@ -189,6 +196,21 @@
         <ConsentIDClaimName>{{financial_services.identity.consent_id_claim_name}}</ConsentIDClaimName>
         {% else %}
         <ConsentIDClaimName>consent_id</ConsentIDClaimName>
+        {% endif %}
+        {% if financial_services.identity.append_consent_id_to_id_token is defined %}
+        <AppendConsentIdToIdToken>{{financial_services.identity.append_consent_id_to_id_token}}</AppendConsentIdToIdToken>
+        {% else %}
+        <AppendConsentIdToIdToken>false</AppendConsentIdToIdToken>
+        {% endif %}
+        {% if financial_services.identity.append_consent_id_to_access_token is defined %}
+        <AppendConsentIdToAccessToken>{{financial_services.identity.append_consent_id_to_access_token}}</AppendConsentIdToAccessToken>
+        {% else %}
+        <AppendConsentIdToAccessToken>false</AppendConsentIdToAccessToken>
+        {% endif %}
+        {% if financial_services.identity.append_consent_id_to_token_introspect_response is defined %}
+        <AppendConsentIdToTokenIntrospectResponse>{{financial_services.identity.append_consent_id_to_token_introspect_response}}</AppendConsentIdToTokenIntrospectResponse>
+        {% else %}
+        <AppendConsentIdToTokenIntrospectResponse>false</AppendConsentIdToTokenIntrospectResponse>
         {% endif %}
         <Extensions>
             {% if financial_services.identity.extensions.request_object_validator is defined %}
@@ -342,6 +364,18 @@
         {% else %}
         <EventSubscriptionHandler>org.wso2.financial.services.accelerator.event.notifications.service.handler.DefaultEventSubscriptionServiceHandler</EventSubscriptionHandler>
         {% endif %}
+        <EventSubscription>
+            {% if financial_services.event.notifications.require_subscription_to_poll is defined %}
+            <RequireSubscriptionToPoll>{{financial_services.event.notifications.require_subscription_to_poll}}</RequireSubscriptionToPoll>
+            {% else %}
+            <RequireSubscriptionToPoll>false</RequireSubscriptionToPoll>
+            {% endif %}
+            {% if financial_services.event.notifications.allow_multiple_subscription is defined %}
+            <AllowMultipleSubscription>{{financial_services.event.notifications.allow_multiple_subscription}}</AllowMultipleSubscription>
+            {% else %}
+            <AllowMultipleSubscription>false</AllowMultipleSubscription>
+            {% endif %}
+        </EventSubscription>
         <PollingResponseParams>
             {% if financial_services.event.notifications.set_sub_claim_included is defined%}
             <IsSubClaimAvailable>{{financial_services.event.notifications.set_sub_claim_included}}</IsSubClaimAvailable>
@@ -413,14 +447,28 @@
         {% else %}
         <Enable>false</Enable>
         {% endif %}
-        {% if financial_services.extensions.endpoint.base_url is defined %}
-        <BaseURL>{{financial_services.extensions.endpoint.base_url}}</BaseURL>
-        {% endif %}
         <AllowedExtensions>
             {% for allowed_extension in financial_services.extensions.endpoint.allowed_extensions %}
             <AllowedExtension>{{allowed_extension}}</AllowedExtension>
             {% endfor %}
         </AllowedExtensions>
+        {% if financial_services.extensions.endpoint.base_url is defined %}
+        <BaseURL>{{financial_services.extensions.endpoint.base_url}}</BaseURL>
+        {% endif %}
+        <AllowedHeaders>
+            {% for allowed_header in financial_services.extensions.endpoint.allowed_headers %}
+            <AllowedHeader>{{allowed_header}}</AllowedHeader>
+            {% endfor %}
+        </AllowedHeaders>
+        {% if financial_services.extensions.endpoint.retry_count is defined %}
+        <RetryCount>{{financial_services.extensions.endpoint.retry_count}}</RetryCount>
+        {% endif %}
+        {% if financial_services.extensions.endpoint.connect_timeout is defined %}
+        <ConnectTimeout>{{financial_services.extensions.endpoint.connect_timeout}}</ConnectTimeout>
+        {% endif %}
+        {% if financial_services.extensions.endpoint.read_timeout is defined %}
+        <ReadTimeout>{{financial_services.extensions.endpoint.read_timeout}}</ReadTimeout>
+        {% endif %}
         <Security>
             {% if financial_services.extensions.endpoint.security.type is defined %}
             <Type>{{financial_services.extensions.endpoint.security.type}}</Type>

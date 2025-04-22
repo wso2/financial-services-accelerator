@@ -41,7 +41,7 @@ public class ConsentExtensionConstants {
     public static final String AUTHORIZED_STATUS = "Authorised";
     public static final String REVOKED_STATUS = "Revoked";
     public static final String REJECTED_STATUS = "Rejected";
-    public static final String CREATED_STATUS = "created";
+    public static final String CREATED_STATUS = "Created";
     public static final String DEFAULT_AUTH_TYPE = "authorisation";
     public static final String PERMISSIONS = "Permissions";
     public static final String EXPIRATION_DATE = "ExpirationDateTime";
@@ -99,6 +99,11 @@ public class ConsentExtensionConstants {
     public static final String ERROR_DESCRIPTION = "description";
     public static final String STATE = "state";
     public static final String REDIRECT_URI = "redirect_uri";
+
+    public static final String ERROR_URI_FRAGMENT = "#error=";
+    public static final String ERROR_DESCRIPTION_PARAMETER = "&error_description=";
+    public static final String STATE_PARAMETER = "&state=";
+
     //Consent Admin Handler Constants
     public static final String CONSENT_IDS = "consentIds";
     public static final String CLIENT_IDS = "clientIds";
@@ -146,6 +151,7 @@ public class ConsentExtensionConstants {
     public static final String AUTH_ID = "authorizationId";
     public static final String CC_CONSENT_ID = "consentId";
     public static final String USER_ID = "userId";
+    public static final String USER_ID_PARAM = "userID";
     public static final String AUTH_STATUS = "authorizationStatus";
     public static final String AUTH_TYPE = "authorizationType";
     public static final String UPDATE_TIME = "updatedTime";
@@ -179,6 +185,8 @@ public class ConsentExtensionConstants {
     public static final int STATUS_FOUND = 302;
     public static final String APPROVAL = "approval";
     public static final String COOKIES = "cookies";
+    public static final String OPENID_SCOPE = "openid";
+    public static final String PERSIST_PAYLOAD = "persistPayload";
 
     // Consent Validate Constants
     public static final String HEADERS = "headers";

@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.identity.extensions.interceptor;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class FSDefaultIntrospectionDataProvider extends FSIntrospectionDataProvi
 
 
     @Override
+    @Generated(message = "Ignoring since method contains no logics")
     public Map<String, Object> getIntrospectionData(OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
                                                     OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO)
             throws IdentityOAuth2Exception {

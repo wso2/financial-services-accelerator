@@ -18,61 +18,46 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.interceptor;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
-import org.wso2.carbon.identity.core.handler.AbstractIdentityHandler;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2IntrospectionResponseDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
- * FS specific introspection data provider
+ * FS specific introspection data provider.
+ * Main purpose of extending this class is to modify the token introspection response.
  */
-public class FSIntrospectionDataProvider extends AbstractIdentityHandler implements IntrospectionDataProvider {
+public class FSIntrospectionDataProvider implements IntrospectionDataProvider {
 
     private static final Log log = LogFactory.getLog(FSIntrospectionDataProvider.class);
     private static IntrospectionDataProvider introspectionDataProvider;
+    private Map<String, Object> identityConfigurations = IdentityExtensionsDataHolder.getInstance()
+            .getConfigurationMap();
 
     @Override
     public Map<String, Object> getIntrospectionData(OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
                                                     OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO)
             throws IdentityOAuth2Exception {
 
-        Map<String, Object> additionalDataMap = new HashMap<>();
+        // Perform FS default behaviour
+        Map<String, Object> additionalDataMap = new HashMap<>(getDefaultIntrospectionData(
+                oAuth2IntrospectionResponseDTO));
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                .PRE_TOKEN_INTROSPECTION)) {
-            // Perform FS customized behaviour with service extension
-            try {
-                additionalDataMap = getIntrospectionDataWithServiceExtension(
-                        oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO);
-            } catch (FinancialServicesException e) {
-                log.error("Error while invoking external service extension", e);
-                throw new IdentityOAuth2Exception("Error while invoking external service extension");
-            }
-        } else if (getIntrospectionDataProvider() != null) {
+        if (getIntrospectionDataProvider() != null) {
             // Perform FS customized behaviour
-            additionalDataMap = getIntrospectionDataProvider()
-                    .getIntrospectionData(oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO);
-        } else {
-            // Perform FS default behaviour
-            additionalDataMap = getDefaultIntrospectionData(oAuth2TokenValidationRequestDTO,
-                    oAuth2IntrospectionResponseDTO);
+            additionalDataMap.putAll(getIntrospectionDataProvider()
+                    .getIntrospectionData(oAuth2TokenValidationRequestDTO, oAuth2IntrospectionResponseDTO));
         }
 
         String[] nonInternalScopes = IdentityCommonUtils.removeInternalScopes(oAuth2IntrospectionResponseDTO.getScope()
@@ -85,69 +70,35 @@ public class FSIntrospectionDataProvider extends AbstractIdentityHandler impleme
         return additionalDataMap;
     }
 
-    private Map<String, Object> getIntrospectionDataWithServiceExtension(
-            OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
-            OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO)
-            throws FinancialServicesException, IdentityOAuth2Exception {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, oAuth2IntrospectionResponseDTO.getScope()
-                .split(IdentityCommonConstants.SPACE_SEPARATOR));
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_TOKEN_INTROSPECTION);
-
-        return processResponseAndGetData(response);
-    }
-
-    private Map<String, Object> processResponseAndGetData(ExternalServiceResponse response)
-            throws IdentityOAuth2Exception {
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("attributes")) {
-            throw new IdentityOAuth2Exception("Missing attributes in response payload.");
-        }
-
-        Map<String, Object> additionalAttributes = new HashMap<>();
-        for (JsonNode attributeNode : responseData.get("attributes")) {
-            if (!attributeNode.hasNonNull("key") || !attributeNode.hasNonNull("value")) {
-                continue;
-            }
-
-            String key = attributeNode.get("key").asText();
-            Object value = attributeNode.get("value").asText();
-
-            // Add only if key is not empty
-            if (!key.isEmpty()) {
-                additionalAttributes.put(key, value);
-            }
-        }
-
-        return additionalAttributes;
-    }
-
     private Map<String, Object> getDefaultIntrospectionData(
-            OAuth2TokenValidationRequestDTO oAuth2TokenValidationRequestDTO,
             OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO) {
 
         if (oAuth2IntrospectionResponseDTO.isActive()) {
-            return oAuth2IntrospectionResponseDTO.getProperties();
+
+            if (Boolean.parseBoolean((String) identityConfigurations
+                    .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_TOKEN_INTROSPECT_RESPONSE))) {
+                Map<String, Object> additionalClaims = new HashMap<>();
+
+                String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
+                additionalClaims.put(consentIdClaimName, IdentityCommonUtils
+                        .getConsentIdFromScopesArray(oAuth2IntrospectionResponseDTO.getScope()
+                                .split(IdentityCommonConstants.SPACE_SEPARATOR)));
+                return additionalClaims;
+            } else {
+                return oAuth2IntrospectionResponseDTO.getProperties();
+            }
         } else {
             return new HashMap<>();
         }
     }
 
+    @Generated(message = "Ignoring since method contains no logics")
     public static IntrospectionDataProvider getIntrospectionDataProvider() {
 
         return introspectionDataProvider;
     }
 
+    @Generated(message = "Ignoring since method contains no logics")
     public static void setIntrospectionDataProvider(IntrospectionDataProvider introspectionDataProvider) {
 
         FSIntrospectionDataProvider.introspectionDataProvider = introspectionDataProvider;

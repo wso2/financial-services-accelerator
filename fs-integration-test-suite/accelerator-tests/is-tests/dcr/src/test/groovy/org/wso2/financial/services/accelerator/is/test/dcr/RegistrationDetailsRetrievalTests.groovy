@@ -33,7 +33,6 @@ class RegistrationDetailsRetrievalTests extends FSConnectorTest {
 
     @BeforeClass
     void generateAccessToken() {
-
         dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 
@@ -63,9 +62,10 @@ class RegistrationDetailsRetrievalTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
-    @Test
+    @Test (priority = 1)
     void "TC0102003_Retrieve registration details with an invalid access token"() {
 
+        configuration.setPsuNumber(1)
         def authToken = "${configuration.getUserPSUName()}:" +
                 "${configuration.getUserPSUPWD()}"
 

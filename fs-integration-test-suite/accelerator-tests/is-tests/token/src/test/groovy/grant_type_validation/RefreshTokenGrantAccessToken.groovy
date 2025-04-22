@@ -20,6 +20,7 @@ package grant_type_validation
 
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
@@ -40,24 +41,30 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
     ConnectorTestConstants.ApiScope scope = ConnectorTestConstants.ApiScope.ACCOUNTS
     private ConfigurationService configuration = new ConfigurationService()
 
-    void authoriseConsent() {
+    void authoriseConsent(String client_id) {
 
-        clientId = configuration.getAppInfoClientID()
-        consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
-        initiationPayload = RequestPayloads.initiationPayload
-        //Consent initiation
-        doDefaultInitiation(initiationPayload)
-        Assert.assertNotNull(consentId)
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+		//Consent initiation
+		consentResponse = doConsentInitiation(initiationPayload)
+		consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
+		Assert.assertNotNull(consentId)
 
-        //Consent Authorisation
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
-        Assert.assertNotNull(code)
+		//Consent Authorisation
+		doConsentAuthorisation(clientId, true, consentScopes)
+		Assert.assertNotNull(code)
     }
+
+	@BeforeClass
+	void setup() {
+		//Create Regulatory Application with tls_client_auth method
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
+	}
 
 	@Test
 	void "Generate refresh token grant access token with pkjwt authentication"() {
 
-		authoriseConsent()
+		authoriseConsent(clientId)
 
 		//Get User Access Token
         Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, code, consentScopes)
@@ -105,17 +112,97 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 		Assert.assertEquals(TestUtil.parseResponseBody(introspectionResponse, "active"), "true")
 		Assert.assertNull(TestUtil.parseResponseBody(introspectionResponse, ConnectorTestConstants.GRANT_TYPE))
 		Assert.assertNotNull(TestUtil.parseResponseBody(introspectionResponse, ConnectorTestConstants.CNF))
+
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
-	@Test (enabled = true)
+	@Test
+	void "Generate refresh token grant access token without refresh token"() {
+
+		//Do Consent Initiation
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
+
+		//Get User Access Token
+		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, code, consentScopes)
+		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+		accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+		refreshToken = TestUtil.parseResponseBody(tokenResponse, "refresh_token")
+		Assert.assertNotNull(accessToken)
+		Assert.assertNotNull(refreshToken)
+
+		//Get Refresh Token Grant User Access Token
+		Response refreshTokenResponse = getRefreshGrantTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, [scope],
+				"")
+
+		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+				"Missing parameters: refresh_token")
+		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
+				ConnectorTestConstants.INVALID_REQUEST)
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
+	}
+
+	@Test
+	void "Generate refresh token grant access token with invalid refresh token"() {
+
+        //Do Consent Initiation
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
+
+		//Get Refresh Token Grant User Access Token
+		String invalidRefreshToken = "09309de5-b7b5-3310-8767-6b14b3dc7fe8"
+		Response refreshTokenResponse = getRefreshGrantTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, [scope],
+				invalidRefreshToken)
+
+		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+				"Persisted access token data not found")
+		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
+				ConnectorTestConstants.INVALID_GRANT)
+	}
+
+	@Test (priority = 1)
 	void "Generate refresh token grant access token for Regulatory Application"() {
 
-		configuration.setTppNumber(1)
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, clientId, code, consentScopes)
 		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+		accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+		refreshToken = TestUtil.parseResponseBody(tokenResponse, "refresh_token")
 		Assert.assertNotNull(accessToken)
 		Assert.assertNotNull(refreshToken)
 
@@ -123,23 +210,38 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 				refreshToken.toString())
 
 		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-		Assert.assertNotNull(accessToken)
+		refreshedAccessToken = TestUtil.parseResponseBody(refreshTokenResponse, "access_token")
+		idToken = TestUtil.parseResponseBody(refreshTokenResponse, "id_token")
+		Assert.assertNotNull(refreshedAccessToken)
 		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, "expires_in").toString(),
 				ConnectorTestConstants.TOKEN_EXPIRY_TIME)
 		Assert.assertNotNull(TestUtil.parseResponseBody(refreshTokenResponse, "scope"))
 		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, "token_type"), ConnectorTestConstants.BEARER)
+
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
-	@Test
-	void "Generate refresh token grant access token without refresh token"() {
+	@Test(priority = 2)
+	void "OB-1132_Generate refresh token grant access token without refresh token"() {
 
-		//Do Consent Initiation
-		configuration.setTppNumber(1)
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, clientId, code, consentScopes)
 		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+		accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+		refreshToken = TestUtil.parseResponseBody(tokenResponse, "refresh_token")
 		Assert.assertNotNull(accessToken)
 		Assert.assertNotNull(refreshToken)
 
@@ -152,14 +254,25 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 				"Missing parameters: refresh_token")
 		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
 				ConnectorTestConstants.INVALID_REQUEST)
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
-	@Test
-	void "Generate refresh token grant access token with invalid refresh token"() {
+	@Test(priority = 2)
+	void "OB-1133_Generate refresh token grant access token with invalid refresh token"() {
 
 		//Do Consent Initiation
-		configuration.setTppNumber(1)
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
 
 		//Get Refresh Token Grant User Access Token
 		String invalidRefreshToken = "09309de5-b7b5-3310-8767-6b14b3dc7fe8"
@@ -171,23 +284,36 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 				"Persisted access token data not found")
 		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
 				ConnectorTestConstants.INVALID_GRANT)
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
-	@Test
-	void "Generate refresh token grant access token without client id"() {
+	@Test(priority = 2)
+	void "OB-1134_Generate refresh token grant access token without client id"() {
 
 		//Do Consent Initiation
-		configuration.setTppNumber(1)
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, clientId, code, consentScopes)
 		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+		accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+		refreshToken = TestUtil.parseResponseBody(tokenResponse, "refresh_token")
 		Assert.assertNotNull(accessToken)
 		Assert.assertNotNull(refreshToken)
 
 		//Get Refresh Token Grant User Access Token
-		Response refreshTokenResponse = getRefreshGrantTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, "", [scope],
+		Response refreshTokenResponse = TokenRequestBuilder.getRefreshGrantTokenResponseWithoutClientId(consentScopes,
 				refreshToken.toString())
 
 		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
@@ -195,34 +321,49 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 				"Client ID not found in the request.")
 		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
 				ConnectorTestConstants.INVALID_CLIENT)
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
-	@Test
-	void "Generate refresh token grant access token for a revoked user access token"() {
+	@Test(priority = 2)
+	void "OB-1135_Generate refresh token grant access token for a revoked user access token"() {
 
 		//Do Consent Initiation
-		configuration.setTppNumber(1)
-		doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
+		initiationPayload = RequestPayloads.initiationPayload
+
+		//delete application if exist
+		if(clientId != null) {
+			deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+		}
+
+		clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD)
+
+		//Consent initiation and authorisation
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, clientId, code, consentScopes)
 		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+		accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+		refreshToken = TestUtil.parseResponseBody(tokenResponse, "refresh_token")
 		Assert.assertNotNull(accessToken)
 		Assert.assertNotNull(refreshToken)
 
 		//Revoke the token
-		Response revokeResponse = TokenRequestBuilder.doTokenRevocation(accessToken.toString(),configuration.getAppInfoClientID())
+		Response revokeResponse = TokenRequestBuilder.doTokenRevocation(accessToken.toString(),clientId)
 		Assert.assertEquals(revokeResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
 
 		//Get Refresh Token Grant User Access Token
 		Response refreshTokenResponse = getRefreshGrantTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD,
-				configuration.getAppInfoClientID(), [scope], refreshToken.toString())
+				clientId, [scope], refreshToken.toString())
 
-		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
 				"Persisted access token data not found")
-		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
 				ConnectorTestConstants.INVALID_GRANT)
+
+		deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 	}
 
 }

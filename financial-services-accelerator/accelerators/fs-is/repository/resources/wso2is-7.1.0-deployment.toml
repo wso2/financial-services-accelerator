@@ -234,7 +234,7 @@ permissions=[]
 scopes=[]
 
 [oauth]
-drop_unregistered_scopes = false
+drop_unregistered_scopes = true
 authorize_all_scopes = true
 
 [oauth.endpoints.v2]
@@ -269,11 +269,11 @@ grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.gra
 
 [oauth.grant_type.password]
 enable = true
-grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSPasswordGrantHandler"
+grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.PasswordGrantHandler"
 
 [oauth.grant_type.client_credentials]
 enable = true
-grant_handler = "org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers.FSClientCredentialsGrantHandler"
+grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.ClientCredentialsGrantHandler"
 
 [oauth.dcr]
 enable_fapi_enforcement=true
@@ -315,9 +315,16 @@ ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA2
 #================configs related to financial-services.xml=============
 [financial_services.extensions.endpoint]
 enabled = false
+# allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
+allowed_extensions = ["pre_process_client_creation", "pre_process_client_update", "pre_process_client_retrieval", "pre_process_consent_creation",
+    "enrich_consent_creation_response", "pre_process_consent_retrieval", "pre_process_consent_bulk_retrieval",
+    "pre_process_consent_revoke", "populate_consent_authorize_screen", "persist_authorized_consent", "validate_consent_access",
+    "validate_refresh_token_issuance", "validate_authorization_request", "enrich_event_subscription_response",
+    "validate_event_creation", "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
 base_url = ""
-# allowed extensions: "post_token_generation", "pre_consent_authorization"
-allowed_extensions = ["post_token_generation"]
+retry_count = 5
+connect_timeout = 5
+read_timeout = 5
 
 [financial_services.extensions.endpoint.security]
 # supported types : Basic-Auth or OAuth2
@@ -347,7 +354,7 @@ application_updater = "org.wso2.financial.services.accelerator.identity.extensio
 [[financial_services.app_registration.dcr.params]]
 name = "SoftwareId"
 key = "software_id"
-required = true
+required = false
 include_in_response = true
 
 [[financial_services.app_registration.dcr.params]]
@@ -400,6 +407,36 @@ name = "RequestObjectSignatureAlgorithm"
 key = "request_object_signing_alg"
 required = true
 include_in_response = true
+
+[[financial_services.app_registration.dcr.params]]
+name = "Iss"
+key = "iss"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Iat"
+key = "iat"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Exp"
+key = "exp"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Jti"
+key = "jti"
+required = true
+include_in_response = false
+
+[[financial_services.app_registration.dcr.params]]
+name = "Aud"
+key = "aud"
+required = true
+include_in_response = false
 
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "RequiredParamsValidator"
@@ -454,13 +491,16 @@ is_pre_initiated_consent=true # Set to true if the consent is pre-initiated by t
 auth_flow_consent_id_source="requestObject" # can be one of "requestObject" or "requestParam"
 
 [financial_services.consent.consent_id_extraction]
-json_path="$.id_token.openbanking_intent_id.value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"
+json_path="/id_token/openbanking_intent_id/value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"
 # key="key-name" # Must be configured if "auth_flow_consent_id_source" is set to "requestParam"
 # regex_pattern="regex-pattern" # Optionally configure a regex pattern to further extract the consent id from the extracted value
 
 [financial_services.consent.manage]
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler"
 validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator"
+
+[financial_services.consent.manage_extension]
+allowed_headers = ["x-wso2-client-id"]
 
 [[financial_services.consent.authorize_steps.retrieve]]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"
@@ -502,6 +542,9 @@ enabled=false
 
 [financial_services.identity]
 consent_id_claim_name="consent_id"
+append_consent_id_to_id_token=false
+append_consent_id_to_access_token=false
+append_consent_id_to_token_introspect_response=false
 
 [financial_services.identity.authentication_webapp]
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
@@ -533,6 +576,8 @@ event_subscription_handler="org.wso2.financial.services.accelerator.event.notifi
 set_sub_claim_included=true
 set_txn_claim_included=true
 set_toe_cliam_included=true
+require_subscription_to_poll= false
+allow_multiple_subscription= true
 
 [financial_services.event.notifications.realtime]
 enable=false

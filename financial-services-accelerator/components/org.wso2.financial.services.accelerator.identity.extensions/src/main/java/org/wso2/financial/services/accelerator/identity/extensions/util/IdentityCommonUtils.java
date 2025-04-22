@@ -18,66 +18,36 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.nimbusds.jose.JWSAlgorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
-import org.wso2.carbon.identity.application.common.util.IdentityApplicationConstants;
-import org.wso2.carbon.identity.base.IdentityRuntimeException;
-import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
-import org.wso2.carbon.identity.core.util.IdentityUtil;
-import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
-import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
-import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
-import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
-import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
-import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
-import org.wso2.carbon.identity.openidconnect.RequestObjectService;
-import org.wso2.carbon.identity.openidconnect.model.RequestedClaim;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
-import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
-import org.wso2.financial.services.accelerator.common.extension.model.OperationEnum;
-import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
-import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
-import org.wso2.financial.services.accelerator.common.util.Generated;
-import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
-import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.Cookie;
 
 /**
  * Common utility class for Identity Extensions.
@@ -85,17 +55,18 @@ import java.util.stream.Collectors;
 public class IdentityCommonUtils {
 
     private static final Log log = LogFactory.getLog(IdentityCommonUtils.class);
+    private static final IdentityExtensionsDataHolder identityExtensionsDataHolder =
+            IdentityExtensionsDataHolder.getInstance();
 
     /**
-     * Remove the internal scopes from the space delimited list of authorized scopes.
+     * Remove the internal scopes from the scopes array.
      *
      * @param scopes Authorized scopes of the token
-     * @return scopes by removing the internal scopes
+     * @return scopes array after removing the internal scopes
      */
     public static String[] removeInternalScopes(String[] scopes) {
 
-        String consentIdClaim = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
-                .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
+        String consentIdClaim = getConfiguredConsentIdClaimName();
 
         if (scopes != null && scopes.length > 0) {
             List<String> scopesList = new LinkedList<>(Arrays.asList(scopes));
@@ -106,184 +77,6 @@ public class IdentityCommonUtils {
             return scopesList.toArray(new String[scopesList.size()]);
         }
         return scopes;
-    }
-
-    /**
-     * Method to obtain Hash Value for a given String, default algorithm SHA256withRSA.
-     *
-     * @param value String value that required to be Hashed
-     * @return Hashed String
-     * @throws IdentityOAuth2Exception
-     */
-    public static String getHashValue(String value, String digestAlgorithm) throws IdentityOAuth2Exception {
-
-        if (digestAlgorithm == null) {
-            JWSAlgorithm digAlg = OAuth2Util.mapSignatureAlgorithmForJWSAlgorithm(
-                    OAuthServerConfiguration.getInstance().getIdTokenSignatureAlgorithm());
-            digestAlgorithm = OAuth2Util.mapDigestAlgorithm(digAlg);
-        }
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance(digestAlgorithm);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IdentityOAuth2Exception("Error creating the hash value. Invalid Digest Algorithm: " +
-                    digestAlgorithm);
-        }
-        //generating hash value
-        md.update(value.getBytes(StandardCharsets.UTF_8));
-        byte[] digest = md.digest();
-        int leftHalfBytes = digest.length / 2;
-        byte[] leftmost = new byte[leftHalfBytes];
-        System.arraycopy(digest, 0, leftmost, 0, leftHalfBytes);
-
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(leftmost)
-                .replace("\n", "").replace("\r", "");
-    }
-
-    /**
-     * Get the configured certificate header name.
-     *
-     * @return value of the cert header name configuration
-     */
-    public static String getMTLSAuthHeader() {
-
-        return Optional.ofNullable(IdentityUtil.getProperty(IdentityCommonConstants.MTLS_AUTH_HEADER))
-                .orElse("CONFIG_NOT_FOUND");
-    }
-
-    /**
-     * Parse the certificate content.
-     *
-     * @param content the content to be passed
-     * @return the parsed certificate
-     * @throws FinancialServicesException  if an error occurs while parsing the certificate
-     */
-    public static X509Certificate parseCertificate(String content) throws FinancialServicesException {
-
-        try {
-            if (StringUtils.isNotBlank(content)) {
-                // removing illegal base64 characters before decoding
-                content = removeIllegalBase64Characters(content);
-                byte[] bytes = Base64.getDecoder().decode(content);
-
-                return (java.security.cert.X509Certificate) CertificateFactory.getInstance(IdentityCommonConstants.X509)
-                        .generateCertificate(new ByteArrayInputStream(bytes));
-            }
-            log.error("Certificate passed through the request is empty");
-            return null;
-        } catch (CertificateException | IllegalArgumentException e) {
-            throw new FinancialServicesException("Certificate passed through the request not valid", e);
-        }
-    }
-
-    /**
-     * Remove illegal base64 characters from input string.
-     *
-     * @param value certificate as a string
-     * @return certificate without illegal base64 characters
-     */
-    private static String removeIllegalBase64Characters(String value) {
-        if (value.contains(IdentityCommonConstants.BEGIN_CERT)
-                && value.contains(IdentityCommonConstants.END_CERT)) {
-
-            // extracting certificate content
-            value = value.substring(value.indexOf(IdentityCommonConstants.BEGIN_CERT)
-                            + IdentityCommonConstants.BEGIN_CERT.length(),
-                    value.indexOf(IdentityCommonConstants.END_CERT));
-        }
-        // remove spaces, \r, \\r, \n, \\n, ], [ characters from certificate string
-        return value.replaceAll("\\\\r|\\\\n|\\r|\\n|\\[|]| ", StringUtils.EMPTY);
-    }
-
-    /**
-     * Utility method get the application certificate stored as a application property from SP Meta Data.
-     * @param clientId ClientId of the application
-     * @return the service provider certificate
-     * @throws FinancialServicesException
-     */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    public static String getCertificateContent(String clientId) throws FinancialServicesException {
-
-        Optional<ServiceProvider> serviceProvider;
-        try {
-            serviceProvider = Optional.ofNullable(IdentityExtensionsDataHolder.getInstance()
-                    .getApplicationManagementService().getServiceProviderByClientId(clientId,
-                            IdentityApplicationConstants.OAuth2.NAME, getSpTenantDomain(clientId)));
-            if (serviceProvider.isPresent()) {
-                return serviceProvider.get().getCertificateContent();
-            }
-        } catch (IdentityApplicationManagementException e) {
-            log.error(String.format("Error occurred while retrieving OAuth2 application data for clientId %s",
-                    clientId.replaceAll("[\r\n]", "")), e);
-            throw new FinancialServicesException("Error occurred while retrieving OAuth2 application data for clientId"
-                    , e);
-        }
-        return "";
-    }
-
-    /**
-     * Utility method get the application property from SP Meta Data.
-     *
-     * @param clientId ClientId of the application
-     * @param property Property of the application
-     * @return the property value from SP metadata
-     * @throws FinancialServicesException
-     */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    public static String getAppPropertyFromSPMetaData(String clientId, String property)
-            throws FinancialServicesException {
-
-        String spProperty = null;
-
-        if (StringUtils.isNotEmpty(clientId)) {
-            Optional<ServiceProvider> serviceProvider;
-            try {
-                serviceProvider = Optional.ofNullable(IdentityExtensionsDataHolder.getInstance()
-                        .getApplicationManagementService().getServiceProviderByClientId(clientId,
-                                IdentityApplicationConstants.OAuth2.NAME, getSpTenantDomain(clientId)));
-                if (serviceProvider.isPresent()) {
-                    spProperty = Arrays.stream(serviceProvider.get().getSpProperties())
-                            .collect(Collectors.toMap(ServiceProviderProperty::getName,
-                                    ServiceProviderProperty::getValue))
-                            .get(property);
-                }
-            } catch (IdentityApplicationManagementException e) {
-                log.error(String.format("Error occurred while retrieving OAuth2 application data for clientId %s",
-                        clientId.replaceAll("[\r\n]", "")), e);
-                throw new FinancialServicesException("Error occurred while retrieving OAuth2 application data for" +
-                        " clientId", e);
-            }
-        } else {
-            log.error(IdentityCommonConstants.CLIENT_ID_ERROR);
-            throw new FinancialServicesException(IdentityCommonConstants.CLIENT_ID_ERROR);
-        }
-
-        return spProperty;
-    }
-
-    /**
-     * Get Tenant Domain String for the client id.
-     * @param clientId the client id of the application
-     * @return tenant domain of the client
-     * @throws FinancialServicesException  if an error occurs while retrieving the tenant domain
-     */
-    @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
-    public static String getSpTenantDomain(String clientId) throws FinancialServicesException {
-
-        try {
-            return OAuth2Util.getTenantDomainOfOauthApp(clientId);
-        } catch (InvalidOAuthClientException | IdentityOAuth2Exception e) {
-            throw new FinancialServicesException("Error retrieving service provider tenant domain for client_id: "
-                    + clientId, e);
-        }
-    }
-
-    public static int getTenantIdOfUser(String userId) throws FinancialServicesException {
-        try {
-            return IdentityTenantUtil.getTenantIdOfUser(userId);
-        } catch (IdentityRuntimeException e) {
-            throw new FinancialServicesException("Error retrieving tenant id for user: " + userId, e);
-        }
     }
 
     /**
@@ -317,7 +110,7 @@ public class IdentityCommonUtils {
      * Check whether the given jti value is replayed.
      *
      * @param jtiValue - jti value
-     * @return
+     * @return true if the JTI is replayed, false otherwise
      */
     public static boolean isJTIReplayed(String jtiValue) {
 
@@ -336,7 +129,7 @@ public class IdentityCommonUtils {
      * Try to retrieve the given jti value from cache.
      *
      * @param jtiValue - jti value
-     * @return
+     * @return the cached JTI value or null if not found
      */
     public static String getJtiFromCache(String jtiValue) {
 
@@ -345,26 +138,28 @@ public class IdentityCommonUtils {
     }
 
     /**
-     * return the new approved scope.
-     *
-     * @param oAuthAuthzReqMessageContext
-     * @return
+     * Update the approved scopes with the consent ID scope for internal purposes.
+     * 
+     * @param oAuthAuthzReqMessageContext OAuth authorization request message context
+     * @return Updated scopes array with consent ID scope
+     * @throws ConsentManagementException 
+     * @throws JsonProcessingException
      */
-    public static String[] updateApprovedScopes(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext,
-                                                String consentID) {
+    public static String[] updateApprovedScopes(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) 
+            throws ConsentManagementException, JsonProcessingException {
 
         if (oAuthAuthzReqMessageContext != null && oAuthAuthzReqMessageContext.getAuthorizationReqDTO() != null) {
 
             String[] scopes = oAuthAuthzReqMessageContext.getApprovedScope();
             if (scopes != null && !Arrays.asList(scopes).contains("api_store")) {
-                if (consentID.isEmpty()) {
-                    log.warn("Consent-ID retrieved from request object claims is empty");
+                String consentId = IdentityCommonUtils.getConsentIdFromAuthzRequestContext(oAuthAuthzReqMessageContext);
+                if (consentId.isEmpty()) {
+                    log.warn("Consent-ID retrieved from request is empty");
                     return scopes;
                 }
 
-                String consentIdClaim = IdentityExtensionsDataHolder.getInstance().getConfigurationMap()
-                        .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME).toString();
-                String consentScope = consentIdClaim + consentID;
+                String consentIdClaim = getConfiguredConsentIdClaimName();
+                String consentScope = consentIdClaim + consentId;
                 if (!Arrays.asList(scopes).contains(consentScope)) {
                     String[] updatedScopes = ArrayUtils.addAll(scopes, consentScope);
                     if (log.isDebugEnabled()) {
@@ -383,321 +178,192 @@ public class IdentityCommonUtils {
     }
 
     /**
-     * Call sessionDataAPI and retrieve request object, decode it and return consentID.
+     * Retrieves the consent ID from the authorization request context.
+     * The method determines the source of the consent ID based on the configuration
+     * and extracts it accordingly. It supports multiple sources such as the common
+     * authentication ID, essential claims, or request parameters.
      *
-     * @param sessionDataKey sessionDataKeyConsent parameter from authorize request
-     * @return consentID
+     * @param oauthAuthzMsgCtx The OAuth authorization message context containing the request details.
+     * @return The extracted consent ID, or null if it cannot be determined.
+     * @throws JsonProcessingException
+     * @throws ConsentManagementException
      */
-    public static String getConsentIDFromSessionData(String sessionDataKey) {
+    public static String getConsentIdFromAuthzRequestContext(OAuthAuthzReqMessageContext oauthAuthzMsgCtx)
+            throws JsonProcessingException, ConsentManagementException {
 
-        String consentID = StringUtils.EMPTY;
-        if (sessionDataKey != null && !sessionDataKey.isEmpty()) {
-            RequestObjectService requestObjectService = IdentityExtensionsDataHolder.getInstance()
-                    .getRequestObjectService();
-            if (requestObjectService != null) {
-                consentID = retrieveConsentIDFromReqObjService(requestObjectService, sessionDataKey);
-                if (consentID.isEmpty()) {
-                    log.warn("Failed to retrieve ConsentID from query parameters");
-                }
-            } else {
-                log.warn("Failed to retrieve Request Object Service");
-            }
-        } else {
-            log.warn("Invalid Session Data Key");
+        boolean isPreInitiatedConsent = Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
+                .get(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT));
+
+        if (!isPreInitiatedConsent) {
+            String commonAuthId = getCommonAuthIdFromCookies(oauthAuthzMsgCtx.getAuthorizationReqDTO().getCookie());
+            return getConsentIdFromCommonAuthId(commonAuthId);
         }
-        return consentID;
+
+        String authFlowConsentIdSource = (String) identityExtensionsDataHolder.getConfigurationMap()
+                .get(FinancialServicesConstants.AUTH_FLOW_CONSENT_ID_SOURCE);
+        if (IdentityCommonConstants.REQUEST_OBJECT.equals(authFlowConsentIdSource)) {
+            return getConsentIdFromEssentialClaims(oauthAuthzMsgCtx.getAuthorizationReqDTO().getEssentialClaims());
+        }
+
+        if (IdentityCommonConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
+            return getConsentIdFromRequestParam(oauthAuthzMsgCtx.getAuthorizationReqDTO());
+        }
+
+        return null;
     }
 
     /**
-     * Call Request Object Service and retrieve consent id.
+     * Get commonAuthId cookie from cookies array.
      *
-     * @param service        request object service
-     * @param sessionDataKey session data key
-     * @return consentID
+     * @param cookies cookies array
+     * @return commonAuthId cookie
      */
-    static String retrieveConsentIDFromReqObjService(RequestObjectService service, String sessionDataKey) {
+    @SuppressFBWarnings("COOKIE_USAGE")
+    // Suppressed content - Cookie handling to extract commonAuthId from cookies array
+    // Suppression reason - False Positive : The cookie is read-only and not modified or created.
+    // It is securely handled by the identity server framework, which enforces appropriate
+    // security flags (e.g., Secure, HttpOnly) during cookie creation.
+    // Suppressed warning count - 1
+    static String getCommonAuthIdFromCookies(Cookie[] cookies) {
 
-        String consentID = StringUtils.EMPTY;
-        try {
-            List<RequestedClaim> requestedClaims = service.getRequestedClaimsForSessionDataKey(sessionDataKey,
-                    false);
-            consentID = retrieveConsentIDFromClaimList(requestedClaims);
-            if (consentID.isEmpty()) {
-                requestedClaims = service.getRequestedClaimsForSessionDataKey(sessionDataKey, true);
-                consentID = retrieveConsentIDFromClaimList(requestedClaims);
-            }
+        String commonAuthId = StringUtils.EMPTY;
 
-        } catch (RequestObjectException ex) {
-            log.warn("Exception occurred", ex);
+        if (cookies == null || cookies.length == 0) {
+            return commonAuthId;
         }
-        return consentID;
-    }
 
-    /**
-     * Iterate the claims list to identify the consent-ID.
-     *
-     * @param requestedClaims list of claims
-     * @return consent id
-     */
-    static String retrieveConsentIDFromClaimList(List<RequestedClaim> requestedClaims) {
-
-        String consentID = StringUtils.EMPTY;
-        for (RequestedClaim claim : requestedClaims) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Claim: %s, value: %s", claim.getName().replaceAll("[\r\n]", ""),
-                        claim.getValue().replaceAll("[\r\n]", "")));
-            }
-
-            if (IdentityCommonConstants.OPENBANKING_INTENT_ID.equals(claim.getName())) {
-                consentID = claim.getValue();
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Consent-ID retrieved: %s", consentID.replaceAll("[\r\n]", "")));
-                }
+        ArrayList<Cookie> cookieList = new ArrayList<>(Arrays.asList(cookies));
+        for (Cookie cookie : cookieList) {
+            if (IdentityCommonConstants.COMMON_AUTH_ID.equals(cookie.getName())) {
+                commonAuthId = cookie.getValue();
                 break;
             }
         }
-        return consentID;
+        return commonAuthId;
     }
 
-    /**
-     * Validates the action status of the external service response
-     *
-     * @param response
-     * @throws IdentityOAuth2Exception
-     */
-    public static void serviceExtensionActionStatusValidation(ExternalServiceResponse response)
-            throws IdentityOAuth2Exception {
+    private static String getConsentIdFromCommonAuthId(String commonAuthId) throws ConsentManagementException {
 
-        if (!StatusEnum.SUCCESS.equals(response.getStatus())) {
-            if (response.getData() == null) {
-                log.error("Unable to locate \"data\" in the response payload");
-                throw new IdentityOAuth2Exception(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE,
-                        FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
-            }
+        List<String> consentIds = identityExtensionsDataHolder.getConsentCoreService()
+                .getConsentIdByConsentAttributeNameAndValue(IdentityCommonConstants.COMMON_AUTH_ID, commonAuthId);
 
-            String errMsg = response.getData().path(FinancialServicesConstants.ERROR_MESSAGE)
-                    .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE);
-            String errDesc = response.getData().path(FinancialServicesConstants.ERROR_DESCRIPTION)
-                    .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
-            throw new IdentityOAuth2Exception(errMsg, errDesc);
+        if (!consentIds.isEmpty()) {
+            return consentIds.get(0);
         }
+
+        return null;
     }
 
-    /**
-     * Get approved scopes by invoking the service extension endpoint
-     *
-     * @param oauthAuthzMsgCtx
-     * @param consentId
-     * @return
-     * @throws IdentityOAuth2Exception
-     */
-    public static String[] getApprovedScopesWithServiceExtension(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
-                                                           String consentId)
-            throws IdentityOAuth2Exception, FinancialServicesException {
+    static String getConsentIdFromEssentialClaims(String essentialClaims)
+            throws JsonProcessingException {
 
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
-        data.put(IdentityCommonConstants.CONSENT_ID, consentId);
+        String jsonPath = (String) identityExtensionsDataHolder.getConfigurationMap()
+                .get(FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH);
 
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
-                data, OperationEnum.GET_APPROVED_SCOPES);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION);
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("approvedScopes")) {
-            throw new IdentityOAuth2Exception("Missing approvedScopes array in response payload.");
+        if (StringUtils.isBlank(essentialClaims) || StringUtils.isBlank(jsonPath)) {
+            return null; // Return null if input is invalid
         }
 
-        ArrayNode approvedScopesArray = (ArrayNode) responseData.get("approvedScopes");
-        List<String> scopesList = new ArrayList<>();
-        approvedScopesArray.forEach(node -> scopesList.add(node.asText()));
-
-        return scopesList.toArray(new String[0]);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(essentialClaims);
+        JsonNode targetNode = node.at(jsonPath);
+        return extractConsentIdFromRegex(targetNode.asText());
     }
 
-    /**
-     * Get refresh token validity period by invoking service extension endpoint
-     *
-     * @param oauthAuthzMsgCtx
-     * @param consentId
-     * @return
-     * @throws IdentityOAuth2Exception
-     */
-    public static long getRefreshTokenValidityPeriodWithServiceExtension(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
-                                                                   String consentId)
-            throws IdentityOAuth2Exception, FinancialServicesException {
+    private static String getConsentIdFromRequestParam(OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO) {
 
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.SCOPES, oauthAuthzMsgCtx.getApprovedScope());
-        data.put(IdentityCommonConstants.CONSENT_ID, consentId);
+        String key = (String) identityExtensionsDataHolder.getConfigurationMap()
+                .get(FinancialServicesConstants.CONSENT_ID_EXTRACTION_KEY);
 
-        ConsentCoreService consentCoreService = IdentityExtensionsDataHolder.getInstance().getConsentCoreService();
-        ConsentResource consentResource = null;
-        try {
-            consentResource = consentCoreService.getConsent(consentId, false);
-            data.put(IdentityCommonConstants.VALIDITY_PERIOD, consentResource.getValidityPeriod());
-        } catch (ConsentManagementException e) {
-            log.error(String.format("Error while retrieving the consent for consent id: %s",
-                    consentId.replaceAll("[\r\n]", "")));
-            throw new IdentityOAuth2Exception("Error while retrieving the consent");
-        }
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(),
-                data, OperationEnum.GET_REFRESH_TOKEN_VALIDITY_PERIOD);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.POST_USER_AUTHORIZATION);
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("refreshTokenValidityPeriod")) {
-            throw new IdentityOAuth2Exception("Missing refreshTokenValidityPeriod in response payload.");
-        }
-
-        return responseData.get("refreshTokenValidityPeriod").asLong();
-    }
-
-    public static void appendParametersToTokenResponseWithServiceExtension(
-            OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO, OAuthTokenReqMessageContext tokReqMsgCtx)
-            throws FinancialServicesException, IdentityOAuth2Exception {
-
-        // Construct the payload
-        JSONObject data = new JSONObject();
-        data.put(IdentityCommonConstants.GRANT_TYPE, tokReqMsgCtx.getOauth2AccessTokenReqDTO().getGrantType());
-        data.put(IdentityCommonConstants.SCOPES, tokReqMsgCtx.getScope());
-
-        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                UUID.randomUUID().toString(), data, OperationEnum.APPEND_PARAMETERS_TO_TOKEN_RESPONSE);
-
-        // Invoke external service
-        ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest,
-                ServiceExtensionTypeEnum.PRE_ACCESS_TOKEN_GENERATION);
-
-        IdentityCommonUtils.serviceExtensionActionStatusValidation(response);
-
-        JsonNode responseData = response.getData();
-        if (responseData == null || !responseData.has("parameters")) {
-            throw new IdentityOAuth2Exception("Missing parameters in response payload.");
-        }
-
-        for (JsonNode claimNode : responseData.get("parameters")) {
-            if (!claimNode.hasNonNull("key") || !claimNode.hasNonNull("value")) {
-                continue;
-            }
-
-            String key = claimNode.get("key").asText();
-            String value = claimNode.get("value").asText();
-
-            // Add only if key is not empty
-            if (!key.isEmpty()) {
-                oAuth2AccessTokenRespDTO.addParameter(key, value);
-            }
+        // TODO: need to support other request parameters based on requirements
+        switch (key) {
+            case IdentityCommonConstants.SCOPE:
+                return getConsentIdFromScopesRequestParam(oAuth2AuthorizeReqDTO.getScopes());
+            default:
+                return null;
         }
     }
 
     /**
-     * Call Request Object Service and retrieve openbanking intent id.
+     * Get consent ID from the scopes request parameter.
+     * Used to extract the consent ID from the scopes request parameter. Eg: "pis ais:123456 cbpii"
      *
-     * @param key session data key
-     * @return openbanking intent id
+     * @param scopes Scopes
+     * @return Consent ID
      */
-    public static Optional<RequestedClaim>  retrieveIntentIDFromReqObjService(String key, String request)
-            throws IdentityOAuth2Exception {
-        Optional<RequestedClaim> intentClaim;
-        List<RequestedClaim> requestedClaimsForIDToken;
-        String errorMsg = "";
-        try {
-            if ("authorize".equals(request)) {
-                requestedClaimsForIDToken = getRequestedClaims(
-                        new SessionDataCacheKey(key).getSessionDataId(), false);
-                errorMsg = "Failed to obtain Claims from session data key :";
-            } else {
-                requestedClaimsForIDToken = getRequestedClaims(key);
-                errorMsg = "Failed to obtain Claims from token id :";
-            }
+    static String getConsentIdFromScopesRequestParam(String[] scopes) {
 
-            intentClaim = requestedClaimsForIDToken.stream()
-                    .filter(claimParam -> IdentityCommonConstants.OPENBANKING_INTENT_ID.equals(claimParam.getName()))
-                    .findFirst();
-        } catch (IdentityOAuth2Exception e) {
-            throw new IdentityOAuth2Exception(errorMsg + key);
+        StringBuilder scopesString = new StringBuilder();
+        for (String scope : scopes) {
+            scopesString.append(scope).append(IdentityCommonConstants.SPACE_SEPARATOR);
         }
 
-        return intentClaim;
+        return extractConsentIdFromRegex(scopesString.toString().trim());
+    }
+
+    static String extractConsentIdFromRegex(String value) {
+
+        if (StringUtils.isBlank(value)) {
+            return value;
+        }
+
+        String patternString = (String) identityExtensionsDataHolder.getConfigurationMap()
+                .get(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN);
+
+        if (StringUtils.isBlank(patternString)) {
+            return value;
+        }
+
+        Pattern pattern = Pattern.compile(patternString);
+
+        Matcher matcher = pattern.matcher(value);
+        return matcher.find() ? matcher.group(1) : null;
     }
 
     /**
-     * Method to obtain Claims from request object.
-     *
-     * @param sessionDataKey session data key of request
-     * @param isUserInfo     boolean value indicating whether user info claims are required or not
-     * @return List of claims
-     * @throws IdentityOAuth2Exception when failed to obtain claims using the service
+     * Add consent ID to the token response.
+     * @param oAuth2AccessTokenRespDTO OAuth2 access token response DTO
      */
-    @Generated(message = "Ignoring since the method require OSGi services to function.")
-    public static List<RequestedClaim> getRequestedClaims(String sessionDataKey, boolean isUserInfo)
-            throws IdentityOAuth2Exception {
+    public static void addConsentIdToTokenResponse(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO) {
 
-        List<RequestedClaim> requestedClaims = new ArrayList<>();
-        if (sessionDataKey != null && !sessionDataKey.isEmpty()) {
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("Obtaining request claims (without userinfo values ) from OSGi Service");
-                }
-
-                Object serviceObj = PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                        .getOSGiService(RequestObjectService.class, null);
-
-                if (serviceObj instanceof RequestObjectService) {
-                    RequestObjectService requestObjectService = (RequestObjectService) serviceObj;
-                    requestedClaims = requestObjectService.getRequestedClaimsForSessionDataKey(sessionDataKey,
-                            isUserInfo);
-                }
-            } catch (RequestObjectException e) {
-                throw new IdentityOAuth2Exception("Failed to obtain Claims from session data key :" +
-                        sessionDataKey);
-            }
+        boolean shouldAddConsentIdClaimToTokenResponse = Boolean
+                .parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ACCESS_TOKEN));
+        if (shouldAddConsentIdClaimToTokenResponse) {
+            String consentId = getConsentIdFromScopesArray(oAuth2AccessTokenRespDTO.getAuthorizedScopes()
+                    .split(IdentityCommonConstants.SPACE_SEPARATOR));
+            String consentIdClaimName = getConfiguredConsentIdClaimName();
+            oAuth2AccessTokenRespDTO.addParameter(consentIdClaimName, consentId);
         }
-        return requestedClaims;
     }
 
     /**
-     * Method to obtain Claims from request object.
+     * Get consent id from the scopes.
      *
-     * @param token token
-     * @return List of claims
-     * @throws IdentityOAuth2Exception when failed to obtain claims using the service
+     * @param scopes Scopes
+     * @return Consent ID
      */
-    @Generated(message = "Ignoring since the method require OSGi services to function.")
-    public static List<RequestedClaim> getRequestedClaims(String token) throws IdentityOAuth2Exception {
+    public static String getConsentIdFromScopesArray(String[] scopes) {
 
-        List<RequestedClaim> requestedClaims = new ArrayList<>();
-        if (token != null && !token.isEmpty()) {
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("Obtaining request claims from OSGi Service");
-                }
-                Object serviceObj = PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                        .getOSGiService(RequestObjectService.class, null);
+        String consentIdClaim = getConfiguredConsentIdClaimName();
 
-                if (serviceObj instanceof RequestObjectService) {
-                    RequestObjectService requestObjectService = (RequestObjectService) serviceObj;
-                    requestedClaims = requestObjectService.getRequestedClaimsForIDToken(token);
-                }
-            } catch (RequestObjectException e) {
-                throw new IdentityOAuth2Exception("Failed to obtain Claims from token", e);
+        for (String scope : scopes) {
+            if (scope.startsWith(consentIdClaim)) {
+                return scope.substring(consentIdClaim.length());
             }
         }
-        return requestedClaims;
+
+        return null;
+    }
+
+    /**
+     * Get the consent id claim name from config.
+     * @return consent ID custom claim name
+     */
+    public static String getConfiguredConsentIdClaimName() {
+
+        return (String) identityExtensionsDataHolder.getConfigurationMap()
+                .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME);
     }
 
 }

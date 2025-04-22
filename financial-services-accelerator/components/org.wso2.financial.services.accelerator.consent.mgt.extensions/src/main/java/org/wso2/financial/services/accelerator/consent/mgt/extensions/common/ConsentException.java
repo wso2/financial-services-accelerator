@@ -18,9 +18,15 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Consent exception class to be used in consent components and extensions.
@@ -30,6 +36,7 @@ public class ConsentException extends RuntimeException {
     private JSONObject payload;
     private ResponseStatus status;
     private URI errorRedirectURI;
+    private static final Log log = LogFactory.getLog(ConsentException.class);
 
     public ConsentException(ResponseStatus status, String errorMessage, Throwable cause) {
 
@@ -78,11 +85,26 @@ public class ConsentException extends RuntimeException {
     public ConsentException(URI errorURI, AuthErrorCode error, String errorDescription, String state) {
 
         if (errorURI != null && error != null) {
-            //add 302 as error code since this will be a redirect
-            errorRedirectURI = errorURI;
-            this.status = ResponseStatus.FOUND;
-            this.payload = createDefaultErrorObject(errorURI, error.toString(), ConsentOperationEnum.CONSENT_DEFAULT,
-                    errorDescription, state);
+            try {
+                //add 302 as error code since this will be a redirect
+                this.status = ResponseStatus.FOUND;
+                //set parameters as uri fragments
+                //https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#rfc.section.5
+                String errorResponse = ConsentExtensionConstants.ERROR_URI_FRAGMENT
+                        .concat(URLEncoder.encode(error.toString(), StandardCharsets.UTF_8.toString()));
+                if (errorDescription != null) {
+                    errorResponse = errorResponse.concat(ConsentExtensionConstants.ERROR_DESCRIPTION_PARAMETER)
+                            .concat(URLEncoder.encode(errorDescription, StandardCharsets.UTF_8.toString()));
+                }
+                if (state != null) {
+                    errorResponse = errorResponse.concat(ConsentExtensionConstants.STATE_PARAMETER)
+                            .concat(URLEncoder.encode(state, StandardCharsets.UTF_8.toString()));
+                }
+                this.errorRedirectURI = new URI(errorURI.toString().concat(errorResponse));
+
+            } catch (URISyntaxException | UnsupportedEncodingException e) {
+                log.error("Error while building the uri", e);
+            }
         }
     }
 

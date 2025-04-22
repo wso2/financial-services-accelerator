@@ -23,7 +23,7 @@
     <parent>
         <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-M3</version>
+        <version>4.0.0-alpha-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -202,8 +202,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!--TODO: improve coverage-->
-                                            <!--<minimum>0.8</minimum>-->
+                                            <minimum>0.8</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

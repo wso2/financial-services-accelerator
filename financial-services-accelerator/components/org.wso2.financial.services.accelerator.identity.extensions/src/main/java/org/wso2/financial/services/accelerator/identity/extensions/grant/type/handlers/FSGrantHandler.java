@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers;
 
-import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 
 /**
@@ -27,19 +26,10 @@ import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 public interface FSGrantHandler {
 
     /**
-     * append parameters to token response.
-     *
-     * @param oAuth2AccessTokenRespDTO
-     * @param tokReqMsgCtx
-     */
-    void appendParametersToTokenResponse(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
-                                         OAuthTokenReqMessageContext tokReqMsgCtx);
-
-    /**
-     * Return should issue refresh token
+     * Return should issue refresh token and optionally update the token request context
      *
      * @return should issue refresh token
      */
-    boolean issueRefreshToken(String grantType);
+    boolean issueRefreshToken(OAuthTokenReqMessageContext oAuthTokenReqMessageContext);
 
 }

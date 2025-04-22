@@ -37,7 +37,9 @@ class DCREndToEndFlow extends FSConnectorTest {
     ConfigurationService configuration = new ConfigurationService()
     private String accessToken
     private String clientId
-    private List<ConnectorTestConstants.ApiScope> consentScopes = [ConnectorTestConstants.ApiScope.ACCOUNTS]
+    private List<ConnectorTestConstants.ApiScope> consentScopes = [ConnectorTestConstants.ApiScope.ACCOUNTS,
+                                                                   ConnectorTestConstants.ApiScope.PAYMENTS,
+                                                                   ConnectorTestConstants.ApiScope.COF]
     private String registrationPath
     String ssa
     ClientRegistrationRequestBuilder registrationRequestBuilder
@@ -47,7 +49,6 @@ class DCREndToEndFlow extends FSConnectorTest {
         configuration.setTppNumber(1)
 
         dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(1)
         ssa = new File(configuration.getAppDCRSSAPath()).text
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
     }

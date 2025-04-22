@@ -46,8 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
@@ -815,6 +813,42 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
+     * Method to get service extensions endpoint retry count.
+     *
+     * @return String service extensions endpoint retry count
+     */
+    public int getServiceExtensionsEndpointRetryCount() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_RETRY_COUNT);
+        return retryCount.map(Integer::parseInt).orElse(1);
+    }
+
+    /**
+     * Method to get service extensions endpoint connect timeout in seconds.
+     *
+     * @return String service extensions endpoint read timeout in seconds
+     */
+    public int getServiceExtensionsEndpointConnectTimeoutInSeconds() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_CONNECT_TIMEOUT);
+        return retryCount.map(Integer::parseInt).orElse(3);
+    }
+
+    /**
+     * Method to get service extensions endpoint read timeout in seconds.
+     *
+     * @return String service extensions endpoint read timeout in seconds
+     */
+    public int getServiceExtensionsEndpointReadTimeoutInSeconds() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_READ_TIMEOUT);
+        return retryCount.map(Integer::parseInt).orElse(3);
+    }
+
+    /**
      * Method to get service extension types.
      *
      * @return List of service extensions
@@ -892,64 +926,6 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Method to get auth flow consent id source.
-     *
-     * @return String consent id source
-     */
-    public String getAuthFlowConsentIdSource() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.AUTH_FLOW_CONSENT_ID_SOURCE);
-        return config.map(String::trim).orElse(null);
-    }
-
-    /**
-     * Method to get consent id extraction json path.
-     *
-     * @return String consent id extraction json path
-     */
-    public String getConsentIdExtractionJsonPath() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH);
-        return config.map(String::trim).orElse(null);
-    }
-
-    /**
-     * Method to get consent id extraction key.
-     *
-     * @return String consent id extraction key
-     */
-    public String getConsentIdExtractionKey() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.CONSENT_ID_EXTRACTION_KEY);
-        return config.map(String::trim).orElse(null);
-    }
-
-    /**
-     * Method to get consent id extraction regex pattern.
-     *
-     * @return String consent id extraction regex pattern
-     */
-    public Pattern getConsentIdExtractionRegexPattern() {
-
-        Optional<String> config = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN);
-
-        return config.map(String::trim)
-                .filter(pattern -> !pattern.isEmpty())
-                .map(pattern -> {
-                    try {
-                        return Pattern.compile(pattern);
-                    } catch (PatternSyntaxException e) {
-                        throw new IllegalArgumentException("Invalid regex pattern configured: " + pattern, e);
-                    }
-                })
-                .orElse(null);
-    }
-
-    /**
      * Get config related for checking whether PSU is a federated user or not.
      *
      * @return Boolean value indicating whether PSU is a federated user or not
@@ -971,4 +947,24 @@ public final class FinancialServicesConfigParser {
                 FinancialServicesConstants.PSU_FEDERATED_IDP_NAME);
         return config.map(String::trim).orElse(null);
     }
+
+    /**
+     * Returns the list of allowed headers to pass in consent manage service extension requests.
+     *
+     * @return List of allowed headers.
+     */
+    public List<String> getConsentManageExtensionAllowedHeaders() {
+
+        Object allowedHeadersObj = configuration.get(FinancialServicesConstants.
+                CONSENT_MANAGE_EXTENSION_ALLOWED_HEADERS);
+        List<String> allowedHeaders = new ArrayList<>();
+        if (allowedHeadersObj instanceof List) {
+            allowedHeaders.addAll((List) allowedHeadersObj);
+        } else if (allowedHeadersObj instanceof String) {
+            allowedHeaders.add((String) allowedHeadersObj);
+        }
+
+        return allowedHeaders;
+    }
+
 }

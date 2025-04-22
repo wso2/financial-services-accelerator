@@ -20,10 +20,13 @@ package client_authenticator_enforcement
 
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.annotations.AfterClass
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
@@ -34,12 +37,17 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
     String clientId
     ConnectorTestConstants.ApiScope scope = ConnectorTestConstants.ApiScope.ACCOUNTS
     private ConfigurationService configuration = new ConfigurationService()
+    ClientRegistrationRequestBuilder registrationRequestBuilder
+
+    @BeforeClass
+    void setup() {
+        //Create Regulatory Application with tls_client_auth method
+        clientId = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
+    }
 
     @Test (priority = 0)
     void "Validate token request with deleted client_id for iss and sub in client_assertion"() {
 
-
-        clientId = configuration.getAppInfoClientID()
         //Token Request for the deleted client
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 "deleted_client_id", [scope])
@@ -48,7 +56,7 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                ("A valid OAuth client could not be found for client_id: deleted_client_id"))
+                ("Client credentials are invalid."))
     }
 
     @Test
@@ -56,7 +64,6 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
 
         long expireTime = (long) (System.currentTimeSeconds()).minus(600000000)
 
-        clientId = configuration.getAppInfoClientID()
         Response tokenResponse = getApplicationAccessTokenResponseWithCustomExp(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 clientId, [scope], expireTime)
 
@@ -70,7 +77,6 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
     @Test
     void "Validate token request for pkjwt client without client_assertion"() {
 
-        clientId = configuration.getAppInfoClientID()
         Response tokenResponse = getApplicationAccessTokenResponseWithoutAssertion(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 clientId, [scope])
 
@@ -100,7 +106,6 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
     @Test(priority = 1)
     void "pkjwt client authentication with both x-wso2-mutual-auth-cert header and client_assertion"() {
 
-        clientId = configuration.getAppInfoClientID()
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 clientId, [scope])
 
@@ -116,7 +121,6 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
     @Test(priority = 1)
     void "pkjwt client authentication with x-wso2-mutual-auth-cert header, client id and client_assertion and client assertion type"() {
 
-        clientId = configuration.getAppInfoClientID()
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 clientId, [scope])
 
@@ -127,5 +131,11 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "expires_in"))
         Assert.assertNotNull(TestUtil.parseResponseBody(tokenResponse, "scope"))
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
+    }
+
+    @AfterClass
+    void cleanup() {
+        //Delete the application created for the test
+        deleteApplication(clientId, ConnectorTestConstants.PKJWT_AUTH_METHOD)
     }
 }

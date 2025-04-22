@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -24,12 +24,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -38,8 +40,11 @@ import org.wso2.financial.services.accelerator.common.extension.model.ServiceExt
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -51,10 +56,10 @@ import java.util.List;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         boolean isServiceExtensionsEndpointEnabled = configParser.isServiceExtensionsEndpointEnabled();
         List<ServiceExtensionTypeEnum> serviceExtensionTypes = configParser.getServiceExtensionTypes();
         return isServiceExtensionsEndpointEnabled && serviceExtensionTypes.contains(serviceExtensionTypeEnum);
@@ -62,64 +67,113 @@ public class ServiceExtensionUtils {
 
     /**
      * Method to invoke external service call.
+     * Implements the retry mechanism for the external service call.
      *
      * @param externalServiceRequest
      * @param serviceType
      * @return
      */
     public static ExternalServiceResponse invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest,
-                                                       ServiceExtensionTypeEnum serviceType)
+                                                                    ServiceExtensionTypeEnum serviceType)
             throws FinancialServicesException {
-        try {
-            String externalServicesPayload = (new JSONObject(externalServiceRequest)).toString();
 
-            String constructedUrl = constructExtensionEndpoint(serviceType);
-            HttpPost httpPost = new HttpPost(constructedUrl);
-            StringEntity params = new StringEntity(externalServicesPayload);
-            httpPost.setEntity(params);
-            httpPost.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
-                    FinancialServicesConstants.JSON_CONTENT_TYPE);
-            httpPost.setHeader(FinancialServicesConstants.ACCEPT,
-                    FinancialServicesConstants.JSON_CONTENT_TYPE);
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        final int maxRetries = configParser.getServiceExtensionsEndpointRetryCount();
 
-            //Setting security credentials
-            if (FinancialServicesConstants.BASIC_AUTH.equals(configParser.getServiceExtensionsEndpointSecurityType())) {
-                setBasicAuthHeader(httpPost, configParser.getServiceExtensionsEndpointSecurityBasicAuthUsername(),
-                        configParser.getServiceExtensionsEndpointSecurityBasicAuthPassword());
-            } else if (FinancialServicesConstants.OAUTH2
-                    .equals(configParser.getServiceExtensionsEndpointSecurityType())) {
-                setOauth2AuthHeader(httpPost, configParser.getServiceExtensionsEndpointSecurityOauth2Token());
-            } else {
-                throw new FinancialServicesException("Invalid security type for service extensions endpoint");
+        // Read timeout
+        final int socketTimeoutMillis = configParser.getServiceExtensionsEndpointReadTimeoutInSeconds() * 1000;
+
+        // Connection timeout
+        final int connectTimeoutMillis = configParser.getServiceExtensionsEndpointConnectTimeoutInSeconds() * 1000;
+
+        int attempt = 0;
+        while (attempt < maxRetries) {
+            attempt++;
+            try {
+                String externalServicesPayload = (new JSONObject(externalServiceRequest)).toString();
+                String constructedUrl = constructExtensionEndpoint(serviceType);
+
+                if (log.isDebugEnabled()) {
+                    String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
+                    log.debug("Invoking external service [requestUrl=" + sanitizedUrl + "]");
+                }
+
+                HttpPost httpPost = new HttpPost(constructedUrl);
+                StringEntity params = new StringEntity(externalServicesPayload);
+                httpPost.setEntity(params);
+                httpPost.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
+                        FinancialServicesConstants.JSON_CONTENT_TYPE);
+                httpPost.setHeader(FinancialServicesConstants.ACCEPT,
+                        FinancialServicesConstants.JSON_CONTENT_TYPE);
+
+                // Set timeouts
+                RequestConfig requestConfig = RequestConfig.custom()
+                        .setSocketTimeout(socketTimeoutMillis)
+                        .setConnectTimeout(connectTimeoutMillis)
+                        .setConnectionRequestTimeout(connectTimeoutMillis)
+                        .build();
+                httpPost.setConfig(requestConfig);
+
+                // Set security credentials
+                String securityType = configParser.getServiceExtensionsEndpointSecurityType();
+                if (FinancialServicesConstants.BASIC_AUTH.equals(securityType)) {
+                    setBasicAuthHeader(httpPost,
+                            configParser.getServiceExtensionsEndpointSecurityBasicAuthUsername(),
+                            configParser.getServiceExtensionsEndpointSecurityBasicAuthPassword());
+                } else if (FinancialServicesConstants.OAUTH2.equals(securityType)) {
+                    setOauth2AuthHeader(httpPost,
+                            configParser.getServiceExtensionsEndpointSecurityOauth2Token());
+                } else {
+                    throw new FinancialServicesException("Invalid security type for service extensions endpoint");
+                }
+
+                try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+                    HttpEntity entity = response.getEntity();
+                    if (entity == null || entity.getContent() == null) {
+                        throw new FinancialServicesException("No response content received from external service");
+                    }
+
+                    String responseContent = IOUtils.toString(entity.getContent(),
+                            String.valueOf(StandardCharsets.UTF_8));
+                    int statusCode = response.getStatusLine().getStatusCode();
+
+                    if (log.isDebugEnabled()) {
+                        String sanitizedUrl = constructedUrl.replaceAll("[\r\n]", "");
+                        log.debug("External service response received [requestUrl=" + sanitizedUrl + ", statusCode=" +
+                                statusCode + "]");
+                    }
+
+                    if (statusCode != 200) {
+                        log.error(String.format(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR +
+                                        "Status code: %s, Error: %s", statusCode,
+                                responseContent.replaceAll("[\r\n]", "")));
+                        throw new FinancialServicesException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
+                    }
+
+                    return mapResponse(responseContent, ExternalServiceResponse.class);
+                }
+
+            } catch (IOException e) {
+                if (isRetryableException(e)) {
+                    log.warn(String.format("Attempt %d failed to call external service: %s",
+                            attempt, e.getMessage().replaceAll("[\r\n]", "")));
+                    if (attempt >= maxRetries) {
+                        throw new FinancialServicesException("External service call failed after retries", e);
+                    }
+                } else {
+                    log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+                    throw new FinancialServicesException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
+                }
             }
-
-            CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            if (entity == null) {
-                throw new FinancialServicesException("Error occurred while invoking the external service");
-            }
-
-            InputStream inputStream = entity.getContent();
-            if (inputStream == null) {
-                throw new FinancialServicesException("Error occurred while invoking the external service");
-            }
-
-            String responseContent = IOUtils.toString(inputStream, String.valueOf(StandardCharsets.UTF_8));
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != 200) {
-                log.error(String.format("Error occurred while invoking the external service. " +
-                                "Status code: %s, Error: %s", statusCode,
-                        responseContent.replaceAll("[\r\n]", "")));
-                throw new FinancialServicesException("Error occurred while invoking the external service");
-            }
-
-            // Map response to response model
-            return mapResponse(responseContent, ExternalServiceResponse.class);
-        } catch (JsonProcessingException e) {
-            throw new FinancialServicesException("Error occurred while mapping response to model class", e);
-        } catch (IOException e) {
-            throw new FinancialServicesException("Error occurred while invoking the external service", e);
         }
+
+        throw new FinancialServicesException("External service call failed");
+    }
+
+    private static boolean isRetryableException(Exception e) {
+        return e instanceof SocketTimeoutException ||
+                e instanceof ConnectException ||
+                e instanceof UnknownHostException;
     }
 
     /**
@@ -127,8 +181,8 @@ public class ServiceExtensionUtils {
      *
      * @param jsonResponse
      * @param clazz
-     * @return
      * @param <T>
+     * @return
      * @throws JsonProcessingException
      */
     public static <T> T mapResponse(String jsonResponse, Class<T> clazz) throws JsonProcessingException {
@@ -205,9 +259,9 @@ public class ServiceExtensionUtils {
     /**
      * Check whether a given path exists in a JSONObject.
      *
-     * @param jsonObject  JSONObject to check
-     * @param path        Path to check
-     * @return        Whether the path exists
+     * @param jsonObject JSONObject to check
+     * @param path       Path to check
+     * @return Whether the path exists
      */
     public static boolean pathExists(JSONObject jsonObject, String path) {
         String[] keys = path.split("\\.");
@@ -231,9 +285,9 @@ public class ServiceExtensionUtils {
     /**
      * Retrieve the value from a JSONObject for a given path.
      *
-     * @param jsonObject  JSONObject to retrieve the value from
-     * @param path        Path to the value
-     * @return          Value for the given path
+     * @param jsonObject JSONObject to retrieve the value from
+     * @param path       Path to the value
+     * @return Value for the given path
      */
     public static Object retrieveValueFromJSONObject(JSONObject jsonObject, String path) {
         String[] keys = path.split("\\.");

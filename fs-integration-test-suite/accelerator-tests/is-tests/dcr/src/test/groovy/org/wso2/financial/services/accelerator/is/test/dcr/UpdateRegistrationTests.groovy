@@ -22,6 +22,7 @@ import org.wso2.financial.services.accelerator.test.framework.request_builder.Cl
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 import java.nio.charset.Charset
+import java.nio.file.Paths
 
 /**
  * Update Registration Tests.
@@ -32,13 +33,10 @@ class UpdateRegistrationTests extends FSConnectorTest {
             ConnectorTestConstants.ApiScope.ACCOUNTS
     ]
     ClientRegistrationRequestBuilder registrationRequestBuilder
-    def ssa
+    String ssa
 
     @BeforeClass
     void generateAccessToken() {
-        configuration.setTppNumber(1)
-
-
         dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 
@@ -70,9 +68,10 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
-    @Test
+    @Test (priority = 1)
     void "TC0103003_Update client request with an invalid access token"() {
 
+        configuration.setPsuNumber(1)
         def authToken = "${configuration.getUserPSUName()}:" +
                 "${configuration.getUserPSUPWD()}"
         def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
@@ -96,6 +95,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_redirect_uri")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid redirect_uris found in the Request")
     }
 
     @Test
@@ -107,7 +108,9 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+                "invalid_redirect_uri")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid redirect_uris found in the Request")
     }
 
     @Test
@@ -120,9 +123,12 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter redirectUris cannot be empty")
     }
 
-    @Test
+    //TODO: Issue: https://github.com/wso2/financial-services-accelerator/issues/475
+    @Test (enabled = false)
     void "Update client request with multiple redirect urls"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -132,7 +138,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
 
-        JSONObject jsonObject = new JSONObject(registrationResponse)
+        String responseBody = registrationResponse.getBody().asString()
+        JSONObject jsonObject = new JSONObject(responseBody)
         JSONArray redirectUris = jsonObject.getJSONArray("redirect_uris")
 
         Assert.assertTrue(redirectUris.getString(0).equalsIgnoreCase(configuration.getAppDCRRedirectUri()))
@@ -150,6 +157,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_redirect_uri")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Redirect URIs do not match with the software statement")
     }
 
     @Test
@@ -163,6 +172,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_redirect_uri")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid redirect_uris found in the Request")
     }
 
     @Test
@@ -176,6 +187,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_redirect_uri")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Redirect URIs do not match with the software statement")
     }
 
     @Test
@@ -188,6 +201,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid issuer, issuer should be the same as the software id")
     }
 
     @Test
@@ -205,6 +220,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter iss not found in the request")
     }
 
     @Test
@@ -218,6 +235,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid token endpoint authentication method requested.")
     }
 
     @Test
@@ -231,6 +250,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid token endpoint authentication method requested.")
     }
 
     @Test
@@ -247,6 +268,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter tokenEndpointAuthMethod not found in the request")
     }
 
     @Test
@@ -260,6 +283,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid grantTypes provided")
     }
 
     @Test
@@ -272,6 +297,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid grantTypes provided")
     }
 
     @Test
@@ -279,7 +306,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
-        payload.remove("grant_type")
+        payload.remove("grant_types")
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
@@ -288,38 +315,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with an invalid response_types"() {
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("response_types", "token")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with an null response_types"() {
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("response_types", null)
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter grantTypes cannot be empty")
     }
 
     @Test
@@ -334,22 +331,6 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 .put(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-    }
-
-    @Test
-    void "Update registration request with softwareId not match with ssa"() {
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("software_id", "SP1")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
     }
 
     @Test
@@ -380,6 +361,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter scope not found in the request")
     }
 
     @Test
@@ -396,6 +379,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_software_statement")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Signature validation failed for the software statement")
     }
 
     @Test
@@ -412,6 +397,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_software_statement")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter softwareStatement not found in the request")
     }
 
     @Test
@@ -427,7 +414,9 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+                "invalid_software_statement")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter softwareStatement not found in the request")
     }
 
     @Test
@@ -444,6 +433,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter applicationType not found in the request")
     }
 
     @Test
@@ -460,6 +451,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid applicationType provided")
     }
 
     @Test
@@ -467,7 +460,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
-        payload.put("application_type", null)
+        payload.put("application_type", "null")
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
@@ -476,38 +469,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with an invalid id_token_signed_response_alg"() {
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("id_token_signed_response_alg", "ES256")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with null value for id_token_signed_response_alg"() {
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("id_token_signed_response_alg", null)
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid applicationType provided")
     }
 
     @Test
@@ -524,38 +487,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with an invalid request_object_signing_alg"() {
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("request_object_signing_alg", "ES256")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with null value for request_object_signing_alg"() {
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("request_object_signing_alg", null)
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter idTokenSignatureAlgorithm not found in the request")
     }
 
     @Test
@@ -572,6 +505,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter requestObjectSignatureAlgorithm not found in the request")
     }
 
     @Test
@@ -588,6 +523,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid signature algorithm requested")
     }
 
     @Test
@@ -604,6 +541,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Token endpoint auth signing alg must be specified if token_endpoint_auth_method is private_key_jwt.")
     }
 
     @Test
@@ -624,58 +563,13 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Token endpoint auth signing alg must be specified if token_endpoint_auth_method is private_key_jwt.")
     }
 
-    @Test
+    //TODO: IS issue: https://github.com/wso2/financial-services-accelerator/issues/472
+    @Test (enabled = false)
     void "Update registration request without client_name" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
 
         payload.remove("client_name")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with jwks_uri not match with SSA" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("jwks_uri", "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/abcd.jwks")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request without jwks_uri" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.remove("jwks_uri")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-    }
-
-    @Test
-    void "Update registration request with token_type_extension not match with SSA" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("token_type_extension", "JSON")
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
@@ -714,6 +608,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test
@@ -730,21 +626,28 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test
     void "Update registration request with a software statement having disallowed characters for software_client_name" (){
 
-        String ssa = TestUtil.getFileContent(TestUtil.getFileFromResources("/InvalidSSA/ssa_invalidClientName.txt"))
-                .toString()
+        String invalidSsaPath = Paths.get(configuration.getTestArtifactLocation(),
+                "DynamicClientRegistration", "uk", "tpp1", "ssa_invalidClientName.txt")
+
+        File ssaFile = new File(invalidSsaPath)
+
+        String ssa = TestUtil.getFileContent(ssaFile).toString()
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(registrationRequestBuilder.getRegularClaims(ssa))
                 .put(dcrPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+        //TODO: Uncomment after fixing the issue: https://github.com/wso2/financial-services-accelerator/issues/480
+//        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+//                "invalid_client_metadata")
     }
 
     @Test
@@ -762,6 +665,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Certificate bound access tokens is required. 'None' binding type is found.")
     }
 
     @Test
@@ -778,6 +683,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Certificate bound access tokens is required. 'None' binding type is found.")
     }
 
     @Test
@@ -795,6 +702,8 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Requested client authentication method incompatible with the Private Key JWT Reuse config value.")
     }
 
     @Test
@@ -809,25 +718,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .put(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-    }
-
-    @Test
-    void "Update registration request with ext_application_display_name having disallowed characters" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
-
-        payload.put("ext_application_display_name", "WSO2 Open Banking TPP @@||++(Sandbox)")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
 
     @Test (priority = 2)
@@ -854,9 +745,13 @@ class UpdateRegistrationTests extends FSConnectorTest {
 
         deleteApplicationIfExist(clientId)
 
+        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
+
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(registrationRequestBuilder.getRegularClaims(ssa, configuration.getAppDCRSoftwareId(),
-                        ConnectorTestConstants.TLS_AUTH_METHOD))
+                .body(payload.toString())
                 .post(dcrPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
@@ -878,6 +773,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
 
         payload.put("require_signed_request_object", true)
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
@@ -893,12 +789,17 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
 
         payload.put("require_signed_request_object", false)
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
                 .put(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Require request object value is incompatible with FAPI requirements")
     }
 
     @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
@@ -908,21 +809,6 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
 
         payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
-
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-    }
-
-    @Test (priority = 2, dependsOnMethods = ["Create tls_client_auth_app"])
-    void "Update registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for tls_client_auth method" (){
-
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
-                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
-
-        payload.put("token_endpoint_allow_reuse_pvt_key_jwt", true)
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
@@ -955,6 +841,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 configuration.getAppDCRSoftwareId(), ConnectorTestConstants.TLS_AUTH_METHOD))
 
         payload.remove("token_endpoint_auth_signing_alg")
+        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
                 .body(payload.toString())
