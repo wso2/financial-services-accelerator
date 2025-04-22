@@ -39,6 +39,7 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>org.wso2.financial.services.accelerator.common</artifactId>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
@@ -65,6 +66,7 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>org.wso2.financial.services.accelerator.identity.extensions</artifactId>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>

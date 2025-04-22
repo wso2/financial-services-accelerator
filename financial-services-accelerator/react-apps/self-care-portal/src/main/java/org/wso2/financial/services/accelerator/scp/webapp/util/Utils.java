@@ -34,7 +34,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
@@ -101,8 +100,6 @@ public class Utils {
 
         } catch (IOException e) {
             LOG.error("Exception occurred while forwarding request. Caused by, ", e);
-        } catch (FinancialServicesException e) {
-            LOG.error("Exception occurred while generating http client. Caused by, ", e);
         }
         throw new TokenGenerationException("Unexpected response received for the request. path: " +
                 request.getURI() + " response:" + responseStr);
@@ -122,8 +119,6 @@ public class Utils {
             LOG.error("Exception occurred while sending token request. Caused by, ", e);
         } catch (JSONException e) {
             LOG.error("Exception occurred while processing token response. Caused by, ", e);
-        } catch (FinancialServicesException e) {
-            LOG.error("Exception occurred while generating http client. Caused by, ", e);
         }
         throw new TokenGenerationException("Invalid response received for token request");
     }
