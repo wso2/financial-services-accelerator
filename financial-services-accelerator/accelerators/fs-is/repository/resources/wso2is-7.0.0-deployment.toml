@@ -499,6 +499,9 @@ json_path="/id_token/openbanking_intent_id/value" # Must be configured if "auth_
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler"
 validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator"
 
+[financial_services.consent.manage_extension]
+allowed_headers = ["x-wso2-client-id"]
+
 [[financial_services.consent.authorize_steps.retrieve]]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"
 priority = 1
