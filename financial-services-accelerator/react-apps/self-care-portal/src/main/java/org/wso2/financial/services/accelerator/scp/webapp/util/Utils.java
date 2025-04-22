@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -106,8 +107,7 @@ public class Utils {
     }
 
     public static JSONObject sendTokenRequest(HttpPost tokenReq) throws TokenGenerationException {
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
-            HttpResponse response = client.execute(tokenReq);
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(tokenReq)) {
             String responseStr = EntityUtils.toString(response.getEntity());
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {

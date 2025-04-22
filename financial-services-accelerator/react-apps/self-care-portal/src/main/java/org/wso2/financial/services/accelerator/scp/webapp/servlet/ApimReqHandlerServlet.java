@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>
  * This interrupts the requests, adds auth header, and forward requests to API Manager
  */
-@WebServlet(name = "ApimReqHandlerServlet", urlPatterns = {"/scp/admin/*"})
+@WebServlet(name = "ApimReqHandlerServlet", urlPatterns = {"/api/fs/consent/admin/*"})
 public class ApimReqHandlerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7385252581004845440L;

@@ -28,9 +28,9 @@ const SearchObjectContextProvider = (props) => {
         limit: JSON.parse(window.localStorage.getItem("postsPerPage")) || CONFIG.NUMBER_OF_CONSENTS,
         offset: 0,
         dateRange: "",
-        consentIDs: "",
-        userIDs: "",
-        clientIDs: "",
+        consentIds: "",
+        userIds: "",
+        clientIds: "",
         consentStatuses: specConfigurations.status.authorised,
         consentTypes: consentTypes[0].id, // Accelerator only supporting the account consents type in SCP.
         hideAdvanceSearchOptions: true

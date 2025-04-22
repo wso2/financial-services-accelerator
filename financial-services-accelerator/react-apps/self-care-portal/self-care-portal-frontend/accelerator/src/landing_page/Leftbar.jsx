@@ -49,9 +49,9 @@ export const Leftbar = ({setTitle}) => {
         let search = {
             ...searchObj,
             dateRange: "",
-            consentIDs: "",
-            userIDs: "",
-            clientIDs: "",
+            consentIds: "",
+            userIds: "",
+            clientIds: "",
             consentTypes: consentTypeKey,
             consentStatuses: lang[consentTypeKey][0].id,
             offset: 0

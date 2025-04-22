@@ -26,6 +26,9 @@ export const getApplicationInfo = async (clientIdList) => {
     var serverURL = CONFIG.SERVER_URL
     const requestConfig = {
         method: "GET",
+        headers: {
+            "Authorization": "Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==",
+        },
         url: `${serverURL}/api/server/v1/applications?attributes=advancedConfigurations,clientId`
     };
 

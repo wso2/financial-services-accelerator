@@ -33,9 +33,9 @@ export const HomeTile = () => {
             const search = {
                 ...searchObj,
                 dateRange: "",
-                consentIDs: "",
-                userIDs: "",
-                clientIDs: "",
+                consentIds: "",
+                userIds: "",
+                clientIds: "",
                 consentTypes: id,
                 consentStatuses: lang[id][0].id,
                 offset: 0,

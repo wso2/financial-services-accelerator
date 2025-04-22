@@ -68,10 +68,10 @@ export const AdvanceSearch = () => {
         setSearchLimit(searchObj.limit);
         setSearchOffset(searchObj.offset);
         setDateRange(searchObj.dateRange);
-        setConsentId(searchObj.consentIDs);
-        setAccountId(searchObj.accountIDs);
-        setSearchUser(searchObj.userIDs);
-        setSoftwareId(searchObj.clientIDs);
+        setConsentId(searchObj.consentIds);
+        setAccountId(searchObj.accountIds);
+        setSearchUser(searchObj.userIds);
+        setSoftwareId(searchObj.clientIds);
         setAdvanceSearchVisibility(!searchObj.hideAdvanceSearchOptions)
     }, [searchObj]);
 
@@ -246,10 +246,10 @@ export const AdvanceSearch = () => {
                                     limit: searchLimit,
                                     offset: 0,
                                     dateRange: dateRange,
-                                    consentIDs: consentId,
-                                    accountIDs: accountId,
-                                    userIDs: modifiedSearchUserId,
-                                    clientIDs: softwareId,
+                                    consentIds: consentId,
+                                    accountIds: accountId,
+                                    userIds: modifiedSearchUserId,
+                                    clientIds: softwareId,
                                 }
                                 setContextSearchObject(search)
                                 setContextSearchUtilState(!searchOnClickState)
@@ -269,10 +269,10 @@ export const AdvanceSearch = () => {
                                     limit: searchLimit,
                                     offset: 0,
                                     dateRange: "",
-                                    consentIDs: "",
-                                    accountIDs: "",
-                                    userIDs: "",
-                                    clientIDs: "",
+                                    consentIds: "",
+                                    accountIds: "",
+                                    userIds: "",
+                                    clientIds: "",
                                 }
                                 setContextSearchObject(search)
                                 let elems = document.getElementsByClassName("calandarArea");

@@ -53,9 +53,9 @@ export const DetailedAgreement = ({match}) => {
             limit: 1,
             offset: 0,
             dateRange: "",
-            consentIDs: match.params.id,
-            userIDs: "",
-            clientIDs: "",
+            consentIds: match.params.id,
+            userIds: "",
+            clientIds: "",
             consentStatuses: "",
             consentTypes: ""
         }
