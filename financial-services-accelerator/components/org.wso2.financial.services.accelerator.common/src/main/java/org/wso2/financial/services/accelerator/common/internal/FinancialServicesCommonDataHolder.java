@@ -18,16 +18,9 @@
 
 package org.wso2.financial.services.accelerator.common.internal;
 
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
-import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 
 import java.security.KeyStore;
 
@@ -50,7 +43,6 @@ public class FinancialServicesCommonDataHolder {
                 .get(FinancialServicesConstants.COMMON_IDENTITY_CACHE_ACCESS_EXPIRY));
         setCommonCacheModifiedExpiry((String) FinancialServicesConfigParser.getInstance().getConfiguration()
                 .get(FinancialServicesConstants.COMMON_IDENTITY_CACHE_MODIFY_EXPIRY));
-        initConnectionManagerForHttpsProtocol();
     }
 
     public static FinancialServicesCommonDataHolder getInstance() {
@@ -99,36 +91,5 @@ public class FinancialServicesCommonDataHolder {
 
     public void setConnectionManager(PoolingHttpClientConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
-    }
-
-
-    /**
-     * Initialize the connection manager for HTTPS protocol.
-     *
-     * @throws FinancialServicesException FinancialServicesException exception
-     */
-    private void initConnectionManagerForHttpsProtocol() {
-
-        int maxTotal = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections();
-        int maxPerRoute = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
-
-        try {
-            SSLConnectionSocketFactory sslsf = HTTPClientUtils.createSSLConnectionSocketFactory();
-            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
-                    .<ConnectionSocketFactory>create()
-                    .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                    .register(HTTPS_PROTOCOL, sslsf)
-                    .build();
-
-            connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-
-            connectionManager.setMaxTotal(maxTotal);
-            connectionManager.setDefaultMaxPerRoute(maxPerRoute);
-            setConnectionManager(connectionManager);
-        } catch (FinancialServicesException e) {
-            if (connectionManager != null) {
-                connectionManager.close();
-            }
-        }
     }
 }

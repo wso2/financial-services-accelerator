@@ -20,12 +20,21 @@ package org.wso2.financial.services.accelerator.common.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationServiceImpl;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 
 /**
  * Method to register Financial Services common OSGi Services.
@@ -37,6 +46,9 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 public class FinancialServicesCommonServiceComponent {
 
     private static final Log log = LogFactory.getLog(FinancialServicesCommonServiceComponent.class);
+    private PoolingHttpClientConnectionManager connectionManager;
+    public static final String HTTP_PROTOCOL = "http";
+    public static final String HTTPS_PROTOCOL = "https";
 
     @Activate
     protected void activate(ComponentContext context) {
@@ -45,7 +57,7 @@ public class FinancialServicesCommonServiceComponent {
                 = new FinancialServicesConfigurationServiceImpl();
         context.getBundleContext().registerService(FinancialServicesConfigurationService.class.getName(),
                 financialServicesConfigurationService, null);
-
+        initConnectionManagerForHttpsProtocol();
         log.debug("Financial Services common component is activated successfully");
     }
 
@@ -53,5 +65,33 @@ public class FinancialServicesCommonServiceComponent {
     protected void deactivate(ComponentContext context) {
 
         log.debug("Financial Services common component is deactivated");
+    }
+
+    /**
+     * Initialize the connection manager for HTTPS protocol.
+     */
+    private void initConnectionManagerForHttpsProtocol() {
+
+        int maxTotal = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections();
+        int maxPerRoute = FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
+
+        try {
+            SSLConnectionSocketFactory sslsf = HTTPClientUtils.createSSLConnectionSocketFactory();
+            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+                    .<ConnectionSocketFactory>create()
+                    .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                    .register(HTTPS_PROTOCOL, sslsf)
+                    .build();
+
+            connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+
+            connectionManager.setMaxTotal(maxTotal);
+            connectionManager.setDefaultMaxPerRoute(maxPerRoute);
+            FinancialServicesCommonDataHolder.getInstance().setConnectionManager(connectionManager);
+        } catch (FinancialServicesException e) {
+            if (connectionManager != null) {
+                connectionManager.close();
+            }
+        }
     }
 }
