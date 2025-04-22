@@ -33,8 +33,6 @@ class DeleteRegistrationTests extends FSConnectorTest {
 
     @BeforeClass
     void generateAccessToken() {
-
-        configuration.setTppNumber(1)
         dcrPath = ConnectorTestConstants.REGISTRATION_ENDPOINT
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
 
@@ -64,9 +62,10 @@ class DeleteRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
-    @Test
+    @Test (priority = 1)
     void "TC0104002_Delete client with an invalid access token"() {
 
+        configuration.setPsuNumber(1)
         def authToken = "${configuration.getUserPSUName()}:" + "${configuration.getUserPSUPWD()}"
         def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
 
