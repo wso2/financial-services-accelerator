@@ -34,23 +34,20 @@ export const getConsentsFromAPI = (user, consentTypes) => {
     var userId = userIdAdjustment(user.email)
 
     // Accelerator only supporting the account consents type in SCP.
-    adminUrl = `${CONFIG.BACKEND_URL}/api/fs/consent/admin/search?consentTypes=${consentTypes}`
-    defaultUrl = `${CONFIG.BACKEND_URL}/api/fs/consent/admin/search?consentTypes=${consentTypes}&userIds=${userId}`
+    adminUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}`
+    defaultUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}&userIds=${userId}`
 
     var selectedUrl
     if (user.role === "customerCareOfficer") {
-        console.log("customerCareOfficer", user.role);
         selectedUrl = adminUrl;
     } else {
-        console.log("Normal", user.role);
         selectedUrl = defaultUrl
     }
 
     const requestConfig = {
         headers: {
             "Content-Type": "application/json",
-//            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
-            "Authorization": "Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==",
+            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)
         },
         method: "GET",
         url: `${selectedUrl}`,
@@ -89,8 +86,6 @@ function getToTimeFromSearchObject(dateRange) {
 }
 
 function getClientIdsFromSoftwareProvider(softwareProvider, appInfo) {
-    console.log("getClientIdsFromSoftwareProvider", softwareProvider);
-    console.log("getClientIdsFromSoftwareProvider", appInfo);
     for (let clientId in appInfo.data) {
         if (appInfo.data.hasOwnProperty(clientId)) {
             let softwareClientName =
@@ -108,7 +103,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
 
     let currentUserEmail = userIdAdjustment(user.email)
 
-    const serverURL = `${CONFIG.BACKEND_URL}/api/fs/consent/admin/search`;
+    const serverURL = `${CONFIG.BACKEND_URL}/admin/search`;
 
     let defaultUrl = `${serverURL}?`;
     let searchUrl
@@ -161,8 +156,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
     const requestConfig = {
         headers: {
             "Content-Type": "application/json",
-//            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
-            "Authorization": "Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==",
+            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
         },
         method: "GET",
         url: `${searchUrl}`,
@@ -189,8 +183,7 @@ export const revokeConsent = (clientId, consentId, user) => {
     return axios.delete(getRevokeUrl(consentId, user), {
         headers: {
             'Content-Type': 'application/json',
-//            Authorization: `Bearer ${Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)}`,
-            'Authorization': 'Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==',
+            Authorization: `Bearer ${Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)}`,
             'x-wso2-client-id': clientId,
             'x-fapi-financial-id': 'open-bank'
         },

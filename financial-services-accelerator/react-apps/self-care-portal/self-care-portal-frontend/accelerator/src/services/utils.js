@@ -22,7 +22,7 @@ import jsPDF from "jspdf";
 
 export function getDisplayName(appInfo, clientId) {
     try {
-        let disName = appInfo.data[clientId].metadata[specConfigurations.application.displayNameAttribute];
+        let disName = appInfo[clientId].metadata[specConfigurations.application.displayNameAttribute];
         if (disName !== undefined && disName != "") {
             return disName;
         } else {
@@ -61,7 +61,7 @@ export function getValueFromConsentWithFailOver(key, failOverKey, consent) {
 
 export function getValueFromApplicationInfo(key, clientId, appInfo) {
     try {
-        return appInfo.data[clientId].metadata[key];
+        return appInfo[clientId].metadata[key];
     } catch (e) {
         return ""
     }

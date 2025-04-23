@@ -23,14 +23,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,8 +54,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.wso2.financial.services.accelerator.scp.webapp.util.Constants.PREFIX_CONSENT_MANAGER;
-import static org.wso2.financial.services.accelerator.scp.webapp.util.Constants.PREFIX_OB_CONSENT;
 
 /**
  * Utils
@@ -76,8 +72,7 @@ public class Utils {
 
         LOG.debug("Sending request to " + request.getURI());
         String responseStr = null;
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
-            HttpResponse response = client.execute(request);
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(request)) {
             HttpEntity responseEntity = response.getEntity();
             if (responseEntity != null) {
                 responseStr = EntityUtils.toString(responseEntity);
@@ -123,11 +118,17 @@ public class Utils {
         throw new TokenGenerationException("Invalid response received for token request");
     }
 
-    public static HttpUriRequest getHttpUriRequest(String apimBaseUrl, String requestMethod, String requestURI,
+    public static HttpUriRequest getHttpUriRequest(String isBaseUrl, String requestMethod, String requestURI,
                                                    String queryParams) {
 
-        final String uri = apimBaseUrl + requestURI.replaceFirst(PREFIX_CONSENT_MANAGER, PREFIX_OB_CONSENT)
-                + "?" + queryParams;
+        final String uri;
+        if (requestURI.contains("applications")) {
+            uri = isBaseUrl + requestURI.replaceFirst(Constants.PREFIX_CONSENT_MANAGER_ADMIN,
+                    Constants.PREFIX_IS_APPLICATIONS) + "?" + queryParams;
+        } else {
+            uri = isBaseUrl + requestURI.replaceFirst(Constants.PREFIX_CONSENT_MANAGER, Constants.PREFIX_OB_CONSENT)
+                    + "?" + queryParams;
+        }
 
         switch (requestMethod) {
             case HttpDelete.METHOD_NAME:

@@ -39,7 +39,7 @@ export const specConfigurations =
             }
         },
         application: {
-            logoURLAttribute: "logo_uri",
+            logoURLAttribute: "software_logo_uri",
             displayNameAttribute: "software_client_name",
             failOverDisplayNameAttribute: "software_id"
         }

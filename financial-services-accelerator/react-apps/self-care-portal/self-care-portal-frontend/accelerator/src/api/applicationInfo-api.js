@@ -27,17 +27,39 @@ export const getApplicationInfo = async (clientIdList) => {
     const requestConfig = {
         method: "GET",
         headers: {
-            "Authorization": "Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==",
+//            "Authorization": "Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==",
+            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)
         },
-        url: `${serverURL}/api/server/v1/applications?attributes=advancedConfigurations,clientId`
+        url: `${serverURL}/admin/applications?attributes=advancedConfigurations,clientId`
     };
 
     return await axios
         .request(requestConfig)
         .then((response) => {
-            return Promise.resolve(response);
+            let modifiedAppResponse = constructAppResponse(response.data.applications);
+            return Promise.resolve(modifiedAppResponse);
         })
         .catch((error) => {
             return Promise.reject(error);
         });
 };
+
+export function constructAppResponse(applications) {
+    const data = {};
+
+    applications.forEach(application => {
+        const metadata = {};
+
+        application.advancedConfigurations?.additionalSpProperties?.forEach(property => {
+            metadata[property.name] = property.value;
+        });
+
+        data[application.clientId] = { metadata };
+    });
+
+    let appInfo = {
+        data: data
+    };
+
+    return appInfo;
+}

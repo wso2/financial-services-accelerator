@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>fs-integration-test-suite</artifactId>
-        <version>4.0.0-alpha-SNAPSHOT</version>
+        <version>4.0.0-alpha</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -43,12 +43,12 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>bfsi-test-framework</artifactId>
-            <version>4.0.0-alpha-SNAPSHOT</version>
+            <version>4.0.0-alpha</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>accelerator-test-framework</artifactId>
-            <version>4.0.0-alpha-SNAPSHOT</version>
+            <version>4.0.0-alpha</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>

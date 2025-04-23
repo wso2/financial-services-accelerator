@@ -105,8 +105,8 @@ export const PermissionItem = ({ permissionScope }) => {
                                     <ul className="permissionsUL">
                                         {data.permissions.map((permission, permissionIndex) => (
                                             <li key={permissionIndex}>
-                                                {data.dataCluster === "Permissions" && permission.description && (
-                                                    <span className="permissionDescription">{permission.description}</span>
+                                                {data.dataCluster === "Permissions" && permission.description && permission.description != null
+                                                    && (<span className="permissionDescription">{permission.description}</span>
                                                 )}
                                                 {data.dataCluster === "Your Account Details" && (
                                                     <>

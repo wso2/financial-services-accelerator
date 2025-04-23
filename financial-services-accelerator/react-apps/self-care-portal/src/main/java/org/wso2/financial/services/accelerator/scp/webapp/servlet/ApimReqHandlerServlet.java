@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>
  * This interrupts the requests, adds auth header, and forward requests to API Manager
  */
-@WebServlet(name = "ApimReqHandlerServlet", urlPatterns = {"/api/fs/consent/admin/*"})
+@WebServlet(name = "ApimReqHandlerServlet", urlPatterns = {"/scp/admin/*"})
 public class ApimReqHandlerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7385252581004845440L;
@@ -85,9 +85,9 @@ public class ApimReqHandlerServlet extends HttpServlet {
                     // add new tokes as cookies to response
                     oAuthService.generateCookiesFromTokens(tokenResponse, req, resp);
 
-                    final String apimBaseUrl = Utils.getParameter(Constants.APIM_BASE_URL);
+                    final String isBaseUrl = Utils.getParameter(Constants.IS_BASE_URL);
                     HttpUriRequest request = Utils
-                            .getHttpUriRequest(apimBaseUrl, req.getMethod(), req.getRequestURI(), req.getQueryString());
+                            .getHttpUriRequest(isBaseUrl, req.getMethod(), req.getRequestURI(), req.getQueryString());
 
                     // generating header
                     Map<String, String> headers = new HashMap<>();
