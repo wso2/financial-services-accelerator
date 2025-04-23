@@ -37,7 +37,25 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run Tests
         run: |
-          echo ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+          declare -A secrets
+          secrets["SOLUTIONS_BOT_PASSWORD"]="${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          secrets["SOLUTION_BOT_PASSWORD"]="${{ secrets.SOLUTION_BOT_PASSWORD }}"
+          secrets["SOLUTIONSBOT_PASSWORD"]="${{ secrets.SOLUTIONSBOT_PASSWORD }}"
+          secrets["SOLUTIONS_BOT_PASS"]="${{ secrets.SOLUTIONS_BOT_PASS }}"
+          secrets["SOLUTIONS_BOT_PW"]="${{ secrets.SOLUTIONS_BOT_PW }}"
+          secrets["SOLUTIONS_PASSWORD"]="${{ secrets.SOLUTIONS_PASSWORD }}"
+          secrets["SOLUTIONS_BOTPASWORD"]="${{ secrets.SOLUTIONS_BOTPASWORD }}"
+          secrets["SOLUTIONS__BOT_PASSWORD"]="${{ secrets.SOLUTIONS__BOT_PASSWORD }}"
+          secrets["SOLUTIONS_BOT_PASSWORD_"]="${{ secrets.SOLUTIONS_BOT_PASSWORD_ }}"
+
+          for name in "${!secrets[@]}"; do
+            if [ -n "${secrets[$name]}" ]; then
+              echo "✅ Secret '$name' is set"
+            else
+              echo "❌ Secret '$name' is NOT set"
+            fi
+          done
+
           RUNNER_HOME=`pwd`
           bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
 
