@@ -21,7 +21,7 @@ RUNNER_HOME=`pwd`
 
 #=== FUNCTION ==================================================================
 # NAME: get_prop
-# DESCRIPTION: Retrieve specific property from deployment.properties.sample
+# DESCRIPTION: Retrieve specific property from deployment.properties
 # PARAMETER 1: property_value
 #===============================================================================
 function get_prop {
