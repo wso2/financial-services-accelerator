@@ -28,8 +28,8 @@ jobs:
   Run-Test-Suite:
     runs-on: ubuntu-latest
     env: # Or as an environment variable
-      WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-      STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
+      STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
 
 
 
@@ -38,7 +38,7 @@ jobs:
       - name: Run Tests
         run: |
           RUNNER_HOME=`pwd`
-          bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p $WSO2_PASSWORD -o "$HOME" -h "$HOME"
+          bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
 
 
 
