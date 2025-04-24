@@ -242,8 +242,11 @@ public class ConsentManageEndpoint {
      * @return Response
      */
     private Response sendFileUploadResponse(ConsentManageData consentManageData) {
-        if (consentManageData.getPayload() != null || consentManageData.getResponseStatus() != null) {
+        if (consentManageData.getResponseStatus() != null && consentManageData.getResponsePayload() == null) {
             return Response.status(consentManageData.getResponseStatus().getStatusCode()).build();
+        } else if (consentManageData.getResponsePayload() != null && consentManageData.getResponseStatus() != null) {
+            return Response.status(consentManageData.getResponseStatus().getStatusCode()).
+                    entity(consentManageData.getResponsePayload().toString()).build();
         } else {
             log.debug("Response status or payload unavailable. Throwing exception");
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Response data unavailable");

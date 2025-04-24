@@ -33,8 +33,12 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadResponseDTO;
 
 import java.util.UUID;
 
@@ -105,6 +109,38 @@ public class ExternalAPIConsentManageUtils {
         JSONObject responseJson = callExternalService(requestJson,
                    ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
+    }
+
+    /**
+     * Method to call external service for pre-process file upload.
+     *
+     * @param requestDTO - Request DTO
+     * @return - Response DTO
+     * @throws ConsentManagementException - Consent Management Exception
+     */
+    public static ExternalAPIPreFileUploadResponseDTO callExternalService(
+            ExternalAPIPreFileUploadRequestDTO requestDTO) throws ConsentManagementException {
+
+        JSONObject requestJson = requestDTO.toJson();
+        JSONObject responseJson = callExternalService(requestJson,
+                ServiceExtensionTypeEnum.PRE_PROCESS_FILE_UPLOAD);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIPreFileUploadResponseDTO.class);
+    }
+
+    /**
+     * Method to call external service for post-process file upload.
+     *
+     * @param requestDTO - Request DTO
+     * @return - Response DTO
+     * @throws ConsentManagementException - Consent Management Exception
+     */
+    public static ExternalAPIPostFileUploadResponseDTO callExternalService(
+            ExternalAPIPostFileUploadRequestDTO requestDTO) throws ConsentManagementException {
+
+        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject responseJson = callExternalService(requestJson,
+                ServiceExtensionTypeEnum.ENRICH_FILE_UPLOAD_RESPONSE);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIPostFileUploadResponseDTO.class);
     }
 
     /**

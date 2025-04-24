@@ -28,6 +28,8 @@ public enum ServiceExtensionTypeEnum {
     PRE_PROCESS_CLIENT_RETRIEVAL("pre_process_client_retrieval"),
     PRE_PROCESS_CONSENT_CREATION("pre_process_consent_creation"),
     ENRICH_CONSENT_CREATION_RESPONSE("enrich_consent_creation_response"),
+    PRE_PROCESS_FILE_UPLOAD("pre_process_file_upload"),
+    ENRICH_FILE_UPLOAD_RESPONSE("enrich_file_upload_response"),
     PRE_PROCESS_CONSENT_RETRIEVAL("pre_process_consent_retrieval"),
     PRE_PROCESS_CONSENT_BULK_RETRIEVAL("pre_process_consent_bulk_retrieval"),
     PRE_PROCESS_CONSENT_REVOKE("pre_process_consent_revoke"),

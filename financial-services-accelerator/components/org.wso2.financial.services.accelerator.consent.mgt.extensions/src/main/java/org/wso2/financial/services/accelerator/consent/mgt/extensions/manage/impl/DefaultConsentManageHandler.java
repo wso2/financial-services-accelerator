@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -46,13 +47,18 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 /**
@@ -67,6 +73,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     boolean isExternalPreConsentGenerationEnabled;
     boolean isExternalPostConsentGenerationEnabled;
     boolean isExternalPreConsentRevocationEnabled;
+    boolean isExternalValidateFileUploadEnabled;
+    boolean isExternalEnrichFileUploadResponseEnabled;
 
     public DefaultConsentManageHandler() {
 
@@ -81,6 +89,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
+
+        // ToDo: Get from config
+        isExternalValidateFileUploadEnabled = true;
+        isExternalEnrichFileUploadResponseEnabled = true;
     }
 
     @Override
@@ -375,8 +387,80 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handleFileUploadPost(ConsentManageData consentManageData) throws ConsentException {
 
-        log.error("Method File Upload POST is not supported");
-        throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, "Method File Upload POST is not supported");
+        //Check whether client ID exists
+        if (StringUtils.isEmpty(consentManageData.getClientId())) {
+            log.error("Client ID is missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.");
+        }
+        String[] requestPathArray;
+        String resourcePath = consentManageData.getRequestPath();
+        if (resourcePath == null) {
+            log.error("Resource path not found in the request");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request");
+        } else {
+            requestPathArray = resourcePath.split("/");
+        }
+        if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
+            log.error("Invalid Request Path");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
+        }
+        String consentId = requestPathArray[1];
+        if (!ConsentExtensionUtils.isConsentIdValid(consentId)) {
+            log.error("Invalid Request Path. Consent Id format is not valid.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
+        }
+        try {
+            DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
+
+            if (consentResource == null) {
+                log.error("Provided consent id is not found");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided consent id is not found");
+            }
+
+            String applicableStatusForFileUpload = ConsentExtensionConstants.AWAIT_UPLOAD_STATUS;
+            String newConsentStatus = ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS;
+            String userId = consentResource.getAuthorizationResources().get(0).getUserID();
+            if (isExtensionsEnabled && isExternalValidateFileUploadEnabled) {
+                // Call external service to validate file upload request
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(consentResource);
+                ExternalAPIPreFileUploadRequestDTO preRequestDTO =
+                        new ExternalAPIPreFileUploadRequestDTO(externalAPIConsentResource, consentManageData);
+                ExternalAPIPreFileUploadResponseDTO preResponseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(preRequestDTO);
+
+                applicableStatusForFileUpload = preResponseDTO.getApplicableConsentStatus();
+                newConsentStatus = preResponseDTO.getNewConsentStatus();
+                userId = preResponseDTO.getUserId();
+            }
+
+            Object fileFromRequest = consentManageData.getPayload();
+            if (!(fileFromRequest instanceof String)) {
+                log.error("Invalid file content found in the request.");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid file content found in the request.");
+            }
+            String fileContent = (String) fileFromRequest;
+            ConsentFile consentFile = new ConsentFile(consentId, fileContent);
+            consentCoreService.createConsentFile(consentFile, newConsentStatus,
+                    userId, applicableStatusForFileUpload);
+            String createdTime = OffsetDateTime.now().toString();
+
+            if (isExtensionsEnabled && isExternalEnrichFileUploadResponseEnabled) {
+                // Call external service to enrich response
+                ExternalAPIPostFileUploadRequestDTO postRequestDTO = new ExternalAPIPostFileUploadRequestDTO(consentId,
+                        createdTime);
+                ExternalAPIPostFileUploadResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(postRequestDTO);
+
+                consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
+                consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
+            }
+            consentManageData.setResponseStatus(ResponseStatus.OK);
+        } catch (ConsentManagementException e) {
+            log.error("Error Occurred while handling the request", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    e.getMessage());
+        }
     }
 
     @Override
