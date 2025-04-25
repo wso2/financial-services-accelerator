@@ -17,7 +17,6 @@
  */
 
 import React from 'react'
-import AppInfoContextProvider from './AppInfoContext';
 import ConsentContextProvider from './ConsentContext';
 import DeviceRegistrationContextProvider from './DeviceRegistrationContext';
 import SearchObjectContextProvider from './SearchObjectContext';
@@ -26,7 +25,6 @@ import UserContextProvider from './UserContext';
 //Higher wrapper provider component should be placed after lower wrapper provider components.
 const contextProviderArray = [
     DeviceRegistrationContextProvider,
-    AppInfoContextProvider,
     ConsentContextProvider,
     SearchObjectContextProvider,
     UserContextProvider]
