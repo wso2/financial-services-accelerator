@@ -55,7 +55,8 @@ public class Constants {
     public static final String CONFIGURED_CLIENT_ID = "Consent.Portal.ClientCredentials.ClientId";
     public static final String CONFIGURED_CLIENT_SECRET = "Consent.Portal.ClientCredentials.ClientSecret";
     public static final String IS_BASE_URL = "Consent.Portal.Params.IdentityServerBaseUrl";
-    public static final String APIM_BASE_URL = "Consent.Portal.Params.ApiManagerServerBaseUrl";
+    public static final String APP_NAME = "Consent.Portal.Params.ApplicationNameParam";
+    public static final String APP_LOGO_URL = "Consent.Portal.Params.ApplicationLogoUrlParam";
 
     // Paths
     public static final String PATH_TOKEN = "/oauth2/token";
@@ -66,4 +67,15 @@ public class Constants {
     public static final String PREFIX_OB_CONSENT = "/api/fs/consent";
     public static final String PATH_APP_RETRIEVAL = "/api/server/v1/applications?attributes=advancedConfigurations," +
             "clientId";
+
+    public static final String RESPONSE_STATUS_CODE = "res_status_code";
+    public static final String APPLICATIONS = "applications";
+    public static final String ADVANCED_CONFIGURATIONS = "advancedConfigurations";
+    public static final String ADDITIONAL_SP_PROPERTIES = "additionalSpProperties";
+    public static final String NAME = "name";
+    public static final String VALUE = "value";
+    public static final String CLIENT_ID_CC = "clientId";
+    public static final String DATA = "data";
+    public static final String SOFTWARE_CLIENT_NAME = "softwareClientName";
+    public static final String LOGO_URL = "logoURL";
 }

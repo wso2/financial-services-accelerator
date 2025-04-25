@@ -39,6 +39,7 @@ import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HttpMethod;
 
 /**
  * APIMService
@@ -99,54 +100,54 @@ public class APIMService implements Serializable {
         httpRequest.addHeader(HttpHeaders.HOST, hostname);
 
         JSONObject responseJson = Utils.sendRequest(httpRequest);
-        int statusCode = responseJson.optInt("res_status_code", 200);
-        responseJson.remove("res_status_code");
+        int statusCode = responseJson.optInt(Constants.RESPONSE_STATUS_CODE, 200);
+        responseJson.remove(Constants.RESPONSE_STATUS_CODE);
 
-        if ("GET".equals(httpRequest.getMethod())) {
-            // Retrieving application details to get software_client_name
+        if (HttpMethod.GET.equals(httpRequest.getMethod())) {
+            // Retrieving application details to get client name and logo url.
             JSONObject applicationDetails = Utils.sendApplicationRetrievalRequest();
             if (applicationDetails != null) {
                 Map<String, String> appClientNameMap = new HashMap<>();
                 Map<String, String> appLogoUrlMap = new HashMap<>();
-                for (Object application : applicationDetails.getJSONArray("applications")) {
+                for (Object application : applicationDetails.getJSONArray(Constants.APPLICATIONS)) {
                     JSONObject applicationJson = (JSONObject) application;
-                    JSONObject configs = applicationJson.getJSONObject("advancedConfigurations");
-                    JSONArray spData = configs.getJSONArray("additionalSpProperties");
+                    JSONObject configs = applicationJson.getJSONObject(Constants.ADVANCED_CONFIGURATIONS);
+                    JSONArray spData = configs.getJSONArray(Constants.ADDITIONAL_SP_PROPERTIES);
                     String clientName = null;
                     String logoUrl = null;
                     for (Object spDatum : spData) {
                         JSONObject spDatumJson = (JSONObject) spDatum;
-                        if (spDatumJson.getString("name").equalsIgnoreCase("software_client_name")) {
-                            String softwareClientName = spDatumJson.getString("value");
+                        if (spDatumJson.getString(Constants.NAME).equalsIgnoreCase(
+                                Utils.getParameter(Constants.APP_NAME))) {
+                            String softwareClientName = spDatumJson.getString(Constants.VALUE);
                             if (StringUtils.isNotEmpty(softwareClientName)) {
                                 clientName = softwareClientName;
                             }
                         }
-                        if (spDatumJson.getString("name").equalsIgnoreCase("software_logo_uri")) {
-                            logoUrl = spDatumJson.getString("value");
+                        if (spDatumJson.getString(Constants.NAME).equalsIgnoreCase(
+                                Utils.getParameter(Constants.APP_LOGO_URL))) {
+                            logoUrl = spDatumJson.getString(Constants.VALUE);
                         }
                     }
                     if (clientName == null) {
-                        clientName = applicationJson.getString("name");
+                        clientName = applicationJson.getString(Constants.NAME);
                     }
-                    appClientNameMap.put(applicationJson.getString("clientId"), clientName);
-                    appLogoUrlMap.put(applicationJson.getString("clientId"), logoUrl);
-
+                    appClientNameMap.put(applicationJson.getString(Constants.CLIENT_ID_CC), clientName);
+                    appLogoUrlMap.put(applicationJson.getString(Constants.CLIENT_ID_CC), logoUrl);
                 }
 
-                if (responseJson.has("data")) {
-                    for (Object dataElement : responseJson.getJSONArray("data")) {
+                if (responseJson.has(Constants.DATA)) {
+                    for (Object dataElement : responseJson.getJSONArray(Constants.DATA)) {
                         JSONObject dataElementJson = (JSONObject) dataElement;
-                        String clientId = dataElementJson.optString("clientId");
+                        String clientId = dataElementJson.optString(Constants.CLIENT_ID_CC);
                         if (clientId != null && appClientNameMap.containsKey(clientId)) {
-                            dataElementJson.put("softwareClientName", appClientNameMap.get(clientId));
-                            dataElementJson.put("logoURL", appLogoUrlMap.get(clientId));
+                            dataElementJson.put(Constants.SOFTWARE_CLIENT_NAME, appClientNameMap.get(clientId));
+                            dataElementJson.put(Constants.LOGO_URL, appLogoUrlMap.get(clientId));
                         }
                     }
                 }
             }
         }
-
         // returning  response
         Utils.returnResponse(resp, statusCode, responseJson);
 

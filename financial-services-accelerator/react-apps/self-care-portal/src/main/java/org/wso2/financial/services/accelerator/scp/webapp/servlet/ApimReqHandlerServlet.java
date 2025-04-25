@@ -109,9 +109,9 @@ public class ApimReqHandlerServlet extends HttpServlet {
                 Optional<String> optAccessToken = apimService.constructAccessTokenFromCookies(req);
 
                 if (optAccessToken.isPresent()) {
-                    final String apimBaseUrl = Utils.getParameter(Constants.APIM_BASE_URL);
+                    final String isBaseUrl = Utils.getParameter(Constants.IS_BASE_URL);
                     HttpUriRequest request = Utils
-                            .getHttpUriRequest(apimBaseUrl, req.getMethod(), req.getRequestURI(), req.getQueryString());
+                            .getHttpUriRequest(isBaseUrl, req.getMethod(), req.getRequestURI(), req.getQueryString());
 
                     // add existing req headers to new request
                     Map<String, String> headers = Collections.list(req.getHeaderNames())
