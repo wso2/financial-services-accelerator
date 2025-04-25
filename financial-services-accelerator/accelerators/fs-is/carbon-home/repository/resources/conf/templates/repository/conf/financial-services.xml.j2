@@ -52,6 +52,13 @@
             <RegexPattern>{{financial_services.consent.consent_id_extraction.regex_pattern}}</RegexPattern>
             {% endif %}
         </ConsentIdExtraction>
+        <ManageExtension>
+            <AllowedHeaders>
+                {% for allowed_header in financial_services.consent.manage_extension.allowed_headers %}
+                <AllowedHeader>{{allowed_header}}</AllowedHeader>
+                {% endfor %}
+            </AllowedHeaders>
+        </ManageExtension>
         {% if financial_services.consent.manage.handler is defined %}
         <ManageHandler>{{financial_services.consent.manage.handler}}</ManageHandler>
         {% else %}

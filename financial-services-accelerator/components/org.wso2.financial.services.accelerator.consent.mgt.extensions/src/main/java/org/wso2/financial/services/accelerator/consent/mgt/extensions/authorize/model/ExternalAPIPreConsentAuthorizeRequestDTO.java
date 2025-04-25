@@ -27,17 +27,17 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
 
     private String consentId;
     private String userId;
-    private String scope;
+    private JSONObject requestParameters;
     private ExternalAPIConsentResourceRequestDTO consentResource;
 
     public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData,
                                                     ExternalAPIConsentResourceRequestDTO consentResource,
-                                                    String scope) {
+                                                    JSONObject requestParameters) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
         this.consentResource = consentResource;
-        this.scope = scope;
+        this.requestParameters = requestParameters;
     }
 
     public String getConsentId() {
@@ -56,12 +56,12 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
         this.userId = userId;
     }
 
-    public String getScope() {
-        return scope;
+    public JSONObject getRequestParameters() {
+        return requestParameters;
     }
 
-    public void setScope(String scope) {
-        this.scope = scope;
+    public void setRequestParameters(JSONObject requestParameters) {
+        this.requestParameters = requestParameters;
     }
 
     public ExternalAPIConsentResourceRequestDTO getConsentResource() {

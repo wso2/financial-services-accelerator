@@ -70,7 +70,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-        String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
+        JSONObject requestParameters = ConsentAuthorizeUtil.getRequestObjectJson(requestObject);
         String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
 
         try {
@@ -86,7 +86,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                 }
             }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
-                    consentData, externalAPIConsentResource, scope);
+                    consentData, externalAPIConsentResource, requestParameters);
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
