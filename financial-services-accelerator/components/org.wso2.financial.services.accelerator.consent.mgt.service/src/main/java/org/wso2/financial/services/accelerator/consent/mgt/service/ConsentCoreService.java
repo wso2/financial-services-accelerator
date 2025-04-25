@@ -137,6 +137,27 @@ public interface ConsentCoreService {
      * This method is used to create a consent file. The following functionality contains in this method.
      *
      * 1. Get the existing consent to validate the status according to the attribute "applicableStatusToFileUpload"
+     *      if the validateApplicableStatus is set to true.
+     * 2. Create the consent file
+     * 3. Update the consent status
+     * 4. Create an audit record for consent update
+     *
+     * @param consentFileResource            consent file resource
+     * @param newConsentStatus               new consent status
+     * @param userID                         user ID (optional)
+     * @param applicableStatusToFileUpload   status that the consent should have to upload a file
+     * @param validateApplicableStatus       whether applicableStatusToFileUpload validation should be enforced
+     * @return true if transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occur in the process
+     */
+    boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID,
+                              String applicableStatusToFileUpload, boolean validateApplicableStatus)
+            throws ConsentManagementException;
+
+    /**
+     * This method is used to create a consent file. The following functionality contains in this method.
+     *
+     * 1. Get the existing consent to validate the status according to the attribute "applicableStatusToFileUpload"
      * 2. Create the consent file
      * 3. Update the consent status
      * 4. Create an audit record for consent update
@@ -150,6 +171,22 @@ public interface ConsentCoreService {
      */
     boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID,
                               String applicableStatusToFileUpload)
+            throws ConsentManagementException;
+
+    /**
+     * This method is used to create a consent file. The following functionality contains in this method.
+     *
+     * 1. Create the consent file
+     * 2. Update the consent status
+     * 3. Create an audit record for consent update
+     *
+     * @param consentFileResource            consent file resource
+     * @param newConsentStatus               new consent status
+     * @param userID                         user ID (optional)
+     * @return true if transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occur in the process
+     */
+    boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID)
             throws ConsentManagementException;
 
     /**

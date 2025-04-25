@@ -39,11 +39,10 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.imp
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
@@ -231,8 +230,8 @@ public class DefaultConsentManageHandlerTest {
                 ExternalAPIConsentManageUtils.class)) {
             ExternalAPIPreConsentGenerateResponseDTO preConsentGenerateResponseDTO =
                     TestUtil.getSampleExternalAPIPreConsentGenerateResponseDTO();
-            ExternalAPIPostConsentGenerateResponseDTO postConsentGenerateResponseDTO =
-                    new ExternalAPIPostConsentGenerateResponseDTO();
+            ExternalAPIModifiedResponseDTO postConsentGenerateResponseDTO =
+                    new ExternalAPIModifiedResponseDTO();
 
             mockedStatic.when(() -> ExternalAPIConsentManageUtils.callExternalService(any(
                     ExternalAPIPreConsentGenerateRequestDTO.class))).thenReturn(preConsentGenerateResponseDTO);
@@ -353,7 +352,7 @@ public class DefaultConsentManageHandlerTest {
 
         try (MockedStatic<ExternalAPIConsentManageUtils> mockedStatic =
                      mockStatic(ExternalAPIConsentManageUtils.class)) {
-            ExternalAPIConsentRetrieveResponseDTO mockResponse = new ExternalAPIConsentRetrieveResponseDTO();
+            ExternalAPIModifiedResponseDTO mockResponse = new ExternalAPIModifiedResponseDTO();
             mockedStatic.when(() ->
                     ExternalAPIConsentManageUtils.callExternalService(any(ExternalAPIConsentRetrieveRequestDTO.class))
             ).thenReturn(mockResponse);

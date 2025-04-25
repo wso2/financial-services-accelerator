@@ -22,24 +22,15 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
  */
 public class ExternalAPIPreFileUploadResponseDTO {
 
-    private String applicableConsentStatus;
-    private String newConsentStatus;
+    private String consentStatus;
     private String userId;
 
-    public String getApplicableConsentStatus() {
-        return applicableConsentStatus;
+    public String getConsentStatus() {
+        return consentStatus;
     }
 
-    public void setApplicableConsentStatus(String applicableConsentStatus) {
-        this.applicableConsentStatus = applicableConsentStatus;
-    }
-
-    public String getNewConsentStatus() {
-        return newConsentStatus;
-    }
-
-    public void setNewConsentStatus(String newConsentStatus) {
-        this.newConsentStatus = newConsentStatus;
+    public void setConsentStatus(String newConsentStatus) {
+        this.consentStatus = consentStatus;
     }
 
     public String getUserId() {

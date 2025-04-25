@@ -397,25 +397,36 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                                      String applicableStatusToFileUpload)
             throws ConsentManagementException {
 
+        return createConsentFile(consentFileResource, newConsentStatus, userID, applicableStatusToFileUpload, true);
+    }
+
+    @Override
+    public boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID)
+            throws ConsentManagementException {
+
+        return createConsentFile(consentFileResource, newConsentStatus, userID, null, false);
+    }
+
+    @Override
+    public boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID,
+                                     String applicableStatusToFileUpload, boolean validateApplicableStatus)
+            throws ConsentManagementException {
+
         if (StringUtils.isBlank(consentFileResource.getConsentID()) ||
                 StringUtils.isBlank(consentFileResource.getConsentFile())) {
-
             log.error(ConsentCoreServiceConstants.CONSENT_FILE_MISSING_ERROR_MSG);
             throw new ConsentManagementException(ConsentCoreServiceConstants.CONSENT_FILE_MISSING_ERROR_MSG);
         }
-
-        String consentID = consentFileResource.getConsentID();
-
-        if (StringUtils.isBlank(newConsentStatus) || StringUtils.isBlank(applicableStatusToFileUpload)) {
-            log.error(ConsentCoreServiceConstants.NEW_CONSENT_STATUS_OR_APPLICABLE_STATUS_MISSING_ERROR);
+        if (StringUtils.isBlank(newConsentStatus)) {
+            log.error(ConsentCoreServiceConstants.NEW_CONSENT_STATUS_MISSING_ERROR);
             throw new ConsentManagementException(ConsentCoreServiceConstants
-                    .NEW_CONSENT_STATUS_OR_APPLICABLE_STATUS_MISSING_ERROR);
+                    .NEW_CONSENT_STATUS_MISSING_ERROR);
         }
 
         Connection connection = DatabaseUtils.getDBConnection();
-
         try {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+            String consentID = consentFileResource.getConsentID();
             try {
                 // Get the existing consent to validate status
                 if (log.isDebugEnabled()) {
@@ -426,10 +437,18 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
                 String existingConsentStatus = existingConsentResource.getCurrentStatus();
 
-                // Validate status of the consent
-                if (!applicableStatusToFileUpload.equals(existingConsentResource.getCurrentStatus())) {
-                    log.error(ConsentCoreServiceConstants.CONSENT_INVALID_STATUS_ERROR_MSG);
-                    throw new ConsentManagementException(ConsentCoreServiceConstants.CONSENT_INVALID_STATUS_ERROR_MSG);
+                if (validateApplicableStatus) {
+                    // Validate status of the consent
+                    if (StringUtils.isBlank(applicableStatusToFileUpload)) {
+                        log.error(ConsentCoreServiceConstants.APPLICABLE_STATUS_MISSING_ERROR);
+                        throw new ConsentManagementException(ConsentCoreServiceConstants
+                                .APPLICABLE_STATUS_MISSING_ERROR);
+                    }
+                    if (!applicableStatusToFileUpload.equals(existingConsentResource.getCurrentStatus())) {
+                        log.error(ConsentCoreServiceConstants.CONSENT_INVALID_STATUS_ERROR_MSG);
+                        throw new ConsentManagementException(ConsentCoreServiceConstants.
+                                CONSENT_INVALID_STATUS_ERROR_MSG);
+                    }
                 }
 
                 // Store the consent file

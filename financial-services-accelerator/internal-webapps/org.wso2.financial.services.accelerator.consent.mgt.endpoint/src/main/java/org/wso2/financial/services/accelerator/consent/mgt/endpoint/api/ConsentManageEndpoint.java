@@ -193,10 +193,12 @@ public class ConsentManageEndpoint {
     public Response manageFileUploadPost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                          @Context UriInfo uriInfo) {
 
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getFileUploadPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleFileUploadPost(consentManageData);
         return sendFileUploadResponse(consentManageData);
     }
@@ -211,9 +213,11 @@ public class ConsentManageEndpoint {
     public Response manageFileGet(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                   @Context UriInfo uriInfo) {
 
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleFileGet(consentManageData);
         return sendResponse(consentManageData);
     }

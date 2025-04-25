@@ -20,6 +20,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
+import java.util.Map;
+
 /**
  * ExternalAPIValidateFileUploadRequestDTO
  */
@@ -29,6 +31,7 @@ public class ExternalAPIPreFileUploadRequestDTO {
     private ExternalAPIConsentResourceRequestDTO consentResource;
     private String fileContent;
     private String consentResourcePath;
+    private Map<String, String> requestHeaders;
 
     public ExternalAPIPreFileUploadRequestDTO(ExternalAPIConsentResourceRequestDTO consentResource,
                                               ConsentManageData consentManageData) {
@@ -37,6 +40,7 @@ public class ExternalAPIPreFileUploadRequestDTO {
         this.consentResource = consentResource;
         this.fileContent = consentManageData.getPayload().toString();
         this.consentResourcePath = consentManageData.getRequestPath();
+        this.requestHeaders = consentManageData.getAllowedExtensionHeaders();
 
     }
 
@@ -71,6 +75,14 @@ public class ExternalAPIPreFileUploadRequestDTO {
 
     public void setConsentResourcePath(String consentResourcePath) {
         this.consentResourcePath = consentResourcePath;
+    }
+
+    public Map<String, String> getRequestHeaders() {
+        return requestHeaders;
+    }
+
+    public void setRequestHeaders(Map<String, String> requestHeaders) {
+        this.requestHeaders = requestHeaders;
     }
 
     /**

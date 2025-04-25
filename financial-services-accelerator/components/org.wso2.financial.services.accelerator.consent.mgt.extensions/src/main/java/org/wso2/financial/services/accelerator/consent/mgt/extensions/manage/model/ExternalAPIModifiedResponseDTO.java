@@ -22,9 +22,9 @@ import com.google.gson.JsonElement;
 import java.util.Map;
 
 /**
- * ExternalAPIPostFileUploadResponseDTO
+ * DTO for getting the modified response from the external API.
  */
-public class ExternalAPIPostFileUploadResponseDTO {
+public class ExternalAPIModifiedResponseDTO {
 
     private JsonElement modifiedResponse;
     private Map<String, String> responseHeaders;

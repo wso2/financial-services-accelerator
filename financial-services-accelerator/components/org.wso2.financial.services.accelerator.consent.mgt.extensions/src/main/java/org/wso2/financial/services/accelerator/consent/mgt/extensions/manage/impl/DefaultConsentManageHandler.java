@@ -42,13 +42,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
@@ -59,6 +57,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.uti
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -73,8 +72,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     boolean isExternalPreConsentGenerationEnabled;
     boolean isExternalPostConsentGenerationEnabled;
     boolean isExternalPreConsentRevocationEnabled;
-    boolean isExternalValidateFileUploadEnabled;
-    boolean isExternalEnrichFileUploadResponseEnabled;
+    boolean isExternalPreFileUploadEnabled;
+    boolean isExternalPostFileUploadEnabled;
+    boolean isExternalPreFileRetrievalEnabled;
 
     public DefaultConsentManageHandler() {
 
@@ -91,8 +91,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
 
         // ToDo: Get from config
-        isExternalValidateFileUploadEnabled = true;
-        isExternalEnrichFileUploadResponseEnabled = true;
+        isExternalPreFileUploadEnabled = true;
+        isExternalPostFileUploadEnabled = true;
+        isExternalPreFileRetrievalEnabled = true;
     }
 
     @Override
@@ -151,11 +152,19 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
                             new ExternalAPIConsentResourceRequestDTO(consent);
                     ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
-                            consentId, externalAPIConsentResource, resourcePath,
-                            consentManageData.getAllowedExtensionHeaders());
-                    ExternalAPIConsentRetrieveResponseDTO responseDTO = ExternalAPIConsentManageUtils.
+                            externalAPIConsentResource, consentManageData);
+                    ExternalAPIModifiedResponseDTO responseDTO = ExternalAPIConsentManageUtils.
                             callExternalService(requestDTO);
-                    consentManageData.setResponsePayload(responseDTO.getModifiedResponse());
+                    if (responseDTO.getModifiedResponse() != null) {
+                        consentManageData.setResponsePayload(responseDTO.getModifiedResponse());
+                    } else {
+                        consentManageData.setResponsePayload(new JSONObject());
+                    }
+                    if (responseDTO.getResponseHeaders() != null) {
+                        consentManageData.setResponseHeaders(responseDTO.getResponseHeaders());
+                    } else {
+                        consentManageData.setResponseHeaders(new HashMap<>());
+                    }
                 } else {
                     String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
                     if (!consentType.equals(consent.getConsentType())) {
@@ -242,10 +251,19 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                         new ExternalAPIConsentResourceRequestDTO(createdConsentResource);
                 ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
                         externalAPIConsentResource, consentManageData.getRequestPath());
-                ExternalAPIPostConsentGenerateResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
+                ExternalAPIModifiedResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
                         callExternalService(postRequestDTO);
 
-                consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
+                if (postResponseDTO.getModifiedResponse() != null) {
+                    consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
+                } else {
+                    consentManageData.setResponsePayload(new JSONObject());
+                }
+                if (postResponseDTO.getResponseHeaders() != null) {
+                    consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
+                } else {
+                    consentManageData.setResponseHeaders(new HashMap<>());
+                }
             } else {
                 consentManageData.setResponsePayload(ConsentExtensionUtils
                         .getInitiationResponse(consentManageData.getPayload(), createdConsent));
@@ -411,27 +429,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         }
         try {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
-
             if (consentResource == null) {
                 log.error("Provided consent id is not found");
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided consent id is not found");
-            }
-
-            String applicableStatusForFileUpload = ConsentExtensionConstants.AWAIT_UPLOAD_STATUS;
-            String newConsentStatus = ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS;
-            String userId = consentResource.getAuthorizationResources().get(0).getUserID();
-            if (isExtensionsEnabled && isExternalValidateFileUploadEnabled) {
-                // Call external service to validate file upload request
-                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
-                        new ExternalAPIConsentResourceRequestDTO(consentResource);
-                ExternalAPIPreFileUploadRequestDTO preRequestDTO =
-                        new ExternalAPIPreFileUploadRequestDTO(externalAPIConsentResource, consentManageData);
-                ExternalAPIPreFileUploadResponseDTO preResponseDTO = ExternalAPIConsentManageUtils.
-                        callExternalService(preRequestDTO);
-
-                applicableStatusForFileUpload = preResponseDTO.getApplicableConsentStatus();
-                newConsentStatus = preResponseDTO.getNewConsentStatus();
-                userId = preResponseDTO.getUserId();
             }
 
             Object fileFromRequest = consentManageData.getPayload();
@@ -441,19 +441,45 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             String fileContent = (String) fileFromRequest;
             ConsentFile consentFile = new ConsentFile(consentId, fileContent);
-            consentCoreService.createConsentFile(consentFile, newConsentStatus,
-                    userId, applicableStatusForFileUpload);
+
+            if (isExtensionsEnabled && isExternalPreFileUploadEnabled) {
+                // Call external service to validate file upload request
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(consentResource);
+                ExternalAPIPreFileUploadRequestDTO preRequestDTO =
+                        new ExternalAPIPreFileUploadRequestDTO(externalAPIConsentResource, consentManageData);
+                ExternalAPIPreFileUploadResponseDTO preResponseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(preRequestDTO);
+
+                consentCoreService.createConsentFile(consentFile, preResponseDTO.getConsentStatus(),
+                        preResponseDTO.getUserId());
+            } else {
+                String applicableStatusForFileUpload = ConsentExtensionConstants.AWAIT_UPLOAD_STATUS;
+                String newConsentStatus = ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS;
+                String userId = consentResource.getAuthorizationResources().get(0).getUserID();
+
+                consentCoreService.createConsentFile(consentFile, newConsentStatus,
+                        userId, applicableStatusForFileUpload);
+            }
             String createdTime = OffsetDateTime.now().toString();
 
-            if (isExtensionsEnabled && isExternalEnrichFileUploadResponseEnabled) {
+            if (isExtensionsEnabled && isExternalPostFileUploadEnabled) {
                 // Call external service to enrich response
                 ExternalAPIPostFileUploadRequestDTO postRequestDTO = new ExternalAPIPostFileUploadRequestDTO(consentId,
                         createdTime);
-                ExternalAPIPostFileUploadResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
+                ExternalAPIModifiedResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
                         callExternalService(postRequestDTO);
 
-                consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
-                consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
+                if (postResponseDTO.getModifiedResponse() != null) {
+                    consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
+                } else {
+                    consentManageData.setResponsePayload(new JSONObject());
+                }
+                if (postResponseDTO.getResponseHeaders() != null) {
+                    consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
+                } else {
+                    consentManageData.setResponseHeaders(new HashMap<>());
+                }
             }
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException e) {
@@ -466,8 +492,71 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handleFileGet(ConsentManageData consentManageData) throws ConsentException {
 
-        log.error("Method File Upload GET is not supported");
-        throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, "Method File Upload GET is not supported");
+        //Check whether client ID exists
+        if (StringUtils.isEmpty(consentManageData.getClientId())) {
+            log.error("Client ID is missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.");
+        }
+        String[] requestPathArray;
+        String resourcePath = consentManageData.getRequestPath();
+        if (resourcePath == null) {
+            log.error("Resource path not found in the request");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request");
+        } else {
+            requestPathArray = resourcePath.split("/");
+        }
+        if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
+            log.error("Invalid Request Path");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
+        }
+
+        String consentId = requestPathArray[1];
+        if (ConsentExtensionUtils.isConsentIdValid(consentId)) {
+            try {
+                ConsentResource consent = consentCoreService.getConsent(consentId, false);
+                if (consent == null) {
+                    log.error("Consent not found");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                            ConsentOperationEnum.CONSENT_RETRIEVE); // ToDo: Check the use of operation enum
+                }
+                // Check whether the client id is matching
+                if (!consent.getClientID().equals(consentManageData.getClientId())) {
+                    log.error("Client ID mismatch");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch");
+                }
+                ConsentFile consentFile = consentCoreService.getConsentFile(consentId);
+
+                if (isExtensionsEnabled && isExternalPreFileRetrievalEnabled) {
+                    // Call external service before sending response.
+                    Map<String, String> consentAttributes =
+                            consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                    consent.setConsentAttributes(consentAttributes);
+                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                            new ExternalAPIConsentResourceRequestDTO(consent);
+                    ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
+                            externalAPIConsentResource, consentManageData);
+                    // Following line is executed to handle failure scenarios.
+                    ExternalAPIConsentManageUtils.callExternalServiceForFileRetrieval(requestDTO);
+                } else {
+                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                    if (!consentType.equals(consent.getConsentType())) {
+                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
+                    }
+                }
+                consentManageData.setResponsePayload(consentFile.getConsentFile());
+                consentManageData.setResponseStatus(ResponseStatus.OK);
+            } catch (ConsentManagementException | JSONException e) {
+                log.error("Error Occurred while handling the request", e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_RETRIEVE);
+            }
+        } else {
+            log.error("Invalid consent-id found");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid consent-id found",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
+        }
     }
 
     private DetailedConsentResource generateConsent(

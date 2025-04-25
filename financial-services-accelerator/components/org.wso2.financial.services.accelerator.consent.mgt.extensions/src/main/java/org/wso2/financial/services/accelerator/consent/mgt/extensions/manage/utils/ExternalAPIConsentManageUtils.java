@@ -28,13 +28,11 @@ import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
@@ -59,7 +57,7 @@ public class ExternalAPIConsentManageUtils {
 
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
-                   ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentGenerateResponseDTO.class);
     }
 
@@ -70,13 +68,13 @@ public class ExternalAPIConsentManageUtils {
      * @return - Response DTO
      * @throws ConsentManagementException - Consent Management Exception
      */
-    public static ExternalAPIPostConsentGenerateResponseDTO callExternalService(
+    public static ExternalAPIModifiedResponseDTO callExternalService(
             ExternalAPIPostConsentGenerateRequestDTO requestDTO) throws ConsentManagementException {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
-                   ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIPostConsentGenerateResponseDTO.class);
+                ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 
     /**
@@ -91,7 +89,7 @@ public class ExternalAPIConsentManageUtils {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
-                   ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
     }
 
@@ -102,13 +100,13 @@ public class ExternalAPIConsentManageUtils {
      * @return - Response DTO
      * @throws ConsentManagementException - Consent Management Exception
      */
-    public static ExternalAPIConsentRetrieveResponseDTO callExternalService(
+    public static ExternalAPIModifiedResponseDTO callExternalService(
             ExternalAPIConsentRetrieveRequestDTO requestDTO) throws ConsentManagementException {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
-                   ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRetrieveResponseDTO.class);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 
     /**
@@ -123,7 +121,7 @@ public class ExternalAPIConsentManageUtils {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
-                ServiceExtensionTypeEnum.PRE_PROCESS_FILE_UPLOAD);
+                ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_FILE_UPLOAD);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIPreFileUploadResponseDTO.class);
     }
 
@@ -134,13 +132,29 @@ public class ExternalAPIConsentManageUtils {
      * @return - Response DTO
      * @throws ConsentManagementException - Consent Management Exception
      */
-    public static ExternalAPIPostFileUploadResponseDTO callExternalService(
+    public static ExternalAPIModifiedResponseDTO callExternalService(
             ExternalAPIPostFileUploadRequestDTO requestDTO) throws ConsentManagementException {
 
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
-                ServiceExtensionTypeEnum.ENRICH_FILE_UPLOAD_RESPONSE);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIPostFileUploadResponseDTO.class);
+                ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
+    }
+
+    /**
+     * Method to call external service for file retrieval.
+     *
+     * @param requestDTO - Request DTO
+     * @return - Response DTO
+     * @throws ConsentManagementException - Consent Management Exception
+     */
+    public static ExternalAPIModifiedResponseDTO callExternalServiceForFileRetrieval(
+            ExternalAPIConsentRetrieveRequestDTO requestDTO) throws ConsentManagementException {
+
+        JSONObject requestJson = requestDTO.toJson();
+        JSONObject responseJson = callExternalService(requestJson,
+                ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
+        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 
     /**
@@ -161,6 +175,9 @@ public class ExternalAPIConsentManageUtils {
                     ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest, serviceType);
             if (response.getStatus().equals(StatusEnum.ERROR)) {
                 ExternalAPIUtil.handleResponseError(response);
+            }
+            if (response.getData() == null) {
+                return new JSONObject();
             }
             return new JSONObject(response.getData().toString());
         } catch (FinancialServicesException e) {
