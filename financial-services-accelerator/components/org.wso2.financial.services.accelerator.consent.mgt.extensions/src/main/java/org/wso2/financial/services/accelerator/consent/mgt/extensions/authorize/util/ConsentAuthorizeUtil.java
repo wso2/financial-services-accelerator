@@ -49,7 +49,7 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to extract request object from query params.
      *
-     * @param spQueryParams  Query params
+     * @param spQueryParams Query params
      * @return requestObject
      * @throws ConsentException Consent Exception
      */
@@ -75,7 +75,7 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to validate the request object and extract consent ID.
      *
-     * @param requestObject  Request object
+     * @param requestObject Request object
      * @return consentId
      */
     public static String extractConsentId(String requestObject) throws ConsentException {
@@ -131,7 +131,27 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
+     * Method to extract the request object payload and convert it to a JSON object.
+     *
+     * @param requestObject Request object
+     * @return requestObjectJson
+     * @throws ConsentException Consent Exception
+     */
+    public static JSONObject getRequestObjectJson(String requestObject) throws ConsentException {
+
+        String payload = decodeRequestObjectPayload(requestObject);
+        JSONObject requestObjectJson;
+        try {
+            requestObjectJson = new JSONObject(payload);
+        } catch (JSONException e) {
+            requestObjectJson = new JSONObject();
+        }
+        return requestObjectJson;
+    }
+
+    /**
      * Method to decode the request object payload.
+     *
      * @param requestObject
      * @return
      */
@@ -210,7 +230,7 @@ public class ConsentAuthorizeUtil {
             for (String item : scopeItems) {
                 // Skip openid scope since it is not relevant to the consent.
                 if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
-                   continue;
+                    continue;
                 }
                 permissions.put(item);
             }
@@ -457,8 +477,8 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to add debtor account details to consent data to send it to the consent page.
      *
-     * @param initiation     Initiation object from the request
-     * @param consentDataJSON  Consent information object
+     * @param initiation      Initiation object from the request
+     * @param consentDataJSON Consent information object
      */
     public static void populateCreditorAccount(JSONObject initiation, JSONArray consentDataJSON) {
         if (initiation.get(ConsentExtensionConstants.CREDITOR_ACC) != null) {

@@ -72,7 +72,7 @@ public class ConsentManageEndpoint {
             initializeConsentManageHandler();
         }
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
-        allowedHeaderNames = configParser.getServiceExtensionAllowedHeaders();
+        allowedHeaderNames = configParser.getConsentManageExtensionAllowedHeaders();
     }
 
     private static void initializeConsentManageHandler() {

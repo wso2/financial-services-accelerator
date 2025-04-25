@@ -325,7 +325,6 @@ allowed_extensions = ["pre_process_client_creation", "pre_process_client_update"
     "pre_process_consent_revoke", "populate_consent_authorize_screen", "persist_authorized_consent", "validate_consent_access",
     "validate_refresh_token_issuance", "validate_authorization_request", "enrich_event_subscription_response",
     "validate_event_creation", "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
-allowed_headers = [""]
 base_url = ""
 retry_count = 5
 connect_timeout = 5
@@ -503,6 +502,9 @@ json_path="/id_token/openbanking_intent_id/value" # Must be configured if "auth_
 [financial_services.consent.manage]
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler"
 validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageValidator"
+
+[financial_services.consent.manage_extension]
+allowed_headers = ["x-wso2-client-id"]
 
 [[financial_services.consent.authorize_steps.retrieve]]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"

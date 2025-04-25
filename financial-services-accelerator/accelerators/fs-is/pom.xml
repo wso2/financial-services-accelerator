@@ -87,42 +87,42 @@
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.identity.extensions/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.identity.extensions-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)?\.jar"/>
+                                                regex="org.wso2.financial.services.accelerator.identity.extensions-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.common/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.common-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)?\.jar"/>
+                                                regex="org.wso2.financial.services.accelerator.common-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.service/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.consent.mgt.service-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)?\.jar"/>
+                                                regex="org.wso2.financial.services.accelerator.consent.mgt.service-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.extensions/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.consent.mgt.extensions-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)?\.jar"/>
+                                                regex="org.wso2.financial.services.accelerator.consent.mgt.extensions-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.consent.mgt.dao/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.consent.mgt.dao-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)?\.jar"/>
+                                                regex="org.wso2.financial.services.accelerator.consent.mgt.dao-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.event.notifications.service/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.event.notifications.service-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)?\.jar"/>
+                                                regex="org.wso2.financial.services.accelerator.event.notifications.service-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
 

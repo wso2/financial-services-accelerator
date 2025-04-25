@@ -86,7 +86,7 @@ public class HTTPClientUtils {
                 }
             }));
 
-            log.info("HTTPS Client initialized with singleton pattern.");
+            log.debug("HTTPS Client initialized with singleton pattern.");
         }
     }
 
