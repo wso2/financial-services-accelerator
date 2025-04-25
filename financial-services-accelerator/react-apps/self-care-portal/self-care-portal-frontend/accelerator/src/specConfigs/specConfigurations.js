@@ -22,7 +22,7 @@ export const specConfigurations =
     {
         // key wordings for the relevant statuses.
         status: {
-            authorised: "authorised",
+            authorised: "Authorised",
             expired: "Expired",
             revoked: "Revoked",
             consumed: "Consumed",
