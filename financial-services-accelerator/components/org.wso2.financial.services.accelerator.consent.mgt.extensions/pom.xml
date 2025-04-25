@@ -161,8 +161,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!--ToDo: Update the minimum value-->
-                                            <minimum>0.7</minimum>
+                                            <minimum>0.8</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

@@ -43,8 +43,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.DataProviders;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
@@ -124,6 +127,9 @@ public class DefaultConsentManageHandlerTest {
         setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreConsentGenerationEnabled", true);
         setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPostConsentGenerationEnabled", true);
         setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreConsentRevocationEnabled", true);
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreFileUploadEnabled", true);
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPostFileUploadEnabled", true);
+        setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreFileRetrievalEnabled", true);
 
     }
 
@@ -273,6 +279,82 @@ public class DefaultConsentManageHandlerTest {
         defaultConsentManageHandler.handlePost(consentManageDataMock);
     }
 
+    @Test(expectedExceptions = ConsentException.class)
+    public void testHandleFilePostWithoutClientId() {
+
+        setConsentManageBuilder();
+        consentManageDataMock = mock(ConsentManageData.class);
+        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
+        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+    }
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testHandleFilePostWithoutRequestPath() {
+
+        setConsentManageBuilder();
+        consentManageDataMock = mock(ConsentManageData.class);
+        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+    }
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testHandleFilePostWithInvalidRequestPath() {
+
+        setConsentManageBuilder();
+        consentManageDataMock = mock(ConsentManageData.class);
+        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        doReturn(headers).when(consentManageDataMock).getHeaders();
+
+        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+    }
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testHandleFilePostWithNullPayload() {
+
+        setConsentManageBuilder();
+        consentManageDataMock = mock(ConsentManageData.class);
+        doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        doReturn(null).when(consentManageDataMock).getPayload();
+        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+    }
+
+    @Test
+    public void testHandlePostForFilePayments() {
+
+        setConsentManageBuilder();
+        doReturn(headers).when(consentManageDataMock).getHeaders();
+        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+    }
+
+    @Test
+    public void testHandlePostForFilePaymentsWithExtensionEnabled() {
+
+        setConsentManageBuilder();
+        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+        try (MockedStatic<ExternalAPIConsentManageUtils> mockedStatic = mockStatic(
+                ExternalAPIConsentManageUtils.class)) {
+            ExternalAPIPreFileUploadResponseDTO preFileUploadResponseDTO = new ExternalAPIPreFileUploadResponseDTO();
+            ExternalAPIModifiedResponseDTO modifiedResponseDTO = new ExternalAPIModifiedResponseDTO();
+            mockedStatic.when(() -> ExternalAPIConsentManageUtils.callExternalService(any(
+                    ExternalAPIPreFileUploadRequestDTO.class))).thenReturn(preFileUploadResponseDTO);
+            mockedStatic.when(() -> ExternalAPIConsentManageUtils.callExternalService(any(
+                    ExternalAPIPostFileUploadRequestDTO.class))).thenReturn(modifiedResponseDTO);
+            externalServiceConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        }
+    }
+
 
     @Test(expectedExceptions = ConsentException.class)
     public void testHandleGetWithoutClientId() {
@@ -358,6 +440,61 @@ public class DefaultConsentManageHandlerTest {
             ).thenReturn(mockResponse);
 
             externalServiceConsentManageHandler.handleGet(consentManageDataMock);
+        }
+    }
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testHandleFileGetWithoutClientId() {
+
+        setConsentManageBuilder();
+        doReturn(null).when(consentManageDataMock).getClientId();
+        defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+    }
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testHandleFileGetWithoutRequestPath() {
+
+        setConsentManageBuilder();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        doReturn(null).when(consentManageDataMock).getRequestPath();
+
+        defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+    }
+
+    @Test
+    public void testHandleFileGet() throws ConsentManagementException {
+
+        setConsentManageBuilder();
+        JSONObject payload = new JSONObject();
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
+                .getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        doReturn(TestUtil.getSampleConsentFileObject(TestConstants.SAMPLE_CONSENT_FILE)).when(consentCoreServiceMock)
+                .getConsentFile(anyString());
+
+        defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+    }
+
+    @Test
+    public void testHandleFileGetWithExtensionEnabled() throws ConsentManagementException {
+
+        setConsentManageBuilder();
+        JSONObject payload = new JSONObject();
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        doReturn(TestUtil.getSampleConsentFileObject(TestConstants.SAMPLE_CONSENT_FILE)).when(consentCoreServiceMock)
+                .getConsentFile(anyString());
+
+        try (MockedStatic<ExternalAPIConsentManageUtils> mockedStatic =
+                     mockStatic(ExternalAPIConsentManageUtils.class)) {
+            ExternalAPIModifiedResponseDTO mockResponse = new ExternalAPIModifiedResponseDTO();
+            mockedStatic.when(() ->
+                    ExternalAPIConsentManageUtils.callExternalService(any(ExternalAPIConsentRetrieveRequestDTO.class))
+            ).thenReturn(mockResponse);
+
+            externalServiceConsentManageHandler.handleFileGet(consentManageDataMock);
         }
     }
 
@@ -460,22 +597,9 @@ public class DefaultConsentManageHandlerTest {
         defaultConsentManageHandler.handlePatch(consentManageDataMock);
     }
 
-    @Test(expectedExceptions = ConsentException.class)
-    public void testHandleFileUploadPost() {
-
-        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
-    }
-
-    @Test(expectedExceptions = ConsentException.class)
-    public void testHandleFileGet() {
-
-        defaultConsentManageHandler.handleFileGet(consentManageDataMock);
-    }
-
     private static void setConsentManageBuilder() {
 
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
-        ConsentManageValidator consentManageValidator = Mockito.mock(ConsentManageValidator.class);
         when(consentManageBuilder.getConsentManageValidator()).thenReturn(new DefaultConsentManageValidator());
         ConsentExtensionExporter.setConsentManageBuilder(consentManageBuilder);
     }

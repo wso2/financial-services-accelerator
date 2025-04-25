@@ -89,11 +89,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
-
-        // ToDo: Get from config
-        isExternalPreFileUploadEnabled = true;
-        isExternalPostFileUploadEnabled = true;
-        isExternalPreFileRetrievalEnabled = true;
+        isExternalPreFileUploadEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_FILE_UPLOAD);;
+        isExternalPostFileUploadEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);;
+        isExternalPreFileRetrievalEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);;
     }
 
     @Override
