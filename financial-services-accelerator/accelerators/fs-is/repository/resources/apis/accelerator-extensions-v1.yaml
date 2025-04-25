@@ -367,6 +367,87 @@ paths:
                 status: ERROR
                 errorMessage: server_error
                 errorDescription: Failed to process the response
+  /pre-process-consent-file-upload:
+    post:
+      tags:
+        - Consent
+      summary: "Handle pre validations related to file upload requests."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreProcessFileUploadRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForPreProcessFileUpload'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: invalid_request
+                  errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+  /enrich-consent-file-response:
+    post:
+      tags:
+        - Consent
+      summary: "Modify the response sent in the file upload request after successfully storig the file."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichFileUploadResponseRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200ForResponseAlternation'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: invalid_request
+                errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
   /pre-process-consent-retrieval:
     post:
       tags:
@@ -376,7 +457,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PreProcessConsentRetrievalRequestBody'
+              $ref: '#/components/schemas/PreProcessConsentRequestBody'
         required: true
       responses:
         "200":
@@ -385,6 +466,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response200ForResponseAlternation'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: invalid_request
+                errorDescription: Data is missing
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                errorMessage: server_error
+                errorDescription: Failed to process the response
+  /validate-consent-file-retrieval:
+    post:
+      tags:
+        - Consent
+      summary: "Handle validations related to file retrieval and return a response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreProcessFileUploadRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200'
         "400":
           description: Bad Request
           content:
@@ -416,7 +537,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PreProcessConsentRevokeRequestBody'
+              $ref: '#/components/schemas/PreProcessConsentRequestBody'
         required: true
       responses:
         "200":
@@ -621,7 +742,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenIssuanceRequestBody'
+              $ref: '#/components/schemas/IssueRefreshTokenRequestBody'
         required: true
       responses:
         "200":
@@ -629,7 +750,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response200ForRefreshTokenGeneration'
+                $ref: '#/components/schemas/Response200ForIssueRefreshToken'
         "400":
           description: Bad Request
           content:
@@ -662,7 +783,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PreUserAuthorizationRequestBody'
+              $ref: '#/components/schemas/ValidateAuthorizationRequestBody'
         required: true
       responses:
         "200":
@@ -670,7 +791,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response200'
+                $ref: '#/components/schemas/Response200ForValidateAuthorizationRequest'
               examples:
                 successExample:
                   summary: Success response
@@ -796,7 +917,7 @@ paths:
                     responseId: Ec1wMjmiG8
                     status: SUCCESS
                     data:
-                      eventSubscriptionResponse: { }
+                      eventSubscriptionResponse: {}
                 failedExample:
                   summary: Failed response
                   value:
@@ -962,7 +1083,7 @@ paths:
                     responseId: Ec1wMjmiG8
                     status: SUCCESS
                     data:
-                      eventPollingResponse: { }
+                      eventPollingResponse: {}
                 ffailedExample:
                   summary: Failed response
                   value:
@@ -1034,24 +1155,6 @@ components:
           type: string
           description: The operation where the error occurred.
       description: Defines an error object with details.
-    PostUserAuthRequestBase:
-      type: object
-      properties:
-        requestId:
-          type: string
-          example: Ec1wMjmiG8
-        data:
-          $ref: '#/components/schemas/PostUserAuthRequestBaseData'
-    PostUserAuthResponseBase:
-      type: object
-      properties:
-        responseId:
-          type: string
-          example: Ec1wMjmiG8
-        status:
-          type: string
-          enum:
-            - SUCCESS
 
     Request:
       type: object
@@ -1059,6 +1162,8 @@ components:
         consentInitiationData:
           type: object
           description: The initiation payload used by third parties which includes detailed information on data access request.
+        requestHeaders:
+          $ref: '#/components/schemas/RequestHeaders'
         consentResourcePath:
           type: string
           description: To identify requested consent type
@@ -1073,6 +1178,31 @@ components:
         consentResourcePath:
           type: string
           description: consent resource path
+    RequestForPreProcessFileUpload:
+      type: object
+      properties:
+        consentId:
+          type: string
+          description: To identify requested
+        consentResource:
+          $ref: '#/components/schemas/StoredDetailedConsentResourceData'
+        fileContent:
+          type: string
+          description: content of the uploaded file
+        consentResourcePath:
+          type: string
+          description: consent resource path
+        requestHeaders:
+          $ref: '#/components/schemas/RequestHeaders'
+    RequestForEnrichFileUploadResponse:
+      type: object
+      properties:
+        consentId:
+          type: string
+          description: "To identify consent."
+        fileUploadCreatedTime:
+          type: string
+          description: "Timestamp which the file was stored in the database."
     PreProcessConsentRetrievalData:
       type: object
       properties:
@@ -1081,6 +1211,8 @@ components:
           description: The consent id
         consentResource:
           $ref: '#/components/schemas/StoredBasicConsentResourceData'
+        requestHeaders:
+          $ref: '#/components/schemas/RequestHeaders'
         consentResourcePath:
           type: string
           description: Resource url
@@ -1102,9 +1234,9 @@ components:
         userId:
           type: string
           example: Username
-        scope:
-          type: string
-          example: accounts payments
+        requestParameters:
+          type: object
+          description: "Custom object with request parameters"
         consentResource:
           $ref: '#/components/schemas/StoredDetailedConsentResourceData'
     ValidateConsentAccessData:
@@ -1127,28 +1259,6 @@ components:
           type: string
           enum:
             - SUCCESS
-    SuccessResponseTokenGeneration:
-      type: object
-      properties:
-        responseId:
-          type: string
-        status:
-          type: string
-          enum:
-            - SUCCESS
-        data:
-          $ref: '#/components/schemas/SuccessResponseTokenGenerationData'
-    SuccessResponseIssueRefreshTokenGeneration:
-      type: object
-      properties:
-        responseId:
-          type: string
-        status:
-          type: string
-          enum:
-            - SUCCESS
-        data:
-          $ref: '#/components/schemas/SuccessResponseIssueRefreshTokenGenerationData'
     SuccessResponseConsentRevocation:
       type: object
       properties:
@@ -1200,7 +1310,18 @@ components:
           enum:
             - SUCCESS
         data:
-          $ref: '#/components/schemas/SuccessResponsePreProcessConsentCreationData'
+          $ref: '#/components/schemas/SuccessResponseWithDetailedConsentData'
+    SuccessResponsePreProcessFileUpload:
+      type: object
+      properties:
+        responseId:
+          type: string
+        status:
+          type: string
+          enum:
+            - SUCCESS
+        data:
+          $ref: '#/components/schemas/SuccessResponsePreProcessFileUploadData'
     FailedResponse:
       required:
         - data
@@ -1219,11 +1340,11 @@ components:
         data:
           type: object
           description: :"Custom error object to response back"
-    FailedResponseInConsent:
+    FailedResponseInConsentAuthorize:
       required:
-        - data
-        - errorCode
         - status
+        - errorMessage
+        - newConsentStatus
       type: object
       properties:
         status:
@@ -1231,12 +1352,12 @@ components:
           description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
           enum:
             - ERROR
-        errorCode:
-          type: integer
-          description: If any custom error code to return.
-        data:
-          type: object
-          description: :"Custom error object to response back"
+        errorMessage:
+          type: string
+          description: "Error messaage to be displayed in the URL"
+        newConsentStatus:
+          type: string
+          description: "New consent status to be set to the consent"
     ErrorResponse:
       required:
         - data
@@ -1269,7 +1390,25 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/RequestForEnrichConsentCreationResponse'
-    PreProcessConsentRetrievalRequestBody:
+    EnrichFileUploadResponseRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/RequestForEnrichFileUploadResponse'
+    PreProcessFileUploadRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: A unique correlation identifier
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/RequestForPreProcessFileUpload'
+    PreProcessConsentRequestBody:
       type: object
       properties:
         requestId:
@@ -1287,15 +1426,6 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/ConsentSearchData'
-    PreProcessConsentRevokeRequestBody:
-      type: object
-      properties:
-        requestId:
-          type: string
-          description: A unique correlation identifier
-          example: Ec1wMjmiG8
-        data:
-          $ref: '#/components/schemas/PreProcessConsentRetrievalData'
     PopulateConsentAuthorizeScreenRequestBody:
       type: object
       properties:
@@ -1313,21 +1443,15 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/ValidateConsentAccessData'
-    AccessTokenGenerationRequestBody:
+    IssueRefreshTokenRequestBody:
       type: object
       properties:
-        scopes:
-          type: array
-          example:
-            - accounts
-            - payments
-            - consentId
-          items:
-            type: string
-        grantType:
+        requestId:
           type: string
-          example: authorization_code
-    RefreshTokenRequestBody:
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/IssueRefreshTokenRequestData'
+    IssueRefreshTokenRequestData:
       type: object
       properties:
         grantType:
@@ -1342,138 +1466,42 @@ components:
         defaultRefreshTokenValidityPeriod:
           type: integer
           format: int64
-    PreAccessTokenGenerationRequestBody:
-      type: object
-      properties:
-        requestId:
-          type: string
-          example: Ec1wMjmiG8
-        data:
-          $ref: '#/components/schemas/AccessTokenGenerationRequestBody'
-    RefreshTokenIssuanceRequestBody:
-      type: object
-      properties:
-        requestId:
-          type: string
-          example: Ec1wMjmiG8
-        data:
-          $ref: '#/components/schemas/RefreshTokenRequestBody'
-    PreUserAuthorizationRequestBody:
-      type: object
-      properties:
-        requestId:
-          type: string
-          example: Ec1wMjmiG8
-        data:
-          $ref: '#/components/schemas/PreUserAuthorizationRequestBodyData'
     Response200ForPreProcessConsentCreation:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponsePreProcessConsentCreation'
-        - $ref: '#/components/schemas/FailedResponseInConsent'
+        - $ref: '#/components/schemas/FailedResponse'
+    Response200ForPreProcessFileUpload:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponsePreProcessFileUpload'
+        - $ref: '#/components/schemas/FailedResponse'
     Response200ForResponseAlternation:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponseForResponseAlternation'
-        - $ref: '#/components/schemas/FailedResponseInConsent'
+        - $ref: '#/components/schemas/FailedResponse'
     Response200ForConsentSearch:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponseForConsentSearch'
-        - $ref: '#/components/schemas/FailedResponseInConsent'
+        - $ref: '#/components/schemas/FailedResponse'
     Response200:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponse'
         - $ref: '#/components/schemas/FailedResponse'
-    Response200ForConsentRevocation:
+    Response200ForIssueRefreshToken:
       oneOf:
-        - $ref: '#/components/schemas/SuccessResponseConsentRevocation'
+        - $ref: '#/components/schemas/SuccessResponseIssueRefreshToken'
         - $ref: '#/components/schemas/FailedResponse'
-    Response200ForPopulateConsentAuthorizeScreen:
-      oneOf:
-        - $ref: '#/components/schemas/SuccessResponsePopulateConsentAuthorizeScreen'
-        - $ref: '#/components/schemas/FailedResponse'
-    Response200ForRefreshTokenGeneration:
-      oneOf:
-        - $ref: '#/components/schemas/SuccessResponseIssueRefreshTokenGeneration'
-        - $ref: '#/components/schemas/FailedResponse'
-    RequestBaseData:
+    SuccessResponseIssueRefreshToken:
       type: object
       properties:
-        userId:
+        responseId:
           type: string
-          example: ben@wso2.com
-        consentId:
+        status:
           type: string
-          example: "123"
-    ResponseBase_data_claims:
-      type: object
-      properties:
-        key:
-          type: string
-          example: claim1
-        value:
-          type: string
-          example: "123"
-    ResponseBaseData:
-      type: object
-      properties:
-        claims:
-          type: array
-          example:
-            - key: claim1
-              value: "123"
-            - key: claim2
-              value: "456"
-          items:
-            $ref: '#/components/schemas/ResponseBase_data_claims'
-    PostUserAuthRequestBaseData:
-      type: object
-      properties:
-        scopes:
-          type: array
-          example:
-            - accounts
-            - payments
-          items:
-            type: string
-        consentId:
-          type: string
-          example: "123"
-        validityPeriod:
-          type: integer
-          example: 1000
-    PostUserAuthRefreshTokenResponseData:
-      type: object
-      properties:
-        refreshTokenValidityPeriod:
-          type: integer
-          example: 1000
-    PostUserAuthApprovedScopesResponseData:
-      type: object
-      properties:
-        approvedScopes:
-          type: array
-          example:
-            - accounts
-            - payments
-            - consentId
-          items:
-            type: string
-    SuccessResponseTokenGenerationDataParameters:
-      type: object
-      properties:
-        key:
-          type: string
-          example: consent-id
-        value:
-          type: string
-          example: "123"
-    SuccessResponseTokenGenerationData:
-      type: object
-      properties:
-        parameters:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuccessResponseTokenGenerationDataParameters'
-    SuccessResponseIssueRefreshTokenGenerationData:
+          enum:
+            - SUCCESS
+        data:
+          $ref: '#/components/schemas/SuccessResponseIssueRefreshTokenData'
+    SuccessResponseIssueRefreshTokenData:
       type: object
       properties:
         issueRefreshToken:
@@ -1481,6 +1509,33 @@ components:
         refreshTokenValidityPeriod:
           type: integer
           format: int64
+    Response200ForValidateAuthorizationRequest:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - $ref: '#/components/schemas/FailedResponse'
+    ValidateAuthorizationRequestBody:
+      type: object
+      properties:
+        requestId:
+          type: string
+          example: Ec1wMjmiG8
+        data:
+          $ref: '#/components/schemas/ValidateAuthorizationRequestBodyData'
+    ValidateAuthorizationRequestBodyData:
+      type: object
+      properties:
+        requestObject:
+          type: object
+      description: full request object
+    Response200ForConsentRevocation:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponseConsentRevocation'
+        - $ref: '#/components/schemas/FailedResponse'
+    Response200ForPopulateConsentAuthorizeScreen:
+      oneOf:
+        - $ref: '#/components/schemas/SuccessResponsePopulateConsentAuthorizeScreen'
+        - $ref: '#/components/schemas/FailedResponseInConsentAuthorize'
+
     SuccessResponseConsentRevocationData:
       type: object
       properties:
@@ -1489,18 +1544,6 @@ components:
           description: Name for the revoked status
         requireTokenRevocation:
           type: string
-          description: Require access token to be revoked
-    SuccessResponseConsentRevocationAdminData:
-      type: object
-      properties:
-        revocationStatusName:
-          type: string
-          description: Name for the revoked status
-        revocationReason:
-          type: string
-          description: Reason for the revoked event
-        requireTokenRevocation:
-          type: boolean
           description: Require access token to be revoked
     SuccessResponsePopulateConsentAuthorizeScreenData:
       type: object
@@ -1514,26 +1557,32 @@ components:
     SuccessResponseForResponseAlternationData:
       type: object
       properties:
+        responseHeaders:
+          type: object
+          description: "Headers to be included in the response."
         modifiedResponse:
           type: object
-          description: Generated custom response body
+          description: "Generated custom response body"
     SuccessResponseForConsentSearchData:
       type: object
       properties:
         searchResult:
           type: object
           description: Enriched search result
-    SuccessResponsePreProcessConsentCreationData:
+    SuccessResponseWithDetailedConsentData:
       type: object
       properties:
         consentResource:
           $ref: '#/components/schemas/DetailedConsentResourceData'
-    PreUserAuthorizationRequestBodyData:
+    SuccessResponsePreProcessFileUploadData:
       type: object
       properties:
-        requestObject:
-          type: object
-      description: full request object
+        consentStatus:
+          type: string
+          description: "New consent status after the file upload is successful."
+        userId:
+          type: string
+          description: "Id of the user doing the file upload. Used for auditing purposes."
     PersistAuthorizedConsentRequestBody:
       type: object
       properties:
@@ -1557,7 +1606,7 @@ components:
     Response200ForPersistAuthorizedConsent:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponsePersistAuthorizedConsent'
-        - $ref: '#/components/schemas/FailedResponseInConsent'
+        - $ref: '#/components/schemas/FailedResponseInConsentAuthorize'
     SuccessResponsePersistAuthorizedConsent:
       type: object
       properties:
@@ -1569,36 +1618,13 @@ components:
             - SUCCESS
         data:
           oneOf:
-            - $ref: '#/components/schemas/SuccessResponsePersistAuthorizedConsentData'
+            - $ref: '#/components/schemas/SuccessResponseWithDetailedConsentData'
             - $ref: '#/components/schemas/SuccessPersistAuthorizedConsentWithAmendmentsData'
-    SuccessResponsePersistAuthorizedConsentData:
-      type: object
-      properties:
-        consentResource:
-          $ref: '#/components/schemas/DetailedConsentResourceData'
     SuccessPersistAuthorizedConsentWithAmendmentsData:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/ConsentPersistenceSuccessDataWithAmendments'
-    BasicConsentResourceData:
-      type: object
-      properties:
-        receipt:
-          type: object
-        type:
-          type: string
-        status:
-          type: string
-        frequency:
-          type: integer
-        validityTime:
-          type: integer
-          format: int64
-        recurringIndicator:
-          type: boolean
-        attributes:
-          type: object
     DetailedConsentResourceData:
       type: object
       properties:
@@ -1907,30 +1933,21 @@ components:
           description: Event polling data
     Response200ForEventSubscriptionValidation:
       oneOf:
-        - $ref: '#/components/schemas/SuccessResponseForEvent'
+        - $ref: '#/components/schemas/SuccessResponse'
         - $ref: '#/components/schemas/SuccessResponseForEventWithDetails'
-        - $ref: '#/components/schemas/FailedResponseForEvent'
+        - $ref: '#/components/schemas/FailedResponse'
     Response200ForEventValidation:
       oneOf:
-        - $ref: '#/components/schemas/SuccessResponseForEvent'
-        - $ref: '#/components/schemas/FailedResponseForEvent'
+        - $ref: '#/components/schemas/SuccessResponse'
+        - $ref: '#/components/schemas/FailedResponse'
     Response200ForEnrichEventSubscription:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponseForEnrichEventSubscription'
-        - $ref: '#/components/schemas/FailedResponseForEvent'
+        - $ref: '#/components/schemas/FailedResponse'
     Response200ForEnrichEventPolling:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponseForEnrichEventPolling'
-        - $ref: '#/components/schemas/FailedResponseForEvent'
-    SuccessResponseForEvent:
-      type: object
-      properties:
-        responseId:
-          type: string
-        status:
-          type: string
-          enum:
-            - SUCCESS
+        - $ref: '#/components/schemas/FailedResponse'
     SuccessResponseForEventWithDetails:
       type: object
       properties:
@@ -1987,39 +2004,9 @@ components:
         eventPollingResponse:
           type: object
           description: Event Polling Response
-    FailedResponseForEvent:
-      required:
-        - data
-        - errorCode
-        - status
+    RequestHeaders:
       type: object
-      properties:
-        responseId:
-          type: string
-        status:
-          type: string
-          description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
-          enum:
-            - ERROR
-        errorCode:
-          type: integer
-          description: If any custom error code to return.
-        data:
-          $ref: '#/components/schemas/FailedResponseForEvent_data'
-    FailedResponseForEvent_data:
-      type: object
-    Response200ForPreTokenIntrospection_data:
-      type: object
-      properties:
-        attributes:
-          type: array
-          example:
-            - key: attribute1
-              value: "123"
-            - key: attribute2
-              value: "456"
-          items:
-            $ref: '#/components/schemas/ResponseBase_data_claims'
+      description: Request headers sent by the TPP. Filtered set of headers are sent to the external service.
   securitySchemes:
     BasicAuth:
       type: http
