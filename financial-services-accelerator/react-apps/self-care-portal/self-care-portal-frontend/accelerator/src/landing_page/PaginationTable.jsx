@@ -25,20 +25,17 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import ReactPaginate from 'react-paginate';
 import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
-import { AppInfoContext } from "../context/AppInfoContext";
 import { SearchObjectContext } from "../context/SearchObjectContext";
 
 export const PaginationTable = ({currentTab}) => {
     const {currentContextUser} = useContext(UserContext);
     const {allContextConsents,getContextConsentForSearch} = useContext(ConsentContext);
-    const {contextAppInfo} = useContext(AppInfoContext);
     const {contextSearchObject,contextSearchUtilState,setContextSearchObject} = useContext(SearchObjectContext);
 
     const currentUser = currentContextUser.user;
     let searchObj = contextSearchObject;
     const consentMetadata = allContextConsents.metadata;
     const searchOnClickState = contextSearchUtilState;
-    const appInfo = contextAppInfo.appInfo; 
 
     const [postsPerPage, setPostsPerPage] = useState(searchObj.limit);
     const [noOfPages, setNoOfPages] = useState(1);
@@ -93,7 +90,7 @@ export const PaginationTable = ({currentTab}) => {
     }
 
     function doSearchConsents(search) {
-        getContextConsentForSearch(search, currentUser, appInfo);
+        getContextConsentForSearch(search, currentUser, null);
     }
 
     // to reset the page to 1 when tab changes

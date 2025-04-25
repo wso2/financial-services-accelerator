@@ -613,16 +613,26 @@ public final class FinancialServicesConfigParser {
         return config.map(String::trim).orElse("1440");
     }
 
+    public String getAdminUsername() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.ADMIN_USERNAME);
+        return source.map(String::trim).orElse("is_admin@wso2.com");
+    }
+
+    public String getAdminPassword() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.ADMIN_PASSWORD);
+        return source.map(String::trim).orElse("wso2123");
+    }
+
     public String getConsentAPIUsername() {
 
-        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_USERNAME);
-        return source.map(String::trim).orElse("admin");
+        return getAdminUsername();
     }
 
     public String getConsentAPIPassword() {
 
-        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_PASSWORD);
-        return source.map(String::trim).orElse("admin");
+        return getAdminPassword();
     }
 
     public String getPreserveConsent() {

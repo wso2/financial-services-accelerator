@@ -25,17 +25,13 @@ import {lang} from "../specConfigs";
 import {PaginationTable} from "./PaginationTable.jsx";
 import { UserContext } from "../context/UserContext.js";
 import { ConsentContext } from "../context/ConsentContext.js";
-import { AppInfoContext } from "../context/AppInfoContext.js";
 import { SearchObjectContext } from "../context/SearchObjectContext.js";
 
 
 export const LandingTabs = () => {
     const {currentContextUser} = useContext(UserContext);
     const {getContextConsentForSearch} = useContext(ConsentContext);
-    const {contextAppInfo} = useContext(AppInfoContext)
     const {contextSearchObject,setContextSearchObject} = useContext(SearchObjectContext);
-
-    const appInfo = contextAppInfo.appInfo;
 
     const [key, setKey] = useState(contextSearchObject.consentStatuses);
     const currentUser = currentContextUser.user;
@@ -52,7 +48,7 @@ export const LandingTabs = () => {
             offset: 0
         }
         setContextSearchObject(search)
-        getContextConsentForSearch(search, currentUser, appInfo);
+        getContextConsentForSearch(search, currentUser, null);
     }, [key])
 
     return (

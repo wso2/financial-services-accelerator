@@ -64,6 +64,6 @@ public class Constants {
     public static final String PATH_AUTHORIZE = "/oauth2/authorize";
     public static final String PREFIX_CONSENT_MANAGER = "/consentmgr/scp";
     public static final String PREFIX_OB_CONSENT = "/api/fs/consent";
-    public static final String PREFIX_CONSENT_MANAGER_ADMIN = "/consentmgr/scp/admin";
-    public static final String PREFIX_IS_APPLICATIONS = "/api/server/v1";
+    public static final String PATH_APP_RETRIEVAL = "/api/server/v1/applications?attributes=advancedConfigurations," +
+            "clientId";
 }

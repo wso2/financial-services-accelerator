@@ -22,16 +22,13 @@ import moment from "moment";
 import { getValueFromApplicationInfoWithFailOver, getValueFromConsentWithFailOver } from "../services/utils";
 import { ConsentContext } from "./../context/ConsentContext";
 import React, { useContext, useState, useEffect } from "react";
-import { AppInfoContext } from "../context/AppInfoContext";
 
 let id = 0;
 
 export const TableBody = ({ statusTab, consentType }) => {
     let index = 0;
     const { allContextConsents } = useContext(ConsentContext);
-    const { contextAppInfo } = useContext(AppInfoContext);
     const consents = allContextConsents.consents;
-    const appInfo = contextAppInfo.appInfo;
 
     const [filteredTab, setFilteredTab] = useState(() => {
         return lang[consentType].filter((lbl) => lbl.id === statusTab)[0];
@@ -111,17 +108,18 @@ export const TableBody = ({ statusTab, consentType }) => {
 
                                 return renderRespectiveConfiguredValue(header, valueFromConsent)
 
-                            } else if (header.dataOrigin === dataOrigins.applicationInfo) {
-                                let valueFromAppInfo = getValueFromApplicationInfoWithFailOver(
-                                    header.dataParameterKey,
-                                    header.failOverDataParameterKey,
-                                    consent.clientId,
-                                    appInfo
-                                );
-                                if (!valueFromAppInfo) {
-                                    return <td key={index = index + 1} />;
-                                }
-                                return renderRespectiveConfiguredValue(header, valueFromAppInfo)
+//                             } else if (header.dataOrigin === dataOrigins.applicationInfo) {
+//                                 let valueFromAppInfo = getValueFromApplicationInfoWithFailOver(
+//                                     header.dataParameterKey,
+//                                     header.failOverDataParameterKey,
+//                                     consent.clientId,
+//                                     appInfo
+//                                 );
+//                                 if (!valueFromAppInfo) {
+//                                     return <td key={index = index + 1} />;
+//                                 }
+//                                 return renderRespectiveConfiguredValue(header, valueFromAppInfo)
+//
 
                             } else {
                                 return <td key={index = index + 1} />;

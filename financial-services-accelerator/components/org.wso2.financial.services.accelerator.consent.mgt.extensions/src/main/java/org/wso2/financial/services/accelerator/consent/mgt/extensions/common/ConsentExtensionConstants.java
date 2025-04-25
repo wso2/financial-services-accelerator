@@ -152,7 +152,7 @@ public class ConsentExtensionConstants {
     public static final String AUTH_ID = "authorizationId";
     public static final String CC_CONSENT_ID = "consentId";
     public static final String USER_ID = "userId";
-    public static final String USER_ID_PARAM = "userID";
+    public static final String USER_ID_PARAM = "userId";
     public static final String AUTH_STATUS = "authorizationStatus";
     public static final String AUTH_TYPE = "authorizationType";
     public static final String UPDATE_TIME = "updatedTime";

@@ -99,7 +99,7 @@ function getClientIdsFromSoftwareProvider(softwareProvider, appInfo) {
     return "*";
 }
 
-export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
+export const getConsentsFromAPIForSearch = (searchObj, user, consent) => {
 
     let currentUserEmail = userIdAdjustment(user.email)
 
@@ -173,8 +173,8 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
 };
 
 export const getRevokeUrl = (consentId, user) => {
-    const adminUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentId}`;
-    const defaultUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentID=${consentId}&userId=${user.email}`;
+    const adminUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentId=${consentId}`;
+    const defaultUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentId=${consentId}&userId=${user.email}`;
 
     return user.role === 'customerCareOfficer' ? adminUrl : defaultUrl;
 };

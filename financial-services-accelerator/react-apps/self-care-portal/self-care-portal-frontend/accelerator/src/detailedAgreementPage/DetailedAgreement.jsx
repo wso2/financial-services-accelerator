@@ -31,19 +31,16 @@ import {getDisplayName} from "../services";
 import {getLogoURL} from "../services/utils";
 import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
-import { AppInfoContext } from "../context/AppInfoContext";
 import { SearchObjectContext } from "../context/SearchObjectContext";
 
 export const DetailedAgreement = ({match}) => {
     const {currentContextUser} = useContext(UserContext);
     const {getContextConsentForSearch,allContextConsents} = useContext(ConsentContext);
-    const {contextAppInfo} = useContext(AppInfoContext);
     const {contextSearchObject} = useContext(SearchObjectContext)
 
     let searchObj = contextSearchObject;
     const currentUser = currentContextUser.user;
     const consents = allContextConsents.consents;
-    const appInfo = contextAppInfo.appInfo;
 
     const [consentTypeKey, setConsentTypeKey] = useState(searchObj.consentTypes);
     const [consent, setConsent] = useState(() => {
@@ -59,19 +56,19 @@ export const DetailedAgreement = ({match}) => {
             consentStatuses: "",
             consentTypes: ""
         }
-        getContextConsentForSearch(search,currentUser,appInfo);
         const matchedConsentId = match.params.id;
         let matchedConsent = consents.data.filter(
             (consent) => consent.consentId === matchedConsentId
         );
+        getContextConsentForSearch(search,currentUser,matchedConsent[0]);
         return matchedConsent[0];
     });
 
     const [applicationName, setApplicationName] = useState(() => {
-        return getDisplayName(appInfo, consent.clientId);
+        return consent.softwareClientName;
     });
     const [logoURL, setLogoURL] = useState(() => {
-        return getLogoURL(appInfo, consent.clientId);
+        return consent.logoURL;
     });
     const [infoLabel, setInfoLabel] = useState(() => {
         const labels = lang[consentTypeKey].filter((lbl) =>
@@ -80,8 +77,8 @@ export const DetailedAgreement = ({match}) => {
     });
 
     useEffect(() => {
-        setApplicationName(getDisplayName(appInfo, consent.clientId));
-    }, [appInfo]);
+        setApplicationName(consent.softwareClientName);
+    });
 
     useEffect(() => {
         const matchedConsentId = match.params.id;

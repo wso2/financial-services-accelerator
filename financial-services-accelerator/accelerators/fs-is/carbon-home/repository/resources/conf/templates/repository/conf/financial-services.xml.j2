@@ -18,6 +18,18 @@
  -->
 
 <Server xmlns="http://wso2.org/projects/carbon/financial-services.xml"  xmlns:svns="http://org.wso2.securevault/configuration">
+    <Admin>
+        {% if financial_services.admin.username is defined %}
+        <Username>{{financial_services.admin.username}}</Username>
+        {% else %}
+        <Username>is_admin@wso2.com</Username>
+        {% endif %}
+        {% if financial_services.admin.password is defined %}
+        <Password>{{financial_services.admin.password}}</Password>
+        {% else %}
+        <Password>wso2123</Password>
+        {% endif %}
+    </Admin>
     <JDBCPersistenceManager>
         <DataSource>
             <!-- Include a data source name (jndiConfigName) from the set of data
@@ -109,18 +121,6 @@
         <AdminHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
         {% endif %}
 
-        <ConsentAPICredentials>
-            {% if financial_services.consent.api_credentials.username is defined %}
-                <Username>{{financial_services.consent.api_credentials.username}}</Username>
-            {% else %}
-                <Username>is_admin@wso2.com</Username>
-            {% endif %}
-            {% if financial_services.consent.api_credentials.password is defined %}
-                <Password>{{financial_services.consent.api_credentials.password}}</Password>
-            {% else %}
-                <Password>wso2123</Password>
-            {% endif %}
-        </ConsentAPICredentials>
         <Portal>
             <ClientCredentials>
                 {% if financial_services.consent.portal.client_credentials.client_id is defined %}

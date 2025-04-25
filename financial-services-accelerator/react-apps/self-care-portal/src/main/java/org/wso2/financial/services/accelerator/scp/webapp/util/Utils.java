@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -121,14 +122,8 @@ public class Utils {
     public static HttpUriRequest getHttpUriRequest(String isBaseUrl, String requestMethod, String requestURI,
                                                    String queryParams) {
 
-        final String uri;
-        if (requestURI.contains("applications")) {
-            uri = isBaseUrl + requestURI.replaceFirst(Constants.PREFIX_CONSENT_MANAGER_ADMIN,
-                    Constants.PREFIX_IS_APPLICATIONS) + "?" + queryParams;
-        } else {
-            uri = isBaseUrl + requestURI.replaceFirst(Constants.PREFIX_CONSENT_MANAGER, Constants.PREFIX_OB_CONSENT)
-                    + "?" + queryParams;
-        }
+        final String uri = isBaseUrl + requestURI.replaceFirst(Constants.PREFIX_CONSENT_MANAGER,
+                Constants.PREFIX_OB_CONSENT) + "?" + queryParams;
 
         switch (requestMethod) {
             case HttpDelete.METHOD_NAME:
@@ -217,6 +212,39 @@ public class Utils {
                     .get(requiredParameter);
         }
         return parameter;
+    }
+
+    /**
+     * Method to retrieve application details
+     */
+    public static JSONObject sendApplicationRetrievalRequest() {
+
+        HttpGet tokenReq = new HttpGet(Utils.getParameter(Constants.IS_BASE_URL) + Constants.PATH_APP_RETRIEVAL);
+
+        // generating basic authorization
+        String adminUsername =  FinancialServicesConfigParser.getInstance().getAdminUsername();
+        String adminPassword = FinancialServicesConfigParser.getInstance().getAdminPassword();
+        final String auth = adminUsername + ":" + adminPassword;
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+        // add request headers
+        tokenReq.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
+        tokenReq.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
+
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(tokenReq)) {
+            String responseStr = EntityUtils.toString(response.getEntity());
+
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                // received success response
+                return new JSONObject(responseStr);
+            }
+            LOG.error("Invalid response received for token request. Error: " + responseStr);
+        } catch (IOException e) {
+            LOG.error("Exception occurred while sending token request. Caused by, ", e);
+        } catch (JSONException e) {
+            LOG.error("Exception occurred while processing token response. Caused by, ", e);
+        }
+        return null;
     }
 
 }

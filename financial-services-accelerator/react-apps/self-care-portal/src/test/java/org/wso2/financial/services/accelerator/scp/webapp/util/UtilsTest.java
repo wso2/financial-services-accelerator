@@ -33,7 +33,9 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
+import org.wso2.financial.services.accelerator.scp.webapp.TestConstants;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.model.SCPError;
 
@@ -45,6 +47,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -57,11 +61,18 @@ public class UtilsTest {
     private static final String REQUEST_URL = "http://localhost:9446";
     private static final String DUMMY_COOKIE = "dummy-cookie";
     private static MockedStatic<HTTPClientUtils> mockedStatic;
+    private static MockedStatic<FinancialServicesConfigParser> configParser;
 
     @BeforeClass
     public void setUp() {
 
         mockedStatic = Mockito.mockStatic(HTTPClientUtils.class);
+        configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Map<String, Object> configs = new HashMap<String, Object>();
+        Mockito.doReturn("admin").when(configParserMock).getAdminUsername();
+        Mockito.doReturn("admin").when(configParserMock).getAdminPassword();
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
     }
 
     @AfterClass
@@ -230,5 +241,32 @@ public class UtilsTest {
         Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
 
         Mockito.verify(resp, Mockito.times(1)).sendRedirect(Mockito.anyString());
+    }
+
+    @Test
+    public void testSendApplicationRetrievalRequest() throws IOException {
+        // mock
+        StatusLine statusLineMock = Mockito.mock(StatusLine.class);
+        HttpEntity httpEntityMock = Mockito.mock(HttpEntity.class);
+        CloseableHttpResponse httpResponseMock = Mockito.mock(CloseableHttpResponse.class);
+        CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
+
+        Mockito.doReturn(HttpStatus.SC_OK).when(statusLineMock).getStatusCode();
+
+        InputStream inStream = new ByteArrayInputStream(TestConstants.APP_DETAIL_RESPONSE
+                .getBytes(StandardCharsets.UTF_8));
+        Mockito.doReturn(inStream).when(httpEntityMock).getContent();
+
+        Mockito.doReturn(statusLineMock).when(httpResponseMock).getStatusLine();
+        Mockito.doReturn(httpEntityMock).when(httpResponseMock).getEntity();
+
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpPost.class));
+
+        mockedStatic.when(HTTPClientUtils::getHttpsClient).thenReturn(closeableHttpClientMock);
+
+        // assert
+        JSONObject response = Utils.sendApplicationRetrievalRequest();
+        Assert.assertNotNull(response);
     }
 }

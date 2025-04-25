@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
@@ -31,6 +32,7 @@ import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -99,6 +101,51 @@ public class APIMService implements Serializable {
         JSONObject responseJson = Utils.sendRequest(httpRequest);
         int statusCode = responseJson.optInt("res_status_code", 200);
         responseJson.remove("res_status_code");
+
+        if ("GET".equals(httpRequest.getMethod())) {
+            // Retrieving application details to get software_client_name
+            JSONObject applicationDetails = Utils.sendApplicationRetrievalRequest();
+            if (applicationDetails != null) {
+                Map<String, String> appClientNameMap = new HashMap<>();
+                Map<String, String> appLogoUrlMap = new HashMap<>();
+                for (Object application : applicationDetails.getJSONArray("applications")) {
+                    JSONObject applicationJson = (JSONObject) application;
+                    JSONObject configs = applicationJson.getJSONObject("advancedConfigurations");
+                    JSONArray spData = configs.getJSONArray("additionalSpProperties");
+                    String clientName = null;
+                    String logoUrl = null;
+                    for (Object spDatum : spData) {
+                        JSONObject spDatumJson = (JSONObject) spDatum;
+                        if (spDatumJson.getString("name").equalsIgnoreCase("software_client_name")) {
+                            String softwareClientName = spDatumJson.getString("value");
+                            if (StringUtils.isNotEmpty(softwareClientName)) {
+                                clientName = softwareClientName;
+                            }
+                        }
+                        if (spDatumJson.getString("name").equalsIgnoreCase("software_logo_uri")) {
+                            logoUrl = spDatumJson.getString("value");
+                        }
+                    }
+                    if (clientName == null) {
+                        clientName = applicationJson.getString("name");
+                    }
+                    appClientNameMap.put(applicationJson.getString("clientId"), clientName);
+                    appLogoUrlMap.put(applicationJson.getString("clientId"), logoUrl);
+
+                }
+
+                if (responseJson.has("data")) {
+                    for (Object dataElement : responseJson.getJSONArray("data")) {
+                        JSONObject dataElementJson = (JSONObject) dataElement;
+                        String clientId = dataElementJson.optString("clientId");
+                        if (clientId != null && appClientNameMap.containsKey(clientId)) {
+                            dataElementJson.put("softwareClientName", appClientNameMap.get(clientId));
+                            dataElementJson.put("logoURL", appLogoUrlMap.get(clientId));
+                        }
+                    }
+                }
+            }
+        }
 
         // returning  response
         Utils.returnResponse(resp, statusCode, responseJson);

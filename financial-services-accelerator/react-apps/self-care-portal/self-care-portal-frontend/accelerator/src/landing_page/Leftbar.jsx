@@ -21,7 +21,6 @@ import "../css/Leftbar.css";
 import {Nav, NavLink, NavItem} from "react-bootstrap";
 import {SearchObjectContext} from "../context/SearchObjectContext";
 import { ConsentContext } from "../context/ConsentContext";
-import { AppInfoContext } from "../context/AppInfoContext";
 import { UserContext } from "../context/UserContext"
 import {lang, consentTypes} from "../specConfigs";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -37,11 +36,9 @@ export const Leftbar = ({setTitle}) => {
     const [isOpen, setIsOpen] = useState(true);
     const toggle = () => setIsOpen(!isOpen);
     const {contextSearchObject, setContextSearchObject} = useContext(SearchObjectContext);
-    const {contextAppInfo} = useContext(AppInfoContext);
     const {currentContextUser} = useContext(UserContext);
     const {getContextConsentForSearch} = useContext(ConsentContext);
     let searchObj = contextSearchObject;
-    const appInfo = contextAppInfo.appInfo;
     const [consentTypeKey, setConsentTypeKey] = useState(searchObj.consentTypes);
     const currentUser = currentContextUser.user;
 
@@ -57,7 +54,7 @@ export const Leftbar = ({setTitle}) => {
             offset: 0
         }
         setContextSearchObject(search);
-        getContextConsentForSearch(search, currentUser, appInfo);
+        getContextConsentForSearch(search, currentUser, null);
         // Update the title based on the selected consent type
         setTitle(consentTypes.find(type => type.id === consentTypeKey).label);
     },  [consentTypeKey]);

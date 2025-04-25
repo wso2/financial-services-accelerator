@@ -34,12 +34,10 @@ import {Modal} from "react-bootstrap";
 import {getDisplayName, getValueFromConsent} from "../services";
 import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
-import { AppInfoContext } from "../context/AppInfoContext";
 
 export const WithdrawStep2 = ({ match }) => {
   const {currentContextUser} = useContext(UserContext);
   const {allContextConsents} = useContext(ConsentContext);
-  const {contextAppInfo} = useContext(AppInfoContext);
 
   const [show, setShow] = useState(false);
   const [message, setMessage] = useState("");
@@ -50,7 +48,6 @@ export const WithdrawStep2 = ({ match }) => {
 
   const consentId = match.params.id;
   const user = currentContextUser.user;
-  const appInfo = contextAppInfo.appInfo;
   const consents = allContextConsents.consents;
 
   const matchedConsent = consents.data.find((consent) => consent.consentId === consentId);
@@ -59,7 +56,7 @@ export const WithdrawStep2 = ({ match }) => {
   const consentStatus = matchedConsent?.currentStatus;
   const consentConsentId = matchedConsent?.consentId;
 
-  const applicationName = getDisplayName(appInfo, clientId);
+  const applicationName = matchedConsent?.softwareClientName;
 
   const consentAccountResponseDataPermissions = getValueFromConsent(
     specConfigurations.consent.permissionsView.permissionsAttribute,

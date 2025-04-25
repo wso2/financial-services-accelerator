@@ -27,6 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
+import org.wso2.financial.services.accelerator.scp.webapp.TestConstants;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
@@ -151,7 +152,10 @@ public class APIMServiceTest {
             HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
             JSONObject resp = new JSONObject();
             resp.append("res_status_code", 200);
+            resp.append("data", new JSONObject());
             utilsMockedStatic.when(() -> Utils.sendRequest(Mockito.any())).thenReturn(resp);
+            utilsMockedStatic.when(Utils::sendApplicationRetrievalRequest)
+                    .thenReturn(new JSONObject(TestConstants.APP_DETAIL_RESPONSE));
             Map<String, String> headers = new HashMap<>();
             uut.forwardRequest(httpServletResponse, new HttpGet(REQUEST_URL), headers);
         }

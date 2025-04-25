@@ -27,15 +27,17 @@ export const getApplicationInfo = async (clientIdList) => {
     const requestConfig = {
         method: "GET",
         headers: {
-//            "Authorization": "Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==",
-            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)
+            "Authorization": "Basic aXNfYWRtaW5Ad3NvMi5jb206d3NvMjEyMw==",
+//            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1)
         },
-        url: `${serverURL}/admin/applications?attributes=advancedConfigurations,clientId`
+        url: `${serverURL}/api/server/v1/applications?attributes=advancedConfigurations,clientId`
     };
 
+    console.log("Get Application Info API called");
     return await axios
         .request(requestConfig)
         .then((response) => {
+            console.log("Application Info Response: ", response);
             let modifiedAppResponse = constructAppResponse(response.data.applications);
             return Promise.resolve(modifiedAppResponse);
         })

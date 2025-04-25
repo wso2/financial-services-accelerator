@@ -55,9 +55,9 @@ export const account_lang = [
         tableHeaders: [
             {
                 heading: "Applications",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "softwareClientName",
+                failOverDataParameterKey: "",
                 dataType: dataTypes.rawData
             },
             {
@@ -136,9 +136,9 @@ export const account_lang = [
         tableHeaders: [
             {
                 heading: "Applications",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "softwareClientName",
+                failOverDataParameterKey: "",
                 dataType: dataTypes.rawData
             },
             {
@@ -219,9 +219,9 @@ export const cof_lang = [
         tableHeaders: [
             {
                 heading: "Applications",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "softwareClientName",
+                failOverDataParameterKey: "",
                 dataType: dataTypes.rawData
             },
             {
@@ -308,9 +308,9 @@ export const cof_lang = [
         tableHeaders: [
             {
                 heading: "Applications",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "softwareClientName",
+                failOverDataParameterKey: "",
                 dataType: dataTypes.rawData
             },
             {
@@ -399,9 +399,9 @@ export const payments_lang = [
         tableHeaders: [
             {
                 heading: "Applications",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "softwareClientName",
+                failOverDataParameterKey: "",
                 dataType: dataTypes.rawData
             },
             {

@@ -30,20 +30,17 @@ import DateRange from "react-date-range/dist/components/DateRange";
 import moment from "moment";
 import { UserContext } from "../context/UserContext";
 import { ConsentContext } from "../context/ConsentContext";
-import { AppInfoContext } from "../context/AppInfoContext";
 import { SearchObjectContext } from "../context/SearchObjectContext";
 
 
 export const AdvanceSearch = () => {
     const {currentContextUser} = useContext(UserContext);
     const {getContextConsentForSearch} = useContext(ConsentContext);
-    const {contextAppInfo} = useContext(AppInfoContext);
     const {contextSearchObject,setContextSearchObject,contextSearchUtilState,setContextSearchUtilState} = useContext(SearchObjectContext);
 
     let searchObj = contextSearchObject;
     const currentUser = currentContextUser.user;
     const searchOnClickState = contextSearchUtilState;
-    const appInfo = contextAppInfo.appInfo;
 
     const [calendarVisibility, setCalendarVisibility] = useState(false);
     const [advanceSearchVisibility, setAdvanceSearchVisibility] = useState(false);
@@ -94,7 +91,7 @@ export const AdvanceSearch = () => {
 
 
     function doSearchConsents(search) {
-        getContextConsentForSearch(search, currentUser, appInfo);
+        getContextConsentForSearch(search, currentUser, null);
     }
 
     return (

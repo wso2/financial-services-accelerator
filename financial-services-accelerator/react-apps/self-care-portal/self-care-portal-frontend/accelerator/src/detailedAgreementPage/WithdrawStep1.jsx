@@ -29,14 +29,11 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import {FourOhFourError} from "../errorPage/index.js";
 import {getDisplayName} from "../services";
 import { ConsentContext } from "../context/ConsentContext";
-import { AppInfoContext } from "../context/AppInfoContext";
 
 export const WithdrawStep1 = ({ match }) => {
   const {allContextConsents} = useContext(ConsentContext);
-  const {contextAppInfo} = useContext(AppInfoContext);
 
   const consents = allContextConsents.consents;
-  const appInfo = contextAppInfo.appInfo;
 
   useEffect(() => {
     window.history.pushState(null, "", '/consentmgr');
@@ -58,7 +55,7 @@ export const WithdrawStep1 = ({ match }) => {
   );
 
   consent = matchedConsent[0];
-  applicationName = getDisplayName(appInfo, consent.clientId);
+  applicationName = consent.softwareClientName;
   consentStatus = consent.currentStatus;
   consentConsentId= consent.consentId;
 

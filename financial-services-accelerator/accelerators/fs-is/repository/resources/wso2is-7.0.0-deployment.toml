@@ -313,6 +313,10 @@ maxHttpHeaderSize = "65536"
 ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
 #================configs related to financial-services.xml=============
+[financial_services.admin]
+username="$ref{super_admin.username}"
+password="$ref{super_admin.password}"
+
 [financial_services.extensions.endpoint]
 enabled = false
 # allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
@@ -514,10 +518,6 @@ jwt.payload.enabled=true
 
 [financial_services.consent.admin]
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler"
-
-[financial_services.consent.api_credentials]
-username="$ref{super_admin.username}"
-password="$ref{super_admin.password}"
 
 [financial_services.consent.portal.client_credentials]
 client_id="consent_management_portal_client_id"
