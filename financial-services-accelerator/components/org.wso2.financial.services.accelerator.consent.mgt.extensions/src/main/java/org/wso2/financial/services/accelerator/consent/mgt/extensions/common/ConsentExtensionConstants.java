@@ -39,6 +39,7 @@ public class ConsentExtensionConstants {
     public static final String DATA = "Data";
     public static final String CONSENT_TYPE = "consent_type";
     public static final String AWAIT_AUTHORISE_STATUS = "AwaitingAuthorisation";
+    public static final String AWAIT_UPLOAD_STATUS = "AwaitingUpload";
     public static final String AUTHORIZED_STATUS = "Authorised";
     public static final String REVOKED_STATUS = "Revoked";
     public static final String REJECTED_STATUS = "Rejected";

@@ -17,20 +17,27 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import com.google.gson.JsonElement;
-
 /**
- * ExternalAPIPostConsentGenerateResponseDTO
+ * ExternalAPIValidateFileUploadResponseDTO
  */
-public class ExternalAPIPostConsentGenerateResponseDTO {
+public class ExternalAPIPreFileUploadResponseDTO {
 
-    private JsonElement modifiedResponse;
+    private String consentStatus;
+    private String userId;
 
-    public JsonElement getModifiedResponse() {
-        return modifiedResponse;
+    public String getConsentStatus() {
+        return consentStatus;
     }
 
-    public void setModifiedResponse(JsonElement data) {
-        this.modifiedResponse = data;
+    public void setConsentStatus(String newConsentStatus) {
+        this.consentStatus = consentStatus;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

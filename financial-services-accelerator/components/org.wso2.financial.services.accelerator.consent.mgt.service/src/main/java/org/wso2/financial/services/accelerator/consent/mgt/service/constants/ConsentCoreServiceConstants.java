@@ -65,8 +65,10 @@ public class ConsentCoreServiceConstants {
     public static final String DATA_RETRIEVE_ERROR_MSG = "Error occurred while retrieving data";
     public static final String DATA_UPDATE_ROLLBACK_ERROR_MSG = "Error occurred while updating consent data. Rolling " +
             "back the transaction";
-    public static final String NEW_CONSENT_STATUS_OR_APPLICABLE_STATUS_MISSING_ERROR = "New consent status or " +
-            "applicable status for file upload is missing. Cannot proceed";
+    public static final String APPLICABLE_STATUS_MISSING_ERROR = "Applicable status for file upload is missing. " +
+            "Cannot proceed";
+    public static final String NEW_CONSENT_STATUS_MISSING_ERROR = "New consent status for file upload is missing. " +
+            "Cannot proceed";
 
     public static final String ATTRIBUTE_UPDATE_ERROR_MSG = "Error occurred while updating consent attributes. " +
             "Rolling back the transaction";
