@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -46,7 +47,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.ArrayList;
@@ -58,6 +63,21 @@ import java.util.UUID;
  */
 public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     private static final Log log = LogFactory.getLog(DefaultConsentAdminHandler.class);
+    ConsentCoreService consentCoreService;
+    boolean isExtensionsEnabled;
+    boolean isExternalPreConsentRevocationEnabled;
+    boolean isExternalPreConsentSearchEnabled;
+
+    public DefaultConsentAdminHandler() {
+
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
+        isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
+        isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
+        isExternalPreConsentSearchEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH);
+    }
 
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
@@ -73,6 +93,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         Long toTime = null;
         Integer limit = null;
         Integer offset = null;
+
 
         Map queryParams = consentAdminData.getQueryParams();
 
@@ -155,19 +176,19 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
         //if the OpenAPI extension is enabled for admin-consent search
-        /*if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                .PRE_PROCESS_CONSENT_BULK_RETRIEVAL)) {
-            ExternalAPIAdminConsentSearchRequestDTO requestDTO = new ExternalAPIAdminConsentSearchRequestDTO(
-                    consentAdminData.getResponsePayload(), consentAdminData.getQueryParams());
-
+        if (isExtensionsEnabled && isExternalPreConsentSearchEnabled) {
+            // Call external service before revoking consent.
+            ExternalAPIAdminConsentSearchRequestDTO externalAPISearchRequest =
+                    new ExternalAPIAdminConsentSearchRequestDTO(consentAdminData.getResponsePayload(),
+                            consentAdminData.getQueryParams());
             try {
-                ExternalAPIAdminConsentSearchResponseDTO responseDTO = callExternalService(requestDTO);
+                ExternalAPIAdminConsentSearchResponseDTO responseDTO = callExternalService(externalAPISearchRequest);
                 consentAdminData.setResponsePayload(responseDTO.getResponsePayload());
             } catch (FinancialServicesException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Exception occurred while searching consents", e);
             }
-        }*/
+        }
     }
 
     @Override
@@ -187,17 +208,20 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 DetailedConsentResource consentResource = coreService
                         .getDetailedConsent(consentId);
                 //if the OpenAPI extension is enabled for admin-consent revoke
-             /*   if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum
-                        .PRE_PROCESS_CONSENT_REVOCATION)) {
-                    ExternalAPIAdminConsentRevokeRequestDTO requestDTO = new ExternalAPIAdminConsentRevokeRequestDTO
-                            (consentId, userId, consentResource);
-                    ExternalAPIAdminConsentRevokeResponseDTO responseDTO = callExternalService(requestDTO);
+                if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
+                    // Call external service before revoking consent.
+                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                            new ExternalAPIConsentResourceRequestDTO(consentResource);
+                    ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(
+                            externalAPIConsentResource, consentAdminData.getRequest().getRequestURI(),
+                            null);
+                    ExternalAPIConsentRevokeResponseDTO responseDTO = ExternalAPIConsentManageUtils.
+                            callExternalService(requestDTO);
                     coreService.revokeConsentWithReason(consentId,
                             responseDTO.getRevocationStatusName(),
                             userId, responseDTO.getRequireTokenRevocation(),
-                            responseDTO.getRevocationReason());
-
-                } else { */
+                            ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
+                } else {
                     if (!ConsentExtensionConstants.AUTHORIZED_STATUS.equals(consentResource.getCurrentStatus())) {
                         throw new ConsentException(ResponseStatus.BAD_REQUEST,
                                 "Consent is not in a revocable status");
@@ -209,7 +233,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                         ConsentAdminUtils.validateAndGetQueryParam(queryParams, "userID"),
                                         ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
                     }
-                //}
+                }
             }
 
             consentAdminData.setResponseStatus(ResponseStatus.OK);
@@ -389,7 +413,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             throws FinancialServicesException {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
-                ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_BULK_RETRIEVAL);
+                ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIAdminConsentSearchResponseDTO.class);
     }
 
