@@ -177,7 +177,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         consentAdminData.setResponsePayload(response);
         //if the OpenAPI extension is enabled for admin-consent search
         if (isExtensionsEnabled && isExternalPreConsentSearchEnabled) {
-            // Call external service before revoking consent.
+            // Call external service to enrich consent search response
             ExternalAPIAdminConsentSearchRequestDTO externalAPISearchRequest =
                     new ExternalAPIAdminConsentSearchRequestDTO(consentAdminData.getResponsePayload(),
                             consentAdminData.getQueryParams());
