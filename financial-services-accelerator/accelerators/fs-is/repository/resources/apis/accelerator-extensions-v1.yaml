@@ -8,13 +8,13 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v3
+  version: v1.0.0-M4
 servers:
   - url: https://virtserver.swaggerhub.com/wso2-f5b/OB4/1.0.0
     description: SwaggerHub API Auto Mocking
 security:
-  - BasicAuth: []
-  - OAuth2: []
+  - BasicAuth: [ ]
+  - OAuth2: [ ]
 tags:
   - name: Client
     description: APIs for dynamically registering/updating client  related extensions
