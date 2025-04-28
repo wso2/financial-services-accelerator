@@ -1341,20 +1341,25 @@ components:
           type: object
           description: :"Custom error object to response back"
     FailedResponseInConsentAuthorize:
-      required:
-        - status
-        - errorMessage
-        - newConsentStatus
       type: object
       properties:
+        responseId:
+          type: string
         status:
           type: string
           description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
           enum:
             - ERROR
+        data:
+          $ref: '#/components/schemas/FailedResponseInConsentAuthorizeData'
+    FailedResponseInConsentAuthorizeData:
+      required:
+        - errorMessage
+      type: object
+      properties:
         errorMessage:
           type: string
-          description: "Error messaage to be displayed in the URL"
+          description: "Error message to be displayed in the URL"
         newConsentStatus:
           type: string
           description: "New consent status to be set to the consent"
