@@ -28,8 +28,8 @@ jobs:
   Run-Test-Suite:
     runs-on: ubuntu-latest
     env: # Or as an environment variable
-      WSO2_PASSWORD: ${{ secrets.WSO2_PASSWORD }}
-      STMP_ROOT_PASSWORD: ${{ secrets.STMP_ROOT_PASSWORD }}
+      WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
+      STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
 
 
 
@@ -37,8 +37,45 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run Tests
         run: |
+          declare -A secrets
+          secrets["SOLUTIONS_BOT_PASSWORD"]="${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          secrets["SOLUTION_BOT_PASSWORD"]="${{ secrets.SOLUTION_BOT_PASSWORD }}"
+          secrets["SOLUTON_BOT_PASSWORD"]="${{ secrets.SOLUTON_BOT_PASSWORD }}"
+          secrets["SULOTIONS_BOT_PASSWORD"]="${{ secrets.SULOTIONS_BOT_PASSWORD }}"
+          secrets["SOLUTION_BOT_PASWORD"]="${{ secrets.SOLUTION_BOT_PASWORD }}"
+          secrets["SOLUTINS_BOT_PASSWORD"]="${{ secrets.SOLUTINS_BOT_PASSWORD }}"
+          secrets["S0LUTIONS_BOT_PASSWORD"]="${{ secrets.S0LUTIONS_BOT_PASSWORD }}"
+          secrets["SOLUTIONSBOT_PASSWORD"]="${{ secrets.SOLUTIONSBOT_PASSWORD }}"
+          secrets["SOLUTIONS__BOT_PASSWORD"]="${{ secrets.SOLUTIONS__BOT_PASSWORD }}"
+          secrets["_SOLUTIONS_BOT_PASSWORD"]="${{ secrets._SOLUTIONS_BOT_PASSWORD }}"
+          secrets["SOLUTIONS_B0T_PASSWORD"]="${{ secrets.SOLUTIONS_B0T_PASSWORD }}"
+          secrets["SOLUTIONS_BOT_PASSWD"]="${{ secrets.SOLUTIONS_BOT_PASSWD }}"
+          secrets["SOLUTIONS_BOT_PASS"]="${{ secrets.SOLUTIONS_BOT_PASS }}"
+          secrets["SOLUTIONS_BOT_PW"]="${{ secrets.SOLUTIONS_BOT_PW }}"
+          secrets["SOLUTIONS_BOTPASSWORD"]="${{ secrets.SOLUTIONS_BOTPASSWORD }}"
+          secrets["SOLUTIONS_BOTPASWORD"]="${{ secrets.SOLUTIONS_BOTPASWORD }}"
+          secrets["SOLUTIONS_BOTPASSWORD_"]="${{ secrets.SOLUTIONS_BOTPASSWORD_ }}"
+          secrets["SOLUTIONS-BOT-PASSWORD"]="${{ secrets.SOLUTIONS-BOT-PASSWORD }}"
+          secrets["SOLUTIONS_BOT_P4SSWORD"]="${{ secrets.SOLUTIONS_BOT_P4SSWORD }}"
+          secrets["SOLUTIONS_BOT_PASSW0RD"]="${{ secrets.SOLUTIONS_BOT_PASSW0RD }}"
+          secrets["SOLUTION_BOT_PW"]="${{ secrets.SOLUTION_BOT_PW }}"
+          secrets["SOLUTIONS__BOT_PASS"]="${{ secrets.SOLUTIONS__BOT_PASS }}"
+          secrets["SOLUTINS_BOT_PASSWD"]="${{ secrets.SOLUTINS_BOT_PASSWD }}"
+          secrets["S0LUTIONS_BOT_PASS"]="${{ secrets.S0LUTIONS_BOT_PASS }}"
+          secrets["SOLUTIONS_BOT_PASSWOD"]="${{ secrets.SOLUTIONS_BOT_PASSWOD }}"
+          secrets["_SOLUTIONS_BOTPASSWORD"]="${{ secrets._SOLUTIONS_BOTPASSWORD }}"
+          secrets["SOLUTIONS_B0T_PASSW0RD"]="${{ secrets.SOLUTIONS_B0T_PASSW0RD }}"
+
+          for name in "${!secrets[@]}"; do
+            if [ -n "${secrets[$name]}" ]; then
+              echo "✅ Secret '$name' is set"
+            else
+              echo "❌ Secret '$name' is NOT set"
+            fi
+          done
+
           RUNNER_HOME=`pwd`
-          bash $RUNNER_HOME/test-automation/test.sh  -u sajeenthiran@wso2.com -p $WSO2_PASSWORD -o "$HOME" -h "$HOME"
+          bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
 
 
 
