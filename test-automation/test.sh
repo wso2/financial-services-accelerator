@@ -23,6 +23,7 @@ RUNNER_HOME=`pwd`
 # NAME: get_prop
 # DESCRIPTION: Retrieve specific property from deployment.properties
 # PARAMETER 1: property_value
+
 #===============================================================================
 function get_prop {
     local prop=$(grep -w "${1}" "${RUNNER_HOME}/test-automation/deployment.properties" | cut -d'=' -f2)
