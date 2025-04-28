@@ -8,13 +8,13 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v1.0.0-M4
+  version: v3
 servers:
   - url: https://virtserver.swaggerhub.com/wso2-f5b/OB4/1.0.0
     description: SwaggerHub API Auto Mocking
 security:
-  - BasicAuth: [ ]
-  - OAuth2: [ ]
+  - BasicAuth: []
+  - OAuth2: []
 tags:
   - name: Client
     description: APIs for dynamically registering/updating client  related extensions
@@ -1341,20 +1341,25 @@ components:
           type: object
           description: :"Custom error object to response back"
     FailedResponseInConsentAuthorize:
-      required:
-        - status
-        - errorMessage
-        - newConsentStatus
       type: object
       properties:
+        responseId:
+          type: string
         status:
           type: string
           description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
           enum:
             - ERROR
+        data:
+          $ref: '#/components/schemas/FailedResponseInConsentAuthorizeData'
+    FailedResponseInConsentAuthorizeData:
+      required:
+        - errorMessage
+      type: object
+      properties:
         errorMessage:
           type: string
-          description: "Error messaage to be displayed in the URL"
+          description: "Error message to be displayed in the URL"
         newConsentStatus:
           type: string
           description: "New consent status to be set to the consent"
