@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -38,6 +38,7 @@ public class ConsentExtensionConstants {
     public static final String DATA = "Data";
     public static final String CONSENT_TYPE = "consent_type";
     public static final String AWAIT_AUTHORISE_STATUS = "AwaitingAuthorisation";
+    public static final String AWAIT_UPLOAD_STATUS = "AwaitingUpload";
     public static final String AUTHORIZED_STATUS = "Authorised";
     public static final String REVOKED_STATUS = "Revoked";
     public static final String REJECTED_STATUS = "Rejected";
@@ -108,6 +109,7 @@ public class ConsentExtensionConstants {
     public static final String CONSENT_IDS = "consentIds";
     public static final String CLIENT_IDS = "clientIds";
     public static final String CONSENT_TYPES = "consentTypes";
+    public static final String NEW_CONSENT_STATUS = "newConsentStatus";
     public static final String CONSENT_STATUSES = "consentStatuses";
     public static final String USER_IDS = "userIds";
     public static final String FROM_TIME = "fromTime";

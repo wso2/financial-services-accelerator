@@ -138,7 +138,7 @@ public class ServiceExtensionUtilsTest {
         Mockito.doReturn(statusLine).when(httpResponse).getStatusLine();
         Mockito.doReturn(httpResponse).when(httpClient).execute(Mockito.any());
 
-        httpClientUtilsMockedStatic.when(() -> HTTPClientUtils.getHttpClient()).thenReturn(httpClient);
+        httpClientUtilsMockedStatic.when(() -> HTTPClientUtils.getHttpsClient()).thenReturn(httpClient);
         ServiceExtensionUtils.invokeExternalServiceCall(getDCRCreateServiceRequest(),
                 ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_CREATION);
     }

@@ -32,12 +32,12 @@ public class ExternalAPIConsentRetrieveRequestDTO {
     private String consentResourcePath;
     private Map<String, String> requestHeaders;
 
-    public ExternalAPIConsentRetrieveRequestDTO(String consentId, ExternalAPIConsentResourceRequestDTO consentResource,
-                                                String resourcePath, Map<String, String> requestHeaders) {
-        this.consentId = consentId;
-        this.consentResourcePath = resourcePath;
+    public ExternalAPIConsentRetrieveRequestDTO(ExternalAPIConsentResourceRequestDTO consentResource,
+                                                ConsentManageData consentManageData) {
+        this.consentId = consentResource.getId();
+        this.consentResourcePath = consentManageData.getRequestPath();
         this.consentResource = consentResource;
-        this.requestHeaders = requestHeaders;
+        this.requestHeaders = consentManageData.getAllowedExtensionHeaders();
     }
 
     public String getConsentId() {

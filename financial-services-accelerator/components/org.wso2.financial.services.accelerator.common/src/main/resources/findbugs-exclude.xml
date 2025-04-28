@@ -90,4 +90,8 @@
         <Class name="org.wso2.financial.services.accelerator.common.extension.model.Request"/>
         <Bug pattern="EI_EXPOSE_REP"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.util.HTTPClientUtils"/>
+        <Bug pattern="DC_PARTIALLY_CONSTRUCTED"/>
+    </Match>
 </FindBugsFilter>

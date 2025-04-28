@@ -193,10 +193,12 @@ public class ConsentManageEndpoint {
     public Response manageFileUploadPost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                          @Context UriInfo uriInfo) {
 
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getFileUploadPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleFileUploadPost(consentManageData);
         return sendFileUploadResponse(consentManageData);
     }
@@ -211,9 +213,11 @@ public class ConsentManageEndpoint {
     public Response manageFileGet(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                   @Context UriInfo uriInfo) {
 
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleFileGet(consentManageData);
         return sendResponse(consentManageData);
     }
@@ -242,8 +246,11 @@ public class ConsentManageEndpoint {
      * @return Response
      */
     private Response sendFileUploadResponse(ConsentManageData consentManageData) {
-        if (consentManageData.getPayload() != null || consentManageData.getResponseStatus() != null) {
+        if (consentManageData.getResponseStatus() != null && consentManageData.getResponsePayload() == null) {
             return Response.status(consentManageData.getResponseStatus().getStatusCode()).build();
+        } else if (consentManageData.getResponsePayload() != null && consentManageData.getResponseStatus() != null) {
+            return Response.status(consentManageData.getResponseStatus().getStatusCode()).
+                    entity(consentManageData.getResponsePayload().toString()).build();
         } else {
             log.debug("Response status or payload unavailable. Throwing exception");
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Response data unavailable");

@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -32,13 +32,15 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadResponseDTO;
 
 import java.util.Map;
 
@@ -113,7 +115,7 @@ public class ExternalAPIConsentManageUtilsTest {
                                 eq(ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE)))
                 .thenReturn(response);
 
-        ExternalAPIPostConsentGenerateResponseDTO result =
+        ExternalAPIModifiedResponseDTO result =
                 ExternalAPIConsentManageUtils.callExternalService(requestDTO);
 
         assertNotNull(result);
@@ -148,12 +150,16 @@ public class ExternalAPIConsentManageUtilsTest {
 
     @Test
     public void testCallExternalService_consentRetrieve_success() throws Exception {
+
         ExternalAPIConsentResourceRequestDTO consentResource = mock(ExternalAPIConsentResourceRequestDTO.class);
         when(consentResource.getId()).thenReturn("cid-xyz");
 
-        ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
-                "cid-xyz", consentResource, "/retrieve/path", Map.of("header1", "val1")
-        );
+        ConsentManageData consentManageData = mock(ConsentManageData.class);
+        when(consentManageData.getRequestPath()).thenReturn("/request/path");
+        when(consentManageData.getAllowedExtensionHeaders()).thenReturn(Map.of("header1", "val1"));
+
+        ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(consentResource,
+                consentManageData);
 
         JSONObject responseJson = new JSONObject().put("modifiedResponse", new JSONObject().put("status", "RETRIEVED"));
         ExternalServiceResponse response = new ExternalServiceResponse();
@@ -165,11 +171,65 @@ public class ExternalAPIConsentManageUtilsTest {
                                 eq(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL)))
                 .thenReturn(response);
 
-        ExternalAPIConsentRetrieveResponseDTO result =
+        ExternalAPIModifiedResponseDTO result =
                 ExternalAPIConsentManageUtils.callExternalService(requestDTO);
 
         assertNotNull(result);
         JsonElement json = result.getModifiedResponse();
         assertEquals(json.getAsJsonObject().get("status").getAsString(), "RETRIEVED");
     }
+
+    @Test
+    public void testCallExternalService_preFileUpload_mocked() throws Exception {
+        ExternalAPIPreFileUploadRequestDTO requestDTO = mock(ExternalAPIPreFileUploadRequestDTO.class);
+        when(requestDTO.toJson()).thenReturn(new JSONObject().put("dummyKey", "dummyValue"));
+
+        ExternalServiceResponse response = new ExternalServiceResponse();
+        response.setStatus(StatusEnum.SUCCESS);
+        staticMock.when(() ->
+                        ServiceExtensionUtils.invokeExternalServiceCall(any(ExternalServiceRequest.class),
+                                eq(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_FILE_UPLOAD)))
+                .thenReturn(response);
+
+        ExternalAPIPreFileUploadResponseDTO result =
+                ExternalAPIConsentManageUtils.callExternalService(requestDTO);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testCallExternalService_postFileUpload_mocked() throws Exception {
+        ExternalAPIPostFileUploadRequestDTO requestDTO = mock(ExternalAPIPostFileUploadRequestDTO.class);
+
+        ExternalServiceResponse response = new ExternalServiceResponse();
+        response.setStatus(StatusEnum.SUCCESS);
+        staticMock.when(() ->
+                        ServiceExtensionUtils.invokeExternalServiceCall(any(ExternalServiceRequest.class),
+                                eq(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE)))
+                .thenReturn(response);
+
+        ExternalAPIModifiedResponseDTO result =
+                ExternalAPIConsentManageUtils.callExternalService(requestDTO);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testCallExternalService_fileRetrieval_mocked() throws Exception {
+        ExternalAPIConsentRetrieveRequestDTO requestDTO = mock(ExternalAPIConsentRetrieveRequestDTO.class);
+        when(requestDTO.toJson()).thenReturn(new JSONObject().put("dummyKey", "dummyValue"));
+
+        ExternalServiceResponse response = new ExternalServiceResponse();
+        response.setStatus(StatusEnum.SUCCESS);
+        staticMock.when(() ->
+                        ServiceExtensionUtils.invokeExternalServiceCall(any(ExternalServiceRequest.class),
+                                eq(ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL)))
+                .thenReturn(response);
+
+        ExternalAPIModifiedResponseDTO result =
+                ExternalAPIConsentManageUtils.callExternalServiceForFileRetrieval(requestDTO);
+
+        assertNotNull(result);
+    }
+
 }

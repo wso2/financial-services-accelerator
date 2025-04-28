@@ -18,6 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -41,6 +42,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
@@ -146,6 +148,17 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
                 externalServiceRequest, ServiceExtensionTypeEnum.POPULATE_CONSENT_AUTHORIZE_SCREEN);
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
+            String newConsentStatus = externalServiceResponse.getData().path(
+                    ConsentExtensionConstants.NEW_CONSENT_STATUS).asText();
+            if (StringUtils.isNotBlank(newConsentStatus)) {
+                String consentId = requestDTO.getConsentId();
+                consentCoreService.updateConsentStatus(consentId, newConsentStatus);
+                if (log.isDebugEnabled()) {
+                    log.debug("Status of the consent with id" + consentId.replaceAll("\n\r", "") +
+                            "updated to " + newConsentStatus.replaceAll("\n\r", "") +
+                            "according to the error response set by the api extension.");
+                }
+            }
             throw new FinancialServicesException(externalServiceResponse.getData()
                     .path(FinancialServicesConstants.ERROR_MESSAGE)
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
