@@ -19,7 +19,7 @@ name: Build Financial Services Repository
 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  pull_request_target:
+  pull_request:
     branches:
       - 'main'
 
