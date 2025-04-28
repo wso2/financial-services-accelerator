@@ -49,15 +49,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * ApimReqHandlerServlet
+ * ResourceInterceptorServlet
  * <p>
- * This interrupts the requests, adds auth header, and forward requests to API Manager
+ * This interrupts the requests, adds auth header, and forward requests to Identity Server,
+ * Also this class modifies the response from IS by adding application details.
  */
-@WebServlet(name = "ApimReqHandlerServlet", urlPatterns = {"/scp/admin/*"})
-public class ApimReqHandlerServlet extends HttpServlet {
+@WebServlet(name = "ResourceInterceptorServlet", urlPatterns = {"/scp/admin/*"})
+public class ResourceInterceptorServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7385252581004845440L;
-    private static final Log LOG = LogFactory.getLog(ApimReqHandlerServlet.class);
+    private static final Log LOG = LogFactory.getLog(ResourceInterceptorServlet.class);
     private final APIMService apimService = new APIMService();
 
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
