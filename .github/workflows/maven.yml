@@ -31,4 +31,4 @@ jobs:
           ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Do something with secrets
-        run: echo "Secret is ${{ secrets.MY_SECRET }}"
+        run: echo "Secret is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
