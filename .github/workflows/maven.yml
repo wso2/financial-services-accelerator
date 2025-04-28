@@ -14,21 +14,42 @@
 # specific language governing permissions and limitations
 # under the License.
 
-
-name: CI
+#test
+name: Build Financial Services Repository
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+  # Triggers the workflow on push or pull request events but only for the main branch
+  pull_request:
+    branches:
+      - 'main'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout base branch (safe)
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.base.ref }}
 
-      - name: Do something with secrets
-        run: echo "Secret is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+  Run-Test-Suite:
+    runs-on: ubuntu-latest
+    env: # Or as an environment variable
+      WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
+      STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
+
+
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Tests
+        run: |               
+         if [ -z "$WSO2_PASSWORD" ]; then
+         echo "❌ WSO2_PASSWORD is not set!"
+                exit 1
+         else
+         echo "✅ WSO2_PASSWORD is set."
+         fi
+         
+         RUNNER_HOME=`pwd`
+         bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
+
+
+
+
+
+
+
