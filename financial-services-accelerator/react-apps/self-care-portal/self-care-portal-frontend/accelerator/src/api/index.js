@@ -17,5 +17,4 @@
  */
 
 export * from './consent-api.js'
-export * from './applicationInfo-api.js'
 export * from './deviceRegistration-api.js'

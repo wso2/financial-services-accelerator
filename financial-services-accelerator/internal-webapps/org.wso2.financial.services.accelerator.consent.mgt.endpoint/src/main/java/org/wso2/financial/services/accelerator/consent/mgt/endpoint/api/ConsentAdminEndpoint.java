@@ -100,7 +100,7 @@ public class ConsentAdminEndpoint {
 
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getAbsolutePath().getPath(), request, response);
-        validateUserPermission(consentAdminData);
+        validateUserPermission(consentAdminData, "userIds");
         consentAdminHandler.handleSearch(consentAdminData);
         return sendResponse(consentAdminData);
     }
@@ -166,7 +166,7 @@ public class ConsentAdminEndpoint {
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getJSONObjectPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getAbsolutePath().getPath(), request, response);
-        validateUserPermission(consentAdminData);
+        validateUserPermission(consentAdminData, "userId");
         consentAdminHandler.handleRevoke(consentAdminData);
         return sendResponse(consentAdminData);
     }
@@ -195,7 +195,7 @@ public class ConsentAdminEndpoint {
      *
      * @param consentAdminData consent admin data
      */
-    private void validateUserPermission(ConsentAdminData consentAdminData) {
+    private void validateUserPermission(ConsentAdminData consentAdminData, String userIdParamName) {
         try {
             String authToken = consentAdminData.getHeaders().get(ConsentConstants.AUTHORIZATION);
             String tokenBody = JWTUtils.decodeRequestJWT(authToken.replace("Bearer ", ""), "body");
@@ -203,7 +203,7 @@ public class ConsentAdminEndpoint {
             String tokenScopes = tokenBodyObj.getString("scope");
             if (!isCustomerCareOfficer(tokenScopes)) {
                 // user is not a customer care officer
-                ArrayList optUserIds = (ArrayList) consentAdminData.getQueryParams().get("userIds");
+                ArrayList optUserIds = (ArrayList) consentAdminData.getQueryParams().get(userIdParamName);
                 String optUserId = !optUserIds.isEmpty() ? getUserNameWithTenantDomain(optUserIds.get(0).toString())
                         : "";
                 String tokenSubject = getUserNameWithTenantDomain(tokenBodyObj.getString("sub"));
