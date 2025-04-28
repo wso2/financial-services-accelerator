@@ -104,22 +104,30 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         }
 
         Map<String, Object> requestMap = objectMapper.convertValue(appRegistrationRequest, Map.class);
-        Map<String, Object> filteredAttributes = new HashMap<>();
+        Map<String, Object> filteredAttributes = new HashMap<>(ssaParams);
         Map<String, Object> additionalAttributes = appRegistrationRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
         if (appRegistrationRequest.getSoftwareStatement() != null) {
             filteredAttributes.put(IdentityCommonConstants.SOFTWARE_STATEMENT,
                     appRegistrationRequest.getSoftwareStatement());
         }
+        //Storing client name to use in consent mgr app
+        if (appRegistrationRequest.getClientName() != null) {
+            filteredAttributes.put(IdentityCommonConstants.CLIENT_NAME,
+                    appRegistrationRequest.getClientName());
+        }
         getResponseAttributeKeys()
                 .stream()
                 .filter(additionalAttributes::containsKey)
+                .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, additionalAttributes.get(key)));
 
         getResponseAttributeKeys()
                 .stream()
                 .filter(requestMap::containsKey)
+                .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, requestMap.get(key)));
+
 
         Map<String, Object> finalAttributesToStore = attributesToStore;
         attributesToStore.keySet().stream()
@@ -170,7 +178,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             throw new DCRMClientException(IdentityCommonConstants.INVALID_CLIENT_METADATA, e.getMessage(), e);
         }
 
-        Map<String, Object> filteredAttributes = new HashMap<>();
+        Map<String, Object> filteredAttributes = new HashMap<>(ssaParams);
         Map<String, Object> additionalAttributes = applicationUpdateRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
         if (applicationUpdateRequest.getSoftwareStatement() != null) {
@@ -180,11 +188,13 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         getResponseAttributeKeys()
                 .stream()
                 .filter(additionalAttributes::containsKey)
+                .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, additionalAttributes.get(key)));
 
         getResponseAttributeKeys()
                 .stream()
                 .filter(requestMap::containsKey)
+                .filter(key -> !filteredAttributes.containsKey(key))
                 .forEach((key) -> filteredAttributes.put(key, requestMap.get(key)));
 
         Map<String, Object> finalAttributesToStore = attributesToStore;

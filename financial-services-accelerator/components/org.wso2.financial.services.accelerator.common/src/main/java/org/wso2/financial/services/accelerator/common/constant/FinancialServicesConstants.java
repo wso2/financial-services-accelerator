@@ -53,8 +53,8 @@ public class FinancialServicesConstants {
     public static final String CONSENT_VALIDATOR = "Consent.Validation.Validator";
     public static final String ADMIN_HANDLER = "Consent.AdminHandler";
     public static final String PRESERVE_CONSENT = "Consent.PreserveConsentLink";
-    public static final String CONSENT_API_USERNAME = "Consent.ConsentAPICredentials.Username";
-    public static final String CONSENT_API_PASSWORD = "Consent.ConsentAPICredentials.Password";
+    public static final String ADMIN_USERNAME = "Admin.Username";
+    public static final String ADMIN_PASSWORD = "Admin.Password";
     public static final String MAX_INSTRUCTED_AMOUNT = "Consent.Payments.MaximumInstructedAmount";
 
     public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";

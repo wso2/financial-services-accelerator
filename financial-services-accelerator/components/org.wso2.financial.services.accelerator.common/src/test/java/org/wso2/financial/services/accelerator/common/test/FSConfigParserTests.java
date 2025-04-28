@@ -174,13 +174,13 @@ public class FSConfigParserTests {
     @Test(priority = 20)
     public void testGetConsentAPIUsername() {
 
-        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIUsername(), "admin");
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIUsername(), "is_admin@wso2.com");
     }
 
     @Test(priority = 21)
     public void testGetConsentAPIPassword() {
 
-        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIPassword(), "admin");
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIPassword(), "wso2123");
     }
 
     @Test(priority = 22)

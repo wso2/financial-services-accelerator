@@ -42,4 +42,7 @@ public class ConsentConstants {
                         "properly or invalid";
         public static final String PRESERVE_CONSENT = FinancialServicesConfigParser.getInstance().getPreserveConsent();
         public static final boolean STORE_CONSENT = Boolean.parseBoolean(PRESERVE_CONSENT);
+
+        public static final String AUTHORIZATION = "authorization";
+        public static final String CUSTOMER_CARE_OFFICER_SCOPE = "consents:read_all";
 }

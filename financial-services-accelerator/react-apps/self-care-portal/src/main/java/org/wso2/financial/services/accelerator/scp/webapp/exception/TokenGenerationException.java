@@ -16,5 +16,21 @@
  * under the License.
  */
 
-export * from './consent-api.js'
-export * from './deviceRegistration-api.js'
+package org.wso2.financial.services.accelerator.scp.webapp.exception;
+
+/**
+ * TokenGenerationException
+ *
+ * Throws if errors occurred during the request forwarding process
+ */
+public class TokenGenerationException extends Exception {
+    private static final long serialVersionUID = -6044462346016688554L;
+
+    public TokenGenerationException(String s) {
+        super(s);
+    }
+
+    public TokenGenerationException(String s, Throwable throwable) {
+        super(s, throwable);
+    }
+}
