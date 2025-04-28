@@ -37,7 +37,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.scp.webapp.TestConstants;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
-import org.wso2.financial.services.accelerator.scp.webapp.model.SCPError;
+import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -236,7 +236,7 @@ public class UtilsTest {
         Mockito.doNothing().when(resp).sendRedirect(Mockito.anyString());
 
         // assert
-        SCPError error = new SCPError("Error Message!", "Error Description");
+        SelfCarePortalError error = new SelfCarePortalError("Error Message!", "Error Description");
         final String errorUrlFormat = "https://localhost:9446/consentmgr/error?message=%s&description=%s";
         Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
 

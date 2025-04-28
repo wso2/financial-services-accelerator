@@ -29,9 +29,9 @@ import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
-import org.wso2.financial.services.accelerator.scp.webapp.model.SCPError;
-import org.wso2.financial.services.accelerator.scp.webapp.service.APIMService;
+import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
 import org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService;
+import org.wso2.financial.services.accelerator.scp.webapp.service.ResourceInterceptorService;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
 
@@ -59,17 +59,17 @@ public class ResourceInterceptorServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7385252581004845440L;
     private static final Log LOG = LogFactory.getLog(ResourceInterceptorServlet.class);
-    private final APIMService apimService = new APIMService();
+    private final ResourceInterceptorService resourceInterceptorService = new ResourceInterceptorService();
 
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
             LOG.debug("New request received: " + req.getRequestURI() + "?" + req.getQueryString());
-            if (apimService.isAccessTokenExpired(req)) {
+            if (resourceInterceptorService.isAccessTokenExpired(req)) {
                 // access token is expired, refreshing access token
-                Optional<String> optRefreshToken = apimService.constructRefreshTokenFromCookies(req);
-                Optional<String> optAccessToken = apimService.constructAccessTokenFromCookies(req);
+                Optional<String> optRefreshToken = resourceInterceptorService.constructRefreshTokenFromCookies(req);
+                Optional<String> optAccessToken = resourceInterceptorService.constructAccessTokenFromCookies(req);
 
                 if (optRefreshToken.isPresent() && optAccessToken.isPresent()) {
                     final OAuthService oAuthService = OAuthService.getInstance();
@@ -95,11 +95,11 @@ public class ResourceInterceptorServlet extends HttpServlet {
                     headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponse.getString(Constants.ACCESS_TOKEN));
                     headers.put(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
 
-                    apimService.forwardRequest(resp, request, headers);
+                    resourceInterceptorService.forwardRequest(resp, request, headers);
 
                 } else {
                     // Invalid request, refresh token missing
-                    SCPError error = new SCPError("Authentication Error!",
+                    SelfCarePortalError error = new SelfCarePortalError("Authentication Error!",
                             "Some values are missing from the request. Please try signing in again.");
                     LOG.error("Refresh token is missing from the request. Returning error to frontend, " + error);
                     OAuthService.getInstance().removeAllCookiesFromRequest(req, resp);
@@ -107,7 +107,7 @@ public class ResourceInterceptorServlet extends HttpServlet {
                 }
             } else {
                 // access token is not expired yet
-                Optional<String> optAccessToken = apimService.constructAccessTokenFromCookies(req);
+                Optional<String> optAccessToken = resourceInterceptorService.constructAccessTokenFromCookies(req);
 
                 if (optAccessToken.isPresent()) {
                     final String isBaseUrl = Utils.getParameter(Constants.IS_BASE_URL);
@@ -124,11 +124,11 @@ public class ResourceInterceptorServlet extends HttpServlet {
                     headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + optAccessToken.get());
                     headers.put(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
 
-                    apimService.forwardRequest(resp, request, headers);
+                    resourceInterceptorService.forwardRequest(resp, request, headers);
 
                 } else {
                     // invalid request, access token missing
-                    SCPError error = new SCPError("Authentication Error!",
+                    SelfCarePortalError error = new SelfCarePortalError("Authentication Error!",
                             "Some values are invalid of the request. Please try signing in again.");
                     LOG.error("Requested access token is invalid. Returning error to frontend, " + error);
                     OAuthService.getInstance().removeAllCookiesFromRequest(req, resp);
@@ -137,14 +137,14 @@ public class ResourceInterceptorServlet extends HttpServlet {
             }
         } catch (TokenGenerationException | IOException | ParseException e) {
             LOG.error("Exception occurred while processing frontend request. Caused by, ", e);
-            SCPError error = new SCPError("Request Forwarding Error!",
+            SelfCarePortalError error = new SelfCarePortalError("Request Forwarding Error!",
                     "Something went wrong during the authentication process. Please try signing in again.");
             OAuthService.getInstance().removeAllCookiesFromRequest(req, resp);
             Utils.returnResponse(resp, HttpStatus.SC_UNAUTHORIZED, new JSONObject(error));
         } catch (SessionTimeoutException e) {
             LOG.debug("Session timeout exception occurred while processing request. Caused by, ", e);
             OAuthService.getInstance().removeAllCookiesFromRequest(req, resp);
-            SCPError error = new SCPError("Session Has Expired!", "Please try signing in again.");
+            SelfCarePortalError error = new SelfCarePortalError("Session Has Expired!", "Please try signing in again.");
             Utils.returnResponse(resp, HttpStatus.SC_UNAUTHORIZED, new JSONObject(error));
         }
     }

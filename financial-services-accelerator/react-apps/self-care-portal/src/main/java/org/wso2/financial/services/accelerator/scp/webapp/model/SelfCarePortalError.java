@@ -19,15 +19,15 @@
 package org.wso2.financial.services.accelerator.scp.webapp.model;
 
 /**
- * SCPError.
+ * SelfCarePortalError.
  * <p>
  * Represents the self care portal default error
  */
-public class SCPError {
+public class SelfCarePortalError {
     private final String message;
     private final String description;
 
-    public SCPError(String message, String description) {
+    public SelfCarePortalError(String message, String description) {
         this.message = message;
         this.description = description;
     }

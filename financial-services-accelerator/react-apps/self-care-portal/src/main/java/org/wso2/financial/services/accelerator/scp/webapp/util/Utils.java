@@ -37,7 +37,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
-import org.wso2.financial.services.accelerator.scp.webapp.model.SCPError;
+import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -173,7 +173,8 @@ public class Utils {
     }
 
     @Generated(message = "Ignoring since method do not contain a logic")
-    public static void sendErrorToFrontend(SCPError error, String errRedirectUrlFormat, HttpServletResponse resp) {
+    public static void sendErrorToFrontend(SelfCarePortalError error, String errRedirectUrlFormat,
+                                           HttpServletResponse resp) {
         LOG.debug("Sending error to frontend.");
         try {
             final String errorMsg = Base64.getUrlEncoder()

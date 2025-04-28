@@ -42,13 +42,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 
 /**
- * APIMService
+ * ResourceInterceptorService
  * <p>
- * Contains methods to process requests that are forwarding to APIM
+ * Contains methods to process requests that are forwarding to IS
  */
-public class APIMService implements Serializable {
+public class ResourceInterceptorService implements Serializable {
     private static final long serialVersionUID = -1968486857447834419L;
-    private static final Log LOG = LogFactory.getLog(APIMService.class);
+    private static final Log LOG = LogFactory.getLog(ResourceInterceptorService.class);
 
     public Optional<String> constructAccessTokenFromCookies(HttpServletRequest req) {
         Optional<Cookie> cookieAccessTokenPart2 = Utils

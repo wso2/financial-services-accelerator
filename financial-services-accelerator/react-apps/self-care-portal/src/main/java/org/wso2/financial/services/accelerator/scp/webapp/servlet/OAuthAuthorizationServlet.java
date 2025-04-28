@@ -21,7 +21,7 @@ package org.wso2.financial.services.accelerator.scp.webapp.servlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.util.Generated;
-import org.wso2.financial.services.accelerator.scp.webapp.model.SCPError;
+import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
 import org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
@@ -60,7 +60,7 @@ public class OAuthAuthorizationServlet extends HttpServlet {
         } catch (URISyntaxException | IOException e) {
             LOG.error("Exception occurred while redirecting to authorization url. caused by,", e);
             // sending error to frontend
-            SCPError error = new SCPError("Authentication Failed!",
+            SelfCarePortalError error = new SelfCarePortalError("Authentication Failed!",
                     "Something went wrong during the authentication process. Please try signing in again.");
             final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL);
             final String errorUrlFormat = iamBaseUrl + "/consentmgr/error?message=%s&description=%s";

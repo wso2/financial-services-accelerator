@@ -42,14 +42,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class APIMServiceTest {
+public class ResourceInterceptorServiceTest {
 
-    private APIMService uut;
+    private ResourceInterceptorService uut;
     private static final String REQUEST_URL = "http://localhost:9446";
 
     @BeforeClass
     public void init() {
-        this.uut = new APIMService();
+        this.uut = new ResourceInterceptorService();
     }
 
     @Test(description = "when valid req, then return access token")

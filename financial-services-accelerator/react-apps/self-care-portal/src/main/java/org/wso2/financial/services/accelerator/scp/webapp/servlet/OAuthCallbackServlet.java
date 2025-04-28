@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
-import org.wso2.financial.services.accelerator.scp.webapp.model.SCPError;
+import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
 import org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
@@ -76,7 +76,8 @@ public class OAuthCallbackServlet extends HttpServlet {
                     (req.getParameter(ERROR_DESCRIPTION))) {
                 LOG.debug("User denied the consent. Error: " + req.getParameter(ERROR) +
                         "Error Description:" + req.getParameter(ERROR_DESCRIPTION));
-                SCPError error = new SCPError(req.getParameter(ERROR), req.getParameter(ERROR_DESCRIPTION));
+                SelfCarePortalError error = new SelfCarePortalError(req.getParameter(ERROR),
+                        req.getParameter(ERROR_DESCRIPTION));
                 final String errorUrlFormat = iamBaseUrl + "/consentmgr/error?message=%s&description=%s";
                 Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
                 return;
@@ -86,7 +87,7 @@ public class OAuthCallbackServlet extends HttpServlet {
         } catch (TokenGenerationException | IOException e) {
             LOG.error("Exception occurred while processing authorization callback request. Caused by, ", e);
             // sending error to frontend
-            SCPError error = new SCPError("Authentication Failed!",
+            SelfCarePortalError error = new SelfCarePortalError("Authentication Failed!",
                     "Something went wrong during the authentication process. Please try signing in again.");
             final String errorUrlFormat = iamBaseUrl + "/consentmgr/error?message=%s&description=%s";
             Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
