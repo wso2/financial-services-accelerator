@@ -163,6 +163,32 @@ public class ExternalAPIUtil {
                 consentMappingResources, consentID, clientID, receipt, createdTime, updatedTime);
     }
 
+    /**
+     * Constructs a {@link DetailedConsentResource} using {@link ExternalAPIPreConsentPersistResponseDTO}.
+     * <p>
+     *
+     * @param responseConsentResource The consent resource received from the external API pre-consent step.
+     * @return A fully populated {@link DetailedConsentResource}.
+     */
+    public static DetailedConsentResource constructDetailedConsentResource(
+            ExternalAPIConsentResourceResponseDTO responseConsentResource, String clientId) {
+
+        String consentID = UUID.randomUUID().toString();
+        String receipt = new JSONObject(responseConsentResource.getReceipt()).toString();
+        long createdTime = System.currentTimeMillis() / 1000;
+        long updatedTime = System.currentTimeMillis() / 1000;
+
+        List<AuthorizationResource> authorizationResources =
+                buildAuthorizationResources(responseConsentResource.getAuthorizations(), consentID, null,
+                        null, updatedTime);
+
+        List<ConsentMappingResource> consentMappingResources =
+                buildConsentMappingResources(responseConsentResource.getAuthorizations(), authorizationResources);
+
+        return buildDetailedConsentResource(responseConsentResource, authorizationResources,
+                consentMappingResources, consentID, clientId, receipt, createdTime, updatedTime);
+    }
+
 
     /**
      * Builds a list of {@link AuthorizationResource} objects from the ResponseDTO's authorization list.
@@ -252,7 +278,7 @@ public class ExternalAPIUtil {
         String consentID = consentResource.getConsentID();
         String clientID = consentResource.getClientID();
         long createdTime = consentResource.getCreatedTime();
-        long updatedTime = System.currentTimeMillis();
+        long updatedTime = System.currentTimeMillis() / 1000;
 
         String resolvedConsentType = (responseConsentResource.getType() != null) ? responseConsentResource.getType() :
                 consentResource.getConsentType();

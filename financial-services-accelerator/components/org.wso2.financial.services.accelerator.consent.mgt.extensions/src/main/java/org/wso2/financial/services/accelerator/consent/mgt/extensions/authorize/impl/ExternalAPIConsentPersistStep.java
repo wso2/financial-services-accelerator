@@ -93,11 +93,6 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                             "Consent Id is not available in consent data", consentData.getState());
                 }
-                if (consentData.getAuthResource() == null) {
-                    log.error("Authorization resource is not available in consent data");
-                    throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
-                            "Authorization resource is not available in consent data", consentData.getState());
-                }
             } else if (consentData.getConsentId() != null) {
                 consentId = consentData.getConsentId();
                 detailedConsentResource = consentCoreService.getDetailedConsent(consentId);

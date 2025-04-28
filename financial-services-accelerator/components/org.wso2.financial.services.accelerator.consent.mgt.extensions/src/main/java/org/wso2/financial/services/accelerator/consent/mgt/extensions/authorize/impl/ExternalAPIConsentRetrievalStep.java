@@ -47,6 +47,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -115,12 +116,25 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
     private void setMandatoryConsentData(String consentId, ConsentData consentData) throws ConsentManagementException {
 
         ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
-        AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
 
         consentData.setConsentId(consentId);
         consentData.setType(consentResource.getConsentType());
         consentData.setConsentResource(consentResource);
-        consentData.setAuthResource(authorizationResource);
+
+        try {
+            ArrayList<AuthorizationResource> authorizationResourceList = consentCoreService
+                    .searchAuthorizations(consentId);
+            if (!authorizationResourceList.isEmpty()) {
+                AuthorizationResource authorizationResource = authorizationResourceList.get(0);
+                consentData.setAuthResource(authorizationResource);
+            }
+        } catch (ConsentManagementException e) {
+            if (log.isDebugEnabled()) {
+                String sanitizedConsentId = consentId.replaceAll("[\r\n]", "");
+                log.debug("No authorizations were found for the consent " + sanitizedConsentId +
+                        ". Proceeding without adding authorization resources.");
+            }
+        }
     }
 
     /**
