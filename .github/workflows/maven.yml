@@ -36,17 +36,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run Tests
-        run: |
-               
-               if [ -z "$WSO2_PASSWORD" ]; then
-               echo "❌ WSO2_PASSWORD is not set!"
-          #            exit 1
-               else
-               echo "✅ WSO2_PASSWORD is set."
-               fi
-               
-               RUNNER_HOME=`pwd`
-               bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
+        run: |               
+           if [ -z "$WSO2_PASSWORD" ]; then
+           echo "❌ WSO2_PASSWORD is not set!"
+                  exit 1
+           else
+           echo "✅ WSO2_PASSWORD is set."
+           fi
+           
+           RUNNER_HOME=`pwd`
+           bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
 
 
 
