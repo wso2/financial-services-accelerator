@@ -17,7 +17,6 @@
 
 MVNSTATE=1 #This variable is read by the test-grid to determine success or failure of the build. (0=Successful)
 RUNNER_HOME=`pwd`
-TEST_HOME = `pwd`
 
 #=== FUNCTION ==================================================================
 # NAME: get_prop
