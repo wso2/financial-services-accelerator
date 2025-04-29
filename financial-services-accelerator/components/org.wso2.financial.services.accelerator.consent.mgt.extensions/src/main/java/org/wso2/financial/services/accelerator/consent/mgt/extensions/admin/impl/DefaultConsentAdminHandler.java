@@ -68,7 +68,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
         isExternalPreConsentSearchEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH);
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH_RESPONSE);
     }
 
     @Override
