@@ -28,7 +28,7 @@ jobs:
 
   Run-Test-Suite:
     runs-on: ubuntu-latest
-    env: # Or as an environment variable
+    env: # Or as an envinment variable
       WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
 
