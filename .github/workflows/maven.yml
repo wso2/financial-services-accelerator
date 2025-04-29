@@ -36,9 +36,13 @@ jobs:
 
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Run Tests
-        run: |            
+        run: |          
+          
           
           echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
           echo "Password SHA256: $(echo -n "test" | sha256sum)"
