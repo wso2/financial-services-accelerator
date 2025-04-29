@@ -30,14 +30,15 @@ function get_prop {
     echo $prop
 }
 
-while getopts u:p:o:h flag
-do
-    case "${flag}" in
-        u) USERNAME=${OPTARG};;
-        p) PASSWORD=${OPTARG};;
-        o) TEST_HOME=${OPTARG};;
-    esac
-done
+TEST_HOME = "$RUNNER_HOME/test-automation"
+#while getopts u:p:o:h flag
+#do
+#    case "${flag}" in
+#        u) $WSO2_USERNAME=${OPTARG};;
+#        p) PASSWORD=${OPTARG};;
+#        o) TEST_HOME=${OPTARG};;
+#    esac
+#done
 
 
 # ====== variables ======
@@ -46,19 +47,19 @@ done
 
 echo "Password SHA256: $(echo -n "$WSO2_PASSWORD" | sha256sum)"
 
-echo "Username: $USERNAME"
-echo "Password: $PASSWORD"
+echo "Username: $WSO2_USERNAME"
+echo "Password: $WSO2_PASSWORD"
 echo "TEST_HOME:  $TEST_HOME"
 
 # handle empty variables
-if [ -z "$USERNAME" ]; then
-    echo "Username is empty. Please provide a username using the -u flag."
-    exit 1
-fi
-if [ -z "$PASSWORD" ]; then
-    echo "Password is empty. Please provide a password using the -p flag."
-    exit 1
-fi
+#if [ -z "$WSO2_USERNAME" ]; then
+#    echo "Username is empty. Please provide a username using the -u flag."
+#    exit 1
+#fi
+#if [ -z "$WSO2_PASSWORD" ]; then
+#    echo "Password is empty. Please provide a password using the -p flag."
+#    exit 1
+#fi
 if [ -z "$TEST_HOME" ]; then
     echo "TEST_HOME is empty. Please provide a TEST_HOME using the -o flag."
     exit 1
@@ -128,12 +129,12 @@ wget "https://github.com/wso2/product-is/releases/download/v7.0.0/wso2is-7.0.0.z
 unzip $TEST_HOME/wso2is-7.0.0.zip -d $TEST_HOME
 
 echo '======================= Installing WSO2 Updates ======================='
-name=$(echo "$USERNAME" | cut -d'@' -f1)
+name=$(echo "$WSO2_USERNAME" | cut -d'@' -f1)
 WSO2_UPDATES_HOME=home/$name/.wso2updates
 sudo mkdir -p /home/$name/.wso2-updates/docker && sudo chmod -R 777 /home/$name/.wso2-updates
 
 cp ${RUNNER_HOME}/test-automation/wso2update_linux $TEST_HOME/wso2is-7.0.0/bin/
-$TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $USERNAME --password $PASSWORD ||  ($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $USERNAME --password $PASSWORD )
+$TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD ||  ($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD )
 #
 echo '======================= Moving Packs to RUNNER_HOME ======================='
 unzip financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
@@ -563,7 +564,7 @@ cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
 mutt -e "set content_type=text/html" \
   -s "Accelerator 4 M3 Test Reports" \
   -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" "${TEST_HOME}/wso2is-7.0.0/repository/logs/wso2carbon.log" "${TEST_HOME}/DCR.txt" "${TEST_HOME}/TokenTest.txt" "${TEST_HOME}/ConsentTest.txt" "${TEST_HOME}/EventNotification.txt" \
-  -- ${USERNAME} < "$EMAIL_BODY"
+  -- ${$WSO2_USERNAME} < "$EMAIL_BODY"
 
 
 $TEST_HOME/wso2is-7.0.0/bin/wso2server.sh  stop

@@ -31,6 +31,7 @@ jobs:
     env: # Or as an environment variable
       WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
+      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
 
 
 
@@ -43,7 +44,7 @@ jobs:
           echo "Password SHA256: $(echo -n "WSO2_PASSWORD" | sha256sum)"
           
           RUNNER_HOME=`pwd` 
-          bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
+          bash $RUNNER_HOME/test-automation/test.sh 
   
 
 
