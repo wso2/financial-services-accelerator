@@ -1,4 +1,4 @@
-# Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+# Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
 #
 # WSO2 LLC. licenses this file to you under the Apache License,
 # Version 2.0 (the "License"); you may not use this file except
@@ -14,42 +14,32 @@
 # specific language governing permissions and limitations
 # under the License.
 
-
 name: Build Financial Services Repository
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push or pull request events but only for the master branch
   pull_request:
     branches:
       - 'main'
 
-
 jobs:
-
   Run-Test-Suite:
     runs-on: ubuntu-latest
-    env: #  as   variable
+
+    env:
+      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
       WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
       TEST_HOME: /home/runner/work/financial-services/financial-services
-      WSO2_ERROR: ${{ secrets.SOLUTIONS_BOT_USERNAME_ERROR }}
-
-
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Run Tests
-        run: |            
-          
-          echo "password is: $WSO2_PASSWORD"
-          echo "test home is: $TEST_HOME"
-          echo "username is: $WSO2_USERNAME"
-          echo "no secret found: $WSO2_ERROR"
-  
-
-
-
-
-
-
+        run: |
+          echo "Starting tests..."
+          echo "Using test home: $TEST_HOME"
+          echo "Using bot username: $WSO2_USERNAME"
+          echo "Using bot password: $WSO2_PASSWORD"
+          echo "Using bot test: $WSO2_USERNAME_ERROR"
