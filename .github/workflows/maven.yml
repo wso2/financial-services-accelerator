@@ -28,7 +28,7 @@ jobs:
 
   Run-Test-Suite:
     runs-on: ubuntu-latest
-    env: # Or as an envinment variable
+    env: # Or as an environment variable
       WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
 
@@ -40,33 +40,10 @@ jobs:
         run: |            
           
           echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
-          echo "username is ${{ secrets.SOLUTIONS_BOT_USERNAME }}"
-
-          echo "password is $WSO2_PASSWORD"
           echo "Password SHA256: $(echo -n "WSO2_PASSWORD" | sha256sum)"
-      
-
-      #          RUNNER_HOME=`pwd`
-#          TEST_HOME=`pwd`
-#
-#          wget "https://github.com/wso2/product-is/releases/download/v7.0.0/wso2is-7.0.0.zip" -O $TEST_HOME/wso2is-7.0.0.zip
-#          unzip $TEST_HOME/wso2is-7.0.0.zip -d $TEST_HOME
-#          name=$(echo "${{ secrets.SOLUTIONS_BOT_USERNAME }}" | cut -d'@' -f1)
-#          WSO2_UPDATES_HOME=home/$name/.wso2updates
-#          sudo mkdir -p /home/$name/.wso2-updates/docker && sudo chmod -R 777 /home/$name/.wso2-updates
-#
-#          cp ${RUNNER_HOME}/test-automation/wso2update_linux $TEST_HOME/wso2is-7.0.0/bin/
-#          ${RUNNER_HOME}/test-automation/wso2update_linux --username ${{ secrets.SOLUTIONS_BOT_USERNAME }} --password ${{ secrets.SOLUTIONS_BOT_PASSWORD }} ||  (${RUNNER_HOME}/test-automation/wso2update_linux --username ${{ secrets.SOLUTIONS_BOT_USERNAME }} --password ${{ secrets.SOLUTIONS_BOT_PASSWORD }} )
-
-      - name: Print password safely
-        shell: bash
-        env:
-          PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-        run: |
-          echo "password is $PASSWORD"
-
-#          {RUNNER_HOME}/test-automation/wso2update_linux
-#          bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.SOLUTIONS_BOT_USERNAME }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
+          
+          RUNNER_HOME=`pwd` 
+          bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
   
 
 
