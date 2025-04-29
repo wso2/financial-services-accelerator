@@ -40,6 +40,8 @@ jobs:
         run: |            
           
           echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          echo "username is ${{ secrets.SOLUTIONS_BOT_USERNAME }}"
+
           echo "password is $WSO2_PASSWORD"
          
           RUNNER_HOME=`pwd`
