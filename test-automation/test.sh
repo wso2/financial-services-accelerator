@@ -44,7 +44,7 @@ done
 # Username and Password for WSO2 Updates
 # TEST_HOME : Folder to install IS server
 
-echo "Password SHA256: $(echo -n "WSO2_PASSWORD" | sha256sum)"
+echo "Password SHA256: $(echo -n "$WSO2_PASSWORD" | sha256sum)"
 
 echo "Username: $USERNAME"
 echo "Password: $PASSWORD"
