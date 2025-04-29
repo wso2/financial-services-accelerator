@@ -32,6 +32,7 @@ jobs:
       WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
+      TEST_HOME: /home/runner/work/financial-services/financial-services
 
 
 
