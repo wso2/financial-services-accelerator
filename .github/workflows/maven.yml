@@ -40,7 +40,7 @@ jobs:
         run: |            
           
           echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
-          echo "actor ${{ github.triggering_actor }}"
+          echo "password ${WSO2_PASSWORD}"
          
           RUNNER_HOME=`pwd`
           
