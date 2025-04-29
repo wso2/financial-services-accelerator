@@ -132,7 +132,7 @@ public class DefaultConsentAdminHandlerTest {
         adminHandler = new DefaultConsentAdminHandler();
         setPrivateBoolean(adminHandler, "isExtensionsEnabled", true);
         setPrivateBoolean(adminHandler, "isExternalPreConsentRevocationEnabled", true);
-        setPrivateBoolean(adminHandler, "isExternalPreConsentSearchEnabled", true);
+        setPrivateBoolean(adminHandler, "isExternalEnrichConsentSearchResponseEnabled", true);
 
     }
 
@@ -145,10 +145,10 @@ public class DefaultConsentAdminHandlerTest {
 
     @Test
     public void testHandleSearch() {
+        ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
         doReturn(getQueryParams()).when(consentAdminDataMock).getQueryParams();
-
         defaultConsentAdminHandler.handleSearch(consentAdminDataMock);
-        //verify(consentAdminDataMock).setResponseStatus(ResponseStatus.OK);
+        verify(consentAdminDataMock).setResponseStatus(ResponseStatus.OK);
     }
 
     @Test
@@ -172,10 +172,10 @@ public class DefaultConsentAdminHandlerTest {
 
     @Test
     public void testHandleRevoke() {
+        ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
         doReturn(getQueryParams()).when(consentAdminDataMock).getQueryParams();
         defaultConsentAdminHandler.handleRevoke(consentAdminDataMock);
         verify(consentAdminDataMock).setResponseStatus(ResponseStatus.NO_CONTENT);
-        ;
     }
 
     @Test
@@ -214,7 +214,6 @@ public class DefaultConsentAdminHandlerTest {
 
     @Test
     public void testHandleConsentStatusAuditSearch() {
-        setConsentAdminBuilder();
         ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
         doReturn(getQueryParams()).when(consentAdminDataMock).getQueryParams();
 
@@ -224,7 +223,6 @@ public class DefaultConsentAdminHandlerTest {
 
     @Test
     public void testHandleConsentFileSearch() {
-        setConsentAdminBuilder();
         ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
         doReturn(getQueryParams()).when(consentAdminDataMock).getQueryParams();
 

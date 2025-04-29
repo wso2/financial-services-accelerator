@@ -58,7 +58,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     ConsentCoreService consentCoreService;
     boolean isExtensionsEnabled;
     boolean isExternalPreConsentRevocationEnabled;
-    boolean isExternalPreConsentSearchEnabled;
+    boolean isExternalEnrichConsentSearchResponseEnabled;
 
     public DefaultConsentAdminHandler() {
 
@@ -67,7 +67,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
-        isExternalPreConsentSearchEnabled = configParser.getServiceExtensionTypes()
+        isExternalEnrichConsentSearchResponseEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH_RESPONSE);
     }
 
@@ -159,7 +159,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         }
 
         //if the OpenAPI extension is enabled for admin-consent search
-        if (isExtensionsEnabled && isExternalPreConsentSearchEnabled) {
+        if (isExtensionsEnabled && isExternalEnrichConsentSearchResponseEnabled) {
             JSONArray searchResult = new JSONArray();
             searchResult.put(consentAdminData.getResponsePayload());
             // Call external service to enrich consent search response
@@ -296,7 +296,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                     ConsentAdminUtils.detailedConsentToJSON(ConsentExtensionsDataHolder.getInstance()
                             .getConsentCoreService().getDetailedConsent(consentId)));
             //if the OpenAPI extension is enabled for admin-consent search
-            if (isExtensionsEnabled && isExternalPreConsentSearchEnabled) {
+            if (isExtensionsEnabled && isExternalEnrichConsentSearchResponseEnabled) {
                 // Call external service to enrich consent search response
                 ExternalAPIAdminConsentSearchRequestDTO externalAPISearchRequest =
                         new ExternalAPIAdminConsentSearchRequestDTO(SearchTypeEnum.AMENDMENT_HISTORY.getValue(),
