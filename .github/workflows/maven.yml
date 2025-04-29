@@ -45,13 +45,14 @@ jobs:
           echo "password is $WSO2_PASSWORD"
          
           RUNNER_HOME=`pwd`
+          {RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD ||  ({RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD )
+
       - name: Print password safely
         shell: bash
         env:
           PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
         run: |
           echo "password is $PASSWORD"
-          {RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD ||  ({RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD )
 
 #          {RUNNER_HOME}/test-automation/wso2update_linux
 #          bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.SOLUTIONS_BOT_USERNAME }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
