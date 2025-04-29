@@ -19,15 +19,16 @@ name: Build Financial Services Repository
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+  pull_request:
+    branches:
+      - 'main'
 
 
 jobs:
 
   Run-Test-Suite:
     runs-on: ubuntu-latest
-    env: #  as an environment variable
+    env: #  as  environment variable
       WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
@@ -36,13 +37,9 @@ jobs:
 
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: actions/checkout@v4
       - name: Run Tests
-        run: |          
-          
+        run: |            
           
           echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
           echo "Password SHA256: $(echo -n "test" | sha256sum)"
