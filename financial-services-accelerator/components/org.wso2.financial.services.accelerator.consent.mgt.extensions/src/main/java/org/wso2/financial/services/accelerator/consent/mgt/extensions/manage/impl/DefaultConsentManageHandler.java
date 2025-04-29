@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl;
 
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +33,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
@@ -90,11 +90,11 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
         isExternalPreFileUploadEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_FILE_UPLOAD);;
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_FILE_UPLOAD);
         isExternalPostFileUploadEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);;
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);
         isExternalPreFileRetrievalEnabled = configParser.getServiceExtensionTypes()
-                .contains(ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);;
+                .contains(ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
     }
 
     @Override
@@ -560,24 +560,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         }
     }
 
-    private DetailedConsentResource generateConsent(
-            ExternalAPIPreConsentGenerateResponseDTO responseDTO, String clientId) throws ConsentException {
+    private DetailedConsentResource generateConsent(ExternalAPIPreConsentGenerateResponseDTO responseDTO,
+                                                    String clientId) throws ConsentException {
+
         ExternalAPIConsentResourceResponseDTO externalAPIConsentResource = responseDTO.getConsentResource();
         try {
-            ConsentResource consentResource = new ConsentResource(clientId,
-                    new Gson().toJson(externalAPIConsentResource.getReceipt()), externalAPIConsentResource.getType(),
-                    externalAPIConsentResource.getFrequency(), externalAPIConsentResource.getValidityTime(),
-                    externalAPIConsentResource.getRecurringIndicator(), externalAPIConsentResource.getStatus(),
-                    externalAPIConsentResource.getAttributes());
-
-            // Assuming only one authorization is present in initiation
-            ExternalAPIConsentResourceResponseDTO.Authorization primaryAuthorization =
-                    externalAPIConsentResource.getAuthorizations().get(0);
-            String authStatus = primaryAuthorization.getStatus();
-            String authType = primaryAuthorization.getType();
-
-            return consentCoreService.createAuthorizableConsent(
-                    consentResource, null, authStatus, authType, true);
+            DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
+                    externalAPIConsentResource, clientId);
+            return consentCoreService.storeDetailedConsentResource(detailedConsentResource);
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent");

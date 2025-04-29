@@ -18,6 +18,18 @@
  -->
 
 <Server xmlns="http://wso2.org/projects/carbon/financial-services.xml"  xmlns:svns="http://org.wso2.securevault/configuration">
+    <Admin>
+        {% if financial_services.admin.username is defined %}
+        <Username>{{financial_services.admin.username}}</Username>
+        {% else %}
+        <Username>is_admin@wso2.com</Username>
+        {% endif %}
+        {% if financial_services.admin.password is defined %}
+        <Password>{{financial_services.admin.password}}</Password>
+        {% else %}
+        <Password>wso2123</Password>
+        {% endif %}
+    </Admin>
     <JDBCPersistenceManager>
         <DataSource>
             <!-- Include a data source name (jndiConfigName) from the set of data
@@ -116,18 +128,6 @@
         <AdminHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
         {% endif %}
 
-        <ConsentAPICredentials>
-            {% if financial_services.consent.api_credentials.username is defined %}
-                <Username>{{financial_services.consent.api_credentials.username}}</Username>
-            {% else %}
-                <Username>is_admin@wso2.com</Username>
-            {% endif %}
-            {% if financial_services.consent.api_credentials.password is defined %}
-                <Password>{{financial_services.consent.api_credentials.password}}</Password>
-            {% else %}
-                <Password>wso2123</Password>
-            {% endif %}
-        </ConsentAPICredentials>
         <Portal>
             <ClientCredentials>
                 {% if financial_services.consent.portal.client_credentials.client_id is defined %}
@@ -147,10 +147,15 @@
                 {% else %}
                     <IdentityServerBaseUrl>https://localhost:9446</IdentityServerBaseUrl>
                 {% endif %}
-                {% if financial_services.consent.portal.params.api_manager_server_base_url is defined %}
-                    <ApiManagerServerBaseUrl>{{financial_services.consent.portal.params.api_manager_server_base_url}}</ApiManagerServerBaseUrl>
+                {% if financial_services.consent.portal.params.application_name_param is defined %}
+                    <ApplicationNameParam>{{financial_services.consent.portal.params.application_name_param}}</ApplicationNameParam>
                 {% else %}
-                    <ApiManagerServerBaseUrl>https://localhost:8243</ApiManagerServerBaseUrl>
+                    <ApplicationNameParam>client_name</ApplicationNameParam>
+                {% endif %}
+                {% if financial_services.consent.portal.params.application_logo_uri_param is defined %}
+                    <ApplicationLogoUrlParam>{{financial_services.consent.portal.params.application_logo_uri_param}}</ApplicationLogoUrlParam>
+                {% else %}
+                    <ApplicationLogoUrlParam>client_name</ApplicationLogoUrlParam>
                 {% endif %}
             </Params>
         </Portal>

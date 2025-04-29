@@ -12,7 +12,7 @@ Navigate to the **self-care-portal-frontend** directory in the terminal and run 
 
 >npm install
 
-Existing components can be modified and/or new components can be added as well. For more details follow the 
+Existing components can be modified and/or new components can be added as well. For more details follow the
 documentation [here.](https://ob.docs.wso2.com/en/latest/develop/customize-consent-manager-portal/)
 
 ## Start up

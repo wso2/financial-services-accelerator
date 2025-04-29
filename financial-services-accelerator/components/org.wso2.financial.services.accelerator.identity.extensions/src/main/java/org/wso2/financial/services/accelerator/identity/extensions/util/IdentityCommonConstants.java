@@ -31,6 +31,7 @@ public class IdentityCommonConstants {
     public static final String OPENID_SCOPE = "openid";
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String ARRAY_ELEMENT_SEPARATOR = "#";
+    public static final String CLIENT_NAME = "client_name";
     public static final String SOFTWARE_STATEMENT = "software_statement";
     public static final String SOFTWARE_ID = "software_id";
     public static final String ISS = "iss";

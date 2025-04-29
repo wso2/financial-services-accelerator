@@ -18,6 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -41,10 +42,12 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -113,12 +116,25 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
     private void setMandatoryConsentData(String consentId, ConsentData consentData) throws ConsentManagementException {
 
         ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
-        AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
 
         consentData.setConsentId(consentId);
         consentData.setType(consentResource.getConsentType());
         consentData.setConsentResource(consentResource);
-        consentData.setAuthResource(authorizationResource);
+
+        try {
+            ArrayList<AuthorizationResource> authorizationResourceList = consentCoreService
+                    .searchAuthorizations(consentId);
+            if (!authorizationResourceList.isEmpty()) {
+                AuthorizationResource authorizationResource = authorizationResourceList.get(0);
+                consentData.setAuthResource(authorizationResource);
+            }
+        } catch (ConsentManagementException e) {
+            if (log.isDebugEnabled()) {
+                String sanitizedConsentId = consentId.replaceAll("[\r\n]", "");
+                log.debug("No authorizations were found for the consent " + sanitizedConsentId +
+                        ". Proceeding without adding authorization resources.");
+            }
+        }
     }
 
     /**
@@ -146,6 +162,17 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
                 externalServiceRequest, ServiceExtensionTypeEnum.POPULATE_CONSENT_AUTHORIZE_SCREEN);
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
+            String newConsentStatus = externalServiceResponse.getData().path(
+                    ConsentExtensionConstants.NEW_CONSENT_STATUS).asText();
+            if (StringUtils.isNotBlank(newConsentStatus)) {
+                String consentId = requestDTO.getConsentId();
+                consentCoreService.updateConsentStatus(consentId, newConsentStatus);
+                if (log.isDebugEnabled()) {
+                    log.debug("Status of the consent with id" + consentId.replaceAll("\n\r", "") +
+                            "updated to " + newConsentStatus.replaceAll("\n\r", "") +
+                            "according to the error response set by the api extension.");
+                }
+            }
             throw new FinancialServicesException(externalServiceResponse.getData()
                     .path(FinancialServicesConstants.ERROR_MESSAGE)
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));

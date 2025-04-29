@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -35,6 +35,7 @@ public class ConsentExtensionConstants {
     public static final String TITLE = "title";
     public static final String CONSENT_ID = "ConsentId";
     public static final String ACCOUNT_ID = "account_id";
+    public static final String ACCOUNT_ID_CC = "accountId";
     public static final String DATA = "Data";
     public static final String CONSENT_TYPE = "consent_type";
     public static final String AWAIT_AUTHORISE_STATUS = "AwaitingAuthorisation";
@@ -109,6 +110,7 @@ public class ConsentExtensionConstants {
     public static final String CONSENT_IDS = "consentIds";
     public static final String CLIENT_IDS = "clientIds";
     public static final String CONSENT_TYPES = "consentTypes";
+    public static final String NEW_CONSENT_STATUS = "newConsentStatus";
     public static final String CONSENT_STATUSES = "consentStatuses";
     public static final String USER_IDS = "userIds";
     public static final String FROM_TIME = "fromTime";
@@ -152,7 +154,7 @@ public class ConsentExtensionConstants {
     public static final String AUTH_ID = "authorizationId";
     public static final String CC_CONSENT_ID = "consentId";
     public static final String USER_ID = "userId";
-    public static final String USER_ID_PARAM = "userID";
+    public static final String USER_ID_PARAM = "userId";
     public static final String AUTH_STATUS = "authorizationStatus";
     public static final String AUTH_TYPE = "authorizationType";
     public static final String UPDATE_TIME = "updatedTime";
