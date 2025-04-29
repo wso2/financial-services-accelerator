@@ -40,6 +40,7 @@ jobs:
         run: |            
           
           echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          echo "actor ${{ github.triggering_actor }}"
          
           RUNNER_HOME=`pwd`
           
