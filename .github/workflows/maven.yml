@@ -51,21 +51,10 @@ jobs:
           PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
         run: |
           echo "password is $PASSWORD"
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-#          bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
+          {RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD ||  ({RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD )
+
+#          {RUNNER_HOME}/test-automation/wso2update_linux
+#          bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.SOLUTIONS_BOT_USERNAME }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
   
 
 

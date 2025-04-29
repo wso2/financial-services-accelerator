@@ -62,59 +62,59 @@ if [ -z "$TEST_HOME" ]; then
     exit 1
 fi
 
-
-echo '=================== setup Firefox ==================='
-
-if command -v firefox &> /dev/null
-then
-    echo "Firefox is installed"
-else
-    sudo install -d -m 0755 /etc/apt/keyrings
-    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
-    gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,""); if($0 == "35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3") print "\nThe key fingerprint matches ("$0").\n"; else print "\nVerification failed: the fingerprint ("$0") does not match the expected one.\n"}'
-    echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
-    echo '
-        Package: *
-        Pin: origin packages.mozilla.org
-        Pin-Priority: 1000
-          ' | sudo tee /etc/apt/preferences.d/mozilla
-    sudo apt-get update && sudo apt-get install firefox
-    firefox -version
-fi
-
-
-
-echo '=================== Install Java and Maven ==================='
-
-if command -v java &> /dev/null
-then
-    echo "Java is installed"
-    java -version
-else
-   wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16+8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
-   tar -xvzf OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
-   sudo mv jdk-11.0.16+8 /opt/java
-   echo "export JAVA_HOME=/opt/java/jdk-11.0.16+8" >> ~/.bashrc
-   echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
-   source ~/.bashrc
-   java -version
-
-fi
-
-if command -v mvn &> /dev/null
-then
-    echo "Maven is installed"
-    mvn --version
-else
-    sudo apt install -y maven
-fi
-
-
-
-echo '======================= Building packs ======================='
-
-mvn -B install --file ${RUNNER_HOME}/pom.xml
-MVNSTATE=$?
+#
+#echo '=================== setup Firefox ==================='
+#
+#if command -v firefox &> /dev/null
+#then
+#    echo "Firefox is installed"
+#else
+#    sudo install -d -m 0755 /etc/apt/keyrings
+#    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+#    gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,""); if($0 == "35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3") print "\nThe key fingerprint matches ("$0").\n"; else print "\nVerification failed: the fingerprint ("$0") does not match the expected one.\n"}'
+#    echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+#    echo '
+#        Package: *
+#        Pin: origin packages.mozilla.org
+#        Pin-Priority: 1000
+#          ' | sudo tee /etc/apt/preferences.d/mozilla
+#    sudo apt-get update && sudo apt-get install firefox
+#    firefox -version
+#fi
+#
+#
+#
+#echo '=================== Install Java and Maven ==================='
+#
+#if command -v java &> /dev/null
+#then
+#    echo "Java is installed"
+#    java -version
+#else
+#   wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16+8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
+#   tar -xvzf OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
+#   sudo mv jdk-11.0.16+8 /opt/java
+#   echo "export JAVA_HOME=/opt/java/jdk-11.0.16+8" >> ~/.bashrc
+#   echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
+#   source ~/.bashrc
+#   java -version
+#
+#fi
+#
+#if command -v mvn &> /dev/null
+#then
+#    echo "Maven is installed"
+#    mvn --version
+#else
+#    sudo apt install -y maven
+#fi
+#
+#
+#
+#echo '======================= Building packs ======================='
+#
+#mvn -B install --file ${RUNNER_HOME}/pom.xml
+#MVNSTATE=$?
 
 echo '======================= SetUp base Products ======================='
 
