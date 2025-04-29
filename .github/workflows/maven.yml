@@ -29,26 +29,26 @@ jobs:
   Run-Test-Suite:
     runs-on: ubuntu-latest
     env: # Or as an environment variable
-      WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
       STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
 
 
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Run Tests
+        run: |            
+          
+          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          echo "password $WSO2_PASSWORD"
+         
+          RUNNER_HOME=`pwd`
       - name: Print password safely
         shell: bash
         env:
           PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
         run: |
           echo "password is $PASSWORD"
-#      - name: Run Tests
-#        run: |
-#
-#          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
-#          echo "password $WSO2_PASSWORD"
-#
-#          RUNNER_HOME=`pwd`
           
           
           
