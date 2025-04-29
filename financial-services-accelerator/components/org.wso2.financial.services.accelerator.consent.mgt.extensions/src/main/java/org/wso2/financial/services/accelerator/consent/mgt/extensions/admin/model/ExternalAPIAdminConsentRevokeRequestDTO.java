@@ -18,7 +18,9 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
+
+import java.util.Map;
 
 /**
  * ExternalAPIAdminConsentRevokeRequestDTO -Request DTO for extension of admin consent revocation
@@ -26,14 +28,17 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 public class ExternalAPIAdminConsentRevokeRequestDTO {
 
     private String consentId;
-    private String userId;
-    private DetailedConsentResource consentResource;
+    private String consentResourcePath;
+    private ExternalAPIConsentResourceRequestDTO consentResource;
+    private Map<String, String> requestHeaders;
 
-    public ExternalAPIAdminConsentRevokeRequestDTO(String consentId, String userId, DetailedConsentResource
-            consentResource) {
-        this.consentId = consentResource.getConsentID();
-        this.userId = userId;
+    public ExternalAPIAdminConsentRevokeRequestDTO(ExternalAPIConsentResourceRequestDTO consentResource,
+                                              String consentResourcePath, Map<String, String> requestHeaders) {
+
+        this.consentId = consentResource.getId();
+        this.consentResourcePath = consentResourcePath;
         this.consentResource = consentResource;
+        this.requestHeaders = requestHeaders;
     }
 
     public String getConsentId() {
@@ -44,21 +49,29 @@ public class ExternalAPIAdminConsentRevokeRequestDTO {
         this.consentId = consentId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getConsentResourcePath() {
+        return consentResourcePath;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setConsentResourcePath(String consentResourcePath) {
+        this.consentResourcePath = consentResourcePath;
     }
 
-    public DetailedConsentResource getConsentResource() {
+    public ExternalAPIConsentResourceRequestDTO getConsentResource() {
         return consentResource;
     }
 
     public void setConsentResource(
-            DetailedConsentResource consentResource) {
+            ExternalAPIConsentResourceRequestDTO consentResource) {
         this.consentResource = consentResource;
+    }
+
+    public Map<String, String> getRequestHeaders() {
+        return requestHeaders;
+    }
+
+    public void setRequestHeaders(Map<String, String> requestHeaders) {
+        this.requestHeaders = requestHeaders;
     }
 
     /**
@@ -69,10 +82,8 @@ public class ExternalAPIAdminConsentRevokeRequestDTO {
     public JSONObject toJson() {
 
         JSONObject dtoJson = new JSONObject(this);
-        JSONObject consentResourceJson = this.consentResource.toJson();
+        JSONObject consentResourceJson = new JSONObject(consentResource);
         dtoJson.put("consentResource", consentResourceJson);
         return dtoJson;
     }
-
-
 }
