@@ -64,7 +64,7 @@ public class ExternalAPIConsentAdminUtils {
             throws FinancialServicesException {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
-                ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH);
+                ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH_RESPONSE);
         return new Gson().fromJson(responseJson.toString(), ExternalAPIAdminConsentSearchResponseDTO.class);
     }
 
