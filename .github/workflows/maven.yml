@@ -35,7 +35,7 @@ jobs:
 
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Print password safely
         shell: bash
         env:
