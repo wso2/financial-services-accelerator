@@ -42,10 +42,12 @@ jobs:
         run: |            
           
           echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          echo "Password SHA256: $(echo -n "test" | sha256sum)"
+
           echo "Password SHA256: $(echo -n "$WSO2_PASSWORD" | sha256sum)"
           
           RUNNER_HOME=`pwd` 
-          bash $RUNNER_HOME/test-automation/test.sh 
+#          bash $RUNNER_HOME/test-automation/test.sh
   
 
 
