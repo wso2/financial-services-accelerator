@@ -41,3 +41,5 @@ jobs:
           echo "Starting tests..."
           echo "Using test home: $TEST_HOME"
           echo "Using bot username: $WSO2_USERNAME"
+          echo "Using bot username: $WSO2_PASSWORD"
+          echo "Using bot username: $WSO2_USERNAME_ERROR"
