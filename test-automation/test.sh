@@ -17,7 +17,7 @@
 
 MVNSTATE=1 #This variable is read by the test-grid to determine success or failure of the build. (0=Successful)
 RUNNER_HOME=`pwd`
-
+TEST_HOME = "$RUNNER_HOME/test-automation"
 
 #=== FUNCTION ==================================================================
 # NAME: get_prop
@@ -30,7 +30,7 @@ function get_prop {
     echo $prop
 }
 
-TEST_HOME = "$RUNNER_HOME/test-automation"
+
 #while getopts u:p:o:h flag
 #do
 #    case "${flag}" in
@@ -65,6 +65,24 @@ echo "TEST_HOME:  $TEST_HOME"
 #    exit 1
 #fi
 
+
+echo '======================= SetUp base Products ======================='
+
+# Create the test home directory if it doesn't exist
+if [ ! -d "$TEST_HOME" ]; then
+    mkdir -p $TEST_HOME
+fi
+wget "https://github.com/wso2/product-is/releases/download/v7.0.0/wso2is-7.0.0.zip" -O $TEST_HOME/wso2is-7.0.0.zip
+unzip $TEST_HOME/wso2is-7.0.0.zip -d $TEST_HOME
+
+echo '======================= Installing WSO2 Updates ======================='
+name=$(echo "$WSO2_USERNAME" | cut -d'@' -f1)
+WSO2_UPDATES_HOME=home/$name/.wso2updates
+sudo mkdir -p /home/$name/.wso2-updates/docker && sudo chmod -R 777 /home/$name/.wso2-updates
+
+cp ${RUNNER_HOME}/test-automation/wso2update_linux $TEST_HOME/wso2is-7.0.0/bin/
+$TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD ||  ($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD )
+#
 
 echo '=================== setup Firefox ==================='
 
@@ -119,23 +137,6 @@ echo '======================= Building packs ======================='
 mvn -B install --file ${RUNNER_HOME}/pom.xml
 MVNSTATE=$?
 
-echo '======================= SetUp base Products ======================='
-
-# Create the test home directory if it doesn't exist
-if [ ! -d "$TEST_HOME" ]; then
-    mkdir -p $TEST_HOME
-fi
-wget "https://github.com/wso2/product-is/releases/download/v7.0.0/wso2is-7.0.0.zip" -O $TEST_HOME/wso2is-7.0.0.zip
-unzip $TEST_HOME/wso2is-7.0.0.zip -d $TEST_HOME
-
-echo '======================= Installing WSO2 Updates ======================='
-name=$(echo "$WSO2_USERNAME" | cut -d'@' -f1)
-WSO2_UPDATES_HOME=home/$name/.wso2updates
-sudo mkdir -p /home/$name/.wso2-updates/docker && sudo chmod -R 777 /home/$name/.wso2-updates
-
-cp ${RUNNER_HOME}/test-automation/wso2update_linux $TEST_HOME/wso2is-7.0.0/bin/
-$TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD ||  ($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD )
-#
 echo '======================= Moving Packs to RUNNER_HOME ======================='
 unzip financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
 #wget https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/wso2-fsiam-accelerator-4.0.0-M3.zip -O wso2-fsiam-accelerator-4.0.0-M3.zip
