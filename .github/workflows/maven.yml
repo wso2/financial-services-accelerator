@@ -45,7 +45,7 @@ jobs:
           echo "password is $WSO2_PASSWORD"
          
           RUNNER_HOME=`pwd`
-          {RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD ||  ({RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD )
+          ${RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD ||  (${RUNNER_HOME}/test-automation/wso2update_linux --username $USERNAME --password $PASSWORD )
 
       - name: Print password safely
         shell: bash
