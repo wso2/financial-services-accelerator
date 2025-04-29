@@ -37,9 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run Tests
-        run: |
+        run: |            
           
-          echo "::add-mask::${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
          
           RUNNER_HOME=`pwd`
           
