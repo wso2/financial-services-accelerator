@@ -29,10 +29,11 @@ jobs:
   Run-Test-Suite:
     runs-on: ubuntu-latest
     env: #  as   variable
-      WSO2_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
-      STMP_ROOT_PASSWORD: ${{secrets.SOLUTIONS_BOT_PASSWORD}}
+      WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
       TEST_HOME: /home/runner/work/financial-services/financial-services
+      WSO2_ERROR: ${{ secrets.SOLUTIONS_BOT_USERNAME_ERROR }}
 
 
 
@@ -41,14 +42,10 @@ jobs:
       - name: Run Tests
         run: |            
           
-          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
-          echo "Password SHA256: $(echo -n "test" | sha256sum)"
-          
-
-          echo "Password SHA256: $(echo -n "" | sha256sum)"
-          
-          RUNNER_HOME=`pwd` 
-#          bash $RUNNER_HOME/test-automation/test.sh
+          echo "password is: $WSO2_PASSWORD"
+          echo "test home is: $TEST_HOME"
+          echo "username is: $WSO2_USERNAME"
+          echo "no secret found: $WSO2_ERROR"
   
 
 
