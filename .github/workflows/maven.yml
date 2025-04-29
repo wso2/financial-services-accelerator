@@ -39,14 +39,8 @@ jobs:
       - name: Run Tests
         run: |            
           
-          echo "password"
-          if [ -z "$WSO2_PASSWORD" ]; then
-          echo "❌ WSO2_PASSWORD is not set!"
-              exit 1
-          else
-          echo "✅ WSO2_PASSWORD is set."
-          fi
-          
+          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}  "
+         
           RUNNER_HOME=`pwd`
           bash $RUNNER_HOME/test-automation/test.sh  -u solutions-bot@wso2.com -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
   
