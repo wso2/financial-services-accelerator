@@ -1,0 +1,806 @@
+---
+openapi: 3.0.1
+info:
+  title: Consent Management API
+  description: Consent Management application API
+  version: '1.2'
+
+tags:
+  - name: Consent API
+    description: The Consent API
+
+paths:
+  /consents:
+    get:
+      tags:
+        - Consent API
+      summary: Consent Search
+      operationId: consentGet
+      parameters:
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+        - name: filter
+          in: query
+          description: >
+            Filter query in JSON string format. Supported fields: consentTypes, consentStatuses,
+            clientIds, userIds, fromTime, toTime, limit, offset.
+          required: false
+          schema:
+            type: string
+            example: >
+              {
+                "consentTypes": "ACCOUNT_ACCESS",
+                "consentStatuses": "ACTIVE",
+                "clientIds": "bank123",
+                "userIds": "user789",
+                "fromTime": 1680000000,
+                "toTime": 1689999999,
+                "limit": 10,
+                "offset": 0
+              }
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DetailedConsentResource"
+        '400':
+          description: Invalid request
+
+    post:
+      tags:
+        - Consent API
+      summary: Consent Initiation
+      description: Create a new consent
+      operationId: consentPost
+      parameters:
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsentResourceDTO"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsentResponse"
+        '400':
+          description: Invalid request body
+
+  /consents/{consentId}:
+    get:
+      tags:
+        - Consent API
+      summary: Consent Retrieval
+      operationId: consentConsentIdGet
+      parameters:
+        - name: consentId
+          in: path
+          description: Consent id
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+        - name: isDetailedConsentResource
+          in: query
+          schema:
+            type: boolean
+        - name: withAttributes
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetailedConsentResource"
+        '404':
+          description: Invalid consent id
+
+    patch:
+      tags:
+        - Consent API
+      summary: Amend a consent
+      operationId: amendConsent
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the consent to be amended
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentAmendmentPatchRequest'
+      responses:
+        '200':
+          description: Consent amended successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consent'
+        '400':
+          description: Invalid amendment request
+        '404':
+          description: Consent not found
+
+    put:
+      tags:
+        - Consent API
+      summary: Consent Amendment
+      operationId: consentConsentIdPut
+      parameters:
+        - name: consentId
+          in: path
+          description: Consent id
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmendmentResource"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmendmentResponse"
+        '400':
+          description: Invalid request body
+    delete:
+      tags:
+        - Consent API
+      summary: Consent Purging
+      operationId: consentConsentIdDelete
+      parameters:
+        - name: consentId
+          in: path
+          description: Consent id
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: Invalid consent id
+
+  /consents/{consentId}/authorization-resource/{authorizationId}:
+    get:
+      tags:
+        - Consent API
+      summary: Retrieve Consent Authorization Resource
+      operationId: consentAuthorizationIdGet
+      parameters:
+        - name: authorizationId
+          in: path
+          description: Authorization Id
+          required: true
+          schema:
+            type: string
+        - name: consentId
+          in: path
+          description: Consent Id
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetailedConsentResource"
+        '404':
+          description: Invalid consent id
+
+  /consents/{consentId}/history:
+    get:
+      tags:
+        - Consent API
+      summary: Consent History Retrieval
+      operationId: consentConsentIdHistoryGet
+      parameters:
+        - name: consentId
+          in: path
+          description: Consent id
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+        - name: detailed
+          in: query
+          schema:
+            type: boolean
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: actionBy
+          in: query
+          schema:
+            type: string
+        - name: fromTime
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: toTime
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: statusAuditId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConsentHistory"
+        '400':
+          description: Invalid consent id
+
+  /consents/{consentId}/status:
+    put:
+      tags:
+        - Consent API
+      summary: Consent Status Update
+      operationId: consentConsentIdStatusPut
+      parameters:
+        - name: consentId
+          in: path
+          description: Consent id
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsentStatusUpdateResource"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid consent id
+
+  /consents/{consentId}/revoke:
+    post:
+      tags:
+        - Consent API
+      summary: Consent Revoke
+      operationId: consentRevokeConsentIdPut
+      parameters:
+        - name: consentId
+          in: path
+          description: Consent id
+          required: true
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      requestBody:
+        required: true
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/ConsentRevokeResource"
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: Invalid consent id
+
+  /consents/{consentId}/attributes:
+    put:
+      tags:
+        - Consent API
+      summary: Update Consent Attributes
+      operationId: updateConsentAttributes
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          description: Consent ID
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          required: false
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Consent attributes to update
+              additionalProperties: true
+      responses:
+        '200':
+          description: Consent attributes updated successfully
+        '400':
+          description: Invalid consent ID or payload
+        '404':
+          description: Consent not found
+
+  /consents/{consentId}/authorization-resource:
+    put:
+      tags:
+        - Consent API
+      summary: Update Authorization Resource
+      operationId: updateAuthorizationResource
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          description: Consent ID
+          schema:
+            type: string
+        - name: OrgInfo
+          in: header
+          required: false
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ReauthorizeResource"
+      responses:
+        '200':
+          description: Authorization resource updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        '400':
+          description: Invalid request
+        '404':
+          description: Consent or Authorization ID not found
+
+
+
+  /consents/status:
+    put:
+      tags:
+        - Consent API
+      summary: Bulk Consent Status Change
+      operationId: consentStatusPut
+      parameters:
+        - name: OrgInfo
+          in: header
+          description: JWT header containing tenant-related information
+          schema:
+            type: string
+            default: DEFAULT_ORG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkConsentStatusUpdateResource"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid consent id
+components:
+  schemas:
+    AuthResponse:
+      required:
+        - authorizationId
+        - authorizationStatus
+        - authorizationType
+        - userID
+      type: object
+      properties:
+        authorizationId:
+          type: string
+        authorizationStatus:
+          type: string
+        authorizationType:
+          type: string
+        userID:
+          type: string
+        resources:
+          type: object
+
+    DetailedConsentResource:
+      required:
+        - clientID
+        - consentType
+        - currentStatus
+        - receipt
+        - recurringIndicator
+        - validityPeriod
+      type: object
+      properties:
+        clientID:
+          type: string
+        consentType:
+          type: string
+        currentStatus:
+          type: string
+        receipt:
+          type: object
+        validityPeriod:
+          type: integer
+        recurringIndicator:
+          type: boolean
+        consentID:
+          type: string
+        consentAttributes:
+          type: object
+        authorizationResources:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AuthResponse"
+        createdTime:
+          type: integer
+        updatedTime:
+          type: integer
+    JSONObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+      additionalProperties:
+        type: object
+    Resource:
+      type: object
+      properties:
+        resource:
+          type: object
+
+        consentMappingStatus:
+          type: string
+        resourceMappingId:
+          type: string
+    ConsentHistory:
+      type: object
+      properties:
+        historyId:
+          type: string
+        consentID:
+          type: string
+        timestamp:
+          type: integer
+        reason:
+          type: string
+        detailedConsent:
+          "$ref": "#/components/schemas/DetailedConsentResource"
+    AmendmentResponse:
+      required:
+        - clientID
+        - consentType
+        - receipt
+        - recurringIndicator
+        - validityPeriod
+      type: object
+      properties:
+        clientID:
+          type: string
+        consentType:
+          type: string
+        receipt:
+          type: object
+        validityPeriod:
+          type: integer
+        recurringIndicator:
+          type: boolean
+        currentStatus:
+          type: string
+        consentAttributes:
+          type: object
+        authorizationResources:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ReauthorizeResource"
+    ReauthorizeResource:
+      type: object
+      properties:
+        authorizationId:
+          type: string
+        authorizationStatus:
+          type: string
+        authorizationType:
+          type: string
+        resources:
+          type: object
+        userID:
+          type: string
+    AmendmentResource:
+      type: object
+      properties:
+        receipt:
+          type: string
+        validityPeriod:
+          type: integer
+        consentAttributes:
+          type: object
+        authorizationResources:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ReauthorizeResource"
+        currentStatus:
+          type: string
+    ConsentStatusUpdateResource:
+      type: object
+      properties:
+        status:
+          type: string
+        reason:
+          type: string
+        userID:
+          type: string
+    ConsentResponse:
+      required:
+        - clientID
+        - consentID
+        - consentType
+        - currentStatus
+        - receipt
+        - recurringIndicator
+        - validityPeriod
+      type: object
+      properties:
+        consentID:
+          type: string
+        clientID:
+          type: string
+        consentType:
+          type: string
+        currentStatus:
+          type: string
+        receipt:
+          type: object
+        validityPeriod:
+          type: integer
+        recurringIndicator:
+          type: boolean
+        consentAttributes:
+          type: object
+        authorizationResources:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AuthResponse"
+        createdTime:
+          type: integer
+        updatedTime:
+          type: integer
+    AuthorizationResourceDTO:
+      required:
+        - authorizationStatus
+        - authorizationType
+        - userID
+      type: object
+      properties:
+        authorizationStatus:
+          type: string
+        authorizationType:
+          type: string
+        userID:
+          type: string
+        resources:
+          type: object
+
+    ConsentResourceDTO:
+      required:
+        - clientID
+        - consentType
+        - currentStatus
+        - receipt
+        - recurringIndicator
+        - validityPeriod
+      type: object
+      properties:
+        clientID:
+          type: string
+        consentType:
+          type: string
+        currentStatus:
+          type: string
+        receipt:
+          type: string
+        validityPeriod:
+          type: integer
+        recurringIndicator:
+          type: boolean
+        consentAttributes:
+          type: object
+        authorizationResources:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AuthorizationResourceDTO"
+    ConsentRevokeResource:
+      type: object
+      properties:
+        reason:
+          type: string
+        userID:
+          type: string
+    BulkConsentStatusUpdateResource:
+      type: object
+      properties:
+        clientID:
+          type: string
+        consentType:
+          type: string
+        applicableStatusesForStateChange:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        reason:
+          type: string
+        userID:
+          type: string
+
+
+
+    ConsentAmendmentPatchRequest:
+      type: object
+      properties:
+        addConsentAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentAttribute'
+        updateConsentAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentAttribute'
+        removeConsentAttributes:
+          type: array
+          items:
+            type: string
+            description: Name of the consent attribute to be removed
+        addAuthorizationResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationResource'
+        updateAuthorizationResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationResourceDTO'
+        removeAuthorizationResources:
+          type: array
+          items:
+            type: string
+            description: Identifier of the authorization resource to remove
+        validityPeriod:
+          type: integer
+          format: int32
+          description: New validity period in days (if updated)
+
+    ConsentAttribute:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+
+    AuthorizationResource:
+      type: object
+      required:
+        - resourceId
+        - actions
+      properties:
+        resourceId:
+          type: string
+        actions:
+          type: array
+          items:
+            type: string
+
+    Consent:
+      type: object
+      description: A full consent object returned after amendment
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        consentAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentAttribute'
+        authorizationResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationResourceDTO'
+        validityPeriod:
+          type: integer
+          format: int32
