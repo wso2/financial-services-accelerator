@@ -19,28 +19,21 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model;
 
 /**
- * ExternalAPIAdminConsentRevokeResponseDTO -Response DTO for extension of admin consent revocation
+ * Search type enum
  */
 
-public class ExternalAPIAdminConsentRevokeResponseDTO {
-    private boolean requireTokenRevocation;
-    private String revocationStatusName;
+public enum SearchTypeEnum {
+    BULK_SEARCH("BULK_SEARCH"),
+    AMENDMENT_HISTORY("AMENDMENT_HISTORY");
 
-    public boolean getRequireTokenRevocation() {
-        return requireTokenRevocation;
+    private final String value;
+
+    SearchTypeEnum(String value) {
+        this.value = value;
     }
 
-    public void setRequireTokenRevocation(boolean requireTokenRevocation) {
-        this.requireTokenRevocation = requireTokenRevocation;
+    public String getValue() {
+        return value;
     }
-
-    public String getRevocationStatusName() {
-        return revocationStatusName;
-    }
-
-    public void setRevocationStatusName(String revocationStatusName) {
-        this.revocationStatusName = revocationStatusName;
-    }
-
 
 }

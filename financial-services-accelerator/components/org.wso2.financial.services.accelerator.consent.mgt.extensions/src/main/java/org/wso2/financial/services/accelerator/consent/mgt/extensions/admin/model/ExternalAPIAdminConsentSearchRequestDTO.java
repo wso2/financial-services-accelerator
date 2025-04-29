@@ -17,6 +17,7 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -25,29 +26,38 @@ import java.util.Map;
  * ExternalAPIAdminConsentSearchRequestDTO -Request DTO for extension of admin consent search
  */
 public class ExternalAPIAdminConsentSearchRequestDTO {
-    private JSONObject searchResult;
-    private Map queryParams;
+    private String searchType;
+    private JSONArray searchResult;
+    private Map enrichmentParams;
 
-    public ExternalAPIAdminConsentSearchRequestDTO(JSONObject searchResult, Map
-            queryParams) {
+    public ExternalAPIAdminConsentSearchRequestDTO(String searchType, JSONArray searchResult, Map
+            enrichmentParams) {
+        this.searchType = searchType;
         this.searchResult = searchResult;
-        this.queryParams = queryParams;
+        this.enrichmentParams = enrichmentParams;
 
+    }
+    public String getSearchType() {
+        return searchType;
+    }
+
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
     }
 
     public Map getQueryParams() {
-        return queryParams;
+        return enrichmentParams;
     }
 
-    public void setQueryParams(Map queryParams) {
-        this.queryParams = queryParams;
+    public void setQueryParams(Map enrichmentParams) {
+        this.enrichmentParams = enrichmentParams;
     }
 
-    public JSONObject getResponsePayload() {
+    public JSONArray getResponsePayload() {
         return searchResult;
     }
 
-    public void setResponsePayload(JSONObject searchResult) {
+    public void setResponsePayload(JSONArray searchResult) {
         this.searchResult = searchResult;
     }
 
