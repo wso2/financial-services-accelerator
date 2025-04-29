@@ -39,7 +39,7 @@ jobs:
       - name: Run Tests
         run: |            
           
-          echo ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+          echo " Password ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
           if [ -z "$WSO2_PASSWORD" ]; then
           echo "❌ WSO2_PASSWORD is not set!"
               exit 1
