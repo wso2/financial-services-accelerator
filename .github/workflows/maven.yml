@@ -39,7 +39,7 @@ jobs:
       - name: Run Tests
         run: |
           
-          run: echo "::add-mask::${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+          echo "::add-mask::${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
          
           RUNNER_HOME=`pwd`
           
