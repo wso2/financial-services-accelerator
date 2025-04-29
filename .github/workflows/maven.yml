@@ -14,7 +14,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-#test
+
 name: Build Financial Services Repository
 
 on:
