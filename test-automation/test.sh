@@ -60,10 +60,10 @@ echo "TEST_HOME:  $TEST_HOME"
 #    echo "Password is empty. Please provide a password using the -p flag."
 #    exit 1
 #fi
-if [ -z "$TEST_HOME" ]; then
-    echo "TEST_HOME is empty. Please provide a TEST_HOME using the -o flag."
-    exit 1
-fi
+#if [ -z "$TEST_HOME" ]; then
+#    echo "TEST_HOME is empty. Please provide a TEST_HOME using the -o flag."
+#    exit 1
+#fi
 
 
 echo '=================== setup Firefox ==================='
