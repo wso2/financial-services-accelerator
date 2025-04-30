@@ -37,10 +37,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Tests
-        run: |            
+        run: |
+          echo "${{ secrets.WSO2_UPDATE_LINUX }}" > ${RUNNER_HOME}/test-automation/wso2update_linux.sh
           
-          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
-         
           RUNNER_HOME=`pwd`
           bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
   
