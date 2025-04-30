@@ -320,11 +320,13 @@ password="$ref{super_admin.password}"
 [financial_services.extensions.endpoint]
 enabled = false
 # allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
-allowed_extensions = ["pre_process_client_creation", "pre_process_client_update", "pre_process_client_retrieval", "pre_process_consent_creation",
-    "enrich_consent_creation_response", "pre_process_consent_retrieval", "enrich_consent_search_response",
-    "pre_process_consent_revoke", "populate_consent_authorize_screen", "persist_authorized_consent", "validate_consent_access",
-    "validate_refresh_token_issuance", "validate_authorization_request", "enrich_event_subscription_response",
-    "validate_event_creation", "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
+allowed_extensions = ["pre_process_client_creation", "pre_process_client_update", "pre_process_client_retrieval",
+    "pre_process_consent_creation", "enrich_consent_creation_response", "pre_process_consent_file_upload",
+    "enrich_consent_file_response", "pre_process_consent_retrieval", "validate_consent_file_retrieval",
+    "pre_process_consent_revoke", "pre_process_bulk_consent_retrieval", "populate_consent_authorize_screen",
+    "persist_authorized_consent", "validate_consent_access", "issue_refresh_token", "validate_authorization_request",
+    "validate_event_subscription", "enrich_event_subscription_response", "validate_event_creation",
+    "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
 base_url = ""
 retry_count = 5
 connect_timeout = 5
