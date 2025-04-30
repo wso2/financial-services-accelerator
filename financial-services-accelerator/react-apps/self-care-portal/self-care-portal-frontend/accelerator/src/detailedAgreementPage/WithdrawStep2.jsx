@@ -133,9 +133,10 @@ export const WithdrawStep2 = ({ match }) => {
           <div className="withdrawInfo">
             <p className="subHeadings">{withdrawLang.collectedData}</p>
             <div className="withdrawalPermissions">
-              {consentAccountResponseDataPermissions.map((permission) => (
-                <PermissionItem permissionScope={permission} />
-              ))}
+{/*               {consentAccountResponseDataPermissions.map((permission) => ( */}
+{/*                 <PermissionItem permissionScope={permission} /> */}
+{/*               ))} */}
+              <PermissionItem permissionScope={consentAccountResponseDataPermissions} />
             </div>
           </div>
           <div className="actionButtons" id="withdrawStep2ActionBtns">

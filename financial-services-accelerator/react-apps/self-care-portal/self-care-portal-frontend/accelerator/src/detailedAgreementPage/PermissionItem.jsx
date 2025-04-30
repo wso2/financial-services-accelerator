@@ -23,6 +23,7 @@ import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Accordion, Card, Col } from "react-bootstrap";
 
 export const PermissionItem = ({ permissionScope }) => {
+    console.log("permissionScope", permissionScope);
     const [showDetailedPermissions, setShowDetailedPermissions] = useState(false);
     const [permissionsData, setPermissionsData] = useState([]);
 
@@ -31,23 +32,32 @@ export const PermissionItem = ({ permissionScope }) => {
 
         if (hasPermissions) {
             const updatedDataLanguage = permissionDataLanguage.map((data) => {
-                if (data.dataCluster === "Permissions"  && Array.isArray(permissionScope)) {
-                    const permissionsWithDescriptions = permissionScope.map((permission) => {
-                        const permissionData = {
-                            name: permission,
-                            description: getPermissionDescription(permission),
-                        };
-
-                        return permissionData;
-                    });
-
+//                 data.dataCluster === "Permissions"  && Array.isArray(permissionScope)
+                if (typeof permissionScope === 'string') {
+                    console.log("Array-Permissions", permissionScope);
+//                     const permissionsWithDescriptions = permissionScope.map((permission) => {
+//                         const permissionData = {
+//                             name: permission,
+//                             description: getPermissionDescription(permission),
+//                         };
+//
+//                         console.log("Array-permissionData", permissionData);
+//                         return permissionData;
+//
+//                     });
+                    const permissionData = {
+                        name: permissionScope,
+                        description: getPermissionDescription(permissionScope),
+                    };
+                    console.log("permissionsWithDescriptions", permissionData);
                     return {
                         ...data,
-                        permissions: permissionsWithDescriptions,
+                        permissions: permissionData,
                     };
                 }
                 return data;
             });
+            console.log("updatedDataLanguage", updatedDataLanguage);
             setPermissionsData(updatedDataLanguage);
         } else {
             setPermissionsData([]);
@@ -55,18 +65,15 @@ export const PermissionItem = ({ permissionScope }) => {
     }, [permissionScope]);
 
     const getPermissionDescription = (permission) => {
+        console.log("getPermissionDescription", permission)
         const permissionObject = permissionDataLanguage.find(
-            (data) => data.dataCluster === "Permissions"
+            (data) => data.scope === permission
         );
 
         if (permissionObject) {
-            const permissionData = permissionObject.permissions.find(
-                (perm) => perm.name === permission
-            );
 
-            if (permissionData) {
-                return permissionData.description;
-            }
+            console.log("permissionObject.description", permissionObject.permissions);
+            return permissionObject.permissions;
         }
 
         return ""; // Default description if no match found
@@ -105,7 +112,7 @@ export const PermissionItem = ({ permissionScope }) => {
                                     <ul className="permissionsUL">
                                         {data.permissions.map((permission, permissionIndex) => (
                                             <li key={permissionIndex}>
-                                                {data.dataCluster === "Permissions" && permission.description && permission.description != null
+                                                {permission.description && permission.description != null
                                                     && (<span className="permissionDescription">{permission.description}</span>
                                                 )}
                                                 {data.dataCluster === "Your Account Details" && (

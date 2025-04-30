@@ -64,7 +64,9 @@ export const DataSharedInfo = ({consent, infoLabels}) => {
                     })
                 ) : (
                     <div className="dataClusters">
-                        <PermissionItem permissionScope={permissions} key={id = id + 1}/>
+                        {permissions.map((permission) =>(
+                            <PermissionItem permissionScope={permission} key={id = id + 1}/>
+                        ))}
                     </div>
                 )
             }

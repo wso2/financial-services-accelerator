@@ -17,32 +17,67 @@
  */
 export const permissionDataLanguage = [
     {
-        scope: "ReadAccountsDetail",
-        dataCluster: "Your Account Details",
+        scope: "ReadAccountsBasic",
+        dataCluster: "Account name, type and other details",
         title:"What we are sharing",
         permissions: [
-            "Your account name, number, and sort code",
-            "Your account balance",
-            "Your card number",
-        ],
+            "Your account name",
+            "Your account type",
+            "Your account currency"
+        ]
     },
     {
-        scope: "Permissions",
-        dataCluster: "Permissions",
+        scope: "ReadAccountsDetail",
+        dataCluster: "Account balance and details",
         title:"What we are sharing",
         permissions: [
-            {
-                name: "ReadAccountsDetail",
-                description: "Your account identification details",
-            },
-            {
-                name: "ReadBalances",
-                description: "All your balance information",
-            },
-            {
-                name: "ReadTransactionsDetail",
-                description: "All transaction data elements which may hold silent party details",
-            },
-        ],
+            "Your account name",
+            "Your account type",
+            "Your account currency",
+            "Your account name, number, and sort code"
+        ]
     },
+    {
+        scope: "ReadBalances",
+        dataCluster: "Your account balance",
+        title:"What we are sharing",
+        permissions: [
+            "Amount",
+            "Currency",
+            "Credit/Debit",
+            "Type of Balance",
+            "Date/Time",
+            "Credit Line"
+        ]
+    },
+    {
+        scope: "ReadTransactionsBasic",
+        dataCluster: "Your transactions",
+        title:"What we are sharing",
+        permissions: [
+            "Basic transaction information on payments for both credits in and debits",
+            "Reference",
+            "Amount",
+            "Status",
+            "Booking Data Info",
+            "Value Date info",
+            "Transaction Code"
+        ]
+    },
+    {
+        scope: "ReadTransactionsDetail",
+        dataCluster: "Details of your transactions",
+        title:"What we are sharing",
+        permissions: [
+            "Detail transaction information on payments for both credits in and debits",
+            "Reference",
+            "Amount",
+            "Status",
+            "Booking Data Info",
+            "Value Date info",
+            "Transaction Code",
+            "Payee Details",
+            "Payer Details"
+        ]
+    }
 ];
