@@ -70,6 +70,7 @@ echo '======================= SetUp base Products ======================='
 if [ ! -d "$TEST_HOME" ]; then
     mkdir -p $TEST_HOME
 fi
+
 wget "https://github.com/wso2/product-is/releases/download/v7.0.0/wso2is-7.0.0.zip" -O $TEST_HOME/wso2is-7.0.0.zip
 unzip $TEST_HOME/wso2is-7.0.0.zip -d $TEST_HOME
 
