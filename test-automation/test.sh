@@ -38,7 +38,6 @@ function get_prop {
 #        o) TEST_HOME=${OPTARG};;
 #    esac
 #done
-
 # ====== variables ======
 # Username and Password for WSO2 Updates
 # TEST_HOME : Folder to install IS server
