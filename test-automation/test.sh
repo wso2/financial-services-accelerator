@@ -564,6 +564,7 @@ XT_FILE="${LOG_FILE%.log}.txt"
 # Convert .log to .txt (just a copy with new extension)
 cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
 echo "Test message from msmtp" | msmtp sajeenthiran@wso2.com
+
 ## Send the email with mutt
 #mutt -e "set content_type=text/html" \
 #  -s "Accelerator 4 M3 Test Reports" \
