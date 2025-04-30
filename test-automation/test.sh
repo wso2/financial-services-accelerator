@@ -469,21 +469,21 @@ sudo apt install -y mutt
 sudo apt install -y ssmtp
 
 sudo touch /etc/msmtprc
-echo -e "root=psajeendran@gmail.com\nmailhub=smtp.gmail.com:587\nAuthUser=psajeendran@gmail.com\nAuthPass=${STMP_ROOT_PASSWORD}\nUseTLS=YES\nUseSTARTTLS=YES\nFromLineOverride=YES" > /etc/msmtprc
-
-API_PUBLISH="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/is-setup/target/surefire-reports/emailable-report.html"
-DCR="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/dcr/target/surefire-reports/emailable-report.html"
-TOKEN="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/token/target/surefire-reports/emailable-report.html"
-CONSENT="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/consent-management/target/surefire-reports/emailable-report.html"
-EVENT_NOTIFICATION="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/event-notification/target/surefire-reports/emailable-report.html"
-
-cp "$API_PUBLISH" ${TEST_HOME}/API_Publish_Report.html
-cp "$DCR" ${TEST_HOME}/DCR_Report.html
-cp "$TOKEN" ${TEST_HOME}/Token_Report.html
-cp "$CONSENT" ${TEST_HOME}/Consent_Report.html
-cp "$EVENT_NOTIFICATION" ${TEST_HOME}/Event_Notification_Report.html
-
-
+echo -e "root=${WSO2_USERNAME}\nmailhub=smtp.gmail.com:587\nAuthUser=${WSO2_USERNAME}\nAuthPass=${STMP_ROOT_PASSWORD}\nUseTLS=YES\nUseSTARTTLS=YES\nFromLineOverride=YES" > /etc/msmtprc
+#
+#API_PUBLISH="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/is-setup/target/surefire-reports/emailable-report.html"
+#DCR="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/dcr/target/surefire-reports/emailable-report.html"
+#TOKEN="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/token/target/surefire-reports/emailable-report.html"
+#CONSENT="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/consent-management/target/surefire-reports/emailable-report.html"
+#EVENT_NOTIFICATION="${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests/event-notification/target/surefire-reports/emailable-report.html"
+#
+#cp "$API_PUBLISH" ${TEST_HOME}/API_Publish_Report.html
+#cp "$DCR" ${TEST_HOME}/DCR_Report.html
+#cp "$TOKEN" ${TEST_HOME}/Token_Report.html
+#cp "$CONSENT" ${TEST_HOME}/Consent_Report.html
+#cp "$EVENT_NOTIFICATION" ${TEST_HOME}/Event_Notification_Report.html
+#
+#
 
 sudo apt install -y msmtp msmtp-mta
 sudo touch /etc/msmtprc
@@ -562,7 +562,7 @@ EOF
 XT_FILE="${LOG_FILE%.log}.txt"
 
 # Convert .log to .txt (just a copy with new extension)
-cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
+#cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
 #echo "Test message from msmtp" | msmtp sajeenthiran@wso2.com
 
 ## Send the email with mutt
@@ -573,7 +573,7 @@ cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
 
 mutt -e "set content_type=text/html" \
   -s "Accelerator 4 M3 Test Reports" \
-  -- sajeenthiran@wso2.com < "$EMAIL_BODY"
+  -- sajeenthiran@wso2.com < "test"
 
 #$TEST_HOME/wso2is-7.0.0/bin/wso2server.sh  stop
 #
