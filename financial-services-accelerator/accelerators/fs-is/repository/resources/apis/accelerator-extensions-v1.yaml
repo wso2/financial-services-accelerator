@@ -8,13 +8,13 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v1.0.0-M4
+  version: v1.0.0-ALPHA
 servers:
   - url: https://virtserver.swaggerhub.com/wso2-f5b/OB4/1.0.0
     description: SwaggerHub API Auto Mocking
 security:
-  - BasicAuth: [ ]
-  - OAuth2: [ ]
+  - BasicAuth: []
+  - OAuth2: []
 tags:
   - name: Client
     description: APIs for dynamically registering/updating client  related extensions
@@ -371,7 +371,7 @@ paths:
     post:
       tags:
         - Consent
-      summary: "Handle pre validations related to file upload requests."
+      summary: Handle pre validations related to file upload requests.
       requestBody:
         content:
           application/json:
@@ -412,7 +412,7 @@ paths:
     post:
       tags:
         - Consent
-      summary: "Modify the response sent in the file upload request after successfully storig the file."
+      summary: Modify the response sent in the file upload request after successfully storig the file.
       requestBody:
         content:
           application/json:
@@ -492,7 +492,7 @@ paths:
     post:
       tags:
         - Consent
-      summary: "Handle validations related to file retrieval and return a response"
+      summary: Handle validations related to file retrieval and return a response
       requestBody:
         content:
           application/json:
@@ -568,7 +568,7 @@ paths:
                 status: ERROR
                 errorMessage: server_error
                 errorDescription: Failed to process the response
-  /pre-process-bulk-consent-retrieval:
+  /enrich-consent-search-result:
     post:
       tags:
         - Consent
@@ -577,7 +577,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PreProcessBulkConsentRetrievalRequestBody'
+              $ref: '#/components/schemas/EnrichConsentSearchRequestBody'
         required: true
       responses:
         "200":
@@ -1135,7 +1135,6 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/ErrorMapperData'
-
     ErrorMapperData:
       type: object
       properties:
@@ -1155,7 +1154,6 @@ components:
           type: string
           description: The operation where the error occurred.
       description: Defines an error object with details.
-
     Request:
       type: object
       properties:
@@ -1199,10 +1197,10 @@ components:
       properties:
         consentId:
           type: string
-          description: "To identify consent."
+          description: To identify consent.
         fileUploadCreatedTime:
           type: string
-          description: "Timestamp which the file was stored in the database."
+          description: Timestamp which the file was stored in the database.
     PreProcessConsentRetrievalData:
       type: object
       properties:
@@ -1219,10 +1217,15 @@ components:
     ConsentSearchData:
       type: object
       properties:
+        searchType:
+          type: string
+          enum:
+            - BULK_SERACH
+            - AMENDMENT_HISTORY
         searchResult:
           type: object
           description: payload
-        queryParams:
+        enrichmentParams:
           type: object
           description: query params
     PopulateConsentAuthorizeScreenData:
@@ -1236,7 +1239,7 @@ components:
           example: Username
         requestParameters:
           type: object
-          description: "Custom object with request parameters"
+          description: Custom object with request parameters
         consentResource:
           $ref: '#/components/schemas/StoredDetailedConsentResourceData'
     ValidateConsentAccessData:
@@ -1270,7 +1273,6 @@ components:
             - SUCCESS
         data:
           $ref: '#/components/schemas/SuccessResponseConsentRevocationData'
-
     SuccessResponsePopulateConsentAuthorizeScreen:
       type: object
       properties:
@@ -1359,10 +1361,10 @@ components:
       properties:
         errorMessage:
           type: string
-          description: "Error message to be displayed in the URL"
+          description: Error message to be displayed in the URL
         newConsentStatus:
           type: string
-          description: "New consent status to be set to the consent"
+          description: New consent status to be set to the consent
     ErrorResponse:
       required:
         - data
@@ -1422,7 +1424,7 @@ components:
           example: Ec1wMjmiG8
         data:
           $ref: '#/components/schemas/PreProcessConsentRetrievalData'
-    PreProcessBulkConsentRetrievalRequestBody:
+    EnrichConsentSearchRequestBody:
       type: object
       properties:
         requestId:
@@ -1540,7 +1542,6 @@ components:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponsePopulateConsentAuthorizeScreen'
         - $ref: '#/components/schemas/FailedResponseInConsentAuthorize'
-
     SuccessResponseConsentRevocationData:
       type: object
       properties:
@@ -1564,10 +1565,10 @@ components:
       properties:
         responseHeaders:
           type: object
-          description: "Headers to be included in the response."
+          description: Headers to be included in the response.
         modifiedResponse:
           type: object
-          description: "Generated custom response body"
+          description: Generated custom response body
     SuccessResponseForConsentSearchData:
       type: object
       properties:
