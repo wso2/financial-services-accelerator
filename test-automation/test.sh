@@ -563,7 +563,7 @@ XT_FILE="${LOG_FILE%.log}.txt"
 
 # Convert .log to .txt (just a copy with new extension)
 cp "${RUNNER_HOME}/wso2.log" "${RUNNER_HOME}/wso2ServerLogs.txt"
-echo "Test message from msmtp" | msmtp sajeenthiran@wso2.com
+#echo "Test message from msmtp" | msmtp sajeenthiran@wso2.com
 
 ## Send the email with mutt
 #mutt -e "set content_type=text/html" \
@@ -571,6 +571,9 @@ echo "Test message from msmtp" | msmtp sajeenthiran@wso2.com
 #  -a "${TEST_HOME}/API_Publish_Report.html" "${TEST_HOME}/DCR_Report.html" "${TEST_HOME}/Consent_Report.html" "${TEST_HOME}/Token_Report.html" "${TEST_HOME}/Event_Notification_Report.html" "$CONFIG_FILE" "$ACCELERATION_INTEGRATION_TESTS_CONFIG" "${TEST_HOME}/wso2is-7.0.0/repository/logs/wso2carbon.log" "${TEST_HOME}/DCR.txt" "${TEST_HOME}/TokenTest.txt" "${TEST_HOME}/ConsentTest.txt" "${TEST_HOME}/EventNotification.txt" \
 #  -- ${$WSO2_USERNAME} < "$EMAIL_BODY"
 
+mutt -e "set content_type=text/html" \
+  -s "Accelerator 4 M3 Test Reports" \
+  -- sajeenthiran@wso2.com < "$EMAIL_BODY"
 
 #$TEST_HOME/wso2is-7.0.0/bin/wso2server.sh  stop
 #
