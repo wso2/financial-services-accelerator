@@ -29,6 +29,7 @@ jobs:
     env:
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
       WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
       STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       TEST_HOME: /home/runner/work/financial-services/financial-services
 
@@ -38,8 +39,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          echo "${{ secrets.WSO2_UPDATE_LINUX }}" > ${RUNNER_HOME}/test-automation/wso2update_linux.sh
-          
+          gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           RUNNER_HOME=`pwd`
           bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
   
