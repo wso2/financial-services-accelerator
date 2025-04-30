@@ -80,7 +80,8 @@ sudo mkdir -p /home/$name/.wso2-updates/docker && sudo chmod -R 777 /home/$name/
 
 
 cp ${RUNNER_HOME}/test-automation/wso2update_linux $TEST_HOME/wso2is-7.0.0/bin/
-$TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD ||  ($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD )
+sudo $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD ||
+($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD )
 
 printf "%s\n%s\n" "$WSO2_USERNAME" "$WSO2_PASSWORD" | $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux
 
