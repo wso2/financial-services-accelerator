@@ -37,9 +37,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Tests
-        run: |
-          echo "Starting tests..."
-          echo "Using test home: $TEST_HOME"
-          echo "Using bot username: $WSO2_USERNAME"
-          echo "Using bot password: $WSO2_PASSWORD"
-          echo "Using bot test: $WSO2_USERNAME_ERROR"
+        run: |            
+          
+          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+         
+          RUNNER_HOME=`pwd`
+          bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
+  
+
+
+
+
+
+
