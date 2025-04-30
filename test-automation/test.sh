@@ -85,9 +85,6 @@ $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --passwor
 
 printf "%s\n%s\n" "$WSO2_USERNAME" "$WSO2_PASSWORD" | $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux
 
-
-#
-#
 echo '=================== setup Firefox ==================='
 
 if command -v firefox &> /dev/null
