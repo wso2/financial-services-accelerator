@@ -39,6 +39,7 @@ jobs:
 
       - name: Run Tests
         run: |
+          chmod +x $RUNNER_HOME/test-automation/test.sh
           RUNNER_HOME=`pwd`
           gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
 
