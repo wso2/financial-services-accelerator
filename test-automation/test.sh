@@ -128,6 +128,8 @@ echo '======================= SetUp base Products ======================='
 #
 #fi
 
+
+
 #if command -v mvn &> /dev/null
 #then
 #    echo "Maven is installed"
