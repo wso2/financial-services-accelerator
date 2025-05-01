@@ -538,23 +538,18 @@ cat > "$EMAIL_BODY" <<EOF
 </head>
 <body style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
   <h2>API PUBLISH</h2>
-  $(strip_html_wrappers "$API_PUBLISH")
   <hr>
 
   <h2>DCR</h2>
-  $(strip_html_wrappers "$DCR")
   <hr>
 
   <h2>TOKEN</h2>
-  $(strip_html_wrappers "$TOKEN")
   <hr>
 
   <h2>CONSENT</h2>
-  $(strip_html_wrappers "$CONSENT")
   <hr>
 
   <h2>EVENT NOTIFICATION</h2>
-  $(strip_html_wrappers "$EVENT_NOTIFICATION")
 </body>
 </html>
 EOF
