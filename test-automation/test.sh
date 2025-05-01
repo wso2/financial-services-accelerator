@@ -572,7 +572,7 @@ XT_FILE="${LOG_FILE%.log}.txt"
 #  -- ${$WSO2_USERNAME} < "$EMAIL_BODY"
 mutt -e "set content_type=text/html" \
   -s "Accelerator 4 M3 Test Reports" \
-  -- sajeenthiran@wso2.com < "test"
+  -- sajeenthiran@wso2.com < "$EMAIL_BODY"
 
 #$TEST_HOME/wso2is-7.0.0/bin/wso2server.sh  stop
 #
