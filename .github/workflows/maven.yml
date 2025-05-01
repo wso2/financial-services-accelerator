@@ -29,7 +29,7 @@ jobs:
     env:
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
       WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-      LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
       STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       TEST_HOME: /home/runner/work/financial-services/financial-services
 
