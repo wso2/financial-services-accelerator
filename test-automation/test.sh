@@ -33,7 +33,7 @@ function get_prop {
 while getopts u:p:o:h flag
 do
     case "${flag}" in
-        u) $WSO2_USERNAME=${OPTARG};;
+        u) WSO2_USERNAME=${OPTARG};;
         p) PASSWORD=${OPTARG};;
         o) TEST_HOME=${OPTARG};;
     esac

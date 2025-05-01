@@ -44,7 +44,7 @@ jobs:
           chmod +x $RUNNER_HOME/test-automation/test.sh         
           gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-          bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
+          bash $RUNNER_HOME/test-automation/test.sh  -u ${{ secrets.WSO2_USERNAME }} -p ${{ secrets.SOLUTIONS_BOT_PASSWORD }} -o "$HOME" -h "$HOME"
   
 
 
