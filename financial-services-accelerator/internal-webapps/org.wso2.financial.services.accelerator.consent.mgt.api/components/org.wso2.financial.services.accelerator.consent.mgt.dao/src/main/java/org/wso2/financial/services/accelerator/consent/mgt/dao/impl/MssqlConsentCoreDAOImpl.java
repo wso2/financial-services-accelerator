@@ -238,7 +238,7 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
         Optional<String> frequency = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CONSENT_FREQUENCY)
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
-        Optional<String> validityTime = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.VALIDITY_TIME)
+        Optional<String> expiryTime = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.EXPIRY_TIME)
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
         Optional<String> recurringIndicator = Arrays.stream(
                 resultSet.getString(ConsentMgtDAOConstants.RECURRING_INDICATOR)
@@ -255,8 +255,7 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         currentStatus.ifPresent(detailedConsentResource::setCurrentStatus);
         createdTime.ifPresent(e -> detailedConsentResource.setCreatedTime(Long.parseLong(e)));
         consentUpdatedTime.ifPresent(e -> detailedConsentResource.setUpdatedTime(Long.parseLong(e)));
-        frequency.ifPresent(e -> detailedConsentResource.setConsentFrequency(Integer.parseInt(e)));
-        validityTime.ifPresent(e -> detailedConsentResource.setValidityPeriod(Long.parseLong(e)));
+        expiryTime.ifPresent(e -> detailedConsentResource.setExpiryTime(Long.parseLong(e)));
         recurringIndicator.ifPresent(e -> detailedConsentResource.setRecurringIndicator(Integer.parseInt(e) != 0));
     }
 

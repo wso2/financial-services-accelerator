@@ -101,9 +101,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             storeConsentPreparedStmt.setString(6, consentResource.getClientID());
             storeConsentPreparedStmt.setString(7, consentResource.getConsentType());
             storeConsentPreparedStmt.setString(8, consentResource.getCurrentStatus());
-            storeConsentPreparedStmt.setLong(9, consentResource.getConsentFrequency());
-            storeConsentPreparedStmt.setLong(10, consentResource.getValidityPeriod());
-            storeConsentPreparedStmt.setBoolean(11, consentResource.isRecurringIndicator());
+            storeConsentPreparedStmt.setLong(9, consentResource.getExpiryTime());
+            storeConsentPreparedStmt.setBoolean(10, consentResource.isRecurringIndicator());
 
             // with result, we can determine whether the insertion was successful or not
             int result = storeConsentPreparedStmt.executeUpdate();
@@ -344,24 +343,24 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public void updateConsentValidityTime(Connection connection, String consentID, long validityTime)
+    public void updateConsentExpiryTime(Connection connection, String consentID, long expiryTime)
             throws
             ConsentDataUpdationException {
 
-        String updateConsentReceiptPrepStatement = sqlStatements.getUpdateConsentValidityTimePreparedStatement();
+        String updateConsentReceiptPrepStatement = sqlStatements.getUpdateConsentExpiryTimePreparedStatement();
         long updatedTime = System.currentTimeMillis() / 1000;
 
-        try (PreparedStatement updateConsentValidityTimePreparedStmt =
+        try (PreparedStatement updateConsentExpiryTimePreparedStmt =
                      connection.prepareStatement(updateConsentReceiptPrepStatement)) {
 
             log.debug("Setting parameters to prepared statement to update consent receipt");
 
-            updateConsentValidityTimePreparedStmt.setLong(1, validityTime);
-            updateConsentValidityTimePreparedStmt.setLong(2, updatedTime);
-            updateConsentValidityTimePreparedStmt.setString(3, consentID);
+            updateConsentExpiryTimePreparedStmt.setLong(1, expiryTime);
+            updateConsentExpiryTimePreparedStmt.setLong(2, updatedTime);
+            updateConsentExpiryTimePreparedStmt.setString(3, consentID);
 
             // with result, we can determine whether the updating was successful or not
-            int result = updateConsentValidityTimePreparedStmt.executeUpdate();
+            int result = updateConsentExpiryTimePreparedStmt.executeUpdate();
             // Confirm that the data are updated successfully
             if (result > 0) {
                 log.debug("Updated the consent validity time successfully");
@@ -400,7 +399,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             storeAuthorizationPreparedStmt.setString(3, authorizationResource.getAuthorizationType());
             storeAuthorizationPreparedStmt.setString(4, authorizationResource.getUserID());
             storeAuthorizationPreparedStmt.setString(5, authorizationResource.getAuthorizationStatus());
-            storeAuthorizationPreparedStmt.setLong(6, updatedTime);
+            storeAuthorizationPreparedStmt.setString(6, authorizationResource.getResource());
+            storeAuthorizationPreparedStmt.setLong(7, updatedTime);
 
             // with result, we can determine whether the insertion was successful or not
             int result = storeAuthorizationPreparedStmt.executeUpdate();
@@ -1674,11 +1674,11 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             setAuthorizationDataInResponseForGroupedQuery(authorizationResources, resultSet,
                     detailedConsentResource.getConsentID());
             // Set consent account mapping data if available
-            setAccountConsentMappingDataInResponse(consentMappingResources, resultSet);
+//            setAccountConsentMappingDataInResponse(consentMappingResources, resultSet);
 
             detailedConsentResource.setConsentAttributes(consentAttributesMap);
             detailedConsentResource.setAuthorizationResources(authorizationResources);
-            detailedConsentResource.setConsentMappingResources(consentMappingResources);
+//            detailedConsentResource.setConsentMappingResources(consentMappingResources);
 
             detailedConsentResources.add(detailedConsentResource);
 
@@ -1701,7 +1701,9 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         String[] authTypes = resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE) != null ?
                 resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE).split(GROUP_BY_SEPARATOR) : null;
         String[] authStatues = resultSet.getString(ConsentMgtDAOConstants.AUTH_STATUS) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.AUTH_STATUS).split(GROUP_BY_SEPARATOR) : null;
+                resultSet.getString(ConsentMgtDAOConstants.RESOURCE).split(GROUP_BY_SEPARATOR) : null;
+        String[] resources = resultSet.getString(ConsentMgtDAOConstants.RESOURCE) != null ?
+                resultSet.getString(ConsentMgtDAOConstants.RESOURCE).split(GROUP_BY_SEPARATOR) : null;
         String[] updatedTimes = resultSet.getString(ConsentMgtDAOConstants.UPDATED_TIME) != null ?
                 resultSet.getString(ConsentMgtDAOConstants.UPDATED_TIME).split(GROUP_BY_SEPARATOR) : null;
         String[] userIds = resultSet.getString(ConsentMgtDAOConstants.USER_ID) != null ?
@@ -1713,11 +1715,15 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 authIdSet.add(authIds[index]);
                 authorizationResource.setAuthorizationID(authIds[index]);
                 authorizationResource.setConsentID(consentId);
+
                 if (authTypes != null && authTypes.length > index) {
                     authorizationResource.setAuthorizationType(authTypes[index]);
                 }
                 if (authStatues != null && authStatues.length > index) {
                     authorizationResource.setAuthorizationStatus(authStatues[index]);
+                }
+                if (resources != null && resources.length > index) {
+                    authorizationResource.setResource(resources[index]);
                 }
                 if (updatedTimes != null && updatedTimes.length > index) {
                     authorizationResource.setUpdatedTime(Long.parseLong(updatedTimes[index]));

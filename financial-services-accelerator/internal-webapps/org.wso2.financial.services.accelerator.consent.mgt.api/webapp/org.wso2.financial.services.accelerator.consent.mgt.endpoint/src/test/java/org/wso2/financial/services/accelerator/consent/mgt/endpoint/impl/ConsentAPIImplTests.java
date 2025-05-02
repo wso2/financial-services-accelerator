@@ -96,7 +96,7 @@ public class ConsentAPIImplTests {
 
         // Act
         Response response =
-                consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID, isDetailedConsent, isWithAttributes);
+                consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
 
         // Assert
         assertNotNull(response, "Response should not be null");
@@ -117,7 +117,7 @@ public class ConsentAPIImplTests {
 
         // Act
         Response response =
-                consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID, isDetailedConsent, isWithAttributes);
+                consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
 
         // Assert
         assertNotNull(response, "Response should not be null");
@@ -138,8 +138,7 @@ public class ConsentAPIImplTests {
         when(detailedConsentResource.getOrgID()).thenReturn(mismatchedOrgID); // Simulate mismatch
 
         // Act
-        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID, detailedConsent,
-                withAttributes);
+        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
 
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
 
@@ -159,7 +158,7 @@ public class ConsentAPIImplTests {
 
         // Act
         Response response =
-                consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID, isDetailedConsent, isWithAttributes);
+                consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
 
 
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
@@ -181,8 +180,7 @@ public class ConsentAPIImplTests {
         when(consentResource.getOrgID()).thenReturn(sampleOrgID);
 
         // Act
-        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID, isDetailedConsent,
-                isWithAttributes);
+        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
 
         // Assert
         assertNotNull(response);
@@ -205,8 +203,7 @@ public class ConsentAPIImplTests {
         when(consentResource.getOrgID()).thenReturn(sampleOrgID);
 
         // Act
-        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID, isDetailedConsent,
-                isWithAttributes);
+        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
 
         // Assert
         assertNotNull(response);
@@ -227,8 +224,7 @@ public class ConsentAPIImplTests {
         when(consentResource.getOrgID()).thenReturn(mismatchedOrgID);
 
         // Act
-        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID, isDetailedConsent,
-                isWithAttributes);
+        Response response = consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
 
         // Assert
         assertNotNull(response);
@@ -246,8 +242,7 @@ public class ConsentAPIImplTests {
         boolean isWithAttributes = true;
 
         // Act
-        Response response = consentAPIImpl.consentConsentIdGet(consentID, sampleOrgID, withAuthorizationResource,
-                isWithAttributes);
+        Response response = consentAPIImpl.consentConsentIdGet(consentID, sampleOrgID);
 
         // Assert
         assertNotNull(response);
@@ -269,8 +264,7 @@ public class ConsentAPIImplTests {
                         ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG));
 
         // Act
-        Response response = consentAPIImpl.consentConsentIdGet(consentID, sampleOrgID, isDetailedConsent,
-                isWithAttributes);
+        Response response = consentAPIImpl.consentConsentIdGet(consentID, sampleOrgID);
 
         // Assert
         assertNotNull(response);
@@ -852,7 +846,7 @@ public class ConsentAPIImplTests {
         doReturn(true).when(mockedConsentCoreServiceImpl).revokeConsentWithReason(any(), any(), any(), any());
 
         // Act
-        Response response = consentAPIImpl.consentRevokeConsentIdPut(sampleConsentID, updateResource, orgInfo);
+        Response response = consentAPIImpl.consentRevokeConsentIdPost(sampleConsentID, updateResource, orgInfo);
 
         // Assert
         assertNotNull(response);
@@ -879,7 +873,7 @@ public class ConsentAPIImplTests {
         when(mockedConsentCoreServiceImpl.getConsent(sampleConsentID, false)).thenReturn(consentResource);
         doReturn(true).when(mockedConsentCoreServiceImpl).revokeConsentWithReason(any(), any(), any(), any());
         // Act
-        Response response = consentAPIImpl.consentRevokeConsentIdPut(sampleConsentID, updateResource, orgInfo);
+        Response response = consentAPIImpl.consentRevokeConsentIdPost(sampleConsentID, updateResource, orgInfo);
         // Assert
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
@@ -911,7 +905,7 @@ public class ConsentAPIImplTests {
         authResources.add(authResource);
 
         when(amendmentResource.getAuthorizationResources()).thenReturn(authResources);
-        when(amendmentResource.getValidityPeriod()).thenReturn(100);
+        when(amendmentResource.getExpiryTime()).thenReturn(100);
         when(amendmentResource.getCurrentStatus()).thenReturn("ACTIVE");
         when(amendmentResource.getReceipt()).thenReturn("Receipt123");
         when(amendmentResource.getConsentAttributes()).thenReturn(new HashMap<>());
@@ -960,7 +954,7 @@ public class ConsentAPIImplTests {
         authResources.add(authResource);
 
         when(amendmentResource.getAuthorizationResources()).thenReturn(authResources);
-        when(amendmentResource.getValidityPeriod()).thenReturn(100);
+        when(amendmentResource.getExpiryTime()).thenReturn(100);
         when(amendmentResource.getCurrentStatus()).thenReturn("ACTIVE");
         when(amendmentResource.getReceipt()).thenReturn("Receipt123");
         when(amendmentResource.getConsentAttributes()).thenReturn(new HashMap<>());
@@ -1003,7 +997,7 @@ public class ConsentAPIImplTests {
         authResources.add(authResource);
 
         when(amendmentResource.getAuthorizationResources()).thenReturn(authResources);
-        when(amendmentResource.getValidityPeriod()).thenReturn(100);
+        when(amendmentResource.getExpiryTime()).thenReturn(100);
         when(amendmentResource.getCurrentStatus()).thenReturn("ACTIVE");
         when(amendmentResource.getReceipt()).thenReturn("Receipt123");
         when(amendmentResource.getConsentAttributes()).thenReturn(new HashMap<>());
@@ -1053,7 +1047,7 @@ public class ConsentAPIImplTests {
         DetailedConsentResource detailedConsentResource = mock(DetailedConsentResource.class);
         when(detailedConsentResource.getConsentID()).thenReturn(sampleConsentID);
         when(detailedConsentResource.getReceipt()).thenReturn("receipt123");
-        when(detailedConsentResource.getValidityPeriod()).thenReturn(100L);
+        when(detailedConsentResource.getExpiryTime()).thenReturn(100L);
         when(detailedConsentResource.getCurrentStatus()).thenReturn("APPROVED");
         when(detailedConsentResource.getConsentType()).thenReturn("TYPE_A");
 
@@ -1101,7 +1095,7 @@ public class ConsentAPIImplTests {
         DetailedConsentResource detailedConsentResource = mock(DetailedConsentResource.class);
         when(detailedConsentResource.getConsentID()).thenReturn(sampleConsentID);
         when(detailedConsentResource.getReceipt()).thenReturn("receipt123");
-        when(detailedConsentResource.getValidityPeriod()).thenReturn(100L);
+        when(detailedConsentResource.getExpiryTime()).thenReturn(100L);
         when(detailedConsentResource.getCurrentStatus()).thenReturn("APPROVED");
         when(detailedConsentResource.getConsentType()).thenReturn("TYPE_A");
 
@@ -1209,7 +1203,7 @@ public class ConsentAPIImplTests {
         authResources.add(authResource);
 
         when(amendmentResource.getAuthorizationResources()).thenReturn(authResources);
-        when(amendmentResource.getValidityPeriod()).thenReturn(100);
+        when(amendmentResource.getExpiryTime()).thenReturn(100);
         when(amendmentResource.getCurrentStatus()).thenReturn("ACTIVE");
         when(amendmentResource.getReceipt()).thenReturn("Receipt123");
         when(amendmentResource.getConsentAttributes()).thenReturn(new HashMap<>());
@@ -1311,7 +1305,7 @@ public class ConsentAPIImplTests {
                 .when(mockedConsentCoreServiceImpl).getDetailedConsent(any());
 
         // Act
-        Response response = consentAPIImpl.consentConsentIdGet(consentID, orgInfo, isDetailedConsent, isWithAttributes);
+        Response response = consentAPIImpl.consentConsentIdGet(consentID, orgInfo);
 
         // Assert
         assertNotNull(response);
@@ -1634,7 +1628,7 @@ public class ConsentAPIImplTests {
             }
         };
 
-        when(authorizationResourceDTO.getResources()).thenReturn(Collections.singletonList(invalidResource));
+        when(authorizationResourceDTO.getResource()).thenReturn(Collections.singletonList(invalidResource));
         when(consentResourceDTO.getAuthorizationResources()).thenReturn(
                 Collections.singletonList(authorizationResourceDTO));
 
@@ -1696,7 +1690,7 @@ public class ConsentAPIImplTests {
 
         when(mockedConsentCoreServiceImpl.getConsent(consentID, false)).thenReturn(consentResource);
 
-        Response response = consentAPIImpl.consentRevokeConsentIdPut(consentID, updateResource, orgInfo);
+        Response response = consentAPIImpl.consentRevokeConsentIdPost(consentID, updateResource, orgInfo);
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
     }

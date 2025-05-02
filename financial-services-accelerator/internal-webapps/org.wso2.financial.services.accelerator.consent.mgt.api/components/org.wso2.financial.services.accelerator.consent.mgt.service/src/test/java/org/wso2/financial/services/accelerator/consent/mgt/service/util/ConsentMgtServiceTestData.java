@@ -139,7 +139,6 @@ public class ConsentMgtServiceTestData {
 
         return new ConsentResource(ConsentMgtServiceTestData.ORG_INFO, null, UUID.randomUUID().toString(),
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_FREQUENCY,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
                 ConsentMgtServiceTestData.SAMPLE_RECURRING_INDICATOR, status,
                 System.currentTimeMillis() / 1000, System.currentTimeMillis() / 1000);
@@ -176,7 +175,7 @@ public class ConsentMgtServiceTestData {
                 ConsentMgtServiceTestData.ORG_INFO,
                 ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, UUID.randomUUID().toString(),
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CONSENT_FREQUENCY,
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD, System.currentTimeMillis() / 1000,
                 System.currentTimeMillis() / 1000, ConsentMgtServiceTestData.SAMPLE_RECURRING_INDICATOR,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP, authResources, mappingResources);
@@ -227,7 +226,8 @@ public class ConsentMgtServiceTestData {
 
         AuthorizationResource authorizationResource = new AuthorizationResource(consentID,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTH_TYPE, System.currentTimeMillis() / 1000);
+                ConsentMgtServiceTestData.SAMPLE_AUTH_TYPE,
+                ConsentMgtServiceTestData.SAMPLE_RESOURCE.toString(), System.currentTimeMillis() / 1000);
         authorizationResource.setAuthorizationID(authorizationID);
 
         return authorizationResource;
@@ -254,10 +254,10 @@ public class ConsentMgtServiceTestData {
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource(ConsentMgtServiceTestData.CONSENT_ID,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTH_TYPE, System.currentTimeMillis() / 1000);
+                ConsentMgtServiceTestData.SAMPLE_AUTH_TYPE,
+                ConsentMgtServiceTestData.SAMPLE_RESOURCE.toString(), System.currentTimeMillis() / 1000);
         authorizationResource.setAuthorizationID(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1);
-        authorizationResource.setConsentMappingResource(
-                ConsentMgtServiceTestData.getSampleTestConsentMappingResourceList());
+      ;
         authorizationResources.add(authorizationResource);
         return authorizationResources;
     }
@@ -269,10 +269,10 @@ public class ConsentMgtServiceTestData {
 
         AuthorizationResource authorizationResource = new AuthorizationResource(consentID,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTH_TYPE, System.currentTimeMillis() / 1000);
+                ConsentMgtServiceTestData.SAMPLE_AUTH_TYPE,
+                ConsentMgtServiceTestData.SAMPLE_RESOURCE.toString(), System.currentTimeMillis() / 1000);
         authorizationResource.setAuthorizationID(authorizationID);
-        authorizationResource.setConsentMappingResource(
-                ConsentMgtServiceTestData.getSampleTestConsentMappingResourceList());
+
 
         return authorizationResource;
     }
@@ -514,7 +514,7 @@ public class ConsentMgtServiceTestData {
         consentBasicDataJson.put("RECEIPT", ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT);
         consentBasicDataJson.put("UPDATED_TIME",
                 String.valueOf(ConsentMgtServiceTestData.SAMPLE_CONSENT_AMENDMENT_TIMESTAMP));
-        consentBasicDataJson.put("VALIDITY_TIME",
+        consentBasicDataJson.put("EXPIRY_TIME",
                 String.valueOf(ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD));
         consentBasicDataJson.put("CURRENT_STATUS", ConsentMgtServiceTestData.SAMPLE_PREVIOUS_STATUS);
         return consentBasicDataJson.toString();

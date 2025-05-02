@@ -1866,7 +1866,7 @@ public class ConsentCoreServiceImplTest {
     }
 
     @Test
-    public void testAmendDetailedConsentDataWithoutValidityTimeOnly() throws
+    public void testAmendDetailedConsentDataWithoutExpiryTimeOnly() throws
             Exception {
 
         setInitialDataForAmendDetailedConsentSuccessFlow();
@@ -1884,7 +1884,7 @@ public class ConsentCoreServiceImplTest {
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutReceiptAndValidityTime() throws
+    public void testAmendDetailedConsentDataWithoutReceiptAndExpiryTime() throws
             Exception {
 
         consentCoreServiceImpl.amendDetailedConsent(sampleID, null, null,
@@ -1964,7 +1964,7 @@ public class ConsentCoreServiceImplTest {
 
         doNothing().when(mockedConsentCoreDAO).updateConsentReceipt(any(),
                 anyString(), anyString());
-        doNothing().when(mockedConsentCoreDAO).updateConsentValidityTime(any(),
+        doNothing().when(mockedConsentCoreDAO).updateConsentExpiryTime(any(),
                 anyString(), anyLong());
         doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource())
                 .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
@@ -1997,7 +1997,7 @@ public class ConsentCoreServiceImplTest {
                         any(), any());
         doNothing().when(mockedConsentCoreDAO).updateConsentReceipt(any(),
                 anyString(), anyString());
-        doNothing().when(mockedConsentCoreDAO).updateConsentValidityTime(any(),
+        doNothing().when(mockedConsentCoreDAO).updateConsentExpiryTime(any(),
                 anyString(), anyLong());
         doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource())
                 .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());

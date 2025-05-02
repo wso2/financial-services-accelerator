@@ -157,7 +157,7 @@ public class ConsentMgtDAOTestData {
     public static final JSONObject SAMPLE_CONSENT_BASIC_DATA_CHANGED_ATTRIBUTES_JSON = new JSONObject() {
         {
             put("RECEIPT", SAMPLE_CONSENT_RECEIPT);
-            put("VALIDITY_TIME", SAMPLE_CONSENT_VALIDITY_PERIOD);
+            put("EXPIRY_TIME", SAMPLE_CONSENT_VALIDITY_PERIOD);
             put("UPDATED_TIME", SAMPLE_UPDATED_TIME);
         }
     };
@@ -192,8 +192,7 @@ public class ConsentMgtDAOTestData {
         consentResource.setClientID(UUID.randomUUID().toString());
         consentResource.setConsentType(ConsentMgtDAOTestData.SAMPLE_CONSENT_TYPE);
         consentResource.setCurrentStatus(ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS);
-        consentResource.setConsentFrequency(ConsentMgtDAOTestData.SAMPLE_CONSENT_FREQUENCY);
-        consentResource.setValidityPeriod(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
+        consentResource.setExpiryTime(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
         consentResource.setRecurringIndicator(ConsentMgtDAOTestData.SAMPLE_RECURRING_INDICATOR);
 
         return consentResource;
@@ -207,8 +206,7 @@ public class ConsentMgtDAOTestData {
         consentResource.setClientID(UUID.randomUUID().toString());
         consentResource.setConsentType(ConsentMgtDAOTestData.SAMPLE_CONSENT_TYPE);
         consentResource.setCurrentStatus(ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS);
-        consentResource.setConsentFrequency(ConsentMgtDAOTestData.SAMPLE_CONSENT_FREQUENCY);
-        consentResource.setValidityPeriod(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
+        consentResource.setExpiryTime(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
         consentResource.setRecurringIndicator(ConsentMgtDAOTestData.SAMPLE_RECURRING_INDICATOR);
 
         return consentResource;
@@ -229,8 +227,7 @@ public class ConsentMgtDAOTestData {
             consentResource.setClientID(SAMPLE_CLIENT_IDS_LIST.get(i));
             consentResource.setConsentType(SAMPLE_CONSENT_TYPES_LIST.get(i));
             consentResource.setCurrentStatus(SAMPLE_CONSENT_STATUSES_LIST.get(i));
-            consentResource.setConsentFrequency(0);
-            consentResource.setValidityPeriod(SAMPLE_VALIDITY_PERIOD_LIST.get(i));
+            consentResource.setExpiryTime(SAMPLE_VALIDITY_PERIOD_LIST.get(i));
             consentResource.setRecurringIndicator(false);
             consentResources.add(consentResource);
         }
@@ -286,7 +283,6 @@ public class ConsentMgtDAOTestData {
         consentMappingResource.setMappingStatus(ConsentMgtDAOTestData.SAMPLE_MAPPING_STATUS);
         consentMappingResources.add(consentMappingResource);
 
-        authorizationResource.setConsentMappingResource(consentMappingResources);
 
         return authorizationResource;
     }

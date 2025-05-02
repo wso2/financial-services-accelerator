@@ -22,7 +22,7 @@ public class AuthResponse implements Serializable {
     private String authorizationStatus;
     private String authorizationType;
     private String userID;
-    private @Valid List<@Valid Resource> resources = new ArrayList<>();
+    private @Valid Object resource = new ArrayList<>();
 
     public AuthResponse() {
     }
@@ -124,38 +124,23 @@ public class AuthResponse implements Serializable {
      *
      **/
     public AuthResponse resources(List<@Valid Resource> resources) {
-        this.resources = resources;
+        this.resource = resources;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
     @JsonProperty("resources")
-    @Valid public List<@Valid Resource> getResources() {
-        return resources;
+    @Valid public Object getResource() {
+        return resource;
     }
 
     @JsonProperty("resources")
-    public void setResources(List<@Valid Resource> resources) {
-        this.resources = resources;
+    public void setResource(Object resource) {
+        this.resource = resource;
     }
 
-    public AuthResponse addResourcesItem(Resource resourcesItem) {
-        if (this.resources == null) {
-            this.resources = new ArrayList<>();
-        }
 
-        this.resources.add(resourcesItem);
-        return this;
-    }
-
-    public AuthResponse removeResourcesItem(Resource resourcesItem) {
-        if (resourcesItem != null && this.resources != null) {
-            this.resources.remove(resourcesItem);
-        }
-
-        return this;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -170,12 +155,12 @@ public class AuthResponse implements Serializable {
                 Objects.equals(this.authorizationStatus, authResponse.authorizationStatus) &&
                 Objects.equals(this.authorizationType, authResponse.authorizationType) &&
                 Objects.equals(this.userID, authResponse.userID) &&
-                Objects.equals(this.resources, authResponse.resources);
+                Objects.equals(this.resource, authResponse.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authId, authorizationStatus, authorizationType, userID, resources);
+        return Objects.hash(authId, authorizationStatus, authorizationType, userID, resource);
     }
 
     @Override
@@ -187,7 +172,7 @@ public class AuthResponse implements Serializable {
         sb.append("    authorizationStatus: ").append(toIndentedString(authorizationStatus)).append("\n");
         sb.append("    authorizationType: ").append(toIndentedString(authorizationType)).append("\n");
         sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
-        sb.append("    resources: ").append(toIndentedString(resources)).append("\n");
+        sb.append("    resource: ").append(toIndentedString(resource)).append("\n");
         sb.append("}");
         return sb.toString();
     }

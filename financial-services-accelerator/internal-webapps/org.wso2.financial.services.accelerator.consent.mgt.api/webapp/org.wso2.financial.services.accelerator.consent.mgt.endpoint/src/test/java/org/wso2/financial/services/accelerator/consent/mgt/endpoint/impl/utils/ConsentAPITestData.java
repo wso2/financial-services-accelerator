@@ -15,7 +15,7 @@ public class ConsentAPITestData {
     public static String testConsentType = "testType";
     public static String testConsentStatus = "testStatus";
     public static String testReceipt = "testReceipt";
-    public static int testValidityPeriod = 10;
+    public static int testExpiryTime = 10;
 
     // authorization resource
     public static String testAuthStatus = "testAuthStatus";
@@ -25,7 +25,13 @@ public class ConsentAPITestData {
     // detailed consent mapping
     public static String testMappingId = "testMappingId";
     public static String testMappingStatus = "testMappingStatus";
-    public static JSONObject testMappingResource = new JSONObject();
+    public static JSONObject testMappingResource = new JSONObject(){
+        {
+            put("mappingId", testMappingId);
+            put("mappingStatus", testMappingStatus);
+            put("mappingResource", "testMappingResource");
+        }
+    };
 
 
 
@@ -39,7 +45,7 @@ public class ConsentAPITestData {
         detailedConsentResource.setConsentID(testConsentID);
         detailedConsentResource.setConsentType(testConsentType);
         detailedConsentResource.setCurrentStatus(testConsentStatus);
-        detailedConsentResource.setValidityPeriod(testValidityPeriod);
+        detailedConsentResource.setExpiryTime(testExpiryTime);
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         authorizationResources.add(getStoredAuthorizationResource());
         detailedConsentResource.setAuthorizationResources(authorizationResources);
@@ -58,9 +64,8 @@ public class ConsentAPITestData {
         authorizationResource.setUserID(testUserID);
         authorizationResource.setAuthorizationType(testAuthType);
         authorizationResource.setAuthorizationStatus(testAuthStatus);
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
-        consentMappingResources.add(getStoredConsentMappingResource());
-        authorizationResource.setConsentMappingResource(consentMappingResources);
+        authorizationResource.setResource(testMappingResource.toString());
+
         return authorizationResource;
     }
 

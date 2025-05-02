@@ -18,7 +18,7 @@ import javax.validation.Valid;
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class AmendmentResource implements Serializable {
     private String receipt;
-    private Integer validityPeriod;
+    private Integer expiryTime;
     private Object consentAttributes;
     private @Valid List<@Valid ReauthorizeResource> authorizationResources = new ArrayList<>();
     private String currentStatus;
@@ -49,21 +49,21 @@ public class AmendmentResource implements Serializable {
     /**
      *
      **/
-    public AmendmentResource validityPeriod(Integer validityPeriod) {
-        this.validityPeriod = validityPeriod;
+    public AmendmentResource expiryTime(Integer expiryTime) {
+        this.expiryTime = expiryTime;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
-    @JsonProperty("validityPeriod")
-    public Integer getValidityPeriod() {
-        return validityPeriod;
+    @JsonProperty("expiryTime")
+    public Integer getExpiryTime() {
+        return expiryTime;
     }
 
-    @JsonProperty("validityPeriod")
-    public void setValidityPeriod(Integer validityPeriod) {
-        this.validityPeriod = validityPeriod;
+    @JsonProperty("expiryTime")
+    public void setExpiryTime(Integer expiryTime) {
+        this.expiryTime = expiryTime;
     }
 
     /**
@@ -154,7 +154,7 @@ public class AmendmentResource implements Serializable {
         }
         AmendmentResource amendmentResource = (AmendmentResource) o;
         return Objects.equals(this.receipt, amendmentResource.receipt) &&
-                Objects.equals(this.validityPeriod, amendmentResource.validityPeriod) &&
+                Objects.equals(this.expiryTime, amendmentResource.expiryTime) &&
                 Objects.equals(this.consentAttributes, amendmentResource.consentAttributes) &&
                 Objects.equals(this.authorizationResources, amendmentResource.authorizationResources) &&
                 Objects.equals(this.currentStatus, amendmentResource.currentStatus);
@@ -162,7 +162,7 @@ public class AmendmentResource implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(receipt, validityPeriod, consentAttributes, authorizationResources, currentStatus);
+        return Objects.hash(receipt, expiryTime, consentAttributes, authorizationResources, currentStatus);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class AmendmentResource implements Serializable {
         sb.append("class AmendmentResource {\n");
 
         sb.append("    receipt: ").append(toIndentedString(receipt)).append("\n");
-        sb.append("    validityPeriod: ").append(toIndentedString(validityPeriod)).append("\n");
+        sb.append("    expiryTime: ").append(toIndentedString(expiryTime)).append("\n");
         sb.append("    consentAttributes: ").append(toIndentedString(consentAttributes)).append("\n");
         sb.append("    authorizationResources: ").append(toIndentedString(authorizationResources)).append("\n");
         sb.append("    currentStatus: ").append(toIndentedString(currentStatus)).append("\n");

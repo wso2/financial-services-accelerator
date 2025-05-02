@@ -30,8 +30,7 @@ public class ConsentResource {
     private String clientID;
     private String receipt;
     private String consentType;
-    private int consentFrequency;
-    private long validityPeriod;
+    private long expiryTime;
     private boolean recurringIndicator;
     private String currentStatus;
     private long createdTime;
@@ -49,15 +48,14 @@ public class ConsentResource {
     }
 
     public ConsentResource(String orgID, String consentID, String clientID, String receipt, String consentType,
-                           int consentFrequency, long validityPeriod, boolean recurringIndicator,
+                           long expiryTime, boolean recurringIndicator,
                            String currentStatus, long createdTime, long updatedTime) {
         this.orgID = orgID;
         this.consentID = consentID;
         this.clientID = clientID;
         this.receipt = receipt;
         this.consentType = consentType;
-        this.consentFrequency = consentFrequency;
-        this.validityPeriod = validityPeriod;
+        this.expiryTime = expiryTime;
         this.recurringIndicator = recurringIndicator;
         this.currentStatus = currentStatus;
         this.createdTime = createdTime;
@@ -134,24 +132,15 @@ public class ConsentResource {
         this.consentType = consentType;
     }
 
-    public int getConsentFrequency() {
 
-        return consentFrequency;
+    public long getExpiryTime() {
+
+        return expiryTime;
     }
 
-    public void setConsentFrequency(int consentFrequency) {
+    public void setExpiryTime(long expiryTime) {
 
-        this.consentFrequency = consentFrequency;
-    }
-
-    public long getValidityPeriod() {
-
-        return validityPeriod;
-    }
-
-    public void setValidityPeriod(long validityPeriod) {
-
-        this.validityPeriod = validityPeriod;
+        this.expiryTime = expiryTime;
     }
 
     public boolean isRecurringIndicator() {

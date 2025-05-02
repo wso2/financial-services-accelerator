@@ -124,7 +124,7 @@ public class ConsentConstant {
     public static final String CLIENT_ID = "clientId";
     public static final String CURRENT_STATUS = "currentStatus";
     public static final String CONSENT_FREQUENCY = "consentFrequency";
-    public static final String VALIDITY_PERIOD = "validityPeriod";
+    public static final String VALIDITY_PERIOD = "expiryTime";
     public static final String CREATED_TIME = "createTime";
     public static final String UPDATED_TIMESTAMP = "updatedTimestamp";
     public static final String RECURRING_INDICATOR = "recurringIndicator";

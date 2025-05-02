@@ -33,8 +33,7 @@ public class DetailedConsentResource {
     private String receipt;
     private String consentType;
     private String currentStatus;
-    private int consentFrequency;
-    private long validityPeriod;
+    private long expiryTime;
     private long createdTime;
     private long updatedTime;
     private boolean recurringIndicator;
@@ -48,7 +47,7 @@ public class DetailedConsentResource {
 
     public DetailedConsentResource(String consentID, String clientID, String receipt,
                                    String consentType,
-                                   String currentStatus, int consentFrequency, long validityPeriod, long createdTime,
+                                   String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
                                    Map<String, String> consentAttributes,
                                    ArrayList<AuthorizationResource> authorizationResources,
@@ -58,8 +57,7 @@ public class DetailedConsentResource {
         this.receipt = receipt;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
-        this.consentFrequency = consentFrequency;
-        this.validityPeriod = validityPeriod;
+        this.expiryTime = expiryTime;
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
         this.recurringIndicator = recurringIndicator;
@@ -71,7 +69,7 @@ public class DetailedConsentResource {
 
     public DetailedConsentResource(String orgID, String consentID, String clientID, String receipt,
                                    String consentType,
-                                   String currentStatus, int consentFrequency, long validityPeriod, long createdTime,
+                                   String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
                                    Map<String, String> consentAttributes,
                                    ArrayList<AuthorizationResource> authorizationResources,
@@ -82,8 +80,7 @@ public class DetailedConsentResource {
         this.receipt = receipt;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
-        this.consentFrequency = consentFrequency;
-        this.validityPeriod = validityPeriod;
+        this.expiryTime = expiryTime;
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
         this.recurringIndicator = recurringIndicator;
@@ -152,24 +149,14 @@ public class DetailedConsentResource {
         this.consentType = consentType;
     }
 
-    public int getConsentFrequency() {
+    public long getExpiryTime() {
 
-        return consentFrequency;
+        return expiryTime;
     }
 
-    public void setConsentFrequency(int consentFrequency) {
+    public void setExpiryTime(long expiryTime) {
 
-        this.consentFrequency = consentFrequency;
-    }
-
-    public long getValidityPeriod() {
-
-        return validityPeriod;
-    }
-
-    public void setValidityPeriod(long validityPeriod) {
-
-        this.validityPeriod = validityPeriod;
+        this.expiryTime = expiryTime;
     }
 
     public boolean isRecurringIndicator() {
@@ -254,16 +241,7 @@ public class DetailedConsentResource {
                 authClone.setAuthorizationStatus(auth.getAuthorizationStatus());
                 // Deep copy of consentMappingResources
                 ArrayList<ConsentMappingResource> copiedConsentMappingResources = new ArrayList<>();
-                if (auth.getConsentMappingResource() != null) {
-                    for (ConsentMappingResource mapping : auth.getConsentMappingResource()) {
-                        ConsentMappingResource mappingClone = new ConsentMappingResource();
-                        mappingClone.setMappingID(mapping.getMappingID());
-                        mappingClone.setResource(mapping.getResource());
-                        mappingClone.setMappingStatus(mapping.getMappingStatus());
-                        copiedConsentMappingResources.add(mappingClone);
-                    }
-                }
-                authClone.setConsentMappingResource(copiedConsentMappingResources);
+
                 copiedAuthResources.add(authClone);
             }
         }
@@ -288,8 +266,7 @@ public class DetailedConsentResource {
                 this.receipt,
                 this.consentType,
                 this.currentStatus,
-                this.consentFrequency,
-                this.validityPeriod,
+                this.expiryTime,
                 this.createdTime,
                 this.updatedTime,
                 this.recurringIndicator,

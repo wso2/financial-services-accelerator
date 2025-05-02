@@ -93,8 +93,7 @@ public class ConsentManagementDAOUtil {
                 resultSet.getString(ConsentMgtDAOConstants.CLIENT_ID),
                 resultSet.getString(ConsentMgtDAOConstants.RECEIPT),
                 resultSet.getString(ConsentMgtDAOConstants.CONSENT_TYPE),
-                resultSet.getInt(ConsentMgtDAOConstants.CONSENT_FREQUENCY),
-                resultSet.getLong(ConsentMgtDAOConstants.VALIDITY_TIME),
+                resultSet.getLong(ConsentMgtDAOConstants.EXPIRY_TIME),
                 resultSet.getBoolean(ConsentMgtDAOConstants.RECURRING_INDICATOR),
                 resultSet.getString(ConsentMgtDAOConstants.CURRENT_STATUS),
                 resultSet.getLong(ConsentMgtDAOConstants.CREATED_TIME),
@@ -179,25 +178,7 @@ public class ConsentManagementDAOUtil {
                 }
             }
 
-            // Set data related to consent account mappings
-            // Check whether consentMappingIds is empty and result set consists a mapping id since at this moment
-            //  there can be a situation where an auth resource is created and mapping resource is not created
-            if (consentMappingIds.isEmpty() && resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID) != null) {
-                ConsentMappingResource consentMappingResource = getConsentMappingResourceWithData(resultSet);
 
-                consentMappingResources.add(consentMappingResource);
-                consentMappingIds.add(consentMappingResource.getMappingID());
-            } else {
-                // Check whether result set consists a mapping id since at this moment, there can be a situation
-                //  where an auth resource is created and mapping resource is not created
-                if (!consentMappingIds.contains(resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID)) &&
-                        resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID) != null) {
-                    ConsentMappingResource consentMappingResource = getConsentMappingResourceWithData(resultSet);
-
-                    consentMappingResources.add(consentMappingResource);
-                    consentMappingIds.add(consentMappingResource.getMappingID());
-                }
-            }
         }
 
         // Set consent attributes, auth resources and account mappings to detailed consent resource
@@ -303,8 +284,7 @@ public class ConsentManagementDAOUtil {
                 resultSet.getString(ConsentMgtDAOConstants.RECEIPT),
                 resultSet.getString(ConsentMgtDAOConstants.CONSENT_TYPE),
                 resultSet.getString(ConsentMgtDAOConstants.CURRENT_STATUS),
-                resultSet.getInt(ConsentMgtDAOConstants.CONSENT_FREQUENCY),
-                resultSet.getLong(ConsentMgtDAOConstants.VALIDITY_TIME),
+                resultSet.getLong(ConsentMgtDAOConstants.EXPIRY_TIME),
                 resultSet.getLong(ConsentMgtDAOConstants.CONSENT_CREATED_TIME),
                 resultSet.getLong(ConsentMgtDAOConstants.CONSENT_UPDATED_TIME),
                 resultSet.getBoolean(ConsentMgtDAOConstants.RECURRING_INDICATOR),
@@ -334,6 +314,7 @@ public class ConsentManagementDAOUtil {
                 resultSet.getString(ConsentMgtDAOConstants.USER_ID),
                 resultSet.getString(ConsentMgtDAOConstants.AUTH_STATUS),
                 resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE),
+                resultSet.getString(ConsentMgtDAOConstants.RESOURCE),
                 resultSet.getLong(updateTimeParamName)
         );
         authorizationResource.setAuthorizationID(resultSet.getString(ConsentMgtDAOConstants.AUTH_ID));
@@ -370,7 +351,6 @@ public class ConsentManagementDAOUtil {
 
 
         }
-        authorizationResource.setConsentMappingResource(consentMappingResources);
         return authorizationResource;
     }
 
@@ -392,6 +372,7 @@ public class ConsentManagementDAOUtil {
                 resultSet.getString(ConsentMgtDAOConstants.USER_ID),
                 resultSet.getString(ConsentMgtDAOConstants.AUTH_STATUS),
                 resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE),
+                resultSet.getString(ConsentMgtDAOConstants.RESOURCE),
                 resultSet.getLong(updateTimeParamName)
         );
         authorizationResource.setAuthorizationID(resultSet.getString(ConsentMgtDAOConstants.AUTH_ID));

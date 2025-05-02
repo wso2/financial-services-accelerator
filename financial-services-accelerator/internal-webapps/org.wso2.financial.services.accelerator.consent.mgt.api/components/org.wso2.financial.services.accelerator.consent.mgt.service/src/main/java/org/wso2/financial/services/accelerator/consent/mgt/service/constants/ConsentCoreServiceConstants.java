@@ -31,7 +31,7 @@ public class ConsentCoreServiceConstants {
     public static final String ACTIVE_MAPPING_STATUS = "active";
     public static final String INACTIVE_MAPPING_STATUS = "inactive";
     public static final String RECEIPT = "RECEIPT";
-    public static final String VALIDITY_TIME = "VALIDITY_TIME";
+    public static final String EXPIRY_TIME = "EXPIRY_TIME";
     public static final String UPDATED_TIME = "UPDATED_TIME";
     public static final String CURRENT_STATUS = "CURRENT_STATUS";
     public static final String MAPPING_STATUS = "MAPPING_STATUS";
@@ -136,6 +136,11 @@ public class ConsentCoreServiceConstants {
     public static final String DETAIL_CONSENT_SEARCH_ERROR_MSG = "Error occurred while searching detailed consents";
     public static final String CONSENT_DATA_MISSING_ERROR_MSG = "Consent ID or both consent receipt and consent" +
             " validity period are not provided, cannot proceed";
+    public static final String CONSENT_EXPIRY_TIME_MISSING_ERROR = " Expriy Time empty, cannot proceed";
+
+    public static final String CONSENT_EXPIRY_TIME_BEFORE_CURRENT_TIMESTAMP_ERROR = " Expiry Time is before the " +
+            "current timestatmp, please consider a time in the future ";
+
     public static final String DETAILED_CONSENT_DATA_MISSING_ERROR_MSG = "Auth ID, user ID, account permissions map," +
             " new consent status or new consent attributes is not present, cannot proceed";
     public static final String DATA_DELETION_ROLLBACK_ERROR_MSG = "Error occurred while deleting data. Rolling" +

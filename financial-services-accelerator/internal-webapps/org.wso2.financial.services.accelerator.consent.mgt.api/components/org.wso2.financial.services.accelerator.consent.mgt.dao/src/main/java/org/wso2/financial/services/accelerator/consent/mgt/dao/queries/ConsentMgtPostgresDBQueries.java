@@ -55,7 +55,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "  CONSENT_TYPE, " +
                 "  OBC.CURRENT_STATUS AS CURRENT_STATUS, " +
                 "  CONSENT_FREQUENCY, " +
-                "  VALIDITY_TIME, " +
+                "  EXPIRY_TIME, " +
                 "  RECURRING_INDICATOR, " +
                 "  OBC.CREATED_TIME AS CONSENT_CREATED_TIME, " +
                 "  OBC.UPDATED_TIME AS CONSENT_UPDATED_TIME, " +
@@ -194,7 +194,7 @@ public class ConsentMgtPostgresDBQueries extends ConsentMgtCommonDBQueries {
                 "OBC.CLIENT_ID," +
                 "OBC.CONSENT_TYPE," +
                 "CONSENT_FREQUENCY," +
-                "VALIDITY_TIME," +
+                "EXPIRY_TIME," +
                 "RECURRING_INDICATOR," +
                 "OBC.CURRENT_STATUS," +
                 "OBC.CREATED_TIME," +

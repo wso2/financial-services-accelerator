@@ -37,7 +37,7 @@ public class ConsentMgtDAOConstants {
     public static final String CONSENT_TYPE = "CONSENT_TYPE";
     public static final String CURRENT_STATUS = "CURRENT_STATUS";
     public static final String CONSENT_FREQUENCY = "CONSENT_FREQUENCY";
-    public static final String VALIDITY_TIME = "VALIDITY_TIME";
+    public static final String EXPIRY_TIME = "EXPIRY_TIME";
     public static final String RECURRING_INDICATOR = "RECURRING_INDICATOR";
     public static final String CONSENT_CREATED_TIME = "CONSENT_CREATED_TIME";
     public static final String CONSENT_UPDATED_TIME = "CONSENT_UPDATED_TIME";

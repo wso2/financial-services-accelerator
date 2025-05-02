@@ -622,7 +622,7 @@ components:
           description: Last updated timestamp
           type: string
           example: "1719810602"
-        validityPeriod:
+        expiryTime:
           description: Consent validity period
           type: string
           example: "0"

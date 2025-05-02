@@ -23,7 +23,7 @@ public class ConsentResponse implements Serializable {
     private String consentType;
     private String currentStatus;
     private Object receipt;
-    private Integer validityPeriod;
+    private Integer expiryTime;
     private Boolean recurringIndicator;
     private Object consentAttributes;
     private @Valid List<@Valid AuthResponse> authorizationResources = new ArrayList<>();
@@ -40,7 +40,7 @@ public class ConsentResponse implements Serializable {
             @JsonProperty(required = true, value = "consentType") String consentType,
             @JsonProperty(required = true, value = "currentStatus") String currentStatus,
             @JsonProperty(required = true, value = "receipt") Object receipt,
-            @JsonProperty(required = true, value = "validityPeriod") Integer validityPeriod,
+            @JsonProperty(required = true, value = "expiryTime") Integer expiryTime,
             @JsonProperty(required = true, value = "recurringIndicator") Boolean recurringIndicator
                           ) {
         this.consentID = consentID;
@@ -48,7 +48,7 @@ public class ConsentResponse implements Serializable {
         this.consentType = consentType;
         this.currentStatus = currentStatus;
         this.receipt = receipt;
-        this.validityPeriod = validityPeriod;
+        this.expiryTime = expiryTime;
         this.recurringIndicator = recurringIndicator;
     }
 
@@ -155,21 +155,21 @@ public class ConsentResponse implements Serializable {
     /**
      *
      **/
-    public ConsentResponse validityPeriod(Integer validityPeriod) {
-        this.validityPeriod = validityPeriod;
+    public ConsentResponse expiryTime(Integer expiryTime) {
+        this.expiryTime = expiryTime;
         return this;
     }
 
 
     @ApiModelProperty(required = true, value = "")
-    @JsonProperty(required = true, value = "validityPeriod")
-    @NotNull public Integer getValidityPeriod() {
-        return validityPeriod;
+    @JsonProperty(required = true, value = "expiryTime")
+    @NotNull public Integer getExpiryTime() {
+        return expiryTime;
     }
 
-    @JsonProperty(required = true, value = "validityPeriod")
-    public void setValidityPeriod(Integer validityPeriod) {
-        this.validityPeriod = validityPeriod;
+    @JsonProperty(required = true, value = "expiryTime")
+    public void setExpiryTime(Integer expiryTime) {
+        this.expiryTime = expiryTime;
     }
 
     /**
@@ -304,7 +304,7 @@ public class ConsentResponse implements Serializable {
                 Objects.equals(this.consentType, consentResponse.consentType) &&
                 Objects.equals(this.currentStatus, consentResponse.currentStatus) &&
                 Objects.equals(this.receipt, consentResponse.receipt) &&
-                Objects.equals(this.validityPeriod, consentResponse.validityPeriod) &&
+                Objects.equals(this.expiryTime, consentResponse.expiryTime) &&
                 Objects.equals(this.recurringIndicator, consentResponse.recurringIndicator) &&
                 Objects.equals(this.consentAttributes, consentResponse.consentAttributes) &&
                 Objects.equals(this.authorizationResources, consentResponse.authorizationResources) &&
@@ -314,7 +314,7 @@ public class ConsentResponse implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(consentID, clientID, consentType, currentStatus, receipt, validityPeriod,
+        return Objects.hash(consentID, clientID, consentType, currentStatus, receipt, expiryTime,
                 recurringIndicator, consentAttributes, authorizationResources, createdTime, updatedTime);
     }
 
@@ -328,7 +328,7 @@ public class ConsentResponse implements Serializable {
         sb.append("    consentType: ").append(toIndentedString(consentType)).append("\n");
         sb.append("    currentStatus: ").append(toIndentedString(currentStatus)).append("\n");
         sb.append("    receipt: ").append(toIndentedString(receipt)).append("\n");
-        sb.append("    validityPeriod: ").append(toIndentedString(validityPeriod)).append("\n");
+        sb.append("    expiryTime: ").append(toIndentedString(expiryTime)).append("\n");
         sb.append("    recurringIndicator: ").append(toIndentedString(recurringIndicator)).append("\n");
         sb.append("    consentAttributes: ").append(toIndentedString(consentAttributes)).append("\n");
         sb.append("    authorizationResources: ").append(toIndentedString(authorizationResources)).append("\n");

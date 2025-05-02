@@ -1,8 +1,11 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentMgtException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
@@ -30,6 +33,7 @@ import javax.ws.rs.core.Response;
  */
 public class ConsentUtils {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Validate the consent ID.
@@ -70,7 +74,7 @@ public class ConsentUtils {
         consentResource.setConsentType(consentResourceDTO.getConsentType());
         consentResource.setClientID(consentResourceDTO.getClientID());
         consentResource.setRecurringIndicator(consentResourceDTO.getRecurringIndicator());
-        consentResource.setValidityPeriod(consentResourceDTO.getValidityPeriod());
+        consentResource.setExpiryTime(consentResourceDTO.getExpiryTime());
         consentResource.setConsentAttributes(ConsentUtils.convertToMap(consentResourceDTO.getConsentAttributes()));
         consentResource.setReceipt(consentResourceDTO.getReceipt());
         consentResource.setCurrentStatus(consentResourceDTO.getCurrentStatus());
@@ -82,10 +86,12 @@ public class ConsentUtils {
      * copy properties from authorizationResourceDTo to authorizationResource
      */
     public static void copyPropertiesToAuthorizationResource(AuthorizationResource authorizationResource,
-                                                             AuthorizationResourceDTO authorizationResourceDTO) {
+                                                             AuthorizationResourceDTO authorizationResourceDTO) throws
+            JsonProcessingException {
         authorizationResource.setAuthorizationType(authorizationResourceDTO.getAuthorizationType());
         authorizationResource.setAuthorizationStatus(authorizationResourceDTO.getAuthorizationStatus());
         authorizationResource.setUserID(authorizationResourceDTO.getUserID());
+        authorizationResource.setResource(objectMapper.writeValueAsString(authorizationResourceDTO.getResource()));
     }
 
     /**
@@ -106,7 +112,6 @@ public class ConsentUtils {
             consentMappingResources.add(consentMappingResource);
 
         }
-        authorizationResource.setConsentMappingResource(consentMappingResources);
 
     }
 
@@ -115,26 +120,18 @@ public class ConsentUtils {
      * copy properties from consentResource to consentResponse
      */
     public static void buildAuthorizationResourceResponse(AuthResponse authorizationResourceResponseResponse,
-                                                          AuthorizationResource authorizationResource,
-                                                          ArrayList<ConsentMappingResource> consentMappingResources) {
+                                                          AuthorizationResource authorizationResource) throws
+            JsonProcessingException {
         authorizationResourceResponseResponse.setAuthId(authorizationResource.getAuthorizationID());
         authorizationResourceResponseResponse.setUserID(authorizationResource.getUserID());
         authorizationResourceResponseResponse.setAuthorizationStatus(authorizationResource.getAuthorizationStatus());
         authorizationResourceResponseResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
 
-        ArrayList<Resource> resources = new ArrayList<>();
 
-        if (consentMappingResources != null) {
-            for (ConsentMappingResource consentMappingResource : consentMappingResources) {
-                Resource res = new Resource();
-                buildConsentMappingResourceResponse(res, consentMappingResource);
-                resources.add(res);
-            }
-        }
-
-        authorizationResourceResponseResponse.setResources(resources);
-
-
+        authorizationResourceResponseResponse.setResource(
+                new net.minidev.json.JSONObject(objectMapper.readValue(
+                authorizationResource.getResource(), new TypeReference<Map<String, Object>>() {
+        })));
     }
 
     /**
@@ -149,11 +146,9 @@ public class ConsentUtils {
         authorizationResourceResponseResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
 
 
-        authorizationResourceResponseResponse.setConsentMappingResource(consentMappingResources);
 
 
     }
-
     /**
      * copy properties from consentResourceMapping  to consentResourceMappingResponse
      */
@@ -172,39 +167,32 @@ public class ConsentUtils {
                                                     DetailedConsentResource consentResource,
                                                     ArrayList<AuthorizationResource> authorizationResources,
                                                     ArrayList<ConsentMappingResource> consentMappingResources,
-                                                    boolean withAttributes) {
+                                                    boolean withAttributes) throws
+            JsonProcessingException {
         consentResourceResponse.setConsentID(consentResource.getConsentID());
         consentResourceResponse.setClientID(consentResource.getClientID());
         consentResourceResponse.setConsentType(consentResource.getConsentType());
         consentResourceResponse.setRecurringIndicator(consentResource.isRecurringIndicator());
         consentResourceResponse.setCreatedTime((int) consentResource.getCreatedTime());
-        consentResourceResponse.setValidityPeriod((int) consentResource.getValidityPeriod());
+        consentResourceResponse.setExpiryTime((int) consentResource.getExpiryTime());
         consentResourceResponse.setCurrentStatus(consentResource.getCurrentStatus());
         consentResourceResponse.setUpdatedTime((int) consentResource.getUpdatedTime());
         consentResourceResponse.setReceipt(consentResource.getReceipt());
+
 
         if (withAttributes) {
             consentResourceResponse.setConsentAttributes(consentResource.getConsentAttributes());
 
         }
 
-        // get consent mapping resources for each AuthorizationResource
-        Map<String, ArrayList<ConsentMappingResource>> consentMappingResourcesMap = new HashMap<>();
-        for (ConsentMappingResource consentMappingResource : consentMappingResources) {
-            if (!consentMappingResourcesMap.containsKey(consentMappingResource.getAuthorizationID())) {
-                consentMappingResourcesMap.put(consentMappingResource.getAuthorizationID(),
-                        new ArrayList<>());
-            }
-            consentMappingResourcesMap.get(consentMappingResource.getAuthorizationID()).add(consentMappingResource);
-        }
+
 
         if (authorizationResources != null) {
             ArrayList<AuthResponse> authResponses = new ArrayList<>();
             for (AuthorizationResource authorizationResource : authorizationResources) {
 
                 AuthResponse authResponse = new AuthResponse();
-                buildAuthorizationResourceResponse(authResponse, authorizationResource,
-                        consentMappingResourcesMap.get(authorizationResource.getAuthorizationID()));
+                buildAuthorizationResourceResponse(authResponse, authorizationResource);
                 authResponses.add(authResponse);
             }
             consentResourceResponse.setAuthorizationResources(authResponses);
@@ -232,10 +220,9 @@ public class ConsentUtils {
                 detailedConsentResource.getConsentType());
         consentResource.put(ConsentConstant.CURRENT_STATUS,
                 detailedConsentResource.getCurrentStatus());
-        consentResource.put(ConsentConstant.CONSENT_FREQUENCY,
-                detailedConsentResource.getConsentFrequency());
+
         consentResource.put(ConsentConstant.VALIDITY_PERIOD,
-                detailedConsentResource.getValidityPeriod());
+                detailedConsentResource.getExpiryTime());
         consentResource.put(ConsentConstant.CREATED_TIMESTAMP,
                 detailedConsentResource.getCreatedTime());
         consentResource.put(ConsentConstant.UPDATED_TIMESTAMP,

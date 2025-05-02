@@ -32,9 +32,9 @@ public class ConsentMgtCommonDBQueries {
 
         return "INSERT INTO FS_CONSENT (ORG_ID, CONSENT_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, " +
                 "CONSENT_TYPE, " +
-                "CURRENT_STATUS, CONSENT_FREQUENCY, VALIDITY_TIME, RECURRING_INDICATOR) VALUES ( COALESCE(?, " +
+                "CURRENT_STATUS, EXPIRY_TIME, RECURRING_INDICATOR) VALUES ( COALESCE(?, " +
                 "'DEFAULT_ORG')" +
-                ", ?, ?, ?, ?, ?, ?, " +
+                ", ?, ?, ?, ?, ?, " +
                 "?, " +
                 "?, ?, ?)";
     }
@@ -47,7 +47,7 @@ public class ConsentMgtCommonDBQueries {
     public String getGetConsentWithConsentAttributesPreparedStatement() {
 
         return "SELECT FS_CONSENT.CONSENT_ID, ORG_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, CONSENT_TYPE, " +
-                "CURRENT_STATUS, CONSENT_FREQUENCY, VALIDITY_TIME, RECURRING_INDICATOR, " +
+                "CURRENT_STATUS, EXPIRY_TIME, RECURRING_INDICATOR, " +
                 "FS_CONSENT_ATTRIBUTE.ATT_KEY, FS_CONSENT_ATTRIBUTE.ATT_VALUE FROM FS_CONSENT LEFT JOIN " +
                 "FS_CONSENT_ATTRIBUTE ON FS_CONSENT.CONSENT_ID = FS_CONSENT_ATTRIBUTE.CONSENT_ID WHERE FS_CONSENT" +
                 ".CONSENT_ID = ?";
@@ -62,8 +62,7 @@ public class ConsentMgtCommonDBQueries {
                 "ORG_ID, " +
                 "CONSENT_TYPE, " +
                 "CURRENT_STATUS, " +
-                "CONSENT_FREQUENCY, " +
-                "VALIDITY_TIME, " +
+                "EXPIRY_TIME, " +
                 "RECURRING_INDICATOR, " +
                 "CREATED_TIME AS CONSENT_CREATED_TIME, " +
                 "obc.UPDATED_TIME AS CONSENT_UPDATED_TIME, " +
@@ -74,13 +73,10 @@ public class ConsentMgtCommonDBQueries {
                 "ocar.AUTH_TYPE, " +
                 "ocar.UPDATED_TIME AS AUTH_UPDATED_TIME, " +
                 "ocar.USER_ID, " +
-                "cm.MAPPING_ID, " +
-                "cm.MAPPING_STATUS, " +
-                "cm.RESOURCE " +
+                "ocar.RESOURCE " +
                 "FROM FS_CONSENT obc " +
                 "LEFT JOIN FS_CONSENT_ATTRIBUTE ca ON obc.CONSENT_ID=ca.CONSENT_ID " +
                 "LEFT JOIN FS_CONSENT_AUTH_RESOURCE ocar ON obc.CONSENT_ID=ocar.CONSENT_ID " +
-                "LEFT JOIN FS_CONSENT_MAPPING cm ON ocar.AUTH_ID=cm.AUTH_ID " +
                 "WHERE obc.CONSENT_ID = ?";
     }
 
@@ -94,7 +90,7 @@ public class ConsentMgtCommonDBQueries {
                 "CONSENT_TYPE, " +
                 "CURRENT_STATUS, " +
                 "CONSENT_FREQUENCY, " +
-                "VALIDITY_TIME, " +
+                "EXPIRY_TIME, " +
                 "RECURRING_INDICATOR, " +
                 "CREATED_TIME AS CONSENT_CREATED_TIME, " +
                 "obc.UPDATED_TIME AS CONSENT_UPDATED_TIME, " +
@@ -122,15 +118,16 @@ public class ConsentMgtCommonDBQueries {
         return "UPDATE FS_CONSENT SET RECEIPT = ? WHERE CONSENT_ID = ?";
     }
 
-    public String getUpdateConsentValidityTimePreparedStatement() {
+    public String getUpdateConsentExpiryTimePreparedStatement() {
 
-        return "UPDATE FS_CONSENT SET VALIDITY_TIME = ?, UPDATED_TIME = ? WHERE CONSENT_ID = ?";
+        return "UPDATE FS_CONSENT SET EXPIRY_TIME = ?, UPDATED_TIME = ? WHERE CONSENT_ID = ?";
     }
 
     public String getStoreAuthorizationPreparedStatement() {
 
-        return "INSERT INTO FS_CONSENT_AUTH_RESOURCE (AUTH_ID, CONSENT_ID, AUTH_TYPE, USER_ID, AUTH_STATUS, " +
-                "UPDATED_TIME) VALUES (?, ?, ?, ?, ?, ?)";
+        return "INSERT INTO FS_CONSENT_AUTH_RESOURCE (AUTH_ID, CONSENT_ID, AUTH_TYPE, USER_ID, AUTH_STATUS, RESOURCE," +
+                " " +
+                "UPDATED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?)";
     }
 
     public String getGetAuthorizationResourcePreparedStatement() {
@@ -224,8 +221,7 @@ public class ConsentMgtCommonDBQueries {
                 "CLIENT_ID, " +
                 "CONSENT_TYPE, " +
                 "OBC.CURRENT_STATUS AS CURRENT_STATUS," +
-                "CONSENT_FREQUENCY," +
-                "VALIDITY_TIME," +
+                "EXPIRY_TIME," +
                 "RECURRING_INDICATOR," +
                 "OBC.CREATED_TIME AS CONSENT_CREATED_TIME," +
                 "OBC.UPDATED_TIME AS CONSENT_UPDATED_TIME," +
@@ -248,6 +244,11 @@ public class ConsentMgtCommonDBQueries {
                 "         WHERE OCAR2.consent_id = OBC.consent_id " +
                 "         GROUP BY OCAR2.consent_id ) AS AUTH_TYPE, " +
 
+                "( SELECT   Group_concat(OCAR2.resource order by OCAR2.auth_id SEPARATOR '||')  " +
+                "         FROM FS_CONSENT_AUTH_RESOURCE OCAR2 " +
+                "         WHERE OCAR2.consent_id = OBC.consent_id " +
+                "         GROUP BY OCAR2.consent_id ) AS RESOURCE, " +
+
                 "( SELECT   Group_concat(OCAR2.updated_time order by OCAR2.auth_id SEPARATOR '||')  " +
                 "         FROM FS_CONSENT_AUTH_RESOURCE OCAR2 " +
                 "         WHERE OCAR2.consent_id = OBC.consent_id " +
@@ -256,30 +257,8 @@ public class ConsentMgtCommonDBQueries {
                 "( SELECT   Group_concat(OCAR2.user_id order by OCAR2.auth_id SEPARATOR '||') " +
                 "         FROM FS_CONSENT_AUTH_RESOURCE OCAR2 " +
                 "         WHERE OCAR2.consent_id = OBC.consent_id " +
-                "         GROUP BY OCAR2.consent_id ) AS USER_ID," +
+                "         GROUP BY OCAR2.consent_id ) AS USER_ID " +
 
-
-                " ( SELECT   Group_concat(OCM2.auth_id order by OCM2.mapping_id SEPARATOR '||') " +
-                "           FROM FS_CONSENT_MAPPING OCM2 " +
-                "           JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
-                "           WHERE OCAR2.consent_id = OBC.consent_id) AS AUTH_MAPPING_ID  , " +
-
-
-
-                "( SELECT   Group_concat(OCM2.mapping_id order by OCM2.mapping_id SEPARATOR '||')  " +
-                "           FROM FS_CONSENT_MAPPING OCM2 " +
-                "           JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
-                "           WHERE OCAR2.consent_id = OBC.consent_id) AS MAPPING_ID  , " +
-
-                "( SELECT   Group_concat(OCM2.mapping_status order by OCM2.mapping_id SEPARATOR '||') " +
-                "           FROM FS_CONSENT_MAPPING OCM2 " +
-                "           JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
-                "           WHERE OCAR2.consent_id = OBC.consent_id) AS MAPPING_STATUS , " +
-
-                "( SELECT   Group_concat(OCM2.resource order by OCM2.mapping_id SEPARATOR '||') " +
-                "           FROM FS_CONSENT_MAPPING OCM2 " +
-                "           JOIN FS_CONSENT_AUTH_RESOURCE OCAR2 ON OCAR2.auth_id = OCM2.auth_id " +
-                "           WHERE OCAR2.consent_id = OBC.consent_id) AS RESOURCE " +
 
                 "FROM " +
                 selectClause +
@@ -287,7 +266,7 @@ public class ConsentMgtCommonDBQueries {
                 "LEFT JOIN FS_CONSENT_ATTRIBUTE CA ON OBC.CONSENT_ID=CA.CONSENT_ID " +
                 joinType + "JOIN FS_CONSENT_AUTH_RESOURCE OCAR ON OBC.CONSENT_ID=OCAR.CONSENT_ID "
                 + userIdFilterClause +
-                "LEFT JOIN FS_CONSENT_MAPPING OCM ON OCAR.AUTH_ID=OCM.AUTH_ID WHERE " +
+                " WHERE " +
                 "(OBC.UPDATED_TIME >= COALESCE(?, OBC.UPDATED_TIME) " +
                 "AND OBC.UPDATED_TIME <= COALESCE(?, OBC.UPDATED_TIME)) " +
                 "group by OBC.CONSENT_ID ORDER BY OBC.UPDATED_TIME DESC ");

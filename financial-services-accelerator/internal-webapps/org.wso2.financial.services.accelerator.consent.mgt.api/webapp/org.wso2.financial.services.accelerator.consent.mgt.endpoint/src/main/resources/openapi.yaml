@@ -500,7 +500,7 @@ components:
         - currentStatus
         - receipt
         - recurringIndicator
-        - validityPeriod
+        - expiryTime
       type: object
       properties:
         clientID:
@@ -511,7 +511,7 @@ components:
           type: string
         receipt:
           type: object
-        validityPeriod:
+        expiryTime:
           type: integer
         recurringIndicator:
           type: boolean
@@ -563,7 +563,7 @@ components:
         - consentType
         - receipt
         - recurringIndicator
-        - validityPeriod
+        - expiryTime
       type: object
       properties:
         clientID:
@@ -572,7 +572,7 @@ components:
           type: string
         receipt:
           type: object
-        validityPeriod:
+        expiryTime:
           type: integer
         recurringIndicator:
           type: boolean
@@ -602,7 +602,7 @@ components:
       properties:
         receipt:
           type: string
-        validityPeriod:
+        expiryTime:
           type: integer
         consentAttributes:
           type: object
@@ -629,7 +629,7 @@ components:
         - currentStatus
         - receipt
         - recurringIndicator
-        - validityPeriod
+        - expiryTime
       type: object
       properties:
         consentID:
@@ -642,7 +642,7 @@ components:
           type: string
         receipt:
           type: object
-        validityPeriod:
+        expiryTime:
           type: integer
         recurringIndicator:
           type: boolean
@@ -679,7 +679,7 @@ components:
         - currentStatus
         - receipt
         - recurringIndicator
-        - validityPeriod
+        - expiryTime
       type: object
       properties:
         clientID:
@@ -690,7 +690,7 @@ components:
           type: string
         receipt:
           type: string
-        validityPeriod:
+        expiryTime:
           type: integer
         recurringIndicator:
           type: boolean
@@ -756,7 +756,7 @@ components:
           items:
             type: string
             description: Identifier of the authorization resource to remove
-        validityPeriod:
+        expiryTime:
           type: integer
           format: int32
           description: New validity period in days (if updated)
@@ -801,6 +801,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AuthorizationResourceDTO'
-        validityPeriod:
+        expiryTime:
           type: integer
           format: int32

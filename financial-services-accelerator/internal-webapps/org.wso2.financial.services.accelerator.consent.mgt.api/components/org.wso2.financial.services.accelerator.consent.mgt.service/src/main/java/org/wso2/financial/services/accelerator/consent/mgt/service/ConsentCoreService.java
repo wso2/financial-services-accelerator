@@ -38,25 +38,6 @@ import java.util.Map;
  */
 public interface ConsentCoreService {
 
-    /**
-     * This method is used to create an authorizable consent. The following functionality contains in this method.
-     * 1. Creates a consent resource
-     * 2. If available, stores consent attributes
-     * 3. Create an audit record for consent creation
-     * 4. If isImplicitAuth parameter is true, creates an authorization resource
-     *
-     * @param consentResource   consent resource
-     * @param userID            user ID is optional and used to create the audit record
-     * @param authStatus        authorization status
-     * @param authType          authorization type (eg. authorization, cancellation)
-     * @param isImplicitAuth    flag to determine whether authorization is implicit or not
-     * @return returns DetailedConsentResource
-     * @throws ConsentMgtException thrown if any error occur in the process
-     */
-    DetailedConsentResource createAuthorizableConsent(ConsentResource consentResource, String userID,
-                                                      String authStatus, String authType, boolean isImplicitAuth)
-            throws
-            ConsentMgtException;
 
     /**
      * This method is used to create an authorizable consent. The following functionality contains in this method.
@@ -78,28 +59,7 @@ public interface ConsentCoreService {
             ConsentMgtException,
             org.wso2.financial.services.accelerator.consent.mgt.service.exception.ConsentMgtException;
 
-    /**
-     * This method is used to create an exclusive consent. The following functionality contains in this method.
-     *
-     * 1. Update existing consent statuses as necessary and deactivate their account mappings
-     * 2. Create audit records for necessary consent updates
-     * 3. Create a new authorizable consent
-     *
-     * @param consentResource consent resource
-     * @param userID                            user ID
-     * @param authStatus                        authorization status
-     * @param authType                          authorization type
-     * @param applicableExistingConsentsStatus  applicable status for existing consents to be updated
-     * @param newExistingConsentStatus          new status that the updated consents should be
-     * @param isImplicitAuth                    flag to determine whether authorization is implicit or not
-     * @return returns DetailedConsentResource
-     * @throws ConsentMgtException thrown if any error occur in the process
-     */
-    DetailedConsentResource createExclusiveConsent(ConsentResource consentResource, String userID, String authStatus,
-                                                   String authType, String applicableExistingConsentsStatus,
-                                                   String newExistingConsentStatus, boolean isImplicitAuth)
-            throws
-            ConsentMgtException;
+
 
     /**
      * This method is used to get a consent with or without consent attributes. The following functionality contains in
@@ -751,7 +711,7 @@ public interface ConsentCoreService {
      *
      * @param consentID                     consent ID
      * @param consentReceipt                new consent receipt
-     * @param consentValidityTime           new consent validity time
+     * @param consentExpiryTime           new consent validity time
      * @param authID                        authorization ID
      * @param accountIDsMapWithPermissions  accounts IDs with relative permissions
      * @param newConsentStatus              new consent status
@@ -762,7 +722,7 @@ public interface ConsentCoreService {
      * @return the updated detailed consent resource
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    DetailedConsentResource amendDetailedConsent(String consentID, String consentReceipt, Long consentValidityTime,
+    DetailedConsentResource amendDetailedConsent(String consentID, String consentReceipt, Long consentExpiryTime,
                                                  String authID, Map<String,
                                                  ArrayList<String>> accountIDsMapWithPermissions,
                                                  String newConsentStatus, Map<String, String> consentAttributes,
@@ -775,7 +735,7 @@ public interface ConsentCoreService {
      * @param orgId
      * @param consentID
      * @param consentReceipt
-     * @param consentValidityTime
+     * @param consentExpiryTime
      * @param reAuthorizationResources
      * @param newConsentStatus
      * @param consentAttributes
@@ -786,7 +746,7 @@ public interface ConsentCoreService {
      */
     DetailedConsentResource amendDetailedConsentWithBulkAuthResource(String orgId, String consentID,
                                                                      String consentReceipt,
-                                                                     Long consentValidityTime,
+                                                                     Long consentExpiryTime,
                                                                      ArrayList<AuthorizationResource>
                                                                              reAuthorizationResources,
 

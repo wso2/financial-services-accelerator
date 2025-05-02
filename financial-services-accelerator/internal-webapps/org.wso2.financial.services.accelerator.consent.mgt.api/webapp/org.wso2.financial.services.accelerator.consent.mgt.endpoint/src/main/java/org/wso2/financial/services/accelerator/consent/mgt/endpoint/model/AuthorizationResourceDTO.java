@@ -21,7 +21,7 @@ public class AuthorizationResourceDTO implements Serializable {
     private String authorizationStatus;
     private String authorizationType;
     private String userID;
-    private @Valid List<Object> resources = new ArrayList<>();
+    private @Valid Object resource = new ArrayList<>();
 
     public AuthorizationResourceDTO() {
     }
@@ -100,39 +100,24 @@ public class AuthorizationResourceDTO implements Serializable {
     /**
      *
      **/
-    public AuthorizationResourceDTO resources(List<Object> resources) {
-        this.resources = resources;
+    public AuthorizationResourceDTO resources(Object resource) {
+        this.resource = resource;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
     @JsonProperty("resources")
-    public List<Object> getResources() {
-        return resources;
+    public Object getResource() {
+        return resource;
     }
 
     @JsonProperty("resources")
-    public void setResources(List<Object> resources) {
-        this.resources = resources;
+    public void setResource(Object resources) {
+        this.resource = resources;
     }
 
-    public AuthorizationResourceDTO addResourcesItem(Object resourcesItem) {
-        if (this.resources == null) {
-            this.resources = new ArrayList<>();
-        }
 
-        this.resources.add(resourcesItem);
-        return this;
-    }
-
-    public AuthorizationResourceDTO removeResourcesItem(Object resourcesItem) {
-        if (resourcesItem != null && this.resources != null) {
-            this.resources.remove(resourcesItem);
-        }
-
-        return this;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -146,12 +131,12 @@ public class AuthorizationResourceDTO implements Serializable {
         return Objects.equals(this.authorizationStatus, authorizationResourceDTO.authorizationStatus) &&
                 Objects.equals(this.authorizationType, authorizationResourceDTO.authorizationType) &&
                 Objects.equals(this.userID, authorizationResourceDTO.userID) &&
-                Objects.equals(this.resources, authorizationResourceDTO.resources);
+                Objects.equals(this.resource, authorizationResourceDTO.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authorizationStatus, authorizationType, userID, resources);
+        return Objects.hash(authorizationStatus, authorizationType, userID, resource);
     }
 
     @Override
@@ -162,7 +147,7 @@ public class AuthorizationResourceDTO implements Serializable {
         sb.append("    authorizationStatus: ").append(toIndentedString(authorizationStatus)).append("\n");
         sb.append("    authorizationType: ").append(toIndentedString(authorizationType)).append("\n");
         sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
-        sb.append("    resources: ").append(toIndentedString(resources)).append("\n");
+        sb.append("    resources: ").append(toIndentedString(resource)).append("\n");
         sb.append("}");
         return sb.toString();
     }

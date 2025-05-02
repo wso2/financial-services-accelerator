@@ -238,7 +238,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
         Optional<String> frequency = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CONSENT_FREQUENCY)
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
-        Optional<String> validityTime = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.VALIDITY_TIME)
+        Optional<String> expiryTime = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.EXPIRY_TIME)
                 .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
         Optional<Boolean> recurringIndicator =
                 Optional.of(resultSet.getBoolean(ConsentMgtDAOConstants.RECURRING_INDICATOR));
@@ -254,8 +254,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         currentStatus.ifPresent(detailedConsentResource::setCurrentStatus);
         createdTime.ifPresent(e -> detailedConsentResource.setCreatedTime(Long.parseLong(e)));
         consentUpdatedTime.ifPresent(e -> detailedConsentResource.setUpdatedTime(Long.parseLong(e)));
-        frequency.ifPresent(e -> detailedConsentResource.setConsentFrequency(Integer.parseInt(e)));
-        validityTime.ifPresent(e -> detailedConsentResource.setValidityPeriod(Long.parseLong(e)));
+        expiryTime.ifPresent(e -> detailedConsentResource.setExpiryTime(Long.parseLong(e)));
         recurringIndicator.ifPresent(detailedConsentResource::setRecurringIndicator);
     }
 

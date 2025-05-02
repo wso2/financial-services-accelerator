@@ -137,10 +137,10 @@ public interface ConsentCoreDAO {
      *
      * @param connection    connection object
      * @param consentID     consent ID
-     * @param validityTime  new validity time
+     * @param expiryTime  new validity time
      * @throws ConsentDataUpdationException thrown if any error occurs in the process
      */
-    void updateConsentValidityTime(Connection connection, String consentID, long validityTime)
+    void updateConsentExpiryTime(Connection connection, String consentID, long expiryTime)
             throws
             ConsentDataUpdationException;
 

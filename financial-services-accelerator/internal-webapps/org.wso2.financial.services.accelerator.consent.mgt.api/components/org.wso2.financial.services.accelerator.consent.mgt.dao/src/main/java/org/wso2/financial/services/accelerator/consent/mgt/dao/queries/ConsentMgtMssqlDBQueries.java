@@ -54,7 +54,7 @@ public class ConsentMgtMssqlDBQueries extends ConsentMgtCommonDBQueries {
                 " (SELECT consent_frequency FROM FS_CONSENT WHERE consent_id = obc.consent_id " +
                 "           order by consent_id offset 0 rows FETCH next 1 rows only ) AS CONSENT_FREQUENCY, " +
                 " (SELECT validity_time FROM FS_CONSENT WHERE consent_id = obc.consent_id " +
-                "           order by consent_id offset 0 rows FETCH next 1 rows only ) AS VALIDITY_TIME, " +
+                "           order by consent_id offset 0 rows FETCH next 1 rows only ) AS EXPIRY_TIME, " +
                 " (SELECT recurring_indicator FROM FS_CONSENT WHERE consent_id = obc.consent_id " +
                 "           order by consent_id offset 0 rows FETCH next 1 rows only ) AS RECURRING_INDICATOR, " +
                 " (SELECT created_time FROM FS_CONSENT WHERE consent_id = obc.consent_id " +

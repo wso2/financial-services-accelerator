@@ -54,7 +54,7 @@ public class ConsentMgtOracleDBQueries extends ConsentMgtCommonDBQueries {
                 " (SELECT consent_frequency FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS CONSENT_FREQUENCY, " +
                 " (SELECT validity_time FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
-                "               FETCH FIRST 1  rows only ) AS VALIDITY_TIME, " +
+                "               FETCH FIRST 1  rows only ) AS EXPIRY_TIME, " +
                 " (SELECT recurring_indicator FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +
                 "               FETCH FIRST 1  rows only ) AS RECURRING_INDICATOR, " +
                 " (SELECT created_time FROM FS_CONSENT WHERE consent_id = obc.consent_id  " +

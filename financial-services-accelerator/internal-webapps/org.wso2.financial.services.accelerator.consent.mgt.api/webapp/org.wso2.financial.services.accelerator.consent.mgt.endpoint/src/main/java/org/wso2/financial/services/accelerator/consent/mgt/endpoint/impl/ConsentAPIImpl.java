@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentMgtException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -19,6 +20,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.Amendm
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthResponse;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.BulkConsentStatusUpdateResource;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentExpiryTimeUpdateDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResponse;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentRevokeResource;
@@ -32,6 +34,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentC
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -62,24 +65,8 @@ public class ConsentAPIImpl {
             ConsentUtils.copyPropertiesToConsentResource(consentResource, consentResourceDTO);
             consentResource.setOrgID(orgInfo);
 
-            // if consentFrequency is an attribute in consentAttributes, then set it to the consentResource
-            Map<String, String> consentAttributes =
-                    ConsentUtils.convertToMap(consentResourceDTO.getConsentAttributes());
-            if (!consentAttributes.isEmpty()) {
-                if (consentAttributes.containsKey("consentFrequency")) {
-                    try {
-                        consentResource.setConsentFrequency(
-                                Integer.parseInt(consentAttributes.get("consentFrequency")));
 
-                    } catch (NumberFormatException e) {
-                        throw new ConsentMgtException(Response.Status.BAD_REQUEST, "Invalid Number Format");
-                    }
-                } else {
-                    consentResource.setConsentFrequency(0);
-                }
-            }
-
-            // build AuthorizationResource objects
+            // parse authorization resources
             ArrayList<AuthorizationResource> authorizations = new ArrayList<>();
 
             if (consentResourceDTO.getAuthorizationResources() != null) {
@@ -88,21 +75,6 @@ public class ConsentAPIImpl {
                         consentResourceDTO.getAuthorizationResources()) {
                     AuthorizationResource authorizationResource = new AuthorizationResource();
                     ConsentUtils.copyPropertiesToAuthorizationResource(authorizationResource, authorizationResourceDTO);
-                    ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
-                    for (Object resource : authorizationResourceDTO.getResources()) {
-                        ConsentMappingResource res = new ConsentMappingResource();
-
-                        // convert resource to JSON string
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        String jsonString = objectMapper.writeValueAsString(resource);
-                        JSONObject jsonObject =
-                                new JSONObject(objectMapper.convertValue(resource, java.util.Map.class));
-
-                        res.setResource(jsonObject);
-                        res.setMappingStatus("active");
-                        consentMappingResources.add(res);
-                    }
-                    authorizationResource.setConsentMappingResource(consentMappingResources);
                     authorizations.add(authorizationResource);
 
                 }
@@ -122,19 +94,19 @@ public class ConsentAPIImpl {
                     true);
 
             return Response.status(Response.Status.CREATED).entity(consentResponse).build();
-        } catch (JsonProcessingException e) {
-
-            return handleConsentMgtException(new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR,
-                    e.getMessage()));
-        } catch (ConsentMgtException e) {
+        }  catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            log.error("Error Occurred while handling the request", e);
+            JSONObject error = new JSONObject();
+            error.put("errorMessage", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         }
     }
 
 
     public Response consentConsentIdGet(
-            String consentID, String orgInfo, boolean isDetailedConsentResource,
-            boolean isWithAttributes) {
+            String consentID, String orgInfo) {
 
         try {
 
@@ -142,7 +114,6 @@ public class ConsentAPIImpl {
             if (ConsentUtils.isConsentIdValid(consentID)) {
 
                 try {
-                    if (isDetailedConsentResource) {
 
                         ////////////// Service call //////////////
                         DetailedConsentResource detailedConsentResource =
@@ -162,46 +133,11 @@ public class ConsentAPIImpl {
                                 detailedConsentResource.getAuthorizationResources(),
                                 detailedConsentResource.getConsentMappingResources(), true);
 
-                        if (!isWithAttributes) {
-                            consentResponse.setConsentAttributes(null);
-                            // remove null values from the consent
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                        }
 
 
                         return Response.ok().entity(consentResponse).build();
 
-                    } else {
 
-                        ConsentResource consent;
-
-                        //////////////  Service Call  //////////////
-                        if (Objects.equals(isWithAttributes,
-                                true)) {
-                            consent = consentCoreService.getConsent(consentID,
-                                    true);
-                        } else {
-                            consent = consentCoreService.getConsent(consentID,
-                                    false);
-                        }
-
-                        if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
-                                consent.getOrgID())) {
-                            log.error("OrgInfo does not match");
-                            throw new ConsentMgtException(Response.Status.BAD_REQUEST,
-                                    "OrgInfo does not match, please provide the correct OrgInfo");
-                        }
-                        //////////////  build Response  //////////////
-                        // remove null values from the consent
-                        consent.setOrgID(null);
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-                        return Response.ok().entity(objectMapper.writeValueAsString(consent)).build();
-
-
-                    }
                 } catch (JSONException e) {
                     log.error("Error Occurred while handling the request", e);
                     throw new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -288,6 +224,8 @@ public class ConsentAPIImpl {
             return Response.ok().entity(consentResponses).build();
         } catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -376,7 +314,7 @@ public class ConsentAPIImpl {
                     orgInfo,
                     consentID,
                     amendmentResource.getReceipt(),
-                    Long.valueOf(amendmentResource.getValidityPeriod()),
+                    Long.valueOf(amendmentResource.getExpiryTime()),
                     reAuthorization,
                     amendmentResource.getCurrentStatus(),
                     ConsentUtils.convertToMap(amendmentResource.getConsentAttributes()),
@@ -394,6 +332,8 @@ public class ConsentAPIImpl {
 
         } catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -418,21 +358,108 @@ public class ConsentAPIImpl {
             AuthorizationResource authorizationResource = consentCoreService.getAuthorizationResource(authorizationId,
                     orgInfo);
 
-            ConsentUtils.buildAuthorizationResourceResponse(authResponse, authorizationResource,
-                    authorizationResource.getConsentMappingResource());
+            ConsentUtils.buildAuthorizationResourceResponse(authResponse, authorizationResource);
 
             return Response.ok().entity(authResponse).build();
 
         } catch (ConsentMgtException e) {
 
             return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
 
     }
 
-    // create authorization resource
-    public Response consentAutho
+    public Response consentAuthorizationIdPost( String consentId, String orgInfo,
+                                                List<AuthorizationResourceDTO> authorizationResourceDTOList){
+        try {
+            ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+
+            for (AuthorizationResourceDTO authorizationResourceDTO : authorizationResourceDTOList) {
+                AuthorizationResource authorizationResource = new AuthorizationResource();
+                ConsentUtils.copyPropertiesToAuthorizationResource(authorizationResource, authorizationResourceDTO);
+                authorizationResource.setConsentID(consentId);
+                consentCoreService.createConsentAuthorization( authorizationResource);
+
+            }
+
+
+            return Response.ok().entity("Authorization Resources Stored").build();
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public  Response consentAuthorizationIdPut (String authorizationId, String consentId, String orgInfo,
+                                                 ReauthorizeResource reauthorizeResource){
+
+        try {
+            ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+            AuthorizationResource authorizationResource = new AuthorizationResource();
+            ConsentUtils.copyPropertiesToAuthorizationResource(authorizationResource, reauthorizeResource);
+            authorizationResource.setConsentID(consentId);
+//            consentCoreService.upa(authorizationResource);
+
+            return Response.ok().entity("Authorization Resource Updated").build();
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+    }
+
+    // consentConsentIdExpiryTimePut
+    public Response consentConsentIdExpiryTimePut(String consentID, String orgInfo, ConsentExpiryTimeUpdateDTO
+            consentExpiryTimeUpdateDTO) {
+        try {
+            ConsentResource consentResource = consentCoreService.getConsent(consentID,
+                    false);
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+            boolean result = consentCoreService.updateConsentExpiryTime(consentID,
+                    consentExpiryTimeUpdateDTO.getExpiryTime() );
+            if (result) {
+
+                JSONObject message = new JSONObject();
+                message.put("message", "Expiry Time Updated");
+
+                return Response.ok().entity(message).build();
+            } else {
+                return Response.serverError().build();
+
+            }
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+    }
+
+
 
     public Response consentConsentIdDelete(String consentID, String orgInfo) {
         try {
@@ -463,21 +490,12 @@ public class ConsentAPIImpl {
 
     }
 
-    public Response consentRevokeConsentIdPut(String consentID,
+    public Response consentRevokeConsentIdPost(String consentID,
                                               ConsentRevokeResource consentStatusUpdateResource, String orgInfo) {
         try {
             ConsentResource consentResource = consentCoreService.getConsent(consentID,
                     false);
 
-            // check already revoked
-            if (consentResource.getCurrentStatus().equals("revoked")) {
-
-                JSONObject message = new JSONObject();
-                message.put("message", "Consent already revoked");
-
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(message).build();
-            }
 
             if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
                     consentResource.getOrgID())) {
@@ -507,6 +525,79 @@ public class ConsentAPIImpl {
         }
 
     }
+
+    public Response consentConsentIdAttributesGet (String consentId, String orgInfo){
+        try {
+            ConsentResource consentResource = consentCoreService.getConsent(consentId,
+                    true);
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+            Map<String, String> consentAttributes = consentResource.getConsentAttributes();
+            return Response.ok().entity(consentAttributes).build();
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+    }
+
+    public Response consentConsentIdAttributesPost (String consentId, String orgInfo,
+                                                    Map<String, String> consentAttributes) {
+        try {
+            ConsentResource consentResource = consentCoreService.getConsent(consentId,
+                    true);
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+            boolean result = consentCoreService.storeConsentAttributes(consentId,
+                   consentAttributes);
+            if (result) {
+                JSONObject message = new JSONObject();
+                message.put("message", "Consent Attributes Stored");
+
+                return Response.ok().entity(message).build();
+            } else {
+                return Response.serverError().build();
+
+            }
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+
+    }
+
+    public Response consentConsentIdAttributesPut (String consentId,
+                                                   String orgInfo, Map<String , String > consentAttributes){
+        try {
+            ConsentResource consentResource = consentCoreService.getConsent(consentId,
+                    true);
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+            consentCoreService.updateConsentAttributes(consentId,
+                    consentAttributes);
+            return Response.ok().build();
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+    }
+
+
 
 
     public Response consentConsentIdHistoryGet(

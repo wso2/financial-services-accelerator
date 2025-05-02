@@ -82,8 +82,7 @@ public class ConsentCoreDAOTests {
         consentResource.setClientID(UUID.randomUUID().toString());
         consentResource.setConsentType(ConsentMgtDAOTestData.SAMPLE_CONSENT_TYPE);
         consentResource.setCurrentStatus(ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS);
-        consentResource.setConsentFrequency(ConsentMgtDAOTestData.SAMPLE_CONSENT_FREQUENCY);
-        consentResource.setValidityPeriod(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
+        consentResource.setExpiryTime(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
         consentResource.setConsentID(UUID.randomUUID().toString());
         consentResource.setRecurringIndicator(true);
 
@@ -94,9 +93,8 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(storedConsentResource.getConsentID());
         Assert.assertNotNull(storedConsentResource.getClientID());
         Assert.assertNotNull(storedConsentResource.getConsentType());
-        Assert.assertEquals(ConsentMgtDAOTestData.SAMPLE_CONSENT_FREQUENCY,
-                storedConsentResource.getConsentFrequency());
-        Assert.assertTrue(storedConsentResource.getValidityPeriod() > 0);
+
+        Assert.assertTrue(storedConsentResource.getExpiryTime() > 0);
         Assert.assertTrue(storedConsentResource.isRecurringIndicator());
         Assert.assertTrue(storedConsentResource.getCreatedTime() > 0L);
         Assert.assertNotNull(storedConsentResource.getCurrentStatus());
@@ -141,8 +139,7 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(retrievedConsentResource.getConsentID());
         Assert.assertNotNull(retrievedConsentResource.getClientID());
         Assert.assertNotNull(retrievedConsentResource.getConsentType());
-        Assert.assertEquals(consentResource.getConsentFrequency(), storedConsentResource.getConsentFrequency());
-        Assert.assertTrue(retrievedConsentResource.getValidityPeriod() > 0L);
+        Assert.assertTrue(retrievedConsentResource.getExpiryTime() > 0L);
         Assert.assertTrue(retrievedConsentResource.isRecurringIndicator());
         Assert.assertTrue(retrievedConsentResource.getCreatedTime() > 0L);
         Assert.assertNotNull(retrievedConsentResource.getCurrentStatus());
@@ -198,8 +195,7 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(retrievedConsentResource.getConsentID());
         Assert.assertNotNull(retrievedConsentResource.getClientID());
         Assert.assertNotNull(retrievedConsentResource.getConsentType());
-        Assert.assertEquals(consentResource.getConsentFrequency(), retrievedConsentResource.getConsentFrequency());
-        Assert.assertTrue(retrievedConsentResource.getValidityPeriod() > 0L);
+        Assert.assertTrue(retrievedConsentResource.getExpiryTime() > 0L);
         Assert.assertTrue(retrievedConsentResource.isRecurringIndicator());
         Assert.assertTrue(retrievedConsentResource.getCreatedTime() > 0L);
         Assert.assertNotNull(retrievedConsentResource.getCurrentStatus());
@@ -269,10 +265,9 @@ public class ConsentCoreDAOTests {
                 storedConsentResource.getConsentType());
         Assert.assertEquals(retrievedDetailedConsentResource.getCurrentStatus(),
                 storedConsentResource.getCurrentStatus());
-        Assert.assertEquals(retrievedDetailedConsentResource.getConsentFrequency(),
-                storedConsentResource.getConsentFrequency());
-        Assert.assertEquals(retrievedDetailedConsentResource.getValidityPeriod(),
-                storedConsentResource.getValidityPeriod());
+
+        Assert.assertEquals(retrievedDetailedConsentResource.getExpiryTime(),
+                storedConsentResource.getExpiryTime());
         Assert.assertEquals(retrievedDetailedConsentResource.isRecurringIndicator(),
                 storedConsentResource.isRecurringIndicator());
         Assert.assertNotNull(retrievedDetailedConsentResource.getConsentAttributes());
@@ -312,10 +307,9 @@ public class ConsentCoreDAOTests {
                 storedConsentResource.getConsentType());
         Assert.assertEquals(retrievedDetailedConsentResource.getCurrentStatus(),
                 storedConsentResource.getCurrentStatus());
-        Assert.assertEquals(retrievedDetailedConsentResource.getConsentFrequency(),
-                storedConsentResource.getConsentFrequency());
-        Assert.assertEquals(retrievedDetailedConsentResource.getValidityPeriod(),
-                storedConsentResource.getValidityPeriod());
+
+        Assert.assertEquals(retrievedDetailedConsentResource.getExpiryTime(),
+                storedConsentResource.getExpiryTime());
         Assert.assertEquals(retrievedDetailedConsentResource.isRecurringIndicator(),
                 storedConsentResource.isRecurringIndicator());
         Assert.assertNotNull(retrievedDetailedConsentResource.getConsentAttributes());
@@ -477,37 +471,37 @@ public class ConsentCoreDAOTests {
     }
 
     @Test
-    public void testUpdateConsentValidityTime() throws
+    public void testUpdateConsentExpiryTime() throws
             Exception {
 
         ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-        long newConsentValidityTime = 12345;
+        long newConsentExpiryTime = 12345;
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
 
             ConsentResource storedConsentResource = consentCoreDAO.storeConsentResource(connection,
                     consentResource);
-            consentCoreDAO.updateConsentValidityTime(connection, storedConsentResource.getConsentID(),
-                    newConsentValidityTime);
+            consentCoreDAO.updateConsentExpiryTime(connection, storedConsentResource.getConsentID(),
+                    newConsentExpiryTime);
         }
     }
 
     @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateConsentValidityTimeSQLError() throws
+    public void testUpdateConsentExpiryTimeSQLError() throws
             Exception {
 
         Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.updateConsentValidityTime(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
+        consentCoreDAO.updateConsentExpiryTime(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
                 ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
     }
 
     @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateConsentValidityTimeUpdateError() throws
+    public void testUpdateConsentExpiryTimeUpdateError() throws
             Exception {
 
         Mockito.doReturn(mockedPreparedStatement).when(mockedConnection).prepareStatement(Mockito.anyString());
         Mockito.doReturn(0).when(mockedPreparedStatement).executeUpdate();
-        consentCoreDAO.updateConsentValidityTime(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
+        consentCoreDAO.updateConsentExpiryTime(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
                 ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
     }
 
