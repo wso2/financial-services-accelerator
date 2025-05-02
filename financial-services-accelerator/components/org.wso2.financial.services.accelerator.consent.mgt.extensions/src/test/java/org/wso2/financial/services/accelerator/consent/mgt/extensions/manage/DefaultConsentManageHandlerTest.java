@@ -98,6 +98,8 @@ public class DefaultConsentManageHandlerTest {
                 .createAuthorizableConsent(any(), any(), anyString(), anyString(),
                         anyBoolean());
         doReturn(TestUtil.getSampleDetailedConsentResource()).when(consentCoreServiceMock)
+                .storeDetailedConsentResource(any());
+        doReturn(TestUtil.getSampleDetailedConsentResource()).when(consentCoreServiceMock)
                 .getDetailedConsent(anyString());
         doReturn(TestUtil.getSampleConsentResource(TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock)
                 .getConsent(anyString(), anyBoolean());

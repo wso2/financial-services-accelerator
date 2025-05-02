@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
@@ -92,11 +93,6 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                             "Consent Id is not available in consent data", consentData.getState());
                 }
-                if (consentData.getAuthResource() == null) {
-                    log.error("Authorization resource is not available in consent data");
-                    throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
-                            "Authorization resource is not available in consent data", consentData.getState());
-                }
             } else if (consentData.getConsentId() != null) {
                 consentId = consentData.getConsentId();
                 detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
@@ -149,6 +145,17 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             throw new ConsentManagementException(e.getMessage());
         }
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
+            String newConsentStatus = externalServiceResponse.getData().path(
+                    ConsentExtensionConstants.NEW_CONSENT_STATUS).asText();
+            if (StringUtils.isNotBlank(newConsentStatus)) {
+                String consentId = requestDTO.getConsentId();
+                consentCoreService.updateConsentStatus(consentId, newConsentStatus);
+                if (log.isDebugEnabled()) {
+                    log.debug("Status of the consent with id" + consentId.replaceAll("\n\r", "") +
+                            "updated to " + newConsentStatus.replaceAll("\n\r", "") +
+                            "according to the error response set by the api extension.");
+                }
+            }
             throw new FinancialServicesException(externalServiceResponse.getData()
                     .path(FinancialServicesConstants.ERROR_MESSAGE)
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));

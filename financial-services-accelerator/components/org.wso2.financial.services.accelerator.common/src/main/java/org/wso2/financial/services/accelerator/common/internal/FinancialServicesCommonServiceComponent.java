@@ -92,7 +92,7 @@ public class FinancialServicesCommonServiceComponent {
             if (connectionManager != null) {
                 connectionManager.close();
             }
-            throw new RuntimeException("Error occurred while creating the connection manager", e);
+            log.error("Error occurred while creating the connection manager", e);
         }
     }
 }

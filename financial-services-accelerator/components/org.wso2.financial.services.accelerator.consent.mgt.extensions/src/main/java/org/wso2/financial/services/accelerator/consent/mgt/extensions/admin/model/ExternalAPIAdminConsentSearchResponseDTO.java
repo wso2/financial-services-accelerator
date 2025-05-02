@@ -18,19 +18,20 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 /**
  * ExternalAPIAdminConsentSearchResponseDTO -Response DTO for extension of admin consent search
  */
 public class ExternalAPIAdminConsentSearchResponseDTO {
-    private JSONObject searchResult;
+    private JSONArray enrichedSearchResult;
 
-    public JSONObject getResponsePayload() {
-        return searchResult;
+    public JSONArray getResponsePayload() {
+        return enrichedSearchResult;
     }
 
-    public void setResponsePayload(JSONObject searchResult) {
-        this.searchResult = searchResult;
+    public void setResponsePayload(JSONArray enrichedSearchResult) {
+        this.enrichedSearchResult = enrichedSearchResult;
     }
 }

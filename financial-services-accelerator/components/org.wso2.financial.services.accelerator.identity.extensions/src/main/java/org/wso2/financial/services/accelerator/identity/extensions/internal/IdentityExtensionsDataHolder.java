@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.internal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
@@ -45,6 +47,7 @@ import java.util.Map;
  */
 public class IdentityExtensionsDataHolder {
 
+    private static final Log log = LogFactory.getLog(IdentityExtensionsDataHolder.class);
     private static volatile IdentityExtensionsDataHolder instance;
     private static ApplicationManagementService applicationManagementService;
     private static AuthorizedAPIManagementService authorizedAPIManagementService;
@@ -219,7 +222,7 @@ public class IdentityExtensionsDataHolder {
     public RealmService getRealmService() {
 
         if (realmService == null) {
-            throw new RuntimeException("Realm Service is not available. Component did not start correctly.");
+            log.error("Realm Service is not available. Component did not start correctly.");
         }
         return realmService;
     }
