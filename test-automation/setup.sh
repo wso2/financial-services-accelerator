@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+RUNNER_HOME=`pwd`
 echo '======================= SetUp base Products ======================='
 # Create the test home directory if it doesn't exist
 if [ ! -d "$TEST_HOME" ]; then
