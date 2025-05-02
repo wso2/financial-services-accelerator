@@ -178,6 +178,18 @@
             {% else %}
                 <AllowedTimeDuration>1440</AllowedTimeDuration>
             {% endif %}
+
+            {% if financial_services.consent.idempotency.header_name is defined %}
+                <HeaderName>{{financial_services.consent.idempotency.header_name}}</HeaderName>
+            {% else %}
+                <HeaderName>x-idempotency-key</HeaderName>
+            {% endif %}
+
+            <AllowedConsentTypes>
+                {% for type in financial_services.consent.idempotency.allowed_consent_types %}
+                <ConsentType>{{type}}</ConsentType>
+                {% endfor %}
+            </AllowedConsentTypes>
         </Idempotency>
         {% if financial_services.consent.preserve_consent_link.enable is defined %}
         <PreserveConsentLink>{{financial_services.consent.preserve_consent_link.enable}}</PreserveConsentLink>

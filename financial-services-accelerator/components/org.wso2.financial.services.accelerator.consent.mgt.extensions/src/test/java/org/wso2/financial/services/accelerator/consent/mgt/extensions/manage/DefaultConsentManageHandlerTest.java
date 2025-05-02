@@ -110,11 +110,13 @@ public class DefaultConsentManageHandlerTest {
 
         configs = new HashMap<String, Object>();
         configs.put(FinancialServicesConstants.MAX_INSTRUCTED_AMOUNT, "1000");
+        configs.put(FinancialServicesConstants.IDEMPOTENCY_HEADER_NAME, "x-idempotency-key");
         FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
         doReturn(configs).when(configParserMock).getConfiguration();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         headers = new HashMap<>();
+        headers.put("x-idempotency-key", "12345678");
 
         ConsentManageBuilder consentManageBuilder = Mockito.mock(ConsentManageBuilder.class);
         Mockito.when(consentManageBuilder.getConsentManageHandler()).thenReturn(defaultConsentManageHandler);

@@ -539,6 +539,8 @@ max_instructed_amount=1000
 [[financial_services.consent.idempotency]]
 enabled=false
 allowed_time_duration=1440
+header_name="x-idempotency-key"
+allowed_consent_types=["payments"]
 
 [financial_services.consent.preserve_consent_link]
 enabled=false

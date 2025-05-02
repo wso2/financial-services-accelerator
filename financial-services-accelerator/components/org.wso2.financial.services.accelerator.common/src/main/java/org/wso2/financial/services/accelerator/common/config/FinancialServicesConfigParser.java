@@ -613,6 +613,35 @@ public final class FinancialServicesConfigParser {
         return config.map(String::trim).orElse("1440");
     }
 
+    /**
+     * Method to get the value Idempotency allowed time configuration.
+     *
+     * @return Idempotency allowed time
+     */
+    public String getIdempotencyHeaderName() {
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_HEADER_NAME);
+        return config.map(String::trim).orElse("x-idempotency-key");
+    }
+
+    /**
+     * Returns the list of idempotency allowed consent types.
+     *
+     * @return List.
+     */
+    public List<String> getIdempotencyAllowedConsentTypes() {
+
+        Object allowedTypesObj = configuration.get(FinancialServicesConstants.
+                IDEMPOTENCY_ALLOWED_CONSENT_TYPES);
+        List<String> allowedTypes = new ArrayList<>();
+        if (allowedTypesObj instanceof List) {
+            allowedTypes.addAll((List) allowedTypesObj);
+        } else if (allowedTypesObj instanceof String) {
+            allowedTypes.add((String) allowedTypesObj);
+        }
+
+        return allowedTypes;
+    }
+
     public String getAdminUsername() {
 
         Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.ADMIN_USERNAME);
