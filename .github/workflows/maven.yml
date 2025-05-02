@@ -21,7 +21,6 @@ on:
   pull_request:
     branches:
       - 'main'
-      - 'test-workflow'
 
 jobs:
   Run-Test-Suite:
@@ -48,7 +47,7 @@ jobs:
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           bash $RUNNER_HOME/test-automation/setup.sh
           bash $RUNNER_HOME/test-automation/test.sh
-#
+
 
 
 

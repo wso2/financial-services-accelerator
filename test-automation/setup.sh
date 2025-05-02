@@ -16,7 +16,6 @@
 # under the License.
 
 echo '======================= SetUp base Products ======================='
-
 # Create the test home directory if it doesn't exist
 if [ ! -d "$TEST_HOME" ]; then
     mkdir -p $TEST_HOME
@@ -28,14 +27,9 @@ echo '======================= Installing WSO2 Updates ======================='
 name=$(echo "$WSO2_USERNAME" | cut -d'@' -f1)
 WSO2_UPDATES_HOME=home/$name/.wso2updates
 sudo mkdir -p /home/$name/.wso2-updates/docker && sudo chmod -R 777 /home/$name/.wso2-updates
-
-
 cp ${RUNNER_HOME}/test-automation/wso2update_linux $TEST_HOME/wso2is-7.0.0/bin/
-
 chmod +x $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux
-
 $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD ||  ($TEST_HOME/wso2is-7.0.0/bin/wso2update_linux --username $WSO2_USERNAME --password $WSO2_PASSWORD )
-
 printf "%s\n%s\n" "$WSO2_USERNAME" "$WSO2_PASSWORD" | $TEST_HOME/wso2is-7.0.0/bin/wso2update_linux
 
 echo '=================== setup Firefox ==================='
@@ -56,8 +50,6 @@ else
     sudo apt-get update && sudo apt-get install firefox
     firefox -version
 fi
-
-
 
 echo '=================== Install Java and Maven ==================='
 
@@ -84,8 +76,6 @@ else
     sudo apt install -y maven
 fi
 
-
-
 echo '======================= Building packs ======================='
 
 mvn -B install --file ${RUNNER_HOME}/pom.xml
@@ -93,8 +83,6 @@ MVNSTATE=$?
 
 echo '======================= Moving Packs to RUNNER_HOME ======================='
 unzip financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
-#wget https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/wso2-fsiam-accelerator-4.0.0-M3.zip -O wso2-fsiam-accelerator-4.0.0-M3.zip
-#unzip wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
 
 echo '======================= Setup MYSQL ======================='
 sudo apt-get update
@@ -179,9 +167,6 @@ show_certificate_details() {
 # Verify imported certificates
 for truststore in "${truststores[@]}"; do
   echo "Checking truststore: $truststore"
-
-
-
   for alias in "${aliases[@]}"; do
     check_alias "$truststore" "$alias"
     show_certificate_details "$truststore" "$alias"
@@ -193,11 +178,8 @@ echo '======================= Import OB sandbox Root and Issuer Certificates ===
 wget 'https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/OB_SandBox_PP_Root%20CA.cer' -O "${TEST_HOME}/OB_SandBox_PP_Root CA.cer"
 keytool -import -alias root -file "${TEST_HOME}/OB_SandBox_PP_Root CA.cer" -keystore "${TEST_HOME}/wso2is-7.0.0/repository/resources/security/client-truststore.jks" -storepass wso2carbon -noprompt
 
-
 wget 'https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/OB_SandBox_PP_Issuing%20CA.cer' -O "${TEST_HOME}/OB_SandBox_PP_Issuing CA.cer"
 keytool -import -alias issuer -file "${TEST_HOME}/OB_SandBox_PP_Issuing CA.cer" -keystore "${TEST_HOME}/wso2is-7.0.0/repository/resources/security/client-truststore.jks" -storepass wso2carbon -noprompt
-
-
 
 echo '======================= Run merge and Config scripts ======================='
 cd $TEST_HOME/wso2is-7.0.0/wso2-fsiam-accelerator-4.0.0-M3/bin
@@ -230,12 +212,8 @@ cd $TEST_HOME/wso2is-7.0.0/bin
 
 ./wso2server.sh  start
 
-#nohup ./wso2server.sh > ${RUNNER_HOME}/wso2.log 2>&1 &
 sleep 120
 
-#cat ${RUNNER_HOME}/wso2.log
-#./wso2server.sh
-###
 echo '======================= Test Setup ======================='
 
 curl -X GET "https://localhost:9446/api/server/v1/applications?limit=30&offset=0" \
