@@ -18,51 +18,6 @@
 MVNSTATE=1 #This variable is read by the test-grid to determine success or failure of the build. (0=Successful)
 RUNNER_HOME=`pwd`
 
-#=== FUNCTION ==================================================================
-# NAME: get_prop
-# DESCRIPTION: Retrieve specific property from deployment.properties
-# PARAMETER 1: property_value
-
-#===============================================================================
-function get_prop {
-    local prop=$(grep -w "${1}" "${RUNNER_HOME}/test-automation/deployment.properties" | cut -d'=' -f2)
-    echo $prop
-}
-
-
-while getopts u:p:o:h flag
-do
-    case "${flag}" in
-        u) WSO2_USERNAME=${OPTARG};;
-        p) PASSWORD=${OPTARG};;
-        o) TEST_HOME=${OPTARG};;
-    esac
-done
-
-# ====== variables ======
-# Username and Password for WSO2 Updates
-# TEST_HOME : Folder to install IS server
-
-echo "Password SHA256: $(echo -n "$WSO2_PASSWORD" | sha256sum)"
-
-echo "Username: $WSO2_USERNAME"
-echo "Password: $WSO2_PASSWORD"
-echo "TEST_HOME:  $TEST_HOME"
-
-# handle empty variables
-if [ -z "$WSO2_USERNAME" ]; then
-    echo "Username is empty. Please provide a username using the -u flag."
-    exit 1
-fi
-if [ -z "$WSO2_PASSWORD" ]; then
-    echo "Password is empty. Please provide a password using the -p flag."
-    exit 1
-fi
-if [ -z "$TEST_HOME" ]; then
-    echo "TEST_HOME is empty. Please provide a TEST_HOME using the -o flag."
-    exit 1
-fi
-
 
 echo '======================= SetUp base Products ======================='
 #
