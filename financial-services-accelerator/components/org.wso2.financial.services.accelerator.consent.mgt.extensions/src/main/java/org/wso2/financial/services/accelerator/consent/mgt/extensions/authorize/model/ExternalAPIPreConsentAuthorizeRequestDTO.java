@@ -29,15 +29,17 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     private String userId;
     private JSONObject requestParameters;
     private ExternalAPIConsentResourceRequestDTO consentResource;
+    private String consentFileContent;
 
     public ExternalAPIPreConsentAuthorizeRequestDTO(ConsentData consentData,
                                                     ExternalAPIConsentResourceRequestDTO consentResource,
-                                                    JSONObject requestParameters) {
+                                                    JSONObject requestParameters, String consentFileContent) {
 
         this.consentId = consentData.getConsentId();
         this.userId = consentData.getUserId();
         this.consentResource = consentResource;
         this.requestParameters = requestParameters;
+        this.consentFileContent = consentFileContent;
     }
 
     public String getConsentId() {
@@ -71,6 +73,14 @@ public class ExternalAPIPreConsentAuthorizeRequestDTO {
     public void setConsentResource(
             ExternalAPIConsentResourceRequestDTO consentResource) {
         this.consentResource = consentResource;
+    }
+
+    public String getConsentFileContent() {
+        return consentFileContent;
+    }
+
+    public void setConsentFileContent(String consentFileContent) {
+        this.consentFileContent = consentFileContent;
     }
 
     /**
