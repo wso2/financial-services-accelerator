@@ -529,7 +529,7 @@ enabled=true
 cron_value="0 0 0 * * ?"
 # This value to be update for expired consents.
 expired_consent_status_value="Expired"
-# These consent statuses will only be consider when checking for expired consents. (Comma separated value list)
+# The current consent statuses that are eligible to be expired. (Comma separated value list)
 eligible_statuses="authorised"
 
 [financial_services.consent.portal.client_credentials]
