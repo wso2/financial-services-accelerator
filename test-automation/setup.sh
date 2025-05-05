@@ -55,34 +55,10 @@ else
     firefox -version
 fi
 
-echo '=================== Install Java and Maven ==================='
-
-#if command -v java &> /dev/null
-#then
-#    echo "Java is installed"
-#    java -version
-#else
-#   wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16+8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
-#   tar -xvzf OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
-#   sudo mv jdk-11.0.16+8 /opt/java
-#   echo "export JAVA_HOME=/opt/java/jdk-11.0.16+8" >> ~/.bashrc
-#   echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
-#   source ~/.bashrc
-#   java -version
-#
-#fi
-
-#if command -v mvn &> /dev/null
-#then
-#    echo "Maven is installed"
-#    mvn --version
-#else
-#    sudo apt install -y maven
-#fi
 
 echo '======================= Building packs ======================='
 #
-mvn -B install --file ${RUNNER_HOME}/pom.xml -Dmaven.test.skip=true
+mvn -B install --file ${RUNNER_HOME}/pom.xml
 MVNSTATE=$?
 #
 echo '======================= Moving Packs to RUNNER_HOME ======================='
@@ -91,8 +67,7 @@ echo "$zip_file_name"
 
 
 unzip "financial-services-accelerator/accelerators/fs-is/target/$zip_file_name.zip" -d $TEST_HOME/wso2is-7.0.0/
-#wget https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/wso2-fsiam-accelerator-4.0.0-M3.zip -O wso2-fsiam-accelerator-4.0.0-M3.zip
-#unzip wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
+
 
 echo '======================= Setup MYSQL ======================='
 sudo apt-get update

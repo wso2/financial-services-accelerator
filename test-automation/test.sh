@@ -18,7 +18,40 @@
 set -e
 MVNSTATE=1 #This variable is read by the test-grid to determine success or failure of the build. (0=Successful)
 RUNNER_HOME=`pwd`
+#=== FUNCTION ==================================================================
+# NAME: get_prop
+# DESCRIPTION: Retrieve specific property from deployment.properties.sample
+# PARAMETER 1: property_value
+#===============================================================================
+function get_prop {
+    local prop=$(grep -w "${1}" "${RUNNER_HOME}/test-automation/deployment.properties" | cut -d'=' -f2)
+    echo $prop
+}
 
+while getopts i:p:o:h flag
+do
+    case "${flag}" in
+        i) TEST_HOME=${OPTARG};;
+        p) PASSWORD=${OPTARG};;
+        u) USERNAME=${OPTARG};;
+    esac
+done
+
+
+# ====== variables ======
+# Username and Password for WSO2 Updates
+# TEST_HOME : Folder to install IS server
+
+echo "Username: $USERNAME"
+echo "Password: $PASSWORD"
+echo "TEST_HOME:  $TEST_HOME"
+
+# handle empty variables
+
+if [ -z "$TEST_HOME" ]; then
+    echo "TEST_HOME is empty. Please provide a TEST_HOME using the -o flag."
+    exit 1
+fi
 echo '======================= Run Test Cases ======================='
 
 cd $RUNNER_HOME/fs-integration-test-suite
