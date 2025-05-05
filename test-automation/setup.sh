@@ -194,7 +194,7 @@ SQL_SCRIPT="financial-services-accelerator/accelerators/fs-is/carbon-home/dbscri
 
 source $(pwd)/../repository/conf/configure.properties
 
-mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "fs_consentdb" < "$SQL_SCRIPT"
+#mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "fs_consentdb" < "$SQL_SCRIPT"
 
 
 echo '======================= Update deployment.toml ======================='
