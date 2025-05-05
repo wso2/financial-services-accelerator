@@ -133,7 +133,7 @@ sed -i -e "s|NonRegulatoryApplication.RedirectURL|https://www.google.com/redirec
 #----------------- Browser Automation -----------------#
 sed -i -e "s|BrowserAutomation.BrowserPreference|firefox|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 sed -i -e "s|BrowserAutomation.HeadlessEnabled|true|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
-sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_HOME}/geckodriver|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 
 #----------------- Consent API -----------------#
 sed -i -e "s|ConsentApi.AudienceValue|https://localhost:9446/oauth2/token|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
@@ -166,16 +166,20 @@ sed -i '/<\/ConsentApi>/a \
 
 
 #----------------Install geckodriver------------------------#
-export DEBIAN_FRONTEND=noninteractive
-wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz
-tar xvzf geckodriver*
-rm ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
-cp geckodriver ${TEST_ARTIFACTS}/selenium-libs/ubuntu/
-chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
+# check if geckodriver is already installed
+if [ -f "$TEST_HOME/geckodriver" ]; then
+    echo "geckodriver is already installed."
+else
+    echo "Installing geckodriver..."
+    export DEBIAN_FRONTEND=noninteractive
+    wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz -O $TEST_HOME/geckodriver.tar.gz
+    tar -xvzf "$TEST_HOME/geckodriver.tar.gz" -C "$TEST_HOME"
+    chmod +x $TEST_HOME/geckodriver
+fi
 
 
-echo '======================= Setup Mail ======================='
-sudo apt update && sudo apt install mailutils
+
+
 
 cat ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 #
@@ -189,9 +193,10 @@ cd ${ACCELERATION_INTEGRATION_TESTS_HOME}/accelerator-tests/is-tests
 mvn clean install
 MVNSTATE=$((MVNSTATE+$?))
 
-
-sudo apt install -y mutt
-sudo apt install -y ssmtp
+#echo '======================= Setup Mail ======================='
+#sudo apt update && sudo apt install mailutils
+#sudo apt install -y mutt
+#sudo apt install -y ssmtp
 
 sudo touch /etc/msmtprc
 echo -e "root=${WSO2_USERNAME}\nmailhub=smtp.gmail.com:587\nAuthUser=${WSO2_USERNAME}\nAuthPass=${STMP_ROOT_PASSWORD}\nUseTLS=YES\nUseSTARTTLS=YES\nFromLineOverride=YES" > /etc/msmtprc
