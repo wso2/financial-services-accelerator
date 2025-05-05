@@ -977,4 +977,55 @@ public final class FinancialServicesConfigParser {
         return allowedHeaders;
     }
 
+    /**
+     * Method to get status for expired consents.
+     * @return statue for expired consents
+     */
+    public String getStatusWordingForExpiredConsents() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.STATUS_FOR_EXPIRED_CONSENT);
+        return config.map(String::trim).orElse(FinancialServicesConstants.DEFAULT_STATUS_FOR_EXPIRED_CONSENTS);
+    }
+
+    /**
+     * Method to get eligible statues for evaluate expiration logic.
+     * @return eligible statues for evaluate expiration logic
+     */
+    public String getEligibleStatusesForConsentExpiry() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.ELIGIBLE_STATUSES_FOR_CONSENT_EXPIRY);
+        return config.map(String::trim).orElse("");
+    }
+
+    public boolean isConsentAmendmentHistoryEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IS_CONSENT_AMENDMENT_HISTORY_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get isEnabled config for periodical consent expiration job.
+     * @return consent expiration job is enabled
+     */
+    public boolean isConsentExpirationPeriodicalJobEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IS_CONSENT_PERIODICAL_EXPIRATION_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get configs for periodical consent expiration job's cron value.
+     * @return consent expiration job's cron string
+     */
+    public String getConsentExpiryCronExpression() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_PERIODICAL_EXPIRATION_CRON);
+        return config.map(String::trim).orElse(FinancialServicesConstants.DEFAULT_MIDNIGHT_CRON);
+    }
+
 }

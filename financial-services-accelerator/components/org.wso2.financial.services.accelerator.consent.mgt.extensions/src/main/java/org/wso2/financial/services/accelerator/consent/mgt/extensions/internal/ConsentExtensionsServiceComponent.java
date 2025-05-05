@@ -29,6 +29,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.job.activator.PeriodicalConsentJobActivator;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 /**
@@ -48,6 +49,9 @@ public class ConsentExtensionsServiceComponent {
         context.getBundleContext().registerService(ConsentExtensionExporter.class.getName(),
                 ConsentExtensionExporter.getInstance(), null);
         log.debug("Consent extensions are registered successfully.");
+
+        new PeriodicalConsentJobActivator().activate();
+        log.debug("Periodical Consent Status Updater Started");
     }
 
     @Reference(

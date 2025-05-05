@@ -36,6 +36,7 @@
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidatorServiceExtensionTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.DefaultConsentAdminHandlerTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.idempotency.IdempotencyValidatorTests"/>
+            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.job.ExpiredConsentStatusUpdateJobTests"/>
         </classes>
     </test>
 </suite>
