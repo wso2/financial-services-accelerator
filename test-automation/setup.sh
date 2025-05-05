@@ -15,7 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+set -e
 RUNNER_HOME=`pwd`
+
 echo '======================= SetUp base Products ======================='
 # Create the test home directory if it doesn't exist
 if [ ! -d "$TEST_HOME" ]; then
@@ -54,20 +56,20 @@ fi
 
 echo '=================== Install Java and Maven ==================='
 
-if command -v java &> /dev/null
-then
-    echo "Java is installed"
-    java -version
-else
-   wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16+8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
-   tar -xvzf OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
-   sudo mv jdk-11.0.16+8 /opt/java
-   echo "export JAVA_HOME=/opt/java/jdk-11.0.16+8" >> ~/.bashrc
-   echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
-   source ~/.bashrc
-   java -version
-
-fi
+#if command -v java &> /dev/null
+#then
+#    echo "Java is installed"
+#    java -version
+#else
+#   wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16+8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
+#   tar -xvzf OpenJDK11U-jdk_x64_linux_hotspot_11.0.16_8.tar.gz
+#   sudo mv jdk-11.0.16+8 /opt/java
+#   echo "export JAVA_HOME=/opt/java/jdk-11.0.16+8" >> ~/.bashrc
+#   echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
+#   source ~/.bashrc
+#   java -version
+#
+#fi
 
 if command -v mvn &> /dev/null
 then
@@ -99,7 +101,6 @@ echo '======================= Generate and Export Certificates =================
 storepass=wso2carbon
 declare -A servers
 servers["wso2"]="$TEST_HOME/wso2is-7.0.0/repository/resources/security/wso2carbon.jks"
-
 cert_dir="$TEST_HOME/certs"
 mkdir -p $cert_dir
 
@@ -121,9 +122,7 @@ for alias in "${!servers[@]}"; do
 done
 
 echo '======================= Import Certificates into the truststore ======================='
-
 aliases=("wso2")
-
 # Define the client truststore
 truststores=(
   "$TEST_HOME/wso2is-7.0.0/repository/resources/security/client-truststore.jks"
@@ -175,10 +174,8 @@ for truststore in "${truststores[@]}"; do
 done
 
 echo '======================= Import OB sandbox Root and Issuer Certificates ======================='
-
 wget 'https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/OB_SandBox_PP_Root%20CA.cer' -O "${TEST_HOME}/OB_SandBox_PP_Root CA.cer"
 keytool -import -alias root -file "${TEST_HOME}/OB_SandBox_PP_Root CA.cer" -keystore "${TEST_HOME}/wso2is-7.0.0/repository/resources/security/client-truststore.jks" -storepass wso2carbon -noprompt
-
 wget 'https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/OB_SandBox_PP_Issuing%20CA.cer' -O "${TEST_HOME}/OB_SandBox_PP_Issuing CA.cer"
 keytool -import -alias issuer -file "${TEST_HOME}/OB_SandBox_PP_Issuing CA.cer" -keystore "${TEST_HOME}/wso2is-7.0.0/repository/resources/security/client-truststore.jks" -storepass wso2carbon -noprompt
 
