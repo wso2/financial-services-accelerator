@@ -89,13 +89,14 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                     externalAPIConsentResource = new ExternalAPIConsentResourceRequestDTO(detailedConsentResource);
                     try {
                         consentFileContent = consentCoreService.getConsentFile(consentId).getConsentFile();
+                        externalAPIConsentResource.setFileContent(consentFileContent);
                     } catch (ConsentManagementException e) {
                         log.debug("No consent file found for the given consent Id.");
                     }
                 }
             }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
-                    consentData, externalAPIConsentResource, requestParameters, consentFileContent);
+                    consentData, externalAPIConsentResource, requestParameters);
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);

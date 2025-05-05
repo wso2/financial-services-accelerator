@@ -1242,8 +1242,6 @@ components:
           description: Custom object with request parameters
         consentResource:
           $ref: '#/components/schemas/StoredDetailedConsentResourceData'
-        consentFileContent:
-          type: string
     ValidateConsentAccessData:
       type: object
       properties:
@@ -1739,6 +1737,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StoredAuthorization'
+        consentFileContent:
+          type: string
     Authorization:
       type: object
       properties:
