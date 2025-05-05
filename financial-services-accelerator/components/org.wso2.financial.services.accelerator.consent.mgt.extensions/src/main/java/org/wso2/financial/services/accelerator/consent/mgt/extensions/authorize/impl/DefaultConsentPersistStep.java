@@ -116,13 +116,12 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         // Create the consent if it is not pre initiated.
         if (isPreInitiatedConsent) {
-           authorizationId = consentData.getAuthResource().getAuthorizationID();
+            authorizationId = consentData.getAuthResource().getAuthorizationID();
         } else {
             DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
                     consentResource, userId, authStatus, ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
             String consentId = createdConsent.getConsentID();
-            authorizationId = consentCoreService.searchAuthorizations(
-                    consentId).get(0).getAuthorizationID();
+            authorizationId = consentCoreService.searchAuthorizations(consentId).get(0).getAuthorizationID();
             // Getting commonAuthId to add as a consent attribute. This is to find the consent in later stages.
             if (consentPersistData.getBrowserCookies() != null) {
                 String commonAuthId = consentPersistData.getBrowserCookies().get(
