@@ -25,14 +25,13 @@ public class ConsentAPITestData {
     // detailed consent mapping
     public static String testMappingId = "testMappingId";
     public static String testMappingStatus = "testMappingStatus";
-    public static JSONObject testMappingResource = new JSONObject(){
+    public static JSONObject testMappingResource = new JSONObject() {
         {
             put("mappingId", testMappingId);
             put("mappingStatus", testMappingStatus);
             put("mappingResource", "testMappingResource");
         }
     };
-
 
 
     public static AuthorizationResource testStoredAuthorizationResource = getStoredAuthorizationResource();

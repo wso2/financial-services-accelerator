@@ -9,20 +9,41 @@ import java.io.Serializable;
 import java.util.Objects;
 
 
-@JsonTypeName("ConsentRevokeResource")
+@JsonTypeName("ConsentStatusUpdateResource")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class ConsentRevokeResource implements Serializable {
+public class ConsentStatusUpdateRequestBody implements Serializable {
+    private String status;
     private String reason;
     private String userID;
 
-    public ConsentRevokeResource() {
+    public ConsentStatusUpdateRequestBody() {
     }
 
     /**
      *
      **/
-    public ConsentRevokeResource reason(String reason) {
+    public ConsentStatusUpdateRequestBody status(String status) {
+        this.status = status;
+        return this;
+    }
+
+
+    @ApiModelProperty(value = "")
+    @JsonProperty("status")
+    public String getStatus() {
+        return status;
+    }
+
+    @JsonProperty("status")
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     *
+     **/
+    public ConsentStatusUpdateRequestBody reason(String reason) {
         this.reason = reason;
         return this;
     }
@@ -42,7 +63,7 @@ public class ConsentRevokeResource implements Serializable {
     /**
      *
      **/
-    public ConsentRevokeResource userID(String userID) {
+    public ConsentStatusUpdateRequestBody userID(String userID) {
         this.userID = userID;
         return this;
     }
@@ -68,21 +89,23 @@ public class ConsentRevokeResource implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ConsentRevokeResource consentRevokeResource = (ConsentRevokeResource) o;
-        return Objects.equals(this.reason, consentRevokeResource.reason) &&
-                Objects.equals(this.userID, consentRevokeResource.userID);
+        ConsentStatusUpdateRequestBody consentStatusUpdateResource = (ConsentStatusUpdateRequestBody) o;
+        return Objects.equals(this.status, consentStatusUpdateResource.status) &&
+                Objects.equals(this.reason, consentStatusUpdateResource.reason) &&
+                Objects.equals(this.userID, consentStatusUpdateResource.userID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reason, userID);
+        return Objects.hash(status, reason, userID);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("class ConsentRevokeResource {\n");
+        sb.append("class ConsentStatusUpdateResource {\n");
 
+        sb.append("    status: ").append(toIndentedString(status)).append("\n");
         sb.append("    reason: ").append(toIndentedString(reason)).append("\n");
         sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
         sb.append("}");

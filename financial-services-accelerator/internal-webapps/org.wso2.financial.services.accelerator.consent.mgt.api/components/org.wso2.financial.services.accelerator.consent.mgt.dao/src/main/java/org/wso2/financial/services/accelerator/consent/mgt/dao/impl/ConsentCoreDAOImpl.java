@@ -241,44 +241,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-    @Override
-    public DetailedConsentResource getConsentResourceWithAuthorizationResources(Connection connection, String consentID)
-            throws
-            ConsentDataRetrievalException {
 
-        String getConsentResourceWithAuthorizationResourcesPreparedStatemen = sqlStatements.
-                getGetConsentResourceWithAuthorizationResourcesPreparedStatement();
-
-        try (PreparedStatement getConsentResourceWithAuthorizationResourcesPreparedStmt = connection
-                .prepareStatement(getConsentResourceWithAuthorizationResourcesPreparedStatemen)) {
-
-            log.debug("Setting parameters to prepared statement to retrieve detailed consent resource");
-
-            getConsentResourceWithAuthorizationResourcesPreparedStmt.setString(1, consentID);
-
-            try (ResultSet resultSet = getConsentResourceWithAuthorizationResourcesPreparedStmt.executeQuery()) {
-                if (resultSet.isBeforeFirst()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Retrieved the detailed consent resource for consent ID : %s",
-                                consentID.replaceAll("[\r\n]", "")));
-                    }
-                    return ConsentManagementDAOUtil.setDataToConsentResourceWithAuthorizationResource(resultSet);
-                } else {
-                    log.error(String.format("No records are found for consent ID : %s",
-                            consentID.replaceAll("[\r\n]", "")));
-                    throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
-                }
-            } catch (SQLException e) {
-                log.error("Error occurred while reading detailed consent resource", e);
-                throw new ConsentDataRetrievalException(String.format("Error occurred while retrieving " +
-                        "detailed consent resource for consent ID : %s", consentID), e);
-            }
-        } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentMgtDAOConstants.DETAILED_CONSENT_RESOURCE_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants
-                    .DETAILED_CONSENT_RESOURCE_RETRIEVE_ERROR_MSG, e);
-        }
-    }
 
 
     @Override
@@ -464,6 +427,38 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
+//    @Override
+//    public AuthorizationResource updateAuthorizationResource(Connection connection, String authorizationId,
+//                                                             AuthorizationResource authorizationResource){
+//        String updateAuthorizationResourcePrepStatement = sqlStatements
+//        .getUpdateAuthorizationResourcePreparedStatement();
+//        try (PreparedStatement updateAuthorizationResourcePreparedStmt =
+//                     connection.prepareStatement(updateAuthorizationResourcePrepStatement)) {
+//
+//            log.debug("Setting parameters to prepared statement to update authorization resource");
+//
+//            updateAuthorizationResourcePreparedStmt.setString(1, authorizationResource.getUserID());
+//            updateAuthorizationResourcePreparedStmt.setString(2, authorizationResource.getAuthorizationStatus());
+//            updateAuthorizationResourcePreparedStmt.setString(3, authorizationId);
+//
+//            // with result, we can determine whether the updating was successful or not
+//            int result = updateAuthorizationResourcePreparedStmt.executeUpdate();
+//
+//            // Confirm that the data are updated successfully
+//            if (result > 0) {
+//                log.debug("Updated the authorization resource successfully");
+//                return authorizationResource;
+//            } else {
+//                throw new ConsentDataUpdationException("Failed to update authorization resource properly.");
+//            }
+//        } catch (SQLException e) {
+//            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG, e);
+//            throw new ConsentDataUpdationException(ConsentMgtDAOConstants
+//            .CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG,
+//                    e);
+//        }
+//    }
+
     @Override
     public void updateAuthorizationStatus(Connection connection, String authorizationID, String newAuthorizationStatus)
             throws
@@ -531,45 +526,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-    @Override
-    public ConsentMappingResource storeConsentMappingResource(Connection connection,
-                                                              ConsentMappingResource consentMappingResource)
-            throws
-            ConsentDataInsertionException {
 
-        String consentMappingID = StringUtils.isEmpty(consentMappingResource.getMappingID()) ?
-                UUID.randomUUID().toString() : consentMappingResource.getMappingID();
-
-        String storeConsentMappingPrepStatement = sqlStatements.getStoreConsentMappingPreparedStatement();
-
-        try (PreparedStatement storeConsentMappingPreparedStmt =
-                     connection.prepareStatement(storeConsentMappingPrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to store consent mapping resource");
-
-            storeConsentMappingPreparedStmt.setString(1, consentMappingID);
-            storeConsentMappingPreparedStmt.setString(2, consentMappingResource.getAuthorizationID());
-            storeConsentMappingPreparedStmt.setString(3, consentMappingResource.getResource().toString());
-            storeConsentMappingPreparedStmt.setString(4, consentMappingResource.getMappingStatus());
-
-
-            // with result, we can determine whether the insertion was successful or not
-            int result = storeConsentMappingPreparedStmt.executeUpdate();
-
-            // Confirm that the data are inserted successfully
-            if (result > 0) {
-                log.debug("Stored the consent mapping resource successfully");
-                consentMappingResource.setMappingID(consentMappingID);
-                return consentMappingResource;
-            } else {
-                throw new ConsentDataInsertionException("Failed to store consent mapping resource data properly.");
-            }
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_STORE_ERROR_MSG, e);
-            throw new ConsentDataInsertionException(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_STORE_ERROR_MSG,
-                    e);
-        }
-    }
 
     @Override
     public ArrayList<ConsentMappingResource> getConsentMappingResources(Connection connection, String authorizationID)

@@ -15,7 +15,7 @@ import javax.validation.Valid;
 @JsonTypeName("BulkConsentStatusUpdateResource")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class BulkConsentStatusUpdateResource implements Serializable {
+public class BulkConsentStatusUpdateResourceRequestBody implements Serializable {
     private String clientID;
     private String consentType;
     private @Valid ArrayList<String> applicableStatusesForStateChange = new ArrayList<>();
@@ -23,13 +23,13 @@ public class BulkConsentStatusUpdateResource implements Serializable {
     private String reason;
     private String userID;
 
-    public BulkConsentStatusUpdateResource() {
+    public BulkConsentStatusUpdateResourceRequestBody() {
     }
 
     /**
      *
      **/
-    public BulkConsentStatusUpdateResource clientID(String clientID) {
+    public BulkConsentStatusUpdateResourceRequestBody clientID(String clientID) {
         this.clientID = clientID;
         return this;
     }
@@ -49,7 +49,7 @@ public class BulkConsentStatusUpdateResource implements Serializable {
     /**
      *
      **/
-    public BulkConsentStatusUpdateResource consentType(String consentType) {
+    public BulkConsentStatusUpdateResourceRequestBody consentType(String consentType) {
         this.consentType = consentType;
         return this;
     }
@@ -69,7 +69,7 @@ public class BulkConsentStatusUpdateResource implements Serializable {
     /**
      *
      **/
-    public BulkConsentStatusUpdateResource applicableStatusesForStateChange(
+    public BulkConsentStatusUpdateResourceRequestBody applicableStatusesForStateChange(
             ArrayList<String> applicableStatusesForStateChange) {
         this.applicableStatusesForStateChange = applicableStatusesForStateChange;
         return this;
@@ -87,7 +87,7 @@ public class BulkConsentStatusUpdateResource implements Serializable {
         this.applicableStatusesForStateChange = applicableStatusesForStateChange;
     }
 
-    public BulkConsentStatusUpdateResource addApplicableStatusesForStateChangeItem(
+    public BulkConsentStatusUpdateResourceRequestBody addApplicableStatusesForStateChangeItem(
             String applicableStatusesForStateChangeItem) {
         if (this.applicableStatusesForStateChange == null) {
             this.applicableStatusesForStateChange = new ArrayList<>();
@@ -97,7 +97,7 @@ public class BulkConsentStatusUpdateResource implements Serializable {
         return this;
     }
 
-    public BulkConsentStatusUpdateResource removeApplicableStatusesForStateChangeItem(
+    public BulkConsentStatusUpdateResourceRequestBody removeApplicableStatusesForStateChangeItem(
             String applicableStatusesForStateChangeItem) {
         if (applicableStatusesForStateChangeItem != null && this.applicableStatusesForStateChange != null) {
             this.applicableStatusesForStateChange.remove(applicableStatusesForStateChangeItem);
@@ -109,7 +109,7 @@ public class BulkConsentStatusUpdateResource implements Serializable {
     /**
      *
      **/
-    public BulkConsentStatusUpdateResource status(String status) {
+    public BulkConsentStatusUpdateResourceRequestBody status(String status) {
         this.status = status;
         return this;
     }
@@ -129,7 +129,7 @@ public class BulkConsentStatusUpdateResource implements Serializable {
     /**
      *
      **/
-    public BulkConsentStatusUpdateResource reason(String reason) {
+    public BulkConsentStatusUpdateResourceRequestBody reason(String reason) {
         this.reason = reason;
         return this;
     }
@@ -149,7 +149,7 @@ public class BulkConsentStatusUpdateResource implements Serializable {
     /**
      *
      **/
-    public BulkConsentStatusUpdateResource userID(String userID) {
+    public BulkConsentStatusUpdateResourceRequestBody userID(String userID) {
         this.userID = userID;
         return this;
     }
@@ -175,7 +175,8 @@ public class BulkConsentStatusUpdateResource implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        BulkConsentStatusUpdateResource bulkConsentStatusUpdateResource = (BulkConsentStatusUpdateResource) o;
+        BulkConsentStatusUpdateResourceRequestBody
+                bulkConsentStatusUpdateResource = (BulkConsentStatusUpdateResourceRequestBody) o;
         return Objects.equals(this.clientID, bulkConsentStatusUpdateResource.clientID) &&
                 Objects.equals(this.consentType, bulkConsentStatusUpdateResource.consentType) &&
                 Objects.equals(this.applicableStatusesForStateChange,

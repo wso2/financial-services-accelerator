@@ -319,38 +319,7 @@ public class ConsentManagementDAOUtil {
         );
         authorizationResource.setAuthorizationID(resultSet.getString(ConsentMgtDAOConstants.AUTH_ID));
 
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
-        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-        consentMappingResource.setMappingStatus(resultSet.getString(ConsentMgtDAOConstants.MAPPING_STATUS));
-        consentMappingResource.setMappingID(resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID));
-        ObjectMapper objectMapper = new ObjectMapper();
 
-
-
-        String resource = resultSet.getString(ConsentMgtDAOConstants.RESOURCE);
-        if (resource != null) {
-            // Convert JSON string to a Map
-            Map<String, Object> map = objectMapper.readValue(resource, new TypeReference<Map<String, Object>>() {
-            });
-            // Convert Map to net.minidev.json.JSONObject
-            JSONObject jsonObject = new JSONObject(map);
-
-            consentMappingResource.setResource(jsonObject);
-        }
-
-        consentMappingResources.add(consentMappingResource);
-
-        while (resultSet.next()) {
-            consentMappingResource.setMappingStatus(resultSet.getString(ConsentMgtDAOConstants.MAPPING_STATUS));
-            consentMappingResource.setMappingID(resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID));
-
-            consentMappingResource.setResource(new JSONObject(objectMapper.readValue(resultSet.
-                    getString(ConsentMgtDAOConstants.RESOURCE), new TypeReference<Map<String, Object>>() {
-            })));
-            consentMappingResources.add(consentMappingResource);
-
-
-        }
         return authorizationResource;
     }
 

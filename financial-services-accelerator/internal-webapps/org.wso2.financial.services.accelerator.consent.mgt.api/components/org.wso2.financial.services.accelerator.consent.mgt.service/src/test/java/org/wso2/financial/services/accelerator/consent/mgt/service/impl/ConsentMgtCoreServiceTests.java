@@ -50,8 +50,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -61,7 +59,6 @@ import static org.mockito.Mockito.mockStatic;
 /**
  * Test for FS consent management core service.
  */
-// CHECKSTYLE:OFF
 public class ConsentMgtCoreServiceTests {
 
     private ConsentCoreServiceImpl consentCoreServiceImpl;
@@ -131,8 +128,6 @@ public class ConsentMgtCoreServiceTests {
                         ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
-        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentMappingResource(ConsentMgtServiceTestData.
-                SAMPLE_AUTHORIZATION_ID_1)).when(mockedConsentCoreDAO).storeConsentMappingResource(any(), any());
 
         DetailedConsentResource detailedConsentResource =
                 consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
@@ -162,8 +157,6 @@ public class ConsentMgtCoreServiceTests {
                         any(ConsentStatusAuditRecord.class));
         doReturn(true).when(mockedConsentCoreDAO).storeConsentAttributes(any(),
                 any());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentMappingResource(ConsentMgtServiceTestData.
-                SAMPLE_AUTHORIZATION_ID_1)).when(mockedConsentCoreDAO).storeConsentMappingResource(any(), any());
 
         DetailedConsentResource detailedConsentResource =
                 consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
@@ -315,7 +308,6 @@ public class ConsentMgtCoreServiceTests {
             Exception {
 
 
-
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
                 getDetailedConsentResource(any(), any());
@@ -343,7 +335,7 @@ public class ConsentMgtCoreServiceTests {
             Exception {
 
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO)
-                        .getDetailedConsentResource(any(), any());
+                .getDetailedConsentResource(any(), any());
         doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
                 .updateConsentStatus(any(), anyString(), anyString());
 
@@ -552,7 +544,6 @@ public class ConsentMgtCoreServiceTests {
 //    }
 
 
-
     @Test
     public void testGetConsent() throws
             Exception {
@@ -587,10 +578,10 @@ public class ConsentMgtCoreServiceTests {
             Exception {
 
 
-       doThrow(
-               new ConsentDataRetrievalException(
-               ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG)).when(mockedConsentCoreDAO)
-       .getConsentResource(any(), anyString());
+        doThrow(
+                new ConsentDataRetrievalException(
+                        ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG)).when(mockedConsentCoreDAO)
+                .getConsentResource(any(), anyString());
 
         // mock getMessage
 

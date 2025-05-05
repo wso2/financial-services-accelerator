@@ -7,34 +7,30 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 
-@JsonTypeName("AuthResponse")
+@JsonTypeName("AuthorizationResourceDTO")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class AuthResponse implements Serializable {
-    private String authId;
+public class CreateAuthorizationResourceRequestBody implements Serializable {
     private String authorizationStatus;
     private String authorizationType;
     private String userID;
     private @Valid Object resource = new ArrayList<>();
 
-    public AuthResponse() {
+    public CreateAuthorizationResourceRequestBody() {
     }
 
     @JsonCreator
-    public AuthResponse(
-            @JsonProperty(required = true, value = "authId") String authId,
+    public CreateAuthorizationResourceRequestBody(
             @JsonProperty(required = true, value = "authorizationStatus") String authorizationStatus,
             @JsonProperty(required = true, value = "authorizationType") String authorizationType,
             @JsonProperty(required = true, value = "userID") String userID
-                       ) {
-        this.authId = authId;
+                                                 ) {
         this.authorizationStatus = authorizationStatus;
         this.authorizationType = authorizationType;
         this.userID = userID;
@@ -43,27 +39,7 @@ public class AuthResponse implements Serializable {
     /**
      *
      **/
-    public AuthResponse authId(String authId) {
-        this.authId = authId;
-        return this;
-    }
-
-
-    @ApiModelProperty(required = true, value = "")
-    @JsonProperty(required = true, value = "authId")
-    @NotNull public String getAuthId() {
-        return authId;
-    }
-
-    @JsonProperty(required = true, value = "authId")
-    public void setAuthId(String authId) {
-        this.authId = authId;
-    }
-
-    /**
-     *
-     **/
-    public AuthResponse authorizationStatus(String authorizationStatus) {
+    public CreateAuthorizationResourceRequestBody authorizationStatus(String authorizationStatus) {
         this.authorizationStatus = authorizationStatus;
         return this;
     }
@@ -83,7 +59,7 @@ public class AuthResponse implements Serializable {
     /**
      *
      **/
-    public AuthResponse authorizationType(String authorizationType) {
+    public CreateAuthorizationResourceRequestBody authorizationType(String authorizationType) {
         this.authorizationType = authorizationType;
         return this;
     }
@@ -103,7 +79,7 @@ public class AuthResponse implements Serializable {
     /**
      *
      **/
-    public AuthResponse userID(String userID) {
+    public CreateAuthorizationResourceRequestBody userID(String userID) {
         this.userID = userID;
         return this;
     }
@@ -123,21 +99,21 @@ public class AuthResponse implements Serializable {
     /**
      *
      **/
-    public AuthResponse resources(List<@Valid Resource> resources) {
-        this.resource = resources;
+    public CreateAuthorizationResourceRequestBody resources(Object resource) {
+        this.resource = resource;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
     @JsonProperty("resources")
-    @Valid public Object getResource() {
+    public Object getResource() {
         return resource;
     }
 
     @JsonProperty("resources")
-    public void setResource(Object resource) {
-        this.resource = resource;
+    public void setResource(Object resources) {
+        this.resource = resources;
     }
 
 
@@ -150,29 +126,27 @@ public class AuthResponse implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AuthResponse authResponse = (AuthResponse) o;
-        return Objects.equals(this.authId, authResponse.authId) &&
-                Objects.equals(this.authorizationStatus, authResponse.authorizationStatus) &&
-                Objects.equals(this.authorizationType, authResponse.authorizationType) &&
-                Objects.equals(this.userID, authResponse.userID) &&
-                Objects.equals(this.resource, authResponse.resource);
+        CreateAuthorizationResourceRequestBody authorizationResourceDTO = (CreateAuthorizationResourceRequestBody) o;
+        return Objects.equals(this.authorizationStatus, authorizationResourceDTO.authorizationStatus) &&
+                Objects.equals(this.authorizationType, authorizationResourceDTO.authorizationType) &&
+                Objects.equals(this.userID, authorizationResourceDTO.userID) &&
+                Objects.equals(this.resource, authorizationResourceDTO.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authId, authorizationStatus, authorizationType, userID, resource);
+        return Objects.hash(authorizationStatus, authorizationType, userID, resource);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("class AuthResponse {\n");
+        sb.append("class AuthorizationResourceDTO {\n");
 
-        sb.append("    authId: ").append(toIndentedString(authId)).append("\n");
         sb.append("    authorizationStatus: ").append(toIndentedString(authorizationStatus)).append("\n");
         sb.append("    authorizationType: ").append(toIndentedString(authorizationType)).append("\n");
         sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
-        sb.append("    resource: ").append(toIndentedString(resource)).append("\n");
+        sb.append("    resources: ").append(toIndentedString(resource)).append("\n");
         sb.append("}");
         return sb.toString();
     }

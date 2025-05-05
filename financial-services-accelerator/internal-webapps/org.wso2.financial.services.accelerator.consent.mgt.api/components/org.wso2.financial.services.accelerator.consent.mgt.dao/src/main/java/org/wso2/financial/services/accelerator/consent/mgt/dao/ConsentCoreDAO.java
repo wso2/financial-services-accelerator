@@ -94,18 +94,7 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataRetrievalException;
 
-    /**
-     * This method is used to retrieve a detailed consent resource for the provided consent ID (includes
-     * authorization resources, account mapping resources and consent attributes).
-     *
-     * @param connection                connection object
-     * @param consentID                 consent ID
-     * @return returns a detailed consent resource related to the provided consent ID
-     * @throws ConsentDataRetrievalException thrown if a database error occurs
-     */
-    DetailedConsentResource getConsentResourceWithAuthorizationResources(Connection connection, String consentID)
-            throws
-            ConsentDataRetrievalException;
+
 
     /**
      * This method is used to update the status of a consent resource. The request consent resource object must be
@@ -169,7 +158,20 @@ public interface ConsentCoreDAO {
     AuthorizationResource getAuthorizationResource(Connection connection, String authorizationID, String orgID)
             throws
             ConsentDataRetrievalException;
-
+//
+//    /**
+//     * This method is used to retrieve an authorization resource for the provided consent ID.
+//     * @param connection
+//     * @param authorizationID
+//     * @param authorizationResource
+//     * @return the relevant authorization resource
+//     * @throws ConsentDataUpdationException
+//     */
+//    AuthorizationResource updateAuthorizationResource(Connection connection, String authorizationID,
+//                                                      AuthorizationResource authorizationResource)
+//            throws
+//            ConsentDataUpdationException;
+////
     /**
      * This method is used to update a given authorization object. The status of the authorization resource provided
      * will be updated with the new status.
@@ -196,20 +198,6 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataUpdationException;
 
-    /**
-     * This method is used to store the consent mapping resource in the database. The request consent mapping object
-     * must contain all the data in it without the consent mapping ID. It will be generated and set to the response
-     * object if the insertion is successful.
-     *
-     * @param connection                connection object
-     * @param consentMappingResource    consent mapping resource with all required data
-     * @return returns the consent mapping resource if the insertion is successful
-     * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
-     */
-    ConsentMappingResource storeConsentMappingResource(Connection connection,
-                                                       ConsentMappingResource consentMappingResource)
-            throws
-            ConsentDataInsertionException;
 
     /**
      * This method is used to retrieve consent mapping resources for a given authorization ID.

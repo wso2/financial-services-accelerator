@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
-public class ConsentExpiryTimeUpdateDTO implements Serializable {
+/**
+ * ConsentExpiryTimeUpdateRequestBody
+ */
+public class ConsentExpiryTimeUpdateRequestBody implements Serializable {
     private long expiryTime;
 
-    public ConsentExpiryTimeUpdateDTO(
+    public ConsentExpiryTimeUpdateRequestBody(
             @JsonProperty(required = true, value = "expiryTime") long expiryTime) {
         this.expiryTime = expiryTime;
     }

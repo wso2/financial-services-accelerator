@@ -245,6 +245,7 @@ public class ConsentMgtDAOTestData {
                 authorizationResource.setAuthorizationType(SAMPLE_AUTHORIZATION_TYPE);
                 authorizationResource.setUserID(SAMPLE_USER_IDS_LIST.get(i));
                 authorizationResource.setAuthorizationStatus(SAMPLE_AUTHORIZATION_STATUS);
+                authorizationResource.setResource(SAMPLE_RESOURCE.toString());
                 authorizationResources.add(authorizationResource);
             }
         }

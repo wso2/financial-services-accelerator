@@ -18,10 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
 
-import net.minidev.json.JSONObject;
-
-import java.util.ArrayList;
-
 /**
  * Model for the Authorization resource.
  */

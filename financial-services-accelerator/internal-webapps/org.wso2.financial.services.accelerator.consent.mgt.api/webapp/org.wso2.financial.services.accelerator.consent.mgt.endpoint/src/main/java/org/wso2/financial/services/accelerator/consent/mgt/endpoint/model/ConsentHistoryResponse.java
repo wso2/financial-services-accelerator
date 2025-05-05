@@ -8,27 +8,24 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.validation.Valid;
-
 
 @JsonTypeName("ConsentHistory")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class ConsentHistory implements Serializable {
+public class ConsentHistoryResponse implements Serializable {
     private String historyId;
     private String consentID;
     private Integer timestamp;
     private String reason;
-    private DetailedConsentResource detailedConsent;
-    private Object changedMetadata;
+    private ConsentResourceResponse consentResource;
 
-    public ConsentHistory() {
+    public ConsentHistoryResponse() {
     }
 
     /**
      *
      **/
-    public ConsentHistory historyId(String historyId) {
+    public ConsentHistoryResponse historyId(String historyId) {
         this.historyId = historyId;
         return this;
     }
@@ -48,7 +45,7 @@ public class ConsentHistory implements Serializable {
     /**
      *
      **/
-    public ConsentHistory consentID(String consentID) {
+    public ConsentHistoryResponse consentID(String consentID) {
         this.consentID = consentID;
         return this;
     }
@@ -68,7 +65,7 @@ public class ConsentHistory implements Serializable {
     /**
      *
      **/
-    public ConsentHistory timestamp(Integer timestamp) {
+    public ConsentHistoryResponse timestamp(Integer timestamp) {
         this.timestamp = timestamp;
         return this;
     }
@@ -88,7 +85,7 @@ public class ConsentHistory implements Serializable {
     /**
      *
      **/
-    public ConsentHistory reason(String reason) {
+    public ConsentHistoryResponse reason(String reason) {
         this.reason = reason;
         return this;
     }
@@ -108,42 +105,21 @@ public class ConsentHistory implements Serializable {
     /**
      *
      **/
-    public ConsentHistory detailedConsent(DetailedConsentResource detailedConsent) {
-        this.detailedConsent = detailedConsent;
+    public ConsentHistoryResponse consentResource(ConsentResourceResponse consentResource) {
+        this.consentResource = consentResource;
         return this;
     }
 
 
-    @ApiModelProperty(value = "")
-    @JsonProperty("detailedConsent")
-    @Valid public DetailedConsentResource getDetailedConsent() {
-        return detailedConsent;
+    public ConsentResourceResponse getDetailedConsent() {
+        return consentResource;
     }
 
-    @JsonProperty("detailedConsent")
-    public void setDetailedConsent(DetailedConsentResource detailedConsent) {
-        this.detailedConsent = detailedConsent;
+    public void setDetailedConsent(
+            ConsentResourceResponse detailedConsent) {
+        this.consentResource = detailedConsent;
     }
 
-    /**
-     *
-     **/
-    public ConsentHistory changedMetadata(Object changedMetadata) {
-        this.changedMetadata = changedMetadata;
-        return this;
-    }
-
-
-    @ApiModelProperty(value = "")
-    @JsonProperty("changedMetadata")
-    public Object getChangedMetadata() {
-        return changedMetadata;
-    }
-
-    @JsonProperty("changedMetadata")
-    public void setChangedMetadata(Object changedMetadata) {
-        this.changedMetadata = changedMetadata;
-    }
 
 
     @Override
@@ -154,18 +130,17 @@ public class ConsentHistory implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ConsentHistory consentHistory = (ConsentHistory) o;
+        ConsentHistoryResponse consentHistory = (ConsentHistoryResponse) o;
         return Objects.equals(this.historyId, consentHistory.historyId) &&
                 Objects.equals(this.consentID, consentHistory.consentID) &&
                 Objects.equals(this.timestamp, consentHistory.timestamp) &&
                 Objects.equals(this.reason, consentHistory.reason) &&
-                Objects.equals(this.detailedConsent, consentHistory.detailedConsent) &&
-                Objects.equals(this.changedMetadata, consentHistory.changedMetadata);
+                Objects.equals(this.consentResource, consentHistory.consentResource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(historyId, consentID, timestamp, reason, detailedConsent, changedMetadata);
+        return Objects.hash(historyId, consentID, timestamp, reason, consentResource);
     }
 
     @Override
@@ -177,8 +152,7 @@ public class ConsentHistory implements Serializable {
         sb.append("    consentID: ").append(toIndentedString(consentID)).append("\n");
         sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
         sb.append("    reason: ").append(toIndentedString(reason)).append("\n");
-        sb.append("    detailedConsent: ").append(toIndentedString(detailedConsent)).append("\n");
-        sb.append("    changedMetadata: ").append(toIndentedString(changedMetadata)).append("\n");
+        sb.append("    consentResource: ").append(toIndentedString(consentResource)).append("\n");
         sb.append("}");
         return sb.toString();
     }

@@ -5,19 +5,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentMgtException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthResponse;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResponse;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ReauthorizeResource;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.Resource;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceResponse;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceResponse;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.CreateAuthorizationResourceRequestBody;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.CreateConsentResourceRequestBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,8 +64,9 @@ public class ConsentUtils {
      *
      * @param consentResourceDTO
      */
-    public static void copyPropertiesToConsentResource(ConsentResource consentResource,
-                                                       ConsentResourceDTO consentResourceDTO) throws
+    public static void copyPropertiesToConsentResource(
+            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource,
+            CreateConsentResourceRequestBody consentResourceDTO) throws
             ConsentMgtException {
         consentResource.setConsentType(consentResourceDTO.getConsentType());
         consentResource.setClientID(consentResourceDTO.getClientID());
@@ -85,8 +82,9 @@ public class ConsentUtils {
     /**
      * copy properties from authorizationResourceDTo to authorizationResource
      */
-    public static void copyPropertiesToAuthorizationResource(AuthorizationResource authorizationResource,
-                                                             AuthorizationResourceDTO authorizationResourceDTO) throws
+    public static void copyPropertiesToAuthorizationResource(
+            org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource authorizationResource,
+            CreateAuthorizationResourceRequestBody authorizationResourceDTO) throws
             JsonProcessingException {
         authorizationResource.setAuthorizationType(authorizationResourceDTO.getAuthorizationType());
         authorizationResource.setAuthorizationStatus(authorizationResourceDTO.getAuthorizationStatus());
@@ -94,79 +92,48 @@ public class ConsentUtils {
         authorizationResource.setResource(objectMapper.writeValueAsString(authorizationResourceDTO.getResource()));
     }
 
-    /**
-     * copy properties from authorizationResourceDTo to authorizationResource
-     */
-    public static void copyPropertiesToAuthorizationResource(AuthorizationResource authorizationResource,
-                                                             ReauthorizeResource authorizationResourceDTO) {
-        authorizationResource.setAuthorizationID(authorizationResourceDTO.getAuthId());
-        authorizationResource.setAuthorizationType(authorizationResourceDTO.getAuthorizationType());
-        authorizationResource.setAuthorizationStatus(authorizationResourceDTO.getAuthorizationStatus());
-        authorizationResource.setUserID(authorizationResourceDTO.getUserID());
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
-        for (Resource resource : authorizationResourceDTO.getResources()) {
-            ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-            consentMappingResource.setResource(resource.getResource());
-            consentMappingResource.setMappingID(resource.getResourceMappingId());
-            consentMappingResource.setMappingStatus(resource.getConsentMappingStatus());
-            consentMappingResources.add(consentMappingResource);
-
-        }
-
-    }
-
 
     /**
      * copy properties from consentResource to consentResponse
      */
-    public static void buildAuthorizationResourceResponse(AuthResponse authorizationResourceResponseResponse,
-                                                          AuthorizationResource authorizationResource) throws
+    public static void buildAuthorizationResourceResponse(AuthorizationResourceResponse authorizationResourceResponse,
+                                                          AuthorizationResource authorizationResource)
+            throws
             JsonProcessingException {
-        authorizationResourceResponseResponse.setAuthId(authorizationResource.getAuthorizationID());
-        authorizationResourceResponseResponse.setUserID(authorizationResource.getUserID());
-        authorizationResourceResponseResponse.setAuthorizationStatus(authorizationResource.getAuthorizationStatus());
-        authorizationResourceResponseResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
+        authorizationResourceResponse.setAuthId(authorizationResource.getAuthorizationID());
+        authorizationResourceResponse.setUserID(authorizationResource.getUserID());
+        authorizationResourceResponse.setAuthorizationStatus(authorizationResource.getAuthorizationStatus());
+        authorizationResourceResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
 
 
-        authorizationResourceResponseResponse.setResource(
+        authorizationResourceResponse.setResource(
                 new net.minidev.json.JSONObject(objectMapper.readValue(
-                authorizationResource.getResource(), new TypeReference<Map<String, Object>>() {
-        })));
+                        authorizationResource.getResource(), new TypeReference<Map<String, Object>>() {
+                        })));
     }
 
     /**
      * copy properties from consentResource to consentResponse
      */
-    public static void buildAuthorizationResourceResponse(AuthorizationResource authorizationResourceResponseResponse,
-                                                          AuthorizationResource authorizationResource,
-                                                          ArrayList<ConsentMappingResource> consentMappingResources) {
+    public static void buildAuthorizationResourceResponse(
+            AuthorizationResource authorizationResourceResponseResponse,
+            AuthorizationResource authorizationResource,
+            ArrayList<ConsentMappingResource> consentMappingResources) {
         authorizationResourceResponseResponse.setAuthorizationID(authorizationResource.getAuthorizationID());
         authorizationResourceResponseResponse.setUserID(authorizationResource.getUserID());
         authorizationResourceResponseResponse.setAuthorizationStatus(authorizationResource.getAuthorizationStatus());
         authorizationResourceResponseResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
 
 
-
-
     }
-    /**
-     * copy properties from consentResourceMapping  to consentResourceMappingResponse
-     */
-    public static void buildConsentMappingResourceResponse(Resource consentMappingResourceResponse,
-                                                           ConsentMappingResource consentMappingResource) {
-        consentMappingResourceResponse.setResourceMappingId(consentMappingResource.getMappingID());
-        consentMappingResourceResponse.setResource(consentMappingResource.getResource());
-        consentMappingResourceResponse.setConsentMappingStatus(consentMappingResource.getMappingStatus());
 
-    }
 
     /**
      * copy properties to consentResourceResponse
      */
-    public static void buildConsentResourceResponse(ConsentResponse consentResourceResponse,
+    public static void buildConsentResourceResponse(ConsentResourceResponse consentResourceResponse,
                                                     DetailedConsentResource consentResource,
                                                     ArrayList<AuthorizationResource> authorizationResources,
-                                                    ArrayList<ConsentMappingResource> consentMappingResources,
                                                     boolean withAttributes) throws
             JsonProcessingException {
         consentResourceResponse.setConsentID(consentResource.getConsentID());
@@ -186,12 +153,11 @@ public class ConsentUtils {
         }
 
 
-
         if (authorizationResources != null) {
-            ArrayList<AuthResponse> authResponses = new ArrayList<>();
+            ArrayList<AuthorizationResourceResponse> authResponses = new ArrayList<>();
             for (AuthorizationResource authorizationResource : authorizationResources) {
 
-                AuthResponse authResponse = new AuthResponse();
+                AuthorizationResourceResponse authResponse = new AuthorizationResourceResponse();
                 buildAuthorizationResourceResponse(authResponse, authorizationResource);
                 authResponses.add(authResponse);
             }
@@ -238,8 +204,10 @@ public class ConsentUtils {
         consentResource.put(ConsentConstant.CONSENT_ATTRIBUTES,
                 attributes);
         JSONArray authorizationResources = new JSONArray();
-        ArrayList<AuthorizationResource> authArray = detailedConsentResource.getAuthorizationResources();
-        for (AuthorizationResource resource : authArray) {
+        ArrayList<org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource> authArray =
+                detailedConsentResource.getAuthorizationResources();
+        for (org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource resource :
+                authArray) {
             JSONObject resourceJSON = new JSONObject();
             resourceJSON.put(ConsentConstant.AUTH_ID,
                     resource.getAuthorizationID());
@@ -284,7 +252,8 @@ public class ConsentUtils {
      * @param consentResource consent resource
      * @return JSON object constructed from the  consent resource
      */
-    public static JSONObject consentResourceToJSON(ConsentResource consentResource) {
+    public static JSONObject consentResourceToJSON(
+            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource) {
         JSONObject consentResourceJSON = new JSONObject();
         consentResourceJSON.put(ConsentConstant.CONSENT_ID,
                 consentResource.getConsentID());

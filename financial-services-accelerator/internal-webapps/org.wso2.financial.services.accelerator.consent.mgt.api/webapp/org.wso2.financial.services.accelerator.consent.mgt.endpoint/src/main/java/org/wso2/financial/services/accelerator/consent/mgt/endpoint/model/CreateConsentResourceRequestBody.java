@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @JsonTypeName("ConsentResourceDTO")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class ConsentResourceDTO implements Serializable {
+public class CreateConsentResourceRequestBody implements Serializable {
     private String clientID;
     private String consentType;
     private String currentStatus;
@@ -25,20 +25,20 @@ public class ConsentResourceDTO implements Serializable {
     private Integer expiryTime;
     private Boolean recurringIndicator;
     private Object consentAttributes;
-    private @Valid List<@Valid AuthorizationResourceDTO> authorizationResources = new ArrayList<>();
+    private @Valid List<@Valid CreateAuthorizationResourceRequestBody> authorizationResources = new ArrayList<>();
 
-    public ConsentResourceDTO() {
+    public CreateConsentResourceRequestBody() {
     }
 
     @JsonCreator
-    public ConsentResourceDTO(
+    public CreateConsentResourceRequestBody(
             @JsonProperty(required = true, value = "clientID") String clientID,
             @JsonProperty(required = true, value = "consentType") String consentType,
             @JsonProperty(required = true, value = "currentStatus") String currentStatus,
             @JsonProperty(required = true, value = "receipt") String receipt,
             @JsonProperty(required = true, value = "expiryTime") Integer expiryTime,
             @JsonProperty(required = true, value = "recurringIndicator") Boolean recurringIndicator
-                             ) {
+                                           ) {
         this.clientID = clientID;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
@@ -50,7 +50,7 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO clientID(String clientID) {
+    public CreateConsentResourceRequestBody clientID(String clientID) {
         this.clientID = clientID;
         return this;
     }
@@ -70,7 +70,7 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO consentType(String consentType) {
+    public CreateConsentResourceRequestBody consentType(String consentType) {
         this.consentType = consentType;
         return this;
     }
@@ -90,7 +90,7 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO currentStatus(String currentStatus) {
+    public CreateConsentResourceRequestBody currentStatus(String currentStatus) {
         this.currentStatus = currentStatus;
         return this;
     }
@@ -110,7 +110,7 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO receipt(String receipt) {
+    public CreateConsentResourceRequestBody receipt(String receipt) {
         this.receipt = receipt;
         return this;
     }
@@ -130,7 +130,7 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO expiryTime(Integer expiryTime) {
+    public CreateConsentResourceRequestBody expiryTime(Integer expiryTime) {
         this.expiryTime = expiryTime;
         return this;
     }
@@ -150,7 +150,7 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO recurringIndicator(Boolean recurringIndicator) {
+    public CreateConsentResourceRequestBody recurringIndicator(Boolean recurringIndicator) {
         this.recurringIndicator = recurringIndicator;
         return this;
     }
@@ -170,7 +170,7 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO consentAttributes(Object consentAttributes) {
+    public CreateConsentResourceRequestBody consentAttributes(Object consentAttributes) {
         this.consentAttributes = consentAttributes;
         return this;
     }
@@ -190,7 +190,8 @@ public class ConsentResourceDTO implements Serializable {
     /**
      *
      **/
-    public ConsentResourceDTO authorizationResources(List<@Valid AuthorizationResourceDTO> authorizationResources) {
+    public CreateConsentResourceRequestBody authorizationResources(
+            List<@Valid CreateAuthorizationResourceRequestBody> authorizationResources) {
         this.authorizationResources = authorizationResources;
         return this;
     }
@@ -198,16 +199,17 @@ public class ConsentResourceDTO implements Serializable {
 
     @ApiModelProperty(value = "")
     @JsonProperty("authorizationResources")
-    @Valid public List<@Valid AuthorizationResourceDTO> getAuthorizationResources() {
+    @Valid public List<@Valid CreateAuthorizationResourceRequestBody> getAuthorizationResources() {
         return authorizationResources;
     }
 
     @JsonProperty("authorizationResources")
-    public void setAuthorizationResources(List<@Valid AuthorizationResourceDTO> authorizationResources) {
+    public void setAuthorizationResources(List<@Valid CreateAuthorizationResourceRequestBody> authorizationResources) {
         this.authorizationResources = authorizationResources;
     }
 
-    public ConsentResourceDTO addAuthorizationResourcesItem(AuthorizationResourceDTO authorizationResourcesItem) {
+    public CreateConsentResourceRequestBody addAuthorizationResourcesItem(
+            CreateAuthorizationResourceRequestBody authorizationResourcesItem) {
         if (this.authorizationResources == null) {
             this.authorizationResources = new ArrayList<>();
         }
@@ -216,7 +218,8 @@ public class ConsentResourceDTO implements Serializable {
         return this;
     }
 
-    public ConsentResourceDTO removeAuthorizationResourcesItem(AuthorizationResourceDTO authorizationResourcesItem) {
+    public CreateConsentResourceRequestBody removeAuthorizationResourcesItem(
+            CreateAuthorizationResourceRequestBody authorizationResourcesItem) {
         if (authorizationResourcesItem != null && this.authorizationResources != null) {
             this.authorizationResources.remove(authorizationResourcesItem);
         }
@@ -232,7 +235,7 @@ public class ConsentResourceDTO implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ConsentResourceDTO consentResourceDTO = (ConsentResourceDTO) o;
+        CreateConsentResourceRequestBody consentResourceDTO = (CreateConsentResourceRequestBody) o;
         return Objects.equals(this.clientID, consentResourceDTO.clientID) &&
                 Objects.equals(this.consentType, consentResourceDTO.consentType) &&
                 Objects.equals(this.currentStatus, consentResourceDTO.currentStatus) &&

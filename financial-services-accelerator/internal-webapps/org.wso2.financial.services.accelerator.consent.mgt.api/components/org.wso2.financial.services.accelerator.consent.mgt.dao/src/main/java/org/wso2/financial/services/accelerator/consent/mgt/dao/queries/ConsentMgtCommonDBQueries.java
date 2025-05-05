@@ -99,12 +99,8 @@ public class ConsentMgtCommonDBQueries {
                 "ocar.AUTH_TYPE, " +
                 "ocar.UPDATED_TIME AS AUTH_UPDATED_TIME, " +
                 "ocar.USER_ID, " +
-                "cm.MAPPING_ID, " +
-                "cm.MAPPING_STATUS, " +
-                "cm.RESOURCE " +
                 "FROM FS_CONSENT obc " +
                 "LEFT JOIN FS_CONSENT_AUTH_RESOURCE ocar ON obc.CONSENT_ID=ocar.CONSENT_ID " +
-                "LEFT JOIN FS_CONSENT_MAPPING cm ON ocar.AUTH_ID=cm.AUTH_ID " +
                 "WHERE obc.CONSENT_ID = ?";
     }
 
@@ -132,9 +128,8 @@ public class ConsentMgtCommonDBQueries {
 
     public String getGetAuthorizationResourcePreparedStatement() {
 
-        return "SELECT ACR.*, OCM.*\n" +
+        return "SELECT ACR.*\n" +
                 "FROM FS_CONSENT_AUTH_RESOURCE ACR  \n" +
-                "LEFT JOIN FS_CONSENT_MAPPING OCM ON OCM.AUTH_ID = ACR.AUTH_ID  \n" +
                 "LEFT JOIN FS_CONSENT C ON ACR.CONSENT_ID = C.CONSENT_ID  \n" +
                 "WHERE ACR.AUTH_ID = ? \n" +
                 "AND (C.ORG_ID = ?)";

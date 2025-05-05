@@ -47,7 +47,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentC
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -373,84 +372,6 @@ public class ConsentCoreServiceUtil {
         };
     }
 
-    /**
-     * Method to update the accounts of a consent.
-     *
-     * @param connection                   Database connection
-     * @param consentCoreDAO               Consent core DAO
-     * @param authID                       Authorization ID
-     * @param accountIDsMapWithPermissions Account IDs map with permissions
-     * @param detailedConsentResource      Detailed consent resource
-     * @param isNewAuthResource            Is new authorization resource
-     * @throws ConsentDataInsertionException If an error occurs when inserting data
-     * @throws ConsentDataUpdationException  If an error occurs when updating data
-     */
-    public static void updateAccounts(Connection connection, ConsentCoreDAO consentCoreDAO, String authID,
-                                      Map<String, ArrayList<String>> accountIDsMapWithPermissions,
-                                      DetailedConsentResource detailedConsentResource, boolean isNewAuthResource)
-            throws
-            ConsentDataInsertionException,
-            ConsentDataUpdationException {
-
-        // Get existing consent account mappings
-        log.debug("Retrieve existing active account mappings");
-        ArrayList<ConsentMappingResource> existingAccountMappings =
-                detailedConsentResource.getConsentMappingResources();
-
-        // Determine unique account IDs
-        HashSet<String> existingAccountIDs = new HashSet<>();
-        existingAccountMappings.forEach(mapping -> existingAccountIDs.add(
-                mapping.getAccountID()));
-
-        ArrayList<String> existingAccountIDsList = new ArrayList<>(existingAccountIDs);
-
-        ArrayList<String> reAuthorizedAccounts = new ArrayList<>();
-        accountIDsMapWithPermissions.forEach((accountID, permissions) ->
-                reAuthorizedAccounts.add(accountID));
-
-        // Determine whether the account should be removed or added
-        ArrayList<String> accountsToRevoke = new ArrayList<>(existingAccountIDsList);
-        accountsToRevoke.removeAll(reAuthorizedAccounts);
-
-        ArrayList<String> accountsToAdd = new ArrayList<>(reAuthorizedAccounts);
-
-        if (isNewAuthResource) {
-            ArrayList<String> commonAccountsFromReAuth = new ArrayList<>(existingAccountIDs);
-            commonAccountsFromReAuth.retainAll(accountsToAdd);
-            accountsToAdd.removeAll(existingAccountIDs);
-            accountsToAdd.addAll(commonAccountsFromReAuth);
-        } else {
-            accountsToAdd.removeAll(existingAccountIDs);
-        }
-
-        if (!accountsToAdd.isEmpty()) {
-            // Store accounts as consent account mappings
-            log.debug("Add extra accounts as account mappings");
-            for (String accountID : accountsToAdd) {
-                ArrayList<String> permissions = accountIDsMapWithPermissions.get(accountID);
-                for (String permission : permissions) {
-                    ConsentMappingResource consentMappingResource = new ConsentMappingResource(
-                            authID, accountID, permission, ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
-                    ConsentMappingResource storedConsentMappingResource =
-                            consentCoreDAO.storeConsentMappingResource(connection,
-                                    consentMappingResource);
-                    existingAccountMappings.add(storedConsentMappingResource);
-                }
-            }
-        }
-        if (!accountsToRevoke.isEmpty()) {
-            // Update mapping statuses of revoking accounts to inactive
-            log.debug("Deactivate unwanted account mappings");
-            ArrayList<String> mappingIDsToUpdate = new ArrayList<>();
-            for (String accountID : accountsToRevoke) {
-                existingAccountMappings.stream()
-                        .filter(resource -> accountID.equals(resource.getAccountID()))
-                        .forEach(resource -> mappingIDsToUpdate.add(resource.getMappingID()));
-            }
-            consentCoreDAO.updateConsentMappingStatus(connection, mappingIDsToUpdate,
-                    ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
-        }
-    }
 
     /**
      * Method to update the consent attributes.
