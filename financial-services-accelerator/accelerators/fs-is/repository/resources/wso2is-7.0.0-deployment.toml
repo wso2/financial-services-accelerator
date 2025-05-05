@@ -207,6 +207,11 @@ TokenExpiryTime = 60
 skip_db_schema_creation = true
 
 [[resource.access_control]]
+context = "(.*)/api/fs/consent/admin/(.*)"
+http_method = "all"
+secure = "true"
+
+[[resource.access_control]]
 allowed_auth_handlers = ["BasicAuthentication"]
 context = "(.*)/api/fs/consent/(.*)"
 http_method = "all"
@@ -224,6 +229,11 @@ context = "(.*)/api/fs/event-notifications/(.*)"
 http_method = "all"
 permissions = ["/permission/admin"]
 secure = "true"
+
+[[resource.access_control]]
+context = "(.*)/consentmgr/(.*)"
+secure="false"
+http_method="GET, DELETE"
 
 [[resource.access_control]]
 context="(.*)/scim2/Me"

@@ -55,11 +55,11 @@ public class ConsentMgrAuthServletImpl implements FSAuthServletInterface {
         Map<String, Object> updatedRequestData = new HashMap<>();
 
         boolean userClaimsConsentOnly = Boolean.parseBoolean(request.getParameter(Constants.USER_CLAIMS_CONSENT_ONLY));
-        updatedRequestData.put("userClaimsConsentOnly", userClaimsConsentOnly);
+        updatedRequestData.put(Constants.USER_CLAIMS_CONSENT_ONLY, userClaimsConsentOnly);
 
-        boolean displayScopes = (boolean) request.getSession().getAttribute("displayScopes");
+        boolean displayScopes = (boolean) request.getSession().getAttribute(Constants.DISPLAY_SCOPES);
         if (displayScopes) {
-            JSONArray openIdScopesArray = dataSet.getJSONArray("openid_scopes");
+            JSONArray openIdScopesArray = dataSet.getJSONArray(Constants.OPENID_SCOPES);
             if (openIdScopesArray != null) {
                 List<String> oidScopes = new ArrayList<>();
                 for (int scopeIndex = 0; scopeIndex < openIdScopesArray.length(); scopeIndex++) {
@@ -70,15 +70,17 @@ public class ConsentMgrAuthServletImpl implements FSAuthServletInterface {
         }
 
         // Strings
-        updatedRequestData.put("openidUserClaims", i18n(resourceBundle, "openid.user.claims"));
-        updatedRequestData.put("requestAccessProfile", i18n(resourceBundle, "request.access.profile"));
-        updatedRequestData.put("requestedAttributes", i18n(resourceBundle, "requested.attributes"));
-        updatedRequestData.put("bySelectingFollowingAttributes",
-                i18n(resourceBundle, "by.selecting.following.attributes"));
-        updatedRequestData.put("mandatoryClaimsRecommendation",
-                i18n(resourceBundle, "mandatory.claims.recommendation"));
-        updatedRequestData.put("continueDefault", i18n(resourceBundle, "continue"));
-        updatedRequestData.put("deny", i18n(resourceBundle, "deny"));
+        updatedRequestData.put(Constants.OPENID_USER_CLAIMS, i18n(resourceBundle, Constants.OPENID_USER_CLAIMS_KEY));
+        updatedRequestData.put(Constants.REQUEST_ACCESS_PROFILE,
+                i18n(resourceBundle, Constants.REQUEST_ACCESS_PROFILE_KEY));
+        updatedRequestData.put(Constants.REQUESTED_ATTRIBUTES,
+                i18n(resourceBundle, Constants.REQUESTED_ATTRIBUTES_KEY));
+        updatedRequestData.put(Constants.SELECTING_ATTRIBUTE,
+                i18n(resourceBundle, Constants.SELECTING_ATTRIBUTE_KEY));
+        updatedRequestData.put(Constants.CLAIM_RECOMMENDATION,
+                i18n(resourceBundle, Constants.CLAIM_RECOMMENDATION_KEY));
+        updatedRequestData.put(Constants.CONTINUE_DEFAULT, i18n(resourceBundle, Constants.CONTINUE));
+        updatedRequestData.put(Constants.DENY, i18n(resourceBundle, Constants.DENY));
 
         return updatedRequestData;
     }

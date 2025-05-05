@@ -30,9 +30,6 @@ import {generatePDF, getExpireTimeFromConsent} from "../services/utils";
 
 export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
 
-    console.log("consent", consent);
-    console.log("lang[consent.consent_type]", lang[consent.consent_type]);
-    console.log("lang[consent.consent_type]", lang[consent.consent_type]);
     const consentConsentId = consent.consentId;
     const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
 
@@ -56,9 +53,8 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
     const consentStatusLabel = (consent.currentStatus.toLowerCase() ===
         specConfigurations.status.authorised.toLowerCase() && !isNotExpired())
         ? specConfigurations.status.expired : infoLabel.label;
-    let keyDatesConfig = lang[consent.consent_type].filter((lbl) =>
+    let langObjectForConsentStatus = lang[consent.consent_type].filter((lbl) =>
             lbl.id.toLowerCase().includes(consent.currentStatus.toLowerCase()))[0];
-    console.log("keyDatesConfig", keyDatesConfig);
     return (
         <Container className="profileMain">
             <img id="profileLogo" src={logoURL} width="50" height="50" alt="new"/>
@@ -72,7 +68,7 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
                     </a>
                 </div>
                 {consent.currentStatus.toLowerCase() ===specConfigurations.status.authorised.toLowerCase() &&
-                    lang[consent.consent_type].isRevocableConsent && isNotExpired() ? (
+                    langObjectForConsentStatus.isRevocableConsent && isNotExpired() ? (
                     <div className="actionButtons">
                         <div className="actionBtnDiv">
                             <Link

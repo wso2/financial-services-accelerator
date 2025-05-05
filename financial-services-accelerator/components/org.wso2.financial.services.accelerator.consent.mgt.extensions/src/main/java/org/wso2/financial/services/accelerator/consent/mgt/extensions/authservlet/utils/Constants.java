@@ -32,4 +32,19 @@ public class Constants {
     public static final String CLAIM_SEPARATOR = ",";
     public static final String USER_CLAIMS_CONSENT_ONLY = "userClaimsConsentOnly";
     public static final String OIDC_SCOPES = "OIDCScopes";
+    public static final String DISPLAY_SCOPES = "displayScopes";
+    public static final String OPENID_SCOPES = "openid_scopes";
+    public static final String OPENID_USER_CLAIMS = "openidUserClaims";
+    public static final String OPENID_USER_CLAIMS_KEY = "openid.user.claims";
+    public static final String REQUEST_ACCESS_PROFILE = "requestAccessProfile";
+    public static final String REQUEST_ACCESS_PROFILE_KEY = "request.access.profile";
+    public static final String REQUESTED_ATTRIBUTES = "requestedAttributes";
+    public static final String REQUESTED_ATTRIBUTES_KEY = "requested.attributes";
+    public static final String SELECTING_ATTRIBUTE = "bySelectingFollowingAttributes";
+    public static final String SELECTING_ATTRIBUTE_KEY = "by.selecting.following.attributes";
+    public static final String CLAIM_RECOMMENDATION = "mandatoryClaimsRecommendation";
+    public static final String CLAIM_RECOMMENDATION_KEY = "mandatory.claims.recommendation";
+    public static final String CONTINUE_DEFAULT = "continueDefault";
+    public static final String CONTINUE = "continue";
+    public static final String DENY = "deny";
 }

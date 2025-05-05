@@ -23,6 +23,7 @@ import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Accordion, Card, Col } from "react-bootstrap";
 
 export const PermissionItem = ({ permissionScope }) => {
+    console.log("permissionScope", permissionScope);
     const [showDetailedPermissions, setShowDetailedPermissions] = useState(false);
     const [permissionsData, setPermissionsData] = useState([]);
 
@@ -40,6 +41,7 @@ export const PermissionItem = ({ permissionScope }) => {
 
                         return permissionData;
                     });
+
                     return {
                         ...data,
                         permissions: permissionsWithDescriptions,
@@ -104,7 +106,7 @@ export const PermissionItem = ({ permissionScope }) => {
                                     <ul className="permissionsUL">
                                         {data.permissions.map((permission, permissionIndex) => (
                                             <li key={permissionIndex}>
-                                                {data.dataCluster === "Permissions" && permission.description != null
+                                                {data.dataCluster === "Permissions" && permission.description && permission.description != null
                                                     && (<span className="permissionDescription">{permission.description}</span>
                                                 )}
                                                 {data.dataCluster === "Your Account Details" && (

@@ -143,10 +143,10 @@ public class FSConsentServlet extends HttpServlet {
 
         // Get servlet extension
         FSAuthServletInterface fsAuthServlet;
-        if (Constants.DEFAULT.equals(dataSet.getString("type"))) {
+        if (Constants.DEFAULT.equals(dataSet.getString(Constants.TYPE))) {
             // get default auth servlet extension
             fsAuthServlet = new ISDefaultAuthServletImpl();
-        } else if (Constants.CONSENT_MGT.equals(dataSet.getString("type"))) {
+        } else if (Constants.CONSENT_MGT.equals(dataSet.getString(Constants.TYPE))) {
             // get consent manager auth servlet extension
             fsAuthServlet = new ConsentMgrAuthServletImpl();
         } else {
@@ -166,7 +166,7 @@ public class FSConsentServlet extends HttpServlet {
         updatedValues.forEach(originalRequest::setAttribute);
 
         // update session
-        updatedValues = fsAuthServletTK.updateSessionAttribute(request, dataSet, resourceBundle);
+        updatedValues = fsAuthServlet.updateSessionAttribute(request, dataSet, resourceBundle);
         updatedValues.forEach(originalRequest.getSession()::setAttribute);
 
         // dispatch

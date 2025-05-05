@@ -33,6 +33,8 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils.i18n;
+
 /**
  * ISDefaultAuthServletImpl
  */
@@ -55,14 +57,14 @@ public class ISDefaultAuthServletImpl implements FSAuthServletInterface {
             String[] requestedClaimList = request.getParameter(Constants.REQUESTED_CLAIMS)
                     .split(Constants.CLAIM_SEPARATOR);
 
-            returnMaps.put("requestedClaims", Utils.splitClaims(requestedClaimList));
+            returnMaps.put(Constants.REQUESTED_CLAIMS, Utils.splitClaims(requestedClaimList));
         }
 
         if (request.getParameter(Constants.MANDATORY_CLAIMS) != null) {
             String[] mandatoryClaimList = request.getParameter(Constants.MANDATORY_CLAIMS)
                     .split(Constants.CLAIM_SEPARATOR);
 
-            returnMaps.put("mandatoryClaims", Utils.splitClaims(mandatoryClaimList));
+            returnMaps.put(Constants.MANDATORY_CLAIMS, Utils.splitClaims(mandatoryClaimList));
         }
 
 
@@ -72,16 +74,16 @@ public class ISDefaultAuthServletImpl implements FSAuthServletInterface {
         hiding the scopes being displayed and the approve always button.
         */
         boolean userClaimsConsentOnly = Boolean.parseBoolean(request.getParameter(Constants.USER_CLAIMS_CONSENT_ONLY));
-        returnMaps.put("userClaimsConsentOnly", userClaimsConsentOnly);
+        returnMaps.put(Constants.USER_CLAIMS_CONSENT_ONLY, userClaimsConsentOnly);
 
         List<String> oidScopes = new ArrayList<>();
-        boolean displayScopes = (boolean) request.getSession().getAttribute("displayScopes");
+        boolean displayScopes = (boolean) request.getSession().getAttribute(Constants.DISPLAY_SCOPES);
 
         if (userClaimsConsentOnly) {
             // If we are getting consent for user claims only, we don't need to display OIDC scopes in the consent page
         } else {
             if (displayScopes) {
-                JSONArray openIdScopesArray = dataSet.getJSONArray("openid_scopes");
+                JSONArray openIdScopesArray = dataSet.getJSONArray(Constants.DISPLAY_SCOPES);
                 if (openIdScopesArray != null) {
                     for (int scopeIndex = 0; scopeIndex < openIdScopesArray.length(); scopeIndex++) {
                         oidScopes.add(openIdScopesArray.getString(scopeIndex));
@@ -93,15 +95,14 @@ public class ISDefaultAuthServletImpl implements FSAuthServletInterface {
 
 
         // Strings
-        returnMaps.put("openidUserClaims", Utils.i18n(resourceBundle, "openid.user.claims"));
-        returnMaps.put("requestAccessProfile", Utils.i18n(resourceBundle, "request.access.profile"));
-        returnMaps.put("requestedAttributes", Utils.i18n(resourceBundle, "requested.attributes"));
-        returnMaps.put("bySelectingFollowingAttributes",
-                Utils.i18n(resourceBundle, "by.selecting.following.attributes"));
-        returnMaps.put("mandatoryClaimsRecommendation",
-                Utils.i18n(resourceBundle, "mandatory.claims.recommendation"));
-        returnMaps.put("continueDefault", Utils.i18n(resourceBundle, "continue"));
-        returnMaps.put("deny", Utils.i18n(resourceBundle, "deny"));
+        returnMaps.put(Constants.OPENID_USER_CLAIMS, i18n(resourceBundle, Constants.OPENID_USER_CLAIMS_KEY));
+        returnMaps.put(Constants.REQUEST_ACCESS_PROFILE, i18n(resourceBundle, Constants.REQUEST_ACCESS_PROFILE_KEY));
+        returnMaps.put(Constants.REQUESTED_ATTRIBUTES, i18n(resourceBundle, Constants.REQUESTED_ATTRIBUTES_KEY));
+        returnMaps.put(Constants.SELECTING_ATTRIBUTE, i18n(resourceBundle, Constants.SELECTING_ATTRIBUTE_KEY));
+        returnMaps.put(Constants.CLAIM_RECOMMENDATION,
+                i18n(resourceBundle, Constants.CLAIM_RECOMMENDATION_KEY));
+        returnMaps.put(Constants.CONTINUE_DEFAULT, i18n(resourceBundle, Constants.CONTINUE));
+        returnMaps.put(Constants.DENY, i18n(resourceBundle, Constants.DENY));
 
         return returnMaps;
 

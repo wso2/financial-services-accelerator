@@ -132,6 +132,7 @@
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/fs#authenticationendpoint/"/>
                                 <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.event.notifications.endpoint/target/api#fs#event-notifications.war"
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#fs#event-notifications/"/>
+                                <unzip src="../../react-apps/self-care-portal/target/consentmgr.war" dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consentmgr/" />
                             </target>
                         </configuration>
                         <goals>
