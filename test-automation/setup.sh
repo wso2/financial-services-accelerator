@@ -85,7 +85,7 @@ echo '=================== Install Java and Maven ==================='
 #MVNSTATE=$?
 ##
 echo '======================= Moving Packs to RUNNER_HOME ======================='
-unzip RUNNER_HOME/financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
+unzip $RUNNER_HOME/financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
 
 echo '======================= Setup MYSQL ======================='
 sudo apt-get update
