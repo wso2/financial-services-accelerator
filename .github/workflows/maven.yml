@@ -84,8 +84,9 @@ jobs:
       - name: Build with Maven
         run: |
           export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
+          chmod +x $RUNNER_HOME/test-automation/test.sh  
+          mvn -B install --file pom.xml
           RUNNER_HOME=`pwd`
-          chmod +x $RUNNER_HOME/test-automation/test.sh         
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           bash $RUNNER_HOME/test-automation/setup.sh
