@@ -27,6 +27,13 @@ jobs:
   Build-repo-check:
 
     runs-on: ubuntu-latest
+    env:
+      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
+      WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
+      STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      TEST_HOME: /home/runner/work/financial-services/financial-services
+      TEST_REPORT_RECIPIENT: sajeenthiran@wso2.com
 
     steps:
       - uses: actions/checkout@v2
