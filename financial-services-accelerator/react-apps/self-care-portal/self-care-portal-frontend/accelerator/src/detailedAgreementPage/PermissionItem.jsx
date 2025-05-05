@@ -23,7 +23,6 @@ import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Accordion, Card, Col } from "react-bootstrap";
 
 export const PermissionItem = ({ permissionScope }) => {
-    console.log("permissionScope", permissionScope);
     const [showDetailedPermissions, setShowDetailedPermissions] = useState(false);
     const [permissionsData, setPermissionsData] = useState([]);
 
