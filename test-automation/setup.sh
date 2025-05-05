@@ -71,19 +71,19 @@ echo '=================== Install Java and Maven ==================='
 #
 #fi
 
-if command -v mvn &> /dev/null
-then
-    echo "Maven is installed"
-    mvn --version
-else
-    sudo apt install -y maven
-fi
+#if command -v mvn &> /dev/null
+#then
+#    echo "Maven is installed"
+#    mvn --version
+#else
+#    sudo apt install -y maven
+#fi
 
-echo '======================= Building packs ======================='
-
-mvn -B install --file ${RUNNER_HOME}/pom.xml
-MVNSTATE=$?
-
+#echo '======================= Building packs ======================='
+##
+#mvn -B install --file ${RUNNER_HOME}/pom.xml
+#MVNSTATE=$?
+##
 echo '======================= Moving Packs to RUNNER_HOME ======================='
 unzip financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
 
