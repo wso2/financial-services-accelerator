@@ -192,7 +192,7 @@ RUNNER_HOME=`pwd`
 #bash configure.sh
 SQL_SCRIPT="$RUNNER_HOME/accelerators/fs-is/carbon-home/dbscripts/financial-services/event-notifications/mysql.sql"
 
-source $(pwd)/../repository/conf/configure.properties
+#source $(pwd)/../repository/conf/configure.properties
 
 mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "fs_consentdb" < "$SQL_SCRIPT"
 
