@@ -69,4 +69,4 @@ node_modules/
 
 fs-integration-test-suite/accelerator-test-framework/src/main/resources/TestConfiguration.xml
 
-.properties
+test-automation/deployment.properties
