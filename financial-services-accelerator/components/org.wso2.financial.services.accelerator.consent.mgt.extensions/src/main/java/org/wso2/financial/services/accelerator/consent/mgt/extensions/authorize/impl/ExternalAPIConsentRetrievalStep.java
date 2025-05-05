@@ -91,7 +91,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                         consentFileContent = consentCoreService.getConsentFile(consentId).getConsentFile();
                         externalAPIConsentResource.setFileContent(consentFileContent);
                     } catch (ConsentManagementException e) {
-                        log.debug("No consent file found for the given consent Id.");
+                        log.debug("No consent file found for the given consent Id: " +
+                                consentId.replaceAll("\n\r", ""));
                     }
                 }
             }
