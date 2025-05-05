@@ -31,26 +31,18 @@ export const PermissionItem = ({ permissionScope }) => {
 
         if (hasPermissions) {
             const updatedDataLanguage = permissionDataLanguage.map((data) => {
-//                 data.dataCluster === "Permissions"  && Array.isArray(permissionScope)
-                if (typeof permissionScope === 'string') {
-                    console.log("Array-Permissions", permissionScope);
-//                     const permissionsWithDescriptions = permissionScope.map((permission) => {
-//                         const permissionData = {
-//                             name: permission,
-//                             description: getPermissionDescription(permission),
-//                         };
-//
-//                         console.log("Array-permissionData", permissionData);
-//                         return permissionData;
-//
-//                     });
-                    const permissionData = {
-                        name: permissionScope,
-                        description: getPermissionDescription(permissionScope),
-                    };
+                if (data.dataCluster === "Permissions"  && Array.isArray(permissionScope)) {
+                    const permissionsWithDescriptions = permissionScope.map((permission) => {
+                        const permissionData = {
+                            name: permission,
+                            description: getPermissionDescription(permission),
+                        };
+
+                        return permissionData;
+                    });
                     return {
                         ...data,
-                        permissions: permissionData,
+                        permissions: permissionsWithDescriptions,
                     };
                 }
                 return data;
@@ -63,11 +55,17 @@ export const PermissionItem = ({ permissionScope }) => {
 
     const getPermissionDescription = (permission) => {
         const permissionObject = permissionDataLanguage.find(
-            (data) => data.scope === permission
+            (data) => data.dataCluster === "Permissions"
         );
 
         if (permissionObject) {
-            return permissionObject.permissions;
+            const permissionData = permissionObject.permissions.find(
+                (perm) => perm.name === permission
+            );
+
+            if (permissionData) {
+                return permissionData.description;
+            }
         }
 
         return ""; // Default description if no match found
@@ -106,7 +104,7 @@ export const PermissionItem = ({ permissionScope }) => {
                                     <ul className="permissionsUL">
                                         {data.permissions.map((permission, permissionIndex) => (
                                             <li key={permissionIndex}>
-                                                {permission.description && permission.description != null
+                                                {data.dataCluster === "Permissions" && permission.description != null
                                                     && (<span className="permissionDescription">{permission.description}</span>
                                                 )}
                                                 {data.dataCluster === "Your Account Details" && (
