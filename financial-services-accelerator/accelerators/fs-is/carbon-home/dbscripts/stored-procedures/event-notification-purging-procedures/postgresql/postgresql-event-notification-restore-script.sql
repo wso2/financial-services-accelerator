@@ -1,0 +1,78 @@
+CREATE OR REPLACE FUNCTION WSO2_FS_EVENT_NOTIFICATION_CLEANUP_DATA_RESTORE_SP() RETURNS void AS $$
+DECLARE
+
+rowcount bigint;
+enableLog boolean;
+logLevel VARCHAR(10);
+
+BEGIN
+
+-- ------------------------------------------
+-- CONFIGURABLE ATTRIBUTES
+-- ------------------------------------------
+enableLog := TRUE; -- ENABLE LOGGING [DEFAULT : TRUE]
+logLevel := 'TRACE'; -- SET LOG LEVELS : TRACE
+
+
+
+IF (enableLog) THEN
+RAISE NOTICE 'WSO2_FS_EVENT_NOTIFICATION_CLEANUP_DATA_RESTORE_SP STARTED .... !';
+RAISE NOTICE '';
+END IF;
+
+
+-- ---------------------
+
+SELECT COUNT(1) INTO rowcount  FROM PG_CATALOG.PG_TABLES WHERE SCHEMANAME = CURRENT_SCHEMA() AND TABLENAME IN ('fs_notification');
+IF (rowcount = 1)
+THEN
+IF (enableLog AND logLevel IN ('TRACE')) THEN
+RAISE NOTICE 'CLEANUP DATA RESTORATION STARTED ON fs_notification TABLE !';
+END IF;
+INSERT INTO fs_notification SELECT A.* FROM bak_fs_notification A LEFT JOIN fs_notification B ON A.NOTIFICATION_ID = B.NOTIFICATION_ID WHERE B.NOTIFICATION_ID IS NULL;
+GET DIAGNOSTICS rowcount := ROW_COUNT;
+IF (enableLog ) THEN
+RAISE NOTICE 'CLEANUP DATA RESTORATION COMPLETED ON fs_notification WITH %',ROWCOUNT;
+END IF;
+END IF;
+
+-- ---------------------
+
+SELECT COUNT(1) INTO rowcount  FROM PG_CATALOG.PG_TABLES WHERE SCHEMANAME = CURRENT_SCHEMA() AND TABLENAME IN ('fs_notification_event');
+IF (rowcount = 1)
+THEN
+IF (enableLog AND logLevel IN ('TRACE')) THEN
+RAISE NOTICE 'CLEANUP DATA RESTORATION STARTED ON fs_notification_event TABLE !';
+END IF;
+INSERT INTO fs_notification_event SELECT A.* FROM bak_fs_notification_event A LEFT JOIN fs_notification_event B ON A.NOTIFICATION_ID = B.NOTIFICATION_ID WHERE B.NOTIFICATION_ID IS NULL;
+GET DIAGNOSTICS rowcount := ROW_COUNT;
+IF (enableLog ) THEN
+RAISE NOTICE 'CLEANUP DATA RESTORATION COMPLETED ON fs_notification_event WITH %',ROWCOUNT;
+END IF;
+END IF;
+
+-- ---------------------
+
+SELECT COUNT(1) INTO rowcount  FROM PG_CATALOG.PG_TABLES WHERE SCHEMANAME = CURRENT_SCHEMA() AND TABLENAME IN ('fs_notification_error');
+IF (rowcount = 1)
+THEN
+IF (enableLog AND logLevel IN ('TRACE')) THEN
+RAISE NOTICE 'CLEANUP DATA RESTORATION STARTED ON fs_notification_error TABLE !';
+END IF;
+INSERT INTO fs_notification_error SELECT A.* FROM bak_fs_notification_error A LEFT JOIN fs_notification_error B ON A.NOTIFICATION_ID = B.NOTIFICATION_ID WHERE B.NOTIFICATION_ID IS NULL;
+GET DIAGNOSTICS rowcount := ROW_COUNT;
+IF (enableLog ) THEN
+RAISE NOTICE 'CLEANUP DATA RESTORATION COMPLETED ON fs_notification_error WITH %',ROWCOUNT;
+END IF;
+END IF;
+
+-- ---------------------
+
+IF (enableLog) THEN
+RAISE NOTICE 'WSO2_FS_EVENT_NOTIFICATION_CLEANUP_DATA_RESTORE_SP COMPLETED .... !';
+RAISE NOTICE '';
+END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql';
