@@ -1739,6 +1739,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StoredAuthorization'
+        fileContent:
+          type: string
     Authorization:
       type: object
       properties:
