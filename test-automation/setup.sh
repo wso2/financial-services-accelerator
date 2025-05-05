@@ -187,7 +187,7 @@ wget 'https://github.com/ParameswaranSajeenthiran/files/raw/refs/heads/master/OB
 keytool -import -alias issuer -file "${TEST_HOME}/OB_SandBox_PP_Issuing CA.cer" -keystore "${TEST_HOME}/wso2is-7.0.0/repository/resources/security/client-truststore.jks" -storepass wso2carbon -noprompt
 
 echo '======================= Run merge and Config scripts ======================='
-cd $TEST_HOME/wso2is-7.0.0/wso2-fsiam-accelerator-4.0.0-M3/bin
+cd $TEST_HOME/wso2is-7.0.0/$zip_file_name/bin
 bash merge.sh
 bash configure.sh
 SQL_SCRIPT="$RUNNER_HOME/accelerators/fs-is/carbon-home/dbscripts/financial-services/event-notifications/mysql.sql"
