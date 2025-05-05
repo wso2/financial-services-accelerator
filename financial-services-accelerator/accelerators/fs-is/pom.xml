@@ -48,7 +48,7 @@
                                 <exclude>**/commons-beanutils-1.9.4.jar</exclude>
                                 <exclude>**/hibernate-validator-6.0.20.Final.jar</exclude>
                                 <exclude>**/validation-api-2.0.1.Final.jar</exclude>
-                                <exclude>**/quartz-2.3.2.jar</exclude>
+                                <exclude>**/quartz-2.3.2.wso2v1.jar</exclude>
                             </excludes>
                         </fileset>
                         <fileset>

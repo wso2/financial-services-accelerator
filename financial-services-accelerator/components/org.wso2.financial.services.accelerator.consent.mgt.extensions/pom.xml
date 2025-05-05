@@ -33,7 +33,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
+            <groupId>org.wso2.orbit.org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
         <dependency>
