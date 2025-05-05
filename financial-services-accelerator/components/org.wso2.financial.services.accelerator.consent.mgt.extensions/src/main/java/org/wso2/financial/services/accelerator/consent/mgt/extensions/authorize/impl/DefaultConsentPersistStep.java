@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
@@ -117,10 +118,19 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         if (isPreInitiatedConsent) {
            authorizationId = consentData.getAuthResource().getAuthorizationID();
         } else {
-            consentCoreService.createAuthorizableConsent(consentResource, userId,
-                    authStatus, ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
+            DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
+                    consentResource, userId, authStatus, ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
+            String consentId = createdConsent.getConsentID();
             authorizationId = consentCoreService.searchAuthorizations(
-                    consentResource.getConsentID()).get(0).getAuthorizationID();
+                    consentId).get(0).getAuthorizationID();
+            // Getting commonAuthId to add as a consent attribute. This is to find the consent in later stages.
+            if (consentPersistData.getBrowserCookies() != null) {
+                String commonAuthId = consentPersistData.getBrowserCookies().get(
+                        ConsentExtensionConstants.COMMON_AUTH_ID);
+                Map<String, String> consentAttributes = new HashMap<>();
+                consentAttributes.put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
+                consentCoreService.storeConsentAttributes(consentId, consentAttributes);
+            }
         }
         consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(), authorizationId,
                 getConsentedAccounts(payload, isApproved), authStatus, consentStatus);
