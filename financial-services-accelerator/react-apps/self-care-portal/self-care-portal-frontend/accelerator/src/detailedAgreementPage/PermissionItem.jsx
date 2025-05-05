@@ -23,7 +23,6 @@ import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Accordion, Card, Col } from "react-bootstrap";
 
 export const PermissionItem = ({ permissionScope }) => {
-    console.log("permissionScope", permissionScope);
     const [showDetailedPermissions, setShowDetailedPermissions] = useState(false);
     const [permissionsData, setPermissionsData] = useState([]);
 
@@ -49,7 +48,6 @@ export const PermissionItem = ({ permissionScope }) => {
                         name: permissionScope,
                         description: getPermissionDescription(permissionScope),
                     };
-                    console.log("permissionsWithDescriptions", permissionData);
                     return {
                         ...data,
                         permissions: permissionData,
@@ -57,7 +55,6 @@ export const PermissionItem = ({ permissionScope }) => {
                 }
                 return data;
             });
-            console.log("updatedDataLanguage", updatedDataLanguage);
             setPermissionsData(updatedDataLanguage);
         } else {
             setPermissionsData([]);
@@ -65,14 +62,11 @@ export const PermissionItem = ({ permissionScope }) => {
     }, [permissionScope]);
 
     const getPermissionDescription = (permission) => {
-        console.log("getPermissionDescription", permission)
         const permissionObject = permissionDataLanguage.find(
             (data) => data.scope === permission
         );
 
         if (permissionObject) {
-
-            console.log("permissionObject.description", permissionObject.permissions);
             return permissionObject.permissions;
         }
 

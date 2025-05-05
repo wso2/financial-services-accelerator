@@ -63,4 +63,6 @@ public class Constants {
     public static final String LOCATION_OF_CREDENTIALS = "ConsentAPICredentials.IsConfiguredInWebapp";
     public static final String USERNAME_IN_WEBAPP_CONFIGS = "ConsentAPICredentials.Username";
     public static final String PASSWORD_IN_WEBAPP_CONFIGS = "ConsentAPICredentials.Password";
+    public static final String DEFAULT = "default";
+    public static final String CONSENT_MGT = "consentmgt";
 }

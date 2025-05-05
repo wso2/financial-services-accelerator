@@ -27,9 +27,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentRetrievalStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.NonRegulatoryConsentStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +79,10 @@ public class ConsentStepsBuilder {
 
             Map<Integer, String> retrieveIntegerStringMap = stepsConfig.get(RETRIEVE);
             if (isExtensionsEnabled && isExternalConsentRetrievalEnabled) {
-                consentRetrievalSteps = Collections.singletonList(new ExternalAPIConsentRetrievalStep());
+                consentRetrievalSteps = Collections.unmodifiableList(Arrays.asList(
+                        new ExternalAPIConsentRetrievalStep(),
+                        new NonRegulatoryConsentStep()
+                ));
                 log.debug("ExternalAPIConsentRetrievalStep loaded successfully");
             } else if (retrieveIntegerStringMap != null) {
                 consentRetrievalSteps = retrieveIntegerStringMap.keySet().stream()

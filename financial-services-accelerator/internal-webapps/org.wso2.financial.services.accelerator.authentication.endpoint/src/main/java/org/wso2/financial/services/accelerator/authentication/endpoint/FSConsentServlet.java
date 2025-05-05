@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.AuthenticationUtils;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.Constants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.ConsentMgrAuthServletImpl;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.ISDefaultAuthServletImpl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -138,16 +140,29 @@ public class FSConsentServlet extends HttpServlet {
         originalRequest.setAttribute(Constants.APP, dataSet.getString(Constants.APPLICATION));
 
         // get auth servlet toolkit implementation
-        if (fsAuthServletTK == null) {
-            request.getSession().invalidate();
-            response.sendRedirect("retry.do?status=Error&statusMsg=Error while processing request");
-            log.error("Unable to find FS auth servlet extension implementation. Returning error.");
-            return;
+
+        // Get servlet extension
+        FSAuthServletInterface fsAuthServlet;
+        if (Constants.DEFAULT.equals(dataSet.getString("type"))) {
+            // get default auth servlet extension
+            fsAuthServlet = new ISDefaultAuthServletImpl();
+        } else if (Constants.CONSENT_MGT.equals(dataSet.getString("type"))) {
+            // get consent manager auth servlet extension
+            fsAuthServlet = new ConsentMgrAuthServletImpl();
+        } else {
+            // get auth servlet toolkit implementation
+            if (fsAuthServletTK == null) {
+                request.getSession().invalidate();
+                response.sendRedirect("retry.do?status=Error&statusMsg=Error while processing request");
+                log.error("Unable to find FS auth servlet extension implementation. Returning error.");
+                return;
+            }
+            fsAuthServlet = fsAuthServletTK;
         }
 
         Map<String, Object> updatedValues;
 
-        updatedValues = fsAuthServletTK.updateRequestAttribute(request, dataSet, resourceBundle);
+        updatedValues = fsAuthServlet.updateRequestAttribute(request, dataSet, resourceBundle);
         updatedValues.forEach(originalRequest::setAttribute);
 
         // update session
@@ -155,7 +170,7 @@ public class FSConsentServlet extends HttpServlet {
         updatedValues.forEach(originalRequest.getSession()::setAttribute);
 
         // dispatch
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(fsAuthServletTK.getJSPPath());
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(fsAuthServlet.getJSPPath());
         dispatcher.forward(originalRequest, response);
 
     }

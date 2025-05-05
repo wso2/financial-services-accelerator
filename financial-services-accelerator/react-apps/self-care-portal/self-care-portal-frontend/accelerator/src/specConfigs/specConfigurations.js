@@ -393,7 +393,7 @@ export const payments_lang = [
     {
         id: "authorised,consumed,expired,revoked",
         labelBadgeVariant: "secondary",
-        isRevocableConsent: true,
+        isRevocableConsent: false,
         description:
             "A list of applications that have requested access to your payments.",
         tableHeaders: [
