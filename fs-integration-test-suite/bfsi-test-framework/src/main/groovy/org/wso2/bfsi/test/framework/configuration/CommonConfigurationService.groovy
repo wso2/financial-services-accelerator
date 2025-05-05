@@ -174,6 +174,15 @@ class CommonConfigurationService {
         return configuration.get(ConfigConstants.SERVER + "." + ConfigConstants.APIM_SERVER_URL)
     }
 
+    String getISAdminUserName(){
+        return configuration.get( ConfigConstants.ISSetup + "." + ConfigConstants.ISAdminUserName)
+
+    }
+
+    String getISAdminPassword(){
+        return configuration.get( ConfigConstants.ISSetup + "." + ConfigConstants.ISAdminPassword)
+    }
+
     /**
      * Get Non-Regulatory Application ClientID
      */
