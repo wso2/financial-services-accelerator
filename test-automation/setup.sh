@@ -82,7 +82,7 @@ echo '=================== Install Java and Maven ==================='
 
 echo '======================= Building packs ======================='
 #
-mvn -B install --file ${RUNNER_HOME}/pom.xml -DskipTests
+mvn -B install --file ${RUNNER_HOME}/pom.xml -Dmaven.test.skip=true
 MVNSTATE=$?
 #
 echo '======================= Moving Packs to RUNNER_HOME ======================='
@@ -212,7 +212,6 @@ sed -i '/name = "SSAJTIValidator"/,/priority = 8/ {
 
 echo "deployment.toml has been updated in place and a backup is saved as deployment.toml.bak."
 
-rm $BACKUP_TOML
 cd $TEST_HOME/wso2is-7.0.0/bin
 
 ./wso2server.sh  start
