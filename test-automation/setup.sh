@@ -17,6 +17,7 @@
 
 set -e
 RUNNER_HOME=`pwd`
+echo "RUNNER_HOME: $RUNNER_HOME"
 
 echo '======================= SetUp base Products ======================='
 # Create the test home directory if it doesn't exist
@@ -80,12 +81,12 @@ echo '=================== Install Java and Maven ==================='
 #fi
 
 #echo '======================= Building packs ======================='
-##
-#mvn -B install --file ${RUNNER_HOME}/pom.xml
-#MVNSTATE=$?
-##
+#
+mvn -B install --file ${RUNNER_HOME}/pom.xml
+MVNSTATE=$?
+#
 echo '======================= Moving Packs to RUNNER_HOME ======================='
-unzip $RUNNER_HOME/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
+unzip ${RUNNER_HOME}/financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
 
 echo '======================= Setup MYSQL ======================='
 sudo apt-get update

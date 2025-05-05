@@ -90,7 +90,7 @@ jobs:
       - name: Run Tests
         run: |
           export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
-          mvn -B install --file pom.xml
+#          mvn -B install --file pom.xml
           RUNNER_HOME=`pwd`
           chmod +x $RUNNER_HOME/test-automation/test.sh         
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
