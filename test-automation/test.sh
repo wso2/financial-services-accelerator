@@ -143,7 +143,6 @@ chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 
 echo '======================= Setup Mail ======================='
 sudo apt update && sudo apt install mailutils
-sudo yum install mailx
 
 cat ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 #
