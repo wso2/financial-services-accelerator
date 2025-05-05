@@ -190,7 +190,7 @@ RUNNER_HOME=`pwd`
 #cd $TEST_HOME/wso2is-7.0.0/$zip_file_name/bin
 #bash merge.sh
 #bash configure.sh
-SQL_SCRIPT="$RUNNER_HOME/accelerators/fs-is/carbon-home/dbscripts/financial-services/event-notifications/mysql.sql"
+SQL_SCRIPT="financial-services/accelerators/fs-is/carbon-home/dbscripts/financial-services/event-notifications/mysql.sql"
 
 #source $(pwd)/../repository/conf/configure.properties
 
