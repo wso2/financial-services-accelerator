@@ -85,7 +85,7 @@ echo '=================== Install Java and Maven ==================='
 #MVNSTATE=$?
 ##
 echo '======================= Moving Packs to RUNNER_HOME ======================='
-unzip $RUNNER_HOME/financial-services-accelerator/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
+unzip $RUNNER_HOME/accelerators/fs-is/target/wso2-fsiam-accelerator-4.0.0-M3.zip -d $TEST_HOME/wso2is-7.0.0/
 
 echo '======================= Setup MYSQL ======================='
 sudo apt-get update
@@ -183,7 +183,7 @@ echo '======================= Run merge and Config scripts =====================
 cd $TEST_HOME/wso2is-7.0.0/wso2-fsiam-accelerator-4.0.0-M3/bin
 bash merge.sh
 bash configure.sh
-SQL_SCRIPT="$RUNNER_HOME/financial-services-accelerator/accelerators/fs-is/carbon-home/dbscripts/financial-services/event-notifications/mysql.sql"
+SQL_SCRIPT="$RUNNER_HOME/accelerators/fs-is/carbon-home/dbscripts/financial-services/event-notifications/mysql.sql"
 
 source $(pwd)/../repository/conf/configure.properties
 
