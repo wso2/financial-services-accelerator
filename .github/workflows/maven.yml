@@ -88,5 +88,7 @@ jobs:
           chmod +x $RUNNER_HOME/test-automation/test.sh         
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-          bash $RUNNER_HOME/test-automation/setup.sh
-          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
+#uncomment this to run the tests (commenting this out since secrets cannot be accessed via
+#actions triggered from fork of public repositories
+#          bash $RUNNER_HOME/test-automation/setup.sh
+#          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
