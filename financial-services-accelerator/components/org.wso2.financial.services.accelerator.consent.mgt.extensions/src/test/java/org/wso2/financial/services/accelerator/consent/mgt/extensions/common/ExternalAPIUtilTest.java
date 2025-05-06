@@ -201,7 +201,7 @@ public class ExternalAPIUtilTest {
 
         // Build the request DTO
         ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
-                consentResource.getConsentID(), consentResource.getConsentType(), consentResourceDTO,
+                consentResource.getConsentID(), consentResourceDTO,
                 new ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO(), true
         );
 

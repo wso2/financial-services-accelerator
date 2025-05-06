@@ -29,17 +29,14 @@ import java.util.Map;
 public class ExternalAPIPreConsentPersistRequestDTO {
 
     private String consentId;
-    private String type;
     private ExternalAPIConsentResourceRequestDTO consentResource;
     private UserGrantedDataDTO userGrantedData;
     private boolean isApproved;
 
-    public ExternalAPIPreConsentPersistRequestDTO(String consentId, String type,
+    public ExternalAPIPreConsentPersistRequestDTO(String consentId,
                                                   ExternalAPIConsentResourceRequestDTO consentResource,
-                                                  UserGrantedDataDTO userGrantedData,
-                                                  boolean isApproved) {
+                                                  UserGrantedDataDTO userGrantedData, boolean isApproved) {
         this.consentId = consentId;
-        this.type = type;
         this.consentResource = consentResource;
         this.userGrantedData = userGrantedData;
         this.isApproved = isApproved;
@@ -51,14 +48,6 @@ public class ExternalAPIPreConsentPersistRequestDTO {
 
     public void setConsentId(String consentId) {
         this.consentId = consentId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public ExternalAPIConsentResourceRequestDTO getConsentResource() {
@@ -95,7 +84,6 @@ public class ExternalAPIPreConsentPersistRequestDTO {
         private String userId;
 
         public UserGrantedDataDTO() {
-            // Default constructor
         }
 
         /**

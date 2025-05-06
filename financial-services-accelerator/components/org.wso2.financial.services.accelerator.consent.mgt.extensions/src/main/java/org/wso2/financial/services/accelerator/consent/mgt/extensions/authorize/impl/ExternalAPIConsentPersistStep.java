@@ -118,7 +118,6 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             } else {
                 consentId = UUID.randomUUID().toString();
                 consentData.setConsentId(consentId);
-                consentData.setType(ConsentExtensionConstants.DEFAULT);
 
                 // Getting commonAuthId to add as a consent attribute. This is to find the consent in later stages.
                 if (consentPersistData.getBrowserCookies() != null) {
@@ -133,8 +132,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     requestParameters, consentData.getUserId());
 
             ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
-                    consentId, consentData.getType(), externalAPIConsentResource, userGrantedData,
-                    consentPersistData.getApproval());
+                    consentId, externalAPIConsentResource, userGrantedData, consentPersistData.getApproval());
             ExternalAPIPreConsentPersistResponseDTO responseDTO = callExternalService(requestDTO);
             ExternalAPIConsentResourceResponseDTO responseConsentResource = responseDTO.getConsentResource();
             persistConsent(responseConsentResource, consentData);
