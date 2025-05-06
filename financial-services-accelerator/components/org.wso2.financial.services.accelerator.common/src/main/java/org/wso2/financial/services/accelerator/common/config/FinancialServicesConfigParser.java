@@ -66,7 +66,6 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Map<Integer, String>> authorizeSteps = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrParams = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrValidators = new HashMap<>();
-    private final Map<String, String> idempotencyAllowedResources = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;

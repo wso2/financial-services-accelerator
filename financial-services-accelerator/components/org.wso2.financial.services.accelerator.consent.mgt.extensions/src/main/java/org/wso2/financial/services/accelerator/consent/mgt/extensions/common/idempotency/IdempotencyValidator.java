@@ -41,6 +41,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.C
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.xml.sax.InputSource;
@@ -48,6 +49,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,6 +67,7 @@ public class IdempotencyValidator {
     private static FinancialServicesConfigParser configParser = null;
     private static boolean isExtensionsEnabled = false;
     private static boolean isExternalPostConsentGenerationEnabled = false;
+    boolean isExternalPostFileUploadEnabled = false;
 
     public IdempotencyValidator () {
         configParser = FinancialServicesConfigParser.getInstance();
@@ -72,6 +75,8 @@ public class IdempotencyValidator {
         isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
         isExternalPostConsentGenerationEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
+        isExternalPostFileUploadEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);
     }
 
     /**
@@ -87,6 +92,25 @@ public class IdempotencyValidator {
             if (result.isIdempotent()) {
                 if (result.isValid()) {
                     if (ConsentOperationEnum.CONSENT_FILE_UPLOAD.equals(consentOperationEnum)) {
+                        if (isExtensionsEnabled && isExternalPostFileUploadEnabled) {
+                            String createdTime = OffsetDateTime.now().toString();
+                            // Call external service to enrich response
+                            ExternalAPIPostFileUploadRequestDTO postRequestDTO =
+                                    new ExternalAPIPostFileUploadRequestDTO(result.getConsentId(), createdTime);
+                            ExternalAPIModifiedResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
+                                    callExternalService(postRequestDTO);
+
+                            if (postResponseDTO.getModifiedResponse() != null) {
+                                consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
+                            } else {
+                                consentManageData.setResponsePayload(new JSONObject());
+                            }
+                            if (postResponseDTO.getResponseHeaders() != null) {
+                                consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
+                            } else {
+                                consentManageData.setResponseHeaders(new HashMap<>());
+                            }
+                        }
                         consentManageData.setResponseStatus(ResponseStatus.OK);
                     } else {
                         if (isExtensionsEnabled && isExternalPostConsentGenerationEnabled) {

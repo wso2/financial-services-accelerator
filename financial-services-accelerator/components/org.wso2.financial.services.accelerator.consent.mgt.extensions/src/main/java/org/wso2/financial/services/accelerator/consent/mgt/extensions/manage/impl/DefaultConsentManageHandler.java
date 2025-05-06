@@ -210,8 +210,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 .validateRequestHeaders(consentManageData);
         if (!headerValidationResult.isValid()) {
             log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
-            throw new ConsentException(headerValidationResult.getHttpCode(),
-                    headerValidationResult.getErrorMessage(), ConsentOperationEnum.CONSENT_CREATE);
+            throw new ConsentException(headerValidationResult.getHttpCode(), headerValidationResult.getErrorMessage(),
+                    ConsentOperationEnum.CONSENT_CREATE);
         }
 
         if (consentManageData.getRequestPath() == null) {
@@ -236,8 +236,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                         callExternalService(preRequestDTO);
                 createdConsent = generateConsent(preResponseDTO, consentManageData.getClientId());
             } else {
-                String consentType = ConsentManageUtils.getConsentManageValidator()
-                        .getConsentType(consentManageData);
+                String consentType = ConsentManageUtils.getConsentManageValidator().getConsentType(consentManageData);
                 //Validate Initiation request
                 ConsentPayloadValidationResult validationResponse = ConsentManageUtils.getConsentManageValidator()
                         .validateRequestPayload(consentManageData, consentType);
@@ -251,9 +250,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                         consentManageData.getPayload().toString(), consentType,
                         ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
 
-                createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent,
-                        null, ConsentExtensionConstants.CREATED_STATUS,
-                        ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
+                createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent, null,
+                        ConsentExtensionConstants.CREATED_STATUS, ConsentExtensionConstants.DEFAULT_AUTH_TYPE,
+                        true);
             }
 
             //Store idempotency key as a consent attribute
@@ -270,9 +269,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                         createdConsent.getConsentID());
                 ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
                         new ExternalAPIConsentResourceRequestDTO(createdConsentResource);
-                ExternalAPIPostConsentGenerateRequestDTO postRequestDTO =
-                        new ExternalAPIPostConsentGenerateRequestDTO(externalAPIConsentResource,
-                                consentManageData.getRequestPath());
+                ExternalAPIPostConsentGenerateRequestDTO postRequestDTO = new ExternalAPIPostConsentGenerateRequestDTO(
+                        externalAPIConsentResource, consentManageData.getRequestPath());
                 ExternalAPIModifiedResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
                         callExternalService(postRequestDTO);
 
@@ -522,8 +520,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while handling the request", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    e.getMessage(), ConsentOperationEnum.CONSENT_FILE_UPLOAD);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
     }
 
