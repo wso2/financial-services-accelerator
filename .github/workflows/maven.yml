@@ -80,17 +80,12 @@ jobs:
             ]
       - name: Build with Maven
         run: |
-          echo "Starting tests..."
-          echo "Using test home: $TEST_HOME"
-          echo "Using bot username: $WSO2_USERNAME"
-          echo "Using bot password: $WSO2_PASSWORD"
-          echo "Using bot test: $WSO2_USERNAME_ERROR"
-#          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
-#          RUNNER_HOME=`pwd`
-#          chmod +x $RUNNER_HOME/test-automation/test.sh
-#          chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
+          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
+          RUNNER_HOME=`pwd`
+          chmod +x $RUNNER_HOME/test-automation/test.sh
+          chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
 #uncomment this to run the tests (commenting this out since secrets cannot be accessed via
 #actions triggered from fork of public repositories
-#          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-#          bash $RUNNER_HOME/test-automation/setup.sh
-#          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
+          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
+          bash $RUNNER_HOME/test-automation/setup.sh
+          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
