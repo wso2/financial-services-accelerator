@@ -17,7 +17,6 @@
 
 set -e
 MVNSTATE=1 #This variable is read by the test-grid to determine success or failure of the build. (0=Successful)
-RUNNER_HOME=`pwd`
 echo "RUNNER_HOME: $RUNNER_HOME"
 #=== FUNCTION ==================================================================
 # NAME: get_prop
