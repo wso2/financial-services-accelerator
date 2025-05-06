@@ -1602,13 +1602,23 @@ components:
       properties:
         consentId:
           type: string
+        type:
+          type: string
         isApproved:
           type: boolean
         userGrantedData:
-          type: object
-          description: "Input data from end user"
+          $ref: '#/components/schemas/UserGrantedData'
         consentResource:
           $ref: '#/components/schemas/StoredDetailedConsentResourceData'
+      UserGrantedData:
+        type: object
+        properties:
+          requestParameters:
+            type: object
+          authorizedResources:
+            type: object
+          userId:
+            type: string
     Response200ForPersistAuthorizedConsent:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponsePersistAuthorizedConsent'

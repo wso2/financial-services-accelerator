@@ -201,10 +201,8 @@ public class ExternalAPIUtilTest {
 
         // Build the request DTO
         ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
-                consentResource.getConsentID(),
-                consentResourceDTO,
-                Map.of("channel", "mobile"),
-                true
+                consentResource.getConsentID(), consentResource.getConsentType(), consentResourceDTO,
+                new ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO(), true
         );
 
         // Create the ExternalServiceRequest
@@ -216,7 +214,6 @@ public class ExternalAPIUtilTest {
 
         assertEquals(payload.getString("consentId"), consentResource.getConsentID());
         assertTrue(payload.toString().contains("AwaitingAuthorisation"));
-        assertTrue(payload.toString().contains("channel"));
         assertTrue(payload.toString().contains("\"isApproved\":true"));
     }
 
