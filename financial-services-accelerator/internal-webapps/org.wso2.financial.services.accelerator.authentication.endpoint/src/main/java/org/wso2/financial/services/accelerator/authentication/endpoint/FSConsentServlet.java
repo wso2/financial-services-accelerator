@@ -143,7 +143,7 @@ public class FSConsentServlet extends HttpServlet {
 
         // Get servlet extension
         FSAuthServletInterface fsAuthServlet;
-        if (Constants.DEFAULT.equals(dataSet.getString(Constants.TYPE))) {
+        if (Constants.IS_DEFAULT.equals(dataSet.getString(Constants.TYPE))) {
             // get default auth servlet extension
             fsAuthServlet = new ISDefaultAuthServletImpl();
         } else if (Constants.CONSENT_MGT.equals(dataSet.getString(Constants.TYPE))) {
