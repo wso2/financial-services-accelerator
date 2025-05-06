@@ -23,7 +23,9 @@ on:
       - 'main'
 
 jobs:
+
   Build-repo-check:
+
     runs-on: ubuntu-latest
     env:
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
@@ -31,6 +33,7 @@ jobs:
       WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
       STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       TEST_HOME: /home/runner/work/financial-services/financial-services
+      TEST_REPORT_RECIPIENT: sajeenthiran@wso2.com
 
     steps:
       - uses: actions/checkout@v2
@@ -79,10 +82,6 @@ jobs:
               }
             ]
       - name: Build with Maven
-        run: |
-          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
-          mvn -B install --file pom.xml
-      - name: Running the integration test suite
         run: |
           echo "Starting tests..."
           export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
