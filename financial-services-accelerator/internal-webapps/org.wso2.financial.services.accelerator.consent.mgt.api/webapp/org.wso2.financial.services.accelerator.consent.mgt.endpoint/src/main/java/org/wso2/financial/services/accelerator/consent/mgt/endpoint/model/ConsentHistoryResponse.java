@@ -17,7 +17,7 @@ public class ConsentHistoryResponse implements Serializable {
     private String consentID;
     private Integer timestamp;
     private String reason;
-    private ConsentResourceResponse consentResource;
+    private ConsentResourceResponseBody consentResource;
 
     public ConsentHistoryResponse() {
     }
@@ -105,18 +105,18 @@ public class ConsentHistoryResponse implements Serializable {
     /**
      *
      **/
-    public ConsentHistoryResponse consentResource(ConsentResourceResponse consentResource) {
+    public ConsentHistoryResponse consentResource(ConsentResourceResponseBody consentResource) {
         this.consentResource = consentResource;
         return this;
     }
 
 
-    public ConsentResourceResponse getDetailedConsent() {
+    public ConsentResourceResponseBody getDetailedConsent() {
         return consentResource;
     }
 
     public void setDetailedConsent(
-            ConsentResourceResponse detailedConsent) {
+            ConsentResourceResponseBody detailedConsent) {
         this.consentResource = detailedConsent;
     }
 

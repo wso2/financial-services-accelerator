@@ -758,12 +758,12 @@ public class ConsentCoreServiceUtil {
         }
     }
 
-    public static boolean validateOrgInfo(String headerOrg, String orgId) throws
+    public static boolean validateOrgInfo(String headerOrg, String orgInfo) throws
             ConsentMgtException {
 
         if (headerOrg == null) {
             headerOrg = ConsentMgtDAOConstants.DEFAULT_ORG;
         }
-        return headerOrg.equals(orgId);
+        return headerOrg.equals(orgInfo);
     }
 }

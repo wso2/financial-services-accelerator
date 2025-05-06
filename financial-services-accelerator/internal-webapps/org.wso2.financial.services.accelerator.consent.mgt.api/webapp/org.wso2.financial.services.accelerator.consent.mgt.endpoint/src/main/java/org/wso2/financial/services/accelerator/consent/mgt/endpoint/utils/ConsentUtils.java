@@ -10,10 +10,10 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceResponse;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceResponse;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.CreateAuthorizationResourceRequestBody;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.CreateConsentResourceRequestBody;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceRequestBody;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceResponseBody;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceRequestBody;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceResponseBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public class ConsentUtils {
      */
     public static void copyPropertiesToConsentResource(
             org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource,
-            CreateConsentResourceRequestBody consentResourceDTO) throws
+            ConsentResourceRequestBody consentResourceDTO) throws
             ConsentMgtException {
         consentResource.setConsentType(consentResourceDTO.getConsentType());
         consentResource.setClientID(consentResourceDTO.getClientID());
@@ -84,7 +84,7 @@ public class ConsentUtils {
      */
     public static void copyPropertiesToAuthorizationResource(
             org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource authorizationResource,
-            CreateAuthorizationResourceRequestBody authorizationResourceDTO) throws
+            AuthorizationResourceRequestBody authorizationResourceDTO) throws
             JsonProcessingException {
         authorizationResource.setAuthorizationType(authorizationResourceDTO.getAuthorizationType());
         authorizationResource.setAuthorizationStatus(authorizationResourceDTO.getAuthorizationStatus());
@@ -96,8 +96,9 @@ public class ConsentUtils {
     /**
      * copy properties from consentResource to consentResponse
      */
-    public static void buildAuthorizationResourceResponse(AuthorizationResourceResponse authorizationResourceResponse,
-                                                          AuthorizationResource authorizationResource)
+    public static void buildAuthorizationResourceResponse(
+            AuthorizationResourceResponseBody authorizationResourceResponse,
+            AuthorizationResource authorizationResource)
             throws
             JsonProcessingException {
         authorizationResourceResponse.setAuthId(authorizationResource.getAuthorizationID());
@@ -131,7 +132,7 @@ public class ConsentUtils {
     /**
      * copy properties to consentResourceResponse
      */
-    public static void buildConsentResourceResponse(ConsentResourceResponse consentResourceResponse,
+    public static void buildConsentResourceResponse(ConsentResourceResponseBody consentResourceResponse,
                                                     DetailedConsentResource consentResource,
                                                     ArrayList<AuthorizationResource> authorizationResources,
                                                     boolean withAttributes) throws
@@ -154,10 +155,10 @@ public class ConsentUtils {
 
 
         if (authorizationResources != null) {
-            ArrayList<AuthorizationResourceResponse> authResponses = new ArrayList<>();
+            ArrayList<AuthorizationResourceResponseBody> authResponses = new ArrayList<>();
             for (AuthorizationResource authorizationResource : authorizationResources) {
 
-                AuthorizationResourceResponse authResponse = new AuthorizationResourceResponse();
+                AuthorizationResourceResponseBody authResponse = new AuthorizationResourceResponseBody();
                 buildAuthorizationResourceResponse(authResponse, authorizationResource);
                 authResponses.add(authResponse);
             }

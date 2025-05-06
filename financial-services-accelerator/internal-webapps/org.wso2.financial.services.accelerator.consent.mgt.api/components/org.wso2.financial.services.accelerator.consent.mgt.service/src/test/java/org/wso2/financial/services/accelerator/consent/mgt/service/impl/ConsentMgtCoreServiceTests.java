@@ -130,7 +130,7 @@ public class ConsentMgtCoreServiceTests {
                         any(ConsentStatusAuditRecord.class));
 
         DetailedConsentResource detailedConsentResource =
-                consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                                 .getSampleTestConsentResource(),
                         ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
 
@@ -159,7 +159,7 @@ public class ConsentMgtCoreServiceTests {
                 any());
 
         DetailedConsentResource detailedConsentResource =
-                consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                                 .getSampleStoredTestConsentResourceWithAttributes(),
                         ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
 
@@ -187,7 +187,7 @@ public class ConsentMgtCoreServiceTests {
                         any(ConsentStatusAuditRecord.class));
 
         DetailedConsentResource detailedConsentResource =
-                consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                                 .getSampleStoredTestConsentResourceWithAttributes(),
                         ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
 
@@ -206,7 +206,7 @@ public class ConsentMgtCoreServiceTests {
         ConsentResource consentResource = ConsentMgtServiceTestData.getSampleTestConsentResource();
         consentResource.setClientID(null);
 
-        consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(consentResource,
+        consentCoreServiceImpl.createConsent(consentResource,
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
     }
 
@@ -227,13 +227,13 @@ public class ConsentMgtCoreServiceTests {
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
         authorizationResources.add(authorizationResource);
-        consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                         .getSampleStoredTestConsentResourceWithAttributes(),
                 authorizationResources);
     }
 
 
-    // unit tests for createAuthorizableConsentWithBulkAuth with exceptions
+    // unit tests for createConsent with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testCreateAuthorizableConsentWithBulkAuthRollback() throws
             Exception {
@@ -242,13 +242,13 @@ public class ConsentMgtCoreServiceTests {
         doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
                 .storeConsentResource(any(), any());
 
-        consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                         .getSampleTestConsentResource(),
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
     }
 
 
-    // unit tests for createAuthorizableConsentWithBulkAuth with exceptions
+    // unit tests for createConsent with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testCreateAuthorizableConsentWithBulkAuthRollbackWhenAuditRecord() throws
             Exception {
@@ -260,13 +260,13 @@ public class ConsentMgtCoreServiceTests {
         doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
                 .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
 
-        consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                         .getSampleTestConsentResource(),
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
     }
 
 
-    // unit tests for createAuthorizableConsentWithBulkAuth with exceptions
+    // unit tests for createConsent with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testCreateAuthorizableConsentWithBulkAuthRollbackWhenStoringAuthResource() throws
             Exception {
@@ -276,13 +276,13 @@ public class ConsentMgtCoreServiceTests {
         doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
                 .storeAuthorizationResource(any(), any());
 
-        consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                         .getSampleTestConsentResource(),
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
     }
 
 
-    // unit tests for createAuthorizableConsentWithBulkAuth with exceptions
+    // unit tests for createConsent with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testCreateAuthorizableConsentWithBulkAuthRollbackWhenStoringAuthResourceWithAuditRecord() throws
             Exception {
@@ -297,7 +297,7 @@ public class ConsentMgtCoreServiceTests {
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
 
-        consentCoreServiceImpl.createAuthorizableConsentWithBulkAuth(ConsentMgtServiceTestData
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
                         .getSampleTestConsentResource(),
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
     }
@@ -608,7 +608,8 @@ public class ConsentMgtCoreServiceTests {
 
         // Get consent
         DetailedConsentResource retrievedConsentResource = consentCoreServiceImpl
-                .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentID());
+                .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentID(),
+                        ConsentMgtServiceTestData.ORG_INFO);
 
         Assert.assertNotNull(retrievedConsentResource);
     }
@@ -618,7 +619,7 @@ public class ConsentMgtCoreServiceTests {
             Exception {
 
         // Get consent
-        consentCoreServiceImpl.getDetailedConsent(null);
+        consentCoreServiceImpl.getDetailedConsent(null, ConsentMgtServiceTestData.ORG_INFO);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -630,7 +631,7 @@ public class ConsentMgtCoreServiceTests {
 
         // Get consent
         consentCoreServiceImpl.getDetailedConsent(ConsentMgtServiceTestData
-                .getSampleStoredConsentResource().getConsentID());
+                .getSampleStoredConsentResource().getConsentID(), ConsentMgtServiceTestData.ORG_INFO);
     }
 
     @Test

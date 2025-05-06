@@ -50,7 +50,7 @@ public interface ConsentCoreService {
      * @return returns DetailedConsentResource
      * @throws ConsentMgtException thrown if any error occur in the process
      */
-    DetailedConsentResource createAuthorizableConsentWithBulkAuth(ConsentResource consentResource,
+    DetailedConsentResource createConsent(ConsentResource consentResource,
                                                                   ArrayList<AuthorizationResource>
                                                                           authorizationResources
                                                                  )
@@ -88,7 +88,7 @@ public interface ConsentCoreService {
      * @return a detailed consent resource
      * @throws ConsentMgtException thrown if any error occur in the process
      */
-    DetailedConsentResource getDetailedConsent(String consentID) throws
+    DetailedConsentResource getDetailedConsent(String consentID, String orgInfo) throws
             ConsentMgtException;
 
     /**
@@ -674,7 +674,7 @@ public interface ConsentCoreService {
 
     /**
      *
-     * @param orgId
+     * @param orgInfo
      * @param consentID
      * @param consentReceipt
      * @param consentExpiryTime
@@ -686,7 +686,7 @@ public interface ConsentCoreService {
      * @return
      * @throws ConsentMgtException
      */
-    DetailedConsentResource amendDetailedConsentWithBulkAuthResource(String orgId, String consentID,
+    DetailedConsentResource amendDetailedConsentWithBulkAuthResource(String orgInfo, String consentID,
                                                                      String consentReceipt,
                                                                      Long consentExpiryTime,
                                                                      ArrayList<AuthorizationResource>
@@ -699,5 +699,11 @@ public interface ConsentCoreService {
             throws
             ConsentMgtException;
 
+    /**
+     * this method is used to update the expiry time of the consent
+     */
+    boolean updateConsentExpiryTime(String consentID, long consentExpiryTime, String orgInfo)
+            throws
+            ConsentMgtException;
 
 }

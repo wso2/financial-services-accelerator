@@ -39,8 +39,8 @@ public class ConsentResource {
     public ConsentResource() {
     }
 
-    public ConsentResource(String orgId, String clientID, String receipt, String consentType, String currentStatus) {
-        this.orgID = orgId;
+    public ConsentResource(String orgInfo, String clientID, String receipt, String consentType, String currentStatus) {
+        this.orgID = orgInfo;
         this.clientID = clientID;
         this.receipt = receipt;
         this.consentType = consentType;
