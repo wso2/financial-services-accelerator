@@ -66,6 +66,7 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Map<Integer, String>> authorizeSteps = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrParams = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrValidators = new HashMap<>();
+    private final Map<String, String> idempotencyAllowedResources = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;
@@ -614,9 +615,9 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Method to get the value Idempotency allowed time configuration.
+     * Method to get the value Idempotency header name.
      *
-     * @return Idempotency allowed time
+     * @return Idempotency header name
      */
     public String getIdempotencyHeaderName() {
         Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_HEADER_NAME);
@@ -624,14 +625,25 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Returns the list of idempotency allowed consent types.
+     * Method to get whether Idempotency validation is allowed for all APIs.
      *
-     * @return List.
+     * @return Idempotency validation is allowed
      */
-    public List<String> getIdempotencyAllowedConsentTypes() {
+    public Boolean isIdempotencyAllowedForAllAPIs() {
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IDEMPOTENCY_ALLOWED_FOR_ALL_APIS);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Returns the list of idempotency allowed API resources.
+     *
+     * @return list.
+     */
+    public List<String> getIdempotencyAllowedResources() {
 
         Object allowedTypesObj = configuration.get(FinancialServicesConstants.
-                IDEMPOTENCY_ALLOWED_CONSENT_TYPES);
+                IDEMPOTENCY_ALLOWED_API_RESOURCES);
         List<String> allowedTypes = new ArrayList<>();
         if (allowedTypesObj instanceof List) {
             allowedTypes.addAll((List) allowedTypesObj);

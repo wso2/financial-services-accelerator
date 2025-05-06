@@ -35,6 +35,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.idempotency.IdempotencyValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
@@ -76,6 +77,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     boolean isExternalPostFileUploadEnabled;
     boolean isExternalPreFileRetrievalEnabled;
     String idempotencyHeaderName;
+    IdempotencyValidator idempotencyValidator;
 
     public DefaultConsentManageHandler() {
 
@@ -97,6 +99,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         isExternalPreFileRetrievalEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
         idempotencyHeaderName = configParser.getIdempotencyHeaderName();
+        idempotencyValidator = new IdempotencyValidator();
     }
 
     @Override
@@ -195,98 +198,104 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
-        synchronized (consentManageData.getHeaders().get(idempotencyHeaderName)) {
-            //Check whether client ID exists
-            if (StringUtils.isEmpty(consentManageData.getClientId())) {
-                log.error("Client ID missing in the request.");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
-                        ConsentOperationEnum.CONSENT_CREATE);
-            }
+        //Check whether client ID exists
+        if (StringUtils.isEmpty(consentManageData.getClientId())) {
+            log.error("Client ID missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
+                    ConsentOperationEnum.CONSENT_CREATE);
+        }
 
-            //Validate Initiation headers
-            ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
-                    .validateRequestHeaders(consentManageData);
-            if (!headerValidationResult.isValid()) {
-                log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
-                throw new ConsentException(headerValidationResult.getHttpCode(),
-                        headerValidationResult.getErrorMessage(), ConsentOperationEnum.CONSENT_CREATE);
-            }
+        //Validate Initiation headers
+        ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
+                .validateRequestHeaders(consentManageData);
+        if (!headerValidationResult.isValid()) {
+            log.error(headerValidationResult.getErrorMessage().replaceAll("[\r\n]+", " "));
+            throw new ConsentException(headerValidationResult.getHttpCode(),
+                    headerValidationResult.getErrorMessage(), ConsentOperationEnum.CONSENT_CREATE);
+        }
 
-            if (consentManageData.getRequestPath() == null) {
-                log.error("Resource Path Not Found");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
-                        ConsentOperationEnum.CONSENT_CREATE);
-            }
+        if (consentManageData.getRequestPath() == null) {
+            log.error("Resource Path Not Found");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
+                    ConsentOperationEnum.CONSENT_CREATE);
+        }
 
-            try {
-                DetailedConsentResource createdConsent;
-                if (isExtensionsEnabled && isExternalPreConsentGenerationEnabled) {
-                    // Call external service before generating consent
-                    ExternalAPIPreConsentGenerateRequestDTO preRequestDTO =
-                            new ExternalAPIPreConsentGenerateRequestDTO(consentManageData);
-                    ExternalAPIPreConsentGenerateResponseDTO preResponseDTO = ExternalAPIConsentManageUtils.
-                            callExternalService(preRequestDTO);
-                    createdConsent = generateConsent(preResponseDTO, consentManageData.getClientId());
-                } else {
-                    String consentType = ConsentManageUtils.getConsentManageValidator()
-                            .getConsentType(consentManageData);
-                    //Validate Initiation request
-                    ConsentPayloadValidationResult validationResponse = ConsentManageUtils.getConsentManageValidator()
-                            .validateRequestPayload(consentManageData, consentType);
-                    if (!validationResponse.isValid()) {
-                        log.error(validationResponse.getErrorMessage().replaceAll("[\r\n]+", " "));
-                        throw new ConsentException(validationResponse.getHttpCode(), validationResponse.getErrorCode(),
-                                validationResponse.getErrorMessage());
-                    }
+        //Perform idempotency validation
+        if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
+                idempotencyValidator.isIdempotent(consentManageData, ConsentOperationEnum.CONSENT_CREATE)) {
+            return;
+        }
 
-                    ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
-                            consentManageData.getPayload().toString(), consentType,
-                            ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
-
-                    createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent,
-                            null, ConsentExtensionConstants.CREATED_STATUS,
-                            ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
+        try {
+            DetailedConsentResource createdConsent;
+            if (isExtensionsEnabled && isExternalPreConsentGenerationEnabled) {
+                // Call external service before generating consent
+                ExternalAPIPreConsentGenerateRequestDTO preRequestDTO =
+                        new ExternalAPIPreConsentGenerateRequestDTO(consentManageData);
+                ExternalAPIPreConsentGenerateResponseDTO preResponseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(preRequestDTO);
+                createdConsent = generateConsent(preResponseDTO, consentManageData.getClientId());
+            } else {
+                String consentType = ConsentManageUtils.getConsentManageValidator()
+                        .getConsentType(consentManageData);
+                //Validate Initiation request
+                ConsentPayloadValidationResult validationResponse = ConsentManageUtils.getConsentManageValidator()
+                        .validateRequestPayload(consentManageData, consentType);
+                if (!validationResponse.isValid()) {
+                    log.error(validationResponse.getErrorMessage().replaceAll("[\r\n]+", " "));
+                    throw new ConsentException(validationResponse.getHttpCode(), validationResponse.getErrorCode(),
+                            validationResponse.getErrorMessage());
                 }
 
-                //Store idempotency key as a consent attribute
+                ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
+                        consentManageData.getPayload().toString(), consentType,
+                        ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
+
+                createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent,
+                        null, ConsentExtensionConstants.CREATED_STATUS,
+                        ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
+            }
+
+            //Store idempotency key as a consent attribute
+            if (consentManageData.getHeaders().containsKey(idempotencyHeaderName)) {
                 Map<String, String> consentAttributes = new HashMap();
                 consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
                         .get(idempotencyHeaderName));
                 consentCoreService.storeConsentAttributes(createdConsent.getConsentID(), consentAttributes);
-
-                if (isExtensionsEnabled && isExternalPostConsentGenerationEnabled) {
-                    // Call external service after generating consent
-                    DetailedConsentResource createdConsentResource = consentCoreService.getDetailedConsent(
-                            createdConsent.getConsentID());
-                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
-                            new ExternalAPIConsentResourceRequestDTO(createdConsentResource);
-                    ExternalAPIPostConsentGenerateRequestDTO postRequestDTO =
-                            new ExternalAPIPostConsentGenerateRequestDTO(externalAPIConsentResource,
-                                    consentManageData.getRequestPath());
-                    ExternalAPIModifiedResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
-                            callExternalService(postRequestDTO);
-
-                    if (postResponseDTO.getModifiedResponse() != null) {
-                        consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
-                    } else {
-                        consentManageData.setResponsePayload(new JSONObject());
-                    }
-                    if (postResponseDTO.getResponseHeaders() != null) {
-                        consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
-                    } else {
-                        consentManageData.setResponseHeaders(new HashMap<>());
-                    }
-                } else {
-                    consentManageData.setResponsePayload(ConsentExtensionUtils
-                            .getInitiationResponse(consentManageData.getPayload(), createdConsent));
-                }
-                consentManageData.setResponseStatus(ResponseStatus.CREATED);
-
-            } catch (ConsentManagementException e) {
-                log.error("Error Occurred while handling the request", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_CREATE);
             }
+
+            if (isExtensionsEnabled && isExternalPostConsentGenerationEnabled) {
+                // Call external service after generating consent
+                DetailedConsentResource createdConsentResource = consentCoreService.getDetailedConsent(
+                        createdConsent.getConsentID());
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(createdConsentResource);
+                ExternalAPIPostConsentGenerateRequestDTO postRequestDTO =
+                        new ExternalAPIPostConsentGenerateRequestDTO(externalAPIConsentResource,
+                                consentManageData.getRequestPath());
+                ExternalAPIModifiedResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(postRequestDTO);
+
+                if (postResponseDTO.getModifiedResponse() != null) {
+                    consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
+                } else {
+                    consentManageData.setResponsePayload(new JSONObject());
+                }
+                if (postResponseDTO.getResponseHeaders() != null) {
+                    consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
+                } else {
+                    consentManageData.setResponseHeaders(new HashMap<>());
+                }
+            } else {
+                consentManageData.setResponsePayload(ConsentExtensionUtils
+                        .getInitiationResponse(consentManageData.getPayload(), createdConsent));
+            }
+            consentManageData.setResponseStatus(ResponseStatus.CREATED);
+
+        } catch (ConsentManagementException e) {
+            log.error("Error Occurred while handling the request", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_CREATE);
         }
 
     }
@@ -440,6 +449,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Invalid Request Path. Consent Id format is not valid.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
         }
+
+        //Perform idempotency validation
+        if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
+                idempotencyValidator.isIdempotent(consentManageData, ConsentOperationEnum.CONSENT_FILE_UPLOAD)) {
+            return;
+        }
         try {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
             if (consentResource == null) {
@@ -474,6 +489,16 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 consentCoreService.createConsentFile(consentFile, newConsentStatus,
                         userId, applicableStatusForFileUpload);
             }
+            //Store idempotency key as a consent attribute
+            if (consentManageData.getHeaders().containsKey(idempotencyHeaderName)) {
+                Map<String, String> consentAttributes = new HashMap();
+                consentAttributes.put(ConsentExtensionConstants.FILE_UPLOAD_IDEMPOTENCY_KEY,
+                        consentManageData.getHeaders().get(idempotencyHeaderName));
+                consentAttributes.put(ConsentExtensionConstants.FILE_UPLOAD_CREATED_TIME,
+                        String.valueOf(System.currentTimeMillis() / 1000));
+                consentCoreService.storeConsentAttributes(consentId, consentAttributes);
+            }
+
             String createdTime = OffsetDateTime.now().toString();
 
             if (isExtensionsEnabled && isExternalPostFileUploadEnabled) {
@@ -498,7 +523,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while handling the request", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    e.getMessage());
+                    e.getMessage(), ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
     }
 

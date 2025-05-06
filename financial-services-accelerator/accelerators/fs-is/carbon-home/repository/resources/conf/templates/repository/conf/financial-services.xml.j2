@@ -168,28 +168,30 @@
         </Payments>
         <Idempotency>
             {% if financial_services.consent.idempotency.enabled is defined %}
-                <Enabled>{{financial_services.consent.idempotency.enabled}}</Enabled>
+            <Enabled>{{financial_services.consent.idempotency.enabled}}</Enabled>
             {% else %}
-                <IsEnabled>false</IsEnabled>
+            <IsEnabled>false</IsEnabled>
             {% endif %}
-
             {% if financial_services.consent.idempotency.allowed_time_duration is defined %}
-                <AllowedTimeDuration>{{financial_services.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
+            <AllowedTimeDuration>{{financial_services.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
             {% else %}
-                <AllowedTimeDuration>1440</AllowedTimeDuration>
+            <AllowedTimeDuration>1440</AllowedTimeDuration>
             {% endif %}
-
             {% if financial_services.consent.idempotency.header_name is defined %}
-                <HeaderName>{{financial_services.consent.idempotency.header_name}}</HeaderName>
+            <HeaderName>{{financial_services.consent.idempotency.header_name}}</HeaderName>
             {% else %}
-                <HeaderName>x-idempotency-key</HeaderName>
+            <HeaderName>x-idempotency-key</HeaderName>
             {% endif %}
-
-            <AllowedConsentTypes>
-                {% for type in financial_services.consent.idempotency.allowed_consent_types %}
-                <ConsentType>{{type}}</ConsentType>
+            {% if financial_services.consent.idempotency.allowed_for_all_apis is defined %}
+            <AllowedForAllAPIs>{{financial_services.consent.idempotency.allowed_for_all_apis}}</AllowedForAllAPIs>
+            {% else %}
+            <AllowedForAllAPIs>false</AllowedForAllAPIs>
+            {% endif %}
+            <AllowedAPIResources>
+                {% for allowed_api in financial_services.consent.idempotency.allowed_api_resources %}
+                <AllowedAPIResource>{{allowed_api}}</AllowedAPIResource>
                 {% endfor %}
-            </AllowedConsentTypes>
+            </AllowedAPIResources>
         </Idempotency>
         {% if financial_services.consent.preserve_consent_link.enable is defined %}
         <PreserveConsentLink>{{financial_services.consent.preserve_consent_link.enable}}</PreserveConsentLink>

@@ -78,16 +78,15 @@ public class IdempotencyValidator {
      * Method to check whether the request is a valid idempotent request.
      *
      * @param consentManageData  Consent Manage Data object
-     * @param type               Payment type
      * @return whether the request is idempotent
      */
-    public boolean isIdempotent(ConsentManageData consentManageData, String type) {
+    public boolean isIdempotent(ConsentManageData consentManageData, ConsentOperationEnum consentOperationEnum) {
 
         try {
-            IdempotencyValidationResult result = validateIdempotency(consentManageData);
+            IdempotencyValidationResult result = validateIdempotency(consentManageData, consentOperationEnum);
             if (result.isIdempotent()) {
                 if (result.isValid()) {
-                    if (consentManageData.getRequestPath().contains("fileUpload")) {
+                    if (ConsentOperationEnum.CONSENT_FILE_UPLOAD.equals(consentOperationEnum)) {
                         consentManageData.setResponseStatus(ResponseStatus.OK);
                     } else {
                         if (isExtensionsEnabled && isExternalPostConsentGenerationEnabled) {
@@ -121,12 +120,11 @@ public class IdempotencyValidator {
             }
         } catch (IdempotencyValidationException e) {
             log.error(ErrorConstants.IDEMPOTENCY_KEY_FRAUDULENT, e);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorConstants.IDEMPOTENCY_KEY_FRAUDULENT,
-                    ConsentOperationEnum.CONSENT_DEFAULT);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage(), consentOperationEnum);
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while handling the request", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_CREATE);
+                    "Error Occurred while handling the request", consentOperationEnum);
         }
         return false;
     }
@@ -151,13 +149,19 @@ public class IdempotencyValidator {
      *  - Whether payloads are equal
      *
      * @param consentManageData            Consent Manage Data
+     * @param consentOperationEnum         Consent Operation
      * @return  IdempotencyValidationResult
      * @throws IdempotencyValidationException    If an error occurs while validating idempotency
      */
-    public IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData)
+    public IdempotencyValidationResult validateIdempotency(ConsentManageData consentManageData,
+                                                           ConsentOperationEnum consentOperationEnum)
             throws IdempotencyValidationException {
 
         if (!configParser.isIdempotencyValidationEnabled()) {
+            return new IdempotencyValidationResult(false, false);
+        }
+
+        if (!isIdempotencyApplicableForAPIResource(consentManageData)) {
             return new IdempotencyValidationResult(false, false);
         }
 
@@ -178,7 +182,7 @@ public class IdempotencyValidator {
         try {
             // idempotencyKeyName is the name of the attribute key which the idempotency key
             // is stored against in the consent attributes
-            String idempotencyKeyName = getIdempotencyAttributeName(consentManageData);
+            String idempotencyKeyName = getIdempotencyAttributeName(consentOperationEnum);
             // Retrieve consent ids that have the idempotency key name and value as attribute
             List<String> consentIds = IdempotencyValidationUtils
                     .getConsentIdsFromIdempotencyKey(idempotencyKeyName, idempotencyKeyValue);
@@ -192,11 +196,7 @@ public class IdempotencyValidator {
                 for (String consentId : consentIds) {
                     DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
                     if (consentResource != null) {
-                        if (!configParser.getIdempotencyAllowedConsentTypes().contains(
-                                consentResource.getConsentType())) {
-                            return new IdempotencyValidationResult(false, false);
-                        }
-                        return validateIdempotencyConditions(consentManageData, consentResource);
+                        return validateIdempotencyConditions(consentManageData, consentResource, consentOperationEnum);
                     } else {
                         String errorMsg = String.format(IdempotencyConstants.ERROR_NO_CONSENT_DETAILS, consentId);
                         log.error(errorMsg.replaceAll("[\r\n]", ""));
@@ -227,7 +227,8 @@ public class IdempotencyValidator {
      * @return  IdempotencyValidationResult
      */
     private IdempotencyValidationResult validateIdempotencyConditions(ConsentManageData consentManageData,
-                                                                      DetailedConsentResource consentResource)
+                                                                      DetailedConsentResource consentResource,
+                                                                      ConsentOperationEnum consentOperationEnum)
             throws IdempotencyValidationException, IOException {
         // Compare the client ID sent in the request and client id retrieved from the database
         // to validate whether the request is received from the same client
@@ -235,10 +236,10 @@ public class IdempotencyValidator {
                 consentManageData.getClientId())) {
             // Check whether difference between two dates is less than the configured time
             if (IdempotencyValidationUtils.isRequestReceivedWithinAllowedTime(getCreatedTimeOfPreviousRequest(
-                    consentManageData, consentResource))) {
+                    consentOperationEnum, consentResource))) {
 
                 // Compare whether JSON payloads are equal
-                if (isPayloadSimilar(consentManageData, getPayloadOfPreviousRequest(consentManageData,
+                if (isPayloadSimilar(consentManageData, getPayloadOfPreviousRequest(consentOperationEnum,
                         consentResource))) {
                     log.debug("Payloads are similar and request received within allowed" +
                             " time. Hence this is a valid idempotent request");
@@ -261,11 +262,11 @@ public class IdempotencyValidator {
     /**
      * Method to get the Idempotency Attribute Name store in consent Attributes.
      *
-     * @param consentManageData Consent Manage Data Object
+     * @param consentOperationEnum  Consent Operation
      * @return idempotency Attribute Name.
      */
-    private String getIdempotencyAttributeName(ConsentManageData consentManageData) {
-        if (consentManageData.getRequestPath().contains("fileUpload")) {
+    private String getIdempotencyAttributeName(ConsentOperationEnum consentOperationEnum) {
+        if (ConsentOperationEnum.CONSENT_FILE_UPLOAD.equals(consentOperationEnum)) {
             return ConsentExtensionConstants.FILE_UPLOAD_IDEMPOTENCY_KEY;
         } else {
             return ConsentExtensionConstants.IDEMPOTENCY_KEY;
@@ -282,16 +283,36 @@ public class IdempotencyValidator {
     }
 
     /**
+     * Method to get whether the idempotency validation is applicable for API resource.
+     *
+     * @return boolean indicating whether applicable.
+     */
+    private Boolean isIdempotencyApplicableForAPIResource(ConsentManageData consentManageData) {
+
+        if (configParser.isIdempotencyAllowedForAllAPIs()) {
+            return true;
+        } else {
+            List<String> allowedAPIResources = configParser.getIdempotencyAllowedResources();
+            for (String allowedAPIResource : allowedAPIResources) {
+                if (consentManageData.getRequestPath().contains(allowedAPIResource)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Method to get created time from the Detailed Consent Resource.
      *
-     * @param consentManageData     Consent Manage Data Object
+     * @param consentOperationEnum  Consent operation
      * @param consentResource       Consent Resource
      * @return Created Time.
      */
-    private long getCreatedTimeOfPreviousRequest(ConsentManageData consentManageData,
+    private long getCreatedTimeOfPreviousRequest(ConsentOperationEnum consentOperationEnum,
                                                  DetailedConsentResource consentResource)  {
 
-        if (consentManageData.getRequestPath().contains("fileUpload")) {
+        if (ConsentOperationEnum.CONSENT_FILE_UPLOAD.equals(consentOperationEnum)) {
             if (consentResource.getConsentAttributes() != null && consentResource.getConsentAttributes()
                     .containsKey(ConsentExtensionConstants.FILE_UPLOAD_CREATED_TIME)) {
                 return Long.parseLong(consentResource.getConsentAttributes()
@@ -306,14 +327,14 @@ public class IdempotencyValidator {
     /**
      * Method to get payload from previous request.
      *
-     * @param consentManageData     Consent Manage Data Object
+     * @param consentOperationEnum  Consent operation
      * @param consentResource       Consent Resource
      * @return Map containing the payload.
      */
-    private String getPayloadOfPreviousRequest(ConsentManageData consentManageData,
+    private String getPayloadOfPreviousRequest(ConsentOperationEnum consentOperationEnum,
                                                DetailedConsentResource consentResource) {
 
-        if (consentManageData.getRequestPath().contains("fileUpload")) {
+        if (ConsentOperationEnum.CONSENT_FILE_UPLOAD.equals(consentOperationEnum)) {
             try {
                 ConsentFile consentFile = consentCoreService.getConsentFile(consentResource.getConsentID());
                 if (consentFile == null) {
