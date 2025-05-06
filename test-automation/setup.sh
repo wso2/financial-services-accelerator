@@ -58,7 +58,7 @@ fi
 
 echo '======================= Building packs ======================='
 #
-mvn -B install --file ${RUNNER_HOME}/pom.xml
+#mvn -B install --file ${RUNNER_HOME}/pom.xml
 MVNSTATE=$?
 #
 echo '======================= Moving Packs to RUNNER_HOME ======================='
