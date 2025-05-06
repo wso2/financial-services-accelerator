@@ -1,4 +1,4 @@
-# Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+# Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
 #
 # WSO2 LLC. licenses this file to you under the Apache License,
 # Version 2.0 (the "License"); you may not use this file except
@@ -87,8 +87,8 @@ jobs:
           RUNNER_HOME=`pwd`          
           chmod +x $RUNNER_HOME/test-automation/test.sh         
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
 #uncomment this to run the tests (commenting this out since secrets cannot be accessed via
 #actions triggered from fork of public repositories
+#          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
 #          bash $RUNNER_HOME/test-automation/setup.sh
 #          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME

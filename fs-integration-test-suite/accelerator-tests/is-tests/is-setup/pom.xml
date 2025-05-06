@@ -74,10 +74,6 @@
             <artifactId>java-uuid-generator</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.osgi</groupId>-->
-<!--            <artifactId>org.osgi.core</artifactId>-->
-<!--        </dependency>-->
     </dependencies>
 
     <build>

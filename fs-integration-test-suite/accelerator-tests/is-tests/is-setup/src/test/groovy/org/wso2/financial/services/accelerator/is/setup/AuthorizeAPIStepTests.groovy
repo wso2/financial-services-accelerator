@@ -1,3 +1,20 @@
+/**
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.financial.services.accelerator.is.setup;
 
 import io.restassured.RestAssured
@@ -8,8 +25,6 @@ import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
-import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
-import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 class AuthorizeAPIStepTests {
 
@@ -95,32 +110,4 @@ class AuthorizeAPIStepTests {
         Assert.assertEquals( response.statusCode(), 201)
 
     }
-//    @Test(groups = "api" ,dependsOnMethods = ["Create API Resource"])
-//    void "Create Application"() {
-//
-//
-//        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-//                .body(registrationRequestBuilder.getRegularClaims(ssa))
-//                .post(dcrPath)
-//
-//        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-//        clientSecret = TestUtil.parseResponseBody(registrationResponse, "client_secret")
-//
-//        if(registrationResponse.statusCode() != 201) {
-//            Assert.fail("Client registration failed with status code: " + registrationResponse.statusCode())
-//        }
-//        File xmlFile = new File(System.getProperty("user.dir").toString().concat("/../../../accelerator-test-framework/src/main/resources/TestConfiguration.xml"))
-//        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
-//                0)
-//        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientSecret", clientSecret,
-//                0)
-//
-//
-//
-//    }
-
-
-
-
-
 }
