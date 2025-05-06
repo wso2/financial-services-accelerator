@@ -83,7 +83,7 @@ public class ISDefaultAuthServletImpl implements FSAuthServletInterface {
             // If we are getting consent for user claims only, we don't need to display OIDC scopes in the consent page
         } else {
             if (displayScopes) {
-                JSONArray openIdScopesArray = dataSet.getJSONArray(Constants.DISPLAY_SCOPES);
+                JSONArray openIdScopesArray = dataSet.getJSONArray(Constants.OPENID_SCOPES);
                 if (openIdScopesArray != null) {
                     for (int scopeIndex = 0; scopeIndex < openIdScopesArray.length(); scopeIndex++) {
                         oidScopes.add(openIdScopesArray.getString(scopeIndex));

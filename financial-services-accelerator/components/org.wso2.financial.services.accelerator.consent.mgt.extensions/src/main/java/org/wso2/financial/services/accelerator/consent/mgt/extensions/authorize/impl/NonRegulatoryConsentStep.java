@@ -38,7 +38,7 @@ public class NonRegulatoryConsentStep implements ConsentRetrievalStep {
     private static final String OPENID_SCOPES = "openid_scopes";
     private static final String OPENID = "openid";
     private static final String CONSENT_MGT = "consentmgt";
-    private static final String DEFAULT = "default";
+    private static final String IS_DEFAULT = "is_default";
     private static final String CONSENT_READ_ALL_SCOPE = "consents:read_all";
     private static final String CONSENT_READ_SELF_SCOPE = "consents:read_self";
     private static final Map<String, String> CONSENT_SCOPES = new HashMap<>();
@@ -53,7 +53,7 @@ public class NonRegulatoryConsentStep implements ConsentRetrievalStep {
         if (consentData.getScopeString().toLowerCase().contains(CONSENT_MGT)) {
             consentData.setType(CONSENT_MGT);
         } else if (consentData.getScopeString().contains(OPENID)) {
-            consentData.setType(DEFAULT);
+            consentData.setType(IS_DEFAULT);
         }
         String scopeString = consentData.getScopeString();
         addScopesArray(scopeString, jsonObject);
