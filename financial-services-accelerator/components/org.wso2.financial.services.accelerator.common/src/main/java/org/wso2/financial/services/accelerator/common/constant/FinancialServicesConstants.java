@@ -26,6 +26,9 @@ public class FinancialServicesConstants {
     public static final String FS_CONFIG_FILE = "financial-services.xml";
     public static final String CARBON_HOME = "carbon.home";
     public static final String FS_CONFIG_QNAME = "http://wso2.org/projects/carbon/financial-services.xml";
+    public static final String DEFAULT_STATUS_FOR_EXPIRED_CONSENTS = "Expired";
+    public static final String DEFAULT_MIDNIGHT_CRON = "0 0 0 * * ?";
+
     public static final String GATEWAY_CONFIG_TAG = "Gateway";
     public static final String GATEWAY_EXECUTOR_CONFIG_TAG = "FinancialServicesGatewayExecutors";
     public static final String EXECUTOR_CONFIG_TAG = "Executor";
@@ -59,6 +62,12 @@ public class FinancialServicesConstants {
     public static final String ADMIN_USERNAME = "Admin.Username";
     public static final String ADMIN_PASSWORD = "Admin.Password";
     public static final String MAX_INSTRUCTED_AMOUNT = "Consent.Payments.MaximumInstructedAmount";
+    public static final String STATUS_FOR_EXPIRED_CONSENT = "Consent.PeriodicalExpiration.ExpiredConsentStatusValue";
+    public static final String ELIGIBLE_STATUSES_FOR_CONSENT_EXPIRY =
+            "Consent.PeriodicalExpiration.EligibleStatuses";
+    public static final String IS_CONSENT_AMENDMENT_HISTORY_ENABLED = "Consent.AmendmentHistory.Enabled";
+    public static final String CONSENT_PERIODICAL_EXPIRATION_CRON = "Consent.PeriodicalExpiration.CronValue";
+    public static final String IS_CONSENT_PERIODICAL_EXPIRATION_ENABLED = "Consent.PeriodicalExpiration.Enabled";
 
     public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";

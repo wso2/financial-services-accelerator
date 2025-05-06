@@ -207,6 +207,11 @@ TokenExpiryTime = 60
 skip_db_schema_creation = true
 
 [[resource.access_control]]
+context = "(.*)/api/fs/consent/admin/(.*)"
+http_method = "all"
+secure = "true"
+
+[[resource.access_control]]
 allowed_auth_handlers = ["BasicAuthentication"]
 context = "(.*)/api/fs/consent/(.*)"
 http_method = "all"
@@ -224,6 +229,11 @@ context = "(.*)/api/fs/event-notifications/(.*)"
 http_method = "all"
 permissions = ["/permission/admin"]
 secure = "true"
+
+[[resource.access_control]]
+context = "(.*)/consentmgr/(.*)"
+secure="false"
+http_method="GET, DELETE"
 
 [[resource.access_control]]
 context="(.*)/scim2/Me"
@@ -512,6 +522,10 @@ allowed_headers = ["x-wso2-client-id"]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep"
 priority = 1
 
+[[financial_services.consent.authorize_steps.retrieve]]
+class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.NonRegulatoryConsentStep"
+priority = 2
+
 [[financial_services.consent.authorize_steps.persist]]
 class = "org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentPersistStep"
 priority = 1
@@ -523,6 +537,16 @@ jwt.payload.enabled=true
 
 [financial_services.consent.admin]
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler"
+
+[financial_services.consent.periodical_expiration]
+# This property needs to be true in order to run the consent expiration periodical updater.
+enabled=true
+# Cron value for the periodical updater. "0 0 0 * * ?" cron will describe as 00:00:00am every day
+cron_value="0 0 0 * * ?"
+# This value to be update for expired consents.
+expired_consent_status_value="Expired"
+# The current consent statuses that are eligible to be expired. (Comma separated value list)
+eligible_statuses="authorised"
 
 [financial_services.consent.portal.client_credentials]
 client_id="consent_management_portal_client_id"

@@ -190,6 +190,12 @@
                 <Step class="org.wso2.financial.services.accelerator.common.test.CustomStep4" priority="4"/>
             </Persist>
         </AuthorizeSteps>
+        <PeriodicalExpiration>
+            <Enabled>true</Enabled>
+            <CronValue>0 0/2 * * * ?</CronValue>
+            <ExpiredConsentStatusValue>Expired</ExpiredConsentStatusValue>
+            <EligibleStatuses>Authorised</EligibleStatuses>
+        </PeriodicalExpiration>
         <AmendmentHistory>
             <Enabled>true</Enabled>
         </AmendmentHistory>
