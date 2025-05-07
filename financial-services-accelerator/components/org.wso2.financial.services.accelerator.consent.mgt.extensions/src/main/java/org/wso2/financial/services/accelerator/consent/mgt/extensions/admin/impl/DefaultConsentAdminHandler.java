@@ -45,6 +45,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.job.ExpiredConsentStatusUpdateJob;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.ArrayList;
@@ -327,6 +328,20 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         response.put(ConsentExtensionConstants.METADATA, metadata);
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
+    }
+
+    @Override
+    public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException {
+
+        try {
+            ExpiredConsentStatusUpdateJob.updateExpiredStatues();
+            consentAdminData.setResponseStatus(ResponseStatus.OK);
+            consentAdminData.setResponseStatus(ResponseStatus.NO_CONTENT);
+        } catch (ConsentManagementException e) {
+            log.error("Error while retrieving expiring consents", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
     }
 
     @Override

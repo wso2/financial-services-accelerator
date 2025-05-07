@@ -520,6 +520,35 @@ class RequestPayloads {
 		}
 	""".stripIndent()
 
+    public static String initiationPaymentPayloadModified = """
+		{
+			"Data": {
+				"ReadRefundAccount": "Yes",
+				"Initiation": {
+					"InstructionIdentification": "ACME413",
+					"EndToEndIdentification": "FRESCO.21302.GFX.20",
+					"InstructedAmount": {
+						"Amount": "165.88",
+						"Currency": "GBP"
+					},
+					"CreditorAccount": {
+						"SchemeName": "OB.SortCodeAccountNumber",
+						"Identification": "080800213256912",
+						"Name": "ACME Inc",
+						"SecondaryIdentification": "0002"
+					},
+					"RemittanceInformation": {
+						"Reference": "FRESCO-101",
+						"Unstructured": "Internal ops code 5120101"
+					}
+				}
+			},
+			"Risk": {
+				"PaymentContextCode": "EcommerceMerchantInitiatedPayment"
+			}
+		}
+	""".stripIndent()
+
     public static String getSubmissionPaymentPayload(String consentID) {
         return """{
 			"Data": {

@@ -763,4 +763,14 @@ public interface ConsentCoreService {
                                                  String userID, Map<String, Object> additionalAmendmentData)
             throws ConsentManagementException;
 
+    /**
+     * This method is used to fetch consents which has a expiring time as a consent attribute
+     * (eligible for expiration)
+     * @param statusesEligibleForExpiration
+     * @return
+     * @throws ConsentManagementException
+     */
+    ArrayList<DetailedConsentResource> getConsentsEligibleForExpiration(String statusesEligibleForExpiration)
+            throws ConsentManagementException;
+
 }

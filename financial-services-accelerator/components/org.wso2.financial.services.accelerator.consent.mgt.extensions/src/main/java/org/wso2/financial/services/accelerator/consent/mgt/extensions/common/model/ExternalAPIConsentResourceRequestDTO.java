@@ -46,6 +46,7 @@ public class ExternalAPIConsentResourceRequestDTO {
     private Map<String, Object> receipt;
     private Map<String, String> attributes;
     private List<Authorization> authorizations;
+    private String fileContent;
 
     public ExternalAPIConsentResourceRequestDTO(ConsentResource consentResource) {
 
@@ -224,6 +225,14 @@ public class ExternalAPIConsentResourceRequestDTO {
     public void setAuthorizations(
             List<Authorization> authorizations) {
         this.authorizations = authorizations;
+    }
+
+    public String getFileContent() {
+        return fileContent;
+    }
+
+    public void setFileContent(String fileContent) {
+        this.fileContent = fileContent;
     }
 
     /**

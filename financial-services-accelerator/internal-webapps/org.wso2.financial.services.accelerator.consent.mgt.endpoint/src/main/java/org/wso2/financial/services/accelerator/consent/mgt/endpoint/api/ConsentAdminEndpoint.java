@@ -172,6 +172,22 @@ public class ConsentAdminEndpoint {
     }
 
     /**
+     * Invoke consent expiration task.
+     */
+    @GET
+    @Path("/expire-consents")
+    @Consumes({"application/json; charset=utf-8"})
+    @Produces({"application/json; charset=utf-8"})
+    public Response expireConsents(@Context HttpServletRequest request,
+                                   @Context HttpServletResponse response, @Context UriInfo uriInfo) {
+
+        ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
+                uriInfo.getQueryParameters(), uriInfo.getAbsolutePath().getPath(), request, response);
+        consentAdminHandler.handleConsentExpiry(consentAdminData);
+        return sendResponse(consentAdminData);
+    }
+
+    /**
      * Method to send response using the payload and response status.
      * 
      * @param consentAdminData Consent admin data

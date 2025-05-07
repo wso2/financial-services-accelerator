@@ -438,7 +438,7 @@
                 <version>${jjwt.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.quartz-scheduler</groupId>
+                <groupId>org.wso2.orbit.org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
             </dependency>
@@ -612,7 +612,7 @@
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
         <apache.tomcat-catalina.version>9.0.11</apache.tomcat-catalina.version>
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-        <quartz.version>2.3.2</quartz.version>
+        <quartz.version>2.3.2.wso2v1</quartz.version>
         <swagger.parser.v3.version>2.1.22.wso2v1</swagger.parser.v3.version>
         <jjwt.version>0.9.1</jjwt.version>
         <!--Base Products related dependencies-->

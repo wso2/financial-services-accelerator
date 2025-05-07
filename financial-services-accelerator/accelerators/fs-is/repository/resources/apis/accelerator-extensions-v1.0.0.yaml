@@ -770,7 +770,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 responseId: Ec1wMjmiG8
-                xtatus: ERROR
+                status: ERROR
                 errorMessage: server_error
                 errorDescription: Failed to process the response
   /validate-authorization-request:
@@ -804,7 +804,7 @@ paths:
                     status: ERROR
                     errorCode: 401
                     errorMessage: invalid_permissions
-                    erroreDescription: "The requested  permissions are invalid, unknown"
+                    errorDescription: "The requested  permissions are invalid, unknown"
         "400":
           description: Bad Request
           content:
@@ -1084,7 +1084,7 @@ paths:
                     status: SUCCESS
                     data:
                       eventPollingResponse: {}
-                ffailedExample:
+                failedExample:
                   summary: Failed response
                   value:
                     status: ERROR
@@ -1605,10 +1605,18 @@ components:
         isApproved:
           type: boolean
         userGrantedData:
-          type: object
-          description: "Input data from end user"
+          $ref: '#/components/schemas/UserGrantedData'
         consentResource:
           $ref: '#/components/schemas/StoredDetailedConsentResourceData'
+    UserGrantedData:
+      type: object
+      properties:
+        requestParameters:
+          type: object
+        authorizedResources:
+          type: object
+        userId:
+          type: string
     Response200ForPersistAuthorizedConsent:
       oneOf:
         - $ref: '#/components/schemas/SuccessResponsePersistAuthorizedConsent'
@@ -1625,12 +1633,12 @@ components:
         data:
           oneOf:
             - $ref: '#/components/schemas/SuccessResponseWithDetailedConsentData'
-            - $ref: '#/components/schemas/SuccessPersistAuthorizedConsentWithAmendmentsData'
-    SuccessPersistAuthorizedConsentWithAmendmentsData:
+            - $ref: '#/components/schemas/SuccessResponseWithDetailedConsentDataAndAmendments'
+    SuccessResponseWithDetailedConsentDataAndAmendments:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/ConsentPersistenceSuccessDataWithAmendments'
+        consentResource:
+          $ref: '#/components/schemas/DetailedConsentResourceDataWithAmendments'
     DetailedConsentResourceData:
       type: object
       properties:
@@ -1653,12 +1661,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Authorization'
-    ConsentPersistenceSuccessDataWithAmendments:
+    DetailedConsentResourceDataWithAmendments:
       type: object
       properties:
-        consentType:
+        type:
           type: string
-        consentStatus:
+        status:
           type: string
         validityTime:
           type: integer
@@ -1667,7 +1675,9 @@ components:
           type: boolean
         frequency:
           type: integer
-        consentPayload:
+        receipt:
+          type: object
+        attributes:
           type: object
         authorizations:
           type: array
@@ -1737,6 +1747,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StoredAuthorization'
+        fileContent:
+          type: string
     Authorization:
       type: object
       properties:

@@ -328,6 +328,21 @@ class FSConnectorTest extends CommonTest{
     }
 
     /**
+     * Payment Consent Initiation Step.
+     */
+    void  doDefaultInitiationForPayments() {
+
+        //initiation
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
+                .body(initiationPayload)
+                .baseUri(configuration.getISServerUrl())
+                .post(consentPath)
+
+        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
+    }
+
+    /**
      * Account Consent Initiation Step without Authorization Header.
      */
     void  doDefaultInitiationWithoutAuthorizationHeader() {

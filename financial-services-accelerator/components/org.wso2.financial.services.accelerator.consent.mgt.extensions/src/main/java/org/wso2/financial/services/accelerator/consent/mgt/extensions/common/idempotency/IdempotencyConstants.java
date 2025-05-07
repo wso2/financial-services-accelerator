@@ -37,7 +37,8 @@ public class IdempotencyConstants {
     public static final String ERROR_NO_CONSENT_DETAILS = "No consent details found for the consent ID %s, Hence this" +
             " is not a valid idempotent request";
     public static final String JSON_COMPARING_ERROR = "Error occurred while comparing JSON payloads";
-    public static final String CONSENT_RETRIEVAL_ERROR = "Error while retrieving detailed consent data";
+    public static final String CONSENT_RETRIEVAL_ERROR = "Error while retrieving detailed consent data for " +
+            "replayed idempotency key";
     public static final String SAME_CONSENT_ID_ERROR = "Cannot use different unique identifier for the same" +
             " consent ID when the request does not contain a payload.";
 }
