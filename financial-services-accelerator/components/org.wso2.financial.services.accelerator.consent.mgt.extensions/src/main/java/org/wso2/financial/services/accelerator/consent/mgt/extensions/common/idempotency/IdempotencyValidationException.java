@@ -18,12 +18,12 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common.idempotency;
 
-import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 
 /**
  * Used for handling exceptions in Idempotency Validation.
  */
-public class IdempotencyValidationException extends ConsentManagementException {
+public class IdempotencyValidationException extends FinancialServicesException {
 
     public IdempotencyValidationException(String message) {
         super(message);

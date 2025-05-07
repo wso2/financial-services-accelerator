@@ -613,6 +613,46 @@ public final class FinancialServicesConfigParser {
         return config.map(String::trim).orElse("1440");
     }
 
+    /**
+     * Method to get the value Idempotency header name.
+     *
+     * @return Idempotency header name
+     */
+    public String getIdempotencyHeaderName() {
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_HEADER_NAME);
+        return config.map(String::trim).orElse("x-idempotency-key");
+    }
+
+    /**
+     * Method to get whether Idempotency validation is allowed for all APIs.
+     *
+     * @return Idempotency validation is allowed
+     */
+    public Boolean isIdempotencyAllowedForAllAPIs() {
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IDEMPOTENCY_ALLOWED_FOR_ALL_APIS);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Returns the list of idempotency allowed API resources.
+     *
+     * @return list.
+     */
+    public List<String> getIdempotencyAllowedResources() {
+
+        Object allowedTypesObj = configuration.get(FinancialServicesConstants.
+                IDEMPOTENCY_ALLOWED_API_RESOURCES);
+        List<String> allowedTypes = new ArrayList<>();
+        if (allowedTypesObj instanceof List) {
+            allowedTypes.addAll((List) allowedTypesObj);
+        } else if (allowedTypesObj instanceof String) {
+            allowedTypes.add((String) allowedTypesObj);
+        }
+
+        return allowedTypes;
+    }
+
     public String getAdminUsername() {
 
         Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.ADMIN_USERNAME);
