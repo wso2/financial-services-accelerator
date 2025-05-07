@@ -51,4 +51,9 @@
             <class name="org.wso2.financial.services.accelerator.is.test.consent.management.FundsConfirmationTests.InitiationRequestHeaderValidationTests"/>
         </classes>
     </test>
+    <test name="Consent Management Payment Consent Flow" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.is.test.consent.management.PaymentsApiTests.InitiationRequestHeaderValidationTests"/>
+        </classes>
+    </test>
 </suite>
