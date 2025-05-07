@@ -115,18 +115,18 @@ public class ResourceInterceptorService implements Serializable {
                     JSONArray spData = configs.getJSONArray(Constants.ADDITIONAL_SP_PROPERTIES);
                     String clientName = null;
                     String logoUrl = null;
-                    for (Object spDatum : spData) {
-                        JSONObject spDatumJson = (JSONObject) spDatum;
-                        if (spDatumJson.getString(Constants.NAME).equalsIgnoreCase(
+                    for (Object spDataItem : spData) {
+                        JSONObject spDataItemJson = (JSONObject) spDataItem;
+                        if (spDataItemJson.getString(Constants.NAME).equalsIgnoreCase(
                                 Utils.getParameter(Constants.APP_NAME))) {
-                            String softwareClientName = spDatumJson.getString(Constants.VALUE);
+                            String softwareClientName = spDataItemJson.getString(Constants.VALUE);
                             if (StringUtils.isNotEmpty(softwareClientName)) {
                                 clientName = softwareClientName;
                             }
                         }
-                        if (spDatumJson.getString(Constants.NAME).equalsIgnoreCase(
+                        if (spDataItemJson.getString(Constants.NAME).equalsIgnoreCase(
                                 Utils.getParameter(Constants.APP_LOGO_URL))) {
-                            logoUrl = spDatumJson.getString(Constants.VALUE);
+                            logoUrl = spDataItemJson.getString(Constants.VALUE);
                         }
                     }
                     if (clientName == null) {
@@ -143,6 +143,9 @@ public class ResourceInterceptorService implements Serializable {
                         if (clientId != null && appClientNameMap.containsKey(clientId)) {
                             dataElementJson.put(Constants.SOFTWARE_CLIENT_NAME, appClientNameMap.get(clientId));
                             dataElementJson.put(Constants.LOGO_URL, appLogoUrlMap.get(clientId));
+                        } else {
+                            // For deleted applications
+                            dataElementJson.put(Constants.SOFTWARE_CLIENT_NAME, clientId);
                         }
                     }
                 }

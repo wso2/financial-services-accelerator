@@ -613,6 +613,46 @@ public final class FinancialServicesConfigParser {
         return config.map(String::trim).orElse("1440");
     }
 
+    /**
+     * Method to get the value Idempotency header name.
+     *
+     * @return Idempotency header name
+     */
+    public String getIdempotencyHeaderName() {
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_HEADER_NAME);
+        return config.map(String::trim).orElse("x-idempotency-key");
+    }
+
+    /**
+     * Method to get whether Idempotency validation is allowed for all APIs.
+     *
+     * @return Idempotency validation is allowed
+     */
+    public Boolean isIdempotencyAllowedForAllAPIs() {
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IDEMPOTENCY_ALLOWED_FOR_ALL_APIS);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Returns the list of idempotency allowed API resources.
+     *
+     * @return list.
+     */
+    public List<String> getIdempotencyAllowedResources() {
+
+        Object allowedTypesObj = configuration.get(FinancialServicesConstants.
+                IDEMPOTENCY_ALLOWED_API_RESOURCES);
+        List<String> allowedTypes = new ArrayList<>();
+        if (allowedTypesObj instanceof List) {
+            allowedTypes.addAll((List) allowedTypesObj);
+        } else if (allowedTypesObj instanceof String) {
+            allowedTypes.add((String) allowedTypesObj);
+        }
+
+        return allowedTypes;
+    }
+
     public String getAdminUsername() {
 
         Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.ADMIN_USERNAME);
@@ -975,6 +1015,57 @@ public final class FinancialServicesConfigParser {
         }
 
         return allowedHeaders;
+    }
+
+    /**
+     * Method to get status for expired consents.
+     * @return statue for expired consents
+     */
+    public String getStatusWordingForExpiredConsents() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.STATUS_FOR_EXPIRED_CONSENT);
+        return config.map(String::trim).orElse(FinancialServicesConstants.DEFAULT_STATUS_FOR_EXPIRED_CONSENTS);
+    }
+
+    /**
+     * Method to get eligible statues for evaluate expiration logic.
+     * @return eligible statues for evaluate expiration logic
+     */
+    public String getEligibleStatusesForConsentExpiry() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.ELIGIBLE_STATUSES_FOR_CONSENT_EXPIRY);
+        return config.map(String::trim).orElse("");
+    }
+
+    public boolean isConsentAmendmentHistoryEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IS_CONSENT_AMENDMENT_HISTORY_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get isEnabled config for periodical consent expiration job.
+     * @return consent expiration job is enabled
+     */
+    public boolean isConsentExpirationPeriodicalJobEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IS_CONSENT_PERIODICAL_EXPIRATION_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get configs for periodical consent expiration job's cron value.
+     * @return consent expiration job's cron string
+     */
+    public String getConsentExpiryCronExpression() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_PERIODICAL_EXPIRATION_CRON);
+        return config.map(String::trim).orElse(FinancialServicesConstants.DEFAULT_MIDNIGHT_CRON);
     }
 
 }

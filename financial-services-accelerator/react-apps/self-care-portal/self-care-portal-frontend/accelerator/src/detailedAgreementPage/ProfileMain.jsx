@@ -53,6 +53,8 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
     const consentStatusLabel = (consent.currentStatus.toLowerCase() ===
         specConfigurations.status.authorised.toLowerCase() && !isNotExpired())
         ? specConfigurations.status.expired : infoLabel.label;
+    let langObjectForConsentStatus = lang[consent.consent_type].filter((lbl) =>
+            lbl.id.toLowerCase().includes(consent.currentStatus.toLowerCase()))[0];
     return (
         <Container className="profileMain">
             <img id="profileLogo" src={logoURL} width="50" height="50" alt="new"/>
@@ -65,8 +67,8 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
                         <FontAwesomeIcon icon={faDownload} size="2xs" id= "downloadIcon"/>
                     </a>
                 </div>
-                {consent.currentStatus.toLowerCase() ===
-                specConfigurations.status.authorised.toLowerCase() && isNotExpired() ? (
+                {consent.currentStatus.toLowerCase() ===specConfigurations.status.authorised.toLowerCase() &&
+                    langObjectForConsentStatus.isRevocableConsent && isNotExpired() ? (
                     <div className="actionButtons">
                         <div className="actionBtnDiv">
                             <Link

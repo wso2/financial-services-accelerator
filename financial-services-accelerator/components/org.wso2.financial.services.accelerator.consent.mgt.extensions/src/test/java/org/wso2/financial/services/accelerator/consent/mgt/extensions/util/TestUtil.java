@@ -75,6 +75,25 @@ public class TestUtil {
                 TestConstants.SAMPLE_CONSENT_ATTRIBUTES_MAP, authorizationResources, consentMappingResources);
     }
 
+    public static DetailedConsentResource getSampleAuthorizedDetailedConsentResource() {
+
+        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
+        authorizationResources.add(getSampleAuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
+                TestConstants.SAMPLE_AUTH_ID));
+
+        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+        consentMappingResources.add(getSampleConsentMappingResource(TestConstants.SAMPLE_AUTH_ID));
+        consentMappingResources.add(getSampleInactiveConsentMappingResource(TestConstants.SAMPLE_AUTH_ID));
+
+        return new DetailedConsentResource(
+                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_CLIENT_ID,
+                TestConstants.VALID_INITIATION, TestConstants.ACCOUNTS,
+                TestConstants.AUTHORISED_STATUS, TestConstants.SAMPLE_CONSENT_FREQUENCY,
+                TestConstants.SAMPLE_CONSENT_VALIDITY_PERIOD, System.currentTimeMillis() / 1000,
+                System.currentTimeMillis() / 1000, TestConstants.SAMPLE_RECURRING_INDICATOR,
+                TestConstants.SAMPLE_CONSENT_ATTRIBUTES_MAP, authorizationResources, consentMappingResources);
+    }
+
     public static DetailedConsentResource getSampleDetailedConsentResourceForCOF() {
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();

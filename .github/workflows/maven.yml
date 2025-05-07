@@ -1,4 +1,4 @@
-# Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+# Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
 #
 # WSO2 LLC. licenses this file to you under the Apache License,
 # Version 2.0 (the "License"); you may not use this file except
@@ -27,10 +27,68 @@ jobs:
   Build-repo-check:
 
     runs-on: ubuntu-latest
+    env:
+      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
+      WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
+      STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      TEST_HOME: /home/runner/work/financial-services/financial-services
+      TEST_REPORT_RECIPIENT: sajeenthiran@wso2.com
 
     steps:
       - uses: actions/checkout@v2
       - name: Set up Adopt JDK 11
-        run:
-          echo "password"
-          echo "password is ${{ secrets.SOLUTIONS_BOT_PASSWORD }}"
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11.0.16+8
+          distribution: 'temurin'
+      - uses: actions/checkout@v3
+      - name: Set up Node 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Setup Maven settings.xml
+        uses: whelk-io/maven-settings-xml-action@v11
+        with:
+          mirrors: >
+            [
+              {
+                "id": "wso2-nexus",
+                "mirrorOf": "wso2-nexus",
+                "url": "http://maven.wso2.org/nexus/content/groups/wso2-public/"
+              },
+              {
+                "id": "wso2.releases",
+                "mirrorOf": "wso2.releases",
+                "url": "http://maven.wso2.org/nexus/content/repositories/releases/"
+              },
+              {
+                "id": "wso2.snapshots",
+                "mirrorOf": "wso2.snapshots",
+                "url": "http://maven.wso2.org/nexus/content/repositories/snapshots/"
+              },
+              {
+                "id": "knopflerfish",
+                "mirrorOf": "knopflerfish",
+                "url": "http://resources.knopflerfish.org/repo/maven2/release"
+              }
+            ]
+      - name: Build with Maven
+        run: |
+          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
+          RUNNER_HOME=`pwd`          
+          chmod +x $RUNNER_HOME/test-automation/test.sh         
+          chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
+#uncomment this to run the tests (commenting this out since secrets cannot be accessed via
+#actions triggered from fork of public repositories
+#          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
+#          bash $RUNNER_HOME/test-automation/setup.sh
+#          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME

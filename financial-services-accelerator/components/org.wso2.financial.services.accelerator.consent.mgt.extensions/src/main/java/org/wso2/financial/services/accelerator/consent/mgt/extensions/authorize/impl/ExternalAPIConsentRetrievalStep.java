@@ -82,10 +82,18 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             }
 
             ExternalAPIConsentResourceRequestDTO externalAPIConsentResource = null;
+            String consentFileContent = "";
             if (consentId != null) {
                 DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
                 if (detailedConsentResource != null) {
                     externalAPIConsentResource = new ExternalAPIConsentResourceRequestDTO(detailedConsentResource);
+                    try {
+                        consentFileContent = consentCoreService.getConsentFile(consentId).getConsentFile();
+                        externalAPIConsentResource.setFileContent(consentFileContent);
+                    } catch (ConsentManagementException e) {
+                        log.debug("No consent file found for the given consent Id: " +
+                                consentId.replaceAll("\n\r", ""));
+                    }
                 }
             }
             ExternalAPIPreConsentAuthorizeRequestDTO requestDTO = new ExternalAPIPreConsentAuthorizeRequestDTO(
@@ -99,6 +107,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             // Set data to json object to be displayed in consent page.
             jsonObject.put("consentData", consentDataJsonArray);
             jsonObject.put("accounts", consumerDataJsonArray);
+
+            // Set request parameters as metadata to be used in persistence extension
+            consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
         } catch (FinancialServicesException e) {
             // ToDo: Improve error handling
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,

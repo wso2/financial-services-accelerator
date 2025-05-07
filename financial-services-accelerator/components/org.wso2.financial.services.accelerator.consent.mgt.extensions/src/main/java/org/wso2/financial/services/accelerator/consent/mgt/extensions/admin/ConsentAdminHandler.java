@@ -52,6 +52,14 @@ public interface ConsentAdminHandler {
     public void handleConsentAmendmentHistoryRetrieval(ConsentAdminData consentAdminData) throws ConsentException;
 
     /**
+     * This method is used to handle the consent expiry request.
+     *
+     * @param consentAdminData Data wrapper for consent admin data that holds the request context data
+     * @throws ConsentException thrown if any error occurs in the process
+     */
+    public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException;
+
+    /**
      * Method to handle the consent status audit search.
      * @param consentAdminData consentAdminData
      * @throws ConsentException if any error occurs while searching the consent status audit

@@ -377,4 +377,39 @@ public class FSConfigParserTests {
                 .isPreInitiatedConsent());
     }
 
+    @Test(priority = 51)
+    public void testGetStatusWordingForExpiredConsents() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getStatusWordingForExpiredConsents());
+    }
+
+    @Test(priority = 52)
+    public void testGetEligibleStatusesForConsentExpiry() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getEligibleStatusesForConsentExpiry());
+    }
+
+    @Test(priority = 53)
+    public void testIsConsentAmendmentHistoryEnabled() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isConsentAmendmentHistoryEnabled());
+    }
+
+    @Test(priority = 54)
+    public void testIsConsentExpirationPeriodicalJobEnabled() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isConsentExpirationPeriodicalJobEnabled());
+    }
+
+    @Test(priority = 55)
+    public void testGetConsentExpiryCronExpression() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getConsentExpiryCronExpression());
+    }
+
 }

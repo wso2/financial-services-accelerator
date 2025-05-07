@@ -35,6 +35,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.idempotency.IdempotencyValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
@@ -75,6 +76,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     boolean isExternalPreFileUploadEnabled;
     boolean isExternalPostFileUploadEnabled;
     boolean isExternalPreFileRetrievalEnabled;
+    String idempotencyHeaderName;
+    IdempotencyValidator idempotencyValidator;
 
     public DefaultConsentManageHandler() {
 
@@ -95,6 +98,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);
         isExternalPreFileRetrievalEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
+        idempotencyHeaderName = configParser.getIdempotencyHeaderName();
+        idempotencyValidator = new IdempotencyValidator();
     }
 
     @Override
@@ -215,6 +220,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_CREATE);
         }
 
+        //Perform idempotency validation
+        if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
+                idempotencyValidator.isIdempotent(consentManageData, ConsentOperationEnum.CONSENT_CREATE)) {
+            return;
+        }
+
         try {
             DetailedConsentResource createdConsent;
             if (isExtensionsEnabled && isExternalPreConsentGenerationEnabled) {
@@ -239,9 +250,17 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                         consentManageData.getPayload().toString(), consentType,
                         ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
 
-                createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent,
-                        null, ConsentExtensionConstants.CREATED_STATUS, ConsentExtensionConstants.DEFAULT_AUTH_TYPE,
+                createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent, null,
+                        ConsentExtensionConstants.CREATED_STATUS, ConsentExtensionConstants.DEFAULT_AUTH_TYPE,
                         true);
+            }
+
+            //Store idempotency key as a consent attribute
+            if (consentManageData.getHeaders().containsKey(idempotencyHeaderName)) {
+                Map<String, String> consentAttributes = new HashMap();
+                consentAttributes.put(ConsentExtensionConstants.IDEMPOTENCY_KEY, consentManageData.getHeaders()
+                        .get(idempotencyHeaderName));
+                consentCoreService.storeConsentAttributes(createdConsent.getConsentID(), consentAttributes);
             }
 
             if (isExtensionsEnabled && isExternalPostConsentGenerationEnabled) {
@@ -428,6 +447,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Invalid Request Path. Consent Id format is not valid.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
         }
+
+        //Perform idempotency validation
+        if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
+                idempotencyValidator.isIdempotent(consentManageData, ConsentOperationEnum.CONSENT_FILE_UPLOAD)) {
+            return;
+        }
         try {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
             if (consentResource == null) {
@@ -462,6 +487,16 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 consentCoreService.createConsentFile(consentFile, newConsentStatus,
                         userId, applicableStatusForFileUpload);
             }
+            //Store idempotency key as a consent attribute
+            if (consentManageData.getHeaders().containsKey(idempotencyHeaderName)) {
+                Map<String, String> consentAttributes = new HashMap();
+                consentAttributes.put(ConsentExtensionConstants.FILE_UPLOAD_IDEMPOTENCY_KEY,
+                        consentManageData.getHeaders().get(idempotencyHeaderName));
+                consentAttributes.put(ConsentExtensionConstants.FILE_UPLOAD_CREATED_TIME,
+                        String.valueOf(System.currentTimeMillis() / 1000));
+                consentCoreService.storeConsentAttributes(consentId, consentAttributes);
+            }
+
             String createdTime = OffsetDateTime.now().toString();
 
             if (isExtensionsEnabled && isExternalPostFileUploadEnabled) {
@@ -485,8 +520,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while handling the request", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    e.getMessage());
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
     }
 

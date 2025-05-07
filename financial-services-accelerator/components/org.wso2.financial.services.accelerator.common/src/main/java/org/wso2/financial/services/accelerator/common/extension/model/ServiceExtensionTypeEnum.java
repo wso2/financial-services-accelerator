@@ -32,7 +32,7 @@ public enum ServiceExtensionTypeEnum {
     ENRICH_CONSENT_FILE_RESPONSE("enrich_consent_file_response"),
     VALIDATE_CONSENT_FILE_RETRIEVAL("validate_consent_file_retrieval"),
     PRE_PROCESS_CONSENT_RETRIEVAL("pre_process_consent_retrieval"),
-    PRE_PROCESS_CONSENT_BULK_RETRIEVAL("pre_process_consent_bulk_retrieval"),
+    ENRICH_CONSENT_SEARCH_RESPONSE("enrich_consent_search_response"),
     PRE_PROCESS_CONSENT_REVOKE("pre_process_consent_revoke"),
     POPULATE_CONSENT_AUTHORIZE_SCREEN("populate_consent_authorize_screen"),
     PERSIST_AUTHORIZED_CONSENT("persist_authorized_consent"),

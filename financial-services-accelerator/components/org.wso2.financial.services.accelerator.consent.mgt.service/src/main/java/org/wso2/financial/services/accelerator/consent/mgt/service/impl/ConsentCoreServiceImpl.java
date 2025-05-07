@@ -2179,4 +2179,31 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             DatabaseUtils.closeConnection(connection);
         }
     }
+
+    @Override
+    public ArrayList<DetailedConsentResource> getConsentsEligibleForExpiration(String statusesEligibleForExpiration)
+            throws ConsentManagementException {
+
+        Connection connection = DatabaseUtils.getDBConnection();
+        ArrayList<DetailedConsentResource> detailedConsentResources;
+
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+            try {
+                log.debug("Retrieving consents which has expiration time attribute.");
+                detailedConsentResources = consentCoreDAO.getExpiringConsents(connection,
+                        statusesEligibleForExpiration);
+                // Commit transactions
+                DatabaseUtils.commitTransaction(connection);
+                log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
+                return detailedConsentResources;
+            } catch (ConsentDataRetrievalException e) {
+                log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
+                throw new ConsentManagementException(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
+            }
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtils.closeConnection(connection);
+        }
+    }
 }

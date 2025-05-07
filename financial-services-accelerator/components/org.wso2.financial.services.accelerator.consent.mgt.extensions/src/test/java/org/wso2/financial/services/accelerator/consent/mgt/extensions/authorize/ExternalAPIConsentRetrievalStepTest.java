@@ -283,4 +283,64 @@ public class ExternalAPIConsentRetrievalStepTest {
         return externalServiceResponse;
     }
 
+    @Test
+    public void testSetMandatoryConsentData_WithAuthorization() throws Exception {
+
+        // Make sure isPreInitiatedConsent = true
+        configParser.close();
+        configParser = mockStatic(FinancialServicesConfigParser.class);
+        FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
+        when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+        dataHolderMockedStatic.close();
+        dataHolderMockedStatic = mockStatic(ConsentExtensionsDataHolder.class);
+        ConsentExtensionsDataHolder dataHolder = mock(ConsentExtensionsDataHolder.class);
+        dataHolderMockedStatic.when(ConsentExtensionsDataHolder::getInstance).thenReturn(dataHolder);
+
+        when(dataHolder.getConsentCoreService()).thenReturn(consentCoreService);
+        when(consentCoreService.getConsent(anyString(), anyBoolean()))
+                .thenReturn(getMockConsentResource());
+
+        AuthorizationResource authResource = new AuthorizationResource();
+        authResource.setAuthorizationStatus("Created");
+        when(consentCoreService.searchAuthorizations(anyString()))
+                .thenReturn(new ArrayList<>(List.of(authResource)));
+
+        when(consentCoreService.getDetailedConsent(anyString())).thenReturn(null);
+
+        serviceUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
+                .thenReturn(getExternalServiceResponse());
+
+        // Spy ConsentData
+        Map<String, String> headers = new HashMap<>();
+        ConsentData spyConsentData = Mockito.spy(new ConsentData("sessionKey123", "user123", "request=dummy",
+                "openid accounts", "testApp", headers
+        ));
+        spyConsentData.setRegulatory(true);
+        spyConsentData.setRedirectURI(URI.create("https://localhost:9443/redirect"));
+        spyConsentData.setState("dummyState");
+
+        // Mock static methods to return valid consent ID
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractRequestObject(anyString()))
+                .thenReturn("dummyJWT");
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.getRequestObjectJson(anyString()))
+                .thenReturn(new JSONObject());
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
+                .thenReturn("consent123");
+
+        // Execute
+        consentRetrievalStep = new ExternalAPIConsentRetrievalStep();
+        JSONObject jsonObject = new JSONObject();
+        consentRetrievalStep.execute(spyConsentData, jsonObject);
+
+        Mockito.verify(spyConsentData).setConsentId("consent123");
+        Mockito.verify(spyConsentData).setType("accounts");
+        Mockito.verify(spyConsentData).setConsentResource(any(ConsentResource.class));
+        Mockito.verify(spyConsentData).setAuthResource(any(AuthorizationResource.class));
+
+        assertTrue(jsonObject.has("consentData"));
+        assertTrue(jsonObject.has("accounts"));
+    }
+
 }

@@ -70,3 +70,34 @@ function validateFrm() {
     }
 
 }
+
+function approvedDefaultClaim() {
+    var mandatoryClaimCBs = $(".mandatory-claim");
+    var checkedMandatoryClaimCBs = $(".mandatory-claim:checked");
+    var scopeApproval = $("input[name='scope-approval']");
+
+    // If scope approval radio button is rendered then we need to validate that it's checked
+    if (scopeApproval.length > 0) {
+        if (scopeApproval.is(":checked")) {
+            var checkScopeConsent = $("input[name='scope-approval']:checked");
+            $('#consent').val(checkScopeConsent.val());
+        } else {
+            $("#modal_scope_validation").modal();
+            return;
+        }
+    } else {
+        // Scope radio button was not rendered therefore set the consent to 'approve'
+        document.getElementById('consent').value = "approve";
+    }
+
+    if (checkedMandatoryClaimCBs.length === mandatoryClaimCBs.length) {
+        document.getElementById("profile").submit();
+    } else {
+        $("#modal_claim_validation").modal();
+    }
+}
+
+function denyDefaultClaim() {
+    document.getElementById('consent').value = "deny";
+    document.getElementById("profile").submit();
+}

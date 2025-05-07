@@ -34,8 +34,6 @@ public class FinancialServicesCommonDataHolder {
     private int commonCacheModifiedExpiry;
     private KeyStore trustStore = null;
     private PoolingHttpClientConnectionManager connectionManager;
-    public static final String HTTP_PROTOCOL = "http";
-    public static final String HTTPS_PROTOCOL = "https";
 
     private FinancialServicesCommonDataHolder() {
 

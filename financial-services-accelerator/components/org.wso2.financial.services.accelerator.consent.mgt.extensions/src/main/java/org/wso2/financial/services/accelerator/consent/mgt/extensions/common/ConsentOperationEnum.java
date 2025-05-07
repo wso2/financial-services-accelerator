@@ -28,7 +28,9 @@ public enum ConsentOperationEnum {
     CONSENT_RETRIEVE("consent_retrieve"),
     CONSENT_DELETE("consent_delete"),
     CONSENT_UPDATE("consent_update"),
-    CONSENT_PARTIAL_UPDATE("consent_partial_update");
+    CONSENT_PARTIAL_UPDATE("consent_partial_update"),
+    CONSENT_FILE_UPLOAD("consent_file_upload"),
+    CONSENT_FILE_RETRIEVAL("consent_file_retrieval");
 
     private final String operation;
 

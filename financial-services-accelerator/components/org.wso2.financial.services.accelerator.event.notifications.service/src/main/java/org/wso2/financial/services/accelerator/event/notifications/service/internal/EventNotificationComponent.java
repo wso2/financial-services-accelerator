@@ -43,7 +43,7 @@ public class EventNotificationComponent {
     private static final Log log = LogFactory.getLog(EventNotificationComponent.class);
 
     @Activate
-    protected void activate(ComponentContext context) throws Exception {
+    protected void activate(ComponentContext context) {
         log.debug("Event Notification Service Component Activated");
 
         // Check if realtime event notification enabled

@@ -23,25 +23,8 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.mod
  */
 
 public class ExternalAPIAdminConsentRevokeResponseDTO {
-    private String revocationStatusName;
-    private String revocationReason;
     private boolean requireTokenRevocation;
-
-    public String getRevocationStatusName() {
-        return revocationStatusName;
-    }
-
-    public void setRevocationStatusName(String revocationStatusName) {
-        this.revocationStatusName = revocationStatusName;
-    }
-
-    public String getRevocationReason() {
-        return revocationReason;
-    }
-
-    public void setRevocationReason(String revocationReason) {
-        this.revocationReason = revocationReason;
-    }
+    private String revocationStatusName;
 
     public boolean getRequireTokenRevocation() {
         return requireTokenRevocation;
@@ -49,6 +32,14 @@ public class ExternalAPIAdminConsentRevokeResponseDTO {
 
     public void setRequireTokenRevocation(boolean requireTokenRevocation) {
         this.requireTokenRevocation = requireTokenRevocation;
+    }
+
+    public String getRevocationStatusName() {
+        return revocationStatusName;
+    }
+
+    public void setRevocationStatusName(String revocationStatusName) {
+        this.revocationStatusName = revocationStatusName;
     }
 
 
