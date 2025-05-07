@@ -17,8 +17,10 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,12 +30,12 @@ public class ExternalAPIPreConsentPersistRequestDTO {
 
     private String consentId;
     private ExternalAPIConsentResourceRequestDTO consentResource;
-    private Map<String, Object> userGrantedData;
+    private UserGrantedDataDTO userGrantedData;
     private boolean isApproved;
 
     public ExternalAPIPreConsentPersistRequestDTO(String consentId,
                                                   ExternalAPIConsentResourceRequestDTO consentResource,
-                                                  Map<String, Object> userGrantedData, boolean isApproved) {
+                                                  UserGrantedDataDTO userGrantedData, boolean isApproved) {
         this.consentId = consentId;
         this.consentResource = consentResource;
         this.userGrantedData = userGrantedData;
@@ -52,16 +54,15 @@ public class ExternalAPIPreConsentPersistRequestDTO {
         return consentResource;
     }
 
-    public void setConsentResource(
-            ExternalAPIConsentResourceRequestDTO consentResource) {
+    public void setConsentResource(ExternalAPIConsentResourceRequestDTO consentResource) {
         this.consentResource = consentResource;
     }
 
-    public Map<String, Object> getUserGrantedData() {
+    public UserGrantedDataDTO getUserGrantedData() {
         return userGrantedData;
     }
 
-    public void setUserGrantedData(Map<String, Object> userGrantedData) {
+    public void setUserGrantedData(UserGrantedDataDTO userGrantedData) {
         this.userGrantedData = userGrantedData;
     }
 
@@ -71,5 +72,65 @@ public class ExternalAPIPreConsentPersistRequestDTO {
 
     public void setIsApproved(boolean isApproved) {
         this.isApproved = isApproved;
+    }
+
+    /**
+     * Inner DTO class for user granted data.
+     */
+    public static class UserGrantedDataDTO {
+
+        private Map<String, Object> authorizedResources;
+        private JSONObject requestParameters;
+        private String userId;
+
+        public UserGrantedDataDTO() {
+        }
+
+        /**
+         * Constructs the DTO from the persist payload.
+         *
+         * @param persistPayload    JSONObject with consent-related user input
+         * @param requestParameters JSONObject of request parameters
+         * @param userId            User identifier
+         */
+        public UserGrantedDataDTO(JSONObject persistPayload,
+                                  JSONObject requestParameters,
+                                  String userId) {
+
+            this.authorizedResources = new HashMap<>();
+
+            if (persistPayload != null) {
+                for (String key : persistPayload.keySet()) {
+                    this.authorizedResources.put(key, persistPayload.get(key));
+                }
+            }
+
+            this.requestParameters = requestParameters;
+            this.userId = userId;
+        }
+
+        public Map<String, Object> getAuthorizedResources() {
+            return authorizedResources;
+        }
+
+        public void setAuthorizedResources(Map<String, Object> authorizedResources) {
+            this.authorizedResources = authorizedResources;
+        }
+
+        public JSONObject getRequestParameters() {
+            return requestParameters;
+        }
+
+        public void setRequestParameters(JSONObject requestParameters) {
+            this.requestParameters = requestParameters;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
     }
 }

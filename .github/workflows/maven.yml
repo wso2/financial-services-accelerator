@@ -26,7 +26,7 @@ jobs:
   Build-repo-check:
     runs-on: ubuntu-latest
     env:
-      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_USERNAME }}
+      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
       WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
       STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}

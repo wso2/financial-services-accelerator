@@ -107,6 +107,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             // Set data to json object to be displayed in consent page.
             jsonObject.put("consentData", consentDataJsonArray);
             jsonObject.put("accounts", consumerDataJsonArray);
+
+            // Set request parameters as metadata to be used in persistence extension
+            consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
         } catch (FinancialServicesException e) {
             // ToDo: Improve error handling
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
