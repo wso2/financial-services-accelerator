@@ -36,6 +36,7 @@ import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -135,7 +136,7 @@ public class ResourceInterceptorServlet extends HttpServlet {
                     Utils.returnResponse(resp, HttpStatus.SC_BAD_REQUEST, new JSONObject(error));
                 }
             }
-        } catch (TokenGenerationException | IOException | ParseException e) {
+        } catch (TokenGenerationException | IOException | ParseException | URISyntaxException e) {
             LOG.error("Exception occurred while processing frontend request. Caused by, ", e);
             SelfCarePortalError error = new SelfCarePortalError("Request Forwarding Error!",
                     "Something went wrong during the authentication process. Please try signing in again.");

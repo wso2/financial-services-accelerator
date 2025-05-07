@@ -114,18 +114,26 @@ export function generatePDF(consent, applicationName, consentStatus) {
 
     const input = document.getElementsByClassName('permissionsUL');
 
-    try {
-        content01 = input[0].innerHTML.split("<li>");
-        content01 = content01.join("").split("</li>").join(", ");
-        content01 = content01.slice(0, -2);
-    } catch (e) {
-    }
+    if (input.length > 0) {
+        try {
+            content01 = input[0].innerHTML.split("<li>");
+            content01 = content01.join("").split("</li>");
+            for (let i = 0; i < content01.length; i++) {
+                content01[i] = content01[i].replace(/(<([^>]+)>)/ig, "");
+            }
+//            content01 = content01.slice(0, -2);
+        } catch (e) {
+        }
 
-    try {
-        content02 = input[1].innerHTML.split("<li>");
-        content02 = content02.join("").split("</li>").join(", ");
-        content02 = content02.slice(0, -2);
-    } catch (e) {
+        try {
+            content02 = input[1].innerHTML.split("<li>");
+            content02 = content02.join("").split("</li>");
+            for (let i = 0; i < content02.length; i++) {
+                content01[i] = content02[i].replace(/(<([^>]+)>)/ig, "");
+            }
+//            content02 = content02.slice(0, -2);
+        } catch (e) {
+        }
     }
 
     try {
@@ -139,16 +147,31 @@ export function generatePDF(consent, applicationName, consentStatus) {
 
     pdf.text(20, 20, 'Consent infomation for consent ID: ' + consent.consentId)
     pdf.rect(15, 10, 265, 190);
-    pdf.text(20, 30, "Status: " + consentStatus)
+    pdf.text(20, 30, "Status: " + consent.currentStatus)
     pdf.text(20, 40, 'API Consumer Application : ' + applicationName)
     pdf.text(20, 50, 'Create date: ' + moment(new Date((consent.createdTimestamp) * 1000)).format("DD-MMM-YYYY"))
     pdf.text(20, 60, 'Expire date: ' + getExpireTimeFromConsent(consent, "DD-MMM-YYYY"));
     pdf.text(20, 70, 'Data we are sharing on: ')
-    pdf.text(30, 80, 'Account name, type and balance: ')
-    pdf.text(40, 90, content01)
-    pdf.text(30, 100, 'Account numbers and features: ')
-    pdf.text(40, 110, content02)
-    pdf.text(20, 120, 'Accounts: ' + content03)
+    let x = 70
+    if (content01 != "") {
+        x = x + 10
+        pdf.text(30, x, 'Your Account Details ')
+        x = x + 10
+        for (let i = 0; i < content01.length; i++) {
+            pdf.text(40, x, content01[i])
+            x = x + 10
+        }
+    }
+    if (content02 != "") {
+        x = x + 10
+        pdf.text(30, x, 'Account numbers and features: ')
+        x = x + 10
+        for (let i = 0; i < content02.length; i++) {
+            pdf.text(40, x, content02[i])
+            x = x + 10
+        }
+    }
+    pdf.text(20, x, 'Accounts: ' + content03)
     pdf.save("consent.pdf");
 }
 
