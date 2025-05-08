@@ -110,6 +110,11 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
+
+            // Setting consent type as default for scope based consents
+            if (!isPreInitiatedConsent) {
+                consentData.setType(ConsentExtensionConstants.DEFAULT);
+            }
         } catch (FinancialServicesException e) {
             // ToDo: Improve error handling
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
