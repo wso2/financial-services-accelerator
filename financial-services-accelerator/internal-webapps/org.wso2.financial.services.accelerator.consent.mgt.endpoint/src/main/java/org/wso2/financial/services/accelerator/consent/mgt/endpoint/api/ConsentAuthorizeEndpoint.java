@@ -167,6 +167,20 @@ public class ConsentAuthorizeEndpoint {
                     scopeString = scopes[0];
                 }
             }
+            // Add request object as an SPQueryParam for PAR requests. Used in consent retrieval step.
+            if (StringUtils.isNotBlank(spQueryParams) && spQueryParams.contains("redirect_uri=")) {
+                Map<String, String[]> paramMap = cacheEntry.getParamMap();
+                String[] requestParams = paramMap != null ? paramMap.get("request") : null;
+
+                if (requestParams != null && requestParams.length > 0 && requestParams[0] != null) {
+                    String requestObject = requestParams[0];
+
+                    if (!spQueryParams.endsWith("&")) {
+                        spQueryParams += "&";
+                    }
+                    spQueryParams += "request=" + requestObject;
+                }
+            }
         } else {
             String isError = (String) sensitiveDataMap.get(ConsentExtensionConstants.IS_ERROR);
             // Have to throw standard error because cannot access redirect URI with this

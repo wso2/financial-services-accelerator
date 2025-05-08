@@ -208,4 +208,13 @@ class TestUtil extends CommonTestUtil{
             return new File(resource.getFile())
         }
     }
+
+    static int getIdempotency() {
+        Random random = new Random()
+        int min = 1
+        int max = 1000000
+        def idempotency = random.nextInt(max-min) + min
+
+        return idempotency
+    }
 }

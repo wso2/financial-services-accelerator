@@ -167,6 +167,7 @@ public class ConsentExtensionConstants {
     public static final String PERMISSION = "permission";
     public static final String MAPPING_STATUS = "mappingStatus";
     public static final String MAPPING_RESOURCES = "consentMappingResources";
+    public static final String REQUEST_PARAMETERS = "requestParameters";
 
     //Consent Authorize Constants
     public static final String IS_ERROR = "isError";
