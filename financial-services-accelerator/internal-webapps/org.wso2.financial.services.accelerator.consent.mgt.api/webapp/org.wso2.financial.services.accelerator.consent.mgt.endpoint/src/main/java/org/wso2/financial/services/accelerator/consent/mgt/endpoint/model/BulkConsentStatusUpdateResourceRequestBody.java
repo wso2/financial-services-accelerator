@@ -16,12 +16,12 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class BulkConsentStatusUpdateResourceRequestBody implements Serializable {
-    private String clientID;
+    private String clientId;
     private String consentType;
     private @Valid ArrayList<String> applicableStatusesForStateChange = new ArrayList<>();
     private String status;
     private String reason;
-    private String userID;
+    private String userId;
 
     public BulkConsentStatusUpdateResourceRequestBody() {
     }
@@ -29,21 +29,21 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
     /**
      *
      **/
-    public BulkConsentStatusUpdateResourceRequestBody clientID(String clientID) {
-        this.clientID = clientID;
+    public BulkConsentStatusUpdateResourceRequestBody clientId(String clientId) {
+        this.clientId = clientId;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
-    @JsonProperty("clientID")
-    public String getClientID() {
-        return clientID;
+    @JsonProperty("clientId")
+    public String getClientId() {
+        return clientId;
     }
 
-    @JsonProperty("clientID")
-    public void setClientID(String clientID) {
-        this.clientID = clientID;
+    @JsonProperty("clientId")
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     /**
@@ -149,21 +149,21 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
     /**
      *
      **/
-    public BulkConsentStatusUpdateResourceRequestBody userID(String userID) {
-        this.userID = userID;
+    public BulkConsentStatusUpdateResourceRequestBody userId(String userId) {
+        this.userId = userId;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
-    @JsonProperty("userID")
-    public String getUserID() {
-        return userID;
+    @JsonProperty("userId")
+    public String getUserId() {
+        return userId;
     }
 
-    @JsonProperty("userID")
-    public void setUserID(String userID) {
-        this.userID = userID;
+    @JsonProperty("userId")
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
 
@@ -177,18 +177,18 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         }
         BulkConsentStatusUpdateResourceRequestBody
                 bulkConsentStatusUpdateResource = (BulkConsentStatusUpdateResourceRequestBody) o;
-        return Objects.equals(this.clientID, bulkConsentStatusUpdateResource.clientID) &&
+        return Objects.equals(this.clientId, bulkConsentStatusUpdateResource.clientId) &&
                 Objects.equals(this.consentType, bulkConsentStatusUpdateResource.consentType) &&
                 Objects.equals(this.applicableStatusesForStateChange,
                         bulkConsentStatusUpdateResource.applicableStatusesForStateChange) &&
                 Objects.equals(this.status, bulkConsentStatusUpdateResource.status) &&
                 Objects.equals(this.reason, bulkConsentStatusUpdateResource.reason) &&
-                Objects.equals(this.userID, bulkConsentStatusUpdateResource.userID);
+                Objects.equals(this.userId, bulkConsentStatusUpdateResource.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clientID, consentType, applicableStatusesForStateChange, status, reason, userID);
+        return Objects.hash(clientId, consentType, applicableStatusesForStateChange, status, reason, userId);
     }
 
     @Override
@@ -196,13 +196,13 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         StringBuilder sb = new StringBuilder();
         sb.append("class BulkConsentStatusUpdateResource {\n");
 
-        sb.append("    clientID: ").append(toIndentedString(clientID)).append("\n");
+        sb.append("    clientId: ").append(toIndentedString(clientId)).append("\n");
         sb.append("    consentType: ").append(toIndentedString(consentType)).append("\n");
         sb.append("    applicableStatusesForStateChange: ").append(toIndentedString(applicableStatusesForStateChange))
                 .append("\n");
         sb.append("    status: ").append(toIndentedString(status)).append("\n");
         sb.append("    reason: ").append(toIndentedString(reason)).append("\n");
-        sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
+        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
         sb.append("}");
         return sb.toString();
     }

@@ -479,7 +479,7 @@ components:
         - authorizationId
         - authorizationStatus
         - authorizationType
-        - userID
+        - userId
       type: object
       properties:
         authorizationId:
@@ -488,14 +488,14 @@ components:
           type: string
         authorizationType:
           type: string
-        userID:
+        userId:
           type: string
         resources:
           type: object
 
     DetailedConsentResource:
       required:
-        - clientID
+        - clientId
         - consentType
         - currentStatus
         - receipt
@@ -503,7 +503,7 @@ components:
         - expiryTime
       type: object
       properties:
-        clientID:
+        clientId:
           type: string
         consentType:
           type: string
@@ -515,7 +515,7 @@ components:
           type: integer
         recurringIndicator:
           type: boolean
-        consentID:
+        consentId:
           type: string
         consentAttributes:
           type: object
@@ -549,7 +549,7 @@ components:
       properties:
         historyId:
           type: string
-        consentID:
+        consentId:
           type: string
         timestamp:
           type: integer
@@ -559,14 +559,14 @@ components:
           "$ref": "#/components/schemas/DetailedConsentResource"
     AmendmentResponse:
       required:
-        - clientID
+        - clientId
         - consentType
         - receipt
         - recurringIndicator
         - expiryTime
       type: object
       properties:
-        clientID:
+        clientId:
           type: string
         consentType:
           type: string
@@ -595,7 +595,7 @@ components:
           type: string
         resources:
           type: object
-        userID:
+        userId:
           type: string
     AmendmentResource:
       type: object
@@ -619,12 +619,12 @@ components:
           type: string
         reason:
           type: string
-        userID:
+        userId:
           type: string
     ConsentResponse:
       required:
-        - clientID
-        - consentID
+        - clientId
+        - consentId
         - consentType
         - currentStatus
         - receipt
@@ -632,9 +632,9 @@ components:
         - expiryTime
       type: object
       properties:
-        consentID:
+        consentId:
           type: string
-        clientID:
+        clientId:
           type: string
         consentType:
           type: string
@@ -660,21 +660,21 @@ components:
       required:
         - authorizationStatus
         - authorizationType
-        - userID
+        - userId
       type: object
       properties:
         authorizationStatus:
           type: string
         authorizationType:
           type: string
-        userID:
+        userId:
           type: string
         resources:
           type: object
 
     ConsentResourceDTO:
       required:
-        - clientID
+        - clientId
         - consentType
         - currentStatus
         - receipt
@@ -682,7 +682,7 @@ components:
         - expiryTime
       type: object
       properties:
-        clientID:
+        clientId:
           type: string
         consentType:
           type: string
@@ -705,12 +705,12 @@ components:
       properties:
         reason:
           type: string
-        userID:
+        userId:
           type: string
     BulkConsentStatusUpdateResource:
       type: object
       properties:
-        clientID:
+        clientId:
           type: string
         consentType:
           type: string
@@ -722,7 +722,7 @@ components:
           type: string
         reason:
           type: string
-        userID:
+        userId:
           type: string
 
 

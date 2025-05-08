@@ -203,7 +203,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
             }
             // Set authorization data
             setAuthorizationDataInResponseForGroupedQuery(authorizationResources, resultSet,
-                    detailedConsentResource.getConsentID());
+                    detailedConsentResource.getConsentId());
             // Set consent account mapping data if available
             setAccountConsentMappingDataInResponse(consentMappingResources, resultSet);
 
@@ -244,8 +244,8 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
                 Optional.of(resultSet.getBoolean(ConsentMgtDAOConstants.RECURRING_INDICATOR));
 
         if (consentId.isPresent() && clientId.isPresent()) {
-            detailedConsentResource.setConsentID(consentId.get());
-            detailedConsentResource.setClientID(clientId.get());
+            detailedConsentResource.setConsentId(consentId.get());
+            detailedConsentResource.setClientId(clientId.get());
         } else {
             throw new SQLException("CLIENT_ID and CONSENT_ID could not be null.");
         }
@@ -282,8 +282,8 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
             if (!authIdSet.contains(authIds[index])) {
                 AuthorizationResource authorizationResource = new AuthorizationResource();
                 authIdSet.add(authIds[index]);
-                authorizationResource.setAuthorizationID(authIds[index]);
-                authorizationResource.setConsentID(consentId);
+                authorizationResource.setAuthorizationId(authIds[index]);
+                authorizationResource.setConsentId(consentId);
                 if (authTypes != null && authTypes.length > index) {
                     authorizationResource.setAuthorizationType(authTypes[index]);
                 }
@@ -294,7 +294,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
                     authorizationResource.setUpdatedTime(Long.parseLong(updatedTimes[index]));
                 }
                 if (userIds != null && userIds.length > index) {
-                    authorizationResource.setUserID(userIds[index]);
+                    authorizationResource.setUserId(userIds[index]);
                 }
                 authorizationResources.add(authorizationResource);
             }
@@ -324,7 +324,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
             if (!mappingIdSet.contains(mappingIds[index])) {
                 ConsentMappingResource consentMappingResource = new ConsentMappingResource();
                 if (authIds != null && authIds.length > index) {
-                    consentMappingResource.setAuthorizationID(authIds[index]);
+                    consentMappingResource.setAuthorizationId(authIds[index]);
                 }
                 consentMappingResource.setMappingID(mappingIds[index]);
                 if (accountIds != null && accountIds.length > index) {

@@ -135,8 +135,8 @@ public class ConsentMgtCoreServiceTests {
                         ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
 
         Assert.assertNotNull(detailedConsentResource);
-        Assert.assertNotNull(detailedConsentResource.getConsentID());
-        Assert.assertNotNull(detailedConsentResource.getClientID());
+        Assert.assertNotNull(detailedConsentResource.getConsentId());
+        Assert.assertNotNull(detailedConsentResource.getClientId());
         Assert.assertNotNull(detailedConsentResource.getReceipt());
         Assert.assertNotNull(detailedConsentResource.getConsentType());
         Assert.assertNotNull(detailedConsentResource.getCurrentStatus());
@@ -164,8 +164,8 @@ public class ConsentMgtCoreServiceTests {
                         ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
 
         Assert.assertNotNull(detailedConsentResource);
-        Assert.assertNotNull(detailedConsentResource.getConsentID());
-        Assert.assertNotNull(detailedConsentResource.getClientID());
+        Assert.assertNotNull(detailedConsentResource.getConsentId());
+        Assert.assertNotNull(detailedConsentResource.getClientId());
         Assert.assertNotNull(detailedConsentResource.getReceipt());
         Assert.assertNotNull(detailedConsentResource.getConsentType());
         Assert.assertNotNull(detailedConsentResource.getCurrentStatus());
@@ -192,8 +192,8 @@ public class ConsentMgtCoreServiceTests {
                         ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
 
         Assert.assertNotNull(detailedConsentResource);
-        Assert.assertNotNull(detailedConsentResource.getConsentID());
-        Assert.assertNotNull(detailedConsentResource.getClientID());
+        Assert.assertNotNull(detailedConsentResource.getConsentId());
+        Assert.assertNotNull(detailedConsentResource.getClientId());
         Assert.assertNotNull(detailedConsentResource.getReceipt());
         Assert.assertNotNull(detailedConsentResource.getConsentType());
         Assert.assertNotNull(detailedConsentResource.getCurrentStatus());
@@ -204,7 +204,7 @@ public class ConsentMgtCoreServiceTests {
             Exception {
 
         ConsentResource consentResource = ConsentMgtServiceTestData.getSampleTestConsentResource();
-        consentResource.setClientID(null);
+        consentResource.setClientId(null);
 
         consentCoreServiceImpl.createConsent(consentResource,
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
@@ -320,7 +320,7 @@ public class ConsentMgtCoreServiceTests {
                         any(ConsentStatusAuditRecord.class));
 
         consentCoreServiceImpl.updateConsentStatusWithImplicitReasonAndUserId(ConsentMgtServiceTestData
-                        .getSampleStoredConsentResource().getConsentID(),
+                        .getSampleStoredConsentResource().getConsentId(),
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
@@ -340,7 +340,7 @@ public class ConsentMgtCoreServiceTests {
                 .updateConsentStatus(any(), anyString(), anyString());
 
         consentCoreServiceImpl.updateConsentStatusWithImplicitReasonAndUserId(ConsentMgtServiceTestData
-                        .getSampleStoredConsentResource().getConsentID(),
+                        .getSampleStoredConsentResource().getConsentId(),
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
@@ -362,7 +362,7 @@ public class ConsentMgtCoreServiceTests {
                 .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
 
         consentCoreServiceImpl.updateConsentStatusWithImplicitReasonAndUserId(ConsentMgtServiceTestData
-                        .getSampleStoredConsentResource().getConsentID(),
+                        .getSampleStoredConsentResource().getConsentId(),
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
@@ -384,7 +384,7 @@ public class ConsentMgtCoreServiceTests {
                 .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
 
         consentCoreServiceImpl.updateConsentStatusWithImplicitReasonAndUserId(ConsentMgtServiceTestData
-                        .getSampleStoredConsentResource().getConsentID(),
+                        .getSampleStoredConsentResource().getConsentId(),
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
@@ -410,7 +410,7 @@ public class ConsentMgtCoreServiceTests {
                 .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
 
         consentCoreServiceImpl.updateConsentStatusWithImplicitReasonAndUserId(ConsentMgtServiceTestData
-                        .getSampleStoredConsentResource().getConsentID(),
+                        .getSampleStoredConsentResource().getConsentId(),
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
@@ -553,7 +553,7 @@ public class ConsentMgtCoreServiceTests {
 
         // Get consent
         ConsentResource retrievedConsentResource = consentCoreServiceImpl.getConsent(ConsentMgtServiceTestData
-                .getSampleStoredConsentResource().getConsentID(), false);
+                .getSampleStoredConsentResource().getConsentId(), false);
 
         Assert.assertNotNull(retrievedConsentResource);
     }
@@ -567,7 +567,7 @@ public class ConsentMgtCoreServiceTests {
 
         // Get consent
         ConsentResource retrievedConsentResource = consentCoreServiceImpl.getConsent(ConsentMgtServiceTestData
-                .getSampleStoredConsentResource().getConsentID(), true);
+                .getSampleStoredConsentResource().getConsentId(), true);
 
         Assert.assertNotNull(retrievedConsentResource);
         Assert.assertNotNull(retrievedConsentResource.getConsentAttributes());
@@ -588,7 +588,7 @@ public class ConsentMgtCoreServiceTests {
 
         // Get consent
         consentCoreServiceImpl.getConsent(ConsentMgtServiceTestData
-                        .getSampleStoredConsentResource().getConsentID(),
+                        .getSampleStoredConsentResource().getConsentId(),
                 false);
     }
 
@@ -608,7 +608,7 @@ public class ConsentMgtCoreServiceTests {
 
         // Get consent
         DetailedConsentResource retrievedConsentResource = consentCoreServiceImpl
-                .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentID(),
+                .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentId(),
                         ConsentMgtServiceTestData.ORG_INFO);
 
         Assert.assertNotNull(retrievedConsentResource);
@@ -631,7 +631,7 @@ public class ConsentMgtCoreServiceTests {
 
         // Get consent
         consentCoreServiceImpl.getDetailedConsent(ConsentMgtServiceTestData
-                .getSampleStoredConsentResource().getConsentID(), ConsentMgtServiceTestData.ORG_INFO);
+                .getSampleStoredConsentResource().getConsentId(), ConsentMgtServiceTestData.ORG_INFO);
     }
 
     @Test
@@ -734,7 +734,7 @@ public class ConsentMgtCoreServiceTests {
         ConsentFile sampleConsentFile =
                 ConsentMgtServiceTestData.getSampleConsentFileObject(ConsentMgtServiceTestData.SAMPLE_CONSENT_FILE);
 
-        sampleConsentFile.setConsentID(null);
+        sampleConsentFile.setConsentId(null);
         consentCoreServiceImpl.createConsentFile(sampleConsentFile, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.AWAITING_UPLOAD_STATUS);
     }
@@ -800,22 +800,25 @@ public class ConsentMgtCoreServiceTests {
         doReturn(ConsentMgtServiceTestData.getSampleStoredTestAuthorizationResource())
                 .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
 
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).
+                when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
         //Create a consent authorization resource
         AuthorizationResource storedAuthorizationResource =
                 consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
 
         Assert.assertNotNull(storedAuthorizationResource);
-        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationID());
-        Assert.assertNotNull(storedAuthorizationResource.getConsentID());
+        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationId());
+        Assert.assertNotNull(storedAuthorizationResource.getConsentId());
         Assert.assertNotNull(storedAuthorizationResource.getAuthorizationType());
-        Assert.assertNotNull(storedAuthorizationResource.getUserID());
+        Assert.assertNotNull(storedAuthorizationResource.getUserId());
         Assert.assertNotNull(storedAuthorizationResource.getAuthorizationStatus());
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testCreateConsentAuthorizationRollbackWhenCreation() throws
             Exception {
-
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).
+                when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
         AuthorizationResource sampleAuthorizationResource =
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
 
@@ -832,7 +835,7 @@ public class ConsentMgtCoreServiceTests {
 
         AuthorizationResource sampleAuthorizationResource =
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResource(null, null);
-        sampleAuthorizationResource.setConsentID(null);
+        sampleAuthorizationResource.setConsentId(null);
 
         //Create a consent authorization resource
         consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
@@ -872,7 +875,7 @@ public class ConsentMgtCoreServiceTests {
                 .when(mockedConsentCoreDAO).getAuthorizationResource(any(), anyString(), any());
         AuthorizationResource authorizationResource =
                 consentCoreServiceImpl.getAuthorizationResource(ConsentMgtServiceTestData
-                        .getSampleStoredTestAuthorizationResource().getAuthorizationID(), null);
+                        .getSampleStoredTestAuthorizationResource().getAuthorizationId(), null);
         Assert.assertNotNull(authorizationResource);
     }
 
@@ -890,7 +893,7 @@ public class ConsentMgtCoreServiceTests {
 //        doThrow(ConsentMgtException.class)
 //                .when(mockedConsentCoreDAO).getAuthorizationResource(any(), anyString(), any());
 //        consentCoreServiceImpl.getAuthorizationResource(ConsentMgtServiceTestData
-//                .getSampleStoredTestAuthorizationResource().getAuthorizationID(), null);
+//                .getSampleStoredTestAuthorizationResource().getAuthorizationId(), null);
 //    }
 
     @Test

@@ -25,26 +25,26 @@ import java.util.Map;
  */
 public class ConsentAttributes {
 
-    private String consentID;
+    private String consentId;
     private Map<String, String> consentAttributes;
 
     public ConsentAttributes(){
 
     }
 
-    public ConsentAttributes(String consentID, Map<String, String> consentAttributes) {
-        this.consentID = consentID;
+    public ConsentAttributes(String consentId, Map<String, String> consentAttributes) {
+        this.consentId = consentId;
         this.consentAttributes = consentAttributes;
     }
 
-    public String getConsentID() {
+    public String getConsentId() {
 
-        return consentID;
+        return consentId;
     }
 
-    public void setConsentID(String consentID) {
+    public void setConsentId(String consentId) {
 
-        this.consentID = consentID;
+        this.consentId = consentId;
     }
 
     public Map<String, String> getConsentAttributes() {

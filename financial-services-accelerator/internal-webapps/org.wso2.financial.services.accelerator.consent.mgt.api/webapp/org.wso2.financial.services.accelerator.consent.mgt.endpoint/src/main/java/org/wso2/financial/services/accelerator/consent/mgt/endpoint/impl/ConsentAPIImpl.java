@@ -22,6 +22,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceResponseBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentRevokeRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentStatusUpdateRequestBody;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.AuthorizationResourceMapper;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentResourceMapper;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentCoreServiceUtil;
@@ -35,7 +37,7 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 /**
- * ConsentAPIImpl.
+ * Consent API Implementation of ConsentAPI class
  */
 @SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class ConsentAPIImpl {
@@ -51,8 +53,16 @@ public class ConsentAPIImpl {
     }
 
 
-    // ======================== authorization resource ==================================//
+    // ============================================authorization resource=============================================
 
+    /**
+     * This method is used to handle the API used to get the consent authorization resource
+     *
+     * @param authorizationId
+     * @param orgInfo
+     * @param consentId
+     * @return Response
+     */
     public Response consentAuthorizationIdGet(String authorizationId, String orgInfo, String consentId) {
 
         AuthorizationResourceResponseBody authResponse = new AuthorizationResourceResponseBody();
@@ -72,12 +82,17 @@ public class ConsentAPIImpl {
 
     }
 
+    /**
+     * This method is used to handle the API used to get the consent authorization resource
+     *
+     * @param consentId
+     * @param orgInfo
+     * @return Response
+     */
     public Response consentAuthorizationGet(String consentId, String orgInfo) {
         try {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId, orgInfo);
-
             List<AuthorizationResource> authorizationResources = consentResource.getAuthorizationResources();
-
             return Response.ok().entity(authorizationResources).build();
 
         } catch (ConsentMgtException e) {
@@ -85,6 +100,14 @@ public class ConsentAPIImpl {
         }
     }
 
+    /**
+     * This method is used to handle the API used to create a consent authorization resource
+     *
+     * @param consentId
+     * @param orgInfo
+     * @param authorizationResourceDTOList
+     * @return Response
+     */
     public Response consentAuthorizationIdPost(String consentId, String orgInfo,
                                                List<AuthorizationResourceRequestBody>
                                                        authorizationResourceDTOList) {
@@ -100,14 +123,12 @@ public class ConsentAPIImpl {
 
 
             for (AuthorizationResourceRequestBody authorizationResourceDTO : authorizationResourceDTOList) {
-                AuthorizationResource
-                        authorizationResource = new AuthorizationResource();
+                AuthorizationResource authorizationResource = new AuthorizationResource();
                 ConsentUtils.copyPropertiesToAuthorizationResource(authorizationResource, authorizationResourceDTO);
-                authorizationResource.setConsentID(consentId);
+                authorizationResource.setConsentId(consentId);
                 consentCoreService.createConsentAuthorization(authorizationResource);
 
             }
-
             return Response.ok().entity("Authorization Resources Stored").build();
 
         } catch (ConsentMgtException e) {
@@ -117,8 +138,17 @@ public class ConsentAPIImpl {
         }
     }
 
+    /**
+     * This method is used to handle the API used to update the authorization resource
+     *
+     * @param authorizationId
+     * @param consentId
+     * @param orgInfo
+     * @param authorizationResourceRequestBody
+     * @return Response
+     */
     public Response consentAuthorizationIdPut(String authorizationId, String consentId, String orgInfo,
-                                              AuthorizationResourceRequestBody authorizationResource) {
+                                              AuthorizationResourceRequestBody authorizationResourceRequestBody) {
 
         try {
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
@@ -129,229 +159,35 @@ public class ConsentAPIImpl {
                 throw new ConsentMgtException(Response.Status.BAD_REQUEST,
                         "OrgInfo does not match, please provide the correct OrgInfo");
             }
+            AuthorizationResource authorizationResource = new AuthorizationResource();
+            ConsentUtils.copyPropertiesToAuthorizationResource(authorizationResource, authorizationResourceRequestBody);
 
-//            consentCoreService.updateAuthorizationResource( authorizationId, authorizationResource,orgInfo);
+            consentCoreService.updateAuthorizationResource(authorizationId, authorizationResource, orgInfo);
 
             return Response.ok().entity("Authorization Resource Updated").build();
 
         } catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
-        }
-    }
-
-    // ========================================= consent resource ====================================
-
-    public Response consentPost(
-            ConsentResourceRequestBody createConsentResourceRequestBody, String orgInfo) {
-
-        try {
-            // --------------------  handle request -----------------------//
-            ConsentResource consentResource = new ConsentResource();
-            ConsentUtils.copyPropertiesToConsentResource(consentResource, createConsentResourceRequestBody);
-            consentResource.setOrgID(orgInfo);
-
-
-            ArrayList<AuthorizationResource> authorizations = new ArrayList<>();
-            if (createConsentResourceRequestBody.getAuthorizationResources() != null) {
-                for (AuthorizationResourceRequestBody authorizationResourceDTO :
-                        createConsentResourceRequestBody.getAuthorizationResources()) {
-                    AuthorizationResource authorizationResource = new AuthorizationResource();
-                    ConsentUtils.copyPropertiesToAuthorizationResource(authorizationResource, authorizationResourceDTO);
-                    authorizations.add(authorizationResource);
-                }
-            }
-
-            // --------------------  service call -----------------------//
-            DetailedConsentResource result;
-            result = consentCoreService.createConsent(consentResource,
-                    authorizations);
-
-            // --------------------  build response -----------------------//
-            ConsentResourceResponseBody consentResponse = new ConsentResourceResponseBody();
-            ConsentUtils.buildConsentResourceResponse(consentResponse, result, result.getAuthorizationResources(),
-                    true);
-            return Response.status(Response.Status.CREATED).entity(consentResponse).build();
-
-        } catch (ConsentMgtException e) {
-            return handleConsentMgtException(e);
         } catch (JsonProcessingException e) {
             log.error("Error Occurred while handling the request", e);
             JSONObject error = new JSONObject();
             error.put("errorMessage", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+
         }
     }
 
-
-    public Response consentConsentIdGet(
-            String consentID, String orgInfo) {
-
+    /**
+     * This method is used to handle the API used to delete the authorization resource
+     *
+     * @param authorizationId
+     * @param consentId
+     * @param orgInfo
+     * @return Response
+     */
+    public Response consentAuthorizationIdDelete(String authorizationId, String consentId, String orgInfo) {
         try {
-
-            // --------------------  service call -----------------------//
-            DetailedConsentResource detailedConsentResource =
-                    consentCoreService.getDetailedConsent(consentID, orgInfo);
-
-
-            //--------------------- build response -----------------------//
-            ConsentResourceResponseBody consentResponse = new ConsentResourceResponseBody();
-            ConsentUtils.buildConsentResourceResponse(consentResponse,
-                    detailedConsentResource,
-                    detailedConsentResource.getAuthorizationResources(), true);
-
-
-            return Response.ok().entity(consentResponse).build();
-
-
-        } catch (ConsentMgtException e) {
-            return handleConsentMgtException(e);
-        } catch (JsonProcessingException e) {
-            log.error("Error Occurred while handling the request", e);
-            JSONObject error = new JSONObject();
-            error.put("errorMessage", e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
-        }
-    }
-
-    public Response consentGet(
-            String orgInfo,
-            String consentType, String consentStatus
-            , String clientId, String userID, long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
-
-
-        try {
-
-            //------------ initialize the search query ---------------//
-            ArrayList<String> consentIDs = new ArrayList<>();
-            ArrayList<String> clientIDs = new ArrayList<>();
-            ArrayList<String> consentTypes = new ArrayList<>();
-            ArrayList<String> consentStatuses = new ArrayList<>();
-            ArrayList<String> userIDs = new ArrayList<>();
-            if (consentType != null) {
-                Collections.addAll(consentTypes, consentType.split(","));
-            }
-            if (consentStatus != null) {
-                Collections.addAll(consentStatuses, consentStatus.split(","));
-            }
-            if (userID != null) {
-                userIDs.add(userID);
-            }
-            if (clientId != null) {
-                Collections.addAll(clientIDs, clientId.split(","));
-            }
-
-            Long fromTime = null;
-            Long toTime = null;
-            Integer limit = null;
-            Integer offset = null;
-            fromTime = fromTimeValue == 0L ? null : fromTimeValue;
-            toTime = toTimeValue == 0L ? null : toTimeValue;
-            limit = limitValue == 0 ? null : limitValue;
-            offset = offsetValue == 0 ? null : offsetValue;
-
-            //----------------- service call -------------------//
-            ArrayList<DetailedConsentResource> results;
-            results = consentCoreService.searchDetailedConsents(
-                    orgInfo,
-                    consentIDs,
-                    clientIDs,
-                    consentTypes,
-                    consentStatuses,
-                    userIDs,
-                    fromTime,
-                    toTime,
-                    limit,
-                    offset);
-
-
-            //--------------------- build response -----------------------------//
-            ArrayList<ConsentResourceResponseBody> consentResponses = new ArrayList<>();
-
-            for (DetailedConsentResource detailedConsentResource : results) {
-
-                ConsentResourceResponseBody consentResponse = new ConsentResourceResponseBody();
-                ConsentUtils.buildConsentResourceResponse(consentResponse, detailedConsentResource,
-                        detailedConsentResource.getAuthorizationResources(),
-                        true);
-                consentResponses.add(consentResponse);
-            }
-
-            return Response.ok().entity(consentResponses).build();
-        } catch (ConsentMgtException e) {
-            return handleConsentMgtException(e);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public Response consentConsentIdStatusPut(
-            String consentID, ConsentStatusUpdateRequestBody consentStatusUpdateResource
-            , String orgInfo) {
-        try {
-            consentCoreService.updateConsentStatusWithImplicitReasonAndUserId(consentID,
-                    consentStatusUpdateResource.getStatus(),
-                    consentStatusUpdateResource.getReason(),
-                    consentStatusUpdateResource.getUserID(),
-                    orgInfo);
-            return Response.ok().entity("Status Updated").build();
-        } catch (ConsentMgtException e) {
-            return handleConsentMgtException(e);
-        }
-    }
-
-    public Response consentStatusPut(BulkConsentStatusUpdateResourceRequestBody bulkConsentStatusUpdateResource,
-                                     String orgInfo) {
-        try {
-
-            consentCoreService.bulkUpdateConsentStatus(
-                    orgInfo,
-                    bulkConsentStatusUpdateResource.getClientID(),
-                    bulkConsentStatusUpdateResource.getStatus(),
-                    bulkConsentStatusUpdateResource.getReason(),
-                    bulkConsentStatusUpdateResource.getUserID(),
-                    bulkConsentStatusUpdateResource.getConsentType(),
-                    bulkConsentStatusUpdateResource.getApplicableStatusesForStateChange());
-
-            return Response.ok().entity("Status Updated").build();
-        } catch (ConsentMgtException e) {
-            return handleConsentMgtException(e);
-        }
-    }
-    // consentConsentIdExpiryTimePut
-    public Response consentConsentIdExpiryTimePut(String consentID, String orgInfo, ConsentExpiryTimeUpdateRequestBody
-            consentExpiryTimeUpdateDTO) {
-        try {
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource =
-                    consentCoreService.getConsent(consentID,
-                            false);
-
-
-
-            boolean result = consentCoreService.updateConsentExpiryTime(consentID,
-                    consentExpiryTimeUpdateDTO.getExpiryTime() , orgInfo);
-            if (result) {
-
-                JSONObject message = new JSONObject();
-                message.put("message", "Expiry Time Updated");
-
-                return Response.ok().entity(message).build();
-            } else {
-                return Response.serverError().build();
-
-            }
-
-        } catch (ConsentMgtException e) {
-            return handleConsentMgtException(e);
-        }
-    }
-
-
-    public Response consentConsentIdDelete(String consentID, String orgInfo) {
-        try {
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource =
-                    consentCoreService.getConsent(consentID,
-                            false);
+            ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
 
             if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
                     consentResource.getOrgID())) {
@@ -360,16 +196,13 @@ public class ConsentAPIImpl {
                         "OrgInfo does not match, please provide the correct OrgInfo");
             }
 
-            boolean result = consentCoreService.deleteConsent(consentID);
+            boolean result = consentCoreService.deleteAuthorizationResource(authorizationId);
             if (result) {
-
-
-                return Response.ok().entity("Consent purged").build();
+                return Response.ok().entity("Authorization Resource Deleted").build();
             } else {
                 return Response.serverError().build();
 
             }
-
 
         } catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
@@ -377,48 +210,18 @@ public class ConsentAPIImpl {
 
     }
 
-    public Response consentRevokeConsentIdPost(String consentID,
-                                               ConsentRevokeRequestBody consentStatusUpdateResource, String orgInfo) {
-        try {
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource =
-                    consentCoreService.getConsent(consentID,
-                            false);
+    //============================================= consent Attributes =============================================/
 
-
-            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
-                    consentResource.getOrgID())) {
-                log.error("OrgInfo does not match");
-                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
-                        "OrgInfo does not match, please provide the correct OrgInfo");
-            }
-
-
-            boolean result = consentCoreService.revokeConsentWithReason(consentID,
-                    "revoked",
-                    consentStatusUpdateResource.getUserID(),
-                    consentStatusUpdateResource.getReason());
-            if (result) {
-                JSONObject message = new JSONObject();
-                message.put("message", "Consent Revoked");
-
-                return Response.ok().entity(message).build();
-            } else {
-                return Response.serverError().build();
-
-            }
-
-
-        } catch (ConsentMgtException e) {
-            return handleConsentMgtException(e);
-        }
-
-    }
-
-    // ======================== consent Attributes ====================================
-
+    /**
+     * This method is used to handle the API used to get the consent attributes
+     *
+     * @param consentId
+     * @param orgInfo
+     * @return Response
+     */
     public Response consentConsentIdAttributesGet(String consentId, String orgInfo) {
         try {
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource =
+            ConsentResource consentResource =
                     consentCoreService.getConsent(consentId,
                             true);
 
@@ -437,10 +240,18 @@ public class ConsentAPIImpl {
         }
     }
 
+    /**
+     * This method is used to handle the API used to store the consent attributes
+     *
+     * @param consentId
+     * @param orgInfo
+     * @param consentAttributes
+     * @return Response
+     */
     public Response consentConsentIdAttributesPost(String consentId, String orgInfo,
                                                    Map<String, String> consentAttributes) {
         try {
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource =
+            ConsentResource consentResource =
                     consentCoreService.getConsent(consentId,
                             true);
 
@@ -468,10 +279,18 @@ public class ConsentAPIImpl {
 
     }
 
+    /**
+     * This method is used to handle the API used to update the consent attributes
+     *
+     * @param consentId
+     * @param orgInfo
+     * @param consentAttributes
+     * @return Response
+     */
     public Response consentConsentIdAttributesPut(String consentId,
                                                   String orgInfo, Map<String, String> consentAttributes) {
         try {
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource =
+            ConsentResource consentResource =
                     consentCoreService.getConsent(consentId,
                             true);
 
@@ -490,9 +309,356 @@ public class ConsentAPIImpl {
         }
     }
 
+    //============================================= consent resource =============================================//
 
+    /**
+     * This method is used to handle the API used to create a consent
+     *
+     * @param createConsentResourceRequestBody payload which contains the consent resource, authorization resource
+     *                                         and consent attributes
+     * @param orgInfo                          tenant information
+     * @return Response
+     */
+    public Response consentPost(
+            ConsentResourceRequestBody createConsentResourceRequestBody, String orgInfo) {
+
+        try {
+            ConsentResource consentResource = ConsentResourceMapper.INSTANCE.toConsentResource(
+                    createConsentResourceRequestBody);
+            consentResource.setOrgID(orgInfo);
+            ArrayList<AuthorizationResource> authorizations = new ArrayList<>();
+            if (createConsentResourceRequestBody.getAuthorizationResources() != null) {
+                for (AuthorizationResourceRequestBody authorizationResourceDTO :
+                        createConsentResourceRequestBody.getAuthorizationResources()) {
+                    AuthorizationResource authorizationResource =
+                            AuthorizationResourceMapper.INSTANCE.
+                                    toAuthorizationResource(authorizationResourceDTO);
+
+                    authorizations.add(authorizationResource);
+                }
+            }
+
+            DetailedConsentResource result = consentCoreService.createConsent(consentResource, authorizations);
+
+
+            ConsentResourceResponseBody consentResourceResponseBody = new ConsentResourceResponseBody();
+            ConsentUtils.buildConsentResourceResponse(consentResourceResponseBody, result,
+                    result.getAuthorizationResources());
+            return Response.status(Response.Status.CREATED).entity(consentResourceResponseBody).build();
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            log.error("Error Occurred while handling the request", e);
+            JSONObject error = new JSONObject();
+            error.put("errorMessage", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
+
+    /**
+     * This method is used to handle the API used to get the consent resource
+     *
+     * @param consentId
+     * @param orgInfo
+     * @return Response
+     */
+    public Response consentConsentIdGet(
+            String consentId, String orgInfo) {
+
+        try {
+
+            // --------------------  service call -----------------------//
+            DetailedConsentResource detailedConsentResource =
+                    consentCoreService.getDetailedConsent(consentId, orgInfo);
+
+
+            //--------------------- build response -----------------------//
+            ConsentResourceResponseBody consentResponse = new ConsentResourceResponseBody();
+            ConsentUtils.buildConsentResourceResponse(consentResponse,
+                    detailedConsentResource,
+                    detailedConsentResource.getAuthorizationResources());
+            return Response.ok().entity(consentResponse).build();
+
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            log.error("Error Occurred while handling the request", e);
+            JSONObject error = new JSONObject();
+            error.put("errorMessage", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
+    /**
+     * This method is used to handle the API used to search the consent resource
+     *
+     * @param orgInfo
+     * @param consentType
+     * @param consentStatus
+     * @param clientId
+     * @param userId
+     * @param fromTimeValue
+     * @param toTimeValue
+     * @param limitValue
+     * @param offsetValue
+     * @return Response
+     */
+    public Response consentGet(
+            String orgInfo,
+            String consentType, String consentStatus
+            , String clientId, String userId, long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
+        try {
+            //------------ initialize the search query ---------------//
+            ArrayList<String> consentIDs = new ArrayList<>();
+            ArrayList<String> clientIDs = new ArrayList<>();
+            ArrayList<String> consentTypes = new ArrayList<>();
+            ArrayList<String> consentStatuses = new ArrayList<>();
+            ArrayList<String> userIDs = new ArrayList<>();
+            if (consentType != null) {
+                Collections.addAll(consentTypes, consentType.split(","));
+            }
+            if (consentStatus != null) {
+                Collections.addAll(consentStatuses, consentStatus.split(","));
+            }
+            if (userId != null) {
+                userIDs.add(userId);
+            }
+            if (clientId != null) {
+                Collections.addAll(clientIDs, clientId.split(","));
+            }
+
+            Long fromTime;
+            Long toTime;
+            Integer limit;
+            Integer offset;
+            fromTime = fromTimeValue == 0L ? null : fromTimeValue;
+            toTime = toTimeValue == 0L ? null : toTimeValue;
+            limit = limitValue == 0 ? null : limitValue;
+            offset = offsetValue == 0 ? null : offsetValue;
+
+            //----------------- service call -------------------//
+            ArrayList<DetailedConsentResource> results;
+            results = consentCoreService.searchDetailedConsents(
+                    orgInfo,
+                    consentIDs,
+                    clientIDs,
+                    consentTypes,
+                    consentStatuses,
+                    userIDs,
+                    fromTime,
+                    toTime,
+                    limit,
+                    offset);
+
+
+            //--------------------- build response -----------------------------//
+            ArrayList<ConsentResourceResponseBody> consentResponses = new ArrayList<>();
+
+            for (DetailedConsentResource detailedConsentResource : results) {
+
+                ConsentResourceResponseBody consentResponse = new ConsentResourceResponseBody();
+                ConsentUtils.buildConsentResourceResponse(consentResponse, detailedConsentResource,
+                        detailedConsentResource.getAuthorizationResources());
+                consentResponses.add(consentResponse);
+            }
+
+            return Response.ok().entity(consentResponses).build();
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        } catch (JsonProcessingException e) {
+            log.error("Error Occurred while handling the request", e);
+            JSONObject error = new JSONObject();
+            error.put("errorMessage", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
+
+    /**
+     * This method is used to handle the API used to update the consent status
+     *
+     * @param consentId
+     * @param orgInfo
+     * @param consentStatusUpdateResource
+     * @return Response
+     */
+    public Response consentConsentIdStatusPut(
+            String consentId, ConsentStatusUpdateRequestBody consentStatusUpdateResource
+            , String orgInfo) {
+        try {
+            consentCoreService.updateConsentStatusWithImplicitReasonAndUserId(consentId,
+                    consentStatusUpdateResource.getStatus(),
+                    consentStatusUpdateResource.getReason(),
+                    consentStatusUpdateResource.getUserId(),
+                    orgInfo);
+            JSONObject message = new JSONObject();
+            message.put("message", "Status Updated");
+            return Response.ok().entity(message).build();
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+    }
+
+    /**
+     * This method is used to handle the API used to update bulk consent status
+     *
+     * @param bulkConsentStatusUpdateResource
+     * @param orgInfo
+     * @return Response
+     */
+    public Response consentStatusPut(BulkConsentStatusUpdateResourceRequestBody bulkConsentStatusUpdateResource,
+                                     String orgInfo) {
+        try {
+
+            consentCoreService.bulkUpdateConsentStatus(
+                    orgInfo,
+                    bulkConsentStatusUpdateResource.getClientId(),
+                    bulkConsentStatusUpdateResource.getStatus(),
+                    bulkConsentStatusUpdateResource.getReason(),
+                    bulkConsentStatusUpdateResource.getUserId(),
+                    bulkConsentStatusUpdateResource.getConsentType(),
+                    bulkConsentStatusUpdateResource.getApplicableStatusesForStateChange());
+
+            return Response.ok().entity("Status Updated").build();
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+    }
+
+    /**
+     * This method is used to handle the API used to update the consent expiry time
+     *
+     * @param consentId
+     * @param orgInfo
+     * @param consentExpiryTimeUpdateDTO
+     * @return Response
+     */
+    public Response consentConsentIdExpiryTimePut(String consentId, String orgInfo, ConsentExpiryTimeUpdateRequestBody
+            consentExpiryTimeUpdateDTO) {
+        try {
+            ConsentResource consentResource =
+                    consentCoreService.getConsent(consentId,
+                            false);
+
+
+            boolean result = consentCoreService.updateConsentExpiryTime(consentId,
+                    consentExpiryTimeUpdateDTO.getExpiryTime(), orgInfo);
+            if (result) {
+
+                JSONObject message = new JSONObject();
+                message.put("message", "Expiry Time Updated");
+
+                return Response.ok().entity(message).build();
+            } else {
+                return Response.serverError().build();
+
+            }
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+    }
+
+
+    /**
+     * This method is used to handle the API used to delete the consent resource
+     *
+     * @param consentId
+     * @param orgInfo
+     * @return Response
+     */
+    public Response consentConsentIdDelete(String consentId, String orgInfo) {
+        try {
+            ConsentResource consentResource =
+                    consentCoreService.getConsent(consentId,
+                            false);
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+            boolean result = consentCoreService.deleteConsent(consentId);
+            if (result) {
+                return Response.ok().entity("Consent purged").build();
+            } else {
+                return Response.serverError().build();
+
+            }
+
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+
+    }
+
+    /**
+     * This method is used to handle the API used to revoke the consent resource
+     *
+     * @param consentId
+     * @param orgInfo
+     * @param consentStatusUpdateResource
+     * @return Response
+     */
+    public Response consentRevokeConsentIdPost(String consentId,
+                                               ConsentRevokeRequestBody consentStatusUpdateResource, String orgInfo) {
+        try {
+            ConsentResource consentResource =
+                    consentCoreService.getConsent(consentId,
+                            false);
+
+
+            if (!ConsentCoreServiceUtil.validateOrgInfo(orgInfo,
+                    consentResource.getOrgID())) {
+                log.error("OrgInfo does not match");
+                throw new ConsentMgtException(Response.Status.BAD_REQUEST,
+                        "OrgInfo does not match, please provide the correct OrgInfo");
+            }
+
+
+            boolean result = consentCoreService.revokeConsentWithReason(consentId,
+                    "revoked",
+                    consentStatusUpdateResource.getUserId(),
+                    consentStatusUpdateResource.getReason());
+            if (result) {
+                JSONObject message = new JSONObject();
+                message.put("message", "Consent Revoked");
+
+                return Response.ok().entity(message).build();
+            } else {
+                return Response.serverError().build();
+
+            }
+
+
+        } catch (ConsentMgtException e) {
+            return handleConsentMgtException(e);
+        }
+
+    }
+
+
+    /**
+     * This method is used to handle the API used to get the consent history
+     *
+     * @param consentId
+     * @param orgInfo
+     * @param detailed
+     * @param status
+     * @param actionBy
+     * @param fromTimeValue
+     * @param toTimeValue
+     * @param statusAuditId
+     * @return Response
+     */
     public Response consentConsentIdHistoryGet(
-            String consentID, String orgInfo, Boolean detailed, String status, String actionBy, long fromTimeValue,
+            String consentId, String orgInfo, Boolean detailed, String status, String actionBy, long fromTimeValue,
             long toTimeValue, String statusAuditId) {
 
         try {
@@ -505,7 +671,7 @@ public class ConsentAPIImpl {
             toTime = toTimeValue == 0L ? null : toTimeValue;
 
             ArrayList<ConsentStatusAuditRecord> consentStatusAuditRecords =
-                    consentCoreService.searchConsentStatusAuditRecords(consentID, status,
+                    consentCoreService.searchConsentStatusAuditRecords(consentId, status,
                             actionBy, fromTime,
                             toTime,
                             statusAuditId);
@@ -518,7 +684,7 @@ public class ConsentAPIImpl {
 
             ArrayList<ConsentHistoryResource> results =
                     new ArrayList<>(consentCoreService.getConsentAmendmentHistoryData(consentStatusAuditRecordIds,
-                            consentID).values());
+                            consentId).values());
             ArrayList<ConsentHistoryResource> newResults = new ArrayList<>();
 
             if (!detailed) {
@@ -553,15 +719,15 @@ public class ConsentAPIImpl {
                     Map<String, ArrayList<ConsentMappingResource>> consentMappingResourcesMap = new HashMap<>();
                     for (ConsentMappingResource consentMappingResource :
                             detailedConsentResource.getConsentMappingResources()) {
-                        if (!consentMappingResourcesMap.containsKey(consentMappingResource.getAuthorizationID())) {
-                            consentMappingResourcesMap.put(consentMappingResource.getAuthorizationID(),
+                        if (!consentMappingResourcesMap.containsKey(consentMappingResource.getAuthorizationId())) {
+                            consentMappingResourcesMap.put(consentMappingResource.getAuthorizationId(),
                                     new ArrayList<>());
                         }
-                        consentMappingResourcesMap.get(consentMappingResource.getAuthorizationID())
+                        consentMappingResourcesMap.get(consentMappingResource.getAuthorizationId())
                                 .add(consentMappingResource);
                     }
 
-                    ArrayList<org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource>
+                    ArrayList<AuthorizationResource>
                             authorizationResourcesWithResources = new ArrayList<>();
                     for (AuthorizationResource authorizationResource :
                             detailedConsentResource.getAuthorizationResources()) {
@@ -570,7 +736,7 @@ public class ConsentAPIImpl {
                                 new AuthorizationResource();
                         ConsentUtils.buildAuthorizationResourceResponse(auth,
                                 authorizationResource,
-                                consentMappingResourcesMap.get(authorizationResource.getAuthorizationID()));
+                                consentMappingResourcesMap.get(authorizationResource.getAuthorizationId()));
                         authorizationResourcesWithResources.add(auth);
                     }
                     detailedConsentResource.setAuthorizationResources(authorizationResourcesWithResources);
@@ -596,6 +762,12 @@ public class ConsentAPIImpl {
         }
     }
 
+    /**
+     * This method is used to build the error response
+     *
+     * @param e
+     * @return Response
+     */
     private Response handleConsentMgtException(ConsentMgtException e) {
         log.error("Error Occurred while handling the request", e);
         JSONObject error = new JSONObject();

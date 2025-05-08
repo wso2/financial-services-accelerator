@@ -23,26 +23,26 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
  */
 public class ConsentFile {
 
-    private String consentID;
+    private String consentId;
     private String consentFile;
 
     public ConsentFile() {
 
     }
 
-    public ConsentFile(String consentID, String consentFile) {
-        this.consentID = consentID;
+    public ConsentFile(String consentId, String consentFile) {
+        this.consentId = consentId;
         this.consentFile = consentFile;
     }
 
-    public String getConsentID() {
+    public String getConsentId() {
 
-        return consentID;
+        return consentId;
     }
 
-    public void setConsentID(String consentID) {
+    public void setConsentId(String consentId) {
 
-        this.consentID = consentID;
+        this.consentId = consentId;
     }
 
     public String getConsentFile() {

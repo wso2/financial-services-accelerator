@@ -30,10 +30,8 @@
         <version>1.4</version>
     </parent>
     <modules>
-        <!--        <module>components/org.wso2.financial.services.accelerator.common</module>-->
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.dao</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.service</module>
-        <!--        <module>components/org.wso2.financial.services.accelerator.consent.mgt.extensions</module>-->
 
         <module>webapp/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
 
@@ -485,8 +483,12 @@
         <org.testng.version>7.10.1</org.testng.version>
         <mockito.testng.version>0.5.2</mockito.testng.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
+        <org.wso2.orbit.org.mapstruct.version>1.4.1.wso2v1</org.wso2.orbit.org.mapstruct.version>
+
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
         <org.slf4j.verison>1.7.21</org.slf4j.verison>
+        <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
+
         <org.slf4j.version>2.0.0-alpha5</org.slf4j.version>
 
     </properties>

@@ -28,8 +28,8 @@ import java.util.Map;
 public class DetailedConsentResource {
 
     private String orgID;
-    private String consentID;
-    private String clientID;
+    private String consentId;
+    private String clientId;
     private String receipt;
     private String consentType;
     private String currentStatus;
@@ -45,15 +45,15 @@ public class DetailedConsentResource {
 
     }
 
-    public DetailedConsentResource(String consentID, String clientID, String receipt,
+    public DetailedConsentResource(String consentId, String clientId, String receipt,
                                    String consentType,
                                    String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
                                    Map<String, String> consentAttributes,
                                    ArrayList<AuthorizationResource> authorizationResources,
                                    ArrayList<ConsentMappingResource> consentMappingResources) {
-        this.consentID = consentID;
-        this.clientID = clientID;
+        this.consentId = consentId;
+        this.clientId = clientId;
         this.receipt = receipt;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
@@ -67,7 +67,7 @@ public class DetailedConsentResource {
 
     }
 
-    public DetailedConsentResource(String orgID, String consentID, String clientID, String receipt,
+    public DetailedConsentResource(String orgID, String consentId, String clientId, String receipt,
                                    String consentType,
                                    String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
@@ -75,8 +75,8 @@ public class DetailedConsentResource {
                                    ArrayList<AuthorizationResource> authorizationResources,
                                    ArrayList<ConsentMappingResource> consentMappingResources) {
         this.orgID = orgID;
-        this.consentID = consentID;
-        this.clientID = clientID;
+        this.consentId = consentId;
+        this.clientId = clientId;
         this.receipt = receipt;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
@@ -100,9 +100,9 @@ public class DetailedConsentResource {
         this.updatedTime = updatedTime;
     }
 
-    public String getConsentID() {
+    public String getConsentId() {
 
-        return consentID;
+        return consentId;
     }
 
     public String getOrgID() {
@@ -113,20 +113,20 @@ public class DetailedConsentResource {
         this.orgID = orgInfo;
     }
 
-    public void setConsentID(String consentID) {
+    public void setConsentId(String consentId) {
 
-        this.consentID = consentID;
+        this.consentId = consentId;
     }
 
-    public String getClientID() {
+    public String getClientId() {
 
-        return clientID;
+        return clientId;
     }
 
 
-    public void setClientID(String clientID) {
+    public void setClientId(String clientId) {
 
-        this.clientID = clientID;
+        this.clientId = clientId;
     }
 
     public String getReceipt() {
@@ -235,8 +235,8 @@ public class DetailedConsentResource {
         if (this.authorizationResources != null) {
             for (AuthorizationResource auth : this.authorizationResources) {
                 AuthorizationResource authClone = new AuthorizationResource();
-                authClone.setAuthorizationID(auth.getAuthorizationID());
-                authClone.setUserID(auth.getUserID());
+                authClone.setAuthorizationId(auth.getAuthorizationId());
+                authClone.setUserId(auth.getUserId());
                 authClone.setAuthorizationType(auth.getAuthorizationType());
                 authClone.setAuthorizationStatus(auth.getAuthorizationStatus());
                 // Deep copy of consentMappingResources
@@ -261,8 +261,8 @@ public class DetailedConsentResource {
         // Create new instance
         return new DetailedConsentResource(
                 this.orgID,
-                this.consentID,
-                this.clientID,
+                this.consentId,
+                this.clientId,
                 this.receipt,
                 this.consentType,
                 this.currentStatus,

@@ -21,7 +21,7 @@ public class AuthorizationResourceResponseBody implements Serializable {
     private String authId;
     private String authorizationStatus;
     private String authorizationType;
-    private String userID;
+    private String userId;
     private @Valid Object resource = new ArrayList<>();
 
     public AuthorizationResourceResponseBody() {
@@ -32,12 +32,12 @@ public class AuthorizationResourceResponseBody implements Serializable {
             @JsonProperty(required = true, value = "authId") String authId,
             @JsonProperty(required = true, value = "authorizationStatus") String authorizationStatus,
             @JsonProperty(required = true, value = "authorizationType") String authorizationType,
-            @JsonProperty(required = true, value = "userID") String userID
+            @JsonProperty(required = true, value = "userId") String userId
                                             ) {
         this.authId = authId;
         this.authorizationStatus = authorizationStatus;
         this.authorizationType = authorizationType;
-        this.userID = userID;
+        this.userId = userId;
     }
 
     /**
@@ -103,21 +103,21 @@ public class AuthorizationResourceResponseBody implements Serializable {
     /**
      *
      **/
-    public AuthorizationResourceResponseBody userID(String userID) {
-        this.userID = userID;
+    public AuthorizationResourceResponseBody userId(String userId) {
+        this.userId = userId;
         return this;
     }
 
 
     @ApiModelProperty(required = true, value = "")
-    @JsonProperty(required = true, value = "userID")
-    @NotNull public String getUserID() {
-        return userID;
+    @JsonProperty(required = true, value = "userId")
+    @NotNull public String getUserId() {
+        return userId;
     }
 
-    @JsonProperty(required = true, value = "userID")
-    public void setUserID(String userID) {
-        this.userID = userID;
+    @JsonProperty(required = true, value = "userId")
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     /**
@@ -154,13 +154,13 @@ public class AuthorizationResourceResponseBody implements Serializable {
         return Objects.equals(this.authId, authResponse.authId) &&
                 Objects.equals(this.authorizationStatus, authResponse.authorizationStatus) &&
                 Objects.equals(this.authorizationType, authResponse.authorizationType) &&
-                Objects.equals(this.userID, authResponse.userID) &&
+                Objects.equals(this.userId, authResponse.userId) &&
                 Objects.equals(this.resource, authResponse.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authId, authorizationStatus, authorizationType, userID, resource);
+        return Objects.hash(authId, authorizationStatus, authorizationType, userId, resource);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class AuthorizationResourceResponseBody implements Serializable {
         sb.append("    authId: ").append(toIndentedString(authId)).append("\n");
         sb.append("    authorizationStatus: ").append(toIndentedString(authorizationStatus)).append("\n");
         sb.append("    authorizationType: ").append(toIndentedString(authorizationType)).append("\n");
-        sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
+        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
         sb.append("    resource: ").append(toIndentedString(resource)).append("\n");
         sb.append("}");
         return sb.toString();

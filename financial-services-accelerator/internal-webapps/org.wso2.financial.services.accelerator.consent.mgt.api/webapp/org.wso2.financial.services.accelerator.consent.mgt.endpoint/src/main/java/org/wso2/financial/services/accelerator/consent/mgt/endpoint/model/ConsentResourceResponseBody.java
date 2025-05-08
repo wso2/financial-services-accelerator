@@ -18,8 +18,8 @@ import javax.validation.constraints.NotNull;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentResourceResponseBody implements Serializable {
-    private String consentID;
-    private String clientID;
+    private String consentId;
+    private String clientId;
     private String consentType;
     private String currentStatus;
     private Object receipt;
@@ -35,16 +35,16 @@ public class ConsentResourceResponseBody implements Serializable {
 
     @JsonCreator
     public ConsentResourceResponseBody(
-            @JsonProperty(required = true, value = "consentID") String consentID,
-            @JsonProperty(required = true, value = "clientID") String clientID,
+            @JsonProperty(required = true, value = "consentId") String consentId,
+            @JsonProperty(required = true, value = "clientId") String clientId,
             @JsonProperty(required = true, value = "consentType") String consentType,
             @JsonProperty(required = true, value = "currentStatus") String currentStatus,
             @JsonProperty(required = true, value = "receipt") Object receipt,
             @JsonProperty(required = true, value = "expiryTime") Integer expiryTime,
             @JsonProperty(required = true, value = "recurringIndicator") Boolean recurringIndicator
                                       ) {
-        this.consentID = consentID;
-        this.clientID = clientID;
+        this.consentId = consentId;
+        this.clientId = clientId;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
         this.receipt = receipt;
@@ -55,41 +55,41 @@ public class ConsentResourceResponseBody implements Serializable {
     /**
      *
      **/
-    public ConsentResourceResponseBody consentID(String consentID) {
-        this.consentID = consentID;
+    public ConsentResourceResponseBody consentId(String consentId) {
+        this.consentId = consentId;
         return this;
     }
 
 
     @ApiModelProperty(required = true, value = "")
-    @JsonProperty(required = true, value = "consentID")
-    @NotNull public String getConsentID() {
-        return consentID;
+    @JsonProperty(required = true, value = "consentId")
+    @NotNull public String getConsentId() {
+        return consentId;
     }
 
-    @JsonProperty(required = true, value = "consentID")
-    public void setConsentID(String consentID) {
-        this.consentID = consentID;
+    @JsonProperty(required = true, value = "consentId")
+    public void setConsentId(String consentId) {
+        this.consentId = consentId;
     }
 
     /**
      *
      **/
-    public ConsentResourceResponseBody clientID(String clientID) {
-        this.clientID = clientID;
+    public ConsentResourceResponseBody clientId(String clientId) {
+        this.clientId = clientId;
         return this;
     }
 
 
     @ApiModelProperty(required = true, value = "")
-    @JsonProperty(required = true, value = "clientID")
-    @NotNull public String getClientID() {
-        return clientID;
+    @JsonProperty(required = true, value = "clientId")
+    @NotNull public String getClientId() {
+        return clientId;
     }
 
-    @JsonProperty(required = true, value = "clientID")
-    public void setClientID(String clientID) {
-        this.clientID = clientID;
+    @JsonProperty(required = true, value = "clientId")
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     /**
@@ -302,8 +302,8 @@ public class ConsentResourceResponseBody implements Serializable {
             return false;
         }
         ConsentResourceResponseBody consentResponse = (ConsentResourceResponseBody) o;
-        return Objects.equals(this.consentID, consentResponse.consentID) &&
-                Objects.equals(this.clientID, consentResponse.clientID) &&
+        return Objects.equals(this.consentId, consentResponse.consentId) &&
+                Objects.equals(this.clientId, consentResponse.clientId) &&
                 Objects.equals(this.consentType, consentResponse.consentType) &&
                 Objects.equals(this.currentStatus, consentResponse.currentStatus) &&
                 Objects.equals(this.receipt, consentResponse.receipt) &&
@@ -317,7 +317,7 @@ public class ConsentResourceResponseBody implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(consentID, clientID, consentType, currentStatus, receipt, expiryTime,
+        return Objects.hash(consentId, clientId, consentType, currentStatus, receipt, expiryTime,
                 recurringIndicator, consentAttributes, authorizationResources, createdTime, updatedTime);
     }
 
@@ -326,8 +326,8 @@ public class ConsentResourceResponseBody implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("class ConsentResponse {\n");
 
-        sb.append("    consentID: ").append(toIndentedString(consentID)).append("\n");
-        sb.append("    clientID: ").append(toIndentedString(clientID)).append("\n");
+        sb.append("    consentId: ").append(toIndentedString(consentId)).append("\n");
+        sb.append("    clientId: ").append(toIndentedString(clientId)).append("\n");
         sb.append("    consentType: ").append(toIndentedString(consentType)).append("\n");
         sb.append("    currentStatus: ").append(toIndentedString(currentStatus)).append("\n");
         sb.append("    receipt: ").append(toIndentedString(receipt)).append("\n");

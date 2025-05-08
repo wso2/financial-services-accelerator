@@ -39,9 +39,9 @@ public class ConsentAPITestData {
     // mock DetailedConsentResource
     public static DetailedConsentResource getStoredDetailedConsentResource() {
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
-        detailedConsentResource.setClientID(testClientID);
+        detailedConsentResource.setClientId(testClientID);
         detailedConsentResource.setReceipt(testReceipt);
-        detailedConsentResource.setConsentID(testConsentID);
+        detailedConsentResource.setConsentId(testConsentID);
         detailedConsentResource.setConsentType(testConsentType);
         detailedConsentResource.setCurrentStatus(testConsentStatus);
         detailedConsentResource.setExpiryTime(testExpiryTime);
@@ -59,8 +59,8 @@ public class ConsentAPITestData {
     // mock AuthorizationResource
     public static AuthorizationResource getStoredAuthorizationResource() {
         AuthorizationResource authorizationResource = new AuthorizationResource();
-        authorizationResource.setAuthorizationID(testAuthId);
-        authorizationResource.setUserID(testUserID);
+        authorizationResource.setAuthorizationId(testAuthId);
+        authorizationResource.setUserId(testUserID);
         authorizationResource.setAuthorizationType(testAuthType);
         authorizationResource.setAuthorizationStatus(testAuthStatus);
         authorizationResource.setResource(testMappingResource.toString());

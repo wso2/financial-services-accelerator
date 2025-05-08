@@ -14,7 +14,7 @@ import java.util.Objects;
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentHistoryResponse implements Serializable {
     private String historyId;
-    private String consentID;
+    private String consentId;
     private Integer timestamp;
     private String reason;
     private ConsentResourceResponseBody consentResource;
@@ -45,21 +45,21 @@ public class ConsentHistoryResponse implements Serializable {
     /**
      *
      **/
-    public ConsentHistoryResponse consentID(String consentID) {
-        this.consentID = consentID;
+    public ConsentHistoryResponse consentId(String consentId) {
+        this.consentId = consentId;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
-    @JsonProperty("consentID")
-    public String getConsentID() {
-        return consentID;
+    @JsonProperty("consentId")
+    public String getConsentId() {
+        return consentId;
     }
 
-    @JsonProperty("consentID")
-    public void setConsentID(String consentID) {
-        this.consentID = consentID;
+    @JsonProperty("consentId")
+    public void setConsentId(String consentId) {
+        this.consentId = consentId;
     }
 
     /**
@@ -132,7 +132,7 @@ public class ConsentHistoryResponse implements Serializable {
         }
         ConsentHistoryResponse consentHistory = (ConsentHistoryResponse) o;
         return Objects.equals(this.historyId, consentHistory.historyId) &&
-                Objects.equals(this.consentID, consentHistory.consentID) &&
+                Objects.equals(this.consentId, consentHistory.consentId) &&
                 Objects.equals(this.timestamp, consentHistory.timestamp) &&
                 Objects.equals(this.reason, consentHistory.reason) &&
                 Objects.equals(this.consentResource, consentHistory.consentResource);
@@ -140,7 +140,7 @@ public class ConsentHistoryResponse implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(historyId, consentID, timestamp, reason, consentResource);
+        return Objects.hash(historyId, consentId, timestamp, reason, consentResource);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class ConsentHistoryResponse implements Serializable {
         sb.append("class ConsentHistory {\n");
 
         sb.append("    historyId: ").append(toIndentedString(historyId)).append("\n");
-        sb.append("    consentID: ").append(toIndentedString(consentID)).append("\n");
+        sb.append("    consentId: ").append(toIndentedString(consentId)).append("\n");
         sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
         sb.append("    reason: ").append(toIndentedString(reason)).append("\n");
         sb.append("    consentResource: ").append(toIndentedString(consentResource)).append("\n");

@@ -24,7 +24,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
 public class ConsentStatusAuditRecord {
 
     private String statusAuditID;
-    private String consentID;
+    private String consentId;
     private String currentStatus;
     private long actionTime;
     private String reason;
@@ -35,10 +35,10 @@ public class ConsentStatusAuditRecord {
 
     }
 
-    public ConsentStatusAuditRecord(String statusAuditID, String consentID, String currentStatus, long actionTime,
+    public ConsentStatusAuditRecord(String statusAuditID, String consentId, String currentStatus, long actionTime,
                                     String reason, String actionBy, String previousStatus) {
         this.statusAuditID = statusAuditID;
-        this.consentID = consentID;
+        this.consentId = consentId;
         this.currentStatus = currentStatus;
         this.actionTime = actionTime;
         this.reason = reason;
@@ -46,9 +46,9 @@ public class ConsentStatusAuditRecord {
         this.previousStatus = previousStatus;
     }
 
-    public ConsentStatusAuditRecord(String consentID, String currentStatus, long actionTime,
+    public ConsentStatusAuditRecord(String consentId, String currentStatus, long actionTime,
                                     String reason, String actionBy, String previousStatus) {
-        this.consentID = consentID;
+        this.consentId = consentId;
         this.currentStatus = currentStatus;
         this.actionTime = actionTime;
         this.reason = reason;
@@ -66,14 +66,14 @@ public class ConsentStatusAuditRecord {
         this.statusAuditID = statusAuditID;
     }
 
-    public String getConsentID() {
+    public String getConsentId() {
 
-        return consentID;
+        return consentId;
     }
 
-    public void setConsentID(String consentID) {
+    public void setConsentId(String consentId) {
 
-        this.consentID = consentID;
+        this.consentId = consentId;
     }
 
     public String getCurrentStatus() {

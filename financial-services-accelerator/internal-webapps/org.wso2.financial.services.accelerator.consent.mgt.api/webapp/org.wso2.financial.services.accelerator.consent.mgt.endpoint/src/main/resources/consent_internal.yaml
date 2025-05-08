@@ -397,12 +397,12 @@ paths:
         - Admin
       parameters:
         - in: query
-          name: consentID
+          name: consentId
           required: true
           schema:
             type: string
         - in: query
-          name: userID
+          name: userId
           required: false
           schema:
             type: string
@@ -671,11 +671,11 @@ components:
           description: Authorization updated time
           type: integer
           example: 1719809834569
-        consentID:
+        consentId:
           description: Consent ID of the authorization
           type: string
           example: "514556fe-57b6-4565-98d1-0b53ff53d62b"
-        authorizationID:
+        authorizationId:
           description: Authorization ID
           type: string
           example: "96e4033b-6063-4bc8-ba5b-00559c1a9b31"
@@ -683,7 +683,7 @@ components:
           description: Type of authorization
           type: string
           example: "authorisation"
-        userID:
+        userId:
           description: User ID
           type: string
           example: "admin@carbon.super"
@@ -706,7 +706,7 @@ components:
           description: Accoung ID of the mapping resource
           type: string
           example: "12345"
-        authorizationID:
+        authorizationId:
           description: Authorization ID associated with the mapping
           type: string
           example: "96e4033b-6063-4bc8-ba5b-00559c1a9b31"

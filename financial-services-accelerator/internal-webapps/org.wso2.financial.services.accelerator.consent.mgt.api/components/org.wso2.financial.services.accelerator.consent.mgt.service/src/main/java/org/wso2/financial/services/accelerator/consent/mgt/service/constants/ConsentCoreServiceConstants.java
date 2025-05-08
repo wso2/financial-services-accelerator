@@ -68,7 +68,8 @@ public class ConsentCoreServiceConstants {
     public static final String CREATE_EXCLUSIVE_CONSENT_MANDATORY_PARAMETER_MISSING_ERROR = "One or more of following" +
             " data are missing (Client ID, receipt, consent type, consent status, auth status, auth type, applicable " +
             "existing consent status, new existing consent status, new current consent status), cannot proceed";
-    public static final String DATA_RETRIEVE_ERROR_MSG = "Error occurred while retrieving data";
+    public static final String DATA_RETRIEVE_ERROR_MSG = "Error occurred while retrieving data, cannot find the " +
+            "requested data with the given parameters";
     public static final String DATA_UPDATE_ROLLBACK_ERROR_MSG = "Error occurred while updating consent data. Rolling " +
             "back the transaction";
     public static final String NEW_CONSENT_STATUS_OR_APPLICABLE_STATUS_MISSING_ERROR = "New consent status or " +
@@ -76,7 +77,7 @@ public class ConsentCoreServiceConstants {
 
     public static final String ATTRIBUTE_UPDATE_ERROR_MSG = "Error occurred while updating consent attributes. " +
             "Rolling back the transaction";
-    public static final String DATA_DELETE_ROLLBACK_ERROR_MSG = "Error occurred while deleting consent data. Rolling " +
+    public static final String DATA_DELETE_ROLLBACK_ERROR_MSG = "Error occurred while deleting data. Rolling " +
             "back the transaction";
     public static final String CONSENT_ATTRIBUTES_DELETE_ERROR_MSG = "Error occurred while deleting consent " +
             "attributes in the database";
@@ -98,7 +99,7 @@ public class ConsentCoreServiceConstants {
             " authorization ID, new authorization status or new consent status is missing, cannot proceed.";
     public static final String ACC_ID_PERMISSION_DETAILS_MISSING_ERROR = "Account IDs and relative permissions" +
             " are not present, cannot proceed";
-    public static final String CONSENT_UPDATE_DETAILS_MISSING_ERROR = "Consent ID, userID or newConsentStatus" +
+    public static final String CONSENT_UPDATE_DETAILS_MISSING_ERROR = "Consent ID, userId or newConsentStatus" +
             " is missing. Cannot proceed.";
     public static final String ACC_MAPPING_DETAILS_MISSING_ERROR = "Authorization ID, accountID/permission map" +
             " is not found, cannot proceed";
@@ -140,6 +141,8 @@ public class ConsentCoreServiceConstants {
 
     public static final String CONSENT_EXPIRY_TIME_BEFORE_CURRENT_TIMESTAMP_ERROR = " Expiry Time is before the " +
             "current timestatmp, please consider a time in the future ";
+
+    public static final String CONSENT_ALREADY_REVOKED = "Consent is already revoked, cannot proceed";
 
     public static final String DETAILED_CONSENT_DATA_MISSING_ERROR_MSG = "Auth ID, user ID, account permissions map," +
             " new consent status or new consent attributes is not present, cannot proceed";

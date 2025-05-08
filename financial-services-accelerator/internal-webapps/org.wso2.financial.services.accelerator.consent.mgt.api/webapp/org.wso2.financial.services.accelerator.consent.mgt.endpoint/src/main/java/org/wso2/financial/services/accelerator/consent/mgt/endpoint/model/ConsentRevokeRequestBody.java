@@ -14,7 +14,7 @@ import java.util.Objects;
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentRevokeRequestBody implements Serializable {
     private String reason;
-    private String userID;
+    private String userId;
 
     public ConsentRevokeRequestBody() {
     }
@@ -42,21 +42,21 @@ public class ConsentRevokeRequestBody implements Serializable {
     /**
      *
      **/
-    public ConsentRevokeRequestBody userID(String userID) {
-        this.userID = userID;
+    public ConsentRevokeRequestBody userId(String userId) {
+        this.userId = userId;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
-    @JsonProperty("userID")
-    public String getUserID() {
-        return userID;
+    @JsonProperty("userId")
+    public String getUserId() {
+        return userId;
     }
 
-    @JsonProperty("userID")
-    public void setUserID(String userID) {
-        this.userID = userID;
+    @JsonProperty("userId")
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
 
@@ -70,12 +70,12 @@ public class ConsentRevokeRequestBody implements Serializable {
         }
         ConsentRevokeRequestBody consentRevokeResource = (ConsentRevokeRequestBody) o;
         return Objects.equals(this.reason, consentRevokeResource.reason) &&
-                Objects.equals(this.userID, consentRevokeResource.userID);
+                Objects.equals(this.userId, consentRevokeResource.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reason, userID);
+        return Objects.hash(reason, userId);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ConsentRevokeRequestBody implements Serializable {
         sb.append("class ConsentRevokeResource {\n");
 
         sb.append("    reason: ").append(toIndentedString(reason)).append("\n");
-        sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
+        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
         sb.append("}");
         return sb.toString();
     }

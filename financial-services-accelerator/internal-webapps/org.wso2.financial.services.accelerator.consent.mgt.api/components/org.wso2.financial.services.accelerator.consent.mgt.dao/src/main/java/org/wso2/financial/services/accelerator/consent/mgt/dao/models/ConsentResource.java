@@ -26,8 +26,8 @@ import java.util.Map;
 public class ConsentResource {
 
     private String orgID;
-    private String consentID;
-    private String clientID;
+    private String consentId;
+    private String clientId;
     private String receipt;
     private String consentType;
     private long expiryTime;
@@ -39,20 +39,20 @@ public class ConsentResource {
     public ConsentResource() {
     }
 
-    public ConsentResource(String orgInfo, String clientID, String receipt, String consentType, String currentStatus) {
+    public ConsentResource(String orgInfo, String clientId, String receipt, String consentType, String currentStatus) {
         this.orgID = orgInfo;
-        this.clientID = clientID;
+        this.clientId = clientId;
         this.receipt = receipt;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
     }
 
-    public ConsentResource(String orgID, String consentID, String clientID, String receipt, String consentType,
+    public ConsentResource(String orgID, String consentId, String clientId, String receipt, String consentType,
                            long expiryTime, boolean recurringIndicator,
                            String currentStatus, long createdTime, long updatedTime) {
         this.orgID = orgID;
-        this.consentID = consentID;
-        this.clientID = clientID;
+        this.consentId = consentId;
+        this.clientId = clientId;
         this.receipt = receipt;
         this.consentType = consentType;
         this.expiryTime = expiryTime;
@@ -84,14 +84,14 @@ public class ConsentResource {
         this.consentAttributes = consentAttributes;
     }
 
-    public String getConsentID() {
+    public String getConsentId() {
 
-        return consentID;
+        return consentId;
     }
 
-    public void setConsentID(String consentID) {
+    public void setConsentId(String consentId) {
 
-        this.consentID = consentID;
+        this.consentId = consentId;
     }
 
     public String getOrgID() {
@@ -102,14 +102,14 @@ public class ConsentResource {
         this.orgID = orgID;
     }
 
-    public String getClientID() {
+    public String getClientId() {
 
-        return clientID;
+        return clientId;
     }
 
-    public void setClientID(String clientID) {
+    public void setClientId(String clientId) {
 
-        this.clientID = clientID;
+        this.clientId = clientId;
     }
 
     public String getReceipt() {

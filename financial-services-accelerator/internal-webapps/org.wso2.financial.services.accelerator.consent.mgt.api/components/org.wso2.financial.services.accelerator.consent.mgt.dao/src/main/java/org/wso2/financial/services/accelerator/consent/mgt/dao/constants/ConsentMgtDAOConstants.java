@@ -95,6 +95,7 @@ public class ConsentMgtDAOConstants {
     //Numbers are assigned to each consent DB table & used as the reference for each table when storing CA history
     public static final Map<String, String> TABLES_MAP = new HashMap<>();
 
+
     static {
         TABLES_MAP.put(TABLE_FS_CONSENT, "01");
         TABLES_MAP.put(TABLE_FS_CONSENT_AUTH_RESOURCE, "02");
@@ -166,5 +167,10 @@ public class ConsentMgtDAOConstants {
             "consent amendment history records from the database for the given consent ID";
     public static final Object CONSENT_DELETE_ERROR_MSG =
             "Error occurred while deleting consent resource from the database";
+    public static final String CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG = "Error occurred while updating " +
+            "consent authorization resource in the database";
+
+    public static final String CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG = "Error occurred while deleting " +
+            "consent authorization resource from the database";
 
 }

@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-04-18T10:47:38.068853078+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentResourceRequestBody implements Serializable {
-    private String clientID;
+    private String clientId;
     private String consentType;
     private String currentStatus;
     private String receipt;
@@ -32,14 +32,14 @@ public class ConsentResourceRequestBody implements Serializable {
 
     @JsonCreator
     public ConsentResourceRequestBody(
-            @JsonProperty(required = true, value = "clientID") String clientID,
+            @JsonProperty(required = true, value = "clientId") String clientId,
             @JsonProperty(required = true, value = "consentType") String consentType,
             @JsonProperty(required = true, value = "currentStatus") String currentStatus,
             @JsonProperty(required = true, value = "receipt") String receipt,
             @JsonProperty(required = true, value = "expiryTime") Integer expiryTime,
             @JsonProperty(required = true, value = "recurringIndicator") Boolean recurringIndicator
                                      ) {
-        this.clientID = clientID;
+        this.clientId = clientId;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
         this.receipt = receipt;
@@ -50,21 +50,21 @@ public class ConsentResourceRequestBody implements Serializable {
     /**
      *
      **/
-    public ConsentResourceRequestBody clientID(String clientID) {
-        this.clientID = clientID;
+    public ConsentResourceRequestBody clientId(String clientId) {
+        this.clientId = clientId;
         return this;
     }
 
 
     @ApiModelProperty(required = true, value = "")
-    @JsonProperty(required = true, value = "clientID")
-    @NotNull public String getClientID() {
-        return clientID;
+    @JsonProperty(required = true, value = "clientId")
+    @NotNull public String getClientId() {
+        return clientId;
     }
 
-    @JsonProperty(required = true, value = "clientID")
-    public void setClientID(String clientID) {
-        this.clientID = clientID;
+    @JsonProperty(required = true, value = "clientId")
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     /**
@@ -236,7 +236,7 @@ public class ConsentResourceRequestBody implements Serializable {
             return false;
         }
         ConsentResourceRequestBody consentResourceDTO = (ConsentResourceRequestBody) o;
-        return Objects.equals(this.clientID, consentResourceDTO.clientID) &&
+        return Objects.equals(this.clientId, consentResourceDTO.clientId) &&
                 Objects.equals(this.consentType, consentResourceDTO.consentType) &&
                 Objects.equals(this.currentStatus, consentResourceDTO.currentStatus) &&
                 Objects.equals(this.receipt, consentResourceDTO.receipt) &&
@@ -248,7 +248,7 @@ public class ConsentResourceRequestBody implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(clientID, consentType, currentStatus, receipt, expiryTime, recurringIndicator,
+        return Objects.hash(clientId, consentType, currentStatus, receipt, expiryTime, recurringIndicator,
                 consentAttributes, authorizationResources);
     }
 
@@ -257,7 +257,7 @@ public class ConsentResourceRequestBody implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("class ConsentResourceDTO {\n");
 
-        sb.append("    clientID: ").append(toIndentedString(clientID)).append("\n");
+        sb.append("    clientId: ").append(toIndentedString(clientId)).append("\n");
         sb.append("    consentType: ").append(toIndentedString(consentType)).append("\n");
         sb.append("    currentStatus: ").append(toIndentedString(currentStatus)).append("\n");
         sb.append("    receipt: ").append(toIndentedString(receipt)).append("\n");

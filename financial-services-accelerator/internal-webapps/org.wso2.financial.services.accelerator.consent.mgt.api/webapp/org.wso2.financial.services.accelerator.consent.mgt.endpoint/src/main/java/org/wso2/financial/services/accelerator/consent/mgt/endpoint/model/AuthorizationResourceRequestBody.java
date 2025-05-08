@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 public class AuthorizationResourceRequestBody implements Serializable {
     private String authorizationStatus;
     private String authorizationType;
-    private String userID;
+    private String userId;
     private @Valid Object resource = new ArrayList<>();
 
     public AuthorizationResourceRequestBody() {
@@ -29,11 +29,11 @@ public class AuthorizationResourceRequestBody implements Serializable {
     public AuthorizationResourceRequestBody(
             @JsonProperty(required = true, value = "authorizationStatus") String authorizationStatus,
             @JsonProperty(required = true, value = "authorizationType") String authorizationType,
-            @JsonProperty(required = true, value = "userID") String userID
+            @JsonProperty(required = true, value = "userId") String userId
                                            ) {
         this.authorizationStatus = authorizationStatus;
         this.authorizationType = authorizationType;
-        this.userID = userID;
+        this.userId = userId;
     }
 
     /**
@@ -79,21 +79,21 @@ public class AuthorizationResourceRequestBody implements Serializable {
     /**
      *
      **/
-    public AuthorizationResourceRequestBody userID(String userID) {
-        this.userID = userID;
+    public AuthorizationResourceRequestBody userId(String userId) {
+        this.userId = userId;
         return this;
     }
 
 
     @ApiModelProperty(required = true, value = "")
-    @JsonProperty(required = true, value = "userID")
-    @NotNull public String getUserID() {
-        return userID;
+    @JsonProperty(required = true, value = "userId")
+    @NotNull public String getUserId() {
+        return userId;
     }
 
-    @JsonProperty(required = true, value = "userID")
-    public void setUserID(String userID) {
-        this.userID = userID;
+    @JsonProperty(required = true, value = "userId")
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     /**
@@ -129,13 +129,13 @@ public class AuthorizationResourceRequestBody implements Serializable {
         AuthorizationResourceRequestBody authorizationResourceDTO = (AuthorizationResourceRequestBody) o;
         return Objects.equals(this.authorizationStatus, authorizationResourceDTO.authorizationStatus) &&
                 Objects.equals(this.authorizationType, authorizationResourceDTO.authorizationType) &&
-                Objects.equals(this.userID, authorizationResourceDTO.userID) &&
+                Objects.equals(this.userId, authorizationResourceDTO.userId) &&
                 Objects.equals(this.resource, authorizationResourceDTO.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authorizationStatus, authorizationType, userID, resource);
+        return Objects.hash(authorizationStatus, authorizationType, userId, resource);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class AuthorizationResourceRequestBody implements Serializable {
 
         sb.append("    authorizationStatus: ").append(toIndentedString(authorizationStatus)).append("\n");
         sb.append("    authorizationType: ").append(toIndentedString(authorizationType)).append("\n");
-        sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
+        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
         sb.append("    resources: ").append(toIndentedString(resource)).append("\n");
         sb.append("}");
         return sb.toString();

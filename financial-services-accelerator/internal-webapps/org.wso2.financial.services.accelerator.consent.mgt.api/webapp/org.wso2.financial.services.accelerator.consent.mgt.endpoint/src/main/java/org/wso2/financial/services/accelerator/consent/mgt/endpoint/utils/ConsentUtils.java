@@ -69,7 +69,7 @@ public class ConsentUtils {
             ConsentResourceRequestBody consentResourceDTO) throws
             ConsentMgtException {
         consentResource.setConsentType(consentResourceDTO.getConsentType());
-        consentResource.setClientID(consentResourceDTO.getClientID());
+        consentResource.setClientId(consentResourceDTO.getClientId());
         consentResource.setRecurringIndicator(consentResourceDTO.getRecurringIndicator());
         consentResource.setExpiryTime(consentResourceDTO.getExpiryTime());
         consentResource.setConsentAttributes(ConsentUtils.convertToMap(consentResourceDTO.getConsentAttributes()));
@@ -88,7 +88,7 @@ public class ConsentUtils {
             JsonProcessingException {
         authorizationResource.setAuthorizationType(authorizationResourceDTO.getAuthorizationType());
         authorizationResource.setAuthorizationStatus(authorizationResourceDTO.getAuthorizationStatus());
-        authorizationResource.setUserID(authorizationResourceDTO.getUserID());
+        authorizationResource.setUserId(authorizationResourceDTO.getUserId());
         authorizationResource.setResource(objectMapper.writeValueAsString(authorizationResourceDTO.getResource()));
     }
 
@@ -101,8 +101,8 @@ public class ConsentUtils {
             AuthorizationResource authorizationResource)
             throws
             JsonProcessingException {
-        authorizationResourceResponse.setAuthId(authorizationResource.getAuthorizationID());
-        authorizationResourceResponse.setUserID(authorizationResource.getUserID());
+        authorizationResourceResponse.setAuthId(authorizationResource.getAuthorizationId());
+        authorizationResourceResponse.setUserId(authorizationResource.getUserId());
         authorizationResourceResponse.setAuthorizationStatus(authorizationResource.getAuthorizationStatus());
         authorizationResourceResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
 
@@ -120,8 +120,8 @@ public class ConsentUtils {
             AuthorizationResource authorizationResourceResponseResponse,
             AuthorizationResource authorizationResource,
             ArrayList<ConsentMappingResource> consentMappingResources) {
-        authorizationResourceResponseResponse.setAuthorizationID(authorizationResource.getAuthorizationID());
-        authorizationResourceResponseResponse.setUserID(authorizationResource.getUserID());
+        authorizationResourceResponseResponse.setAuthorizationId(authorizationResource.getAuthorizationId());
+        authorizationResourceResponseResponse.setUserId(authorizationResource.getUserId());
         authorizationResourceResponseResponse.setAuthorizationStatus(authorizationResource.getAuthorizationStatus());
         authorizationResourceResponseResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
 
@@ -130,29 +130,22 @@ public class ConsentUtils {
 
 
     /**
-     * copy properties to consentResourceResponse
+     * copy properties to consentResourceResponseBody from consentResource and authorizationResource
      */
-    public static void buildConsentResourceResponse(ConsentResourceResponseBody consentResourceResponse,
+    public static void buildConsentResourceResponse(ConsentResourceResponseBody consentResourceResponseBody,
                                                     DetailedConsentResource consentResource,
-                                                    ArrayList<AuthorizationResource> authorizationResources,
-                                                    boolean withAttributes) throws
+                                                    ArrayList<AuthorizationResource> authorizationResources) throws
             JsonProcessingException {
-        consentResourceResponse.setConsentID(consentResource.getConsentID());
-        consentResourceResponse.setClientID(consentResource.getClientID());
-        consentResourceResponse.setConsentType(consentResource.getConsentType());
-        consentResourceResponse.setRecurringIndicator(consentResource.isRecurringIndicator());
-        consentResourceResponse.setCreatedTime((int) consentResource.getCreatedTime());
-        consentResourceResponse.setExpiryTime((int) consentResource.getExpiryTime());
-        consentResourceResponse.setCurrentStatus(consentResource.getCurrentStatus());
-        consentResourceResponse.setUpdatedTime((int) consentResource.getUpdatedTime());
-        consentResourceResponse.setReceipt(consentResource.getReceipt());
-
-
-        if (withAttributes) {
-            consentResourceResponse.setConsentAttributes(consentResource.getConsentAttributes());
-
-        }
-
+        consentResourceResponseBody.setConsentId(consentResource.getConsentId());
+        consentResourceResponseBody.setClientId(consentResource.getClientId());
+        consentResourceResponseBody.setConsentType(consentResource.getConsentType());
+        consentResourceResponseBody.setRecurringIndicator(consentResource.isRecurringIndicator());
+        consentResourceResponseBody.setCreatedTime((int) consentResource.getCreatedTime());
+        consentResourceResponseBody.setExpiryTime((int) consentResource.getExpiryTime());
+        consentResourceResponseBody.setCurrentStatus(consentResource.getCurrentStatus());
+        consentResourceResponseBody.setUpdatedTime((int) consentResource.getUpdatedTime());
+        consentResourceResponseBody.setReceipt(consentResource.getReceipt());
+        consentResourceResponseBody.setConsentAttributes(consentResource.getConsentAttributes());
 
         if (authorizationResources != null) {
             ArrayList<AuthorizationResourceResponseBody> authResponses = new ArrayList<>();
@@ -162,7 +155,7 @@ public class ConsentUtils {
                 buildAuthorizationResourceResponse(authResponse, authorizationResource);
                 authResponses.add(authResponse);
             }
-            consentResourceResponse.setAuthorizationResources(authResponses);
+            consentResourceResponseBody.setAuthorizationResources(authResponses);
         }
     }
 
@@ -177,9 +170,9 @@ public class ConsentUtils {
         JSONObject consentResource = new JSONObject();
 
         consentResource.put(ConsentConstant.CC_CONSENT_ID,
-                detailedConsentResource.getConsentID());
+                detailedConsentResource.getConsentId());
         consentResource.put(ConsentConstant.CLIENT_ID,
-                detailedConsentResource.getClientID());
+                detailedConsentResource.getClientId());
         consentResource.put(ConsentConstant.RECEIPT,
                 detailedConsentResource.getReceipt());
 
@@ -211,11 +204,11 @@ public class ConsentUtils {
                 authArray) {
             JSONObject resourceJSON = new JSONObject();
             resourceJSON.put(ConsentConstant.AUTH_ID,
-                    resource.getAuthorizationID());
+                    resource.getAuthorizationId());
             resourceJSON.put(ConsentConstant.CC_CONSENT_ID,
-                    resource.getConsentID());
+                    resource.getConsentId());
             resourceJSON.put(ConsentConstant.USER_ID,
-                    resource.getUserID());
+                    resource.getUserId());
             resourceJSON.put(ConsentConstant.AUTH_STATUS,
                     resource.getAuthorizationStatus());
             resourceJSON.put(ConsentConstant.AUTH_TYPE,
@@ -233,7 +226,7 @@ public class ConsentUtils {
             resourceJSON.put(ConsentConstant.MAPPING_ID,
                     resource.getMappingID());
             resourceJSON.put(ConsentConstant.AUTH_ID,
-                    resource.getAuthorizationID());
+                    resource.getAuthorizationId());
             resourceJSON.put(ConsentConstant.ACCOUNT_ID,
                     resource.getAccountID());
             resourceJSON.put(ConsentConstant.PERMISSION,
@@ -257,9 +250,9 @@ public class ConsentUtils {
             org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource) {
         JSONObject consentResourceJSON = new JSONObject();
         consentResourceJSON.put(ConsentConstant.CONSENT_ID,
-                consentResource.getConsentID());
+                consentResource.getConsentId());
         consentResourceJSON.put(ConsentConstant.CLIENT_ID,
-                consentResource.getClientID());
+                consentResource.getClientId());
         consentResourceJSON.put(ConsentConstant.CONSENT_TYPE,
                 consentResource.getConsentType());
         consentResourceJSON.put(ConsentConstant.CURRENT_STATUS,

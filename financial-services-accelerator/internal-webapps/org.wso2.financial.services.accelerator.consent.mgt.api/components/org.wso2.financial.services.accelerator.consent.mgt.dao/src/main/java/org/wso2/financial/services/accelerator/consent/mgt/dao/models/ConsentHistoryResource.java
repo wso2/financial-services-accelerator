@@ -27,7 +27,7 @@ import java.util.Map;
 public class ConsentHistoryResource {
 
     private String historyID;
-    private String consentID;
+    private String consentId;
     private long timestamp;
     private String reason;
     private DetailedConsentResource detailedConsentResource;
@@ -37,9 +37,9 @@ public class ConsentHistoryResource {
 
     }
 
-    public ConsentHistoryResource(String consentID, String historyID) {
+    public ConsentHistoryResource(String consentId, String historyID) {
 
-        this.consentID = consentID;
+        this.consentId = consentId;
         this.historyID = historyID;
         this.changedAttributesJsonDataMap = new HashMap<String, Object>();
     }
@@ -76,12 +76,12 @@ public class ConsentHistoryResource {
         this.changedAttributesJsonDataMap = changedAttributesJsonDataMap;
     }
 
-    public String getConsentID() {
-        return consentID;
+    public String getConsentId() {
+        return consentId;
     }
 
-    public void setConsentID(String consentID) {
-        this.consentID = consentID;
+    public void setConsentId(String consentId) {
+        this.consentId = consentId;
     }
 
     public String getHistoryID() {

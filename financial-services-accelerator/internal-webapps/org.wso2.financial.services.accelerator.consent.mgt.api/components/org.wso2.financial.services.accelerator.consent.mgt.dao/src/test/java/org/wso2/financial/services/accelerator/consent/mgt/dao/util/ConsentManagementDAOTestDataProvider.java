@@ -153,7 +153,7 @@ public class ConsentManagementDAOTestDataProvider {
 
         /*
          * historyID
-         * consentID
+         * consentId
          * changedAttributes
          * consentType
          * amendedTimestamp

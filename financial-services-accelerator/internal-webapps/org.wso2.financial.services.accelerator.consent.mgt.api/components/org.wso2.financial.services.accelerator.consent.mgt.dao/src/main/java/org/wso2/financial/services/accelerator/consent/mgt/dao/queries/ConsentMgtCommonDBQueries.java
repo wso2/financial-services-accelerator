@@ -140,10 +140,22 @@ public class ConsentMgtCommonDBQueries {
         return "UPDATE FS_CONSENT_AUTH_RESOURCE SET AUTH_STATUS = ?, UPDATED_TIME = ? WHERE AUTH_ID = ?";
     }
 
+
     public String getUpdateAuthorizationUserPreparedStatement() {
 
         return "UPDATE FS_CONSENT_AUTH_RESOURCE SET USER_ID = ?, UPDATED_TIME = ? WHERE AUTH_ID = ?";
     }
+
+    public String getUpdateAuthorizationResourcePreparedStatement() {
+
+        return "UPDATE FS_CONSENT_AUTH_RESOURCE SET AUTH_STATUS = ?, AUTH_TYPE = ?, USER_ID = ?, RESOURCE = ?, " +
+                "UPDATED_TIME = ? " +
+                "WHERE AUTH_ID = ?";
+    }
+    public String getDeleteAuthorizationResourcePreparedStatement() {
+        return "DELETE FROM FS_CONSENT_AUTH_RESOURCE WHERE AUTH_ID = ?";
+    }
+
 
     public String getStoreConsentMappingPreparedStatement() {
 

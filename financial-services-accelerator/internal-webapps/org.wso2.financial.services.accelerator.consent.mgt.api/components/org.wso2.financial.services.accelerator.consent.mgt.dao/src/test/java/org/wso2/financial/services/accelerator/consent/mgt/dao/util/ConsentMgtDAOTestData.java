@@ -189,7 +189,7 @@ public class ConsentMgtDAOTestData {
         ConsentResource consentResource = new ConsentResource();
         consentResource.setOrgID(ConsentMgtDAOConstants.DEFAULT_ORG);
         consentResource.setReceipt(ConsentMgtDAOTestData.SAMPLE_CONSENT_RECEIPT);
-        consentResource.setClientID(UUID.randomUUID().toString());
+        consentResource.setClientId(UUID.randomUUID().toString());
         consentResource.setConsentType(ConsentMgtDAOTestData.SAMPLE_CONSENT_TYPE);
         consentResource.setCurrentStatus(ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS);
         consentResource.setExpiryTime(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
@@ -201,9 +201,9 @@ public class ConsentMgtDAOTestData {
     public static ConsentResource getSampleStoredTestConsentResource() {
 
         ConsentResource consentResource = new ConsentResource();
-        consentResource.setConsentID(UUID.randomUUID().toString());
+        consentResource.setConsentId(UUID.randomUUID().toString());
         consentResource.setReceipt(ConsentMgtDAOTestData.SAMPLE_CONSENT_RECEIPT);
-        consentResource.setClientID(UUID.randomUUID().toString());
+        consentResource.setClientId(UUID.randomUUID().toString());
         consentResource.setConsentType(ConsentMgtDAOTestData.SAMPLE_CONSENT_TYPE);
         consentResource.setCurrentStatus(ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS);
         consentResource.setExpiryTime(ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
@@ -224,7 +224,7 @@ public class ConsentMgtDAOTestData {
         for (int i = 0; i < 3; i++) {
             ConsentResource consentResource = new ConsentResource();
             consentResource.setReceipt(SAMPLE_CONSENT_RECEIPTS_LIST.get(i));
-            consentResource.setClientID(SAMPLE_CLIENT_IDS_LIST.get(i));
+            consentResource.setClientId(SAMPLE_CLIENT_IDS_LIST.get(i));
             consentResource.setConsentType(SAMPLE_CONSENT_TYPES_LIST.get(i));
             consentResource.setCurrentStatus(SAMPLE_CONSENT_STATUSES_LIST.get(i));
             consentResource.setExpiryTime(SAMPLE_VALIDITY_PERIOD_LIST.get(i));
@@ -241,9 +241,9 @@ public class ConsentMgtDAOTestData {
         for (int i = 0; i < consentIDs.size(); i++) {
             for (int j = 0; j < 2; j++) {
                 AuthorizationResource authorizationResource = new AuthorizationResource();
-                authorizationResource.setConsentID(consentIDs.get(i));
+                authorizationResource.setConsentId(consentIDs.get(i));
                 authorizationResource.setAuthorizationType(SAMPLE_AUTHORIZATION_TYPE);
-                authorizationResource.setUserID(SAMPLE_USER_IDS_LIST.get(i));
+                authorizationResource.setUserId(SAMPLE_USER_IDS_LIST.get(i));
                 authorizationResource.setAuthorizationStatus(SAMPLE_AUTHORIZATION_STATUS);
                 authorizationResource.setResource(SAMPLE_RESOURCE.toString());
                 authorizationResources.add(authorizationResource);
@@ -259,7 +259,7 @@ public class ConsentMgtDAOTestData {
         for (int i = 0; i < authIDs.size(); i++) {
             for (int j = 0; j < 2; j++) {
                 ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-                consentMappingResource.setAuthorizationID(authIDs.get(i));
+                consentMappingResource.setAuthorizationId(authIDs.get(i));
                 consentMappingResource.setAccountID(SAMPLE_ACCOUNT_ID);
                 consentMappingResource.setResource(SAMPLE_RESOURCE);
                 consentMappingResource.setMappingStatus(SAMPLE_MAPPING_STATUS);
@@ -269,17 +269,17 @@ public class ConsentMgtDAOTestData {
         return consentMappingResources;
     }
 
-    public static AuthorizationResource getSampleTestAuthorizationResource(String consentID) {
+    public static AuthorizationResource getSampleTestAuthorizationResource(String consentId) {
 
         AuthorizationResource authorizationResource = new AuthorizationResource();
-        authorizationResource.setConsentID(consentID);
+        authorizationResource.setConsentId(consentId);
         authorizationResource.setAuthorizationType(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_TYPE);
-        authorizationResource.setUserID(ConsentMgtDAOTestData.SAMPLE_USER_ID);
+        authorizationResource.setUserId(ConsentMgtDAOTestData.SAMPLE_USER_ID);
         authorizationResource.setAuthorizationStatus(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_STATUS);
 
         ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<ConsentMappingResource>();
         ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-        consentMappingResource.setAuthorizationID(consentID);
+        consentMappingResource.setAuthorizationId(consentId);
         consentMappingResource.setResource(ConsentMgtDAOTestData.SAMPLE_RESOURCE);
         consentMappingResource.setMappingStatus(ConsentMgtDAOTestData.SAMPLE_MAPPING_STATUS);
         consentMappingResources.add(consentMappingResource);
@@ -291,42 +291,42 @@ public class ConsentMgtDAOTestData {
     public static AuthorizationResource getSampleStoredTestAuthorizationResource() {
 
         AuthorizationResource authorizationResource = new AuthorizationResource();
-        authorizationResource.setConsentID(UUID.randomUUID().toString());
-        authorizationResource.setAuthorizationID(UUID.randomUUID().toString());
+        authorizationResource.setConsentId(UUID.randomUUID().toString());
+        authorizationResource.setAuthorizationId(UUID.randomUUID().toString());
         authorizationResource.setAuthorizationType(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_TYPE);
-        authorizationResource.setUserID(ConsentMgtDAOTestData.SAMPLE_USER_ID);
+        authorizationResource.setUserId(ConsentMgtDAOTestData.SAMPLE_USER_ID);
         authorizationResource.setAuthorizationStatus(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_STATUS);
         authorizationResource.setUpdatedTime(System.currentTimeMillis() / 1000);
 
         return authorizationResource;
     }
 
-    public static ConsentMappingResource getSampleTestConsentMappingResource(String authorizationID) {
+    public static ConsentMappingResource getSampleTestConsentMappingResource(String authorizationId) {
 
         ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-        consentMappingResource.setAuthorizationID(authorizationID);
+        consentMappingResource.setAuthorizationId(authorizationId);
         consentMappingResource.setResource(ConsentMgtDAOTestData.SAMPLE_RESOURCE);
         consentMappingResource.setMappingStatus(ConsentMgtDAOTestData.SAMPLE_MAPPING_STATUS);
 
         return consentMappingResource;
     }
 
-    public static ConsentMappingResource getSampleTestConsentMappingResourceWithResource(String authorizationID,
+    public static ConsentMappingResource getSampleTestConsentMappingResourceWithResource(String authorizationId,
                                                                                          String accountID) {
 
         ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-        consentMappingResource.setAuthorizationID(authorizationID);
+        consentMappingResource.setAuthorizationId(authorizationId);
         consentMappingResource.setResource(ConsentMgtDAOTestData.SAMPLE_RESOURCE);
         consentMappingResource.setMappingStatus(ConsentMgtDAOTestData.SAMPLE_MAPPING_STATUS);
 
         return consentMappingResource;
     }
 
-    public static ConsentStatusAuditRecord getSampleTestConsentStatusAuditRecord(String consentID,
+    public static ConsentStatusAuditRecord getSampleTestConsentStatusAuditRecord(String consentId,
                                                                                  String currentStatus) {
 
         ConsentStatusAuditRecord consentStatusAuditRecord = new ConsentStatusAuditRecord();
-        consentStatusAuditRecord.setConsentID(consentID);
+        consentStatusAuditRecord.setConsentId(consentId);
         consentStatusAuditRecord.setCurrentStatus(currentStatus);
         consentStatusAuditRecord.setReason(ConsentMgtDAOTestData.SAMPLE_REASON);
         consentStatusAuditRecord.setActionBy(ConsentMgtDAOTestData.SAMPLE_ACTION_BY);
@@ -335,10 +335,10 @@ public class ConsentMgtDAOTestData {
         return consentStatusAuditRecord;
     }
 
-    public static ConsentAttributes getSampleTestConsentAttributesObject(String consentID) {
+    public static ConsentAttributes getSampleTestConsentAttributesObject(String consentId) {
 
         ConsentAttributes consentAttributes = new ConsentAttributes();
-        consentAttributes.setConsentID(consentID);
+        consentAttributes.setConsentId(consentId);
         consentAttributes.setConsentAttributes(ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
 
         return consentAttributes;
@@ -347,7 +347,7 @@ public class ConsentMgtDAOTestData {
     public static ConsentFile getSampleConsentFileObject(String fileContent) {
 
         ConsentFile consentFile = new ConsentFile();
-        consentFile.setConsentID(UUID.randomUUID().toString());
+        consentFile.setConsentId(UUID.randomUUID().toString());
         consentFile.setConsentFile(fileContent);
 
         return consentFile;

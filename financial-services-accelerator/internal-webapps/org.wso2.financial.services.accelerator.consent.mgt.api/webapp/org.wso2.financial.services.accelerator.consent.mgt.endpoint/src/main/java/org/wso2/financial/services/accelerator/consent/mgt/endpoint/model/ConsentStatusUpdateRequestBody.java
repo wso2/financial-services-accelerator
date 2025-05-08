@@ -15,7 +15,7 @@ import java.util.Objects;
 public class ConsentStatusUpdateRequestBody implements Serializable {
     private String status;
     private String reason;
-    private String userID;
+    private String userId;
 
     public ConsentStatusUpdateRequestBody() {
     }
@@ -63,21 +63,21 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
     /**
      *
      **/
-    public ConsentStatusUpdateRequestBody userID(String userID) {
-        this.userID = userID;
+    public ConsentStatusUpdateRequestBody userId(String userId) {
+        this.userId = userId;
         return this;
     }
 
 
     @ApiModelProperty(value = "")
-    @JsonProperty("userID")
-    public String getUserID() {
-        return userID;
+    @JsonProperty("userId")
+    public String getUserId() {
+        return userId;
     }
 
-    @JsonProperty("userID")
-    public void setUserID(String userID) {
-        this.userID = userID;
+    @JsonProperty("userId")
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
 
@@ -92,12 +92,12 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
         ConsentStatusUpdateRequestBody consentStatusUpdateResource = (ConsentStatusUpdateRequestBody) o;
         return Objects.equals(this.status, consentStatusUpdateResource.status) &&
                 Objects.equals(this.reason, consentStatusUpdateResource.reason) &&
-                Objects.equals(this.userID, consentStatusUpdateResource.userID);
+                Objects.equals(this.userId, consentStatusUpdateResource.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(status, reason, userID);
+        return Objects.hash(status, reason, userId);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
 
         sb.append("    status: ").append(toIndentedString(status)).append("\n");
         sb.append("    reason: ").append(toIndentedString(reason)).append("\n");
-        sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
+        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
         sb.append("}");
         return sb.toString();
     }

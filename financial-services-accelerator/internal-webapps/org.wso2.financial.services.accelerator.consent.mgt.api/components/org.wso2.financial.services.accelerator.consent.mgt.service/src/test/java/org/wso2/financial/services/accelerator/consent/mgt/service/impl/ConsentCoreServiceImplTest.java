@@ -128,12 +128,12 @@ public class ConsentCoreServiceImplTest {
 //                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
 //
 //        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-//                retrievedDetailedConsentResource.getConsentID(),
+//                retrievedDetailedConsentResource.getConsentId(),
 //                retrievedDetailedConsentResource.getCurrentStatus()))
 //                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
 //                        any(ConsentStatusAuditRecord.class));
 //
-//        consentCoreServiceImpl.updateConsentStatus(retrievedDetailedConsentResource.getConsentID(),
+//        consentCoreServiceImpl.updateConsentStatus(retrievedDetailedConsentResource.getConsentId(),
 //                ConsentMgtServiceTestData.SAMPLE_CONSUMED_STATUS);
 //    }
 
@@ -237,7 +237,7 @@ public class ConsentCoreServiceImplTest {
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
                 anyString());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
@@ -264,7 +264,7 @@ public class ConsentCoreServiceImplTest {
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
                 anyString());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
@@ -290,7 +290,7 @@ public class ConsentCoreServiceImplTest {
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
                 anyString());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
@@ -317,7 +317,7 @@ public class ConsentCoreServiceImplTest {
                 anyString());
 
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
@@ -345,7 +345,7 @@ public class ConsentCoreServiceImplTest {
                 anyString());
 
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
@@ -376,7 +376,7 @@ public class ConsentCoreServiceImplTest {
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
                 anyString());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
@@ -470,7 +470,7 @@ public class ConsentCoreServiceImplTest {
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
                 anyString());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
@@ -496,7 +496,7 @@ public class ConsentCoreServiceImplTest {
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
                 anyString());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentID(),
+                retrievedDetailedConsentResource.getConsentId(),
                 retrievedDetailedConsentResource.getCurrentStatus()))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));

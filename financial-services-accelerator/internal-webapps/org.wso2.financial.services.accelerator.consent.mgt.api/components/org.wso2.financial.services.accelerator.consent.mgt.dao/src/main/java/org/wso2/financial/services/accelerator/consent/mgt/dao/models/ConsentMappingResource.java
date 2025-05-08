@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
 public class ConsentMappingResource {
 
     private String mappingID;
-    private String authorizationID;
+    private String authorizationId;
     private String accountID;
     private String permission;
     private String mappingStatus;
@@ -36,15 +36,15 @@ public class ConsentMappingResource {
 
     }
 
-    public ConsentMappingResource(String authorizationID, JSONObject resource, String mappingStatus) {
-        this.authorizationID = authorizationID;
+    public ConsentMappingResource(String authorizationId, JSONObject resource, String mappingStatus) {
+        this.authorizationId = authorizationId;
         this.resource = resource;
         this.mappingStatus = mappingStatus;
     }
 
-    public ConsentMappingResource(String authorizationID, String accountID, String permission,
+    public ConsentMappingResource(String authorizationId, String accountID, String permission,
                                   String mappingStatus) {
-        this.authorizationID = authorizationID;
+        this.authorizationId = authorizationId;
         this.accountID = accountID;
         this.permission = permission;
         this.mappingStatus = mappingStatus;
@@ -60,14 +60,14 @@ public class ConsentMappingResource {
         this.mappingID = mappingID;
     }
 
-    public String getAuthorizationID() {
+    public String getAuthorizationId() {
 
-        return authorizationID;
+        return authorizationId;
     }
 
-    public void setAuthorizationID(String authorizationID) {
+    public void setAuthorizationId(String authorizationId) {
 
-        this.authorizationID = authorizationID;
+        this.authorizationId = authorizationId;
     }
 
     public String getAccountID() {

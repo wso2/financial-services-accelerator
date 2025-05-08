@@ -23,9 +23,9 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
  */
 public class AuthorizationResource {
 
-    private String authorizationID;
-    private String consentID;
-    private String userID;
+    private String authorizationId;
+    private String consentId;
+    private String userId;
     private String authorizationStatus;
     private String authorizationType;
     private long updatedTime;
@@ -35,19 +35,19 @@ public class AuthorizationResource {
 
     }
 
-    public AuthorizationResource(String consentID, String userID, String authorizationStatus,
+    public AuthorizationResource(String consentId, String userId, String authorizationStatus,
                                  String authorizationType, String resource,  long updatedTime) {
-        this.consentID = consentID;
-        this.userID = userID;
+        this.consentId = consentId;
+        this.userId = userId;
         this.authorizationStatus = authorizationStatus;
         this.authorizationType = authorizationType;
         this.updatedTime = updatedTime;
         this.resource = resource;
 
     }
-    public String getAuthorizationID() {
+    public String getAuthorizationId() {
 
-        return authorizationID;
+        return authorizationId;
     }
 
     public String getAuthorizationType() {
@@ -60,29 +60,29 @@ public class AuthorizationResource {
         this.authorizationType = authorizationType;
     }
 
-    public void setAuthorizationID(String authorizationID) {
+    public void setAuthorizationId(String authorizationId) {
 
-        this.authorizationID = authorizationID;
+        this.authorizationId = authorizationId;
     }
 
-    public String getConsentID() {
+    public String getConsentId() {
 
-        return consentID;
+        return consentId;
     }
 
-    public void setConsentID(String consentID) {
+    public void setConsentId(String consentId) {
 
-        this.consentID = consentID;
+        this.consentId = consentId;
     }
 
-    public String getUserID() {
+    public String getUserId() {
 
-        return userID;
+        return userId;
     }
 
-    public void setUserID(String userID) {
+    public void setUserId(String userId) {
 
-        this.userID = userID;
+        this.userId = userId;
     }
 
     public String getAuthorizationStatus() {

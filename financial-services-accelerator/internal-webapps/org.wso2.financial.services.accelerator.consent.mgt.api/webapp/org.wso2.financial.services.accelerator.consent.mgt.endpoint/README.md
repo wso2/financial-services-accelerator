@@ -93,10 +93,10 @@ public class Example {
     defaultClient.setBasePath("https://localhost:9446/api/bfsi/consent");
 
     AdminApi apiInstance = new AdminApi(defaultClient);
-    String consentID = "consentID_example"; // String | 
-    String userID = "userID_example"; // String | 
+    String consentId = "consentID_example"; // String | 
+    String userId = "userID_example"; // String | 
     try {
-      apiInstance.revokeConsents(consentID, userID);
+      apiInstance.revokeConsents(consentId, userId);
     } catch (ApiException e) {
       System.err.println("Exception when calling AdminApi#revokeConsents");
       System.err.println("Status code: " + e.getCode());
