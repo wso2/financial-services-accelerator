@@ -44,7 +44,7 @@
                             <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
                             <excludes>
                                 <exclude>**/commons-beanutils-1.9.4.jar</exclude>
-                                <exclude>**/hibernate-validator-6.0.20.Final.jar</exclude>
+                                <exclude>**/hibernate-validator-6.2.0.Final.jar</exclude>
                                 <exclude>**/validation-api-2.0.1.Final.jar</exclude>
                             </excludes>
                         </fileset>
