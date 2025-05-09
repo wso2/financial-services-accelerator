@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import {specConfigurations, dataTypes} from "../specConfigs";
+import {specConfigurations, dataTypes, consentTypes} from "../specConfigs";
 import moment from "moment";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -158,6 +158,7 @@ export function generatePDF(consent, applicationName, consentStatus) {
         margin: {left: 20, right: 20 },
         border: {top: 2, right: 2, bottom: 2, left: 2},
         body: [
+          ['ConsentType', consentTypes.find((type) => type.id === consent.consent_type).label],
           ['Status', consent.currentStatus],
           ['API Consumer Application ', applicationName],
           ['Create date', moment(new Date((consent.createdTimestamp) * 1000)).format("DD-MMM-YYYY")],
@@ -176,9 +177,9 @@ export function generatePDF(consent, applicationName, consentStatus) {
     }
 
     if (content01.length > 0 || content02.length > 0) {
-        pdf.text(20, 90, 'Data we are sharing on: ');
+        pdf.text(20, 100, 'Data we are sharing on: ');
         autoTable(pdf, {
-            startY :100,
+            startY :110,
             margin: { left: 20, right: 20 },
             border: {top: 2, right: 2, bottom: 2, left: 2},
             headStyles: { fillColor: [112, 123, 124] },
