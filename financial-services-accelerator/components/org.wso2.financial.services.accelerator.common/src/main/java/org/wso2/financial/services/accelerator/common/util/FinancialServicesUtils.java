@@ -48,7 +48,6 @@ import java.util.regex.Pattern;
 public class FinancialServicesUtils {
 
     private static final Log log = LogFactory.getLog(FinancialServicesUtils.class);
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     /**
      * Get Tenant Domain String for the client id.
@@ -216,7 +215,7 @@ public class FinancialServicesUtils {
     public static String getConsentIdFromEssentialClaims(String essentialClaims)
             throws JsonProcessingException {
 
-        String jsonPath = configParser.getConsentIdExtractionJsonPath();
+        String jsonPath = FinancialServicesConfigParser.getInstance().getConsentIdExtractionJsonPath();
 
         if (StringUtils.isBlank(essentialClaims) || StringUtils.isBlank(jsonPath)) {
             return null; // Return null if input is invalid
@@ -239,7 +238,7 @@ public class FinancialServicesUtils {
             return value;
         }
 
-        String patternString = configParser.getConsentIdExtractionRegexPattern();
+        String patternString = FinancialServicesConfigParser.getInstance().getConsentIdExtractionRegexPattern();
 
         if (StringUtils.isBlank(patternString)) {
             return value;
