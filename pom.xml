@@ -782,7 +782,7 @@
         <carbon.identity.local.auth.api.version>2.4.0</carbon.identity.local.auth.api.version>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
-        <hibernate-validator>6.0.20.Final</hibernate-validator>
+        <hibernate-validator>6.2.0.Final</hibernate-validator>
         <org.wso2.carbon.apimgt.version.range>[9.0.174, 9.28.117]</org.wso2.carbon.apimgt.version.range>
         <org.wso2.carbon.apimgt.version>9.28.116</org.wso2.carbon.apimgt.version>
         <org.wso2.carbon.apimgt.keymgt.version>9.28.116</org.wso2.carbon.apimgt.keymgt.version>
