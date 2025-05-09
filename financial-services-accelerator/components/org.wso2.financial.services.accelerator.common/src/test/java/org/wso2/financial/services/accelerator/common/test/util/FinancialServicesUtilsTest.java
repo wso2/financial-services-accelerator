@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.common.test.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.testng.Assert;
@@ -30,8 +31,6 @@ import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtil
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
@@ -45,15 +44,13 @@ public class FinancialServicesUtilsTest {
 
     @Mock
     private MockedStatic<FinancialServicesConfigParser> configParser;
+    private FinancialServicesConfigParser configParserMock;
 
     @BeforeClass
     public void initClass() {
 
-        Map<String, Object> configs = new HashMap<>();
         configParser = mockStatic(FinancialServicesConfigParser.class);
-
-        FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
-        doReturn(configs).when(configParserMock).getConfiguration();
+        configParserMock = mock(FinancialServicesConfigParser.class);
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
     }
@@ -91,4 +88,42 @@ public class FinancialServicesUtilsTest {
         String formattedDate = offsetDateTime.format(formatter);
         Assert.assertEquals(FinancialServicesUtils.convertToISO8601(offsetDateTime.toEpochSecond()), formattedDate);
     }
+
+    @Test
+    public void testGetConsentIdFromEssentialClaims() throws JsonProcessingException {
+
+        doReturn("/essential/consentId").when(configParserMock).getConsentIdExtractionJsonPath();
+        doReturn("").when(configParserMock).getConsentIdExtractionRegexPattern();
+
+        String consentId = "consentId";
+        String json = "{\n" +
+                "  \"essential\": {\n" +
+                "    \"consentId\": \"" + consentId + "\"\n" +
+                "  }\n" +
+                "}";
+
+        Assert.assertEquals(FinancialServicesUtils.getConsentIdFromEssentialClaims(json), consentId);
+    }
+
+    @Test
+    public void testGetConsentIdFromScopesRequestParam() {
+        String[] scopes = {"scope1", "ais:123", "scope2"};
+
+        doReturn(":([a-fA-F0-9\\-]+)").when(configParserMock).getConsentIdExtractionRegexPattern();
+
+        String consentId = FinancialServicesUtils.getConsentIdFromScopesRequestParam(scopes);
+        Assert.assertEquals(consentId, "123");
+    }
+
+    @Test
+    public void testExtractConsentIdFromRegex() {
+        String consentId = "da5c57ca-dcab-45db-8620-65fca406fd91";
+        String value = "ais: accounts ais:" + consentId + " payments ais:: pis";
+
+        doReturn(":([a-fA-F0-9\\-]+)").when(configParserMock).getConsentIdExtractionRegexPattern();
+
+        String extractedConsentId = FinancialServicesUtils.extractConsentIdFromRegex(value);
+        Assert.assertEquals(extractedConsentId, consentId);
+    }
+
 }

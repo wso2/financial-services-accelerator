@@ -105,29 +105,6 @@ public class IdentityCommonUtilsTest {
     }
 
     @Test
-    public void testGetConsentIdFromScopesRequestParam() {
-        String[] scopes = {"scope1", "ais:123", "scope2"};
-
-        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
-        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN, ":([a-fA-F0-9\\-]+)");
-
-        String consentId = IdentityCommonUtils.getConsentIdFromScopesRequestParam(scopes);
-        Assert.assertEquals(consentId, "123");
-    }
-
-    @Test
-    public void testExtractConsentIdFromRegex() {
-        String consentId = "da5c57ca-dcab-45db-8620-65fca406fd91";
-        String value = "ais: accounts ais:" + consentId + " payments ais:: pis";
-
-        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
-        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN, ":([a-fA-F0-9\\-]+)");
-
-        String extractedConsentId = IdentityCommonUtils.extractConsentIdFromRegex(value);
-        Assert.assertEquals(extractedConsentId, consentId);
-    }
-
-    @Test
     public void testGetConsentIdFromAuthzRequestContext() throws Exception {
         OAuth2AuthorizeReqDTO authzReqDTO = new OAuth2AuthorizeReqDTO();
         authzReqDTO.setCookie(new Cookie[]{new Cookie("commonAuthId", "123")});
@@ -180,16 +157,5 @@ public class IdentityCommonUtilsTest {
         Map<String, Object> spMetaData = IdentityCommonUtils.getSpMetaData(serviceProvider);
         Assert.assertEquals(spMetaData.get("key1"), "value1");
         Assert.assertEquals(spMetaData.get("key2"), "value2,value3");
-    }
-
-    @Test
-    public void testGetConsentIdFromEssentialClaims() throws Exception {
-        String essentialClaims = "{\"claims\":{\"consent_id\":\"123\"}}";
-        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
-        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH, "/claims/consent_id");
-        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN, null);
-
-        String consentId = IdentityCommonUtils.getConsentIdFromEssentialClaims(essentialClaims);
-        Assert.assertEquals(consentId, "123");
     }
 }

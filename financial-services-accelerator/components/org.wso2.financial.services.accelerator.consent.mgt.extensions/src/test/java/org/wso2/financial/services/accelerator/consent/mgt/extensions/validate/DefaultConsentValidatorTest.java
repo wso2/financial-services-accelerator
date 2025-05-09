@@ -26,6 +26,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -52,6 +53,7 @@ public class DefaultConsentValidatorTest {
     DefaultConsentValidator validator = new DefaultConsentValidator();
     ConsentValidateData consentValidateDataMock;
     ConsentValidationResult consentValidationResultMock;
+    MockedStatic<FinancialServicesConfigParser> financialServicesConfigParserMockedStatic;
     MockedStatic<FinancialServicesUtils> financialServicesUtilsMockedStatic;
 
     @BeforeClass
@@ -59,6 +61,7 @@ public class DefaultConsentValidatorTest {
         consentValidateDataMock = mock(ConsentValidateData.class);
         consentValidationResultMock = spy(ConsentValidationResult.class);
 
+        financialServicesConfigParserMockedStatic = Mockito.mockStatic(FinancialServicesConfigParser.class);
         financialServicesUtilsMockedStatic = Mockito.mockStatic(FinancialServicesUtils.class);
         financialServicesUtilsMockedStatic.when(() -> FinancialServicesUtils.resolveUsernameFromUserId(anyString()))
                 .thenReturn(TestConstants.SAMPLE_USER_ID);
@@ -66,6 +69,7 @@ public class DefaultConsentValidatorTest {
 
     @AfterClass
     public void afterTest() {
+        financialServicesConfigParserMockedStatic.close();
         financialServicesUtilsMockedStatic.close();
     }
 

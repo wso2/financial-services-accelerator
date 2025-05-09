@@ -26,8 +26,6 @@ public class IdentityCommonConstants {
     public static final String FS_PREFIX = "FS_";
     public static final String TIME_PREFIX = "TIME_";
     public static final String CERT_PREFIX = "x5t#";
-    public static final String SPACE_SEPARATOR = " ";
-    public static final String SCOPE = "scope";
     public static final String OPENID_SCOPE = "openid";
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String ARRAY_ELEMENT_SEPARATOR = "#";
@@ -71,7 +69,5 @@ public class IdentityCommonConstants {
     public static final String SSA_PARAMS = "softwareStatement";
     public static final String EXISTING_CLIENT_DATA = "existingClientData";
     public static final String ISSUE_REFRESH_TOKEN = "issueRefreshToken";
-    public static final String REQUEST_OBJECT = "requestObject";
-    public static final String REQUEST_PARAM = "requestParam";
 }
 

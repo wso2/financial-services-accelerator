@@ -82,7 +82,7 @@ public class IdentityServiceExtensionUtils {
 
         // Construct the payload
         org.json.JSONObject data = new org.json.JSONObject();
-        data.put(IdentityCommonConstants.REQUEST_OBJECT, fsRequestObject.getClaimsSet().toJSONObject());
+        data.put(FinancialServicesConstants.REQUEST_OBJECT, fsRequestObject.getClaimsSet().toJSONObject());
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
 

@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -25,7 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -45,6 +48,7 @@ import java.util.Locale;
 public class ConsentAuthorizeUtil {
 
     private static final Log log = LogFactory.getLog(ConsentAuthorizeUtil.class);
+    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
 
     /**
      * Method to extract request object from query params.
@@ -73,41 +77,59 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Method to validate the request object and extract consent ID.
-     *
+     * Method to extract the consent id from the request.
      * @param requestObject Request object
      * @return consentId
+     * @throws ConsentException Consent Exception
      */
     public static String extractConsentId(String requestObject) throws ConsentException {
 
-        String consentId = null;
-        try {
-            // validate request object and get the payload
-            String requestObjectPayload = decodeRequestObjectPayload(requestObject);
-            JSONObject payload = new JSONObject(requestObjectPayload);
+        String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
 
-            // get consent id from the request object
-            if (payload.has(ConsentExtensionConstants.CLAIMS)) {
-                JSONObject claims = payload.getJSONObject(ConsentExtensionConstants.CLAIMS);
-                for (String claim : new String[]{ConsentExtensionConstants.USER_INFO,
-                        ConsentExtensionConstants.ID_TOKEN}) {
-                    if (claims.has(claim)) {
-                        JSONObject claimObject = claims.getJSONObject(claim);
-                        if (claimObject.has(ConsentExtensionConstants.OB_INTENT_ID)) {
-                            JSONObject intentObject = claimObject.getJSONObject(ConsentExtensionConstants.OB_INTENT_ID);
-                            if (intentObject.has(ConsentExtensionConstants.VALUE)) {
-                                consentId = intentObject.getString(ConsentExtensionConstants.VALUE);
-                                break;
-                            }
-                        }
-                    }
+        try {
+            if (FinancialServicesConstants.REQUEST_OBJECT.equals(authFlowConsentIdSource)) {
+
+                // validate request object and get the payload
+                String requestObjectPayload = decodeRequestObjectPayload(requestObject);
+                JSONObject payload = new JSONObject(requestObjectPayload);
+
+                // get consent id from the request object
+                if (payload.has(ConsentExtensionConstants.CLAIMS)) {
+                    JSONObject claims = payload.getJSONObject(ConsentExtensionConstants.CLAIMS);
+                    return FinancialServicesUtils.getConsentIdFromEssentialClaims(claims.toString());
                 }
             }
-            return consentId;
-        } catch (JSONException e) {
+        } catch (JSONException | JsonProcessingException e) {
             log.error("Payload is not a JSON object", e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not a JSON object");
         }
+
+        if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
+            return getConsentIdFromRequestParam(ConsentAuthorizeUtil.getRequestObjectJson(requestObject));
+        }
+
+        return null;
+    }
+
+    /**
+     * Method to extract the consent id from the request parameters.
+     *
+     * @param requestParameters Request parameters
+     * @return consentId
+     */
+    public static String getConsentIdFromRequestParam(JSONObject requestParameters) {
+
+        String key = configParser.getConsentIdExtractionKey();
+
+        // TODO: need to support other request parameters based on requirements
+        if (key.equals(FinancialServicesConstants.SCOPE)) {
+            String scope = (String) requestParameters.get(FinancialServicesConstants.SCOPE);
+            if (StringUtils.isNotBlank(scope)) {
+                return FinancialServicesUtils.getConsentIdFromScopesRequestParam(
+                        scope.split(FinancialServicesConstants.SPACE_SEPARATOR));
+            }
+        }
+        return null;
     }
 
     /**

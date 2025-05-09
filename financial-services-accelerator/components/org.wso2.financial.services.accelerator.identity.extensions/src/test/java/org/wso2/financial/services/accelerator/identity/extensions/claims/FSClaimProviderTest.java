@@ -58,7 +58,7 @@ public class FSClaimProviderTest {
 
         Map<String, Object> configMap = new HashMap<>();
         configMap.put(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
-        configMap.put(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN, "true");
+        configMap.put(FinancialServicesConstants.APPEND_CONSENT_ID_TO_TOKEN_ID_TOKEN, "true");
         IdentityExtensionsDataHolder.getInstance().setConfigurationMap(configMap);
     }
 

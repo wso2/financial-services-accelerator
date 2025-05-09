@@ -176,6 +176,12 @@
     </Gateway>
     <Consent>
         <PreInitiatedConsent>true</PreInitiatedConsent>
+        <AuthFlowConsentIdSource>requestObject</AuthFlowConsentIdSource>
+        <ConsentIdExtraction>
+            <JsonPath>/id_token/openbanking_intent_id/value</JsonPath>
+            <RegexPattern>test-pattern</RegexPattern>
+            <Key>scope</Key>
+        </ConsentIdExtraction>
         <AuthorizeSteps>
             <Retrieve>
                 <Step class="org.wso2.financial.services.accelerator.common.test.CustomStep1" priority="1"/>

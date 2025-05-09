@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationRegistrationRequest;
 import org.wso2.carbon.identity.oauth.dcr.bean.ApplicationUpdateRequest;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesDCRException;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
@@ -262,7 +263,7 @@ public class RequiredParamsValidator implements DynamicClientRegistrationValidat
             throws FinancialServicesDCRException {
 
         //check scope validation since request is sending a space separated scopes list
-        if (camelCaseConfigParam.equals(IdentityCommonConstants.SCOPE)) {
+        if (camelCaseConfigParam.equals(FinancialServicesConstants.SCOPE)) {
             List<String> scopeList = Arrays.asList(param.split(" "));
             for (String scope : scopeList) {
                 if (!allowedList.contains(scope)) {
