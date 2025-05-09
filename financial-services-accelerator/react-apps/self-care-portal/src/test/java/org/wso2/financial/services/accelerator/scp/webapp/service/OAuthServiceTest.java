@@ -91,7 +91,7 @@ public class OAuthServiceTest {
             utilsMockedStatic.when(() -> Utils.sendTokenRequest(Mockito.any(HttpPost.class)))
                     .thenReturn(TOKEN_RESPONSE_JSON);
             JSONObject responseJson = uut
-                    .sendRefreshTokenRequest(IAM_BASE_URL, CLIENT_KEY, CLIENT_SECRET, "dummy-token", "dummy-scope");
+                    .sendRefreshTokenRequest(IAM_BASE_URL, CLIENT_KEY, CLIENT_SECRET, "dummy-token");
             Assert.assertEquals(responseJson.get(Constants.ACCESS_TOKEN), RESP_ACCESS_TOKEN);
             Assert.assertEquals(responseJson.get(Constants.ID_TOKEN), RESP_ID_TOKEN);
         }

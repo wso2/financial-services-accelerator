@@ -112,13 +112,12 @@ public class OAuthService {
     }
 
     public JSONObject sendRefreshTokenRequest(String iamBaseUrl, String clientKey, String clientSecret,
-                                              String token, String scopes)
+                                              String token)
             throws UnsupportedEncodingException, TokenGenerationException {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair(Constants.GRANT_TYPE, Constants.REFRESH_TOKEN));
         params.add(new BasicNameValuePair(Constants.REFRESH_TOKEN, token));
         params.add(new BasicNameValuePair(Constants.CLIENT_ID, clientKey));
-        params.add(new BasicNameValuePair(Constants.OAUTH_SCOPE, scopes));
 
         return sendTokenRequest(iamBaseUrl, clientKey, clientSecret, params);
     }
@@ -131,7 +130,7 @@ public class OAuthService {
 
         // adding tokens as cookies
         addCookiesToResponse(req, resp, Constants.ACCESS_TOKEN_COOKIE_NAME, accessToken,
-                Constants.DEFAULT_COOKIE_PATH, Constants.DEFAULT_COOKIE_MAX_AGE);
+                Constants.DEFAULT_COOKIE_PATH, tokenExpiry);
         addCookiesToResponse(req, resp, Constants.ID_TOKEN_COOKIE_NAME, idToken,
                 Constants.DEFAULT_COOKIE_PATH, 86400);
         // adding refresh token, expires after 24 hours

@@ -32,6 +32,7 @@ import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerat
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
 
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class ResourceInterceptorServiceTest {
 
     private ResourceInterceptorService uut;
     private static final String REQUEST_URL = "http://localhost:9446";
+    private static final String REQUEST_URL_WITH_QUERY_PARAM = "http://localhost:9446?clientIds=test";
 
     @BeforeClass
     public void init() {
@@ -146,7 +148,7 @@ public class ResourceInterceptorServiceTest {
     }
 
     @Test()
-    public void testForwardRequest() throws TokenGenerationException {
+    public void testForwardRequest() throws TokenGenerationException, URISyntaxException {
 
         try (MockedStatic<Utils> utilsMockedStatic = Mockito.mockStatic(Utils.class)) {
             HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
@@ -158,6 +160,22 @@ public class ResourceInterceptorServiceTest {
                     .thenReturn(new JSONObject(TestConstants.APP_DETAIL_RESPONSE));
             Map<String, String> headers = new HashMap<>();
             uut.forwardRequest(httpServletResponse, new HttpGet(REQUEST_URL), headers);
+        }
+    }
+
+    @Test()
+    public void testForwardRequestWithQueryParam() throws TokenGenerationException, URISyntaxException {
+
+        try (MockedStatic<Utils> utilsMockedStatic = Mockito.mockStatic(Utils.class)) {
+            HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+            JSONObject resp = new JSONObject();
+            resp.append("res_status_code", 200);
+            resp.append("data", new JSONObject());
+            utilsMockedStatic.when(() -> Utils.sendRequest(Mockito.any())).thenReturn(resp);
+            utilsMockedStatic.when(Utils::sendApplicationRetrievalRequest)
+                    .thenReturn(new JSONObject(TestConstants.APP_DETAIL_RESPONSE));
+            Map<String, String> headers = new HashMap<>();
+            uut.forwardRequest(httpServletResponse, new HttpGet(REQUEST_URL_WITH_QUERY_PARAM), headers);
         }
     }
 

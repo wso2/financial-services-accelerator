@@ -27,7 +27,6 @@ import org.apache.http.entity.ContentType;
 import org.json.JSONObject;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
-import org.wso2.financial.services.accelerator.common.util.JWTUtils;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
 import org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService;
@@ -36,7 +35,7 @@ import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
 
 import java.io.IOException;
-import java.text.ParseException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,19 +68,15 @@ public class ResourceInterceptorServlet extends HttpServlet {
             if (resourceInterceptorService.isAccessTokenExpired(req)) {
                 // access token is expired, refreshing access token
                 Optional<String> optRefreshToken = resourceInterceptorService.constructRefreshTokenFromCookies(req);
-                Optional<String> optAccessToken = resourceInterceptorService.constructAccessTokenFromCookies(req);
 
-                if (optRefreshToken.isPresent() && optAccessToken.isPresent()) {
+                if (optRefreshToken.isPresent()) {
                     final OAuthService oAuthService = OAuthService.getInstance();
                     final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL);
                     final String clientKey = Utils.getParameter(Constants.CONFIGURED_CLIENT_ID);
                     final String clientSecret = Utils.getParameter(Constants.CONFIGURED_CLIENT_SECRET);
 
-                    JSONObject tokenBody = new JSONObject(JWTUtils.decodeRequestJWT(optAccessToken.get(), "body"));
-                    final String requestedScopes = tokenBody.getString("scope");
-
                     JSONObject tokenResponse = oAuthService.sendRefreshTokenRequest(iamBaseUrl, clientKey,
-                            clientSecret, optRefreshToken.get(), requestedScopes);
+                            clientSecret, optRefreshToken.get());
 
                     // add new tokes as cookies to response
                     oAuthService.generateCookiesFromTokens(tokenResponse, req, resp);
@@ -135,7 +130,7 @@ public class ResourceInterceptorServlet extends HttpServlet {
                     Utils.returnResponse(resp, HttpStatus.SC_BAD_REQUEST, new JSONObject(error));
                 }
             }
-        } catch (TokenGenerationException | IOException | ParseException e) {
+        } catch (TokenGenerationException | IOException | URISyntaxException e) {
             LOG.error("Exception occurred while processing frontend request. Caused by, ", e);
             SelfCarePortalError error = new SelfCarePortalError("Request Forwarding Error!",
                     "Something went wrong during the authentication process. Please try signing in again.");

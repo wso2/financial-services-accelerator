@@ -22,8 +22,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.json.JSONArray;
+import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
@@ -31,8 +32,9 @@ import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -90,7 +92,36 @@ public class ResourceInterceptorService implements Serializable {
     }
 
     public void forwardRequest(HttpServletResponse resp, HttpUriRequest httpRequest, Map<String, String> headers)
-            throws TokenGenerationException {
+            throws TokenGenerationException, URISyntaxException {
+
+        if (HttpMethod.GET.equals(httpRequest.getMethod())) {
+            // Replacing software id with client id before sending the request to the backend
+            URI originalUri = httpRequest.getURI();
+            String queryParams = originalUri.getQuery();
+            if (queryParams != null && queryParams.contains("clientIds")) {
+                String clientIds = "";
+                Map<String, String> appClientNameMap = Utils.getAppClientNameMap();
+                String[] queryParamsArray = queryParams.split("&");
+                for (String queryParam : queryParamsArray) {
+                    if (queryParam.startsWith("clientIds")) {
+                        String[] softwareIds = queryParam.split("=")[1].split(",");
+                        for (String softwareId : softwareIds) {
+                            for (Map.Entry<String, String> entry : appClientNameMap.entrySet()) {
+                                if (entry.getValue().equals(softwareId)) {
+                                    clientIds = clientIds.concat(entry.getKey() + ",");
+                                }
+                            }
+                        }
+                    }
+                }
+                // Rebuild URI with new query parameters
+                URI newUri = new URIBuilder(originalUri)
+                        .setParameter("clientIds", clientIds)
+                        .build();
+                httpRequest = new HttpGet(newUri);
+            }
+        }
+
         // adding headers to request
         headers.forEach(httpRequest::addHeader);
 
@@ -104,49 +135,20 @@ public class ResourceInterceptorService implements Serializable {
         responseJson.remove(Constants.RESPONSE_STATUS_CODE);
 
         if (HttpMethod.GET.equals(httpRequest.getMethod())) {
-            // Retrieving application details to get client name and logo url.
-            JSONObject applicationDetails = Utils.sendApplicationRetrievalRequest();
-            if (applicationDetails != null) {
-                Map<String, String> appClientNameMap = new HashMap<>();
-                Map<String, String> appLogoUrlMap = new HashMap<>();
-                for (Object application : applicationDetails.getJSONArray(Constants.APPLICATIONS)) {
-                    JSONObject applicationJson = (JSONObject) application;
-                    JSONObject configs = applicationJson.getJSONObject(Constants.ADVANCED_CONFIGURATIONS);
-                    JSONArray spData = configs.getJSONArray(Constants.ADDITIONAL_SP_PROPERTIES);
-                    String clientName = null;
-                    String logoUrl = null;
-                    for (Object spDataItem : spData) {
-                        JSONObject spDataItemJson = (JSONObject) spDataItem;
-                        if (spDataItemJson.getString(Constants.NAME).equalsIgnoreCase(
-                                Utils.getParameter(Constants.APP_NAME))) {
-                            String softwareClientName = spDataItemJson.getString(Constants.VALUE);
-                            if (StringUtils.isNotEmpty(softwareClientName)) {
-                                clientName = softwareClientName;
-                            }
-                        }
-                        if (spDataItemJson.getString(Constants.NAME).equalsIgnoreCase(
-                                Utils.getParameter(Constants.APP_LOGO_URL))) {
-                            logoUrl = spDataItemJson.getString(Constants.VALUE);
-                        }
-                    }
-                    if (clientName == null) {
-                        clientName = applicationJson.getString(Constants.NAME);
-                    }
-                    appClientNameMap.put(applicationJson.getString(Constants.CLIENT_ID_CC), clientName);
-                    appLogoUrlMap.put(applicationJson.getString(Constants.CLIENT_ID_CC), logoUrl);
-                }
 
-                if (responseJson.has(Constants.DATA)) {
-                    for (Object dataElement : responseJson.getJSONArray(Constants.DATA)) {
-                        JSONObject dataElementJson = (JSONObject) dataElement;
-                        String clientId = dataElementJson.optString(Constants.CLIENT_ID_CC);
-                        if (clientId != null && appClientNameMap.containsKey(clientId)) {
-                            dataElementJson.put(Constants.SOFTWARE_CLIENT_NAME, appClientNameMap.get(clientId));
-                            dataElementJson.put(Constants.LOGO_URL, appLogoUrlMap.get(clientId));
-                        } else {
-                            // For deleted applications
-                            dataElementJson.put(Constants.SOFTWARE_CLIENT_NAME, clientId);
-                        }
+            Map<String, String> appClientNameMap = Utils.getAppClientNameMap();
+            Map<String, String> appLogoUrlMap = Utils.getAppLogoUrlMap();
+
+            if (responseJson.has(Constants.DATA)) {
+                for (Object dataElement : responseJson.getJSONArray(Constants.DATA)) {
+                    JSONObject dataElementJson = (JSONObject) dataElement;
+                    String clientId = dataElementJson.optString(Constants.CLIENT_ID_CC);
+                    if (clientId != null && appClientNameMap.containsKey(clientId)) {
+                        dataElementJson.put(Constants.SOFTWARE_CLIENT_NAME, appClientNameMap.get(clientId));
+                        dataElementJson.put(Constants.LOGO_URL, appLogoUrlMap.get(clientId));
+                    } else {
+                        // For deleted applications
+                        dataElementJson.put(Constants.SOFTWARE_CLIENT_NAME, clientId);
                     }
                 }
             }

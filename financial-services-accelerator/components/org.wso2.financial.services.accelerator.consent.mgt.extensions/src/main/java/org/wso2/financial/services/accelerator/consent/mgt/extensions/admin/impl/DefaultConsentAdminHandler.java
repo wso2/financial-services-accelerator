@@ -196,6 +196,11 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             response.put(ConsentExtensionConstants.METADATA, metadata);
             consentAdminData.setResponseStatus(ResponseStatus.OK);
             consentAdminData.setResponsePayload(response);
+
+            // Filter consent data based on the accounts if accounts are available in the query params.
+            if (consentAdminData.getQueryParams().containsKey(ConsentExtensionConstants.ACCOUNT_IDS)) {
+                filterConsentsByAccount(consentAdminData);
+            }
         }
     }
 
@@ -448,6 +453,36 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     }
 
 
+    /**
+     * Filter the consent data based on the accounts.
+     * @param consentAdminData Consent admin data.
+     */
+    public void filterConsentsByAccount(ConsentAdminData consentAdminData) {
+
+        ArrayList accounts = ((ArrayList) consentAdminData.getQueryParams()
+                .get(ConsentExtensionConstants.ACCOUNT_IDS));
+        if (accounts.size() > 0) {
+            JSONArray filteredConsentData = new JSONArray();
+            for (Object consentObj : (JSONArray) consentAdminData.getResponsePayload()
+                    .get(ConsentExtensionConstants.DATA_CC)) {
+                JSONObject consent = (JSONObject) consentObj;
+                JSONArray consentMappingResources = (JSONArray) consent
+                        .get(ConsentExtensionConstants.MAPPING_RESOURCES);
+                for (Object consentMappingResource : consentMappingResources) {
+                    JSONObject consentMappingResourceObject = (JSONObject) consentMappingResource;
+                    if (accounts.contains(consentMappingResourceObject.get(ConsentExtensionConstants.ACCOUNT_ID_CC))) {
+                        filteredConsentData.put(consent);
+                        break;
+                    }
+                }
+            }
+            JSONObject responseMetadata = (JSONObject) consentAdminData.getResponsePayload()
+                    .get(ConsentExtensionConstants.METADATA);
+            responseMetadata.put(ConsentExtensionConstants.TOTAL, filteredConsentData.length());
+            responseMetadata.put(ConsentExtensionConstants.COUNT, filteredConsentData.length());
+            consentAdminData.getResponsePayload().put(ConsentExtensionConstants.DATA_CC, filteredConsentData);
+        }
+    }
 
 
 }

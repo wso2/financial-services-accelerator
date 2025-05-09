@@ -152,6 +152,15 @@ public class DefaultConsentAdminHandlerTest {
     }
 
     @Test
+    public void testHandleSearchWithAccountIdFilter() {
+        ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
+        doReturn(getQueryParamsWithAccountId()).when(consentAdminDataMock).getQueryParams();
+        doReturn(new JSONObject(TestConstants.ADMIN_SEARCH_RESPONSE)).when(consentAdminDataMock).getResponsePayload();
+        defaultConsentAdminHandler.handleSearch(consentAdminDataMock);
+        verify(consentAdminDataMock).setResponseStatus(ResponseStatus.OK);
+    }
+
+    @Test
     public void testHandleSearchWithExtensionsEnabled() {
         setConsentAdminBuilder();
         JSONObject payload = new JSONObject();
@@ -244,6 +253,26 @@ public class DefaultConsentAdminHandlerTest {
                 .singletonList(TestConstants.AUTHORISED_STATUS)));
         queryParams.put(ConsentExtensionConstants.USER_IDS, new ArrayList<>(Collections
                 .singletonList(TestConstants.SAMPLE_USER_ID)));
+
+        return queryParams;
+    }
+
+    private Map getQueryParamsWithAccountId() {
+        Map queryParams = new HashMap();
+        queryParams.put(ConsentExtensionConstants.CC_CONSENT_ID, new ArrayList<>(Collections
+                .singletonList(TestConstants.SAMPLE_CONSENT_ID)));
+        queryParams.put(ConsentExtensionConstants.CONSENT_IDS, new ArrayList<>(Collections
+                .singletonList(TestConstants.SAMPLE_CONSENT_ID)));
+        queryParams.put(ConsentExtensionConstants.CLIENT_IDS, new ArrayList<>(Collections
+                .singletonList(TestConstants.SAMPLE_CLIENT_ID)));
+        queryParams.put(ConsentExtensionConstants.CONSENT_TYPES, new ArrayList<>(Collections
+                .singletonList(TestConstants.ACCOUNTS)));
+        queryParams.put(ConsentExtensionConstants.CONSENT_STATUSES, new ArrayList<>(Collections
+                .singletonList(TestConstants.AUTHORISED_STATUS)));
+        queryParams.put(ConsentExtensionConstants.USER_IDS, new ArrayList<>(Collections
+                .singletonList(TestConstants.SAMPLE_USER_ID)));
+        queryParams.put(ConsentExtensionConstants.ACCOUNT_IDS, new ArrayList<>(Collections
+                .singletonList(TestConstants.SAMPLE_ACCOUNT_ID)));
 
         return queryParams;
     }

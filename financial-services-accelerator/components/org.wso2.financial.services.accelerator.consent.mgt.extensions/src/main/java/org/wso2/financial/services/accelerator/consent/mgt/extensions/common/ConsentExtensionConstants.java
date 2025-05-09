@@ -37,6 +37,7 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNT_ID = "account_id";
     public static final String ACCOUNT_ID_CC = "accountId";
     public static final String DATA = "Data";
+    public static final String DATA_CC = "data";
     public static final String CONSENT_TYPE = "consent_type";
     public static final String AWAIT_AUTHORISE_STATUS = "AwaitingAuthorisation";
     public static final String AWAIT_UPLOAD_STATUS = "AwaitingUpload";
