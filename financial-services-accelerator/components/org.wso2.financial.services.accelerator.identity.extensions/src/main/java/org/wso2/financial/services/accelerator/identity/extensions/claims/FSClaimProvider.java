@@ -123,7 +123,7 @@ public class FSClaimProvider implements ClaimProvider {
         Map<String, Object> additionalClaims = new HashMap<>();
 
         if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
-                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_AUTHZ_ID_TOKEN))) {
             String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
             additionalClaims.put(consentIdClaimName, IdentityCommonUtils
                     .getConsentIdFromAuthzRequestContext(authAuthzReqMessageContext));
@@ -137,7 +137,7 @@ public class FSClaimProvider implements ClaimProvider {
         Map<String, Object> additionalClaims = new HashMap<>();
 
         if (Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
-                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ID_TOKEN))) {
+                        .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_TOKEN_ID_TOKEN))) {
             String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
             additionalClaims.put(consentIdClaimName, IdentityCommonUtils
                     .getConsentIdFromScopesArray(tokenReqMessageContext.getScope()));

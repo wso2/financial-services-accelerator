@@ -77,7 +77,8 @@ public class FinancialServicesConstants {
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
     public static final String INTROSPECTION_DATA_PROVIDER = "Identity.Extensions.IntrospectionDataProvider";
     public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
-    public static final String APPEND_CONSENT_ID_TO_ID_TOKEN = "Identity.AppendConsentIdToIdToken";
+    public static final String APPEND_CONSENT_ID_TO_TOKEN_ID_TOKEN = "Identity.AppendConsentIdToTokenIdToken";
+    public static final String APPEND_CONSENT_ID_TO_AUTHZ_ID_TOKEN = "Identity.AppendConsentIdToAuthzIdToken";
     public static final String APPEND_CONSENT_ID_TO_ACCESS_TOKEN = "Identity.AppendConsentIdToAccessToken";
     public static final String APPEND_CONSENT_ID_TO_TOKEN_INTROSPECT_RESPONSE = "Identity" +
             ".AppendConsentIdToTokenIntrospectResponse";
