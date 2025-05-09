@@ -31,7 +31,6 @@ import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
@@ -107,11 +106,11 @@ public class FSClaimProvider implements ClaimProvider {
     private String updateScopeInTokenResponseBody(String scopes) {
 
         String[] updatedScopesArray = IdentityCommonUtils
-                .removeInternalScopes(scopes.split(IdentityCommonConstants.SPACE_SEPARATOR));
+                .removeInternalScopes(scopes.split(FinancialServicesConstants.SPACE_SEPARATOR));
 
         StringBuilder scopesString = new StringBuilder();
         for (String scope : updatedScopesArray) {
-            scopesString.append(scope).append(IdentityCommonConstants.SPACE_SEPARATOR);
+            scopesString.append(scope).append(FinancialServicesConstants.SPACE_SEPARATOR);
         }
 
         return scopesString.toString().trim();

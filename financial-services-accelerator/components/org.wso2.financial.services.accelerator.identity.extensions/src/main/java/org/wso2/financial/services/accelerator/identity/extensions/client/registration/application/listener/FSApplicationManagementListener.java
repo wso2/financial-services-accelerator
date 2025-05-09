@@ -37,6 +37,7 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.listener.AbstractApplicationMgtListener;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.util.DCRUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
@@ -94,7 +95,7 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
         try {
             ServiceProviderProperty[] spProperties = serviceProvider.getSpProperties();
             Optional<ServiceProviderProperty> scopeProperty = Arrays.stream(spProperties)
-                    .filter(spProperty -> IdentityCommonConstants.SCOPE.equals(spProperty.getName()))
+                    .filter(spProperty -> FinancialServicesConstants.SCOPE.equals(spProperty.getName()))
                     .findFirst();
 
             // In IS 7.0 and upwards, scopes should be bind to the application via API Resources. When IS as a
