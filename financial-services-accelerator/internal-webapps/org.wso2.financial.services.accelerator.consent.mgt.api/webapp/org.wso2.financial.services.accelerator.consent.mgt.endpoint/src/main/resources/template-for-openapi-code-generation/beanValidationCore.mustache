@@ -1,10 +1,10 @@
 {{#pattern}} @Pattern(regexp="{{{.}}}"){{/pattern}}{{!
 minLength && maxLength set
-}}{{#minLength}}{{#maxLength}} @Size(min={{minLength}},max={{maxLength}}){{/maxLength}}{{/minLength}}{{!
+}}{{#minLength}}{{#maxLength}}  @Size(min={{minLength}},max={{maxLength}}){{/maxLength}}{{/minLength}}{{!
 minLength set, maxLength not
 }}{{#minLength}}{{^maxLength}} @Size(min={{minLength}}){{/maxLength}}{{/minLength}}{{!
 minLength not set, maxLength set
-}}{{^minLength}}{{#maxLength}} @Size(max={{.}}){{/maxLength}}{{/minLength}}{{!
+}}{{^minLength}}{{#maxLength}}  @Size(max={{.}}){{/maxLength}}{{/minLength}}{{!
 @Size: minItems && maxItems set
 }}{{#minItems}}{{#maxItems}} @Size(min={{minItems}},max={{maxItems}}){{/maxItems}}{{/minItems}}{{!
 @Size: minItems set, maxItems not

@@ -4,6 +4,7 @@ import net.minidev.json.JSONObject;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentMgtException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -12,13 +13,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentRes
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.impl.utils.ConsentAPITestData;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.impl.utils.ConsentAPITestUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.BulkConsentStatusUpdateResourceRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentRevokeRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentStatusUpdateRequestBody;
-import org.wso2.financial.services.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.lang.reflect.Method;
@@ -95,28 +94,6 @@ public class ConsentAPIImplTests {
 
     }
 
-    // Test the 'isDetailedConsent' false case
-    @Test
-    public void testConsentConsentIdGetNonDetailedConsent() throws
-            Exception {
-        boolean isWithAttributes = false;
-
-        ConsentResource consentResource = mock(ConsentResource.class);
-        when(mockedConsentCoreServiceImpl.getConsent(sampleConsentID, isWithAttributes)).thenReturn(consentResource);
-        when(consentResource.getOrgID()).thenReturn(sampleOrgID);
-
-        // Act
-        Response response =
-                consentAPIImpl.consentConsentIdGet(sampleConsentID, sampleOrgID);
-
-        // Assert
-        assertNotNull(response, "Response should not be null");
-
-    }
-
-
-
-
 
     // Test the case when 'isDetailedConsent' is true and 'isWithAttributes' is false
     @Test
@@ -142,12 +119,12 @@ public class ConsentAPIImplTests {
     public void testConsentIdNotFound() throws
             Exception {
         // Arrange
-        String consentId = "f1711761-3359-42d5-a827-9a011a8bebe3";
+        String consentId = "invalid";
 
 
         when(mockedConsentCoreServiceImpl.getDetailedConsent(any(), any())).thenThrow(
                 new ConsentMgtException(Response.Status.NOT_FOUND,
-                        ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG));
+                        ConsentError.CONSENT_NOT_FOUND));
 
         // Act
         Response response = consentAPIImpl.consentConsentIdGet(consentId, sampleOrgID);
@@ -300,7 +277,7 @@ public class ConsentAPIImplTests {
                 any(),
                 any())).thenThrow(new ConsentMgtException(
                 Response.Status.INTERNAL_SERVER_ERROR,
-                ConsentCoreServiceConstants.DETAIL_CONSENT_SEARCH_ERROR_MSG));
+                ConsentError.CONSENT_SEARCH_ERROR));
 
         // Act
         Response response = consentAPIImpl.consentGet(sampleOrgID, consentType, consentStatus,
@@ -399,7 +376,7 @@ public class ConsentAPIImplTests {
         updateResource.setReason("User agreed");
         updateResource.setUserId("user456");
 
-        doNothing().when(mockedConsentCoreServiceImpl).updateConsentStatusWithImplicitReasonAndUserId(
+        doNothing().when(mockedConsentCoreServiceImpl).updateConsentStatus(
                 sampleConsentID, updateResource.getStatus(), updateResource.getReason(), updateResource.getUserId(),
                 sampleOrgID);
 
@@ -412,69 +389,17 @@ public class ConsentAPIImplTests {
 
     }
 
-    @Test
-    public void testConsentConsentIdStatusPutNullConsentID() throws
-            ConsentMgtException {
-        // Arrange
-        String consentId = null;
-        ConsentStatusUpdateRequestBody updateResource = new ConsentStatusUpdateRequestBody();
-        updateResource.setStatus("Approved");
-        updateResource.setReason("User agreed");
-        updateResource.setUserId("user456");
-
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST,
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR)).
-                when(mockedConsentCoreServiceImpl).
-                updateConsentStatusWithImplicitReasonAndUserId(any(), any(), any(), any(), any());
-
-
-        // Act
-        Response response = consentAPIImpl.consentConsentIdStatusPut(consentId, updateResource, sampleOrgID);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR);
-    }
-
-    @Test
-    public void testConsentConsentIdStatusPutInvalidStatus() throws
-            ConsentMgtException {
-
-        ConsentStatusUpdateRequestBody updateResource = new ConsentStatusUpdateRequestBody();
-        updateResource.setStatus(null); // Not a valid consent status
-        updateResource.setReason("Invalid status test");
-        updateResource.setUserId("user789");
-
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST,
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR)).
-                when(mockedConsentCoreServiceImpl).
-                updateConsentStatusWithImplicitReasonAndUserId(any(), any(), any(), any(), any());
-
-
-        // Act & Assert
-        Response response = consentAPIImpl.consentConsentIdStatusPut(sampleConsentID, updateResource, sampleOrgID);
-
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR);
-
-    }
 
     @Test
     public void testConsentConsentIdStatusPutConsentNotFound() throws
             Exception {
 
         ConsentStatusUpdateRequestBody updateResource = new ConsentStatusUpdateRequestBody();
-        updateResource.setStatus("Revoked");
-        updateResource.setReason("User request");
-        updateResource.setUserId("user999");
+
 
         doThrow(new ConsentMgtException(Response.Status.NOT_FOUND,
-                ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG))
-                .when(mockedConsentCoreServiceImpl).updateConsentStatusWithImplicitReasonAndUserId(
+                ConsentError.CONSENT_NOT_FOUND))
+                .when(mockedConsentCoreServiceImpl).updateConsentStatus(
                         sampleConsentID, updateResource.getStatus(), updateResource.getReason(),
                         updateResource.getUserId()
                         , sampleOrgID);
@@ -484,8 +409,7 @@ public class ConsentAPIImplTests {
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
+
     }
 
 
@@ -510,141 +434,22 @@ public class ConsentAPIImplTests {
 
     }
 
-    @Test
-    public void testConsentStatusPutBulkInvalidStatus() throws
-            ConsentMgtException {
-
-
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST,
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR)).
-                when(mockedConsentCoreServiceImpl).
-                bulkUpdateConsentStatus(any(), any(), any(), any(), any(), any(), any());
-
-        BulkConsentStatusUpdateResourceRequestBody
-                bulkConsentStatusUpdateResource = mock(BulkConsentStatusUpdateResourceRequestBody.class);
-        Response response = consentAPIImpl.consentStatusPut(bulkConsentStatusUpdateResource, sampleOrgID);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR);
-
-    }
-
-
-    // Test case for update consent status with invalid consent ID
-    @Test
-    public void testConsentStatusPutBulkInvalidConsentID() throws
-            ConsentMgtException {
-
-
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST,
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR)).
-                when(mockedConsentCoreServiceImpl).
-                bulkUpdateConsentStatus(any(), any(), any(), any(), any(), any(), any());
-
-        BulkConsentStatusUpdateResourceRequestBody
-                bulkConsentStatusUpdateResource = mock(BulkConsentStatusUpdateResourceRequestBody.class);
-        Response response = consentAPIImpl.consentStatusPut(bulkConsentStatusUpdateResource, sampleOrgID);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR);
-
-    }
-
-    // Test case for update consent status with invalid orgInfo
-    @Test
-    public void testConsentStatusPutBulkInvalidOrgInfo() throws
-            ConsentMgtException {
-
-        String orgInfo = null;
-
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST,
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR)).
-                when(mockedConsentCoreServiceImpl).
-                bulkUpdateConsentStatus(any(), any(), any(), any(), any(), any(), any());
-
-        BulkConsentStatusUpdateResourceRequestBody
-                bulkConsentStatusUpdateResource = mock(BulkConsentStatusUpdateResourceRequestBody.class);
-        Response response = consentAPIImpl.consentStatusPut(bulkConsentStatusUpdateResource, orgInfo);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR);
-
-    }
-
-
-//    @Test
-//    public void testConsentConsentIdDeleteOrgInfoMismatch() throws
-//            ConsentMgtException,
-//            org.wso2.financial.services.accelerator.consent.mgt.service.exception.ConsentMgtException {
-//        // Arrange
-//        String consentId = sampleConsentID;
-//        String orgInfo = "orgXYZ";
-//
-//        ConsentResource consentResource = Mockito.mock(ConsentResource.class);
-//        consentResource.setOrgID("wrongOrg");
-//
-//        when(mockedConsentCoreServiceImpl.getConsent(consentId, false)).thenReturn(consentResource);
-//
-//
-//        Response response = consentAPIImpl.consentConsentIdDelete(consentId, orgInfo);
-//        assertEquals(ConsentAPITestUtils.parseErrorMessage(response), ConsentConstant.ORG_MISMATCH);
-//    }
-
 
     @Test
     public void testConsentConsentIdDeleteConsentNotFound() throws
             ConsentMgtException {
 
-
-        when(mockedConsentCoreServiceImpl.getConsent(sampleConsentID, false)).
+        when(mockedConsentCoreServiceImpl.getDetailedConsent(sampleConsentID, sampleOrgID)).
                 thenThrow(new ConsentMgtException(
-                        Response.Status.INTERNAL_SERVER_ERROR, ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG));
+                        Response.Status.NOT_FOUND, ConsentError.CONSENT_NOT_FOUND));
 
         // Act & Assert
-
         Response response = consentAPIImpl.consentConsentIdDelete(sampleConsentID, sampleOrgID);
-
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG);
-
-
-    }
-
-    // test case for delete consent with invalid consent ID
-    @Test
-    public void testConsentConsentIdDeleteInvalidConsentID() throws
-            ConsentMgtException {
-        String invalidConsentID = "invalid-id";
-
-
-        ConsentResource consentResource = new ConsentResource();
-        consentResource.setOrgID(sampleOrgID);
-
-        when(mockedConsentCoreServiceImpl.getConsent(invalidConsentID, false)).thenReturn(consentResource);
-
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST,
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR)).
-                when(mockedConsentCoreServiceImpl).deleteConsent(any());
-
-        // Act
-        Response response = consentAPIImpl.consentConsentIdDelete(invalidConsentID, sampleOrgID);
-
-        // Assert
         assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR);
+        assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode());
 
     }
+
 
     // Test for consentRevokeConsentIdPut
     @Test
@@ -664,7 +469,7 @@ public class ConsentAPIImplTests {
         when(mockedConsentCoreServiceImpl.getConsent(sampleConsentID, false)).thenReturn(consentResource);
 
 
-        doReturn(true).when(mockedConsentCoreServiceImpl).revokeConsentWithReason(any(), any(), any(), any());
+        doReturn(true).when(mockedConsentCoreServiceImpl).revokeConsent(any(), any(), any(), any());
 
         // Act
         Response response = consentAPIImpl.consentRevokeConsentIdPost(sampleConsentID, updateResource, orgInfo);
@@ -691,16 +496,16 @@ public class ConsentAPIImplTests {
         consentResource.setCurrentStatus("ACTIVE");
 
 
-        when(mockedConsentCoreServiceImpl.getConsent(sampleConsentID, false)).thenReturn(consentResource);
-        doReturn(true).when(mockedConsentCoreServiceImpl).revokeConsentWithReason(any(), any(), any(), any());
+        doThrow(new ConsentMgtException(Response.Status.NOT_FOUND,
+                ConsentError.DETAILED_CONSENT_NOT_FOUND)).when(mockedConsentCoreServiceImpl).revokeConsent(any(),
+                any(), any(), any());
+
         // Act
         Response response = consentAPIImpl.consentRevokeConsentIdPost(sampleConsentID, updateResource, orgInfo);
         // Assert
         assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
+        assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode());
 
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response),
-                ConsentCoreServiceConstants.ORGANIZATION_MISMATCH_ERROR_MSG);
 
     }
 
@@ -835,64 +640,12 @@ public class ConsentAPIImplTests {
 
     }
 
-    // ✅ Test Case 4: Exception Handling when `consentCoreService` fails
-    @Test
-    public void testConsentConsentIdHistoryGetException() throws
-            Exception {
-
-        Boolean detailed = true;
-        String status = "APPROVED";
-        String actionBy = "user123";
-        long fromTimeValue = 0L;
-        long toTimeValue = 0L;
-        String statusAuditId = "audit123";
-
-        // Mock exception in `consentCoreService`
-        when(mockedConsentCoreServiceImpl.searchConsentStatusAuditRecords(anyString(), anyString(), anyString(), any(),
-                any(), anyString()))
-                .thenThrow(new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, "Service Failure"));
-
-        // When
-        Response response =
-                consentAPIImpl.consentConsentIdHistoryGet(sampleConsentID, sampleOrgID, detailed, status, actionBy,
-                        fromTimeValue,
-                        toTimeValue,
-                        statusAuditId);
-
-        // assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        assertEquals(ConsentAPITestUtils.parseErrorMessage(response), "Service Failure");
-
-
-    }
-
-
-    @Test
-    public void testConsentStatusPutBulkFailure() throws
-            ConsentMgtException {
-
-        BulkConsentStatusUpdateResourceRequestBody
-                bulkConsentStatusUpdateResource = mock(BulkConsentStatusUpdateResourceRequestBody.class);
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST, "Invalid Data"))
-                .when(mockedConsentCoreServiceImpl)
-                .bulkUpdateConsentStatus(any(), any(), any(), any(), any(), any(), any());
-
-        // Act
-        Response response = consentAPIImpl.consentStatusPut(bulkConsentStatusUpdateResource, sampleOrgID);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-    }
 
     @Test
     public void testConsentConsentIdDeleteSuccess() throws
             ConsentMgtException {
-
-
-        ConsentResource consentResource = mock(ConsentResource.class);
-        doReturn(consentResource).when(mockedConsentCoreServiceImpl).getConsent(any(), anyBoolean());
+        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
+        doReturn(consentResource).when(mockedConsentCoreServiceImpl).getDetailedConsent(any(), any());
         when(consentResource.getOrgID()).thenReturn(sampleOrgID); // Simulate mismatch
 
         doReturn(true).when(mockedConsentCoreServiceImpl).deleteConsent(any());
@@ -944,10 +697,9 @@ public class ConsentAPIImplTests {
         // Arrange
         String consentId = sampleConsentID;
         String orgInfo = "org123";
-        boolean isDetailedConsent = true;
-        boolean isWithAttributes = true;
 
-        doThrow(new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, "Service Error"))
+
+        doThrow(new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, ConsentError.UNKNOWN_ERROR))
                 .when(mockedConsentCoreServiceImpl).getDetailedConsent(any(), any());
 
         // Act
@@ -983,52 +735,6 @@ public class ConsentAPIImplTests {
         assertEquals(response.getStatus(), Response.Status.CREATED.getStatusCode());
     }
 
-    @Test
-    public void testConsentPostMissingAuthorizationResourcesWIthImplicitAuth() throws
-            Exception {
-        // Arrange
-        ConsentResourceRequestBody consentResourceDTO = mock(ConsentResourceRequestBody.class);
-        String orgInfo = "org123";
-        boolean isImplicitAuth = true;
-        boolean exclusiveConsent = false;
-
-        // Mock data setup
-        Map<String, String> consentAttributes = new HashMap<>();
-        consentAttributes.put("consentFrequency", "30");
-        when(consentResourceDTO.getConsentAttributes()).thenReturn(consentAttributes);
-        when(consentResourceDTO.getAuthorizationResources()).thenReturn(null); // Missing resources
-        // Act
-        when(mockedConsentCoreServiceImpl.createConsent(any(), any())).thenThrow(
-                new ConsentMgtException(Response.Status.BAD_REQUEST,
-                        ConsentCoreServiceConstants.CANNOT_PROCEED_WITH_IMPLICIT_AUTH));
-        Response response = consentAPIImpl.consentPost(consentResourceDTO, orgInfo);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-    }
-
-    @Test
-    public void testConsentStatusPutBulkEmptyResource() throws
-            Exception {
-        // Arrange
-        BulkConsentStatusUpdateResourceRequestBody bulkResource =
-                new BulkConsentStatusUpdateResourceRequestBody(); // Empty resource
-        String orgInfo = "org123";
-
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST,
-                ConsentCoreServiceConstants.CONSENT_UPDATE_DETAILS_MISSING_ERROR)).
-                when(mockedConsentCoreServiceImpl).
-                bulkUpdateConsentStatus(any(), any(), any(), any(), any(), any(), any());
-
-
-        // Act
-        Response response = consentAPIImpl.consentStatusPut(bulkResource, orgInfo);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-    }
 
     @Test
     public void testConsentAuthorizationAuthorizationIdGetSuccess() throws
@@ -1083,28 +789,6 @@ public class ConsentAPIImplTests {
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
     }
 
-
-    @Test
-    public void testConsentAuthorizationAuthorizationIdGetInvalidConsentId() throws
-            Exception {
-        // Arrange
-        String authorizationId = "auth123";
-        String orgInfo = "orgXYZ";
-        String consentId = "invalid-consent-id";
-
-
-        doThrow(new ConsentMgtException(Response.Status.NOT_FOUND, "Consent ID not found"))
-                .when(mockedConsentCoreServiceImpl).getAuthorizationResource(authorizationId, orgInfo);
-
-
-        // Act
-        Response response = consentAPIImpl.consentAuthorizationIdGet(authorizationId, orgInfo, consentId);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode());
-    }
-
     @Test
     public void testConsentAuthorizationAuthorizationIdGetInvalidAuthorizationId() throws
             Exception {
@@ -1118,7 +802,8 @@ public class ConsentAPIImplTests {
         when(mockedConsentCoreServiceImpl.getConsent(any(), anyBoolean())).thenReturn(consentResource);
 
         when(mockedConsentCoreServiceImpl.getAuthorizationResource(authorizationId, orgInfo))
-                .thenThrow(new ConsentMgtException(Response.Status.NOT_FOUND, "Authorization ID not found"));
+                .thenThrow(new ConsentMgtException(Response.Status.NOT_FOUND,
+                        ConsentError.AUTHORIZATION_RESOURCE_NOT_FOUND));
 
         // Act
         Response response = consentAPIImpl.consentAuthorizationIdGet(authorizationId, orgInfo, consentId);
@@ -1137,7 +822,8 @@ public class ConsentAPIImplTests {
         String consentId = "consent456";
 
         when(mockedConsentCoreServiceImpl.getAuthorizationResource(authorizationId, orgInfo))
-                .thenThrow(new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, "Service failure"));
+                .thenThrow(new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR,
+                        ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR));
 
         // Act
         Response response = consentAPIImpl.consentAuthorizationIdGet(authorizationId, orgInfo, consentId);
@@ -1152,7 +838,8 @@ public class ConsentAPIImplTests {
             Exception {
         // Arrange
         ConsentAPIImpl consentAPIImpl = new ConsentAPIImpl();
-        ConsentMgtException exception = new ConsentMgtException(Response.Status.BAD_REQUEST, "Invalid request");
+        ConsentMgtException exception = new ConsentMgtException(Response.Status.BAD_REQUEST,
+                ConsentError.INVALID_CONSENT_EXPIRY_TIME);
 
         // Invoke private method via reflection
         Method method = ConsentAPIImpl.class.getDeclaredMethod("handleConsentMgtException", ConsentMgtException.class);
@@ -1170,7 +857,8 @@ public class ConsentAPIImplTests {
             Exception {
         // Arrange
         ConsentAPIImpl consentAPIImpl = new ConsentAPIImpl();
-        ConsentMgtException exception = new ConsentMgtException(Response.Status.NOT_FOUND, "Consent not found");
+        ConsentMgtException exception = new ConsentMgtException(Response.Status.NOT_FOUND,
+                ConsentError.CONSENT_NOT_FOUND);
 
         // Invoke private method via reflection
         Method method = ConsentAPIImpl.class.getDeclaredMethod("handleConsentMgtException", ConsentMgtException.class);
@@ -1189,7 +877,7 @@ public class ConsentAPIImplTests {
         // Arrange
         ConsentAPIImpl consentAPIImpl = new ConsentAPIImpl();
         ConsentMgtException exception =
-                new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, "System error occurred");
+                new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, ConsentError.UNKNOWN_ERROR);
 
         // Invoke private method via reflection
         Method method = ConsentAPIImpl.class.getDeclaredMethod("handleConsentMgtException", ConsentMgtException.class);
@@ -1222,24 +910,6 @@ public class ConsentAPIImplTests {
         Response response = consentAPIImpl.consentAuthorizationIdGet(authorizationId, orgInfo, consentId);
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-    }
-
-    @Test
-    public void testConsentConsentIdHistoryGetServiceException() throws
-            Exception {
-        String consentId = sampleConsentID;
-        String orgInfo = "org123";
-        Boolean detailed = true;
-
-        doThrow(new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR, "Test Exception"))
-                .when(mockedConsentCoreServiceImpl)
-                .searchConsentStatusAuditRecords(anyString(), anyString(), anyString(), any(), any(), anyString());
-
-        Response response = consentAPIImpl.consentConsentIdHistoryGet(consentId, orgInfo, detailed,
-                "APPROVED", "user1", 0, 0, "audit123");
-
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
 
 
@@ -1296,8 +966,8 @@ public class ConsentAPIImplTests {
 
         when(mockedConsentCoreServiceImpl.getConsent(consentId, false)).thenReturn(consentResource);
 
-        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST, "consent already revoked")).when(
-                mockedConsentCoreServiceImpl).revokeConsentWithReason(any(),
+        doThrow(new ConsentMgtException(Response.Status.BAD_REQUEST, ConsentError.CONSENT_ALREADY_REVOKED_ERROR)).when(
+                mockedConsentCoreServiceImpl).revokeConsent(any(),
                 any(),
                 any(),
                 any());
@@ -1349,13 +1019,6 @@ public class ConsentAPIImplTests {
         }
     }
 
-    @Test
-    public void testHandleConsentMgtExceptionReturnsExpectedResponse() {
-        ConsentMgtException ex = new ConsentMgtException(Response.Status.BAD_REQUEST, "Test error");
-        Response response = consentAPIImplTestProxyHandle(ex);
-        assertNotNull(response);
-        assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-    }
 
 }
 

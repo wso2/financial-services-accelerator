@@ -30,7 +30,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataUpdationException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
@@ -251,7 +250,7 @@ public class ConsentCoreDAOTests {
                     ConsentMgtDAOTestData.getSampleTestAuthorizationResource(storedConsentResource.getConsentId()));
 
             retrievedDetailedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgID());
         }
 
         Assert.assertNotNull(retrievedDetailedConsentResource);
@@ -290,7 +289,8 @@ public class ConsentCoreDAOTests {
                     ConsentMgtDAOTestData.getSampleTestAuthorizationResource(storedConsentResource.getConsentId()));
 
             retrievedDetailedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId());
+                    storedAuthorizationResource.getConsentId()
+                    , storedConsentResource.getOrgID());
         }
 
         Assert.assertNotNull(retrievedDetailedConsentResource);
@@ -334,8 +334,8 @@ public class ConsentCoreDAOTests {
                     ConsentMgtDAOTestData.getSampleTestAuthorizationResource(storedConsentResource.getConsentId()));
             storedAuthorizationResourceTwo = consentCoreDAO.storeAuthorizationResource(connection,
                     ConsentMgtDAOTestData.getSampleTestAuthorizationResource(storedConsentResource.getConsentId()));
-                        retrievedDetailedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId());
+            retrievedDetailedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgID());
         }
 
         Assert.assertNotNull(retrievedDetailedConsentResource);
@@ -367,7 +367,8 @@ public class ConsentCoreDAOTests {
                 .prepareStatement(Mockito.anyString());
         Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
         Mockito.doReturn(false).when(mockedResultSet).next();
-        consentCoreDAO.getDetailedConsentResource(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID);
+        consentCoreDAO.getDetailedConsentResource(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
+                ConsentMgtDAOTestData.SAMPLE_ORG_ID);
     }
 
     @Test(expectedExceptions = ConsentDataRetrievalException.class)
@@ -377,7 +378,8 @@ public class ConsentCoreDAOTests {
         Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
                 .prepareStatement(Mockito.anyString());
         Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
-        consentCoreDAO.getDetailedConsentResource(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID);
+        consentCoreDAO.getDetailedConsentResource(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
+                ConsentMgtDAOTestData.SAMPLE_ORG_ID);
     }
 
     @Test
@@ -414,39 +416,6 @@ public class ConsentCoreDAOTests {
         }
     }
 
-    @Test
-    public void testUpdateConsentReceipt() throws
-            Exception {
-
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-        String newConsentReceipt = "{\"amendedReceipt\":\"amendedData\"}";
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-
-            ConsentResource storedConsentResource = consentCoreDAO.storeConsentResource(connection,
-                    consentResource);
-            consentCoreDAO.updateConsentReceipt(connection, storedConsentResource.getConsentId(), newConsentReceipt);
-        }
-    }
-
-    @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateConsentReceiptSQLError() throws
-            Exception {
-
-        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.updateConsentReceipt(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
-                ConsentMgtDAOTestData.SAMPLE_CONSENT_RECEIPT);
-    }
-
-    @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateConsentReceiptUpdateError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection).prepareStatement(Mockito.anyString());
-        Mockito.doReturn(0).when(mockedPreparedStatement).executeUpdate();
-        consentCoreDAO.updateConsentReceipt(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
-                ConsentMgtDAOTestData.SAMPLE_CONSENT_RECEIPT);
-    }
 
     @Test
     public void testUpdateConsentExpiryTime() throws
@@ -599,93 +568,6 @@ public class ConsentCoreDAOTests {
         }
     }
 
-    @Test
-    public void testUpdateAuthorizationStatus() throws
-            Exception {
-
-        ConsentResource storedConsentResource;
-        AuthorizationResource authorizationResource;
-        AuthorizationResource storedAuthorizationResource;
-
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-
-            storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-
-            authorizationResource = ConsentMgtDAOTestData
-                    .getSampleTestAuthorizationResource(storedConsentResource.getConsentId());
-
-            storedAuthorizationResource = consentCoreDAO.storeAuthorizationResource(connection,
-                    authorizationResource);
-
-            consentCoreDAO.updateAuthorizationStatus(connection, storedAuthorizationResource.getAuthorizationId(),
-                    ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS);
-        }
-    }
-
-    @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateAuthorizationStatusSQLError() throws
-            Exception {
-
-        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.updateAuthorizationStatus(mockedConnection, ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_ID,
-                ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateAuthorizationStatusWithUnmatchedAuthID() throws
-            Exception {
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            consentCoreDAO.updateAuthorizationStatus(connection,
-                    ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_ID, ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS);
-        }
-    }
-
-    @Test
-    public void testUpdateAuthorizationUser() throws
-            Exception {
-
-        ConsentResource storedConsentResource;
-        AuthorizationResource authorizationResource;
-        AuthorizationResource storedAuthorizationResource;
-
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-
-            storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-
-            authorizationResource = ConsentMgtDAOTestData
-                    .getSampleTestAuthorizationResource(storedConsentResource.getConsentId());
-
-            storedAuthorizationResource = consentCoreDAO.storeAuthorizationResource(connection,
-                    authorizationResource);
-
-            consentCoreDAO.updateAuthorizationUser(connection, storedAuthorizationResource.getAuthorizationId(),
-                    ConsentMgtDAOTestData.SAMPLE_NEW_USER_ID);
-        }
-    }
-
-    @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateAuthorizationUserSQLError() throws
-            Exception {
-
-        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.updateAuthorizationUser(mockedConnection, ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_ID,
-                ConsentMgtDAOTestData.SAMPLE_USER_ID);
-    }
-
-    @Test(expectedExceptions = ConsentDataUpdationException.class)
-    public void testUpdateAuthorizationUserWithUnmatchedAuthID() throws
-            Exception {
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            consentCoreDAO.updateAuthorizationUser(connection, ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_ID,
-                    ConsentMgtDAOTestData.SAMPLE_NEW_USER_ID);
-        }
-    }
 
     @Test
     public void testStoreConsentAttributes() throws
@@ -957,12 +839,12 @@ public class ConsentCoreDAOTests {
             consentAttributesResource.setConsentAttributes(ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
             consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
             createdConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgID());
 
             consentCoreDAO.updateConsentAttributes(connection, storedConsentResource.getConsentId(),
                     ConsentMgtDAOTestData.CONSENT_ATTRIBUTES_MAP_FOR_UPDATE);
             updatedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgID());
         }
         Assert.assertEquals(createdConsentResource.getConsentId(), updatedConsentResource.getConsentId());
         Assert.assertNotEquals(createdConsentResource.getConsentAttributes(),
@@ -1011,122 +893,6 @@ public class ConsentCoreDAOTests {
                 ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
     }
 
-    @Test
-    public void testStoreConsentFile() throws
-            Exception {
-
-        boolean isConsentFileStored;
-
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-
-            ConsentResource storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-
-            ConsentFile consentFileResource = new ConsentFile();
-            consentFileResource.setConsentId(storedConsentResource.getConsentId());
-            consentFileResource.setConsentFile(ConsentMgtDAOTestData.SAMPLE_CONSENT_FILE);
-
-            isConsentFileStored = consentCoreDAO.storeConsentFile(connection, consentFileResource);
-        }
-        Assert.assertTrue(isConsentFileStored);
-    }
-
-    @Test(expectedExceptions = ConsentDataInsertionException.class)
-    public void testStoreConsentFileInsertionError() throws
-            Exception {
-
-        ConsentFile sampleConsentFileResource =
-                ConsentMgtDAOTestData.getSampleConsentFileObject(ConsentMgtDAOTestData.SAMPLE_CONSENT_FILE);
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doReturn(0).when(mockedPreparedStatement).executeUpdate();
-        consentCoreDAO.storeConsentFile(mockedConnection, sampleConsentFileResource);
-    }
-
-    @Test(expectedExceptions = ConsentDataInsertionException.class)
-    public void testStoreConsentFileSQLError() throws
-            Exception {
-
-        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.storeConsentFile(mockedConnection, Mockito.any());
-    }
-
-    @Test
-    public void testRetrieveConsentFileResource() throws
-            Exception {
-
-        ConsentFile retrievedConsentFileResource;
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-            ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-                    consentResource.getConsentId());
-
-            ConsentFile consentFileResource = new ConsentFile();
-            consentFileResource.setConsentId(retrievedConsentResource.getConsentId());
-            consentFileResource.setConsentFile(ConsentMgtDAOTestData.SAMPLE_CONSENT_FILE);
-
-            consentCoreDAO.storeConsentFile(connection, consentFileResource);
-
-            retrievedConsentFileResource = consentCoreDAO.getConsentFile(connection,
-                    consentFileResource.getConsentId());
-        }
-        Assert.assertNotNull(retrievedConsentFileResource.getConsentId());
-        Assert.assertNotNull(retrievedConsentFileResource.getConsentFile());
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testRetrieveConsentFileResourceNoRecordsFoundError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
-        Mockito.doReturn(false).when(mockedResultSet).next();
-        consentCoreDAO.getConsentFile(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID);
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testRetrieveConsentFileResourceSQLError() throws
-            Exception {
-
-        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.getConsentFile(mockedConnection, Mockito.any());
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testRetrieveConsentFileResourceRetrieveError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
-        consentCoreDAO.getConsentFile(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID);
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testRetrieveConsentFileResourceWithUnmatchedConsentID() throws
-            Exception {
-
-        ConsentFile consentFileResource;
-        ConsentResource retrievedConsentResource;
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-            retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentResource.getConsentId());
-
-            consentFileResource = new ConsentFile();
-            consentFileResource.setConsentId(retrievedConsentResource.getConsentId());
-            consentFileResource.setConsentFile(ConsentMgtDAOTestData.SAMPLE_CONSENT_FILE);
-
-            consentCoreDAO.storeConsentFile(connection, consentFileResource);
-            consentCoreDAO.getConsentFile(connection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID);
-        }
-    }
 
     @Test
     public void testConsentSearchWithConsentIDsList() throws
@@ -1490,63 +1256,6 @@ public class ConsentCoreDAOTests {
                 null, null, null, null, null, null);
     }
 
-    @Test
-    public void testSearchConsentAuthorizations() throws
-            Exception {
-
-        ArrayList<AuthorizationResource> authorizationResources;
-        ConsentResource storedConsentResource;
-        AuthorizationResource storedAuthorizationResource;
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-
-            storedConsentResource = consentCoreDAO.storeConsentResource(connection, ConsentMgtDAOTestData
-                    .getSampleTestConsentResource());
-            storedAuthorizationResource = consentCoreDAO.storeAuthorizationResource(connection,
-                    ConsentMgtDAOTestData.getSampleTestAuthorizationResource(storedConsentResource.getConsentId()));
-
-            authorizationResources = consentCoreDAO.searchConsentAuthorizations(connection,
-                    storedConsentResource.getConsentId(), storedAuthorizationResource.getUserId());
-        }
-
-        Assert.assertNotNull(authorizationResources);
-        Assert.assertEquals(storedAuthorizationResource.getAuthorizationId(),
-                authorizationResources.get(0).getAuthorizationId());
-        Assert.assertEquals(storedAuthorizationResource.getConsentId(),
-                authorizationResources.get(0).getConsentId());
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testSearchConsentAuthorizationsSQLError() throws
-            Exception {
-
-        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.searchConsentAuthorizations(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
-                ConsentMgtDAOTestData.SAMPLE_USER_ID);
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testSearchConsentAuthorizationsResultSetError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
-        consentCoreDAO.searchConsentAuthorizations(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
-                ConsentMgtDAOTestData.SAMPLE_USER_ID);
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testSearchConsentAuthorizationsNoRecordsFoundError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
-        Mockito.doReturn(false).when(mockedResultSet).isBeforeFirst();
-        consentCoreDAO.searchConsentAuthorizations(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
-                ConsentMgtDAOTestData.SAMPLE_USER_ID);
-    }
 
     @Test
     public void testStoreConsentStatusAuditRecord() throws
@@ -2049,70 +1758,6 @@ public class ConsentCoreDAOTests {
 //        Assert.assertEquals(result.size(), 0);
 //    }
 
-    @Test
-    public void testRetrieveExpiringConsentsWithNoEligibility() throws
-            Exception {
-
-        ConsentAttributes consentAttributesResource;
-        ArrayList<DetailedConsentResource> expirationEligibleConsents;
-        ConsentResource retrievedConsentResource;
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleStoredTestConsentResource();
-        consentResource.setCurrentStatus(ConsentMgtDAOTestData.SAMPLE_EXPIRED_STATUS);
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-            retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentResource.getConsentId());
-
-            consentAttributesResource = ConsentMgtDAOTestData
-                    .getSampleTestConsentAttributesObject(retrievedConsentResource.getConsentId());
-            consentAttributesResource.getConsentAttributes().put(
-                    ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE, "1632918113");
-
-            consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
-
-            expirationEligibleConsents = consentCoreDAO.getExpiringConsents(connection, null,
-                    "authorised,awaitingAuthorisation");
-
-        }
-        Assert.assertTrue(expirationEligibleConsents.isEmpty());
-    }
-
-    @Test(dependsOnMethods = {"testRetrieveExpiringConsentsWithNoEligibility"})
-    public void testRetrieveExpiringConsentsWithEligibility() throws
-            Exception {
-
-        ConsentAttributes consentAttributesResource;
-        ArrayList<DetailedConsentResource> expirationEligibleConsents;
-        ConsentResource retrievedConsentResource;
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-            retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentResource.getConsentId());
-
-            consentAttributesResource = ConsentMgtDAOTestData
-                    .getSampleTestConsentAttributesObject(retrievedConsentResource.getConsentId());
-            consentAttributesResource.getConsentAttributes().put(
-                    ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE, "1632918113");
-
-            consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
-
-            expirationEligibleConsents =
-                    consentCoreDAO.getExpiringConsents(connection, ConsentMgtDAOConstants.DEFAULT_ORG,
-                            "authorised,awaitingAuthorisation");
-
-        }
-        Assert.assertFalse(expirationEligibleConsents.isEmpty());
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testRetrieveExpiringConsentsDataRetrievalError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection).prepareStatement(Mockito.anyString());
-        Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
-        consentCoreDAO.getExpiringConsents(mockedConnection, null, "authorised,awaitingAuthorisation");
-    }
 
     private void storeDataForConsentSearchTest(ArrayList<String> consentIDs,
                                                Connection connection) throws
@@ -2134,7 +1779,6 @@ public class ConsentCoreDAOTests {
         }
 
 
-
         // Store consent attributes
         for (String consentId : consentIDs) {
             ConsentAttributes consentAttributesResource = new ConsentAttributes();
@@ -2146,7 +1790,8 @@ public class ConsentCoreDAOTests {
 
 
     @Test
-    public void testGetConsentAttributesWithKeys() throws Exception {
+    public void testGetConsentAttributesWithKeys() throws
+            Exception {
 
         ConsentAttributes consentAttributes;
         ArrayList<String> keys = new ArrayList<>();
@@ -2170,8 +1815,10 @@ public class ConsentCoreDAOTests {
 
 
     }
+
     @Test
-    public void testGetConsentAttributesByName() throws Exception {
+    public void testGetConsentAttributesByName() throws
+            Exception {
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
             ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
@@ -2193,7 +1840,6 @@ public class ConsentCoreDAOTests {
             Assert.assertTrue(results.containsValue("12345"));
         }
     }
-
 
 
 }

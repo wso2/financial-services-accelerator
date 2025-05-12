@@ -53,7 +53,7 @@ public class ConsentCoreServiceConstants {
     public static final String ADDITIONAL_MAPPING_RESOURCES = "AdditionalMappingResources";
     public static final String AMENDMENT_REASON_CONSENT_AMENDMENT_FLOW = "ConsentAmendmentFlow";
     public static final String AMENDMENT_REASON_CONSENT_REVOCATION = "ConsentRevocation";
-
+    public static final String CONSENT_REVOKE_STATUS = "revoked";
     // Error Constants
     public static final String ORGANIZATION_MISMATCH_ERROR_MSG =
             "OrgInfo does not match, please provide the correct OrgInfo";

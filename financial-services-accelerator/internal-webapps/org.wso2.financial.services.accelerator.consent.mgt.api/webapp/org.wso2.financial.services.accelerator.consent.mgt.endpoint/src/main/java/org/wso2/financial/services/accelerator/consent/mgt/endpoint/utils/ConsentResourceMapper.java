@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentMgtException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceRequestBody;
@@ -42,7 +43,7 @@ public interface ConsentResourceMapper {
             return map.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString()));
         } catch (IllegalArgumentException e) {
-            throw new ConsentMgtException(Response.Status.BAD_REQUEST, "Invalid consent attributes");
+            throw new ConsentMgtException(Response.Status.BAD_REQUEST, ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR);
         }
     }
 

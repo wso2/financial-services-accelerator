@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -59,7 +59,6 @@ public class ConsentMgtCommonDBQueries {
                 "ORG_ID, " +
                 "RECEIPT, " +
                 "CLIENT_ID, " +
-                "ORG_ID, " +
                 "CONSENT_TYPE, " +
                 "CURRENT_STATUS, " +
                 "EXPIRY_TIME, " +
@@ -77,7 +76,7 @@ public class ConsentMgtCommonDBQueries {
                 "FROM FS_CONSENT obc " +
                 "LEFT JOIN FS_CONSENT_ATTRIBUTE ca ON obc.CONSENT_ID=ca.CONSENT_ID " +
                 "LEFT JOIN FS_CONSENT_AUTH_RESOURCE ocar ON obc.CONSENT_ID=ocar.CONSENT_ID " +
-                "WHERE obc.CONSENT_ID = ?";
+                "WHERE (obc.CONSENT_ID = ? AND obc.ORG_ID = COALESCE(?, obc.ORG_ID)) ";
     }
 
     public String getGetConsentResourceWithAuthorizationResourcesPreparedStatement() {
@@ -152,6 +151,7 @@ public class ConsentMgtCommonDBQueries {
                 "UPDATED_TIME = ? " +
                 "WHERE AUTH_ID = ?";
     }
+
     public String getDeleteAuthorizationResourcePreparedStatement() {
         return "DELETE FROM FS_CONSENT_AUTH_RESOURCE WHERE AUTH_ID = ?";
     }
@@ -311,10 +311,10 @@ public class ConsentMgtCommonDBQueries {
      * @param whereClause conditions
      * @param shouldLimit   whether to consider the Limit parameter
      * @param shouldOffset  whether to consider the Offset parameter
-     * @return  SQL query for get consent status audit records by consentIds
+     * @return SQL query for get consent status audit records by consentIds
      */
     public String getConsentStatusAuditRecordsByConsentIdsPreparedStatement(String whereClause, boolean shouldLimit,
-                                                                               boolean shouldOffset) {
+                                                                            boolean shouldOffset) {
 
         StringBuilder query =
                 new StringBuilder("SELECT * FROM FS_CONSENT_STATUS_AUDIT " + whereClause);
@@ -370,7 +370,6 @@ public class ConsentMgtCommonDBQueries {
 
         return statements;
     }
-
 
 
 }

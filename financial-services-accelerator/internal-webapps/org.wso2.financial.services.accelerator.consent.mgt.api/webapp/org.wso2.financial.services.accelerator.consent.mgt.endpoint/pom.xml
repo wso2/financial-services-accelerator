@@ -103,6 +103,26 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        <!-- Jakarta Bean Validation API -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope> <!-- Default: just omit the scope -->
+
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.2.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
@@ -196,57 +216,65 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
 
-<!--                        <plugin>-->
-<!--                            <groupId>org.openapitools</groupId>-->
-<!--                            <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                            &lt;!&ndash; RELEASE_VERSION &ndash;&gt;-->
-<!--                            <version>7.12.0</version>-->
-<!--                            &lt;!&ndash; /RELEASE_VERSION &ndash;&gt;-->
-<!--                            <executions>-->
-<!--                                <execution>-->
-<!--                                    <phase>generate-sources</phase>-->
-<!--                                    <goals>-->
-<!--                                        <goal>generate</goal>-->
-<!--                                    </goals>-->
-<!--                                    <configuration>-->
-<!--                                        <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>-->
-<!--                                        <generatorName>jaxrs-spec</generatorName>-->
-<!--                                        <output>${project.basedir}</output>-->
+                        <plugin>
+                            <groupId>org.openapitools</groupId>
+                            <artifactId>openapi-generator-maven-plugin</artifactId>
+                            <!-- RELEASE_VERSION -->
+                            <version>7.12.0</version>
+                            <!-- /RELEASE_VERSION -->
+                            <executions>
+                                <execution>
+                                    <phase>generate-sources</phase>
+                                    <goals>
+                                        <goal>generate</goal>
+                                    </goals>
+                                    <configuration>
+                                        <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+                                        <generatorName>jaxrs-spec</generatorName>
+                                        <output>${project.basedir}</output>
 
-<!--                                        <configOptions>-->
-<!--                                            <serializableModel>true</serializableModel>-->
-<!--                                            <artifactId>${project.artifactId}</artifactId>-->
-<!--                                            <groupId>${project.groupId}</groupId>-->
-<!--                                            <version>${project.version}</version>-->
-<!--                                            <skipOverwrite>true</skipOverwrite>-->
-<!--                                            <sourceFolder>src/main/java</sourceFolder>-->
-<!--                                            <basePackage>org.wso2.financial.services.accelerator.consent.mgt.endpoint</basePackage>-->
-<!--                                            &lt;!&ndash;                <invokerPackage>com.redhat.todo</invokerPackage>&ndash;&gt;-->
-<!--                                            &lt;!&ndash;                <configPackage>com.redhat.todo.config</configPackage>&ndash;&gt;-->
-<!--                                            <modelPackage>org.wso2.financial.services.accelerator.consent.mgt.endpoint.model-->
-<!--                                            </modelPackage>-->
-<!--                                            <apiPackage>org.wso2.financial.services.accelerator.consent.mgt.endpoint.api-->
-<!--                                            </apiPackage>-->
-<!--                                            <xJavaType>true</xJavaType>-->
-<!--                                        </configOptions>-->
-<!--                                       -->
+                                        <configOptions>
+                                            <serializableModel>true</serializableModel>
+                                            <artifactId>${project.artifactId}</artifactId>
+                                            <groupId>${project.groupId}</groupId>
+                                            <version>${project.version}</version>
+                                            <skipOverwrite>true</skipOverwrite>
+                                            <sourceFolder>src/gen/java</sourceFolder>
+                                            <basePackage>org.wso2.financial.services.accelerator.consent.mgt.endpoint</basePackage>
+                                            <!--                <invokerPackage>com.redhat.todo</invokerPackage>-->
+                                            <!--                <configPackage>com.redhat.todo.config</configPackage>-->
+                                            <modelPackage>org.wso2.financial.services.accelerator.consent.mgt.endpoint.model
+                                            </modelPackage>
+                                            <apiPackage>org.wso2.financial.services.accelerator.consent.mgt.endpoint.api
+                                            </apiPackage>
+                                            <xJavaType>true</xJavaType>
+                                        </configOptions>
 
 
-<!--                                        <generateApis>true</generateApis>-->
-<!--                                        <generateModels>true</generateModels>-->
-<!--                                        <generateSupportingFiles>false</generateSupportingFiles>-->
-<!--                                        <generateApiTests>false</generateApiTests>-->
-<!--                                        <generateModelTests>false</generateModelTests>-->
-<!--                                        <templateDirectory>-->
-<!--                                            ${project.basedir}/src/main/resources/template-for-openapi-code-generation-->
-<!--                                        </templateDirectory>-->
 
-<!--                                    </configuration>-->
-<!--                                </execution>-->
-<!--                            </executions>-->
-<!--                        </plugin>-->
+                                        <generateApis>true</generateApis>
+                                        <generateModels>true</generateModels>
+                                        <generateSupportingFiles>false</generateSupportingFiles>
+                                        <generateApiTests>false</generateApiTests>
+                                        <generateModelTests>false</generateModelTests>
+                                        <templateDirectory>
+                                            ${project.basedir}/src/main/resources/template-for-openapi-code-generation
+                                        </templateDirectory>
+
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

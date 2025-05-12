@@ -53,6 +53,7 @@ public class ConsentManagementDAOUtil {
 
     private static final Log log = LogFactory.getLog(ConsentManagementDAOUtil.class);
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final String SPACE = " ";
     private static final String COMMA = ",";
     private static final String PLACEHOLDER = "?";
@@ -334,14 +335,20 @@ public class ConsentManagementDAOUtil {
     public static AuthorizationResource setAuthorizationData(ResultSet resultSet,
                                                              String updateTimeParamName)
             throws
-            SQLException {
+            SQLException,
+            JsonProcessingException {
+
+
+
 
         AuthorizationResource authorizationResource = new AuthorizationResource(
                 resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID),
                 resultSet.getString(ConsentMgtDAOConstants.USER_ID),
                 resultSet.getString(ConsentMgtDAOConstants.AUTH_STATUS),
                 resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE),
-                resultSet.getString(ConsentMgtDAOConstants.RESOURCE),
+                objectMapper.readValue(resultSet.getString(ConsentMgtDAOConstants.RESOURCE),
+                               Object.class)
+                        ,
                 resultSet.getLong(updateTimeParamName)
         );
         authorizationResource.setAuthorizationId(resultSet.getString(ConsentMgtDAOConstants.AUTH_ID));

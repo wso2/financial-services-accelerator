@@ -29,14 +29,14 @@ public class AuthorizationResource {
     private String authorizationStatus;
     private String authorizationType;
     private long updatedTime;
-    private String resource;
+    private Object resource;
 
     public AuthorizationResource() {
 
     }
 
     public AuthorizationResource(String consentId, String userId, String authorizationStatus,
-                                 String authorizationType, String resource,  long updatedTime) {
+                                 String authorizationType, Object resource,  long updatedTime) {
         this.consentId = consentId;
         this.userId = userId;
         this.authorizationStatus = authorizationStatus;
@@ -105,11 +105,11 @@ public class AuthorizationResource {
         this.updatedTime = updatedTime;
     }
 
-    public String getResource() {
+    public Object getResource() {
 
         return resource;
     }
-    public void setResource(String resource) {
+    public void setResource(Object resource) {
 
         this.resource = resource;
     }

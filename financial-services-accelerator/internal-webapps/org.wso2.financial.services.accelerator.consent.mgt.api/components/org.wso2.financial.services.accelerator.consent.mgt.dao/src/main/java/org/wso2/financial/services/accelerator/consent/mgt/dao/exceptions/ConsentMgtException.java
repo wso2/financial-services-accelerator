@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions;
 
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
+
 import javax.ws.rs.core.Response;
 
 /**
@@ -26,19 +28,32 @@ import javax.ws.rs.core.Response;
 public class ConsentMgtException extends Exception {
 
     private static final long serialVersionUID = -5686395831712095972L;
-    private Response.Status errorCode;
+    private Response.Status statusCode;
+    private ConsentError error;
 
-    public ConsentMgtException(Response.Status errorCode, Throwable cause) {
+    public ConsentMgtException(Response.Status statusCode, Throwable cause) {
 
         super(cause);
-        this.errorCode = errorCode;
+        this.statusCode = statusCode;
     }
 
 
-    public ConsentMgtException(Response.Status errorCode, String message) {
+    public ConsentMgtException(Response.Status statusCode, ConsentError error) {
+        this.statusCode = statusCode;
+        this.error = error;
+    }
+
+    public ConsentMgtException(Response.Status statusCode, ConsentError error, Throwable e) {
+        super(e);
+        this.statusCode = statusCode;
+        this.error = error;
+    }
+
+
+    public ConsentMgtException(Response.Status statusCode, String message) {
 
         super(message);
-        this.errorCode = errorCode;
+        this.statusCode = statusCode;
     }
 
     public ConsentMgtException(String message) {
@@ -47,9 +62,9 @@ public class ConsentMgtException extends Exception {
     }
 
 
-    public ConsentMgtException(Response.Status status, String message, Throwable cause) {
+    public ConsentMgtException(Response.Status statusCode, String message, Throwable cause) {
         super(message, cause);
-        this.errorCode = status;
+        this.statusCode = statusCode;
 
     }
 
@@ -57,9 +72,13 @@ public class ConsentMgtException extends Exception {
         super(message, cause);
     }
 
-    public Response.Status getErrorCode() {
+    public ConsentError getError() {
 
-        return errorCode;
+        return error;
+    }
+
+    public Response.Status getStatusCode() {
+        return statusCode;
     }
 
 

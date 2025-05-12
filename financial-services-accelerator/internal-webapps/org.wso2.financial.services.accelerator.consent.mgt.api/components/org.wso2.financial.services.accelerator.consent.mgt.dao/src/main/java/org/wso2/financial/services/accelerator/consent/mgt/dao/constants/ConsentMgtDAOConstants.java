@@ -118,7 +118,7 @@ public class ConsentMgtDAOConstants {
     //Error Messages
     public static final String CONSENT_RESOURCE_STORE_ERROR_MSG = "Error occurred while storing consent resource in " +
             "the database";
-    public static final String FAILED_TO_STORE_ERROR_MSG = "Failed to store the consent resource in the database.";
+    public static final String ERROR_TO_STORE_ERROR_MSG = "Failed to store the consent resource in the database.";
     public static final String NO_RECORDS_FOUND_ERROR_MSG = "No records are found for the given inputs";
     public static final String CONSENT_RESOURCE_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent " +
             "resource from the database";
@@ -142,7 +142,9 @@ public class ConsentMgtDAOConstants {
             "resources from the database";
     public static final String CONSENT_MAPPING_STATUS_UPDATE_ERROR_MSG = "Error occurred while updating consent " +
             "mapping status in the database";
-    public static final String CONSENT_ATTRIBUTES_STORE_ERROR_MSG = "Error occurred while storing consent attributes " +
+    public static final String CONSENT_ATTRIBUTES_STORE_ERROR_MSG = "Error occurred while storing consent attributes ";
+    public static final String CONSENT_ATTRIBUTES_STORE_DATABASE_ERROR_MSG = "Error occurred while storing consent " +
+            "attributes " +
             "in the database";
     public static final String CONSENT_ATTRIBUTES_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent " +
             "attributes from the database for the given consent ID";
@@ -172,5 +174,7 @@ public class ConsentMgtDAOConstants {
 
     public static final String CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG = "Error occurred while deleting " +
             "consent authorization resource from the database";
+
+    // error codes
 
 }

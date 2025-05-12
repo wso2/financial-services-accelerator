@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.service.impl;
 
+import net.minidev.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.ConsentCoreDAO;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataDeletionException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataInsertionException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataRetrievalException;
@@ -35,18 +37,18 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.persistence.ConsentStoreInitializer;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.util.DatabaseUtils;
-import org.wso2.financial.services.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentCoreServiceUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentMgtServiceTestData;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -119,23 +121,621 @@ public class ConsentCoreServiceImplTest {
 
 
 
+    @Test
+    public void testCreateAuthorizableConsentWithBulkAuth() throws
+            Exception {
 
-//    @Test
-//    public void testUpdateConsentStatus() throws
-//            Exception {
-//
-//        DetailedConsentResource retrievedDetailedConsentResource =
-//                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-//
-//        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-//                retrievedDetailedConsentResource.getConsentId(),
-//                retrievedDetailedConsentResource.getCurrentStatus()))
-//                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-//                        any(ConsentStatusAuditRecord.class));
-//
-//        consentCoreServiceImpl.updateConsentStatus(retrievedDetailedConsentResource.getConsentId(),
-//                ConsentMgtServiceTestData.SAMPLE_CONSUMED_STATUS);
-//    }
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .storeConsentResource(any(), any());
+        doReturn(ConsentMgtServiceTestData.getSampleTestAuthorizationResource(null, null))
+                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+
+        DetailedConsentResource detailedConsentResource =
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                                .getSampleTestConsentResource(),
+                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+
+        Assert.assertNotNull(detailedConsentResource);
+        Assert.assertNotNull(detailedConsentResource.getConsentId());
+        Assert.assertNotNull(detailedConsentResource.getClientId());
+        Assert.assertNotNull(detailedConsentResource.getReceipt());
+        Assert.assertNotNull(detailedConsentResource.getConsentType());
+        Assert.assertNotNull(detailedConsentResource.getCurrentStatus());
+    }
+
+    @Test
+    public void testCreateAuthorizableConsentWithBulkAuthWithAttributes() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .storeConsentResource(any(), any());
+        doReturn(ConsentMgtServiceTestData.getSampleTestAuthorizationResource(null, null))
+                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+        doReturn(true).when(mockedConsentCoreDAO).storeConsentAttributes(any(),
+                any());
+
+        DetailedConsentResource detailedConsentResource =
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                                .getSampleStoredTestConsentResourceWithAttributes(),
+                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+
+        Assert.assertNotNull(detailedConsentResource);
+        Assert.assertNotNull(detailedConsentResource.getConsentId());
+        Assert.assertNotNull(detailedConsentResource.getClientId());
+        Assert.assertNotNull(detailedConsentResource.getReceipt());
+        Assert.assertNotNull(detailedConsentResource.getConsentType());
+        Assert.assertNotNull(detailedConsentResource.getCurrentStatus());
+        Assert.assertNotNull(detailedConsentResource.getConsentAttributes());
+    }
+
+    @Test
+    public void testCreateAuthorizableConsentWithBulkAuthWithoutUserID() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .storeConsentResource(any(), any());
+        doReturn(ConsentMgtServiceTestData.getSampleTestAuthorizationResource(null, null))
+                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+
+        DetailedConsentResource detailedConsentResource =
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                                .getSampleStoredTestConsentResourceWithAttributes(),
+                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+
+        Assert.assertNotNull(detailedConsentResource);
+        Assert.assertNotNull(detailedConsentResource.getConsentId());
+        Assert.assertNotNull(detailedConsentResource.getClientId());
+        Assert.assertNotNull(detailedConsentResource.getReceipt());
+        Assert.assertNotNull(detailedConsentResource.getConsentType());
+        Assert.assertNotNull(detailedConsentResource.getCurrentStatus());
+    }
+
+
+    // unit test for ImplicitAndNoAuthType
+
+
+    // unit tests for createConsent with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateAuthorizableConsentWithBulkAuthRollback() throws
+            Exception {
+
+
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentResource(any(), any());
+
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                        .getSampleTestConsentResource(),
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+    }
+
+
+    // unit tests for createConsent with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateAuthorizableConsentWithBulkAuthRollbackWhenAuditRecord() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .storeConsentResource(any(), any());
+        doReturn(ConsentMgtServiceTestData.getSampleTestAuthorizationResource(null, null))
+                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
+
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                        .getSampleTestConsentResource(),
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+    }
+
+
+    // unit tests for createConsent with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateAuthorizableConsentWithBulkAuthRollbackWhenStoringAuthResource() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .storeConsentResource(any(), any());
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeAuthorizationResource(any(), any());
+
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                        .getSampleTestConsentResource(),
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+    }
+
+
+    // unit tests for createConsent with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateAuthorizableConsentWithBulkAuthRollbackWhenStoringAuthResourceWithAuditRecord() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .storeConsentResource(any(), any());
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeAuthorizationResource(any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+
+        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                        .getSampleTestConsentResource(),
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+    }
+
+    // unit tests for updateConsentStatus
+    @Test
+    public void testUpdateConsentStatus() throws
+            Exception {
+
+
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any(), any());
+
+        // handle Status Audit Record
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+
+        consentCoreServiceImpl.updateConsentStatus(ConsentMgtServiceTestData
+                        .getSampleStoredConsentResource().getConsentId(),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.ORG_INFO);
+
+
+    }
+
+    // unit tests for updateConsentStatus with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testUpdateConsentStatusRollback() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), any(), any());
+        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
+                .updateConsentStatus(any(), anyString(), anyString());
+
+        consentCoreServiceImpl.updateConsentStatus(ConsentMgtServiceTestData
+                        .getSampleStoredConsentResource().getConsentId(),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.ORG_INFO);
+
+    }
+
+    // unit tests for updateConsentStatus with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testUpdateConsentStatusRollbackWhenAuditRecord() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), any(), any());
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any());
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
+
+        consentCoreServiceImpl.updateConsentStatus(ConsentMgtServiceTestData
+                        .getSampleStoredConsentResource().getConsentId(),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.ORG_INFO);
+
+    }
+
+    // unit tests for updateConsentStatus with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testUpdateConsentStatusRollbackWhenAuditRecordWithConsentResource() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), any(), any());
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any());
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
+
+        consentCoreServiceImpl.updateConsentStatus(ConsentMgtServiceTestData
+                        .getSampleStoredConsentResource().getConsentId(),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.ORG_INFO);
+    }
+
+    // unit tests for updateConsentStatus with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void
+    testUpdateConsentStatusRollbackWhenAuditRecordWithConsentResourceWithConsentStatus()
+            throws
+            Exception {
+
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
+
+        consentCoreServiceImpl.updateConsentStatus(ConsentMgtServiceTestData
+                        .getSampleStoredConsentResource().getConsentId(),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.ORG_INFO);
+
+    }
+
+    // unit test for bulkUpdateConsentStatus
+    @Test
+    public void testBulkUpdateConsentStatus() throws
+            Exception {
+
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
+                .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
+                        any(), any(), any(), any(), any(), any(), any());
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
+    }
+
+    // unit test for bulkUpdateConsentStatus with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testBulkUpdateConsentStatusRollback() throws
+            Exception {
+
+        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
+                .updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any(), any());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
+                .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
+                        any(), any(), any(), any(), any(), any(), any());
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
+    }
+
+
+    // unit test for bulkUpdateConsentStatus with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testBulkUpdateConsentStatusRollbackWhenAuditRecord() throws
+            Exception {
+
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any(), any());
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
+                .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
+                        any(), any(), any(), any(), any(), any(), any());
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
+    }
+
+    // unit test for bulkUpdateConsentStatus with exceptions
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testBulkUpdateConsentStatusRollbackWhenAuditRecordWithConsentResource() throws
+            Exception {
+
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
+                getDetailedConsentResource(any(), any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
+                .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
+                        any(), any(), any(), any(), any(), any(), any());
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
+    }
+
+
+    @Test
+    public void testGetConsent() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .getConsentResource(any(), anyString());
+
+        // Get consent
+        ConsentResource retrievedConsentResource = consentCoreServiceImpl.getConsent(ConsentMgtServiceTestData
+                .getSampleStoredConsentResource().getConsentId(), false);
+
+        Assert.assertNotNull(retrievedConsentResource);
+    }
+
+    @Test
+    public void testGetConsentWithAttributes() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentResourceWithAttributes())
+                .when(mockedConsentCoreDAO).getConsentResourceWithAttributes(any(), anyString());
+
+        // Get consent
+        ConsentResource retrievedConsentResource = consentCoreServiceImpl.getConsent(ConsentMgtServiceTestData
+                .getSampleStoredConsentResource().getConsentId(), true);
+
+        Assert.assertNotNull(retrievedConsentResource);
+        Assert.assertNotNull(retrievedConsentResource.getConsentAttributes());
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testGetConsentRollBackWhenRetrieve() throws
+            Exception {
+
+
+        doThrow(
+                new ConsentDataRetrievalException(
+                        ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG)).when(mockedConsentCoreDAO)
+                .getConsentResource(any(), anyString());
+
+        // mock getMessage
+
+
+        // Get consent
+        consentCoreServiceImpl.getConsent(ConsentMgtServiceTestData
+                        .getSampleStoredConsentResource().getConsentId(),
+                false);
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testGetConsentWithoutConsentID() throws
+            Exception {
+
+        consentCoreServiceImpl.getConsent(null, false);
+    }
+
+    @Test
+    public void testGetDetailedConsent() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
+                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString(), any());
+
+        // Get consent
+        DetailedConsentResource retrievedConsentResource = consentCoreServiceImpl
+                .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentId(),
+                        ConsentMgtServiceTestData.ORG_INFO);
+
+        Assert.assertNotNull(retrievedConsentResource);
+    }
+
+
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testGetDetailedConsentWithDataRetrievalException() throws
+            Exception {
+
+        doThrow(ConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), anyString(), any());
+
+        // Get consent
+        consentCoreServiceImpl.getDetailedConsent(ConsentMgtServiceTestData
+                .getSampleStoredConsentResource().getConsentId(), ConsentMgtServiceTestData.ORG_INFO);
+    }
+
+
+
+
+    @Test
+    public void testCreateConsentAuthorization() throws
+            Exception {
+
+        AuthorizationResource sampleAuthorizationResource =
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredTestAuthorizationResource())
+                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).
+                when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
+        //Create a consent authorization resource
+        AuthorizationResource storedAuthorizationResource =
+                consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+
+        Assert.assertNotNull(storedAuthorizationResource);
+        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationId());
+        Assert.assertNotNull(storedAuthorizationResource.getConsentId());
+        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationType());
+        Assert.assertNotNull(storedAuthorizationResource.getUserId());
+        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationStatus());
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateConsentAuthorizationRollbackWhenCreation() throws
+            Exception {
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).
+                when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
+        AuthorizationResource sampleAuthorizationResource =
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
+
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeAuthorizationResource(any(), any());
+
+        // Get consent
+        consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateConsentAuthorizationWithoutConsentID() throws
+            Exception {
+
+        AuthorizationResource sampleAuthorizationResource =
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResource(null, null);
+        sampleAuthorizationResource.setConsentId(null);
+
+        //Create a consent authorization resource
+        consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateConsentAuthorizationWithoutAuthorizationStatus() throws
+            Exception {
+
+        AuthorizationResource sampleAuthorizationResource =
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
+
+        // Explicitly setting authorization status to null
+        sampleAuthorizationResource.setAuthorizationStatus(null);
+
+        //Create a consent authorization resource
+        consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testCreateConsentAuthorizationWithoutAuthorizationType() throws
+            Exception {
+
+        AuthorizationResource sampleAuthorizationResource =
+                ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
+        sampleAuthorizationResource.setAuthorizationType(null);
+
+        //Create a consent authorization resource
+        consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+    }
+
+    @Test
+    public void testGetAuthorizationResource() throws
+            Exception {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredTestAuthorizationResource())
+                .when(mockedConsentCoreDAO).getAuthorizationResource(any(), anyString(), any());
+        AuthorizationResource authorizationResource =
+                consentCoreServiceImpl.getAuthorizationResource(ConsentMgtServiceTestData
+                        .getSampleStoredTestAuthorizationResource().getAuthorizationId(), null);
+        Assert.assertNotNull(authorizationResource);
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testGetAuthorizationResourceWithoutAuthID() throws
+            Exception {
+
+        consentCoreServiceImpl.getAuthorizationResource(null, null);
+    }
+
+
+
+    // test for ConsentCoreServiceUtil
+    @Test
+    public void testGetConsentStatusAuditRecord() throws
+            Exception {
+
+
+        List<String> consentStatusAuditRecord = ConsentCoreServiceUtil
+                .getRecordIdListForConsentHistoryRetrieval(ConsentMgtServiceTestData
+                        .getSampleDetailedStoredTestConsentResource());
+        Assert.assertNotNull(consentStatusAuditRecord);
+
+        // assert
+        Assert.assertEquals(consentStatusAuditRecord.size(), 4);
+
+    }
+
+    @Test
+    public void testGetConsentStatusAuditRecordWithEmptyConsent() throws
+            Exception {
+
+        List<String> consentStatusAuditRecord = ConsentCoreServiceUtil
+                .getRecordIdListForConsentHistoryRetrieval(ConsentMgtServiceTestData
+                        .getSampleDetailedStoredTestConsentResourceWithMultipleAccountIDs());
+        Assert.assertNotNull(consentStatusAuditRecord);
+
+        // assert
+        Assert.assertEquals(consentStatusAuditRecord.size(), 4);
+
+    }
+
+    // test getChangedBasicConsentDataJSON
+    @Test
+    public void testGetChangedBasicConsentDataJSON() throws
+            Exception {
+
+        JSONObject changedBasicConsentDataJSON = ConsentCoreServiceUtil
+                .getChangedBasicConsentDataJSON(
+                        ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourceWithMultipleAccountIDs(),
+                        ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourceWithMultipleAccountIDs());
+        Assert.assertNotNull(changedBasicConsentDataJSON);
+    }
+
+
+    // test getChangedConsentAttributesDataJSON
+    @Test
+    public void testGetChangedConsentAttributesDataJSON() throws
+            Exception {
+
+        JSONObject changedConsentAttributesDataJSON = ConsentCoreServiceUtil
+                .getChangedConsentAttributesDataJSON(
+                        ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
+                        ConsentMgtServiceTestData.SAMPLE_CHANGED_CONSENT_ATTRIBUTES_MAP);
+        Assert.assertNotNull(changedConsentAttributesDataJSON);
+    }
+
+    // test getChangedConsentMappingDataJSONMap
+    @Test
+    public void testGetChangedConsentMappingDataJSONMap() throws
+            Exception {
+
+        Map<String, JSONObject> changedConsentMappingDataJSON = ConsentCoreServiceUtil
+                .getChangedConsentMappingDataJSONMap(
+                        ConsentMgtServiceTestData.getSampleTestConsentMappingResourceListWithMappingId(),
+                        ConsentMgtServiceTestData.getSampleTestConsentMappingResourceListWithMappingId());
+        Assert.assertNotNull(changedConsentMappingDataJSON);
+    }
+
+
+
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testUpdateConsentStatusDataRetrievalError() throws
@@ -194,885 +794,6 @@ public class ConsentCoreServiceImplTest {
                 null);
     }
 
-
-
-    @Test
-    public void testDeactivateAccountMappings() throws
-            Exception {
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), any());
-        Assert.assertTrue(consentCoreServiceImpl
-                .deactivateAccountMappings(ConsentMgtServiceTestData.UNMATCHED_MAPPING_IDS));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testDeactivateAccountMappingsWithEmptyMappingIDList() throws
-            Exception {
-
-        consentCoreServiceImpl.deactivateAccountMappings(new ArrayList<>());
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testDeactivateAccountMappingsRollback() throws
-            Exception {
-
-        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
-                .updateConsentMappingStatus(any(), any(), any());
-        consentCoreServiceImpl.deactivateAccountMappings(ConsentMgtServiceTestData.UNMATCHED_MAPPING_IDS);
-    }
-
-
-
-
-    @Test
-    public void testRevokeConsent() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        boolean isConsentRevoked = consentCoreServiceImpl.revokeConsentWithReason(
-                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, false,
-                ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
-
-        Assert.assertTrue(isConsentRevoked);
-    }
-
-    @Test
-    public void testRevokeConsentWithReason() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        boolean isConsentRevoked = consentCoreServiceImpl.revokeConsentWithReason(
-                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
-
-        Assert.assertTrue(isConsentRevoked);
-    }
-
-    @Test
-    public void testRevokeConsentWithUserId() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        boolean isConsentRevoked = consentCoreServiceImpl.revokeConsentWithReason(
-                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
-
-        Assert.assertTrue(isConsentRevoked);
-    }
-
-    @Test
-    public void testRevokeConsentAndTokens() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        boolean isConsentRevoked = consentCoreServiceImpl.revokeConsent(
-                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                true);
-
-        Assert.assertTrue(isConsentRevoked);
-    }
-
-    @Test
-    public void testRevokeConsentAndTokensTokenRevokeError() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-        try {
-            boolean isConsentRevoked = consentCoreServiceImpl.revokeConsentWithReason(
-                    ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                    ConsentMgtServiceTestData.SAMPLE_USER_ID, true,
-                    ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
-            Assert.assertTrue(isConsentRevoked);
-        } catch (Exception e) {
-            Assert.assertTrue(e instanceof ConsentMgtException);
-        }
-
-    }
-
-    @Test
-    public void testRevokeConsentWithoutConsentAttributes() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-        retrievedDetailedConsentResource.setConsentAttributes(null);
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        boolean isConsentRevoked = consentCoreServiceImpl.revokeConsent(
-                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                false);
-
-        Assert.assertTrue(isConsentRevoked);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeConsentWithoutConsentID() throws
-            Exception {
-
-        consentCoreServiceImpl.revokeConsentWithReason(null,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                false, ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeConsentWithoutNewConsentStatus() throws
-            Exception {
-
-        consentCoreServiceImpl.revokeConsent(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                null, ConsentMgtServiceTestData.SAMPLE_USER_ID, false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeConsentDataRetrievalError() throws
-            Exception {
-
-        doThrow(ConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-
-        consentCoreServiceImpl.revokeConsentWithReason(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                false, ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeConsentDataInsertionError() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doThrow(ConsentDataInsertionException.class)
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-
-        consentCoreServiceImpl.revokeConsent(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeConsentDataUpdateError() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
-                .updateConsentStatus(any(), anyString(), anyString());
-
-        consentCoreServiceImpl.revokeConsentWithReason(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                false, ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
-    }
-
-
-    @Test
-    public void testRevokeConsentWithoutReason() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        boolean isConsentRevoked = consentCoreServiceImpl.revokeConsent(
-                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS);
-
-        Assert.assertTrue(isConsentRevoked);
-    }
-
-    @Test(priority = 1)
-    public void testRevokeConsentWithUserIDWithoutReason() throws
-            Exception {
-
-        DetailedConsentResource retrievedDetailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-
-        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
-                .getDetailedConsentResource(any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleTestConsentStatusAuditRecord(
-                retrievedDetailedConsentResource.getConsentId(),
-                retrievedDetailedConsentResource.getCurrentStatus()))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        boolean isConsentRevoked = consentCoreServiceImpl.revokeConsent(
-                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID);
-
-        Assert.assertTrue(isConsentRevoked);
-    }
-
-    @Test
-    public void testRevokeExistingApplicableConsents() throws
-            Exception {
-
-        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
-        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
-
-        doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
-                .searchConsents(any(), any(), any(), any(), any(), any(),
-                        any(), anyLong(), anyLong(), anyInt(), anyInt());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS)).when(mockedConsentCoreDAO)
-                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), any());
-
-        Assert.assertTrue(consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                false));
-    }
-
-    @Test
-    public void testRevokeExistingApplicableConsentsWithTokens() throws
-            Exception {
-
-        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
-        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
-
-        doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
-                .searchConsents(any(), any(), any(), any(), any(), any(),
-                        any(), anyLong(), anyLong(), anyInt(), anyInt());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS)).when(mockedConsentCoreDAO)
-                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), any());
-
-        Assert.assertTrue(consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                true));
-    }
-
-    @Test
-    public void testRevokeExistingApplicableConsentsWithConsentsWithNoAttributes() throws
-            Exception {
-
-        DetailedConsentResource detailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-        detailedConsentResource.setConsentAttributes(null);
-
-        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
-        detailedConsentResources.add(detailedConsentResource);
-
-        doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
-                .searchConsents(any(), any(), any(), any(), any(), any(),
-                        any(), anyLong(), anyLong(), anyInt(), anyInt());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS)).when(mockedConsentCoreDAO)
-                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), any());
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeExistingApplicableConsentsRetrieveError() throws
-            Exception {
-
-        doThrow(ConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
-                .searchConsents(any(), any(), any(), any(), any(), any(),
-                        any(), any(), any(), any(), any());
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeExistingApplicableConsentsUpdateError() throws
-            Exception {
-
-        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
-        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
-
-        doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
-                .searchConsents(any(), any(), any(), any(), any(), any(),
-                        any(), any(), any(), any(), any());
-        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
-                .updateConsentStatus(any(), anyString(), anyString());
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
-    }
-
-//    @Test(expectedExceptions = ConsentMgtException.class)
-//    public void testRevokeExistingApplicableConsentsInsertionError() throws
-//            Exception {
-//
-//        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
-//        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
-//
-//        doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
-//                .searchConsents(any(), any(), any(), any(), any(), any(),
-//                        any(), any(), any(), any(), any());
-//        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-//                anyString());
-//        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
-//                .storeConsentStatusAuditRecord(any(), any());
-//
-//        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-//                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-//                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
-//    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeExistingApplicableConsentsWithoutClientID() throws
-            Exception {
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(null, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeExistingApplicableConsentsWithoutRevokedConsentStatus() throws
-            Exception {
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, null, false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeExistingApplicableConsentsWithoutUserID() throws
-            Exception {
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
-                null, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS
-                , false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeExistingApplicableConsentsWithoutConsentType() throws
-            Exception {
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, null,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS
-                , false);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testRevokeExistingApplicableConsentsWithoutApplicableStatusToRevoke() throws
-            Exception {
-
-        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
-                null, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS
-                , false);
-    }
-
-    @Test
-    public void testReAuthorizeExistingAuthResources() throws
-            Exception {
-
-        ConsentResource consentResource = ConsentMgtServiceTestData.getSampleStoredConsentResource();
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, consentResource.getCurrentStatus()));
-    }
-
-    @Test
-    public void testReAuthorizeExistingAuthResourceAccountsAddScenario() throws
-            Exception {
-
-        ConsentMappingResource consentMappingResource =
-                ConsentMgtServiceTestData.getSampleTestConsentMappingResource(sampleID);
-        consentMappingResource.setAccountID("accountID1");
-        ArrayList<ConsentMappingResource> mappingResources = new ArrayList<>();
-        mappingResources.add(consentMappingResource);
-
-        DetailedConsentResource detailedConsentResource =
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
-        detailedConsentResource.setConsentMappingResources(mappingResources);
-
-        ConsentResource consentResource = ConsentMgtServiceTestData.getSampleStoredConsentResource();
-        doReturn(detailedConsentResource)
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, consentResource.getCurrentStatus()));
-    }
-
-    @Test
-    public void testReAuthorizeExistingAuthResourceNoAccountsRemoveOrAddScenario() throws
-            Exception {
-
-        ConsentResource consentResource = ConsentMgtServiceTestData.getSampleStoredConsentResource();
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP2,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, consentResource.getCurrentStatus()));
-    }
-
-    @Test
-    public void testReAuthorizeExistingAuthResourceAccountsRemoveScenario() throws
-            Exception {
-
-        ConsentResource consentResource = ConsentMgtServiceTestData.getSampleStoredConsentResource();
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourceWithMultipleAccountIDs())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP3,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, consentResource.getCurrentStatus()));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesWithoutConsentID() throws
-            Exception {
-
-        Assert.assertTrue(consentCoreServiceImpl.reAuthorizeExistingAuthResource(null,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesWithoutAuthID() throws
-            Exception {
-
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        null, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesWithoutUserID() throws
-            Exception {
-
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        sampleID, null, ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesWithoutCurrentConsentStatus() throws
-            Exception {
-
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        null, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesWithoutNewConsentStatus() throws
-            Exception {
-
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, null));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesWithoutAccountsAndPermissionsMap() throws
-            Exception {
-
-        Assert.assertTrue(consentCoreServiceImpl
-                .reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        new HashMap<>(), ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesDataRetrieveError() throws
-            Exception {
-
-        doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-        consentCoreServiceImpl.reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS);
-    }
-//
-//    @Test(expectedExceptions = ConsentMgtException.class)
-//    public void testReAuthorizeExistingAuthResourcesDataInsertError() throws
-//            Exception {
-//
-//        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-//                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-//        doReturn(ConsentMgtServiceTestData
-//                .getSampleConsentMappingResourcesList(ConsentMgtServiceTestData.SAMPLE_CLIENT_IDS_LIST))
-//                .when(mockedConsentCoreDAO).getConsentMappingResources(any(), anyString());
-//        doThrow(ConsentDataInsertionException.class)
-//                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(),
-//                        any());
-//        consentCoreServiceImpl.reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-//                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-//                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-//                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS);
-//    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeExistingAuthResourcesDataUpdateError() throws
-            Exception {
-
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-        doReturn(ConsentMgtServiceTestData
-                .getSampleConsentMappingResourcesList(ConsentMgtServiceTestData.SAMPLE_CLIENT_IDS_LIST))
-                .when(mockedConsentCoreDAO).getConsentMappingResources(any(), anyString());
-        doThrow(ConsentDataUpdationException.class)
-                .when(mockedConsentCoreDAO).updateConsentStatus(any(), any(),
-                        anyString());
-        consentCoreServiceImpl.reAuthorizeExistingAuthResource(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS);
-    }
-
-    @Test
-    public void testReAuthorizeConsentWithNewAuthResource() throws
-            Exception {
-
-        AuthorizationResource authorizationResource = ConsentMgtServiceTestData
-                .getSampleTestAuthorizationResource(sampleID, null);
-        ArrayList<String> consentIDs = new ArrayList<>();
-        consentIDs.add(sampleID);
-
-        doReturn(ConsentMgtServiceTestData.getSampleAuthorizationResourcesList(consentIDs))
-                .when(mockedConsentCoreDAO).searchConsentAuthorizations(any(), anyString(),
-                        anyString());
-        doNothing().when(mockedConsentCoreDAO).updateAuthorizationStatus(any(), anyString(),
-                anyString());
-        doReturn(authorizationResource).when(mockedConsentCoreDAO).storeAuthorizationResource(any(),
-                any(AuthorizationResource.class));
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
-                anyString());
-        doReturn(ConsentMgtServiceTestData
-                .getSampleTestConsentStatusAuditRecord(sampleID,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceDataRetrieveError() throws
-            Exception {
-
-        doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).searchConsentAuthorizations(any(), any(), any());
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceDataUpdateError() throws
-            Exception {
-
-        ArrayList<String> consentIDs = new ArrayList<>();
-        consentIDs.add(sampleID);
-        doReturn(ConsentMgtServiceTestData.getSampleAuthorizationResourcesList(consentIDs))
-                .when(mockedConsentCoreDAO).searchConsentAuthorizations(any(), any(), any());
-        doThrow(ConsentDataUpdationException.class)
-                .when(mockedConsentCoreDAO).updateAuthorizationStatus(any(), anyString(),
-                        anyString());
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceDataInsertError() throws
-            Exception {
-
-        AuthorizationResource authorizationResource = ConsentMgtServiceTestData
-                .getSampleTestAuthorizationResource(sampleID, null);
-
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
-                .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(), any(),
-                        any(), any(), anyLong(), anyLong(), anyInt(),
-                        anyInt());
-        doNothing().when(mockedConsentCoreDAO).updateAuthorizationStatus(any(), anyString(),
-                anyString());
-        doReturn(authorizationResource).when(mockedConsentCoreDAO).storeAuthorizationResource(any(),
-                any(AuthorizationResource.class));
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-        doThrow(ConsentDataInsertionException.class)
-                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(),
-                        any());
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutConsentID() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(null, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutUserID() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, null,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutAccountsMap() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                null, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutCurrentConsentStatus() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP, null,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutNewConsentStatus() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                null, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutNewExistingAuthStatus() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, null,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutNewAuthStatus() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                null, ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testReAuthorizeConsentWithNewAuthResourceWithoutNewAuthType() throws
-            Exception {
-
-        consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS, null);
-    }
 
     @Test
     public void storeConsentAttributes() throws
@@ -1237,71 +958,6 @@ public class ConsentCoreServiceImplTest {
         Assert.assertNotNull(consentAttributes);
     }
 
-    @Test
-    public void testGetConsentAttributesByName() throws
-            Exception {
-
-        doReturn(ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP)
-                .when(mockedConsentCoreDAO).getConsentAttributesByName(any(), anyString());
-        Map<String, String> retrievedAttributesMap =
-                consentCoreServiceImpl.getConsentAttributesByName("x-request-id");
-        Assert.assertTrue(retrievedAttributesMap.containsKey("x-request-id"));
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentAttributesByNameWithoutAttributeName() throws
-            Exception {
-
-        consentCoreServiceImpl.getConsentAttributesByName(null);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentAttributesByNameDataRetrieveError() throws
-            Exception {
-
-        doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentAttributesByName(any(), anyString());
-        consentCoreServiceImpl.getConsentAttributesByName("x-request-id");
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentIdByConsentAttributeNameAndValueWithoutAttributeName() throws
-            Exception {
-
-        consentCoreServiceImpl.getConsentIdByConsentAttributeNameAndValue(null,
-                "domestic-payments");
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentIdByConsentAttributeNameAndValueWithoutAttributeValues() throws
-            Exception {
-
-        consentCoreServiceImpl.getConsentIdByConsentAttributeNameAndValue("payment-type",
-                null);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentIdByConsentAttributeNameAndValueDataRetrieveError() throws
-            Exception {
-
-        doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentIdByConsentAttributeNameAndValue(any(),
-                        anyString(), anyString());
-        consentCoreServiceImpl.getConsentIdByConsentAttributeNameAndValue("payment-type",
-                "domestic-payments");
-    }
-
-    @Test
-    public void testGetConsentIdByConsentAttributeNameAndValue() throws
-            Exception {
-
-        doReturn(ConsentMgtServiceTestData.SAMPLE_CONSENT_IS_ARRAY)
-                .when(mockedConsentCoreDAO).getConsentIdByConsentAttributeNameAndValue(any(),
-                        anyString(), anyString());
-        ArrayList<String> consentIdList = consentCoreServiceImpl.getConsentIdByConsentAttributeNameAndValue(
-                "payment-type", "domestic-payments");
-        Assert.assertFalse(consentIdList.isEmpty());
-    }
 
     @Test
     public void testUpdateConsentAttributes() throws
@@ -1549,320 +1205,6 @@ public class ConsentCoreServiceImplTest {
         consentCoreServiceImpl.storeConsentAmendmentHistory(sampleID,
                 ConsentMgtServiceTestData.getSampleTestConsentHistoryResource(),
                 ConsentMgtServiceTestData.getSampleDetailedStoredTestCurrentConsentResource());
-    }
-
-
-    @Test
-    public void testAmendDetailedConsentData() throws
-            Exception {
-
-        setInitialDataForAmendDetailedConsentSuccessFlow();
-        DetailedConsentResource detailedConsentResource =
-                consentCoreServiceImpl.amendDetailedConsent(sampleID,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        new HashMap<>());
-
-        Assert.assertNotNull(detailedConsentResource);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutConsentID() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsent(null, ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                new HashMap<>());
-    }
-
-    @Test
-    public void testAmendDetailedConsentDataWithoutExpiryTimeOnly() throws
-            Exception {
-
-        setInitialDataForAmendDetailedConsentSuccessFlow();
-        DetailedConsentResource detailedConsentResource =
-                consentCoreServiceImpl.amendDetailedConsent(sampleID, null,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                        ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                        ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        new HashMap<>());
-
-        Assert.assertNotNull(detailedConsentResource);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutReceiptAndExpiryTime() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsent(sampleID, null, null,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                new HashMap<>());
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutUserId() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsent(sampleID, ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP, null,
-                new HashMap<>());
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutAuthId() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsent(sampleID, ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD, null,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                new HashMap<>());
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutNewConsentStatus() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsent(sampleID, ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP, null,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                new HashMap<>());
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutNewConsentAttributes() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsent(sampleID, ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, null,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                new HashMap<>());
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentDataWithoutAccountIdMapWithPermissions() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsent(sampleID, ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                ConsentMgtServiceTestData.UNMATCHED_AUTHORIZATION_ID,
-                null,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                new HashMap<>());
-    }
-
-    private void setInitialDataForAmendDetailedConsentSuccessFlow() throws
-            Exception {
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentReceipt(any(),
-                anyString(), anyString());
-        doNothing().when(mockedConsentCoreDAO).updateConsentExpiryTime(any(),
-                anyString(), anyLong());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource())
-                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        doReturn(true).when(mockedConsentCoreDAO).deleteConsentAttributes(any(),
-                anyString(), any());
-        doReturn(true).when(mockedConsentCoreDAO).storeConsentAttributes(any(),
-                any(ConsentAttributes.class));
-    }
-
-    private void setInitialDataForAmendDetailedConsentWithBulkAuthResourceSuccessFlow() throws
-            Exception {
-
-        // return authResource
-        doReturn(ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null))
-                .when(mockedConsentCoreDAO).getAuthorizationResource(any(),
-                        any(), any());
-        doNothing().when(mockedConsentCoreDAO).updateConsentReceipt(any(),
-                anyString(), anyString());
-        doNothing().when(mockedConsentCoreDAO).updateConsentExpiryTime(any(),
-                anyString(), anyLong());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource())
-                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
-                any(), anyString());
-
-        doReturn(true).when(mockedConsentCoreDAO).deleteConsentAttributes(any(),
-                anyString(), any());
-        doReturn(true).when(mockedConsentCoreDAO).storeConsentAttributes(any(),
-                any(ConsentAttributes.class));
-
-        //storeAuthorizationResource
-        doReturn(ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null))
-                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(),
-                        any(AuthorizationResource.class));
-        // mocked DetailedConsentResource
-        DetailedConsentResource detailedConsentResource = Mockito.mock(DetailedConsentResource.class);
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-        // getOrgId
-        doReturn(ConsentMgtServiceTestData.ORG_INFO).when(detailedConsentResource).getOrgID();
-
-    }
-
-
-    // uint tests for amendDetailedConsentWithBulkAuthResource
-    @Test
-    public void testAmendDetailedConsentWithBulkAuthResource() throws
-            Exception {
-
-        setInitialDataForAmendDetailedConsentWithBulkAuthResourceSuccessFlow();
-        DetailedConsentResource detailedConsentResource =
-                consentCoreServiceImpl.amendDetailedConsentWithBulkAuthResource(
-                        ConsentMgtServiceTestData.ORG_INFO,
-                        sampleID,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourceListWithAuthIdAndConsentMappingId(),
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                        ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                        ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(sampleID, null)
-                                                                               );
-
-        Assert.assertNotNull(detailedConsentResource);
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testAmendDetailedConsentWithBulkAuthResourceWithoutConsentID() throws
-            Exception {
-
-        consentCoreServiceImpl.amendDetailedConsentWithBulkAuthResource(
-                ConsentMgtServiceTestData.ORG_INFO,
-                null,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourceListWithAuthIdAndConsentMappingId(),
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(sampleID, null)
-                                                                       );
-    }
-
-    @Test()
-    public void testAmendDetailedConsentWithBulkAuthResourceWithoutAuthorizationResource() throws
-            Exception {
-
-        setInitialDataForAmendDetailedConsentWithBulkAuthResourceSuccessFlow();
-        consentCoreServiceImpl.amendDetailedConsentWithBulkAuthResource(
-                ConsentMgtServiceTestData.ORG_INFO,
-                sampleID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                new ArrayList<>(),
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(sampleID, null)
-                                                                       );
-
-    }
-
-
-    @Test
-    public void testAmendDetailedConsentWithBulkAuthResourceWithoutUserId() throws
-            Exception {
-        setInitialDataForAmendDetailedConsentWithBulkAuthResourceSuccessFlow();
-
-        consentCoreServiceImpl.amendDetailedConsentWithBulkAuthResource(
-                ConsentMgtServiceTestData.ORG_INFO,
-                sampleID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_VALIDITY_PERIOD,
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourceListWithAuthIdAndConsentMappingId(),
-                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP,
-                null,
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(sampleID, null)
-                                                                       );
-
-    }
-
-    // unit tests for getConsentAmendmentHistoryData
-    @Test
-    public void testGetConsentAmendmentHistoryData() throws
-            Exception {
-
-
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
-                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-
-        //retrieveConsentAmendmentHistory
-        doReturn(ConsentMgtServiceTestData.getSampleConsentHistoryDataMap()).when(mockedConsentCoreDAO).
-                retrieveConsentAmendmentHistory(any(), any(), any());
-
-        Map<String, ConsentHistoryResource> consentHistoryResource =
-                consentCoreServiceImpl.getConsentAmendmentHistoryData(
-                        ConsentMgtServiceTestData.getSampleConsentStatusAuditRecordIds(), sampleID);
-        Assert.assertNotNull(consentHistoryResource);
-    }
-
-    // empty consentStatusAuditRecordIds
-    @Test
-    public void testGetConsentAmendmentHistoryDataWithEmptyConsentStatusAuditRecordIds() throws
-            Exception {
-
-        Map<String, ConsentHistoryResource> consentHistoryResource =
-                consentCoreServiceImpl.getConsentAmendmentHistoryData(
-                        new ArrayList<>(), sampleID);
-        Assert.assertNotNull(consentHistoryResource);
-    }
-
-    // empty consetId
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentAmendmentHistoryDataWithEmptyConsentId() throws
-            Exception {
-
-        consentCoreServiceImpl.getConsentAmendmentHistoryData(
-                ConsentMgtServiceTestData.getSampleConsentStatusAuditRecordIds(), null);
     }
 
 

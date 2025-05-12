@@ -40,18 +40,27 @@
     <init-param>
       <param-name>jersey.config.server.provider.classnames</param-name>
       <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature,
-        org.wso2.financial.services.accelerator.consent.mgt.endpoint.exception.ConstraintViolationException</param-value>
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.ConstraintViolationExceptionMapper</param-value>
     </init-param>
 
 
     <init-param>
       <param-name>jaxrs.providers</param-name>
-      <param-value>com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,org.wso2.financial.services.accelerator.consent.mgt.endpoint.exception.ConstraintViolationException</param-value>
+      <param-value>com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.ConstraintViolationExceptionMapper,
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.MismatchedInputExceptionMapper,
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.JsonParseExceptionMapper
+      </param-value>
+    </init-param>
+    <init-param>
+      <param-name>jaxrs.features</param-name>
+      <param-value>
+        org.apache.cxf.validation.BeanValidationFeature
+      </param-value>
     </init-param>
     <init-param>
       <param-name>jaxrs.serviceClasses</param-name>
       <param-value>
-        org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentApi
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentsApi
       </param-value>
     </init-param>
 

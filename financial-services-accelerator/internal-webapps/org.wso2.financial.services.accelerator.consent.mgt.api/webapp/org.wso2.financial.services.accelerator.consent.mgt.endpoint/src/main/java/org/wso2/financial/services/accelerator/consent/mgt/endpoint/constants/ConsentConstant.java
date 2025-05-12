@@ -177,4 +177,7 @@ public class ConsentConstant {
     public static final String CREATED_TIMESTAMP = "createdTimestamp";
 
     public static final String ORG_MISMATCH = "OrgInfo does not match, please provide the correct OrgInfo";
+
+    // error codes
+    public static final String PAYLOAD_SCHEMA_VALIDATION_ERROR = "101";
 }

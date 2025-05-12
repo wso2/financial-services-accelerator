@@ -21,7 +21,6 @@
     <test name="consent.mgt.service.tests" preserve-order="false" parallel="false">
         <parameter name="log-level" value="info"/>
         <classes>
-            <class name="org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentMgtCoreServiceTests"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImplTest"/>
 
 

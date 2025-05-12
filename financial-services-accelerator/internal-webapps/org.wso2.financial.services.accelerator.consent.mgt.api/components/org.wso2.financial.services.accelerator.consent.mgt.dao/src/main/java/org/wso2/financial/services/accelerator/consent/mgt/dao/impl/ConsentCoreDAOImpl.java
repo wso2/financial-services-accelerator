@@ -19,12 +19,14 @@
 package org.wso2.financial.services.accelerator.consent.mgt.dao.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.ConsentCoreDAO;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataDeletionException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataInsertionException;
@@ -32,7 +34,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataUpdationException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -47,15 +48,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -107,6 +105,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             // with result, we can determine whether the insertion was successful or not
             int result = storeConsentPreparedStmt.executeUpdate();
 
+
             // Confirm that the data are inserted successfully
             if (result > 0) {
                 log.debug("Stored the consent resource successfully");
@@ -115,12 +114,12 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 consentResource.setUpdatedTime(createdTime);
                 return consentResource;
             } else {
-                log.error(ConsentMgtDAOConstants.FAILED_TO_STORE_ERROR_MSG);
-                throw new ConsentDataInsertionException(ConsentMgtDAOConstants.FAILED_TO_STORE_ERROR_MSG);
+                log.error(ConsentError.CONSENT_INSERTION_ERROR_IN_DATABASE.getMessage());
+                throw new ConsentDataInsertionException(ConsentError.CONSENT_INSERTION_ERROR_IN_DATABASE);
             }
         } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_RESOURCE_STORE_ERROR_MSG, e);
-            throw new ConsentDataInsertionException(ConsentMgtDAOConstants.CONSENT_RESOURCE_STORE_ERROR_MSG, e);
+            log.error(ConsentError.CONSENT_INSERTION_ERROR, e);
+            throw new ConsentDataInsertionException(ConsentError.CONSENT_INSERTION_ERROR);
         }
     }
 
@@ -148,17 +147,17 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 } else {
                     log.error(String.format("No records are found for consent ID : %S",
                             consentId.replaceAll("[\r\n]", "")));
-                    throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
+                    throw new ConsentDataRetrievalException(ConsentError.CONSENT_NOT_FOUND);
                 }
             } catch (SQLException e) {
                 String errorMessage = String.format("Error occurred while retrieving consent resource for " +
                         "consent ID : %s", consentId.replaceAll("[\r\n]", ""));
                 log.error(errorMessage, e);
-                throw new ConsentDataRetrievalException(errorMessage, e);
+                throw new ConsentDataRetrievalException(ConsentError.CONSENT_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_RESOURCE_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_RESOURCE_RETRIEVE_ERROR_MSG, e);
+            log.error(ConsentError.CONSENT_RETRIEVAL_ERROR, e);
+            throw new ConsentDataRetrievalException(ConsentError.CONSENT_RETRIEVAL_ERROR);
         }
     }
 
@@ -204,6 +203,43 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
+    public DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgInfo)
+            throws
+            ConsentDataRetrievalException {
+
+        String getDetailedConsentResourcePrepStatement = sqlStatements.getGetDetailedConsentPreparedStatement();
+
+        try (PreparedStatement getDetailedConsentResourcePreparedStmt = connection
+                .prepareStatement(getDetailedConsentResourcePrepStatement)) {
+
+            log.debug("Setting parameters to prepared statement to retrieve detailed consent resource");
+
+            getDetailedConsentResourcePreparedStmt.setString(1, consentId);
+            getDetailedConsentResourcePreparedStmt.setString(2, orgInfo);
+
+            try (ResultSet resultSet = getDetailedConsentResourcePreparedStmt.executeQuery()) {
+                if (resultSet.isBeforeFirst()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Retrieved the detailed consent resource for consent ID : %s",
+                                consentId.replaceAll("[\r\n]", "")));
+                    }
+                    return ConsentManagementDAOUtil.setDataToDetailedConsentResource(resultSet);
+                } else {
+                    log.error(String.format("No records are found for consent ID : %s",
+                            consentId.replaceAll("[\r\n]", "")));
+                    throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_NOT_FOUND);
+                }
+            } catch (SQLException e) {
+                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE, e);
+                throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE);
+            }
+        } catch (SQLException | JsonProcessingException e) {
+            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR, e);
+            throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
+        }
+    }
+
+    @Override
     public DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId)
             throws
             ConsentDataRetrievalException {
@@ -216,6 +252,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.debug("Setting parameters to prepared statement to retrieve detailed consent resource");
 
             getDetailedConsentResourcePreparedStmt.setString(1, consentId);
+            getDetailedConsentResourcePreparedStmt.setString(2, null);
 
             try (ResultSet resultSet = getDetailedConsentResourcePreparedStmt.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
@@ -227,17 +264,15 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 } else {
                     log.error(String.format("No records are found for consent ID : %s",
                             consentId.replaceAll("[\r\n]", "")));
-                    throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
+                    throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_NOT_FOUND);
                 }
             } catch (SQLException e) {
-                log.error("Error occurred while reading detailed consent resource", e);
-                throw new ConsentDataRetrievalException(String.format("Error occurred while retrieving " +
-                        "detailed consent resource for consent ID : %s", consentId), e);
+                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE, e);
+                throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentMgtDAOConstants.DETAILED_CONSENT_RESOURCE_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants
-                    .DETAILED_CONSENT_RESOURCE_RETRIEVE_ERROR_MSG, e);
+            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR, e);
+            throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
         }
     }
 
@@ -265,43 +300,15 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             if (result > 0) {
                 log.debug("Updated the consent status successfully");
             } else {
-                throw new ConsentDataUpdationException("Failed to update consent status properly.");
+                log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE.getMessage());
+                throw new ConsentDataUpdationException(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE);
             }
         } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_STATUS_UPDATE_ERROR_MSG, e);
-            throw new ConsentDataUpdationException(ConsentMgtDAOConstants.CONSENT_STATUS_UPDATE_ERROR_MSG, e);
+            log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR, e);
+            throw new ConsentDataUpdationException(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE);
         }
     }
 
-    @Override
-    public void updateConsentReceipt(Connection connection, String consentId, String consentReceipt)
-            throws
-            ConsentDataUpdationException {
-
-        String updateConsentReceiptPrepStatement = sqlStatements.getUpdateConsentReceiptPreparedStatement();
-
-        try (PreparedStatement updateConsentReceiptPreparedStmt =
-                     connection.prepareStatement(updateConsentReceiptPrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to update consent receipt");
-
-            updateConsentReceiptPreparedStmt.setString(1, consentReceipt);
-            updateConsentReceiptPreparedStmt.setString(2, consentId);
-
-            // with result, we can determine whether the updating was successful or not
-            int result = updateConsentReceiptPreparedStmt.executeUpdate();
-            // Confirm that the data are updated successfully
-            if (result > 0) {
-                log.debug("Updated the consent receipt successfully");
-            } else {
-                throw new ConsentDataUpdationException("Failed to update consent receipt properly.");
-            }
-        } catch (SQLException e) {
-            String errorMessage = String.format("Error while updating consent receipt for consent ID: %s", consentId);
-            log.error(errorMessage.replaceAll("[\r\n]", ""), e);
-            throw new ConsentDataUpdationException(errorMessage, e);
-        }
-    }
 
     @Override
     public void updateConsentExpiryTime(Connection connection, String consentId, long expiryTime)
@@ -326,13 +333,14 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             if (result > 0) {
                 log.debug("Updated the consent validity time successfully");
             } else {
-                throw new ConsentDataUpdationException("Failed to update consent validity time properly.");
+                throw new ConsentDataUpdationException(
+                        ConsentError.CONSENT_EXPIRY_TIME_UPDATE_ERROR_IN_DATABASE.getMessage());
             }
         } catch (SQLException e) {
             String errorMessage = String.format("Error while updating consent validity time for consent ID: %s",
                     consentId);
             log.error(errorMessage.replaceAll("[\r\n]", ""), e);
-            throw new ConsentDataUpdationException(errorMessage, e);
+            throw new ConsentDataUpdationException(ConsentError.CONSENT_EXPIRY_TIME_UPDATE_ERROR_IN_DATABASE);
         }
     }
 
@@ -355,12 +363,15 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             log.debug("Setting parameters to prepared statement to store authorization resource");
 
+            ObjectMapper objectMapper = new ObjectMapper();
             storeAuthorizationPreparedStmt.setString(1, authorizationId);
             storeAuthorizationPreparedStmt.setString(2, authorizationResource.getConsentId());
             storeAuthorizationPreparedStmt.setString(3, authorizationResource.getAuthorizationType());
             storeAuthorizationPreparedStmt.setString(4, authorizationResource.getUserId());
             storeAuthorizationPreparedStmt.setString(5, authorizationResource.getAuthorizationStatus());
-            storeAuthorizationPreparedStmt.setString(6, authorizationResource.getResource());
+            storeAuthorizationPreparedStmt.setString(6,
+                    objectMapper.writeValueAsString(authorizationResource.getResource())
+                                                    );
             storeAuthorizationPreparedStmt.setLong(7, updatedTime);
 
             // with result, we can determine whether the insertion was successful or not
@@ -373,11 +384,13 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 authorizationResource.setUpdatedTime(updatedTime);
                 return authorizationResource;
             } else {
-                throw new ConsentDataInsertionException("Failed to store authorization resource data properly.");
+                log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE);
+                throw new ConsentDataInsertionException(
+                        ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE);
             }
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.AUTHORIZATION_RESOURCE_STORE_ERROR_MSG, e);
-            throw new ConsentDataInsertionException(ConsentMgtDAOConstants.AUTHORIZATION_RESOURCE_STORE_ERROR_MSG, e);
+        } catch (SQLException | JsonProcessingException e) {
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR, e);
+            throw new ConsentDataInsertionException(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR, e);
         }
     }
 
@@ -407,16 +420,15 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 } else {
                     log.error(String.format("No records are found for authorization ID : %s",
                             authorizationId.replaceAll("[\r\n]", "")));
-                    throw new ConsentDataRetrievalException(String.format("No records are found for " +
-                                    "authorization ID : %s",
-                            authorizationId.replaceAll("[\r\n]", "")));
+                    throw new ConsentDataRetrievalException(ConsentError.AUTHORIZATION_RESOURCE_NOT_FOUND);
                 }
             } catch (SQLException e) {
                 String errorMessage = String.format("Error occurred while retrieving consent authorization " +
                         "resource for authorization ID : %s", authorizationId.replaceAll("[\r\n]",
                         ""));
                 log.error(errorMessage, e);
-                throw new ConsentDataRetrievalException(errorMessage, e);
+                throw new ConsentDataRetrievalException(
+                        ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
             log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG, e);
@@ -438,10 +450,14 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             log.debug("Setting parameters to prepared statement to update authorization resource");
 
+            ObjectMapper objectMapper = new ObjectMapper();
             updateAuthorizationResourcePreparedStmt.setString(1, authorizationResource.getAuthorizationStatus());
             updateAuthorizationResourcePreparedStmt.setString(2, authorizationResource.getAuthorizationType());
             updateAuthorizationResourcePreparedStmt.setString(3, authorizationResource.getUserId());
-            updateAuthorizationResourcePreparedStmt.setString(4, authorizationResource.getResource());
+
+            updateAuthorizationResourcePreparedStmt.setString(4,
+                    objectMapper.writeValueAsString(authorizationResource.getResource())
+                                                             );
             updateAuthorizationResourcePreparedStmt.setLong(5, authorizationResource.getUpdatedTime());
             updateAuthorizationResourcePreparedStmt.setString(6, authorizationId);
 
@@ -456,7 +472,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             } else {
                 throw new ConsentDataUpdationException("Failed to update authorization resource properly.");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | JsonProcessingException e) {
             log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG, e);
             throw new ConsentDataUpdationException(ConsentMgtDAOConstants
                     .CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG,
@@ -497,150 +513,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
 
     @Override
-    public void updateAuthorizationStatus(Connection connection, String authorizationId, String newAuthorizationStatus)
-            throws
-            ConsentDataUpdationException {
-
-        // Unix time in seconds
-        long updatedTime = System.currentTimeMillis() / 1000;
-        String updateAuthorizationStatusPrepStatement = sqlStatements.getUpdateAuthorizationStatusPreparedStatement();
-
-        try (PreparedStatement updateAuthorizationStatusPreparedStmt =
-                     connection.prepareStatement(updateAuthorizationStatusPrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to update authorization status");
-
-            updateAuthorizationStatusPreparedStmt.setString(1, newAuthorizationStatus);
-            updateAuthorizationStatusPreparedStmt.setLong(2, updatedTime);
-            updateAuthorizationStatusPreparedStmt.setString(3, authorizationId);
-
-            // with result, we can determine whether the updating was successful or not
-            int result = updateAuthorizationStatusPreparedStmt.executeUpdate();
-
-            // Confirm that the data are updated successfully
-            if (result > 0) {
-                log.debug("Updated the authorization status successfully");
-            } else {
-                throw new ConsentDataUpdationException("Failed to update consent status properly.");
-            }
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_STATUS_UPDATE_ERROR_MSG, e);
-            throw new ConsentDataUpdationException(ConsentMgtDAOConstants
-                    .CONSENT_AUTHORIZATION_STATUS_UPDATE_ERROR_MSG, e);
-        }
-    }
-
-    @Override
-    public void updateAuthorizationUser(Connection connection, String authorizationId, String userId)
-            throws
-            ConsentDataUpdationException {
-        // Unix time in seconds
-        long updatedTime = System.currentTimeMillis() / 1000;
-        String updateAuthorizationUserPrepStatement = sqlStatements.getUpdateAuthorizationUserPreparedStatement();
-
-        try (PreparedStatement updateAuthorizationUserPreparedStmt =
-                     connection.prepareStatement(updateAuthorizationUserPrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to update authorization user");
-
-            updateAuthorizationUserPreparedStmt.setString(1, userId);
-            updateAuthorizationUserPreparedStmt.setLong(2, updatedTime);
-            updateAuthorizationUserPreparedStmt.setString(3, authorizationId);
-
-            // with result, we can determine whether the updating was successful or not
-            int result = updateAuthorizationUserPreparedStmt.executeUpdate();
-
-            // Confirm that the data are updated successfully
-            if (result > 0) {
-                log.debug("Updated the authorization user successfully");
-            } else {
-                throw new ConsentDataUpdationException("Failed to update authorization user properly.");
-            }
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_USER_UPDATE_ERROR_MSG, e);
-            throw new ConsentDataUpdationException(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_USER_UPDATE_ERROR_MSG,
-                    e);
-        }
-    }
-
-
-    @Override
-    public ArrayList<ConsentMappingResource> getConsentMappingResources(Connection connection, String authorizationId)
-            throws
-            ConsentDataRetrievalException {
-
-        ArrayList<ConsentMappingResource> retrievedConsentMappingResources = new ArrayList<>();
-        String getMappingResourcePrepStatement = sqlStatements.getGetConsentMappingResourcesPreparedStatement();
-
-        try (PreparedStatement getConsentMappingResourcePreparedStmt =
-                     connection.prepareStatement(getMappingResourcePrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to retrieve consent mapping resources");
-
-            getConsentMappingResourcePreparedStmt.setString(1, authorizationId);
-
-            try (ResultSet resultSet = getConsentMappingResourcePreparedStmt.executeQuery()) {
-                if (resultSet.isBeforeFirst()) {
-                    while (resultSet.next()) {
-                        retrievedConsentMappingResources.add(ConsentManagementDAOUtil
-                                .getConsentMappingResourceWithData(resultSet));
-                    }
-                } else {
-                    log.debug(String.format("No records are found for authorization ID : %s",
-                            authorizationId.replaceAll("[\r\n]", "")));
-                }
-            } catch (SQLException e) {
-                log.error("Error occurred while reading consent mapping resources", e);
-                throw new ConsentDataRetrievalException(String.format("Error occurred while retrieving consent " +
-                        "mapping resources for authorization ID : %s", authorizationId), e);
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved the consent mapping resources for authorization ID : %s",
-                        authorizationId.replaceAll("[\r\n]", "")));
-            }
-        } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_MAPPING_RETRIEVE_ERROR_MSG, e);
-        }
-        return retrievedConsentMappingResources;
-    }
-
-    @Override
-    public void updateConsentMappingStatus(Connection connection, ArrayList<String> mappingIDs, String mappingStatus)
-            throws
-            ConsentDataUpdationException {
-
-        int[] result;
-        String updateConsentMappingStatusPrepStatement = sqlStatements.getUpdateConsentMappingStatusPreparedStatement();
-
-        try (PreparedStatement updateConsentMappingStatusPreparedStmt =
-                     connection.prepareStatement(updateConsentMappingStatusPrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to update consent mapping status");
-
-            for (String mappingID : mappingIDs) {
-                updateConsentMappingStatusPreparedStmt.setString(1, mappingStatus);
-                updateConsentMappingStatusPreparedStmt.setString(2, mappingID);
-                updateConsentMappingStatusPreparedStmt.addBatch();
-            }
-
-            // with result, we can determine whether the updating was successful or not
-            result = updateConsentMappingStatusPreparedStmt.executeBatch();
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_STATUS_UPDATE_ERROR_MSG, e);
-            throw new ConsentDataUpdationException(ConsentMgtDAOConstants.CONSENT_MAPPING_STATUS_UPDATE_ERROR_MSG, e);
-        }
-
-        // An empty array or an array with value -3 means the batch execution is failed
-        if (result.length != 0 && IntStream.of(result).noneMatch(value -> value == -3)) {
-            log.debug("Updated the consent mapping statuses of matching records successfully");
-        } else {
-            throw new ConsentDataUpdationException("Failed to update consent mapping status properly.");
-        }
-    }
-
-    @Override
     public boolean storeConsentAttributes(Connection connection, ConsentAttributes consentAttributes)
             throws
             ConsentDataInsertionException {
@@ -661,9 +533,10 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             // with result, we can determine whether the updating was successful or not
             result = storeConsentAttributesPreparedStmt.executeBatch();
+
         } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_ATTRIBUTES_STORE_ERROR_MSG, e);
-            throw new ConsentDataInsertionException(ConsentMgtDAOConstants.CONSENT_ATTRIBUTES_STORE_ERROR_MSG, e);
+            log.error(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR.getMessage(), e);
+            throw new ConsentDataInsertionException(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR, e);
         }
 
         /*
@@ -675,7 +548,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.debug("Stored the consent attributes successfully");
             return true;
         } else {
-            throw new ConsentDataInsertionException("Failed to store consent attribute data properly.");
+            log.error(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR_DATABASE.getMessage());
+            throw new ConsentDataInsertionException(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR_DATABASE);
         }
     }
 
@@ -929,81 +803,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-    @Override
-    public boolean storeConsentFile(Connection connection, ConsentFile consentFileResource)
-            throws
-            ConsentDataInsertionException {
-
-        int result;
-        String storeConsentMappingPrepStatement = sqlStatements.getStoreConsentFilePreparedStatement();
-
-        try (PreparedStatement storeConsentFilePreparedStmt =
-                     connection.prepareStatement(storeConsentMappingPrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to store consent file resource");
-
-            storeConsentFilePreparedStmt.setString(1, consentFileResource.getConsentId());
-            storeConsentFilePreparedStmt.setString(2, consentFileResource.getConsentFile());
-
-            // with result, we can determine whether the insertion was successful or not
-            result = storeConsentFilePreparedStmt.executeUpdate();
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_FILE_STORE_ERROR_MSG, e);
-            throw new ConsentDataInsertionException(ConsentMgtDAOConstants.CONSENT_FILE_STORE_ERROR_MSG, e);
-        }
-
-        // Confirm that the data are inserted successfully
-        if (result > 0) {
-            log.debug("Stored the consent file resource successfully");
-            return true;
-        } else {
-            throw new ConsentDataInsertionException("Failed to store consent file resource data properly.");
-        }
-    }
-
-    @Override
-    public ConsentFile getConsentFile(Connection connection, String consentId)
-            throws
-            ConsentDataRetrievalException {
-
-        ConsentFile receivedConsentFileResource = new ConsentFile();
-        String getConsentFilePrepStatement = sqlStatements.getGetConsentFileResourcePreparedStatement();
-
-        try (PreparedStatement getConsentFileResourcePreparedStmt =
-                     connection.prepareStatement(getConsentFilePrepStatement)) {
-
-            log.debug("Setting parameters to prepared statement to retrieve consent file resource");
-
-            getConsentFileResourcePreparedStmt.setString(1, consentId);
-
-            try (ResultSet resultSet = getConsentFileResourcePreparedStmt.executeQuery()) {
-                if (resultSet.next()) {
-                    String storedConsentID = resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID);
-                    String consentFile = resultSet.getString(ConsentMgtDAOConstants.CONSENT_FILE);
-
-                    receivedConsentFileResource.setConsentId(storedConsentID);
-                    receivedConsentFileResource.setConsentFile(consentFile);
-                } else {
-                    log.error(String.format("No records are found for consent ID : %s",
-                            consentId.replaceAll("[\r\n]", "")));
-                    throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
-                }
-            } catch (SQLException e) {
-                log.error("Error occurred while reading consent file resource");
-                throw new ConsentDataRetrievalException(String.format("Error occurred while retrieving consent file" +
-                        " resource for consent ID : %s", consentId.replaceAll("[\r\n]", "")), e);
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved the consent file resource for consent ID : %s",
-                        consentId.replaceAll("[\r\n]", "")));
-            }
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_FILE_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_FILE_RETRIEVE_ERROR_MSG, e);
-        }
-        return receivedConsentFileResource;
-    }
 
     @Override
     @SuppressFBWarnings("SQL_INJECTION_JDBC")
@@ -1114,84 +913,16 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 return detailedConsentResources;
             } catch (SQLException e) {
                 log.error("Error occurred while searching detailed consent resources", e);
-                throw new ConsentDataRetrievalException("Error occurred while searching detailed " +
-                        "consent resources", e);
+                throw new ConsentDataRetrievalException(ConsentError.CONSENT_SEARCH_ERROR_IN_DATABASE, e);
             }
         } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_SEARCH_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_SEARCH_ERROR_MSG);
+            log.error(ConsentError.CONSENT_SEARCH_ERROR.getMessage(), e);
+            throw new ConsentDataRetrievalException(ConsentError.CONSENT_SEARCH_ERROR);
         }
     }
 
-    @Override
-    @SuppressFBWarnings("SQL_INJECTION_JDBC")
-    // Suppressed content - connection.prepareStatement(searchAuthorizationResourcesPrepStatement)
-    // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
-    // Suppressed warning count - 1
-    public ArrayList<AuthorizationResource> searchConsentAuthorizations(Connection connection, String consentId,
-                                                                        String userId)
-            throws
-            ConsentDataRetrievalException {
 
-        ArrayList<AuthorizationResource> retrievedAuthorizationResources = new ArrayList<>();
-        Map<String, String> conditions = new HashMap<>();
-        if (StringUtils.trimToNull(consentId) != null) {
-            conditions.put("CONSENT_ID", consentId);
-        }
-        if (StringUtils.trimToNull(userId) != null) {
-            conditions.put("USER_ID", userId);
-        }
-        String whereClause = ConsentManagementDAOUtil.constructAuthSearchPreparedStatement(conditions);
-        String searchAuthorizationResourcesPrepStatement =
-                sqlStatements.getSearchAuthorizationResourcesPreparedStatement(whereClause);
-
-        try (PreparedStatement getSearchAuthorizationResourcesPreparedStmt =
-                     connection.prepareStatement(searchAuthorizationResourcesPrepStatement)) {
-
-            if (log.isDebugEnabled()) {
-                log.debug("Setting parameters to prepared statement to search authorization resources");
-            }
-
-            Iterator<Map.Entry<String, String>> conditionIterator = conditions.entrySet().iterator();
-
-            for (int count = 1; count <= conditions.size(); count++) {
-                getSearchAuthorizationResourcesPreparedStmt.setString(count, conditionIterator.next().getValue());
-            }
-
-            try (ResultSet resultSet = getSearchAuthorizationResourcesPreparedStmt.executeQuery()) {
-                if (resultSet.isBeforeFirst()) {
-                    while (resultSet.next()) {
-                        AuthorizationResource authorizationResource = new AuthorizationResource();
-                        authorizationResource
-                                .setAuthorizationId(resultSet.getString(ConsentMgtDAOConstants.AUTH_ID));
-                        authorizationResource.setConsentId(resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID));
-                        authorizationResource
-                                .setUserId(resultSet.getString(ConsentMgtDAOConstants.USER_ID));
-                        authorizationResource.setAuthorizationStatus(resultSet
-                                .getString(ConsentMgtDAOConstants.AUTH_STATUS));
-                        authorizationResource
-                                .setAuthorizationType(resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE));
-                        authorizationResource.setUpdatedTime(resultSet.getLong(ConsentMgtDAOConstants.UPDATED_TIME));
-                        retrievedAuthorizationResources.add(authorizationResource);
-                    }
-                } else {
-                    log.error("No records are found for the provided inputs");
-                    throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
-                }
-            } catch (SQLException e) {
-                log.error("Error occurred while searching authorization resources", e);
-                throw new ConsentDataRetrievalException(ConsentMgtDAOConstants
-                        .CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG, e);
-            }
-            log.debug("Retrieved the authorization resources successfully");
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants
-                    .CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG, e);
-        }
-        return retrievedAuthorizationResources;
-    }
-
+    // TODO : history not yet implemented
     @Override
     public ConsentStatusAuditRecord storeConsentStatusAuditRecord(Connection connection,
                                                                   ConsentStatusAuditRecord consentStatusAuditRecord)
@@ -1239,7 +970,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             consentStatusAuditRecord.setActionTime(actionTime);
             return consentStatusAuditRecord;
         } else {
-            throw new ConsentDataInsertionException("Failed to store consent status audit record data properly.");
+            log.error(ConsentError.STATUS_AUDIT_INSERTION_ERROR_IN_DATABASE.getMessage());
+            throw new ConsentDataInsertionException(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE);
         }
     }
 
@@ -1509,65 +1241,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-    @Override
-    @SuppressFBWarnings("SQL_INJECTION_JDBC")
-    // Suppressed content - connection.prepareStatement(expiringConsentStatement)
-    // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
-    // Suppressed warning count - 1
-    public ArrayList<DetailedConsentResource> getExpiringConsents(Connection connection, String orgID,
-                                                                  String statusesEligibleForExpiration)
-            throws
-            ConsentDataRetrievalException {
-
-        List<String> statusesEligibleForExpirationList = Arrays.stream(statusesEligibleForExpiration
-                        .split(",")).filter(status -> !status.isEmpty())
-                .collect(Collectors.toList());
-
-        String statusesEligibleForExpirationCondition = ConsentManagementDAOUtil
-                .constructStatusesEligibleForExpirationCondition(statusesEligibleForExpirationList);
-        String expiringConsentStatement = sqlStatements.getSearchExpiringConsentPreparedStatement(
-                statusesEligibleForExpirationCondition);
-
-        try (PreparedStatement preparedStatement =
-                     connection.prepareStatement(expiringConsentStatement)) {
-
-            log.debug("Setting parameters to prepared statement to fetch consents eligible for expiration");
-
-            ArrayList<String> consentIdList = new ArrayList<>();
-
-            // populate prepared statement
-            int parameterIndex = 0;
-            preparedStatement.setString(++parameterIndex, ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE);
-            for (String status : statusesEligibleForExpirationList) {
-                preparedStatement.setString(++parameterIndex, status);
-            }
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.isBeforeFirst()) {
-                    while (resultSet.next()) {
-                        consentIdList.add(resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID));
-                    }
-                } else {
-                    log.debug("No consents found for expiration check eligibility.");
-                }
-                if (!consentIdList.isEmpty()) {
-                    return searchConsents(connection, null, consentIdList, null, null, null,
-                            null, null, null, null, null);
-                } else {
-                    return new ArrayList<>();
-                }
-
-            } catch (SQLException e) {
-                log.error("Error occurred while searching consents eligible for expiration", e);
-                throw new ConsentDataRetrievalException("Error occurred while searching consents" +
-                        " eligible for expiration", e);
-            }
-        } catch (SQLException e) {
-            log.error("Error while searching consents eligible for expiration", e);
-            throw new ConsentDataRetrievalException("Error while updating searching consents eligible for" +
-                    " expiration", e);
-        }
-    }
 
     @Override
     public void deleteConsent(Connection connection, String consentId) {

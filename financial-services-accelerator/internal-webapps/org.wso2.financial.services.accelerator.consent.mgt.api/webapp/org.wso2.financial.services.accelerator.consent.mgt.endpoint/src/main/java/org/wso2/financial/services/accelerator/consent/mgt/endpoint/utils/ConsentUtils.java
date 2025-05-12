@@ -1,7 +1,5 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,10 +8,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceRequestBody;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceResponseBody;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceRequestBody;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceResponseBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,59 +53,10 @@ public class ConsentUtils {
         }
     }
 
-    /**
-     * copy propoerties from consentResource DTO to consentResource DAO
-     *
-     * @param consentResourceDTO
-     */
-    public static void copyPropertiesToConsentResource(
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource consentResource,
-            ConsentResourceRequestBody consentResourceDTO) throws
-            ConsentMgtException {
-        consentResource.setConsentType(consentResourceDTO.getConsentType());
-        consentResource.setClientId(consentResourceDTO.getClientId());
-        consentResource.setRecurringIndicator(consentResourceDTO.getRecurringIndicator());
-        consentResource.setExpiryTime(consentResourceDTO.getExpiryTime());
-        consentResource.setConsentAttributes(ConsentUtils.convertToMap(consentResourceDTO.getConsentAttributes()));
-        consentResource.setReceipt(consentResourceDTO.getReceipt());
-        consentResource.setCurrentStatus(consentResourceDTO.getCurrentStatus());
 
 
-    }
-
-    /**
-     * copy properties from authorizationResourceDTo to authorizationResource
-     */
-    public static void copyPropertiesToAuthorizationResource(
-            org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource authorizationResource,
-            AuthorizationResourceRequestBody authorizationResourceDTO) throws
-            JsonProcessingException {
-        authorizationResource.setAuthorizationType(authorizationResourceDTO.getAuthorizationType());
-        authorizationResource.setAuthorizationStatus(authorizationResourceDTO.getAuthorizationStatus());
-        authorizationResource.setUserId(authorizationResourceDTO.getUserId());
-        authorizationResource.setResource(objectMapper.writeValueAsString(authorizationResourceDTO.getResource()));
-    }
 
 
-    /**
-     * copy properties from consentResource to consentResponse
-     */
-    public static void buildAuthorizationResourceResponse(
-            AuthorizationResourceResponseBody authorizationResourceResponse,
-            AuthorizationResource authorizationResource)
-            throws
-            JsonProcessingException {
-        authorizationResourceResponse.setAuthId(authorizationResource.getAuthorizationId());
-        authorizationResourceResponse.setUserId(authorizationResource.getUserId());
-        authorizationResourceResponse.setAuthorizationStatus(authorizationResource.getAuthorizationStatus());
-        authorizationResourceResponse.setAuthorizationType(authorizationResource.getAuthorizationType());
-
-
-        authorizationResourceResponse.setResource(
-                new net.minidev.json.JSONObject(objectMapper.readValue(
-                        authorizationResource.getResource(), new TypeReference<Map<String, Object>>() {
-                        })));
-    }
 
     /**
      * copy properties from consentResource to consentResponse
@@ -129,35 +74,6 @@ public class ConsentUtils {
     }
 
 
-    /**
-     * copy properties to consentResourceResponseBody from consentResource and authorizationResource
-     */
-    public static void buildConsentResourceResponse(ConsentResourceResponseBody consentResourceResponseBody,
-                                                    DetailedConsentResource consentResource,
-                                                    ArrayList<AuthorizationResource> authorizationResources) throws
-            JsonProcessingException {
-        consentResourceResponseBody.setConsentId(consentResource.getConsentId());
-        consentResourceResponseBody.setClientId(consentResource.getClientId());
-        consentResourceResponseBody.setConsentType(consentResource.getConsentType());
-        consentResourceResponseBody.setRecurringIndicator(consentResource.isRecurringIndicator());
-        consentResourceResponseBody.setCreatedTime((int) consentResource.getCreatedTime());
-        consentResourceResponseBody.setExpiryTime((int) consentResource.getExpiryTime());
-        consentResourceResponseBody.setCurrentStatus(consentResource.getCurrentStatus());
-        consentResourceResponseBody.setUpdatedTime((int) consentResource.getUpdatedTime());
-        consentResourceResponseBody.setReceipt(consentResource.getReceipt());
-        consentResourceResponseBody.setConsentAttributes(consentResource.getConsentAttributes());
-
-        if (authorizationResources != null) {
-            ArrayList<AuthorizationResourceResponseBody> authResponses = new ArrayList<>();
-            for (AuthorizationResource authorizationResource : authorizationResources) {
-
-                AuthorizationResourceResponseBody authResponse = new AuthorizationResourceResponseBody();
-                buildAuthorizationResourceResponse(authResponse, authorizationResource);
-                authResponses.add(authResponse);
-            }
-            consentResourceResponseBody.setAuthorizationResources(authResponses);
-        }
-    }
 
 
     /**

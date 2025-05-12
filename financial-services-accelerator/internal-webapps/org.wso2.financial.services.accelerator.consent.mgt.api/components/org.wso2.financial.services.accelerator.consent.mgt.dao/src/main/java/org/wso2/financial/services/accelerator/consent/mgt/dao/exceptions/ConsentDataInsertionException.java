@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,16 +18,34 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions;
 
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
+
 /**
  * ConsentDataInsertionException.
  */
 public class ConsentDataInsertionException extends Exception {
 
-    public ConsentDataInsertionException(String message) {
-        super(message);
+    private ConsentError consentError;
+
+    public ConsentDataInsertionException(String error) {
+        super(error);
+    }
+
+    public ConsentDataInsertionException(ConsentError error) {
+        this.consentError = error;
+    }
+
+    public ConsentDataInsertionException(ConsentError error, Throwable e) {
+        super(e);
+        this.consentError = error;
     }
 
     public ConsentDataInsertionException(String message, Throwable e) {
         super(message, e);
     }
+
+    public ConsentError getConsentError() {
+        return this.consentError;
+    }
+
 }
