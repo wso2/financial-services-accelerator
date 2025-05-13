@@ -1,3 +1,0 @@
-0:0:0:0:0:0:0:1 - - [19/Feb/2025:14:42:41 +0530] "GET /endpoint HTTP/1.1" 500 2693
-0:0:0:0:0:0:0:1 - - [19/Feb/2025:14:42:41 +0530] "GET /favicon.ico HTTP/1.1" 404 682
-0:0:0:0:0:0:0:1 - - [19/Feb/2025:14:43:10 +0530] "GET /endpoint/admin/search?consentIds=f9b8d67e-8cac-45cd-b4f3-d5aab2bbd64f HTTP/1.1" 500 183
