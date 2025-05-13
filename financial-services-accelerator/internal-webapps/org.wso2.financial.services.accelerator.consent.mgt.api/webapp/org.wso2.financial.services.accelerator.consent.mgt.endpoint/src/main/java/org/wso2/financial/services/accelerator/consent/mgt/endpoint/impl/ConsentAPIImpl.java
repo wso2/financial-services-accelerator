@@ -47,7 +47,6 @@ public class ConsentAPIImpl {
     }
 
 
-    //============================================= consent resource =============================================//
 
     /**
      * Handles the API request to create a new consent resource.
