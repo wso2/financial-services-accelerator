@@ -89,7 +89,6 @@ public class ConsentAPIImpl {
         }
     }
 
-
     /**
      * Handles the API request to retrieve a specific consent resource by its ID.
      * This method fetches the full details of a consent resource, including its type, status,
