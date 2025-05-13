@@ -1,3 +1,0 @@
-<module name="FileLength">
-    <property name="max" value="3000"/>  <!-- Change this value as needed -->
-</module>
