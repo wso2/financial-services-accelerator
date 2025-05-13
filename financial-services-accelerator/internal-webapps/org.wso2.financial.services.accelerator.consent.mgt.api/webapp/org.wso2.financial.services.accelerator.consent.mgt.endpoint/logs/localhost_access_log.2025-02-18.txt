@@ -1,4 +1,0 @@
-0:0:0:0:0:0:0:1 - - [18/Feb/2025:14:10:26 +0530] "GET /consent/admin/search?consentIds=f9b8d67e-8cac-45cd-b4f3-d5aab2bbd64f HTTP/1.1" 404 682
-0:0:0:0:0:0:0:1 - - [18/Feb/2025:14:10:41 +0530] "GET /endpoint/admin/search?consentIds=f9b8d67e-8cac-45cd-b4f3-d5aab2bbd64f HTTP/1.1" 500 183
-0:0:0:0:0:0:0:1 - - [18/Feb/2025:14:11:16 +0530] "GET / HTTP/1.1" 404 682
-0:0:0:0:0:0:0:1 - - [18/Feb/2025:14:11:16 +0530] "GET /favicon.ico HTTP/1.1" 404 682
