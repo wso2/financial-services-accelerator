@@ -90,8 +90,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         try (PreparedStatement storeConsentPreparedStmt = connection.prepareStatement(storeConsentPrepStatement)) {
 
             log.debug("Setting parameters to prepared statement to store consent resource");
-            storeConsentPreparedStmt.setString(1, consentResource.getOrgID());
-
+            storeConsentPreparedStmt.setString(1, consentResource.getOrgInfo());
             storeConsentPreparedStmt.setString(2, consentId);
             storeConsentPreparedStmt.setString(3, consentResource.getReceipt());
             storeConsentPreparedStmt.setLong(4, createdTime);
@@ -118,7 +117,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 throw new ConsentDataInsertionException(ConsentError.CONSENT_INSERTION_ERROR_IN_DATABASE);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_INSERTION_ERROR, e);
+            log.error(ConsentError.CONSENT_INSERTION_ERROR.getMessage(), e);
             throw new ConsentDataInsertionException(ConsentError.CONSENT_INSERTION_ERROR);
         }
     }
@@ -161,46 +160,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-    @Override
-    public ConsentResource getConsentResourceWithAttributes(Connection connection, String consentId)
-            throws
-            ConsentDataRetrievalException {
 
-        String getConsentResourcePrepStatement = sqlStatements.getGetConsentWithConsentAttributesPreparedStatement();
-
-        try (PreparedStatement getConsentResourcePreparedStmt =
-                     connection.prepareStatement(getConsentResourcePrepStatement, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                             ResultSet.CONCUR_READ_ONLY)) {
-
-            log.debug("Setting parameters to prepared statement to retrieve consent resource with consent " +
-                    "attributes");
-
-            getConsentResourcePreparedStmt.setString(1, consentId);
-
-            try (ResultSet resultSet = getConsentResourcePreparedStmt.executeQuery()) {
-                if (resultSet.next()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Retrieved the consent resource with consent attributes for " +
-                                "consent ID : %s ", consentId.replaceAll("[\r\n]", "")));
-                    }
-                    return ConsentManagementDAOUtil.setDataToConsentResourceWithAttributes(resultSet);
-                } else {
-                    log.error(String.format("No records are found for consent ID : %s",
-                            consentId.replaceAll("[\r\n]", "")));
-                    throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
-                }
-            } catch (SQLException e) {
-                String errorMessage = String.format("Error occurred while retrieving consent " +
-                        "resource with consent attributes for consent ID : %s", consentId.replaceAll("[\r\n]", ""));
-                log.error(errorMessage, e);
-                throw new ConsentDataRetrievalException(errorMessage, e);
-            }
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_WITH_ATTRIBUTES_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_WITH_ATTRIBUTES_RETRIEVE_ERROR_MSG,
-                    e);
-        }
-    }
 
     @Override
     public DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgInfo)
@@ -395,21 +355,21 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public AuthorizationResource getAuthorizationResource(Connection connection, String authorizationId, String orgID)
+    public AuthorizationResource getAuthorizationResource(Connection connection, String authorizationId, String orgInfo)
             throws
             ConsentDataRetrievalException {
 
         String getAuthorizationResourcePrepStatement = sqlStatements.getGetAuthorizationResourcePreparedStatement();
 
-        try (PreparedStatement getConsentResourcePreparedStmt =
+        try (PreparedStatement getAuthorizationResourcePreparedStmt =
                      connection.prepareStatement(getAuthorizationResourcePrepStatement)) {
 
             log.debug("Setting parameters to prepared statement to retrieve consent authorization resource");
 
-            getConsentResourcePreparedStmt.setString(1, authorizationId);
-            getConsentResourcePreparedStmt.setString(2, orgID);
+            getAuthorizationResourcePreparedStmt.setString(1, authorizationId);
+            getAuthorizationResourcePreparedStmt.setString(2, orgInfo);
 
-            try (ResultSet resultSet = getConsentResourcePreparedStmt.executeQuery()) {
+            try (ResultSet resultSet = getAuthorizationResourcePreparedStmt.executeQuery()) {
                 if (resultSet.next()) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Retrieved the consent authorization resource for authorization ID" +
@@ -431,9 +391,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                         ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG, e);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.
-                    CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG, e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR.getMessage(), e);
+            throw new ConsentDataRetrievalException(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR);
         }
     }
 
@@ -470,13 +429,11 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 log.debug("Updated the authorization resource successfully");
                 return authorizationResource;
             } else {
-                throw new ConsentDataUpdationException("Failed to update authorization resource properly.");
+                throw new ConsentDataUpdationException(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG, e);
-            throw new ConsentDataUpdationException(ConsentMgtDAOConstants
-                    .CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG,
-                    e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR.getMessage(), e);
+            throw new ConsentDataUpdationException(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR);
         }
     }
 
@@ -504,12 +461,12 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 throw new ConsentDataDeletionException("Failed to delete authorization resource properly.");
             }
         } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG, e);
-            throw new ConsentDataDeletionException(ConsentMgtDAOConstants
-                    .CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG,
-                    e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_DELETE_ERROR.getMessage());
+            throw new ConsentDataDeletionException(ConsentError.AUTHORIZATION_RESOURCE_DELETE_ERROR);
         }
     }
+
+    ///  TODO : consent attributes not yet implemented and tested in the api
 
 
     @Override
@@ -813,7 +770,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
 
     public ArrayList<DetailedConsentResource> searchConsents(Connection connection,
-                                                             String orgID, ArrayList<String> consentIDs,
+                                                             String orgInfo, ArrayList<String> consentIDs,
                                                              ArrayList<String> clientIDs,
                                                              ArrayList<String> consentTypes,
                                                              ArrayList<String> consentStatuses,
@@ -828,11 +785,11 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         Map<String, ArrayList<String>> applicableConditionsMap = new HashMap<>();
 
 
-        if (orgID == null) {
-            orgID = ConsentMgtDAOConstants.DEFAULT_ORG;
+        if (orgInfo == null) {
+            orgInfo = ConsentMgtDAOConstants.DEFAULT_ORG;
         }
         ArrayList<String> orgIDs = new ArrayList<>();
-        orgIDs.add(orgID);
+        orgIDs.add(orgInfo);
         validateAndSetSearchConditions(orgIDs, applicableConditionsMap, consentIDs, clientIDs, consentTypes,
                 consentStatuses);
 
@@ -1243,7 +1200,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
 
     @Override
-    public void deleteConsent(Connection connection, String consentId) {
+    public void deleteConsent(Connection connection, String consentId) throws
+            ConsentDataDeletionException {
 
         List<String> deleteStatements = sqlStatements.getDeleteConsentCascadeStatements();
 
@@ -1253,8 +1211,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             for (String query : deleteStatements) {
                 try (PreparedStatement ps = connection.prepareStatement(query)) {
                     ps.setString(1, consentId);
-                    int result = ps.executeUpdate();
-                    log.debug("Executed delete query, affected rows: " + result);
+                    ps.executeUpdate();
                 }
             }
 
@@ -1266,14 +1223,17 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             try {
                 connection.rollback();
                 log.error("Transaction rolled back due to error while deleting consent", e);
+                throw new ConsentDataDeletionException(ConsentError.CONSENT_DELETE_ERROR);
             } catch (SQLException rollbackEx) {
                 log.error("Error during rollback after failed consent deletion", rollbackEx);
+                throw new ConsentDataDeletionException(ConsentError.CONSENT_DELETE_ERROR);
             }
         } finally {
             try {
                 connection.setAutoCommit(true); // Reset autocommit
             } catch (SQLException e) {
                 log.error("Failed to reset autocommit to true", e);
+
             }
         }
     }
@@ -1302,7 +1262,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     consentStatuses);
         }
         if (CollectionUtils.isNotEmpty(orgIDs)) {
-            applicableConditionsMap.put(ConsentMgtDAOConstants.COLUMNS_MAP.get(ConsentMgtDAOConstants.ORG_ID),
+            applicableConditionsMap.put(ConsentMgtDAOConstants.COLUMNS_MAP.get(ConsentMgtDAOConstants.ORG_INFO),
                     orgIDs);
         }
     }
@@ -1316,7 +1276,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         while (resultSet.next()) {
 
             Map<String, String> consentAttributesMap = new HashMap<>();
-            ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
             ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
             DetailedConsentResource detailedConsentResource = ConsentManagementDAOUtil
                     .setConsentDataToDetailedConsentResource(resultSet);
@@ -1336,16 +1295,10 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     }
                 }
             }
-            // Set authorization data
             setAuthorizationDataInResponseForGroupedQuery(authorizationResources, resultSet,
                     detailedConsentResource.getConsentId());
-            // Set consent account mapping data if available
-//            setAccountConsentMappingDataInResponse(consentMappingResources, resultSet);
-
             detailedConsentResource.setConsentAttributes(consentAttributesMap);
             detailedConsentResource.setAuthorizationResources(authorizationResources);
-//            detailedConsentResource.setConsentMappingResources(consentMappingResources);
-
             detailedConsentResources.add(detailedConsentResource);
 
         }

@@ -21,13 +21,11 @@ package org.wso2.financial.services.accelerator.consent.mgt.service.util;
 import net.minidev.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import org.wso2.financial.services.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +64,8 @@ public class ConsentMgtServiceTestData {
     public static final String SAMPLE_AUTHORIZATION_ID_1 = "88888";
     public static final String SAMPLE_MAPPING_ID_2 = "sampleMappingId2";
     public static final String CONSENT_ID = "464ef174-9877-4c71-940c-93d6e069eaf9";
+    public static final long SAMPLE_EXPIRY_TIME = (System.currentTimeMillis() / 1000) + 100;
+    public static final String AUTHORIZATION_ID = "testAuthId";
     public static final String SAMPLE_CONSUMED_STATUS = "Consumed";
     public static final String UNMATCHED_AUTHORIZATION_ID = "3333";
     public static final long SAMPLE_CONSENT_AMENDMENT_TIMESTAMP = 1638337852;
@@ -130,6 +130,7 @@ public class ConsentMgtServiceTestData {
             new ArrayList<String>(Arrays.asList(SAMPLE_MAPPING_ID, SAMPLE_MAPPING_ID_2));
     public static final ArrayList<String> UNMATCHED_MAPPING_IDS = new ArrayList<String>(Arrays.asList("4444", "5555"));
 
+
     public static ConsentResource getSampleTestConsentResource() {
 
         return getSampleTestConsentResource(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS);
@@ -153,13 +154,6 @@ public class ConsentMgtServiceTestData {
 
     }
 
-    public static ConsentResource getSampleStoredConsentResource(String status) {
-        ConsentResource consentResource = getSampleTestConsentResource(status);
-        consentResource.setConsentId(UUID.randomUUID().toString());
-
-        return consentResource;
-
-    }
 
     public static ConsentResource getSampleStoredTestConsentResourceWithAttributes() {
 
@@ -250,18 +244,6 @@ public class ConsentMgtServiceTestData {
         return authorizationResources;
     }
 
-    public static ArrayList<AuthorizationResource>
-    getSampleTestAuthorizationResourceListWithAuthIdAndConsentMappingId() {
-        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-        AuthorizationResource authorizationResource = new AuthorizationResource(ConsentMgtServiceTestData.CONSENT_ID,
-                ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_AUTH_TYPE,
-                ConsentMgtServiceTestData.SAMPLE_RESOURCE.toString(), System.currentTimeMillis() / 1000);
-        authorizationResource.setAuthorizationId(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1);
-        ;
-        authorizationResources.add(authorizationResource);
-        return authorizationResources;
-    }
 
 
     public static AuthorizationResource getSampleTestAuthorizationResourceWithConsentMapping(String consentId,
@@ -284,14 +266,7 @@ public class ConsentMgtServiceTestData {
                 UUID.randomUUID().toString());
     }
 
-    public static ArrayList<AuthorizationResource> getSampleStoredTestAuthorizationResourcesList() {
 
-        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-        authorizationResources.add(ConsentMgtServiceTestData.getSampleStoredTestAuthorizationResource());
-        authorizationResources.add(ConsentMgtServiceTestData.getSampleStoredTestAuthorizationResource());
-
-        return authorizationResources;
-    }
 
     public static ConsentMappingResource getSampleTestConsentMappingResource(String authorizationId) {
 
@@ -318,18 +293,7 @@ public class ConsentMgtServiceTestData {
         return consentMappingResources;
     }
 
-    // New method to get consent mapping resource without mapping and authorization id
-    public static ArrayList<ConsentMappingResource> getSampleTestConsentMappingResourceList() {
 
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
-        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-        consentMappingResource.setResource(ConsentMgtServiceTestData.SAMPLE_RESOURCE);
-        consentMappingResource.setMappingStatus(ConsentMgtServiceTestData.SAMPLE_MAPPING_STATUS);
-
-        consentMappingResources.add(consentMappingResource);
-        consentMappingResources.add(consentMappingResource);
-        return consentMappingResources;
-    }
 
     public static ConsentMappingResource getSampleTestInactiveConsentMappingResource(String authorizationId) {
 
@@ -349,39 +313,13 @@ public class ConsentMgtServiceTestData {
                 ConsentMgtServiceTestData.SAMPLE_ACTION_BY, ConsentMgtServiceTestData.SAMPLE_PREVIOUS_STATUS);
     }
 
-    public static ConsentStatusAuditRecord getSampleStoredTestConsentStatusAuditRecord(String sampleID,
-                                                                                       String currentStatus) {
-
-        ConsentStatusAuditRecord consentStatusAuditRecord = getSampleTestConsentStatusAuditRecord(sampleID,
-                currentStatus);
-        consentStatusAuditRecord.setStatusAuditID(sampleID);
-
-        return consentStatusAuditRecord;
-    }
-
-    public static ConsentFile getSampleConsentFileObject(String fileContent) {
-
-        return new ConsentFile(UUID.randomUUID().toString(), fileContent);
-    }
 
     public static ConsentAttributes getSampleTestConsentAttributesObject(String consentId) {
 
         return new ConsentAttributes(consentId, ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
     }
 
-    public static ArrayList<AuthorizationResource> getSampleAuthorizationResourcesList(ArrayList<String> consentIDs) {
 
-        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-
-        for (String consentId : consentIDs) {
-            for (int j = 0; j < 2; j++) {
-                AuthorizationResource authorizationResource = getSampleTestAuthorizationResource(consentId,
-                        consentId);
-                authorizationResources.add(authorizationResource);
-            }
-        }
-        return authorizationResources;
-    }
 
     public static DetailedConsentResource getSampleDetailedStoredTestConsentResourceWithMultipleAccountIDs() {
 
@@ -402,18 +340,7 @@ public class ConsentMgtServiceTestData {
         return getSampleDetailedConsentResource(authorizationResources, consentMappingResources);
     }
 
-    public static ArrayList<ConsentMappingResource> getSampleConsentMappingResourcesList(ArrayList<String> authIDs) {
 
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
-
-        for (String authID : authIDs) {
-            for (int j = 0; j < 2; j++) {
-                ConsentMappingResource consentMappingResource = getSampleTestConsentMappingResource(authID);
-                consentMappingResources.add(consentMappingResource);
-            }
-        }
-        return consentMappingResources;
-    }
 
     public static ConsentMappingResource getSampleStoredTestConsentMappingResource(String authorizationId) {
 
@@ -478,36 +405,7 @@ public class ConsentMgtServiceTestData {
         return getSampleDetailedConsentResource(authorizationResources, consentMappingResources);
     }
 
-    public static Map<String, ConsentHistoryResource> getSampleDetailedStoredTestConsentHistoryDataMap() {
 
-        Map<String, ConsentHistoryResource> consentAmendmentHistoryDataMap = new LinkedHashMap<>();
-
-        Map<String, Object> changedAttributesJson = new HashMap<>();
-        changedAttributesJson.put("ConsentData", getBasicConsentDataChangedAttributesJson());
-        changedAttributesJson.put("ConsentAttributesData", getConsentAttributesDataChangedAttributesJson());
-
-        Map<String, Object> consentAuthResources = new HashMap<>();
-        consentAuthResources.put(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1, "null");
-        changedAttributesJson.put("ConsentAuthResourceData", consentAuthResources);
-
-        Map<String, Object> consentMappingResources = new HashMap<>();
-        JSONObject consentMappingDataJson1 = new JSONObject();
-        consentMappingDataJson1.put("MAPPING_STATUS", ConsentMgtServiceTestData.SAMPLE_MAPPING_STATUS);
-        consentMappingResources.put(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID, consentMappingDataJson1);
-
-        JSONObject consentMappingDataJson2 = new JSONObject();
-        consentMappingDataJson2.put("MAPPING_STATUS", ConsentMgtServiceTestData.SAMPLE_NEW_MAPPING_STATUS);
-        consentMappingResources.put(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID_2, consentMappingDataJson2);
-
-        consentMappingResources.put(UUID.randomUUID().toString(), "null");
-        changedAttributesJson.put("ConsentMappingData", consentMappingResources);
-
-        ConsentHistoryResource consentHistoryResource = new ConsentHistoryResource();
-        consentHistoryResource.setChangedAttributesJsonDataMap(changedAttributesJson);
-        consentHistoryResource.setReason("SampleReason");
-        consentAmendmentHistoryDataMap.put(ConsentMgtServiceTestData.SAMPLE_HISTORY_ID, consentHistoryResource);
-        return consentAmendmentHistoryDataMap;
-    }
 
     private static String getBasicConsentDataChangedAttributesJson() {
 
@@ -541,130 +439,6 @@ public class ConsentMgtServiceTestData {
         return consentAmendmentHistoryDataMap;
     }
 
-    public static Map<String, ConsentHistoryResource> getSampleConsentHistoryConsentAttributesDataMap() {
-
-        Map<String, ConsentHistoryResource> consentAmendmentHistoryDataMap = new LinkedHashMap<>();
-        Map<String, Object> changedAttributesJson = new HashMap<>();
-        changedAttributesJson.put("ConsentAttributesData", getConsentAttributesDataChangedAttributesJson());
-        ConsentHistoryResource consentHistoryResource = new ConsentHistoryResource();
-        consentHistoryResource.setChangedAttributesJsonDataMap(changedAttributesJson);
-        consentHistoryResource.setReason("SampleReason");
-        consentAmendmentHistoryDataMap.put(ConsentMgtServiceTestData.SAMPLE_HISTORY_ID, consentHistoryResource);
-        return consentAmendmentHistoryDataMap;
-    }
-
-    public static Map<String, ConsentHistoryResource> getSampleConsentHistoryConsentMappingsDataMap() {
-
-        Map<String, ConsentHistoryResource> consentAmendmentHistoryDataMap = new LinkedHashMap<>();
-
-        Map<String, Object> changedAttributesJson = new HashMap<>();
-
-        Map<String, Object> consentMappingResources = new HashMap<>();
-        JSONObject consentMappingDataJson1 = new JSONObject();
-        consentMappingDataJson1.put("MAPPING_STATUS", ConsentMgtServiceTestData.SAMPLE_MAPPING_STATUS);
-        consentMappingResources.put(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID, consentMappingDataJson1);
-
-        JSONObject consentMappingDataJson2 = new JSONObject();
-        consentMappingDataJson2.put("MAPPING_STATUS", "null");
-        consentMappingResources.put(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID_2, consentMappingDataJson2);
-        changedAttributesJson.put("ConsentMappingData", consentMappingResources);
-
-        ConsentHistoryResource consentHistoryResource = new ConsentHistoryResource();
-        consentHistoryResource.setChangedAttributesJsonDataMap(changedAttributesJson);
-        consentHistoryResource.setReason("SampleReason");
-        consentAmendmentHistoryDataMap.put(ConsentMgtServiceTestData.SAMPLE_HISTORY_ID, consentHistoryResource);
-        return consentAmendmentHistoryDataMap;
-    }
-
-    public static Map<String, Object> getSampleAdditionalConsentAmendmentDataMap() {
-
-        Map<String, Object> additionalAmendmentData = new HashMap<>();
-        Map<String, AuthorizationResource> newUserAuthResources = new HashMap<>();
-        Map<String, ArrayList<ConsentMappingResource>> newUserAccountMappings = new HashMap<>();
-
-        AuthorizationResource newAuthResource = getSampleStoredTestAuthorizationResource();
-        newUserAuthResources.put(SAMPLE_NEW_USER_ID, newAuthResource);
-
-        ConsentMappingResource consentMappingResource = getSampleStoredTestConsentMappingResource(null);
-        ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
-        consentMappingResourceList.add(consentMappingResource);
-        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceList);
-
-        additionalAmendmentData
-                .put(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES, newUserAuthResources);
-        additionalAmendmentData
-                .put(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES, newUserAccountMappings);
-        return additionalAmendmentData;
-    }
-
-    public static Map<String, Object> getSampleAdditionalConsentAmendmentDataMapWithoutConsentId() {
-
-        Map<String, Object> additionalAmendmentData = new HashMap<>();
-        Map<String, AuthorizationResource> newUserAuthResources = new HashMap<>();
-        Map<String, ArrayList<ConsentMappingResource>> newUserAccountMappings = new HashMap<>();
-
-        AuthorizationResource newAuthResource = getSampleStoredTestAuthorizationResource();
-        newAuthResource.setConsentId(null);
-        newUserAuthResources.put(SAMPLE_NEW_USER_ID, newAuthResource);
-
-        ConsentMappingResource consentMappingResource = getSampleStoredTestConsentMappingResource(null);
-        ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
-        consentMappingResourceList.add(consentMappingResource);
-        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceList);
-
-        additionalAmendmentData
-                .put(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES, newUserAuthResources);
-        additionalAmendmentData
-                .put(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES, newUserAccountMappings);
-        return additionalAmendmentData;
-    }
-
-    public static Map<String, Object> getSampleAdditionalConsentAmendmentDataMapWithoutAccountId() {
-
-        Map<String, Object> additionalAmendmentData = new HashMap<>();
-        Map<String, AuthorizationResource> newUserAuthResources = new HashMap<>();
-        Map<String, ArrayList<ConsentMappingResource>> newUserAccountMappings = new HashMap<>();
-
-        AuthorizationResource newAuthResource = getSampleStoredTestAuthorizationResource();
-        newUserAuthResources.put(SAMPLE_NEW_USER_ID, newAuthResource);
-
-        ConsentMappingResource consentMappingResource = getSampleStoredTestConsentMappingResource(null);
-        consentMappingResource.setAccountID(null);
-        ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
-        consentMappingResourceList.add(consentMappingResource);
-        newUserAccountMappings.put(SAMPLE_NEW_USER_ID, consentMappingResourceList);
-
-        additionalAmendmentData
-                .put(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES, newUserAuthResources);
-        additionalAmendmentData
-                .put(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES, newUserAccountMappings);
-        return additionalAmendmentData;
-    }
-
-    // sample statusAudit record Ids
-    public static ArrayList<String> getSampleConsentStatusAuditRecordIds() {
-
-        ArrayList<String> consentStatusAuditRecordIds = new ArrayList<>();
-        consentStatusAuditRecordIds.add(UUID.randomUUID().toString());
-        consentStatusAuditRecordIds.add(UUID.randomUUID().toString());
-        return consentStatusAuditRecordIds;
-    }
-
-    // return Map<string,ConsentHistoryReource> with consent history resource
-    public static Map<String, ConsentHistoryResource> getSampleConsentHistoryDataMap() {
-
-        Map<String, ConsentHistoryResource> consentAmendmentHistoryDataMap = new LinkedHashMap<>();
-        Map<String, Object> changedAttributesJson = new HashMap<>();
-        changedAttributesJson.put("ConsentData", getBasicConsentDataChangedAttributesJson());
-        changedAttributesJson.put("ConsentAttributesData", getConsentAttributesDataChangedAttributesJson());
-        changedAttributesJson.put("ConsentAuthResourceData", new HashMap<>());
-        changedAttributesJson.put("ConsentMappingData", new HashMap<>());
-        ConsentHistoryResource consentHistoryResource = new ConsentHistoryResource();
-        consentHistoryResource.setChangedAttributesJsonDataMap(changedAttributesJson);
-        consentHistoryResource.setReason("SampleReason");
-        consentAmendmentHistoryDataMap.put(ConsentMgtServiceTestData.SAMPLE_HISTORY_ID, consentHistoryResource);
-        return consentAmendmentHistoryDataMap;
-    }
 
 
 }

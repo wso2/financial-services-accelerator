@@ -20,6 +20,9 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
 
 import net.minidev.json.JSONObject;
 
+
+// TODO : remove this class . currently this is used in the previous history handling logic. should be removed in the
+//  new history handling logic
 /**
  * Model for consent mapping resource.
  */

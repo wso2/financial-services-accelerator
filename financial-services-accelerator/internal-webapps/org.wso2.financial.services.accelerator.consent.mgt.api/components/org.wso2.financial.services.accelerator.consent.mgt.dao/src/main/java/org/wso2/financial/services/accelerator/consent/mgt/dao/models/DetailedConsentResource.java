@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class DetailedConsentResource {
 
-    private String orgID;
+    private String orgInfo;
     private String consentId;
     private String clientId;
     private String receipt;
@@ -67,14 +67,14 @@ public class DetailedConsentResource {
 
     }
 
-    public DetailedConsentResource(String orgID, String consentId, String clientId, String receipt,
+    public DetailedConsentResource(String orgInfo, String consentId, String clientId, String receipt,
                                    String consentType,
                                    String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
                                    Map<String, String> consentAttributes,
                                    ArrayList<AuthorizationResource> authorizationResources,
                                    ArrayList<ConsentMappingResource> consentMappingResources) {
-        this.orgID = orgID;
+        this.orgInfo = orgInfo;
         this.consentId = consentId;
         this.clientId = clientId;
         this.receipt = receipt;
@@ -105,12 +105,12 @@ public class DetailedConsentResource {
         return consentId;
     }
 
-    public String getOrgID() {
-        return orgID;
+    public String getOrgInfo() {
+        return orgInfo;
     }
 
     public void setOrgID(String orgInfo) {
-        this.orgID = orgInfo;
+        this.orgInfo = orgInfo;
     }
 
     public void setConsentId(String consentId) {
@@ -260,7 +260,7 @@ public class DetailedConsentResource {
 
         // Create new instance
         return new DetailedConsentResource(
-                this.orgID,
+                this.orgInfo,
                 this.consentId,
                 this.clientId,
                 this.receipt,

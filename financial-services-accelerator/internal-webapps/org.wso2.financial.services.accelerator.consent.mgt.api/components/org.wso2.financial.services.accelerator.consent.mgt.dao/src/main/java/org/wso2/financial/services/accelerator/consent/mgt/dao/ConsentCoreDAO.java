@@ -45,8 +45,8 @@ public interface ConsentCoreDAO {
      * contain all data in it without the consent ID. A consent ID will be generated and set to the response object
      * if the insertion is successful.
      *
-     * @param connection        connection object
-     * @param consentResource   ConsentResource object with all required data
+     * @param connection      connection object
+     * @param consentResource ConsentResource object with all required data
      * @return returns the consent resource with the consent ID and created time if insertion is successful
      * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
      */
@@ -58,8 +58,8 @@ public interface ConsentCoreDAO {
      * This method is used to retrieve a consent resource for the provided consent ID (without associated consent
      * attributes).
      *
-     * @param connection    connection object
-     * @param consentId     consent ID
+     * @param connection connection object
+     * @param consentId  consent ID
      * @return returns the consent resource related to the provided consent ID without consent attributes.
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
@@ -67,24 +67,13 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataRetrievalException;
 
-    /**
-     * This method is used to retrieve a consent resource for the provided consent ID with associated attributes.
-     *
-     * @param connection    connection object
-     * @param consentId     consent ID
-     * @return returns the consent resource related to the provided consent ID with additional consent attributes
-     * @throws ConsentDataRetrievalException thrown if a database error occurs
-     */
-    ConsentResource getConsentResourceWithAttributes(Connection connection, String consentId)
-            throws
-            ConsentDataRetrievalException;
 
     /**
      * This method is used to retrieve a detailed consent resource for the provided consent ID (includes
      * authorization resources, account mapping resources and consent attributes).
      *
-     * @param connection                connection object
-     * @param consentId                 consent ID
+     * @param connection connection object
+     * @param consentId  consent ID
      * @return returns a detailed consent resource related to the provided consent ID
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
@@ -96,8 +85,8 @@ public interface ConsentCoreDAO {
      * This method is used to retrieve a detailed consent resource for the provided consent ID (includes
      * authorization resources, account mapping resources and consent attributes).
      *
-     * @param connection                connection object
-     * @param consentId                 consent ID
+     * @param connection connection object
+     * @param consentId  consent ID
      * @return returns a detailed consent resource related to the provided consent ID
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
@@ -106,15 +95,13 @@ public interface ConsentCoreDAO {
             ConsentDataRetrievalException;
 
 
-
-
     /**
      * This method is used to update the status of a consent resource. The request consent resource object must be
      * set with a consent ID and the new consent status.
      *
-     * @param connection        connection object
-     * @param consentId         consent ID of the consent needed to be updated
-     * @param consentStatus     the new status that should be updated with
+     * @param connection    connection object
+     * @param consentId     consent ID of the consent needed to be updated
+     * @param consentStatus the new status that should be updated with
      * @throws ConsentDataUpdationException thrown if a database error occur or an update failure
      */
     void updateConsentStatus(Connection connection, String consentId, String consentStatus)
@@ -125,9 +112,9 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to update consent validity time.
      *
-     * @param connection    connection object
-     * @param consentId     consent ID
-     * @param expiryTime  new validity time
+     * @param connection connection object
+     * @param consentId  consent ID
+     * @param expiryTime new validity time
      * @throws ConsentDataUpdationException thrown if any error occurs in the process
      */
     void updateConsentExpiryTime(Connection connection, String consentId, long expiryTime)
@@ -139,8 +126,8 @@ public interface ConsentCoreDAO {
      * object must contain data all in it without the authorization ID and the updated time. Both of them will be
      * generated and set to the response object if the insertion is successful.
      *
-     * @param connection                connection object
-     * @param authorizationResource     authorization resource with all required data
+     * @param connection            connection object
+     * @param authorizationResource authorization resource with all required data
      * @return returns the authorization resource with the updated time if insertion is successful
      * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
      */
@@ -151,17 +138,18 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to retrieve an authorization resource for the provided authorization ID.
      *
-     * @param connection        connection object
-     * @param authorizationId   authorization ID
+     * @param connection      connection object
+     * @param authorizationId authorization ID
      * @return the relevant authorization resource
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    AuthorizationResource getAuthorizationResource(Connection connection, String authorizationId, String orgID)
+    AuthorizationResource getAuthorizationResource(Connection connection, String authorizationId, String orgInfo)
             throws
             ConsentDataRetrievalException;
 
     /**
      * This method is used to retrieve an authorization resource for the provided consent ID.
+     *
      * @param connection
      * @param authorizationId
      * @param authorizationResource
@@ -174,11 +162,12 @@ public interface ConsentCoreDAO {
             ConsentDataUpdationException;
 
     // delete authorization resource
+
     /**
      * This method is used to delete an authorization resource for the provided authorization ID.
      *
-     * @param connection        connection object
-     * @param authorizationId   authorization ID
+     * @param connection      connection object
+     * @param authorizationId authorization ID
      * @throws ConsentDataDeletionException thrown if a database error occurs
      */
     void deleteAuthorizationResource(Connection connection, String authorizationId)
@@ -191,8 +180,8 @@ public interface ConsentCoreDAO {
      * must be set with a consent ID and consent attribute map.
      * must be set with a consent ID and consent attribute map.
      *
-     * @param connection            connection object
-     * @param consentAttributes     consent attributes object with consent ID and attributes map
+     * @param connection        connection object
+     * @param consentAttributes consent attributes object with consent ID and attributes map
      * @return returns true if insertion is successful
      * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
      */
@@ -203,8 +192,8 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to retrieve all the consent attributes from the database for the given consent ID.
      *
-     * @param connection    connection object
-     * @param consentId     consent ID
+     * @param connection connection object
+     * @param consentId  consent ID
      * @return returns the consent attributes that matches the provided consentId and consent attribute keys
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
@@ -215,9 +204,9 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to retrieve the consent attributes from the database for given attribute keys.
      *
-     * @param connection            connection object
-     * @param consentId             consent ID
-     * @param consentAttributeKeys  the keys of the consent attributes that need to be retrieved
+     * @param connection           connection object
+     * @param consentId            consent ID
+     * @param consentAttributeKeys the keys of the consent attributes that need to be retrieved
      * @return returns the consent attributes that matches the provided consentId and consent attribute keys
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
@@ -229,8 +218,8 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to retrieve consent attribute using the attribute name.
      *
-     * @param connection        connection object
-     * @param attributeName     attribute name
+     * @param connection    connection object
+     * @param attributeName attribute name
      * @return a map with the consent ID and the related attribute value
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
@@ -241,11 +230,11 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to retrieve consent id using the attribute name and value.
      *
-     * @param connection        connection object
-     * @param attributeName     attribute name
-     * @param attributeValue    attribute value
+     * @param connection     connection object
+     * @param attributeName  attribute name
+     * @param attributeValue attribute value
      * @return Consent ID related to the given attribute key and value
-     * @throws ConsentDataRetrievalException  `thrown if a database error occurs
+     * @throws ConsentDataRetrievalException `thrown if a database error occurs
      */
     ArrayList<String> getConsentIdByConsentAttributeNameAndValue(Connection connection, String attributeName,
                                                                  String attributeValue)
@@ -255,9 +244,9 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to update a given list of consent attributes.
      *
-     * @param connection             connection object
-     * @param consentId              consent ID
-     * @param consentAttributes      a map of attributes that should be updated
+     * @param connection        connection object
+     * @param consentId         consent ID
+     * @param consentAttributes a map of attributes that should be updated
      * @throws ConsentDataUpdationException thrown if a database error occurs
      */
     void updateConsentAttributes(Connection connection, String consentId, Map<String, String> consentAttributes)
@@ -267,9 +256,9 @@ public interface ConsentCoreDAO {
     /**
      * This method is used to delete a given list of consent attributes.
      *
-     * @param connection                connection object
-     * @param consentId                 consent ID
-     * @param consentAttributeKeys      a list of attribute keys that should be deleted
+     * @param connection           connection object
+     * @param consentId            consent ID
+     * @param consentAttributeKeys a list of attribute keys that should be deleted
      * @return true if the deletion is successful
      * @throws ConsentDataDeletionException thrown if a database error occurs
      */
@@ -285,21 +274,22 @@ public interface ConsentCoreDAO {
      * returned. "fromTime" and "toTime" are also optional. "limit" and "offset" are optional combined. If all
      * parameters are null, all the consents will be returned.
      *
-     * @param connection        connection object
-     * @param consentIDs        consent IDs optional list
-     * @param clientIDs         client IDs optional list
-     * @param consentTypes      consent types optional list
-     * @param consentStatuses   consent statuses optional list
-     * @param userIDs           user IDs optional list
-     * @param fromTime          from time
-     * @param toTime            to time
-     * @param limit             limit
-     * @param offset            offset
+     * @param connection      connection object
+     * @param consentIDs      consent IDs optional list
+     * @param clientIDs       client IDs optional list
+     * @param consentTypes    consent types optional list
+     * @param consentStatuses consent statuses optional list
+     * @param userIDs         user IDs optional list
+     * @param fromTime        from time
+     * @param toTime          to time
+     * @param limit           limit
+     * @param offset          offset
      * @return a list of detailed consent resources according to the provided parameters or the list of all consents
      * if all parameters are null
      * @throws ConsentDataRetrievalException thrown if any error occur
      */
-    ArrayList<DetailedConsentResource> searchConsents(Connection connection, String orgID, ArrayList<String> consentIDs,
+    ArrayList<DetailedConsentResource> searchConsents(Connection connection, String orgInfo,
+                                                      ArrayList<String> consentIDs,
                                                       ArrayList<String> clientIDs, ArrayList<String> consentTypes,
                                                       ArrayList<String> consentStatuses, ArrayList<String> userIDs,
                                                       Long fromTime, Long toTime, Integer limit, Integer offset)
@@ -307,14 +297,12 @@ public interface ConsentCoreDAO {
             ConsentDataRetrievalException;
 
 
-
-
     /**
      * This method is used to store the consent status audit record in the database. The request consent status audit
      * record object must contain all the data in it without the status audit ID and actionTime. They will be generated
      * and set to the response object if the insertion is successful.
      *
-     * @param connection connection object
+     * @param connection               connection object
      * @param consentStatusAuditRecord consent status audit record with all required data
      * @return returns the consent status audit record if the insertion is successful
      * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
@@ -330,12 +318,12 @@ public interface ConsentCoreDAO {
      * parameter that is provided. All parameters are optional. If no parameters are provided, all the records will
      * be queried.
      *
-     * @param connection connection object
-     * @param consentId consent ID
+     * @param connection    connection object
+     * @param consentId     consent ID
      * @param currentStatus current status of the consent
-     * @param actionBy the user who performed the status update
-     * @param fromTime lower bound of the time of the needed records
-     * @param toTime upper bound of the time of the needed records
+     * @param actionBy      the user who performed the status update
+     * @param fromTime      lower bound of the time of the needed records
+     * @param toTime        upper bound of the time of the needed records
      * @param statusAuditID status audit ID
      * @return a list of retrieved audit records that matches the provided parameters
      * @throws ConsentDataRetrievalException thrown if a database error occurs
@@ -365,16 +353,16 @@ public interface ConsentCoreDAO {
      * This method is used to store the changed attribute values of the consent into consent history when an
      * amendment happens to the consent.
      *
-     * @param connection connection object
-     * @param historyID An identifier for consent history uniquely assigned per consent amendment
-     * @param timestamp The timestamp at which the consent amendment happened
-     * @param recordID Identifier for each history record (can be ConsentID or MappingID)
-     * @param statusAuditRecordId The status audit record ID of the consent
-     * @param consentDataType The consent data type stored in each history record (can be ConsentData,
-     *                        ConsentAttributesData or ConsentMappingData)
+     * @param connection                  connection object
+     * @param historyID                   An identifier for consent history uniquely assigned per consent amendment
+     * @param timestamp                   The timestamp at which the consent amendment happened
+     * @param recordID                    Identifier for each history record (can be ConsentID or MappingID)
+     * @param statusAuditRecordId         The status audit record ID of the consent
+     * @param consentDataType             The consent data type stored in each history record (can be ConsentData,
+     *                                    ConsentAttributesData or ConsentMappingData)
      * @param changedAttributesJsonString The key-value pair json string that represents the changes
-     *                          relevant to each history record
-     * @param amendmentReason A string that indicates the reason that caused the amendment of the consent
+     *                                    relevant to each history record
+     * @param amendmentReason             A string that indicates the reason that caused the amendment of the consent
      * @return true if insertion successful
      * @throws ConsentDataInsertionException thrown if any error occurs in the process
      */
@@ -389,7 +377,7 @@ public interface ConsentCoreDAO {
      * This method is used to retrieve consent amendment history for a given consentId provided with its mappingIDs,
      * AuthorizationIDs.
      *
-     * @param connection connection object
+     * @param connection    connection object
      * @param recordIDsList the list of recordIDs relevant to the consent (includes consentId, MappingIDs, AuthIDs)
      * @return a comprehensive map of consent history data
      * @throws ConsentDataRetrievalException thrown if any error occurs in the process
@@ -400,9 +388,10 @@ public interface ConsentCoreDAO {
             ConsentDataRetrievalException;
 
     /**
-     *
      * @param connection
      * @param consentId
      */
-    void deleteConsent(Connection connection, String consentId);
+    void deleteConsent(Connection connection, String consentId)
+            throws
+            ConsentDataDeletionException;
 }

@@ -27,8 +27,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentSta
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,22 +58,7 @@ public interface ConsentCoreService {
             org.wso2.financial.services.accelerator.consent.mgt.service.exception.ConsentMgtException;
 
 
-    /**
-     * This method is used to get a consent with or without consent attributes. The following functionality contains in
-     * this method.
-     *
-     * 1. Get existing consent for status validation
-     * 2. Optionally gets consent attributes according to the value of withConsentAttributes flag
-     * 3. Check whether the retrieved consent involves a file
-     *
-     * @param consentId               ID of the consent
-     * @param withConsentAttributes   flag to determine the consent should be retrieved with attributes or not
-     * @return returns ConsentResource
-     * @throws ConsentMgtException thrown if any error occur in the process
-     */
-    ConsentResource getConsent(String consentId, boolean withConsentAttributes)
-            throws
-            ConsentMgtException;
+
 
     /**
      * This method is used to get a detailed consent for the provided consent ID. The detailed consent includes
@@ -88,7 +73,8 @@ public interface ConsentCoreService {
      * @throws ConsentMgtException thrown if any error occur in the process
      */
     DetailedConsentResource getDetailedConsent(String consentId, String orgInfo) throws
-            ConsentMgtException;
+            ConsentMgtException,
+            SQLException;
 
 
     /**
@@ -109,7 +95,7 @@ public interface ConsentCoreService {
      * @return an authorization resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    AuthorizationResource getAuthorizationResource(String authorizationId, String orgID) throws
+    AuthorizationResource getAuthorizationResource(String authorizationId, String orgInfo) throws
             ConsentMgtException;
 
 
@@ -121,7 +107,7 @@ public interface ConsentCoreService {
      */
     void updateAuthorizationResource(String authorizationId,
                                      AuthorizationResource authorizationResource,
-                                     String orgID)
+                                     String orgInfo)
             throws
             ConsentMgtException;
 
@@ -136,16 +122,6 @@ public interface ConsentCoreService {
             throws
             ConsentMgtException;
 
-    /**
-     * This method is used to update status of the consent for a given consentId and userId.
-     * @param consentId         consent ID
-     * @param newConsentStatus  new consent status
-     * @return the updated consent resource
-     * @throws ConsentMgtException thrown if any error occurs in the process
-     */
-    DetailedConsentResource updateConsentStatus(String consentId, String newConsentStatus)
-            throws
-            ConsentMgtException;
 
     /**
      * This method is used to update status of the consent for a given consentId and userId.
@@ -169,7 +145,7 @@ public interface ConsentCoreService {
      * @param reason
      * @param userId
      */
-    void bulkUpdateConsentStatus(String orgID, String clientId, String status, String reason, String userId,
+    void bulkUpdateConsentStatus(String orgInfo, String clientId, String status, String reason, String userId,
                                  String consentType, ArrayList<String> applicableExistingStatus)
             throws
             ConsentMgtException;
@@ -330,18 +306,6 @@ public interface ConsentCoreService {
             throws
             ConsentMgtException;
 
-    /**
-     * This method is used to retrieve consent amendment history for a given consentId. Consent ID is mandatory.
-     *
-     * @param consentId     consent ID
-     * @return a map of consent history resources
-     * @throws ConsentMgtException thrown if any error occurs in the process
-     */
-    Map<String, ConsentHistoryResource> getConsentAmendmentHistoryData(
-            List<String> statusAuditRecordIds,
-            String consentId)
-            throws
-            ConsentMgtException;
 
     /**
      * This method is used to search detailed consents for the given lists of parameters. Following optional lists
@@ -369,7 +333,7 @@ public interface ConsentCoreService {
      * @return a list of detailed consent resources according to the provided parameters
      * @throws ConsentMgtException thrown if any error occur
      */
-    ArrayList<DetailedConsentResource> searchDetailedConsents(String orgID, ArrayList<String> consentIDs,
+    ArrayList<DetailedConsentResource> searchDetailedConsents(String orgInfo, ArrayList<String> consentIDs,
                                                               ArrayList<String> clientIDs,
                                                               ArrayList<String> consentTypes,
                                                               ArrayList<String> consentStatuses,

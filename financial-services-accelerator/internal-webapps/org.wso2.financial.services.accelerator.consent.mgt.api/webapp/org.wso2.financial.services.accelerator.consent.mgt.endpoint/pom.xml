@@ -366,10 +366,13 @@
 
                         <!-- Excluding the generated classes in org/wso2/financial/services/accelerator/consent/mgt/endpoint/model-->
                         <exclude>org/wso2/financial/services/accelerator/consent/mgt/endpoint/model/**</exclude>
+
                         <exclude>**/*SwaggerApplication.class</exclude>
                         <exclude>**/*DatabaseInitializer.class</exclude>
-                        <exclude>**/*ConsentApi.class</exclude>
+                        <exclude>**/*ConsentsApi.class</exclude>
                         <exclude>**/*ConsentUtils.class</exclude>
+                        <exclude>**/*Mapper.class</exclude>
+
 
 
 
@@ -419,7 +422,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.5</minimum>
+                                            <minimum>0.8</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

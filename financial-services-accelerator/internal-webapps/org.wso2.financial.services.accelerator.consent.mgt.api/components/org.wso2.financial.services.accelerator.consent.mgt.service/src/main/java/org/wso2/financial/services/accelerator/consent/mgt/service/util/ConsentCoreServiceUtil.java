@@ -69,9 +69,9 @@ public class ConsentCoreServiceUtil {
     /**
      * Create an authorizable consent with audit record.
      *
-     * @param consentCoreDAO          Consent core DAO
-     * @param consentResource         Consent resource
-     * @param authorizationResources  auth resources
+     * @param consentCoreDAO         Consent core DAO
+     * @param consentResource        Consent resource
+     * @param authorizationResources auth resources
      * @return DetailedConsentResource
      * @throws ConsentDataInsertionException Consent data insertion exception
      * @throws ConsentMgtException           Consent management exception
@@ -87,7 +87,7 @@ public class ConsentCoreServiceUtil {
             ConsentDataRetrievalException {
 
         boolean isConsentAttributesStored = false;
-        AuthorizationResource storedAuthorizationResource = null;
+        AuthorizationResource storedAuthorizationResource;
 
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
@@ -137,9 +137,8 @@ public class ConsentCoreServiceUtil {
             }
 
             // TODO : handle history
-
             DetailedConsentResource detailedConsentResource =
-                    new DetailedConsentResource(storedConsentResource.getOrgID(), consentId,
+                    new DetailedConsentResource(storedConsentResource.getOrgInfo(), consentId,
                             storedConsentResource.getClientId(), storedConsentResource.getReceipt(),
                             storedConsentResource.getConsentType(), storedConsentResource.getCurrentStatus(),
                             storedConsentResource.getExpiryTime(),
@@ -175,6 +174,7 @@ public class ConsentCoreServiceUtil {
                     consentResource.getCurrentStatus(),
                     null, ConsentCoreServiceConstants.CREATE_CONSENT_REASON,
                     consentResource.getClientId(), consentDataMap);
+
 
             DatabaseUtils.commitTransaction(connection);
 

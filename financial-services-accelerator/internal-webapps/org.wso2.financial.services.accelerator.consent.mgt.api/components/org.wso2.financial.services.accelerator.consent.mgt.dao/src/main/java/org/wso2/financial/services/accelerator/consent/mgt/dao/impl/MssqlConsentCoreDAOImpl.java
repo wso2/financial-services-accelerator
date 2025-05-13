@@ -74,7 +74,7 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
     // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
     // Suppressed warning count - 1
     public ArrayList<DetailedConsentResource> searchConsents(Connection connection,
-                                                             String orgID, ArrayList<String> consentIDs,
+                                                             String orgInfo, ArrayList<String> consentIDs,
                                                              ArrayList<String> clientIDs,
                                                              ArrayList<String> consentTypes,
                                                              ArrayList<String> consentStatuses,

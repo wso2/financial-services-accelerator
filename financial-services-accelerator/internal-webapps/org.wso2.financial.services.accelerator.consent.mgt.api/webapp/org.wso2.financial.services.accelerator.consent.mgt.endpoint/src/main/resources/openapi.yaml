@@ -5,7 +5,7 @@ info:
   description: Consent Management application API
   version: '1.0'
 paths:
-  "/consents/{consentId}/authorizationResource/{authorizationId}":
+  "/consents/{consentId}/authorization-resource/{authorizationId}":
     get:
       tags:
         - Authorization Resource
@@ -139,7 +139,7 @@ paths:
                 type: string
         '404':
           description: Invalid consent id
-  "/consents/{consentId}/authorizationResource":
+  "/consents/{consentId}/authorization-resource":
     post:
       tags:
         - Authorization Resource
@@ -175,104 +175,7 @@ paths:
                 type: string
         '404':
           description: Invalid consent id
-  "/consents/{consentId}/attributes":
-    get:
-      tags:
-        - Consent Attributes
-      summary: Retrieve Consent Attributes
-      operationId: consentConsentIdAttributesGet
-      parameters:
-        - name: consentId
-          in: path
-          description: Consent id
-          required: true
-          schema:
-            type: string
-        - name: orgInfo
-          in: header
-          description: JWT header containing tenant-related information
-          schema:
-            type: string
-            default: DEFAULT_ORG
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: string
-        '404':
-          description: Invalid consent id
-    put:
-      tags:
-        - Consent Attributes
-      summary: Update Consent Attributes
-      operationId: consentConsentIdAttributesPut
-      parameters:
-        - name: consentId
-          in: path
-          description: Consent id
-          required: true
-          schema:
-            type: string
-        - name: orgInfo
-          in: header
-          description: JWT header containing tenant-related information
-          schema:
-            type: string
-            default: DEFAULT_ORG
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties:
-                type: string
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: string
-        '404':
-          description: Invalid consent id
-    post:
-      tags:
-        - Consent Attributes
-      summary: Add Consent Attributes
-      operationId: consentConsentIdAttributesPost
-      parameters:
-        - name: consentId
-          in: path
-          description: Consent id
-          required: true
-          schema:
-            type: string
-        - name: orgInfo
-          in: header
-          description: JWT header containing tenant-related information
-          schema:
-            type: string
-            default: DEFAULT_ORG
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties:
-                type: string
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: string
-        '404':
-          description: Invalid consent id
+
   "/consents/{consentId}":
     get:
       tags:
@@ -358,60 +261,7 @@ paths:
                 type: string
         '400':
           description: Invalid consent id
-  "/consents/{consentId}/history":
-    get:
-      tags:
-        - history
-      summary: Consent History Retrieval
-      operationId: consentConsentIdHistoryGet
-      parameters:
-        - name: consentId
-          in: path
-          description: Consent id
-          required: true
-          schema:
-            type: string
-        - name: orgInfo
-          in: header
-          description: JWT header containing tenant-related information
-          schema:
-            type: string
-            default: DEFAULT_ORG
-        - name: detailed
-          in: query
-          schema:
-            type: boolean
-        - name: status
-          in: query
-          schema:
-            type: string
-        - name: actionBy
-          in: query
-          schema:
-            type: string
-        - name: fromTime
-          in: query
-          schema:
-            type: integer
-            format: int64
-        - name: toTime
-          in: query
-          schema:
-            type: integer
-            format: int64
-        - name: statusAuditId
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ConsentHistoryResponse"
-        '400':
-          description: Invalid consent id
+
   "/consents/{consentId}/status":
     put:
       tags:

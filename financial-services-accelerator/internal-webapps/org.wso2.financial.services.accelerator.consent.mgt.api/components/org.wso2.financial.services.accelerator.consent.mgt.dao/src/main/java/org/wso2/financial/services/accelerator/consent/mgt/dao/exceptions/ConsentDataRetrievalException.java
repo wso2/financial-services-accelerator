@@ -26,6 +26,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.Consent
 public class ConsentDataRetrievalException extends Exception {
     private ConsentError consentError;
 
+    // TODO : have to remove unwanted constructors after implementing consent attributes ( still some of the
+    //  constructors are in use in the code used for consent attributes)
     public ConsentDataRetrievalException(String message) {
         super(message);
     }

@@ -30,7 +30,7 @@ public class ConsentMgtCommonDBQueries {
 
     public String getStoreConsentPreparedStatement() {
 
-        return "INSERT INTO FS_CONSENT (ORG_ID, CONSENT_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, " +
+        return "INSERT INTO FS_CONSENT (ORG_INFO, CONSENT_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, " +
                 "CONSENT_TYPE, " +
                 "CURRENT_STATUS, EXPIRY_TIME, RECURRING_INDICATOR) VALUES ( COALESCE(?, " +
                 "'DEFAULT_ORG')" +
@@ -46,7 +46,8 @@ public class ConsentMgtCommonDBQueries {
 
     public String getGetConsentWithConsentAttributesPreparedStatement() {
 
-        return "SELECT FS_CONSENT.CONSENT_ID, ORG_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, CONSENT_TYPE, " +
+        return "SELECT FS_CONSENT.CONSENT_ID, ORG_INFO, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, CONSENT_TYPE," +
+                " " +
                 "CURRENT_STATUS, EXPIRY_TIME, RECURRING_INDICATOR, " +
                 "FS_CONSENT_ATTRIBUTE.ATT_KEY, FS_CONSENT_ATTRIBUTE.ATT_VALUE FROM FS_CONSENT LEFT JOIN " +
                 "FS_CONSENT_ATTRIBUTE ON FS_CONSENT.CONSENT_ID = FS_CONSENT_ATTRIBUTE.CONSENT_ID WHERE FS_CONSENT" +
@@ -56,7 +57,7 @@ public class ConsentMgtCommonDBQueries {
     public String getGetDetailedConsentPreparedStatement() {
 
         return "SELECT obc.CONSENT_ID," +
-                "ORG_ID, " +
+                "ORG_INFO, " +
                 "RECEIPT, " +
                 "CLIENT_ID, " +
                 "CONSENT_TYPE, " +
@@ -76,41 +77,12 @@ public class ConsentMgtCommonDBQueries {
                 "FROM FS_CONSENT obc " +
                 "LEFT JOIN FS_CONSENT_ATTRIBUTE ca ON obc.CONSENT_ID=ca.CONSENT_ID " +
                 "LEFT JOIN FS_CONSENT_AUTH_RESOURCE ocar ON obc.CONSENT_ID=ocar.CONSENT_ID " +
-                "WHERE (obc.CONSENT_ID = ? AND obc.ORG_ID = COALESCE(?, obc.ORG_ID)) ";
-    }
-
-    public String getGetConsentResourceWithAuthorizationResourcesPreparedStatement() {
-
-        return "SELECT obc.CONSENT_ID," +
-                "ORG_ID, " +
-                "RECEIPT, " +
-                "CLIENT_ID, " +
-                "ORG_ID, " +
-                "CONSENT_TYPE, " +
-                "CURRENT_STATUS, " +
-                "CONSENT_FREQUENCY, " +
-                "EXPIRY_TIME, " +
-                "RECURRING_INDICATOR, " +
-                "CREATED_TIME AS CONSENT_CREATED_TIME, " +
-                "obc.UPDATED_TIME AS CONSENT_UPDATED_TIME, " +
-                "ocar.AUTH_ID, " +
-                "ocar.AUTH_STATUS, " +
-                "ocar.AUTH_TYPE, " +
-                "ocar.UPDATED_TIME AS AUTH_UPDATED_TIME, " +
-                "ocar.USER_ID, " +
-                "FROM FS_CONSENT obc " +
-                "LEFT JOIN FS_CONSENT_AUTH_RESOURCE ocar ON obc.CONSENT_ID=ocar.CONSENT_ID " +
-                "WHERE obc.CONSENT_ID = ?";
+                "WHERE (obc.CONSENT_ID = ? AND obc.ORG_INFO = COALESCE(?, obc.ORG_INFO)) ";
     }
 
     public String getUpdateConsentStatusPreparedStatement() {
 
         return "UPDATE FS_CONSENT SET CURRENT_STATUS = ?, UPDATED_TIME = ? WHERE CONSENT_ID = ?";
-    }
-
-    public String getUpdateConsentReceiptPreparedStatement() {
-
-        return "UPDATE FS_CONSENT SET RECEIPT = ? WHERE CONSENT_ID = ?";
     }
 
     public String getUpdateConsentExpiryTimePreparedStatement() {
@@ -131,19 +103,9 @@ public class ConsentMgtCommonDBQueries {
                 "FROM FS_CONSENT_AUTH_RESOURCE ACR  \n" +
                 "LEFT JOIN FS_CONSENT C ON ACR.CONSENT_ID = C.CONSENT_ID  \n" +
                 "WHERE ACR.AUTH_ID = ? \n" +
-                "AND (C.ORG_ID = ?)";
+                "AND (C.ORG_INFO = ?)";
     }
 
-    public String getUpdateAuthorizationStatusPreparedStatement() {
-
-        return "UPDATE FS_CONSENT_AUTH_RESOURCE SET AUTH_STATUS = ?, UPDATED_TIME = ? WHERE AUTH_ID = ?";
-    }
-
-
-    public String getUpdateAuthorizationUserPreparedStatement() {
-
-        return "UPDATE FS_CONSENT_AUTH_RESOURCE SET USER_ID = ?, UPDATED_TIME = ? WHERE AUTH_ID = ?";
-    }
 
     public String getUpdateAuthorizationResourcePreparedStatement() {
 
@@ -156,22 +118,6 @@ public class ConsentMgtCommonDBQueries {
         return "DELETE FROM FS_CONSENT_AUTH_RESOURCE WHERE AUTH_ID = ?";
     }
 
-
-    public String getStoreConsentMappingPreparedStatement() {
-
-        return "INSERT INTO FS_CONSENT_MAPPING (MAPPING_ID, AUTH_ID, RESOURCE, MAPPING_STATUS) VALUES " +
-                "(?, ?, ?, ? )";
-    }
-
-    public String getGetConsentMappingResourcesPreparedStatement() {
-
-        return "SELECT * FROM FS_CONSENT_MAPPING WHERE AUTH_ID = ?";
-    }
-
-    public String getUpdateConsentMappingStatusPreparedStatement() {
-
-        return "UPDATE FS_CONSENT_MAPPING SET MAPPING_STATUS = ? WHERE MAPPING_ID = ?";
-    }
 
     public String getStoreConsentAttributesPreparedStatement() {
 
@@ -203,14 +149,6 @@ public class ConsentMgtCommonDBQueries {
         return "DELETE FROM FS_CONSENT_ATTRIBUTE WHERE CONSENT_ID = ? AND ATT_KEY = ?";
     }
 
-    public String getStoreConsentFilePreparedStatement() {
-
-        return "INSERT INTO FS_CONSENT_FILE (CONSENT_ID, CONSENT_FILE) VALUES (?, ?)";
-    }
-
-    public String getGetConsentFileResourcePreparedStatement() {
-        return "SELECT * FROM FS_CONSENT_FILE WHERE CONSENT_ID = ?";
-    }
 
     public String getSearchConsentsPreparedStatement(String whereClause, boolean shouldLimit, boolean shouldOffset,
                                                      String userIdFilterClause) {
@@ -223,7 +161,7 @@ public class ConsentMgtCommonDBQueries {
         }
 
         StringBuilder query = new StringBuilder("SELECT OBC.CONSENT_ID, " +
-                "ORG_ID, " +
+                "ORG_INFO, " +
                 "RECEIPT, " +
                 "CLIENT_ID, " +
                 "CONSENT_TYPE, " +
@@ -308,9 +246,10 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * SQL query for get consent status audit records by consentIds.
-     * @param whereClause conditions
-     * @param shouldLimit   whether to consider the Limit parameter
-     * @param shouldOffset  whether to consider the Offset parameter
+     *
+     * @param whereClause  conditions
+     * @param shouldLimit  whether to consider the Limit parameter
+     * @param shouldOffset whether to consider the Offset parameter
      * @return SQL query for get consent status audit records by consentIds
      */
     public String getConsentStatusAuditRecordsByConsentIdsPreparedStatement(String whereClause, boolean shouldLimit,
@@ -329,6 +268,7 @@ public class ConsentMgtCommonDBQueries {
 
     /**
      * Util method to get the limit offset order for differentiate oracle and mssql pagination.
+     *
      * @return is limit is before in prepared statement than offset
      */
     public boolean isLimitBeforeThanOffset() {
@@ -362,8 +302,6 @@ public class ConsentMgtCommonDBQueries {
         List<String> statements = new ArrayList<>();
 
         statements.add("DELETE FROM FS_CONSENT_ATTRIBUTE WHERE CONSENT_ID = ?");
-        statements.add("DELETE FROM FS_CONSENT_MAPPING WHERE AUTH_ID IN (" +
-                "SELECT AUTH_ID FROM FS_CONSENT_AUTH_RESOURCE WHERE CONSENT_ID = ?)");
         statements.add("DELETE FROM FS_CONSENT_AUTH_RESOURCE WHERE CONSENT_ID = ?");
         statements.add("DELETE FROM FS_CONSENT_STATUS_AUDIT WHERE CONSENT_ID = ?");
         statements.add("DELETE FROM FS_CONSENT WHERE CONSENT_ID = ?");

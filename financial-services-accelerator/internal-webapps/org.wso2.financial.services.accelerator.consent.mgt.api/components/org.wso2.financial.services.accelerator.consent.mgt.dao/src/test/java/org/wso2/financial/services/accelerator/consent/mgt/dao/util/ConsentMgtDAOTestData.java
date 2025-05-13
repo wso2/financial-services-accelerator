@@ -25,7 +25,6 @@ import net.minidev.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
@@ -342,14 +341,5 @@ public class ConsentMgtDAOTestData {
         consentAttributes.setConsentAttributes(ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
 
         return consentAttributes;
-    }
-
-    public static ConsentFile getSampleConsentFileObject(String fileContent) {
-
-        ConsentFile consentFile = new ConsentFile();
-        consentFile.setConsentId(UUID.randomUUID().toString());
-        consentFile.setConsentFile(fileContent);
-
-        return consentFile;
     }
 }

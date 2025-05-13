@@ -28,7 +28,7 @@ import java.util.Map;
 public class ConsentMgtDAOConstants {
 
     public static final String CONSENT_ID = "CONSENT_ID";
-    public static final String ORG_ID = "ORG_ID";
+    public static final String ORG_INFO = "ORG_INFO";
     public static final String DEFAULT_ORG = "DEFAULT_ORG";
     public static final String RECEIPT = "RECEIPT";
     public static final String CREATED_TIME = "CREATED_TIME";
@@ -110,7 +110,7 @@ public class ConsentMgtDAOConstants {
         COLUMNS_MAP.put(CONSENT_IDS, "CONSENT_ID");
         COLUMNS_MAP.put(CLIENT_IDS, "CLIENT_ID");
         COLUMNS_MAP.put(CONSENT_TYPES, "CONSENT_TYPE");
-        COLUMNS_MAP.put(ORG_ID, "ORG_ID");
+        COLUMNS_MAP.put(ORG_INFO, "ORG_INFO");
         COLUMNS_MAP.put(CONSENT_STATUSES, "CURRENT_STATUS");
         COLUMNS_MAP.put(USER_IDS, "OCAR.USER_ID");
     }
