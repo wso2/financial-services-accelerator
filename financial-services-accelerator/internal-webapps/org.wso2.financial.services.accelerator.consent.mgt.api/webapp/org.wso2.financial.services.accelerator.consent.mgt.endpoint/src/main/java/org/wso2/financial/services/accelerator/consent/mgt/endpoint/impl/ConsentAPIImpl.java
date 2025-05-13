@@ -134,7 +134,6 @@ public class ConsentAPIImpl {
             String consentType, String consentStatus
             , String clientId, String userId, long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
         try {
-            //------------ initialize the search query ---------------//
             ArrayList<String> consentIDs = new ArrayList<>();
             ArrayList<String> clientIDs = new ArrayList<>();
             ArrayList<String> consentTypes = new ArrayList<>();
