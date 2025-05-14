@@ -27,6 +27,8 @@ public class ConsentDataDeletionException extends Exception {
 
     ConsentError consentError;
 
+    // TODO : have to remove unwanted constructors after implementing consent attributes ( still some of the
+    //  constructors are in use in the code used for consent attributes)
     public ConsentDataDeletionException(String message) {
         super(message);
     }

@@ -154,9 +154,7 @@
                         <exclude>**/*ServiceComponent.class</exclude>
                         <exclude>**/*Constants.class</exclude>
                         <exclude>**/*Exception.class</exclude>
-
                         <exclude>org/wso2/financial/services/accelerator/consent/mgt/dao/models/**</exclude>
-
 
                         <!-- Excluded since involves datasource initialization -->
                         <exclude>**/ConsentStoreInitializer.class</exclude>

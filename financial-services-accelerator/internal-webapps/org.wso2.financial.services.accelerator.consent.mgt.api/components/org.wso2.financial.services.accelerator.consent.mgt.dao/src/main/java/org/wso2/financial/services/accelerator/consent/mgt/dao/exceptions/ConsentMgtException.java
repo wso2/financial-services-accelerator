@@ -31,6 +31,8 @@ public class ConsentMgtException extends Exception {
     private Response.Status statusCode;
     private ConsentError error;
 
+    // TODO : have to remove unwanted constructors after implementing consent attributes ( still some of the
+    //  constructors are in use in the code used for consent attributes)
     public ConsentMgtException(Response.Status statusCode, Throwable cause) {
 
         super(cause);

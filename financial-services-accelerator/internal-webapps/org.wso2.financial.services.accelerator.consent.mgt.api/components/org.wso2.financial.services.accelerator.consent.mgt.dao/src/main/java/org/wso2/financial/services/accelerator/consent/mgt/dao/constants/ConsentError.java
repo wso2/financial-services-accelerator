@@ -71,6 +71,7 @@ public enum ConsentError {
             "Occurs when consent creation logic fails at the service level."),
     CONSENT_INSERTION_ERROR_IN_DATABASE("CMGT_10026", "Failed to persist consent resource to database",
             "Occurs during database operation while storing a new consent."),
+
     CONSENT_RETRIEVAL_ERROR("CMGT_10027", "Unable to retrieve consent resource", "General error when fetching a " +
             "consent from the service."),
     CONSENT_RETRIEVAL_ERROR_IN_DATABASE("CMGT_10028", "Database error retrieving consent resource", "Occurs due to " +
@@ -99,7 +100,6 @@ public enum ConsentError {
 
     CONSENT_DELETE_ERROR("CMGT_10043", "Unable to delete consent resource",
             "Occurs when the system fails to remove a consent."),
-
     CONSENT_DELETE_ERROR_IN_DATABASE("CMGT_10044", "Database error while deleting consent resource",
             "Occurs when the system fails to delete a consent from the database."),
 
@@ -121,6 +121,7 @@ public enum ConsentError {
             "A generic error occurred while saving consent attribute data."),
 
     //dao level
+    //TODO : not yet implemented
     CONSENT_ATTRIBUTES_STORE_ERROR_DATABASE("CMGT_11001", "Database error while storing consent attributes",
             "Occurs when database insertion for consent attributes fails."),
     ATTRIBUTE_NOT_FOUND("CMGT_11101", "Consent attribute not found",
