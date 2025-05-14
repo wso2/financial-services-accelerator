@@ -62,6 +62,7 @@ import java.util.stream.IntStream;
  * database. The incoming data are pre-validated in the upper service layer. Therefore, no validations are done in
  * this layer.
  */
+@SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     private static final Log log = LogFactory.getLog(ConsentCoreDAOImpl.class);
