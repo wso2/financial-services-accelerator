@@ -193,7 +193,7 @@ public interface ConsentCoreService {
      * @throws ConsentMgtException thrown if any exception occured in the process
      */
 
-    public boolean revokeConsent(String consentId, String orgInfo, String actionBy, String revokedReason)
+        boolean revokeConsent(String consentId, String orgInfo, String actionBy, String revokedReason)
             throws
             ConsentMgtException;
 

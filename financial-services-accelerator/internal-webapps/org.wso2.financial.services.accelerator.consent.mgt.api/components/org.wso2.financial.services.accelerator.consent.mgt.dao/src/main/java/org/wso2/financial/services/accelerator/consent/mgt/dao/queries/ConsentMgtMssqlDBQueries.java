@@ -20,6 +20,7 @@ package  org.wso2.financial.services.accelerator.consent.mgt.dao.queries;
 
 import org.apache.commons.lang3.StringUtils;
 
+//TODO : have to change if using MsSQL
 /**
  * The Microsoft SQL database queries used by the consent management DAO layer.
  */

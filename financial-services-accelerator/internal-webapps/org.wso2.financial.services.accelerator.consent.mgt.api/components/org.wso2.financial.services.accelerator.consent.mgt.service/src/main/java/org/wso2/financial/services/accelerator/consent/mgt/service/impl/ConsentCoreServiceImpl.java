@@ -527,8 +527,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         }
     }
 
-    ;
-
     @Override
     public boolean deleteAuthorizationResource(String authorizationId) throws
             ConsentMgtException {

@@ -43,6 +43,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentSta
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.persistence.ConsentStoreInitializer;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.util.DatabaseUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentCoreServiceUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentMgtServiceTestData;
 
@@ -1178,6 +1179,29 @@ public class ConsentCoreServiceImplTest {
         Assert.assertTrue(result);
     }
 
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testRevokeRevokedConsent() throws
+            Exception {
+
+
+        DetailedConsentResource detailedConsentResource =
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
+        detailedConsentResource.setCurrentStatus(ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS);
+        doReturn(detailedConsentResource)
+                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any(), any());
+        // Call the method
+        boolean result = consentCoreServiceImpl.revokeConsent(
+                ConsentMgtServiceTestData.CONSENT_ID,
+                ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.SAMPLE_ACTION_BY,
+                ConsentMgtServiceTestData.SAMPLE_REASON
+                                                             );
+
+        // Assert the result
+        Assert.assertTrue(result);
+    }
+
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testRevokeConsentWithException() throws
             Exception {
@@ -1198,6 +1222,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                             );
     }
+
 
 
     // Test for successful update of consent expiry time
