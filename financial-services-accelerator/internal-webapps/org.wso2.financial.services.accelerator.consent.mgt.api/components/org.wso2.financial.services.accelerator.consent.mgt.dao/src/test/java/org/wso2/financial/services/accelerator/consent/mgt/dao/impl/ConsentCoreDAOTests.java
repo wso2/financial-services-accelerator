@@ -470,7 +470,6 @@ public class ConsentCoreDAOTests {
                     storedAuthorizationResource.getAuthorizationId(), storedConsentResource.getOrgInfo());
         }
         Assert.assertTrue(retrievedAuthorizationResource.getUpdatedTime() > 0L);
-//        Assert.assertNotNull(retrievedAuthorizationResource.getAuthorizationId());
         Assert.assertNotNull(retrievedAuthorizationResource.getAuthorizationStatus());
         Assert.assertNotNull(retrievedAuthorizationResource.getUserId());
         Assert.assertNotNull(retrievedAuthorizationResource.getAuthorizationType());
@@ -601,46 +600,7 @@ public class ConsentCoreDAOTests {
         consentCoreDAO.getConsentAttributes(mockedConnection, Mockito.any());
     }
 
-//    @Test
-//    public void testRetrieveConsentAttributes() throws Exception {
-//
-//        ConsentAttributes retrievedConsentAttributesResource;
-//        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-//
-//        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-//            consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-//            ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-//                    consentResource.getConsentId());
-//
-//            ConsentAttributes consentAttributesResource = ConsentMgtDAOTestData
-//                    .getSampleTestConsentAttributesObject(retrievedConsentResource.getConsentId());
-//
-//            consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
-//
-//            retrievedConsentAttributesResource = consentCoreDAO.getConsentAttributes(connection,
-//                    retrievedConsentResource.getConsentId(), ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
-//        }
-//        Assert.assertNotNull(retrievedConsentAttributesResource.getConsentId());
-//        Assert.assertNotNull(retrievedConsentAttributesResource.getConsentAttributes());
-//    }
 
-//    @Test
-//    public void testRetrieveConsentAttributesForNoAttributesScenario() throws Exception {
-//
-//        ConsentAttributes retrievedConsentAttributesResource;
-//        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-//
-//        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-//            consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-//            ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-//                    consentResource.getConsentId());
-//
-//            retrievedConsentAttributesResource = consentCoreDAO.getConsentAttributes(connection,
-//                    retrievedConsentResource.getConsentId(), ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
-//        }
-//        Assert.assertNotNull(retrievedConsentAttributesResource.getConsentId());
-//        Assert.assertTrue(retrievedConsentAttributesResource.getConsentAttributes().isEmpty());
-//    }
 
     @Test(expectedExceptions = ConsentDataRetrievalException.class)
     public void testRetrieveConsentAttributesResultSetErrorOverloadedMethod() throws
@@ -1636,67 +1596,67 @@ public class ConsentCoreDAOTests {
                 statusAuditRecordId, recordID, consentType, changedAttributes, amendmentReason);
     }
 
-//    @Test(dependsOnMethods = {"testStoreConsentAmendmentHistory"})
-//    public void testRetrieveConsentAmendmentHistory() throws Exception {
-//
-//        Map<String, ConsentHistoryResource> consentHistoryResourcesDataMap;
-//        String[] expectedConsentDataTypes = { ConsentMgtDAOConstants.TYPE_CONSENT_BASIC_DATA,
-//                                              ConsentMgtDAOConstants.TYPE_CONSENT_ATTRIBUTES_DATA,
-//                                              ConsentMgtDAOConstants.TYPE_CONSENT_MAPPING_DATA,
-//                                              ConsentMgtDAOConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA,
-//                                              "AmendedReason"};
-//
-//        List<String> expectedConsentDataTypesList = Arrays.asList(expectedConsentDataTypes);
-//
-//        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-//
-//            consentHistoryResourcesDataMap = consentCoreDAO.retrieveConsentAmendmentHistory(connection,
-//                    ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory(), );
-//            Assert.assertNotNull(consentHistoryResourcesDataMap);
-//            for (Map.Entry<String, ConsentHistoryResource> consentHistoryDataEntry :
-//                    consentHistoryResourcesDataMap.entrySet()) {
-//                Assert.assertEquals(ConsentMgtDAOTestData.SAMPLE_HISTORY_ID, consentHistoryDataEntry.getKey());
-//                Map<String, Object> consentHistoryData =
-//                        consentHistoryDataEntry.getValue().getChangedAttributesJsonDataMap();
-//                for (Map.Entry<String, Object> consentHistoryDataTypeEntry :
-//                        consentHistoryData.entrySet()) {
-//                    Assert.assertNotNull(consentHistoryDataTypeEntry.getKey());
-//                    Assert.assertTrue(expectedConsentDataTypesList.contains((consentHistoryDataTypeEntry.getKey())));
-//                    Assert.assertNotNull(consentHistoryDataTypeEntry.getValue());
-//                }
-//            }
-//        }
-//    }
-//
-//    @Test (expectedExceptions = ConsentDataRetrievalException.class)
-//    public void testRetrieveConsentAmendmentHistoryDataRetrievalError() throws Exception {
-//
-//        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection).prepareStatement(Mockito.anyString());
-//        Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
-//        consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
-//                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
-//    }
-//
-//    @Test (expectedExceptions = ConsentDataRetrievalException.class)
-//    public void testRetrieveConsentAmendmentHistoryPrepStmtSQLError() throws Exception {
-//
-//        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-//        consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
-//                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
-//    }
-//
-//    @Test
-//    public void testRetrieveConsentAmendmentHistoryNoRecordsFound() throws Exception {
-//
-//        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-//                .prepareStatement(Mockito.anyString());
-//        Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
-//        Mockito.doReturn(false).when(mockedResultSet).isBeforeFirst();
-//
-//        Map<String, ConsentHistoryResource> result = consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
-//                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
-//        Assert.assertEquals(result.size(), 0);
-//    }
+    @Test(dependsOnMethods = {"testStoreConsentAmendmentHistory"})
+    public void testRetrieveConsentAmendmentHistory() throws Exception {
+
+        Map<String, ConsentHistoryResource> consentHistoryResourcesDataMap;
+        String[] expectedConsentDataTypes = { ConsentMgtDAOConstants.TYPE_CONSENT_BASIC_DATA,
+                                              ConsentMgtDAOConstants.TYPE_CONSENT_ATTRIBUTES_DATA,
+                                              ConsentMgtDAOConstants.TYPE_CONSENT_MAPPING_DATA,
+                                              ConsentMgtDAOConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA,
+                                              "AmendedReason"};
+
+        List<String> expectedConsentDataTypesList = Arrays.asList(expectedConsentDataTypes);
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+
+            consentHistoryResourcesDataMap = consentCoreDAO.retrieveConsentAmendmentHistory(connection,
+                    ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory(), );
+            Assert.assertNotNull(consentHistoryResourcesDataMap);
+            for (Map.Entry<String, ConsentHistoryResource> consentHistoryDataEntry :
+                    consentHistoryResourcesDataMap.entrySet()) {
+                Assert.assertEquals(ConsentMgtDAOTestData.SAMPLE_HISTORY_ID, consentHistoryDataEntry.getKey());
+                Map<String, Object> consentHistoryData =
+                        consentHistoryDataEntry.getValue().getChangedAttributesJsonDataMap();
+                for (Map.Entry<String, Object> consentHistoryDataTypeEntry :
+                        consentHistoryData.entrySet()) {
+                    Assert.assertNotNull(consentHistoryDataTypeEntry.getKey());
+                    Assert.assertTrue(expectedConsentDataTypesList.contains((consentHistoryDataTypeEntry.getKey())));
+                    Assert.assertNotNull(consentHistoryDataTypeEntry.getValue());
+                }
+            }
+        }
+    }
+
+    @Test (expectedExceptions = ConsentDataRetrievalException.class)
+    public void testRetrieveConsentAmendmentHistoryDataRetrievalError() throws Exception {
+
+        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection).prepareStatement(Mockito.anyString());
+        Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
+        consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
+                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
+    }
+
+    @Test (expectedExceptions = ConsentDataRetrievalException.class)
+    public void testRetrieveConsentAmendmentHistoryPrepStmtSQLError() throws Exception {
+
+        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
+        consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
+                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
+    }
+
+    @Test
+    public void testRetrieveConsentAmendmentHistoryNoRecordsFound() throws Exception {
+
+        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
+                .prepareStatement(Mockito.anyString());
+        Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
+        Mockito.doReturn(false).when(mockedResultSet).isBeforeFirst();
+
+        Map<String, ConsentHistoryResource> result = consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
+                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
+        Assert.assertEquals(result.size(), 0);
+    }
 
 
     private void storeDataForConsentSearchTest(ArrayList<String> consentIDs,
