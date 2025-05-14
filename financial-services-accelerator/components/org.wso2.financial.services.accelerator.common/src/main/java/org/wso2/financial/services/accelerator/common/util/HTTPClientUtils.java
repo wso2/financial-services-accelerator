@@ -21,21 +21,16 @@ package org.wso2.financial.services.accelerator.common.util;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.wso2.carbon.base.ServerConfiguration;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.internal.FinancialServicesCommonDataHolder;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -55,64 +50,44 @@ public class HTTPClientUtils {
     public static final String ALLOW_ALL = "AllowAll";
     public static final String STRICT = "Strict";
     public static final String HOST_NAME_VERIFIER = "httpclient.hostnameVerifier";
-    public static final String HTTP_PROTOCOL = "http";
-    public static final String HTTPS_PROTOCOL = "https";
     private static final String[] SUPPORTED_HTTP_PROTOCOLS = {"TLSv1.2"};
     private static final Log log = LogFactory.getLog(DatabaseUtils.class);
+
+    private HTTPClientUtils() {
+        // Prevent instantiation
+    }
 
     /**
      * Get closeable https client.
      *
      * @return Closeable https client
-     * @throws FinancialServicesException FinancialServicesException exception
      */
     @Generated(message = "Ignoring since method contains no logics")
-    public static CloseableHttpClient getHttpsClient() throws FinancialServicesException {
+    public static CloseableHttpClient getHttpsClient() {
 
-        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
-
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                .register(HTTPS_PROTOCOL, sslsf)
-                .build();
-
-        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
-                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
-                new PoolingHttpClientConnectionManager();
-
-        // configuring default maximum connections
-        connectionManager.setMaxTotal(FinancialServicesConfigParser.getInstance().getConnectionPoolMaxConnections());
-        connectionManager.setDefaultMaxPerRoute(FinancialServicesConfigParser.getInstance()
-                .getConnectionPoolMaxConnectionsPerRoute());
-
-        return HttpClients.custom().setConnectionManager(connectionManager).build();
+        return HttpsClientHolder.INSTANCE;
     }
 
-    /**
-     * Get closeable https client with given max Total and max per route values.
-     *
-     * @return Closeable https client
-     * @throws FinancialServicesException FinancialServicesException exception
-     */
-    @Generated(message = "Ignoring since method contains no logics")
-    public static CloseableHttpClient getHttpsClient(int maxTotal, int maxPerRoute) throws FinancialServicesException {
+    private static class HttpsClientHolder {
+        private static final CloseableHttpClient INSTANCE;
 
-        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+        static {
 
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                .register(HTTPS_PROTOCOL, sslsf)
-                .build();
+            INSTANCE = HttpClients.custom()
+                    .setConnectionManager(FinancialServicesCommonDataHolder.getInstance().getConnectionManager())
+                    .build();
 
-        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
-                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
-                new PoolingHttpClientConnectionManager();
+            // Optional: Add shutdown hook to clean up properly
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    INSTANCE.close();
+                } catch (IOException e) {
+                    log.error("Error shutting down HttpClient", e);
+                }
+            }));
 
-        // configuring default maximum connections
-        connectionManager.setMaxTotal(maxTotal);
-        connectionManager.setDefaultMaxPerRoute(maxPerRoute);
-
-        return HttpClients.custom().setConnectionManager(connectionManager).build();
+            log.debug("HTTPS Client initialized with singleton pattern.");
+        }
     }
 
     /**
@@ -122,7 +97,7 @@ public class HTTPClientUtils {
      * @throws FinancialServicesException
      */
     @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
-    private static SSLConnectionSocketFactory createSSLConnectionSocketFactory()
+    public static SSLConnectionSocketFactory createSSLConnectionSocketFactory()
             throws FinancialServicesException {
 
         KeyStore trustStore = null;

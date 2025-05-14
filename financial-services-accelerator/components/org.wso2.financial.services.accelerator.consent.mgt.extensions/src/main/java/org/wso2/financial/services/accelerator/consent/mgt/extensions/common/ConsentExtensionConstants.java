@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -27,6 +27,7 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS = "accounts";
     public static final String PAYMENTS = "payments";
     public static final String FUNDS_CONFIRMATIONS = "fundsconfirmations";
+    public static final String DEFAULT = "default";
     public static final String ACCOUNT_CONSENT_PATH = "account-access-consents";
     public static final String COF_CONSENT_PATH = "funds-confirmation-consents";
     public static final String PAYMENT_CONSENT_PATH = "payment-consents";
@@ -34,13 +35,16 @@ public class ConsentExtensionConstants {
     public static final String TITLE = "title";
     public static final String CONSENT_ID = "ConsentId";
     public static final String ACCOUNT_ID = "account_id";
+    public static final String ACCOUNT_ID_CC = "accountId";
     public static final String DATA = "Data";
+    public static final String DATA_CC = "data";
     public static final String CONSENT_TYPE = "consent_type";
     public static final String AWAIT_AUTHORISE_STATUS = "AwaitingAuthorisation";
+    public static final String AWAIT_UPLOAD_STATUS = "AwaitingUpload";
     public static final String AUTHORIZED_STATUS = "Authorised";
     public static final String REVOKED_STATUS = "Revoked";
     public static final String REJECTED_STATUS = "Rejected";
-    public static final String CREATED_STATUS = "created";
+    public static final String CREATED_STATUS = "Created";
     public static final String DEFAULT_AUTH_TYPE = "authorisation";
     public static final String PERMISSIONS = "Permissions";
     public static final String EXPIRATION_DATE = "ExpirationDateTime";
@@ -78,6 +82,10 @@ public class ConsentExtensionConstants {
     public static final String CURRENCY_TITLE = "Currency";
     public static final String AMOUNT = "Amount";
     public static final String AMOUNT_TITLE = "Amount";
+    public static final String COMMON_AUTH_ID = "commonAuthId";
+    public static final String FILE_UPLOAD_CREATED_TIME = "FileUploadCreatedTime";
+    public static final String IDEMPOTENCY_KEY = "IdempotencyKey";
+    public static final String FILE_UPLOAD_IDEMPOTENCY_KEY = "FileUploadIdempotencyKey";
 
     //Consent Auth Servlet Constants
     public static final String DEBTOR_ACCOUNT_ID = "AccountId";
@@ -90,16 +98,23 @@ public class ConsentExtensionConstants {
     public static final String COF_ACCOUNT = "cofAccount";
     public static final String PRIMARY = "primary";
     public static final String ACCOUNT_IDS = "accountIds";
-    public static final String ERRORS = "errors";
+    public static final String ERROR = "error";
     public static final String ERROR_CODE = "code";
     public static final String ERROR_MSG = "message";
+    public static final String OPERATION = "operation";
     public static final String ERROR_DESCRIPTION = "description";
     public static final String STATE = "state";
     public static final String REDIRECT_URI = "redirect_uri";
+
+    public static final String ERROR_URI_FRAGMENT = "#error=";
+    public static final String ERROR_DESCRIPTION_PARAMETER = "&error_description=";
+    public static final String STATE_PARAMETER = "&state=";
+
     //Consent Admin Handler Constants
     public static final String CONSENT_IDS = "consentIds";
     public static final String CLIENT_IDS = "clientIds";
     public static final String CONSENT_TYPES = "consentTypes";
+    public static final String NEW_CONSENT_STATUS = "newConsentStatus";
     public static final String CONSENT_STATUSES = "consentStatuses";
     public static final String USER_IDS = "userIds";
     public static final String FROM_TIME = "fromTime";
@@ -143,6 +158,7 @@ public class ConsentExtensionConstants {
     public static final String AUTH_ID = "authorizationId";
     public static final String CC_CONSENT_ID = "consentId";
     public static final String USER_ID = "userId";
+    public static final String USER_ID_PARAM = "userId";
     public static final String AUTH_STATUS = "authorizationStatus";
     public static final String AUTH_TYPE = "authorizationType";
     public static final String UPDATE_TIME = "updatedTime";
@@ -151,6 +167,7 @@ public class ConsentExtensionConstants {
     public static final String PERMISSION = "permission";
     public static final String MAPPING_STATUS = "mappingStatus";
     public static final String MAPPING_RESOURCES = "consentMappingResources";
+    public static final String REQUEST_PARAMETERS = "requestParameters";
 
     //Consent Authorize Constants
     public static final String IS_ERROR = "isError";
@@ -176,6 +193,8 @@ public class ConsentExtensionConstants {
     public static final int STATUS_FOUND = 302;
     public static final String APPROVAL = "approval";
     public static final String COOKIES = "cookies";
+    public static final String OPENID_SCOPE = "openid";
+    public static final String PERSIST_PAYLOAD = "persistPayload";
 
     // Consent Validate Constants
     public static final String HEADERS = "headers";

@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class of constants for tests.
+ */
 public class TestConstants {
 
     public static final OffsetDateTime EXP_DATE = OffsetDateTime.now().plusDays(50);
@@ -36,6 +39,7 @@ public class TestConstants {
     public static final String INVALID_REQUEST_PATH = "accounts";
     public static final String REQUEST_PATH_WITH_INVALID_CONSENT_ID = "accounts/1234";
     public static final String ACCOUNT_CONSENT_GET_PATH = "account-access-consents/" + SAMPLE_CONSENT_ID;
+    public static final String PAYMENTS_FILE_UPLOAD_PATH = "fileUpload/" + SAMPLE_CONSENT_ID;
     public static final String INVALID_INITIATION_OBJECT = "Invalid Object";
     public static final int SAMPLE_CONSENT_FREQUENCY = 1;
     public static final Long SAMPLE_CONSENT_VALIDITY_PERIOD = 1638337852L;
@@ -45,7 +49,7 @@ public class TestConstants {
     public static final String SAMPLE_AUTH_ID = "88888";
     public static final String SAMPLE_AUTH_TYPE = "authorizationType";
     public static final String SAMPLE_USER_ID = "admin@wso2.com";
-    public static final String SAMPLE_AUTHORIZATION_STATUS = "created";
+    public static final String SAMPLE_AUTHORIZATION_STATUS = "Created";
     public static final String SAMPLE_MAPPING_ID = "sampleMappingId";
     public static final String SAMPLE_MAPPING_ID_2 = "sampleMappingId2";
     public static final String SAMPLE_ACCOUNT_ID = "123456789";
@@ -54,7 +58,7 @@ public class TestConstants {
     public static final String SAMPLE_PERMISSION = "samplePermission";
     public static final String AUTHORISED_STATUS = "Authorised";
     public static final String AWAITING_AUTH_STATUS = "AwaitingAuthorisation";
-    public static final String CREATED_STATUS = "created";
+    public static final String CREATED_STATUS = "Created";
     public static final String ACCOUNTS = "accounts";
     public static final String PAYMENTS = "payments";
     public static final String FUNDS_CONFIRMATIONS = "fundsconfirmations";
@@ -466,5 +470,149 @@ public class TestConstants {
                     "       \"MultiAuthType\":\"Any\"," +
                     "       \"MultiAuthExpiry\":\"1626755005019\"" +
                     "   }";
+
+    public static final String ADMIN_SEARCH_RESPONSE = "{\n" +
+            "   \"metadata\":{\n" +
+            "      \"total\":88,\n" +
+            "      \"count\":20,\n" +
+            "      \"limit\":20\n" +
+            "   },\n" +
+            "   \"data\":[\n" +
+            "      {\n" +
+            "         \"clientId\":\"MILJqVfWKGd9gXw3fmTAHr2qZwAa\",\n" +
+            "         \"currentStatus\":\"Authorised\",\n" +
+            "         \"createdTimestamp\":1746536842,\n" +
+            "         \"recurringIndicator\":false,\n" +
+            "         \"authorizationResources\":[\n" +
+            "            {\n" +
+            "               \"updatedTime\":1746536861,\n" +
+            "               \"consentId\":\"a18f2f56-4ad7-4128-a507-f006d5bdf40d\",\n" +
+            "               \"authorizationId\":\"113b12ff-359f-4da8-afd1-40d9d824575d\",\n" +
+            "               \"authorizationType\":\"authorise\",\n" +
+            "               \"userId\":\"test@wso2.com\",\n" +
+            "               \"authorizationStatus\":\"Authorised\"\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"updatedTimestamp\":1746536861,\n" +
+            "         \"softwareClientName\":\"oQ4KoaavpOuoE7rvQsZEOV\",\n" +
+            "         \"consent_type\":\"accounts\",\n" +
+            "         \"validityPeriod\":1754312861,\n" +
+            "         \"consentAttributes\":{\n" +
+            "            \n" +
+            "         },\n" +
+            "         \"consentId\":\"a18f2f56-4ad7-4128-a507-f006d5bdf40d\",\n" +
+            "         \"consentMappingResources\":[\n" +
+            "            {\n" +
+            "               \"mappingId\":\"dc716c7a-1a7f-44ac-a461-a0513fc6f75d\",\n" +
+            "               \"mappingStatus\":\"active\",\n" +
+            "               \"accountId\":\"30080012343456\",\n" +
+            "               \"authorizationId\":\"113b12ff-359f-4da8-afd1-40d9d824575d\",\n" +
+            "               \"permission\":\"n/a\"\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"receipt\":{\n" +
+            "            \"Risk\":{\n" +
+            "               \n" +
+            "            },\n" +
+            "            \"Data\":{\n" +
+            "               \"TransactionToDateTime\":\"2025-05-09T18:13:50.070878+05:30\",\n" +
+            "               \"ExpirationDateTime\":\"2025-05-11T18:13:50.070489+05:30\",\n" +
+            "               \"Permissions\":[\n" +
+            "                  \"ReadAccountsBasic\",\n" +
+            "                  \"ReadAccountsDetail\",\n" +
+            "                  \"ReadBalances\",\n" +
+            "                  \"ReadBeneficiariesBasic\",\n" +
+            "                  \"ReadBeneficiariesDetail\",\n" +
+            "                  \"ReadDirectDebits\",\n" +
+            "                  \"ReadProducts\",\n" +
+            "                  \"ReadStandingOrdersBasic\",\n" +
+            "                  \"ReadStandingOrdersDetail\",\n" +
+            "                  \"ReadTransactionsBasic\",\n" +
+            "                  \"ReadTransactionsCredits\",\n" +
+            "                  \"ReadTransactionsDebits\",\n" +
+            "                  \"ReadTransactionsDetail\",\n" +
+            "                  \"ReadStatementsBasic\",\n" +
+            "                  \"ReadStatementsDetail\",\n" +
+            "                  \"ReadOffers\",\n" +
+            "                  \"ReadParty\",\n" +
+            "                  \"ReadPartyPSU\",\n" +
+            "                  \"ReadScheduledPaymentsBasic\",\n" +
+            "                  \"ReadScheduledPaymentsDetail\",\n" +
+            "                  \"ReadPAN\"\n" +
+            "               ],\n" +
+            "               \"TransactionFromDateTime\":\"2025-05-06T18:13:50.070760+05:30\"\n" +
+            "            }\n" +
+            "         },\n" +
+            "         \"consentFrequency\":0\n" +
+            "      },\n" +
+            "      {\n" +
+            "         \"clientId\":\"MILJqVfWKGd9gXw3fmTAHr2qZwAa\",\n" +
+            "         \"currentStatus\":\"Authorised\",\n" +
+            "         \"createdTimestamp\":1746536822,\n" +
+            "         \"recurringIndicator\":false,\n" +
+            "         \"authorizationResources\":[\n" +
+            "            {\n" +
+            "               \"updatedTime\":1746536841,\n" +
+            "               \"consentId\":\"1aa69e75-84c2-4d3a-8cf3-5164933fa3ca\",\n" +
+            "               \"authorizationId\":\"9c8751dd-91cf-4140-8e1e-1ff42c4394e3\",\n" +
+            "               \"authorizationType\":\"authorise\",\n" +
+            "               \"userId\":\"test@wso2.com\",\n" +
+            "               \"authorizationStatus\":\"Authorised\"\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"updatedTimestamp\":1746536841,\n" +
+            "         \"softwareClientName\":\"oQ4KoaavpOuoE7rvQsZEOV\",\n" +
+            "         \"consent_type\":\"accounts\",\n" +
+            "         \"validityPeriod\":1754312841,\n" +
+            "         \"consentAttributes\":{\n" +
+            "            \n" +
+            "         },\n" +
+            "         \"consentId\":\"1aa69e75-84c2-4d3a-8cf3-5164933fa3ca\",\n" +
+            "         \"consentMappingResources\":[\n" +
+            "            {\n" +
+            "               \"mappingId\":\"156bd151-8b2b-4fcd-936f-f324a145bf75\",\n" +
+            "               \"mappingStatus\":\"active\",\n" +
+            "               \"accountId\":\"123456789\",\n" +
+            "               \"authorizationId\":\"9c8751dd-91cf-4140-8e1e-1ff42c4394e3\",\n" +
+            "               \"permission\":\"n/a\"\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"receipt\":{\n" +
+            "            \"Risk\":{\n" +
+            "               \n" +
+            "            },\n" +
+            "            \"Data\":{\n" +
+            "               \"TransactionToDateTime\":\"2025-05-09T18:13:50.070878+05:30\",\n" +
+            "               \"ExpirationDateTime\":\"2025-05-11T18:13:50.070489+05:30\",\n" +
+            "               \"Permissions\":[\n" +
+            "                  \"ReadAccountsBasic\",\n" +
+            "                  \"ReadAccountsDetail\",\n" +
+            "                  \"ReadBalances\",\n" +
+            "                  \"ReadBeneficiariesBasic\",\n" +
+            "                  \"ReadBeneficiariesDetail\",\n" +
+            "                  \"ReadDirectDebits\",\n" +
+            "                  \"ReadProducts\",\n" +
+            "                  \"ReadStandingOrdersBasic\",\n" +
+            "                  \"ReadStandingOrdersDetail\",\n" +
+            "                  \"ReadTransactionsBasic\",\n" +
+            "                  \"ReadTransactionsCredits\",\n" +
+            "                  \"ReadTransactionsDebits\",\n" +
+            "                  \"ReadTransactionsDetail\",\n" +
+            "                  \"ReadStatementsBasic\",\n" +
+            "                  \"ReadStatementsDetail\",\n" +
+            "                  \"ReadOffers\",\n" +
+            "                  \"ReadParty\",\n" +
+            "                  \"ReadPartyPSU\",\n" +
+            "                  \"ReadScheduledPaymentsBasic\",\n" +
+            "                  \"ReadScheduledPaymentsDetail\",\n" +
+            "                  \"ReadPAN\"\n" +
+            "               ],\n" +
+            "               \"TransactionFromDateTime\":\"2025-05-06T18:13:50.070760+05:30\"\n" +
+            "            }\n" +
+            "         },\n" +
+            "         \"consentFrequency\":0\n" +
+            "      }\n" +
+            "   ]\n" +
+            "}";
 
 }

@@ -26,9 +26,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.CarbonUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+import org.wso2.securevault.commons.MiscellaneousUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -64,8 +66,6 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Map<Integer, String>> authorizeSteps = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrParams = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrValidators = new HashMap<>();
-    private static final Map<String, Map<String, String>> keyManagerAdditionalProperties
-            = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;
@@ -134,7 +134,6 @@ public final class FinancialServicesConfigParser {
             buildFSExecutors();
             buildConsentAuthSteps();
             buildDCRConfigs();
-            buildKeyManagerProperties();
         } catch (IOException | XMLStreamException | OMException e) {
             throw new FinancialServicesRuntimeException("Error occurred while building configuration from " +
                     "financial-services.xml", e);
@@ -444,9 +443,8 @@ public final class FinancialServicesConfigParser {
                 String key = getKey(nameStack);
                 Object currentObject = configuration.get(key);
                 String value = replaceSystemProperty(element.getText());
-                if (secretResolver != null && secretResolver.isInitialized() &&
-                        secretResolver.isTokenProtected(key)) {
-                    value = secretResolver.resolve(key);
+                if (secretResolver != null && secretResolver.isInitialized()) {
+                    value = MiscellaneousUtil.resolve(element, secretResolver);
                 }
                 if (currentObject == null) {
                     configuration.put(key, value);
@@ -665,16 +663,66 @@ public final class FinancialServicesConfigParser {
         return config.map(String::trim).orElse("1440");
     }
 
+    /**
+     * Method to get the value Idempotency header name.
+     *
+     * @return Idempotency header name
+     */
+    public String getIdempotencyHeaderName() {
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IDEMPOTENCY_HEADER_NAME);
+        return config.map(String::trim).orElse("x-idempotency-key");
+    }
+
+    /**
+     * Method to get whether Idempotency validation is allowed for all APIs.
+     *
+     * @return Idempotency validation is allowed
+     */
+    public Boolean isIdempotencyAllowedForAllAPIs() {
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IDEMPOTENCY_ALLOWED_FOR_ALL_APIS);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Returns the list of idempotency allowed API resources.
+     *
+     * @return list.
+     */
+    public List<String> getIdempotencyAllowedResources() {
+
+        Object allowedTypesObj = configuration.get(FinancialServicesConstants.
+                IDEMPOTENCY_ALLOWED_API_RESOURCES);
+        List<String> allowedTypes = new ArrayList<>();
+        if (allowedTypesObj instanceof List) {
+            allowedTypes.addAll((List) allowedTypesObj);
+        } else if (allowedTypesObj instanceof String) {
+            allowedTypes.add((String) allowedTypesObj);
+        }
+
+        return allowedTypes;
+    }
+
+    public String getAdminUsername() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.ADMIN_USERNAME);
+        return source.map(String::trim).orElse("is_admin@wso2.com");
+    }
+
+    public String getAdminPassword() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.ADMIN_PASSWORD);
+        return source.map(String::trim).orElse("wso2123");
+    }
+
     public String getConsentAPIUsername() {
 
-        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_USERNAME);
-        return source.map(String::trim).orElse("admin");
+        return getAdminUsername();
     }
 
     public String getConsentAPIPassword() {
 
-        Optional<String> source = getConfigurationFromKeyAsString(FinancialServicesConstants.CONSENT_API_PASSWORD);
-        return source.map(String::trim).orElse("admin");
+        return getAdminPassword();
     }
 
     public String getPreserveConsent() {
@@ -838,6 +886,236 @@ public final class FinancialServicesConfigParser {
                 FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR);
         return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications.service." +
                 "realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
+    }
+
+    /**
+     * Method to determine service extensions feature is enabled or not from the configurations.
+     *
+     * @return boolean value indicating the state
+     */
+    public boolean isServiceExtensionsEndpointEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get service extensions endpoint base url.
+     *
+     * @return String service extensions endpoint base url
+     */
+    public String getServiceExtensionsEndpointBaseUrl() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_BASE_URL);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint retry count.
+     *
+     * @return String service extensions endpoint retry count
+     */
+    public int getServiceExtensionsEndpointRetryCount() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_RETRY_COUNT);
+        return retryCount.map(Integer::parseInt).orElse(1);
+    }
+
+    /**
+     * Method to get service extensions endpoint connect timeout in seconds.
+     *
+     * @return String service extensions endpoint read timeout in seconds
+     */
+    public int getServiceExtensionsEndpointConnectTimeoutInSeconds() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_CONNECT_TIMEOUT);
+        return retryCount.map(Integer::parseInt).orElse(3);
+    }
+
+    /**
+     * Method to get service extensions endpoint read timeout in seconds.
+     *
+     * @return String service extensions endpoint read timeout in seconds
+     */
+    public int getServiceExtensionsEndpointReadTimeoutInSeconds() {
+
+        Optional<String> retryCount = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_ENDPOINT_READ_TIMEOUT);
+        return retryCount.map(Integer::parseInt).orElse(3);
+    }
+
+    /**
+     * Method to get service extension types.
+     *
+     * @return List of service extensions
+     */
+    public List<ServiceExtensionTypeEnum> getServiceExtensionTypes() {
+        Object serviceExtensionTypesObj = configuration.get(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_EXTENSION);
+
+        List<String> serviceExtensionTypes = serviceExtensionTypesObj instanceof List<?>
+                ? (List<String>) serviceExtensionTypesObj
+                : Collections.singletonList((String) serviceExtensionTypesObj);
+
+        return serviceExtensionTypes.stream()
+                .map(ServiceExtensionTypeEnum::fromString)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Method to get service extensions endpoint security type.
+     *
+     * @return String service extensions endpoint security type
+     */
+    public String getServiceExtensionsEndpointSecurityType() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_SECURITY_TYPE);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security basic auth username.
+     *
+     * @return String service extensions endpoint security basic auth username
+     */
+    public String getServiceExtensionsEndpointSecurityBasicAuthUsername() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_BASIC_AUTH_USERNAME);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security basic auth password.
+     *
+     * @return String service extensions endpoint security basic auth password
+     */
+    public String getServiceExtensionsEndpointSecurityBasicAuthPassword() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get service extensions endpoint security oauth2 token.
+     *
+     * @return String service extensions endpoint security oauth2 token
+     */
+    public String getServiceExtensionsEndpointSecurityOauth2Token() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.SERVICE_EXTENSIONS_OAUTH2_TOKEN);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get if consents are pre initiated.
+     *
+     * @return boolean
+     */
+    public boolean isPreInitiatedConsent() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT);
+        return config.map(Boolean::parseBoolean).orElse(true);
+    }
+
+    /**
+     * Get config related for checking whether PSU is a federated user or not.
+     *
+     * @return Boolean value indicating whether PSU is a federated user or not
+     */
+    public boolean isPSUFederated() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_PSU_FEDERATED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Get Federated PSU IDP Name.
+     *
+     * @return String Federated IDP name
+     */
+    public String getFederatedIDPName() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.PSU_FEDERATED_IDP_NAME);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Returns the list of allowed headers to pass in consent manage service extension requests.
+     *
+     * @return List of allowed headers.
+     */
+    public List<String> getConsentManageExtensionAllowedHeaders() {
+
+        Object allowedHeadersObj = configuration.get(FinancialServicesConstants.
+                CONSENT_MANAGE_EXTENSION_ALLOWED_HEADERS);
+        List<String> allowedHeaders = new ArrayList<>();
+        if (allowedHeadersObj instanceof List) {
+            allowedHeaders.addAll((List) allowedHeadersObj);
+        } else if (allowedHeadersObj instanceof String) {
+            allowedHeaders.add((String) allowedHeadersObj);
+        }
+
+        return allowedHeaders;
+    }
+
+    /**
+     * Method to get status for expired consents.
+     * @return statue for expired consents
+     */
+    public String getStatusWordingForExpiredConsents() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.STATUS_FOR_EXPIRED_CONSENT);
+        return config.map(String::trim).orElse(FinancialServicesConstants.DEFAULT_STATUS_FOR_EXPIRED_CONSENTS);
+    }
+
+    /**
+     * Method to get eligible statues for evaluate expiration logic.
+     * @return eligible statues for evaluate expiration logic
+     */
+    public String getEligibleStatusesForConsentExpiry() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.ELIGIBLE_STATUSES_FOR_CONSENT_EXPIRY);
+        return config.map(String::trim).orElse("");
+    }
+
+    public boolean isConsentAmendmentHistoryEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IS_CONSENT_AMENDMENT_HISTORY_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get isEnabled config for periodical consent expiration job.
+     * @return consent expiration job is enabled
+     */
+    public boolean isConsentExpirationPeriodicalJobEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.IS_CONSENT_PERIODICAL_EXPIRATION_ENABLED);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Method to get configs for periodical consent expiration job's cron value.
+     * @return consent expiration job's cron string
+     */
+    public String getConsentExpiryCronExpression() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_PERIODICAL_EXPIRATION_CRON);
+        return config.map(String::trim).orElse(FinancialServicesConstants.DEFAULT_MIDNIGHT_CRON);
     }
 
     /**

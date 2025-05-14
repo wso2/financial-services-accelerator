@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.api;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.PATCH;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -29,6 +30,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
+
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,6 +62,7 @@ public class ConsentManageEndpoint {
 
     private static final Log log = LogFactory.getLog(ConsentManageEndpoint.class);
 
+    private static List<String> allowedHeaderNames;
     private static ConsentManageHandler consentManageHandler = null;
     private static final String CLIENT_ID_HEADER = "x-wso2-client-id";
 
@@ -66,6 +71,8 @@ public class ConsentManageEndpoint {
         if (consentManageHandler == null) {
             initializeConsentManageHandler();
         }
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        allowedHeaderNames = configParser.getConsentManageExtensionAllowedHeaders();
     }
 
     private static void initializeConsentManageHandler() {
@@ -79,7 +86,7 @@ public class ConsentManageEndpoint {
             log.info(String.format("Consent manage handler %s initialized",
                     consentManageHandler.getClass().getName().replaceAll("\n\r", "")));
         } else {
-            log.warn("Consent manage handler is null");
+            log.warn("Consent manage handler initialization failed");
         }
     }
 
@@ -93,9 +100,11 @@ public class ConsentManageEndpoint {
     public Response manageGet(@Context HttpServletRequest request, @Context HttpServletResponse response,
                               @Context UriInfo uriInfo) {
 
-        ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
+        ConsentManageData consentManageData = new ConsentManageData(headers, uriInfo.getQueryParameters(),
+                uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleGet(consentManageData);
         return sendResponse(consentManageData);
     }
@@ -110,10 +119,11 @@ public class ConsentManageEndpoint {
     public Response managePost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                @Context UriInfo uriInfo) {
 
-        ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                ConsentUtils.getPayload(request), uriInfo.getQueryParameters(),
-                uriInfo.getPathParameters().getFirst("s"), request, response);
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
+        ConsentManageData consentManageData = new ConsentManageData(headers, ConsentUtils.getPayload(request),
+                uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handlePost(consentManageData);
         return sendResponse(consentManageData);
     }
@@ -128,10 +138,11 @@ public class ConsentManageEndpoint {
     public Response manageDelete(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                  @Context UriInfo uriInfo) {
 
-        ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
-                null, uriInfo.getQueryParameters(),
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
+        ConsentManageData consentManageData = new ConsentManageData(headers, null, uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleDelete(consentManageData);
         return sendResponse(consentManageData);
     }
@@ -182,10 +193,12 @@ public class ConsentManageEndpoint {
     public Response manageFileUploadPost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                          @Context UriInfo uriInfo) {
 
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getFileUploadPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleFileUploadPost(consentManageData);
         return sendFileUploadResponse(consentManageData);
     }
@@ -200,9 +213,11 @@ public class ConsentManageEndpoint {
     public Response manageFileGet(@Context HttpServletRequest request, @Context HttpServletResponse response,
                                   @Context UriInfo uriInfo) {
 
+        Map<String, String> headers = ConsentUtils.getHeaders(request);
         ConsentManageData consentManageData = new ConsentManageData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getPathParameters().getFirst("s"), request, response);
         consentManageData.setClientId(consentManageData.getHeaders().get(CLIENT_ID_HEADER));
+        consentManageData.setAllowedExtensionHeaders(ConsentUtils.getAllowedHeaders(headers, allowedHeaderNames));
         consentManageHandler.handleFileGet(consentManageData);
         return sendResponse(consentManageData);
     }
@@ -231,8 +246,11 @@ public class ConsentManageEndpoint {
      * @return Response
      */
     private Response sendFileUploadResponse(ConsentManageData consentManageData) {
-        if (consentManageData.getPayload() != null || consentManageData.getResponseStatus() != null) {
+        if (consentManageData.getResponseStatus() != null && consentManageData.getResponsePayload() == null) {
             return Response.status(consentManageData.getResponseStatus().getStatusCode()).build();
+        } else if (consentManageData.getResponsePayload() != null && consentManageData.getResponseStatus() != null) {
+            return Response.status(consentManageData.getResponseStatus().getStatusCode()).
+                    entity(consentManageData.getResponsePayload().toString()).build();
         } else {
             log.debug("Response status or payload unavailable. Throwing exception");
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Response data unavailable");

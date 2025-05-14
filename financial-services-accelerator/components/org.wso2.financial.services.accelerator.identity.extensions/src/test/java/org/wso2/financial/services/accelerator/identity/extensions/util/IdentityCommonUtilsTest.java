@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,109 +18,178 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.api.resource.mgt.APIResourceMgtException;
-import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
-import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
+import org.wso2.carbon.identity.application.common.model.ServiceProvider;
+import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
+import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.Cookie;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class for IdentityCommonUtils.
  */
 public class IdentityCommonUtilsTest {
 
-    MockedStatic<IdentityExtensionsDataHolder> identityExtensionsDataHolderMockedStatic;
-
     @BeforeClass
-    public void beforeClass() throws IdentityApplicationManagementException, IdentityOAuthAdminException,
-            APIResourceMgtException {
+    public void beforeClass() throws ConsentManagementException {
 
-        IdentityExtensionsDataHolder identityExtensionsDataHolder = IdentityExtensionsDataHolder.getInstance();
-        Map<String, Object> confMap = new HashMap<>();
-        confMap.put(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
-        identityExtensionsDataHolder.setConfigurationMap(confMap);
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
+        configMap.put(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ACCESS_TOKEN, "true");
+        configMap.put(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT, "true");
+        IdentityExtensionsDataHolder.getInstance().setConfigurationMap(configMap);
 
-        identityExtensionsDataHolderMockedStatic = Mockito.mockStatic(IdentityExtensionsDataHolder.class);
-        identityExtensionsDataHolderMockedStatic.when(IdentityExtensionsDataHolder::getInstance)
-                .thenReturn(identityExtensionsDataHolder);
-    }
-
-    @AfterClass
-    public void afterClass() {
-        identityExtensionsDataHolderMockedStatic.close();
+        ConsentCoreService consentCoreService = mock(ConsentCoreService.class);
+        when(consentCoreService.getConsentIdByConsentAttributeNameAndValue(Mockito.any(), Mockito.any()))
+                .thenReturn(new ArrayList<>(Arrays.asList("123")));
+        IdentityExtensionsDataHolder.getInstance().setConsentCoreService(consentCoreService);
     }
 
     @Test
-    public void testGetConsentIdFromScopes() {
-        String[] scopes = {"dummy-scope1", "dummy-scope2", "consent_id_ConsentId", "dummy-scope3", "FS_ConsentId",
-                "TIME_ConsentId", "x5t#_ConsentId"};
-        Assert.assertTrue(Arrays.toString(scopes).contains("consent_id"));
-        String[] modifiedScopes = IdentityCommonUtils.removeInternalScopes(scopes);
-        Assert.assertFalse(Arrays.toString(modifiedScopes).contains("consent_id"));
-        Assert.assertFalse(Arrays.toString(modifiedScopes).contains("FS_"));
-        Assert.assertFalse(Arrays.toString(modifiedScopes).contains("TIME_"));
-        Assert.assertFalse(Arrays.toString(modifiedScopes).contains("x5t#_"));
-    }
+    public void testRemoveInternalScopes() {
+        String[] scopes = {"scope1", "scope2", "consent_id123", "FS_scope", "TIME_scope", "x5t#_scope"};
 
-    @Test(description = "when valid transport cert, return x509 certificate")
-    public void testParseCertificate() throws FinancialServicesException {
-        Assert.assertNotNull(IdentityCommonUtils.parseCertificate(TestConstants.TEST_CLIENT_CERT));
-    }
-
-    @Test (expectedExceptions = FinancialServicesException.class)
-    public void testParseCertificateWithInvalidCert() throws FinancialServicesException {
-        Assert.assertNull(IdentityCommonUtils.parseCertificate("-----INVALID CERTIFICATE-----"));
+        String[] result = IdentityCommonUtils.removeInternalScopes(scopes);
+        Assert.assertEquals(result, new String[]{"scope1", "scope2"});
     }
 
     @Test
-    public void testParseCertificateWithInvalidBase64CharactersCert() throws FinancialServicesException {
-        Assert.assertNotNull(IdentityCommonUtils.parseCertificate(TestConstants.WRONGLY_FORMATTED_CERT));
+    public void testGetConsentIdFromScopesArray() {
+        String[] scopes = {"scope1", "consent_id123", "scope2"};
+
+        String consentId = IdentityCommonUtils.getConsentIdFromScopesArray(scopes);
+        Assert.assertEquals(consentId, "123");
     }
 
     @Test
-    public void testParseCertificateWithEmptyCert() throws FinancialServicesException {
-        Assert.assertNull(IdentityCommonUtils.parseCertificate(""));
+    public void testGetConfiguredConsentIdClaimName() {
+        String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
+        Assert.assertEquals(consentIdClaimName, "consent_id");
     }
 
-    @Test(description = "when certificate expired, return true")
-    public void testIsExpiredWithExpiredCert() throws FinancialServicesException {
-        X509Certificate testCert = IdentityCommonUtils.parseCertificate(TestConstants.EXPIRED_SELF_CERT);
-        Assert.assertNotNull(testCert);
-        Assert.assertTrue(hasExpired(testCert));
+    @Test
+    public void testAddConsentIdToTokenResponse() {
+        OAuth2AccessTokenRespDTO tokenRespDTO = new OAuth2AccessTokenRespDTO();
+        tokenRespDTO.setAuthorizedScopes("scope1 consent_id123 scope2");
+
+        IdentityCommonUtils.addConsentIdToTokenResponse(tokenRespDTO);
+        Assert.assertEquals(tokenRespDTO.getParameters().get("consent_id"), "123");
     }
 
-    @Test(description = "when valid certificate, return false")
-    public void testIsExpired() throws FinancialServicesException {
-        X509Certificate testCert = IdentityCommonUtils.parseCertificate(TestConstants.TEST_CLIENT_CERT);
-        Assert.assertNotNull(testCert);
-        Assert.assertFalse(hasExpired(testCert));
+    @Test
+    public void testGetCommonAuthIdFromCookies() {
+        Cookie[] cookies = {
+                new Cookie("other_cookie", "value1"),
+                new Cookie("commonAuthId", "testCommonAuthId")
+        };
+
+        String commonAuthId = IdentityCommonUtils.getCommonAuthIdFromCookies(cookies);
+        Assert.assertEquals(commonAuthId, "testCommonAuthId");
     }
 
-    /**
-     * Test util method to check cert expiry.
-     *
-     * @param peerCertificate
-     * @return
-     */
-    public static boolean hasExpired(X509Certificate peerCertificate) {
-        try {
-            peerCertificate.checkValidity();
-        } catch (CertificateException e) {
-            return true;
-        }
-        return false;
+    @Test
+    public void testGetConsentIdFromScopesRequestParam() {
+        String[] scopes = {"scope1", "ais:123", "scope2"};
+
+        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
+        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN, ":([a-fA-F0-9\\-]+)");
+
+        String consentId = IdentityCommonUtils.getConsentIdFromScopesRequestParam(scopes);
+        Assert.assertEquals(consentId, "123");
+    }
+
+    @Test
+    public void testExtractConsentIdFromRegex() {
+        String consentId = "da5c57ca-dcab-45db-8620-65fca406fd91";
+        String value = "ais: accounts ais:" + consentId + " payments ais:: pis";
+
+        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
+        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN, ":([a-fA-F0-9\\-]+)");
+
+        String extractedConsentId = IdentityCommonUtils.extractConsentIdFromRegex(value);
+        Assert.assertEquals(extractedConsentId, consentId);
+    }
+
+    @Test
+    public void testGetConsentIdFromAuthzRequestContext() throws Exception {
+        OAuth2AuthorizeReqDTO authzReqDTO = new OAuth2AuthorizeReqDTO();
+        authzReqDTO.setCookie(new Cookie[]{new Cookie("commonAuthId", "123")});
+        OAuthAuthzReqMessageContext authzReqMessageContext = new OAuthAuthzReqMessageContext(authzReqDTO);
+
+        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
+        configMap.put(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT, "false");
+
+        String consentId = IdentityCommonUtils.getConsentIdFromAuthzRequestContext(authzReqMessageContext);
+        Assert.assertNotNull(consentId);
+    }
+
+
+    @Test
+    public void testUpdateApprovedScopes() throws Exception {
+        OAuth2AuthorizeReqDTO authzReqDTO = new OAuth2AuthorizeReqDTO();
+        authzReqDTO.setCookie(new Cookie[]{new Cookie("commonAuthId", "123")});
+        OAuthAuthzReqMessageContext authzReqMessageContext = new OAuthAuthzReqMessageContext(authzReqDTO);
+        authzReqMessageContext.setApprovedScope(new String[]{"scope1", "scope2"});
+
+        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
+        configMap.put(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT, "false");
+
+        String[] updatedScopes = IdentityCommonUtils.updateApprovedScopes(authzReqMessageContext);
+        Assert.assertEquals(updatedScopes, new String[]{"scope1", "scope2", "consent_id123"});
+    }
+
+    @Test
+    public void testAddConsentIdToTokenResponse_NoConsentId() {
+        OAuth2AccessTokenRespDTO tokenRespDTO = new OAuth2AccessTokenRespDTO();
+        tokenRespDTO.setAuthorizedScopes("scope1 scope2");
+
+        IdentityCommonUtils.addConsentIdToTokenResponse(tokenRespDTO);
+        Assert.assertNull(tokenRespDTO.getParameters().get("consent_id"));
+    }
+
+    @Test
+    public void testGetSpMetaData() {
+        ServiceProvider serviceProvider = new ServiceProvider();
+        ServiceProviderProperty property1 = new ServiceProviderProperty();
+        property1.setName("key1");
+        property1.setValue("value1");
+
+        ServiceProviderProperty property2 = new ServiceProviderProperty();
+        property2.setName("key2");
+        property2.setValue("value2,value3");
+
+        serviceProvider.setSpProperties(new ServiceProviderProperty[]{property1, property2});
+
+        Map<String, Object> spMetaData = IdentityCommonUtils.getSpMetaData(serviceProvider);
+        Assert.assertEquals(spMetaData.get("key1"), "value1");
+        Assert.assertEquals(spMetaData.get("key2"), "value2,value3");
+    }
+
+    @Test
+    public void testGetConsentIdFromEssentialClaims() throws Exception {
+        String essentialClaims = "{\"claims\":{\"consent_id\":\"123\"}}";
+        Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
+        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH, "/claims/consent_id");
+        configMap.put(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN, null);
+
+        String consentId = IdentityCommonUtils.getConsentIdFromEssentialClaims(essentialClaims);
+        Assert.assertEquals(consentId, "123");
     }
 }

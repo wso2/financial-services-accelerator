@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,12 +18,14 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -31,8 +33,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
+import java.util.Locale;
 
 /**
  * Util class for consent authorize operations.
@@ -44,8 +49,8 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to extract request object from query params.
      *
-     * @param spQueryParams  Query params
-     * @return  requestObject
+     * @param spQueryParams Query params
+     * @return requestObject
      * @throws ConsentException Consent Exception
      */
     public static String extractRequestObject(String spQueryParams) throws ConsentException {
@@ -70,7 +75,7 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to validate the request object and extract consent ID.
      *
-     * @param requestObject  Request object
+     * @param requestObject Request object
      * @return consentId
      */
     public static String extractConsentId(String requestObject) throws ConsentException {
@@ -98,13 +103,7 @@ public class ConsentAuthorizeUtil {
                     }
                 }
             }
-
-            if (consentId == null) {
-                log.error("intent_id not found in request object");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "intent_id not found in request object");
-            }
             return consentId;
-
         } catch (JSONException e) {
             log.error("Payload is not a JSON object", e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not a JSON object");
@@ -112,7 +111,47 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
+     * Extracts a top-level string field from the request object payload.
+     * Returns an empty string if the field is not found or if the payload is invalid.
+     *
+     * @param requestObject The signed JWT request object (in format header.payload.signature)
+     * @param fieldName     The name of the field to extract
+     * @return The string value of the field, or an empty string if the field is not found
+     */
+    public static String extractField(String requestObject, String fieldName) {
+        try {
+            String payloadJson = decodeRequestObjectPayload(requestObject);
+            JSONObject payload = new JSONObject(payloadJson);
+            return payload.optString(fieldName, "");
+        } catch (JSONException e) {
+            log.warn("Failed to parse JWT payload as JSON or extract field: " +
+                    fieldName.replaceAll("[\r\n]", ""), e);
+            return "";
+        }
+    }
+
+    /**
+     * Method to extract the request object payload and convert it to a JSON object.
+     *
+     * @param requestObject Request object
+     * @return requestObjectJson
+     * @throws ConsentException Consent Exception
+     */
+    public static JSONObject getRequestObjectJson(String requestObject) throws ConsentException {
+
+        String payload = decodeRequestObjectPayload(requestObject);
+        JSONObject requestObjectJson;
+        try {
+            requestObjectJson = new JSONObject(payload);
+        } catch (JSONException e) {
+            requestObjectJson = new JSONObject();
+        }
+        return requestObjectJson;
+    }
+
+    /**
      * Method to decode the request object payload.
+     *
      * @param requestObject
      * @return
      */
@@ -135,7 +174,8 @@ public class ConsentAuthorizeUtil {
      *                        from database.
      * @return ConsentDataJson array
      */
-    public static JSONArray getConsentData(ConsentResource consentResource) throws ConsentException {
+    public static JSONArray getConsentDataForPreInitiatedConsent(ConsentResource consentResource)
+            throws ConsentException {
 
         JSONArray consentDataJSON = new JSONArray();
         try {
@@ -168,6 +208,41 @@ public class ConsentAuthorizeUtil {
         } catch (JSONException e) {
             log.error("Payload is not in JSON Format", e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not in JSON Format");
+        }
+        return consentDataJSON;
+    }
+
+    /**
+     * Returns consent data to be displayed based on the requested scopes.
+     *
+     * @param scope Scopes given in the request
+     * @return ConsentDataJson array
+     */
+    public static JSONArray getConsentDataForScope(String scope)
+            throws ConsentException {
+
+        JSONArray consentDataJSON = new JSONArray();
+        JSONArray permissions = new JSONArray();
+
+        // Convert space-separated scopes into JSON array
+        if (scope != null && !scope.trim().isEmpty()) {
+            String[] scopeItems = scope.trim().split("\\s+");
+            for (String item : scopeItems) {
+                // Skip openid scope since it is not relevant to the consent.
+                if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
+                    continue;
+                }
+                permissions.put(item);
+            }
+        }
+
+        if (!permissions.isEmpty()) {
+            JSONObject jsonElementPermissions = new JSONObject();
+            jsonElementPermissions.put(ConsentExtensionConstants.TITLE,
+                    ConsentExtensionConstants.PERMISSIONS);
+            jsonElementPermissions.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
+                    permissions);
+            consentDataJSON.put(jsonElementPermissions);
         }
         return consentDataJSON;
     }
@@ -402,8 +477,8 @@ public class ConsentAuthorizeUtil {
     /**
      * Method to add debtor account details to consent data to send it to the consent page.
      *
-     * @param initiation     Initiation object from the request
-     * @param consentDataJSON  Consent information object
+     * @param initiation      Initiation object from the request
+     * @param consentDataJSON Consent information object
      */
     public static void populateCreditorAccount(JSONObject initiation, JSONArray consentDataJSON) {
         if (initiation.get(ConsentExtensionConstants.CREDITOR_ACC) != null) {
@@ -482,5 +557,44 @@ public class ConsentAuthorizeUtil {
             throw new ConsentException(ResponseStatus.BAD_REQUEST,
                     ConsentAuthorizeConstants.ACC_CONSENT_RETRIEVAL_ERROR);
         }
+    }
+
+    /**
+     * Method to create the consent receipt using the request object.
+     *
+     * @param requestObject request object
+     * @return Consent receipt
+     */
+    @SuppressFBWarnings("IMPROPER_UNICODE")
+    public static String getReceiptFromRequestObject(String requestObject) {
+
+        // Extract the space-separated scopes from the request
+        String scope = extractField(requestObject, FinancialServicesConstants.SCOPE);
+
+        JSONArray permissions = new JSONArray();
+        if (scope != null && !scope.trim().isEmpty()) {
+            String[] scopeItems = scope.trim().split("\\s+");
+            for (String item : scopeItems) {
+                // Skip openid scope since it is not relevant to the consent.
+                if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
+                    continue;
+                }
+                permissions.put(item.toUpperCase(Locale.ROOT));
+            }
+        }
+
+        // Default expiration timestamp (current time + 1 hour)
+        OffsetDateTime expirationTime = OffsetDateTime.now(ZoneId.systemDefault()).plusHours(1);
+        String expirationDateTime = expirationTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        // Build the JSON object
+        JSONObject receiptData = new JSONObject();
+        receiptData.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+        receiptData.put(ConsentExtensionConstants.EXPIRATION_DATE, expirationDateTime);
+
+        JSONObject receipt = new JSONObject();
+        receipt.put(ConsentExtensionConstants.DATA, receiptData);
+
+        return receipt.toString();
     }
 }

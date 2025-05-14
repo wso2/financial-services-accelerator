@@ -29,7 +29,6 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.exception.ConsentManagementRuntimeException;
 import org.wso2.financial.services.accelerator.common.persistence.JDBCPersistenceManager;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
@@ -56,11 +55,9 @@ public class ConsentMgtServiceComponent {
                     .isValid(FinancialServicesConfigParser.getInstance().getConnectionVerificationTimeout());
             if (!isConnectionActive) {
                 log.error("The connection is not active");
-                throw new ConsentManagementRuntimeException("The connection is not active");
             }
         } catch (SQLException e) {
             log.error("Database connection is not active, cannot proceed");
-            throw new ConsentManagementRuntimeException("Database connection is not active, cannot proceed");
         }
 
         context.getBundleContext().registerService(ConsentCoreService.class.getName(), consentCoreService, null);

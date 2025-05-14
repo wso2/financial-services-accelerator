@@ -18,42 +18,15 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Constants for testing.
  */
 public class TestConstants {
-
-    public static final String CERTIFICATE_HEADER = "x-wso2-mutual-auth-cert";
-    public static final String CERTIFICATE_CONTENT = "-----BEGIN CERTIFICATE-----\n" +
-            "MIIFODCCBCCgAwIBAgIEWcbiiTANBgkqhkiG9w0BAQsFADBTMQswCQYDVQQGEwJH\n" +
-            "QjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxLjAsBgNVBAMTJU9wZW5CYW5raW5nIFBy\n" +
-            "ZS1Qcm9kdWN0aW9uIElzc3VpbmcgQ0EwHhcNMjMxMTE1MDUxMDMxWhcNMjQxMjE1\n" +
-            "MDU0MDMxWjBhMQswCQYDVQQGEwJHQjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxGzAZ\n" +
-            "BgNVBAsTEjAwMTU4MDAwMDFIUVFyWkFBWDEfMB0GA1UEAxMWakZRdVE0ZVFiTkNN\n" +
-            "U3FkQ29nMjFuRjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJslGjTm\n" +
-            "0tWwnnKgC7WNqUSYNxblURkJyoD5UuSmzpsM5nlUBAxYxBgztTo062LJELzUTzA/\n" +
-            "9kgLIMMgj+wG1OS475QCgeyoDmwf0SPuFRBl0G0AjxAvJzzs2aijzxiYRbKUa4gm\n" +
-            "O1KPU3Xlz89mi8lwjTZlxtGk3ABwBG4f5na5TY7uZMlgWPXDnTg7Cc1H4mrMbEFk\n" +
-            "UaXmb6ZhhGtp0JL04+4Lp16QWrgiHrlop+P8bd+pwmmOmLuglTIEh+v993j+7v8B\n" +
-            "XYqdmYQ3noiOhK9ynFPD1A7urrm71Pgkuq+Wk5HCvMiBK7zZ4Sn9FDovykDKZTFY\n" +
-            "MloVDXLhmfDQrmcCAwEAAaOCAgQwggIAMA4GA1UdDwEB/wQEAwIHgDAgBgNVHSUB\n" +
-            "Af8EFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwgeAGA1UdIASB2DCB1TCB0gYLKwYB\n" +
-            "BAGodYEGAWQwgcIwKgYIKwYBBQUHAgEWHmh0dHA6Ly9vYi50cnVzdGlzLmNvbS9w\n" +
-            "b2xpY2llczCBkwYIKwYBBQUHAgIwgYYMgYNVc2Ugb2YgdGhpcyBDZXJ0aWZpY2F0\n" +
-            "ZSBjb25zdGl0dXRlcyBhY2NlcHRhbmNlIG9mIHRoZSBPcGVuQmFua2luZyBSb290\n" +
-            "IENBIENlcnRpZmljYXRpb24gUG9saWNpZXMgYW5kIENlcnRpZmljYXRlIFByYWN0\n" +
-            "aWNlIFN0YXRlbWVudDBtBggrBgEFBQcBAQRhMF8wJgYIKwYBBQUHMAGGGmh0dHA6\n" +
-            "Ly9vYi50cnVzdGlzLmNvbS9vY3NwMDUGCCsGAQUFBzAChilodHRwOi8vb2IudHJ1\n" +
-            "c3Rpcy5jb20vb2JfcHBfaXNzdWluZ2NhLmNydDA6BgNVHR8EMzAxMC+gLaArhilo\n" +
-            "dHRwOi8vb2IudHJ1c3Rpcy5jb20vb2JfcHBfaXNzdWluZ2NhLmNybDAfBgNVHSME\n" +
-            "GDAWgBRQc5HGIXLTd/T+ABIGgVx5eW4/UDAdBgNVHQ4EFgQU7T6cMtCSQTT5JWW3\n" +
-            "O6vifRUSdpkwDQYJKoZIhvcNAQELBQADggEBAE9jrd/AE65vy3SEWdmFKPS4su7u\n" +
-            "EHy+KH18PETV6jMF2UFIJAOx7jl+5a3O66NkcpxFPeyvSuH+6tAAr2ZjpoQwtW9t\n" +
-            "Z9k2KSOdNOiJeQgjavwQC6t/BHI3yXWOIQm445BUN1cV9pagcRJjRyL3SPdHVoRf\n" +
-            "IbF7VI/+ULHwWdZYPXxtwUoda1mQFf6a+2lO4ziUHb3U8iD90FBURzID7WJ1ODSe\n" +
-            "B5zE/hG9Sxd9wlSXvl1oNmc/ha5oG/7rJpRqrx5Dcq3LEoX9iZZ3knHLkCm/abIQ\n" +
-            "7Nff8GQytuGhnGZxmGFYKDXdKElcl9dAlZ3bIK2I+I6jD2z2XvSfrhFyRjU=\n" +
-            "-----END CERTIFICATE-----";
 
     public static final String VALID_REQUEST = "eyJraWQiOiJEd01LZFdNbWo3UFdpbnZvcWZReVhWenlaNlEiLCJ0eXAiOiJKV1" +
             "QiLCJhbGciOiJQUzI1NiJ9.eyJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo5NDQ2L29hdXRoMi90b2tlbiIsIm1heF9hZ2UiOjg2NDAw" +
@@ -160,4 +133,218 @@ public class TestConstants {
             "SULAmjx0sCDfDAQItP79CC7jCW0TFN0CMORw/+fzp/dnVboSZ2MgcuRIH1Ez+6/1" +
             "1QJD2SrkkaRSEaXI6fe9jgHVhnqK9V3y3WAuzEKjaKw6jV8BjkXAA4dQj1Re" +
             "-----END CERTIFICATE-----";
+
+    public static final String SSA = "eyJhbGciOiJQUzI1NiIsImtpZCI6ImNJWW8tNXpYNE9UV1pwSHJtbWlaRFZ4QUNKTSIsInR5cCI6Ik" +
+            "pXVCJ9.eyJpc3MiOiJPcGVuQmFua2luZyBMdGQiLCJpYXQiOjE3MTY5NTU2MTMsImp0aSI6ImJhM2JhZjNjODQ3MjQ1ZmEiLCJzb2Z0" +
+            "d2FyZV9lbnZpcm9ubWVudCI6InNhbmRib3giLCJzb2Z0d2FyZV9tb2RlIjoiVGVzdCIsInNvZnR3YXJlX2lkIjoib1E0S29hYXZwT3V" +
+            "vRTdydlFzWkVPViIsInNvZnR3YXJlX2NsaWVudF9pZCI6Im9RNEtvYWF2cE91b0U3cnZRc1pFT1YiLCJzb2Z0d2FyZV9jbGllbnRfbm" +
+            "FtZSI6IldTTzIgT3BlbiBCYW5raW5nIFRQUDIgKFNhbmRib3gpIiwic29mdHdhcmVfY2xpZW50X2Rlc2NyaXB0aW9uIjoiV1NPMiBPc" +
+            "GVuIEJhbmtpbmcgVFBQMiBmb3IgdGVzdGluZyIsInNvZnR3YXJlX3ZlcnNpb24iOiIxLjUiLCJzb2Z0d2FyZV9jbGllbnRfdXJpIjoi" +
+            "aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbSIsInNvZnR3YXJlX3JlZGlyZWN0X3VyaXMiOlsiaHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS9yZWR" +
+            "pcmVjdHMvcmVkaXJlY3QxIl0sInNvZnR3YXJlX3JvbGVzIjpbIlBJU1AiLCJBSVNQIiwiQ0JQSUkiXSwib3JnYW5pc2F0aW9uX2NvbX" +
+            "BldGVudF9hdXRob3JpdHlfY2xhaW1zIjp7ImF1dGhvcml0eV9pZCI6Ik9CR0JSIiwicmVnaXN0cmF0aW9uX2lkIjoiVW5rbm93bjAwM" +
+            "TU4MDAwMDFIUVFyWkFBWCIsInN0YXR1cyI6IkFjdGl2ZSIsImF1dGhvcmlzYXRpb25zIjpbeyJtZW1iZXJfc3RhdGUiOiJHQiIsInJv" +
+            "bGVzIjpbIlBJU1AiLCJBSVNQIiwiQ0JQSUkiXX0seyJtZW1iZXJfc3RhdGUiOiJJRSIsInJvbGVzIjpbIlBJU1AiLCJDQlBJSSIsIkF" +
+            "JU1AiXX0seyJtZW1iZXJfc3RhdGUiOiJOTCIsInJvbGVzIjpbIlBJU1AiLCJBSVNQIiwiQ0JQSUkiXX1dfSwic29mdHdhcmVfbG9nb1" +
+            "91cmkiOiJodHRwczovL3d3dy5nb29nbGUuY29tIiwib3JnX3N0YXR1cyI6IkFjdGl2ZSIsIm9yZ19pZCI6IjAwMTU4MDAwMDFIUVFyW" +
+            "kFBWCIsIm9yZ19uYW1lIjoiV1NPMiAoVUspIExJTUlURUQiLCJvcmdfY29udGFjdHMiOlt7Im5hbWUiOiJUZWNobmljYWwiLCJlbWFp" +
+            "bCI6InNhY2hpbmlzQHdzbzIuY29tIiwicGhvbmUiOiIrOTQ3NzQyNzQzNzQiLCJ0eXBlIjoiVGVjaG5pY2FsIn0seyJuYW1lIjoiQnV" +
+            "zaW5lc3MiLCJlbWFpbCI6InNhY2hpbmlzQHdzbzIuY29tIiwicGhvbmUiOiIrOTQ3NzQyNzQzNzQiLCJ0eXBlIjoiQnVzaW5lc3MifV" +
+            "0sIm9yZ19qd2tzX2VuZHBvaW50IjoiaHR0cHM6Ly9rZXlzdG9yZS5vcGVuYmFua2luZ3Rlc3Qub3JnLnVrLzAwMTU4MDAwMDFIUVFyW" +
+            "kFBWC8wMDE1ODAwMDAxSFFRclpBQVguandrcyIsIm9yZ19qd2tzX3Jldm9rZWRfZW5kcG9pbnQiOiJodHRwczovL2tleXN0b3JlLm9w" +
+            "ZW5iYW5raW5ndGVzdC5vcmcudWsvMDAxNTgwMDAwMUhRUXJaQUFYL3Jldm9rZWQvMDAxNTgwMDAwMUhRUXJaQUFYLmp3a3MiLCJzb2Z" +
+            "0d2FyZV9qd2tzX2VuZHBvaW50IjoiaHR0cHM6Ly9rZXlzdG9yZS5vcGVuYmFua2luZ3Rlc3Qub3JnLnVrLzAwMTU4MDAwMDFIUVFyWk" +
+            "FBWC9vUTRLb2FhdnBPdW9FN3J2UXNaRU9WLmp3a3MiLCJzb2Z0d2FyZV9qd2tzX3Jldm9rZWRfZW5kcG9pbnQiOiJodHRwczovL2tle" +
+            "XN0b3JlLm9wZW5iYW5raW5ndGVzdC5vcmcudWsvMDAxNTgwMDAwMUhRUXJaQUFYL3Jldm9rZWQvb1E0S29hYXZwT3VvRTdydlFzWkVP" +
+            "Vi5qd2tzIiwic29mdHdhcmVfcG9saWN5X3VyaSI6Imh0dHBzOi8vd3d3Lmdvb2dsZS5jb20iLCJzb2Z0d2FyZV90b3NfdXJpIjoiaHR" +
+            "0cHM6Ly93d3cuZ29vZ2xlLmNvbSIsInNvZnR3YXJlX29uX2JlaGFsZl9vZl9vcmciOiJXU08yIE9wZW4gQmFua2luZyJ9.VnfXrppGm" +
+            "CcYGWLcmT3gB22r297Vc0ppibLrl0mv8PGkb7oZLEkIqaAdz9OBwFjehDiHlIzOrCzNgzJD5GvyacZSiorFkpzBpbV80q-n_-uFTugE" +
+            "7mrCVnNfTsb1SBEdoWCRn_BbzH-T2YstqLWPhb_fHkDSFTGJeSnFGp1EcMXVmx8P-pCgsoTS-kXEPDXD7F4iZjZwcFfxDpe_N8FvAUC" +
+            "28l3Tzm1au4bLjrI0T94PVoEJEmAk9AU_somFy_XEvuKuuULfccW3CDR6KGbvXV7MVPNA5XTT5g_H9bRxcPX4ZaaWfIaRVfZ28d_ZCR" +
+            "tsUIiLgm_6eZkiD-7Eh3qyVQ";
+
+    public static final String DCR_APP_REQUEST = "{\n" +
+            "  \"redirectUris\": [" +
+            "       \"https://www.google.com/redirects/redirect1\"" +
+            "   ],\n" +
+            "  \"clientName\": \"9ZzFFBxSLGEjPZogRAbvFd\",\n" +
+            "  \"grantTypes\": [\n" +
+            "       \"authorization_code\", \n" +
+            "       \"client_credentials\", \n" +
+            "       \"refresh_token\"" +
+            "   ],\n" +
+            "  \"jwksURI\": \"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/" +
+            "                   9ZzFFBxSLGEjPZogRAbvFd.jwks\",\n" +
+            "  \"tokenType\": \"JWT\",\n" +
+            "  \"extApplicationDisplayName\": \"WSO2_Open_Banking_TPP__Sandbox_\",\n" +
+            "  \"tokenEndpointAuthMethod\": \"private_key_jwt\",\n" +
+            "  \"tokenEndpointAuthSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenEncryptionAlgorithm\": \"RSA-OAEP\",\n" +
+            "  \"idTokenEncryptionMethod\": \"A256GCM\",\n" +
+            "  \"requestObjectSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"requireSignedRequestObject\": true,\n" +
+            "  \"tlsClientCertificateBoundAccessTokens\": true,\n" +
+            "  \"softwareStatement\":" + SSA + ",\n" +
+            "  \"additionalAttributes\": {\n" +
+            "       \"software_id\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
+            "       \"aud\": [\"https://localbank.com\"], \n" +
+            "       \"application_type\": \"web\", \n" +
+            "       \"scope\": \"accounts payments\", \n" +
+            "       \"token_endpoint_allow_reuse_pvt_key_jwt\": false, \n" +
+            "       \"iss\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
+            "       \"exp\": 1739098988640, \n" +
+            "       \"iat\": 1738839788640, \n" +
+            "       \"jti\": \"1738839788640\", \n" +
+            "       \"response_types\": [\"code id_token\"]" +
+            "   }\n" +
+            "}\n";
+
+    public static final String DCR_APP_REQUEST_WITHOUT_MANDATORY_FIELDS = "{\n" +
+            "  \"redirectUris\": [" +
+            "       \"https://www.google.com/redirects/redirect1\"" +
+            "   ],\n" +
+            "  \"clientName\": \"9ZzFFBxSLGEjPZogRAbvFd\",\n" +
+            "  \"grantTypes\": [\n" +
+            "       \"authorization_code\", \n" +
+            "       \"client_credentials\", \n" +
+            "       \"refresh_token\"" +
+            "   ],\n" +
+            "  \"jwksURI\": \"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/" +
+            "                   9ZzFFBxSLGEjPZogRAbvFd.jwks\",\n" +
+            "  \"tokenType\": \"JWT\",\n" +
+            "  \"extApplicationDisplayName\": \"WSO2_Open_Banking_TPP__Sandbox_\",\n" +
+            "  \"tokenEndpointAuthMethod\": \"private_key_jwt\",\n" +
+            "  \"tokenEndpointAuthSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenEncryptionAlgorithm\": \"RSA-OAEP\",\n" +
+            "  \"idTokenEncryptionMethod\": \"A256GCM\",\n" +
+            "  \"requestObjectSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"requireSignedRequestObject\": true,\n" +
+            "  \"tlsClientCertificateBoundAccessTokens\": true,\n" +
+            "  \"additionalAttributes\": {\n" +
+            "       \"aud\": [\"https://localbank.com\"], \n" +
+            "       \"application_type\": \"web\", \n" +
+            "       \"token_endpoint_allow_reuse_pvt_key_jwt\": false, \n" +
+            "       \"iss\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
+            "       \"exp\": 1739098988640, \n" +
+            "       \"iat\": 1738839788640, \n" +
+            "       \"jti\": 1738839788640, \n" +
+            "       \"response_types\": [\"code id_token\"]" +
+            "   }\n" +
+            "}\n";
+
+    public static final String DCR_APP_REQUEST_WITH_DISALLOWED_VALUES = "{\n" +
+            "  \"redirectUris\": [" +
+            "       \"https://www.google.com/redirects/redirect1\"" +
+            "   ],\n" +
+            "  \"clientName\": \"9ZzFFBxSLGEjPZogRAbvFd\",\n" +
+            "  \"grantTypes\": [\n" +
+            "       \"authorization_code\", \n" +
+            "       \"client_credentials\", \n" +
+            "       \"refresh_token\"" +
+            "   ],\n" +
+            "  \"jwksURI\": \"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/" +
+            "                   9ZzFFBxSLGEjPZogRAbvFd.jwks\",\n" +
+            "  \"tokenType\": \"JWT\",\n" +
+            "  \"extApplicationDisplayName\": \"WSO2_Open_Banking_TPP__Sandbox_\",\n" +
+            "  \"tokenEndpointAuthMethod\": \"private_key_jwt\",\n" +
+            "  \"tokenEndpointAuthSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenEncryptionAlgorithm\": \"RSA-OAEP\",\n" +
+            "  \"idTokenEncryptionMethod\": \"A256GCM\",\n" +
+            "  \"requestObjectSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"requireSignedRequestObject\": true,\n" +
+            "  \"tlsClientCertificateBoundAccessTokens\": true,\n" +
+            "  \"softwareStatement\":" + SSA + ",\n" +
+            "  \"additionalAttributes\": {\n" +
+            "       \"software_id\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
+            "       \"aud\": [\"https://localbank.com\"], \n" +
+            "       \"application_type\": \"web\", \n" +
+            "       \"scope\": \"accounts payments unsupported_scope\", \n" +
+            "       \"token_endpoint_allow_reuse_pvt_key_jwt\": false, \n" +
+            "       \"iss\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
+            "       \"exp\": 1739098988640, \n" +
+            "       \"iat\": 1738839788640, \n" +
+            "       \"jti\": 1738839788640, \n" +
+            "       \"response_types\": [\"code id_token\"]" +
+            "   }\n" +
+            "}\n";
+
+    public static Map<String, Object> getSSAParamMap() {
+        Map<String, Object> ssaParams = new HashMap<>();
+
+        ssaParams.put("software_mode", "Test");
+        ssaParams.put("org_jwks_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/0015800001HQQrZAAX.jwks");
+        ssaParams.put("software_client_name", "WSO2 Open Banking TPP (Sandbox)");
+        ssaParams.put("org_status", "Active");
+        ssaParams.put("iss", "OpenBanking Ltd");
+        ssaParams.put("software_tos_uri", "https://www.google.com");
+        ssaParams.put("software_policy_uri", "https://www.google.com");
+        ssaParams.put("software_id", "9ZzFFBxSLGEjPZogRAbvFd");
+        ssaParams.put("software_environment", "sandbox");
+        ssaParams.put("software_version", "1.5");
+        ssaParams.put("org_name", "WSO2 (UK) LIMITED");
+        ssaParams.put("iat", "Fri Jan 03 13:48:23 IST 2025");
+        ssaParams.put("jti", "f8844552ceae49a3");
+        ssaParams.put("software_client_id", "9ZzFFBxSLGEjPZogRAbvFd");
+        ssaParams.put("software_client_description", "WSO2 Open Banking TPP for testing");
+        ssaParams.put("software_jwks_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9ZzFFBxSLGEjPZogRAbvFd.jwks");
+        ssaParams.put("software_client_uri", "https://www.google.com");
+        ssaParams.put("software_on_behalf_of_org", "WSO2 Open Banking");
+        ssaParams.put("software_logo_uri", "https://www.google.com");
+        ssaParams.put("org_id", "0015800001HQQrZAAX");
+        ssaParams.put("software_jwks_revoked_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/revoked/9ZzFFBxSLGEjPZogRAbvFd.jwks");
+        ssaParams.put("software_roles", "[\"PISP\",\"AISP\",\"CBPII\"]");
+        ssaParams.put("org_jwks_revoked_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/revoked/0015800001HQQrZAAX.jwks");
+        ssaParams.put("registration_id", "Unknown0015800001HQQrZAAX");
+        ssaParams.put("authority_id", "OBGBR");
+        ssaParams.put("status", "Active");
+        List<String> redirectUris = new ArrayList<>();
+        redirectUris.add("https://www.google.com/redirects/redirect1");
+        ssaParams.put("software_redirect_uris", redirectUris);
+
+        return ssaParams;
+    }
+
+    public static Map<String, String> getSSAParamMapForRetrieval() {
+        Map<String, String> ssaParams = new HashMap<>();
+
+        ssaParams.put("software_mode", "Test");
+        ssaParams.put("org_jwks_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/0015800001HQQrZAAX.jwks");
+        ssaParams.put("software_client_name", "WSO2 Open Banking TPP (Sandbox)");
+        ssaParams.put("org_status", "Active");
+        ssaParams.put("iss", "OpenBanking Ltd");
+        ssaParams.put("software_tos_uri", "https://www.google.com");
+        ssaParams.put("software_policy_uri", "https://www.google.com");
+        ssaParams.put("software_id", "9ZzFFBxSLGEjPZogRAbvFd");
+        ssaParams.put("software_environment", "sandbox");
+        ssaParams.put("software_version", "1.5");
+        ssaParams.put("org_name", "WSO2 (UK) LIMITED");
+        ssaParams.put("iat", "Fri Jan 03 13:48:23 IST 2025");
+        ssaParams.put("jti", "f8844552ceae49a3");
+        ssaParams.put("software_client_id", "9ZzFFBxSLGEjPZogRAbvFd");
+        ssaParams.put("software_client_description", "WSO2 Open Banking TPP for testing");
+        ssaParams.put("software_jwks_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9ZzFFBxSLGEjPZogRAbvFd.jwks");
+        ssaParams.put("software_client_uri", "https://www.google.com");
+        ssaParams.put("software_on_behalf_of_org", "WSO2 Open Banking");
+        ssaParams.put("software_logo_uri", "https://www.google.com");
+        ssaParams.put("org_id", "0015800001HQQrZAAX");
+        ssaParams.put("software_jwks_revoked_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/revoked/9ZzFFBxSLGEjPZogRAbvFd.jwks");
+        ssaParams.put("software_roles", "[\"PISP\",\"AISP\",\"CBPII\"]");
+        ssaParams.put("org_jwks_revoked_endpoint",
+                "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/revoked/0015800001HQQrZAAX.jwks");
+        ssaParams.put("registration_id", "Unknown0015800001HQQrZAAX");
+        ssaParams.put("authority_id", "OBGBR");
+        ssaParams.put("status", "Active");
+
+        return ssaParams;
+    }
 }

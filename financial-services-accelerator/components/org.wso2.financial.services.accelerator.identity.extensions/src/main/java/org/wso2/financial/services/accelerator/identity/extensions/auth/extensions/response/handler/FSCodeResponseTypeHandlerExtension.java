@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -25,9 +26,12 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.authz.handlers.CodeResponseTypeHandler;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeRespDTO;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 /**
  * Extension to append scope with FS_ prefix at the end of auth flow, before offering auth code.
@@ -39,34 +43,47 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
             IdentityExtensionsDataHolder.getInstance().getObResponseTypeHandler();
 
     /**
-     * Extension point to get updated scope and refresh token validity period.
+     * Extension point to get updated scopes.
      *
-     * @param oauthAuthzMsgCtx  OAuthAuthzReqMessageContext
+     * @param oauthAuthzMsgCtx OAuthAuthzReqMessageContext
      * @return OAuth2AuthorizeRespDTO
      * @throws IdentityOAuth2Exception If an error occurred while issuing the code.
      */
     @Override
+    @Generated(message = "Ignoring since main logics in util methods are tested")
     public OAuth2AuthorizeRespDTO issue(OAuthAuthzReqMessageContext oauthAuthzMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (!isRegulatory(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
+            if (!FinancialServicesUtils.isRegulatoryApp(oauthAuthzMsgCtx.getAuthorizationReqDTO().getConsumerKey())) {
                 return issueCode(oauthAuthzMsgCtx);
             }
-        } catch (RequestObjectException e) {
-            log.error("Error while reading regulatory property", e);
-            throw new IdentityOAuth2Exception("Error while reading regulatory property");
-        }
 
-        oauthAuthzMsgCtx.setRefreshTokenvalidityPeriod(
-                fsResponseTypeHandler.updateRefreshTokenValidityPeriod(oauthAuthzMsgCtx));
-        String[] approvedScopes = fsResponseTypeHandler.updateApprovedScopes(oauthAuthzMsgCtx);
-        if (approvedScopes != null) {
-            oauthAuthzMsgCtx.setApprovedScope(approvedScopes);
-        } else {
-            log.error("Error while updating scopes");
-            throw new IdentityOAuth2Exception("Error while updating scopes");
+            String[] updatedApprovedScopes;
+            if (fsResponseTypeHandler != null) {
+
+                // Perform FS customized behaviour
+                updatedApprovedScopes = fsResponseTypeHandler.getApprovedScopes(oauthAuthzMsgCtx);
+            } else {
+
+                // Perform FS default behaviour
+                updatedApprovedScopes = IdentityCommonUtils.updateApprovedScopes(oauthAuthzMsgCtx);
+            }
+
+            if (updatedApprovedScopes != null) {
+                oauthAuthzMsgCtx.setApprovedScope(updatedApprovedScopes);
+            } else {
+                throw new IdentityOAuth2Exception("Error while updating scopes");
+            }
+            return issueCode(oauthAuthzMsgCtx);
+        } catch (RequestObjectException e) {
+            throw new IdentityOAuth2Exception("Error while reading regulatory property");
+        } catch (FinancialServicesException e) {
+            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
+        } catch (JsonProcessingException e) {
+            log.error(ErrorConstants.JSON_PROCESSING_ERROR, e);
+            throw new IdentityOAuth2Exception(ErrorConstants.JSON_PROCESSING_ERROR);
         }
-        return issueCode(oauthAuthzMsgCtx);
     }
 
     /**
@@ -77,15 +94,9 @@ public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler 
      * @throws IdentityOAuth2Exception If an error occurred while issuing the code.
      */
     @Generated(message = "Cannot test super calls")
-    OAuth2AuthorizeRespDTO issueCode(
-            OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) throws IdentityOAuth2Exception {
+    OAuth2AuthorizeRespDTO issueCode(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext)
+            throws IdentityOAuth2Exception {
 
         return super.issue(oAuthAuthzReqMessageContext);
-    }
-
-    @Generated(message = "Ignoring because it requires a service call")
-    boolean isRegulatory(String clientId) throws RequestObjectException {
-
-        return FinancialServicesUtils.isRegulatoryApp(clientId);
     }
 }

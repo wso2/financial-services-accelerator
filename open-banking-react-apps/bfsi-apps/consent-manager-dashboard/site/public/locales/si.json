@@ -1,9 +1,0 @@
-{
-    "app.LandingPage.state": "සන්දර්භය",
-    "app.LandingPage.isAuthenticated": "සත්‍යාපනය කර ඇත",
-    "app.LandingPage.idToken": "අනන්යතා ටෝකනය",
-    "app.LandingPage.decodedIDToken": "විකේතනය කළ අනන්යතා ටෝකනය",
-    "app.LandingPage.accessToken": "ප්රවේශ ටෝකනය",
-    "app.LandingPage.decodedAccessToken": "විකේතනය කළ ප්රවේශ ටෝකනය",
-    "app.LandingPage.refreshToken": "නැවුම් ටෝකනය"
-}

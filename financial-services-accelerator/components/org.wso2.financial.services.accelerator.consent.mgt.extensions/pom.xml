@@ -21,7 +21,7 @@
     <parent>
         <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-alpha-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -32,6 +32,10 @@
     <packaging>bundle</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>org.wso2.orbit.org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -119,6 +123,8 @@
                         <exclude>**/*AuthErrorCode.class</exclude>
                         <exclude>**/*ResponseStatus.class</exclude>
                         <exclude>**/*ConsentPayloadValidationResult.class</exclude>
+                        <exclude>**/*ConsentValidateRequest.class</exclude>
+                        <exclude>**/model/**/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

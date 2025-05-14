@@ -119,7 +119,6 @@ public class EventNotificationConstants {
     public static final String VERSION_PARAM = "version";
     public static final String EVENT_TYPES_PARAM = "eventTypes";
     public static final String EVENT_TYPE_PARAM = "eventType";
-    public static final String DATA_PARAM = "data";
 
     public static final String DB_ERROR_UPDATING = "Database error while updating notification with ID : " +
             "'%s' in the database. ";
@@ -156,4 +155,55 @@ public class EventNotificationConstants {
     public static final String EVENT_SUBSCRIPTIONS_NOT_FOUND = "Event subscriptions not found for the given client id.";
     public static final String ERROR_HANDLING_EVENT_SUBSCRIPTION = "Error occurred while handling the event " +
             "subscription request";
+    public static final String SUBSCRIPTION_EXISTS = "Subscription Resource already exists for the client";
+    public static final String SUBSCRIPTION_RESOURCE_NOT_FOUND = "A subscription Resource does not exists for" +
+            " the client";
+
+    public static final String EVENT_DATA = "eventData";
+    public static final String EVENT_POLLING_DATA = "eventPollingData";
+    public static final String EVENT_POLLING_RESPONSE = "eventPollingResponse";
+    public static final String EVENT_SUBSCRIPTION_DATA = "eventSubscriptionData";
+    public static final String EVENT_SUBSCRIPTION_RESPONSE = "eventSubscriptionResponse";
+
+
+    /**
+     * Specifies the Schema Names of Event subscription operations.
+     */
+    public enum EventSubscriptionOperationEnum {
+
+        SubscriptionCreation("SubscriptionCreation"),
+
+        SingleSubscriptionRetrieval("SingleSubscriptionRetrieval"),
+
+        BulkSubscriptionRetrieval("BulkSubscriptionRetrieval"),
+
+        SubscriptionRetrievalForEventTypes("SubscriptionRetrievalForEventTypes"),
+
+        SubscriptionUpdate("SubscriptionUpdate"),
+
+        SubscriptionDelete("SubscriptionDelete");
+
+        private String value;
+
+        EventSubscriptionOperationEnum(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        public static EventSubscriptionOperationEnum fromValue(String text) {
+
+            List<EventSubscriptionOperationEnum> accountList = Arrays.asList(EventSubscriptionOperationEnum.values());
+            Optional<EventSubscriptionOperationEnum> accountOpt = accountList
+                    .stream()
+                    .filter(i -> String.valueOf(i.value).equals(text))
+                    .findAny();
+
+            return accountOpt.orElse(null);
+        }
+
+    }
 }

@@ -45,9 +45,9 @@ public class EventSubscriptionUtils {
      */
     public static EventSubscriptionServiceHandler getEventSubscriptionServiceHandler() {
 
-        return (EventSubscriptionServiceHandler)
-                FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance()
-                        .getConfiguration().get(FinancialServicesConstants.EVENT_SUBSCRIPTION_HANDLER).toString());
+        return FinancialServicesUtils.getClassInstanceFromFQN(FinancialServicesConfigParser.getInstance()
+                        .getConfiguration().get(FinancialServicesConstants.EVENT_SUBSCRIPTION_HANDLER).toString(),
+                EventSubscriptionServiceHandler.class);
     }
 
     /**
@@ -70,6 +70,10 @@ public class EventSubscriptionUtils {
         if (eventSubscriptionResponse.getResponseBody() != null) {
             return Response.status(eventSubscriptionResponse.getResponseStatus())
                     .entity(eventSubscriptionResponse.getResponseBody().toString())
+                    .build();
+        } else if (eventSubscriptionResponse.getErrorResponse() != null) {
+            return Response.status(eventSubscriptionResponse.getResponseStatus())
+                    .entity(eventSubscriptionResponse.getErrorResponse().toString())
                     .build();
         } else {
             return Response.status(eventSubscriptionResponse.getResponseStatus())

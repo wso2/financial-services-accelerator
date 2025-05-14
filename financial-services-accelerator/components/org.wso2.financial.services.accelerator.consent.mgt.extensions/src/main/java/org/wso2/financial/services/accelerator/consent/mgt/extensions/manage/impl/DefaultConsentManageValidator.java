@@ -23,9 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageUtils;
 
@@ -42,11 +45,23 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
     private static final List<String> validPermissions = Arrays.asList(
             "ReadAccountsBasic",
             "ReadAccountsDetail",
+            "ReadTransactionsBasic",
             "ReadTransactionsDetail",
             "ReadBalances");
 
     @Override
-    public ConsentPayloadValidationResult validateRequestPayload(JSONObject requestPayload, String consentType) {
+    public ConsentPayloadValidationResult validateRequestPayload(ConsentManageData consentManageData,
+                                                                 String consentType) {
+        //Get the request payload from the ConsentManageData
+        Object request = consentManageData.getPayload();
+        if (!(request instanceof JSONObject)) {
+            log.error("Payload is not in the correct format");
+            return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
+                    ResponseStatus.BAD_REQUEST.getReasonPhrase(), "Payload is not in the correct format");
+        }
+
+        JSONObject requestPayload = (JSONObject) request;
+
         switch (consentType) {
             case ConsentExtensionConstants.ACCOUNTS:
                 return validateAccountRequestPayload(requestPayload);
@@ -58,6 +73,16 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
                 return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST, "invalid_consent_type",
                         "Invalid consent type");
         }
+    }
+
+    @Override
+    public ConsentPayloadValidationResult validateRequestHeaders(ConsentManageData consentManageData) {
+        return new ConsentPayloadValidationResult(true);
+    }
+
+    @Override
+    public String getConsentType(ConsentManageData consentManageData) throws ConsentManagementException {
+        return ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
     }
 
     /**
@@ -81,6 +106,10 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
         }
 
         JSONArray permissions = data.getJSONArray("Permissions");
+        if (permissions.length() == 0) {
+            return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
+                    ResponseStatus.BAD_REQUEST.getReasonPhrase(), "Permissions are empty");
+        }
         for (int i = 0; i < permissions.length(); i++) {
             Object permission = permissions.get(i);
             if (!(permission instanceof String)) {
@@ -95,7 +124,8 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
             }
         }
 
-        if (!data.has("ExpirationDateTime") || !(data.get("ExpirationDateTime") instanceof String)) {
+        if (!data.has("ExpirationDateTime") || !(data.get("ExpirationDateTime") instanceof String) ||
+                !ConsentExtensionUtils.isValid8601(data.getString("ExpirationDateTime"))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(), "ExpirationDateTime is invalid");
         }
@@ -103,20 +133,23 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
         if (!ConsentManageUtils.isConsentExpirationTimeValid(data.getString("ExpirationDateTime"))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(),
-                    "ExpirationDateTime should be a future time");
+                    "ExpirationDateTime should be a future date");
         }
 
-        if (!data.has("TransactionFromDateTime") || !(data.get("TransactionFromDateTime") instanceof String)) {
+        if (data.has("TransactionFromDateTime") && (!(data.get("TransactionFromDateTime") instanceof String) ||
+                !ConsentExtensionUtils.isValid8601(data.getString("TransactionFromDateTime")))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(), "TransactionFromDateTime is invalid");
         }
 
-        if (!data.has("TransactionToDateTime") || !(data.get("TransactionToDateTime") instanceof String)) {
+        if (data.has("TransactionToDateTime") && (!(data.get("TransactionToDateTime") instanceof String) ||
+                !ConsentExtensionUtils.isValid8601(data.getString("TransactionToDateTime")))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(), "TransactionToDateTime is invalid");
         }
 
-        if (!ConsentManageUtils.isTransactionFromToTimeValid(data.getString("TransactionFromDateTime"),
+        if (data.has("TransactionFromDateTime") && data.has("TransactionToDateTime") &&
+                !ConsentManageUtils.isTransactionFromToTimeValid(data.getString("TransactionFromDateTime"),
                 data.getString("TransactionToDateTime"))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(),
@@ -141,12 +174,17 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
 
         JSONObject data = initiation.getJSONObject(ConsentExtensionConstants.DATA);
 
-        //Validate json payload expirationDateTime is a future date
-        if (data.has(ConsentExtensionConstants.EXPIRATION_DATE) && !ConsentManageUtils
-                .isConsentExpirationTimeValid(data.getString(ConsentExtensionConstants.EXPIRATION_DATE))) {
+        if (data.has("ExpirationDateTime") && (!(data.get("ExpirationDateTime") instanceof String) ||
+                !ConsentExtensionUtils.isValid8601(data.getString("ExpirationDateTime")))) {
+            return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
+                    ResponseStatus.BAD_REQUEST.getReasonPhrase(), "ExpirationDateTime is invalid");
+        }
+
+        if (data.has("ExpirationDateTime") &&
+                !ConsentManageUtils.isConsentExpirationTimeValid(data.getString("ExpirationDateTime"))) {
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(),
-                    "ExpirationDateTime should be after TransactionFromDateTime");
+                    "ExpirationDateTime should be a future date");
         }
 
         if (data.has(ConsentExtensionConstants.DEBTOR_ACC)) {
@@ -159,12 +197,19 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
                         "Debtor Account is not in correct format");
             }
 
-            JSONObject debtorAccount = data.getJSONObject(ConsentExtensionConstants.DEBTOR_ACC);
+            JSONObject debtorAccount = (JSONObject) debtorAccountObj;
+
             //Check whether debtor account is not empty
-            if (debtorAccount == null) {
+            if (debtorAccount.isEmpty()) {
                 return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                         ResponseStatus.BAD_REQUEST.getReasonPhrase(),
-                        "Data object is not in correct format");
+                        "Mandatory field Debtor Account is missing");
+            }
+
+            //Validate DebtorAccount
+            ConsentPayloadValidationResult validationResult = validateDebtorAccount(debtorAccount);
+            if (!(boolean) validationResult.isValid()) {
+                return validationResult;
             }
 
         } else {

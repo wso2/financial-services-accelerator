@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data holder for executor core
+ * Data holder for executor core.
  */
 public class GatewayDataHolder {
 
@@ -113,8 +113,9 @@ public class GatewayDataHolder {
             setGatewayCacheAccessExpiry((String) configurations.get(FinancialServicesConstants.GATEWAY_CACHE_EXPIRY));
             setGatewayCacheModifiedExpiry((String) configurations
                     .get(FinancialServicesConstants.GATEWAY_CACHE_MODIFIED_EXPIRY));
-            AbstractRequestRouter configuredRequestRouter = (AbstractRequestRouter) FinancialServicesUtils
-                    .getClassInstanceFromFQN(configurations.get(FinancialServicesConstants.REQUEST_ROUTER).toString());
+            AbstractRequestRouter configuredRequestRouter = FinancialServicesUtils.getClassInstanceFromFQN(
+                    configurations.get(FinancialServicesConstants.REQUEST_ROUTER).toString(),
+                    AbstractRequestRouter.class);
             configuredRequestRouter.build();
             this.setRequestRouter(configuredRequestRouter);
             this.urlMap = constructURLMap();

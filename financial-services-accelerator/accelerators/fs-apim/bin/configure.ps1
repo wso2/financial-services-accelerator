@@ -146,6 +146,8 @@ Function Set-AdminCredentials {
     Find-Replace $DEPLOYMENT_TOML_FILE "APIM_ADMIN_USERNAME" "$( $PROPERTIES.'APIM_ADMIN_USERNAME' )"
     Find-Replace $DEPLOYMENT_TOML_FILE "APIM_ADMIN_PASSWORD" "$( $PROPERTIES.'APIM_ADMIN_PASSWORD' )"
     Find-Replace $DEPLOYMENT_TOML_FILE "APIM_ADMIN_NAME" "$( $PROPERTIES.'APIM_ADMIN_NAME' )"
+    Find-Replace $DEPLOYMENT_TOML_FILE "IS_ADMIN_USERNAME" "$( $PROPERTIES.'IS_ADMIN_USERNAME' )"
+    Find-Replace $DEPLOYMENT_TOML_FILE "IS_ADMIN_PASSWORD" "$( $PROPERTIES.'IS_ADMIN_PASSWORD' )"
 }
 
 # A utility function to create a database.
@@ -175,10 +177,7 @@ Function Add-Databases {
         Write-Output "[INFO] Database Created: $( $PROPERTIES.'DB_AM_CONFIG' )"
         
         Add-Database "$( $PROPERTIES.'DB_USER' )" $DB_MYSQL_PASS "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_GOV' )"
-        Write-Output "[INFO] Database Created: $( $PROPERTIES.'DB_GOV' )"
-        
-        Add-Database "$( $PROPERTIES.'DB_USER' )" $DB_MYSQL_PASS "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_USER_STORE' )"
-        Write-Output "[INFO] Database Created: $( $PROPERTIES.'DB_USER_STORE' )"        
+        Write-Output "[INFO] Database Created: $( $PROPERTIES.'DB_GOV' )"    
     }
     else {
         Write-Output "[INFO] The databases must be created manually for non mysql DBMSs."   
@@ -205,9 +204,6 @@ Function Add-DatabaseTables {
         
         Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" $DB_MYSQL_PASS "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_GOV' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\mysql.sql")"
         Write-Output "[NOTE] Database tables Created for: $( $PROPERTIES.'DB_GOV' )"
-        
-        Add-TablesToDatabase "$( $PROPERTIES.'DB_USER' )" $DB_MYSQL_PASS "$( $PROPERTIES.'DB_HOST' )" "$( $PROPERTIES.'DB_USER_STORE' )" "$(Join-Path $WSO2_BASE_PRODUCT_HOME "dbscripts\mysql.sql")"
-        Write-Output "[NOTE] Database tables Created for: $( $PROPERTIES.'DB_USER_STORE' )"
 
         mysql -u"$( $PROPERTIES.'DB_USER' )" -p"$DB_MYSQL_PASS" -h"$( $PROPERTIES.'DB_HOST' )" -e "ALTER TABLE $( $PROPERTIES.'DB_APIMGT' ).SP_METADATA MODIFY VALUE VARCHAR(4096);"
     }

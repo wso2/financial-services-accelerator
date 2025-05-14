@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Data class for Consent Management Service Tests
+ */
 public class ConsentMgtServiceTestData {
 
     public static final String SAMPLE_CONSENT_RECEIPT = "{\"validUntil\": \"2020-10-20\", \"frequencyPerDay\": 1," +
@@ -102,7 +105,7 @@ public class ConsentMgtServiceTestData {
             (List.of("accounts", "payments", "cof"));
 
     public static final ArrayList<String> SAMPLE_CONSENT_STATUSES_LIST = new ArrayList<>
-            (List.of("created", "authorised", "awaitingAuthorization"));
+            (List.of("Created", "Authorised", "AwaitingAuthorization"));
 
     public static final Map<String, ArrayList<String>> SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP3 = Map.of(
             "mismatching account ID", new ArrayList<> (List.of("permission5", "permission6")));

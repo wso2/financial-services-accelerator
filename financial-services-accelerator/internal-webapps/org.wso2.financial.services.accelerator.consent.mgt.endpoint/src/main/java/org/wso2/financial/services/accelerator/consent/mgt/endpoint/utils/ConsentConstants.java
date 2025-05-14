@@ -33,6 +33,8 @@ public class ConsentConstants {
         public static final String ERROR_PERSIST_APPROVAL_MANDATORY = "Mandatory body parameter approval is " +
                 "unavailable";
         public static final String ERROR_NO_TYPE_AND_APP_DATA = "Type and application data is unavailable";
+        public static final String ERROR_NO_CONSENT_TYPE = "Consent type is not available";
+        public static final String ERROR_NO_APP_DATA = "Application data is not available";
         public static final String ERROR_SERVER_ERROR = "Internal server error";
         public static final String ERROR_NO_DATA_IN_SESSION_CACHE = "Data unavailable in session cache corresponding" +
                 " to the key provided";
@@ -40,4 +42,7 @@ public class ConsentConstants {
                         "properly or invalid";
         public static final String PRESERVE_CONSENT = FinancialServicesConfigParser.getInstance().getPreserveConsent();
         public static final boolean STORE_CONSENT = Boolean.parseBoolean(PRESERVE_CONSENT);
+
+        public static final String AUTHORIZATION = "authorization";
+        public static final String CUSTOMER_CARE_OFFICER_SCOPE = "consents:read_all";
 }

@@ -38,7 +38,7 @@ public abstract class AbstractRequestRouter {
     private Map<String, List<FinancialServicesGatewayExecutor>> executorMap = new HashMap<>();
 
     /**
-     * Initiation method of the Router
+     * Initiation method of the Router.
      */
     @Generated(message = "Ignoring since the method require OSGi services to function. This functionality is tested " +
             "in other services")
@@ -49,8 +49,8 @@ public abstract class AbstractRequestRouter {
         executorConfig.keySet().forEach(consentType -> {
             Map<Integer, String> integerStringMap = executorConfig.get(consentType);
             List<FinancialServicesGatewayExecutor> executorList = integerStringMap.keySet().stream()
-                    .map(integer -> (FinancialServicesGatewayExecutor) FinancialServicesUtils
-                            .getClassInstanceFromFQN(integerStringMap.get(integer))).collect(Collectors.toList());
+                    .map(integer -> FinancialServicesUtils.getClassInstanceFromFQN(integerStringMap.get(integer),
+                            FinancialServicesGatewayExecutor.class)).collect(Collectors.toList());
             executorMap.put(consentType, executorList);
         });
     }

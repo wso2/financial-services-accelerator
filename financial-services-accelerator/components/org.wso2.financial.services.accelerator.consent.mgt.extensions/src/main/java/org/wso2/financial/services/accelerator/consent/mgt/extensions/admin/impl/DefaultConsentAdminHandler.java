@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -23,19 +23,29 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.ConsentAdminHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model.ConsentAdminData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model.ExternalAPIAdminConsentRevokeRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model.ExternalAPIAdminConsentRevokeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model.ExternalAPIAdminConsentSearchRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model.ExternalAPIAdminConsentSearchResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model.SearchTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.utils.ConsentAdminUtils;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.utils.ExternalAPIConsentAdminUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.job.ExpiredConsentStatusUpdateJob;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.ArrayList;
@@ -46,6 +56,21 @@ import java.util.Map;
  */
 public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     private static final Log log = LogFactory.getLog(DefaultConsentAdminHandler.class);
+    ConsentCoreService consentCoreService;
+    boolean isExtensionsEnabled;
+    boolean isExternalPreConsentRevocationEnabled;
+    boolean isExternalEnrichConsentSearchResponseEnabled;
+
+    public DefaultConsentAdminHandler() {
+
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
+        isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
+        isExternalPreConsentRevocationEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
+        isExternalEnrichConsentSearchResponseEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH_RESPONSE);
+    }
 
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
@@ -62,10 +87,11 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         Integer limit = null;
         Integer offset = null;
 
+
         Map queryParams = consentAdminData.getQueryParams();
 
         consentIDs = ConsentAdminUtils.getArrayListFromQueryParam(ConsentAdminUtils
-                    .validateAndGetQueryParam(queryParams, ConsentExtensionConstants.CONSENT_IDS));
+                .validateAndGetQueryParam(queryParams, ConsentExtensionConstants.CONSENT_IDS));
         clientIDs = ConsentAdminUtils.getArrayListFromQueryParam(ConsentAdminUtils
                 .validateAndGetQueryParam(queryParams, ConsentExtensionConstants.CLIENT_IDS));
         consentTypes = ConsentAdminUtils.getArrayListFromQueryParam(ConsentAdminUtils
@@ -109,7 +135,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         try {
             ArrayList<DetailedConsentResource> results = ConsentExtensionsDataHolder.getInstance()
                     .getConsentCoreService().searchDetailedConsents(consentIDs, clientIDs,
-                    consentTypes, consentStatuses, userIDs, fromTime, toTime, limit, offset);
+                            consentTypes, consentStatuses, userIDs, fromTime, toTime, limit, offset);
             JSONArray searchResults = new JSONArray();
             for (DetailedConsentResource result : results) {
                 searchResults.put(ConsentAdminUtils.detailedConsentToJSON(result));
@@ -126,22 +152,56 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             try {
                 ArrayList<DetailedConsentResource> results = ConsentExtensionsDataHolder.getInstance()
                         .getConsentCoreService().searchDetailedConsents(consentIDs,
-                        clientIDs, consentTypes, consentStatuses, userIDs, fromTime, toTime, null, null);
+                                clientIDs, consentTypes, consentStatuses, userIDs, fromTime, toTime, null, null);
                 total = results.size();
             } catch (ConsentManagementException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
             }
         }
 
-        JSONObject metadata = new JSONObject();
-        metadata.put(ConsentExtensionConstants.COUNT, count);
-        metadata.put(ConsentExtensionConstants.OFFSET, offset);
-        metadata.put(ConsentExtensionConstants.LIMIT, limit);
-        metadata.put(ConsentExtensionConstants.TOTAL, total);
+        //if the OpenAPI extension is enabled for admin-consent search
+        if (isExtensionsEnabled && isExternalEnrichConsentSearchResponseEnabled) {
+            JSONArray searchResult = new JSONArray();
+            searchResult.put(consentAdminData.getResponsePayload());
+            // Call external service to enrich consent search response
+            ExternalAPIAdminConsentSearchRequestDTO externalAPISearchRequest =
+                    new ExternalAPIAdminConsentSearchRequestDTO(SearchTypeEnum.BULK_SEARCH.getValue(), searchResult,
+                            consentAdminData.getQueryParams());
+            try {
+                ExternalAPIAdminConsentSearchResponseDTO responseDTO =
+                        ExternalAPIConsentAdminUtils.callExternalService(externalAPISearchRequest);
+                consentAdminData.setResponseStatus(ResponseStatus.OK);
+                JSONObject enrichedSearchResult = new JSONObject();
+                JSONArray enrichedSearchResultArray = responseDTO.getResponsePayload();
+                if (enrichedSearchResultArray != null) {
+                    for (int i = 0; i < enrichedSearchResultArray.length(); i++) {
+                        JSONObject obj = enrichedSearchResultArray.getJSONObject(i);
+                        for (String key : obj.keySet()) {
+                            enrichedSearchResult.put(key, obj.get(key));
+                        }
+                    }
+                }
+                consentAdminData.setResponsePayload(enrichedSearchResult);
+            } catch (FinancialServicesException e) {
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Exception occurred while searching consents", e);
+            }
+        } else {
+            JSONObject metadata = new JSONObject();
+            metadata.put(ConsentExtensionConstants.COUNT, count);
+            metadata.put(ConsentExtensionConstants.OFFSET, offset);
+            metadata.put(ConsentExtensionConstants.LIMIT, limit);
+            metadata.put(ConsentExtensionConstants.TOTAL, total);
 
-        response.put(ConsentExtensionConstants.METADATA, metadata);
-        consentAdminData.setResponseStatus(ResponseStatus.OK);
-        consentAdminData.setResponsePayload(response);
+            response.put(ConsentExtensionConstants.METADATA, metadata);
+            consentAdminData.setResponseStatus(ResponseStatus.OK);
+            consentAdminData.setResponsePayload(response);
+
+            // Filter consent data based on the accounts if accounts are available in the query params.
+            if (consentAdminData.getQueryParams().containsKey(ConsentExtensionConstants.ACCOUNT_IDS)) {
+                filterConsentsByAccount(consentAdminData);
+            }
+        }
     }
 
     @Override
@@ -155,21 +215,46 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             if (consentId == null) {
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory parameter consent ID not available");
             } else {
-                ConsentResource consentResource = ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
-                        .getConsent(consentId, false);
-
-                if (!ConsentExtensionConstants.AUTHORIZED_STATUS.equals(consentResource.getCurrentStatus())) {
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            "Consent is not in a revocable status");
+                String userId = ConsentAdminUtils.validateAndGetQueryParam(queryParams,
+                        ConsentExtensionConstants.USER_ID_PARAM);
+                ConsentCoreService coreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
+                DetailedConsentResource consentResource = coreService
+                        .getDetailedConsent(consentId);
+                //if the OpenAPI extension is enabled for admin-consent revoke
+                if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
+                    // Call external service before revoking consent.
+                    try {
+                        ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                                new ExternalAPIConsentResourceRequestDTO(consentResource);
+                        ExternalAPIAdminConsentRevokeRequestDTO requestDTO = new
+                                ExternalAPIAdminConsentRevokeRequestDTO(
+                                externalAPIConsentResource, consentAdminData.getAbsolutePath(),
+                                null);
+                        ExternalAPIAdminConsentRevokeResponseDTO responseDTO =
+                                ExternalAPIConsentAdminUtils.callExternalService(requestDTO);
+                        coreService.revokeConsentWithReason(consentId,
+                                responseDTO.getRevocationStatusName(),
+                                userId, responseDTO.getRequireTokenRevocation(),
+                                ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
+                    } catch (FinancialServicesException e) {
+                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                                "Exception occurred while revoking the consent", e);
+                    }
                 } else {
-                    ConsentExtensionsDataHolder.getInstance().getConsentCoreService()
-                            .revokeConsentWithReason(ConsentAdminUtils.validateAndGetQueryParam(queryParams,
-                                    ConsentExtensionConstants.CC_CONSENT_ID),
-                                    ConsentExtensionConstants.REVOKED_STATUS,
-                                    ConsentAdminUtils.validateAndGetQueryParam(queryParams, "userID"),
-                                    ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
+                    if (!ConsentExtensionConstants.AUTHORIZED_STATUS.equals(consentResource.getCurrentStatus())) {
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                                "Consent is not in a revocable status");
+                    } else {
+                        coreService
+                                .revokeConsentWithReason(ConsentAdminUtils.validateAndGetQueryParam(queryParams,
+                                                ConsentExtensionConstants.CC_CONSENT_ID),
+                                        ConsentExtensionConstants.REVOKED_STATUS,
+                                        ConsentAdminUtils.validateAndGetQueryParam(queryParams, "userID"),
+                                        ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
+                    }
                 }
             }
+
             consentAdminData.setResponseStatus(ResponseStatus.OK);
             consentAdminData.setResponseStatus(ResponseStatus.NO_CONTENT);
         } catch (ConsentManagementException e) {
@@ -216,8 +301,28 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             response.put(ConsentExtensionConstants.CURRENT_CONSENT,
                     ConsentAdminUtils.detailedConsentToJSON(ConsentExtensionsDataHolder.getInstance()
                             .getConsentCoreService().getDetailedConsent(consentId)));
-            response.put(ConsentExtensionConstants.AMENDMENT_HISTORY, consentHistory);
-            count = consentHistory.length();
+            //if the OpenAPI extension is enabled for admin-consent search
+            if (isExtensionsEnabled && isExternalEnrichConsentSearchResponseEnabled) {
+                // Call external service to enrich consent search response
+                ExternalAPIAdminConsentSearchRequestDTO externalAPISearchRequest =
+                        new ExternalAPIAdminConsentSearchRequestDTO(SearchTypeEnum.AMENDMENT_HISTORY.getValue(),
+                                consentHistory,
+                                consentAdminData.getQueryParams());
+                try {
+                    ExternalAPIAdminConsentSearchResponseDTO responseDTO =
+                            ExternalAPIConsentAdminUtils.callExternalService(externalAPISearchRequest);
+                    response.put(ConsentExtensionConstants.AMENDMENT_HISTORY, responseDTO.getResponsePayload());
+                    count = responseDTO.getResponsePayload().length();
+
+                } catch (FinancialServicesException e) {
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            "Exception occurred while searching consents", e);
+                }
+            } else {
+
+                response.put(ConsentExtensionConstants.AMENDMENT_HISTORY, consentHistory);
+                count = consentHistory.length();
+            }
         } catch (ConsentManagementException e) {
             log.error("Error while retrieving consent amendment history data", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -231,6 +336,20 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     }
 
     @Override
+    public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException {
+
+        try {
+            ExpiredConsentStatusUpdateJob.updateExpiredStatues();
+            consentAdminData.setResponseStatus(ResponseStatus.OK);
+            consentAdminData.setResponseStatus(ResponseStatus.NO_CONTENT);
+        } catch (ConsentManagementException e) {
+            log.error("Error while retrieving expiring consents", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+    }
+
+    @Override
     public void handleConsentStatusAuditSearch(ConsentAdminData consentAdminData) throws ConsentException {
 
         JSONObject response = new JSONObject();
@@ -239,7 +358,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         Map queryParams = consentAdminData.getQueryParams();
 
-        ArrayList<String> consentIDs =  ConsentAdminUtils.getArrayListFromQueryParam(ConsentAdminUtils
+        ArrayList<String> consentIDs = ConsentAdminUtils.getArrayListFromQueryParam(ConsentAdminUtils
                 .validateAndGetQueryParam(queryParams, ConsentExtensionConstants.CONSENT_IDS));
         try {
             limit = ConsentAdminUtils.getIntFromQueryParam(ConsentAdminUtils
@@ -332,4 +451,38 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
     }
+
+
+    /**
+     * Filter the consent data based on the accounts.
+     * @param consentAdminData Consent admin data.
+     */
+    public void filterConsentsByAccount(ConsentAdminData consentAdminData) {
+
+        ArrayList accounts = ((ArrayList) consentAdminData.getQueryParams()
+                .get(ConsentExtensionConstants.ACCOUNT_IDS));
+        if (accounts.size() > 0) {
+            JSONArray filteredConsentData = new JSONArray();
+            for (Object consentObj : (JSONArray) consentAdminData.getResponsePayload()
+                    .get(ConsentExtensionConstants.DATA_CC)) {
+                JSONObject consent = (JSONObject) consentObj;
+                JSONArray consentMappingResources = (JSONArray) consent
+                        .get(ConsentExtensionConstants.MAPPING_RESOURCES);
+                for (Object consentMappingResource : consentMappingResources) {
+                    JSONObject consentMappingResourceObject = (JSONObject) consentMappingResource;
+                    if (accounts.contains(consentMappingResourceObject.get(ConsentExtensionConstants.ACCOUNT_ID_CC))) {
+                        filteredConsentData.put(consent);
+                        break;
+                    }
+                }
+            }
+            JSONObject responseMetadata = (JSONObject) consentAdminData.getResponsePayload()
+                    .get(ConsentExtensionConstants.METADATA);
+            responseMetadata.put(ConsentExtensionConstants.TOTAL, filteredConsentData.length());
+            responseMetadata.put(ConsentExtensionConstants.COUNT, filteredConsentData.length());
+            consentAdminData.getResponsePayload().put(ConsentExtensionConstants.DATA_CC, filteredConsentData);
+        }
+    }
+
+
 }

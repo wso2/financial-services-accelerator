@@ -104,6 +104,7 @@ public class ErrorConstants {
             " not match with the length defined in the specification";
     public static final String IDEMPOTENCY_KEY_NOT_FOUND = "Idempotency related details should be submitted" +
             " in order to proceed.";
+    public static final String IDEMPOTENCY_KEY_FRAUDULENT = "Idempotency check failed.";
     public static final String MSG_INVALID_DEBTOR_ACC = "Mandatory parameter DebtorAccount object is invalid.";
     public static final String PATH_DEBTOR_ACCOUNT = "Data.Initiation.DebtorAccount";
     public static final String COF_PATH_DEBTOR_ACCOUNT_SCHEME = "Data.DebtorAccount.SchemeName";
@@ -222,6 +223,8 @@ public class ErrorConstants {
     public static final String EXPIRED_DATE_ERROR = "The ExpirationDateTime value has to be a future date.";
     public static final String CONSENT_ATTRIBUTE_RETRIEVAL_ERROR = "Error occurred while retrieving the consent " +
             "attributes";
+    public static final String JSON_PROCESSING_ERROR = "Error while processing json";
+    public static final String EXTERNAL_SERVICE_DEFAULT_ERROR = "Error while invoking external service extension";
 
     // VRP error constants
 

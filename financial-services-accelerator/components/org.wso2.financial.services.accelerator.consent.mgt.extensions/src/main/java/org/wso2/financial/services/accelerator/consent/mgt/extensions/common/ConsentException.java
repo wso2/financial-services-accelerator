@@ -18,10 +18,15 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
-import org.json.JSONArray;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Consent exception class to be used in consent components and extensions.
@@ -31,26 +36,35 @@ public class ConsentException extends RuntimeException {
     private JSONObject payload;
     private ResponseStatus status;
     private URI errorRedirectURI;
+    private static final Log log = LogFactory.getLog(ConsentException.class);
 
     public ConsentException(ResponseStatus status, String errorMessage, Throwable cause) {
 
         super(cause);
         this.status = status;
         this.payload = createDefaultErrorObject(null, String.valueOf(this.status.getStatusCode()),
-                errorMessage, null);
+                ConsentOperationEnum.CONSENT_DEFAULT, errorMessage, null);
     }
 
     public ConsentException(ResponseStatus status, String errorCode, String errorMessage) {
 
         this.status = status;
-        this.payload = createDefaultErrorObject(null, errorCode, errorMessage, null);
+        this.payload = createDefaultErrorObject(null, errorCode, ConsentOperationEnum.CONSENT_DEFAULT,
+                errorMessage, null);
+    }
+
+    public ConsentException(ResponseStatus status, String errorMessage, ConsentOperationEnum operationEnum) {
+
+        this.status = status;
+        this.payload = createDefaultErrorObject(null, String.valueOf(this.status.getStatusCode()),
+                operationEnum, errorMessage, null);
     }
 
     public ConsentException(ResponseStatus status, String errorMessage) {
 
         this.status = status;
         this.payload = createDefaultErrorObject(null, String.valueOf(this.status.getStatusCode()),
-                errorMessage, null);
+                ConsentOperationEnum.CONSENT_DEFAULT, errorMessage, null);
     }
 
     public ConsentException(ResponseStatus status, JSONObject payload) {
@@ -71,19 +85,36 @@ public class ConsentException extends RuntimeException {
     public ConsentException(URI errorURI, AuthErrorCode error, String errorDescription, String state) {
 
         if (errorURI != null && error != null) {
-            //add 302 as error code since this will be a redirect
-            errorRedirectURI = errorURI;
-            this.status = ResponseStatus.FOUND;
-            this.payload = createDefaultErrorObject(errorURI, error.toString(), errorDescription, state);
+            try {
+                //add 302 as error code since this will be a redirect
+                this.status = ResponseStatus.FOUND;
+                //set parameters as uri fragments
+                //https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#rfc.section.5
+                String errorResponse = ConsentExtensionConstants.ERROR_URI_FRAGMENT
+                        .concat(URLEncoder.encode(error.toString(), StandardCharsets.UTF_8.toString()));
+                if (errorDescription != null) {
+                    errorResponse = errorResponse.concat(ConsentExtensionConstants.ERROR_DESCRIPTION_PARAMETER)
+                            .concat(URLEncoder.encode(errorDescription, StandardCharsets.UTF_8.toString()));
+                }
+                if (state != null) {
+                    errorResponse = errorResponse.concat(ConsentExtensionConstants.STATE_PARAMETER)
+                            .concat(URLEncoder.encode(state, StandardCharsets.UTF_8.toString()));
+                }
+                this.errorRedirectURI = new URI(errorURI.toString().concat(errorResponse));
+
+            } catch (URISyntaxException | UnsupportedEncodingException e) {
+                log.error("Error while building the uri", e);
+            }
         }
     }
 
-    public JSONObject createDefaultErrorObject(URI redirectURI, String errorCode, String errorDescription,
+    public JSONObject createDefaultErrorObject(URI redirectURI, String errorCode,
+                                               ConsentOperationEnum consentOperationEnum, String errorDescription,
                                                String state) {
 
         JSONObject error = new JSONObject();
         error.put(ConsentExtensionConstants.ERROR_CODE, errorCode);
-        error.put(ConsentExtensionConstants.ERROR_MSG, "Consent Management Error");
+        error.put(ConsentExtensionConstants.ERROR_MSG, consentOperationEnum.toString());
         error.put(ConsentExtensionConstants.ERROR_DESCRIPTION, errorDescription);
         if (state != null) {
             error.put(ConsentExtensionConstants.STATE, state);
@@ -92,12 +123,9 @@ public class ConsentException extends RuntimeException {
             error.put(ConsentExtensionConstants.REDIRECT_URI, redirectURI.toString());
         }
 
-        JSONArray errorList = new JSONArray();
-        errorList.put(error);
-
-        JSONObject errorObj = new JSONObject();
-        errorObj.put(ConsentExtensionConstants.ERRORS, errorList);
-        return errorObj;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(ConsentExtensionConstants.ERROR, error);
+        return jsonObject;
     }
 
     public JSONObject getPayload() {

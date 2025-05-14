@@ -25,7 +25,7 @@
     <parent>
         <artifactId>financial-services-accelerator-modules</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-alpha-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -82,14 +82,14 @@
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.common/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.common-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.financial.services.accelerator.common-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
                                             dir="../../components/org.wso2.financial.services.accelerator.gateway/target">
                                         <filename
-                                                regex="org.wso2.financial.services.accelerator.gateway-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.financial.services.accelerator.gateway-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
                                 <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.demo.backend/target/api#fs#backend.war"

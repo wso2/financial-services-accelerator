@@ -18,21 +18,37 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage;
 
-import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 
 /**
- * Consent payload validator interface.
+ * Consent create validator interface.
  */
 public interface ConsentManageValidator {
 
     /**
      * Method to validate initiation request payload.
      *
-     * @param requestPayload   Initiation request payload Object
-     * @param consentType      Consent Type
+     * @param consentManageData   Consent Manage Data Object
+     * @param consentType         Consent Type
      * @return ConsentPayloadValidationResult     Validation Result
      */
-    ConsentPayloadValidationResult validateRequestPayload(JSONObject requestPayload, String consentType);
+    ConsentPayloadValidationResult validateRequestPayload(ConsentManageData consentManageData, String consentType);
 
+    /**
+     * Method to validate initiation request headers.
+     *
+     * @param consentManageData   Consent Manage Data Object
+     * @return ConsentPayloadValidationResult     Validation Result
+     */
+    ConsentPayloadValidationResult validateRequestHeaders(ConsentManageData consentManageData);
+
+    /**
+     * Method to get the consent type of the request.
+     *
+     * @param consentManageData  Consent Manage Data Object
+     * @return Consent Type
+     */
+    String getConsentType(ConsentManageData consentManageData) throws ConsentManagementException;
 }

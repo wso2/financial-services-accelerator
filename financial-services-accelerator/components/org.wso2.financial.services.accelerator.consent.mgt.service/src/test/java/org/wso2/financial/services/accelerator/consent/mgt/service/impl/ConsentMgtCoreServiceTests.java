@@ -54,14 +54,17 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -509,6 +512,55 @@ public class ConsentMgtCoreServiceTests {
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 null, true);
     }
+
+    @Test
+    public void testStoreDetailedConsentResource() throws ConsentManagementException, ConsentDataInsertionException {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredTestAuthorizationResource())
+                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
+        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentMappingResource("sample-auth-id"))
+                .when(mockedConsentCoreDAO).storeConsentMappingResource(any(), any());
+
+        DetailedConsentResource result = consentCoreServiceImpl.storeDetailedConsentResource(
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+        Assert.assertNotNull(result);
+
+    }
+
+    @Test(expectedExceptions = ConsentManagementException.class)
+    public void testStoreDetailedConsentResourceWithMissingConsentID() throws ConsentManagementException {
+
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setConsentID(null);
+        // Should throw an exception
+        consentCoreServiceImpl.storeDetailedConsentResource(detailedConsentResource);
+    }
+
+    @Test
+    public void testUpdateConsentAndCreateAuthResources() throws ConsentManagementException,
+            ConsentDataRetrievalException, ConsentDataInsertionException {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .getConsentResource(any(), anyString());
+        doReturn(ConsentMgtServiceTestData.getSampleStoredTestAuthorizationResource())
+                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
+        doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentMappingResource("sample-auth-id"))
+                .when(mockedConsentCoreDAO).storeConsentMappingResource(any(), any());
+
+        DetailedConsentResource result = consentCoreServiceImpl.updateConsentAndCreateAuthResources(
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource(), "test-user");
+        Assert.assertNotNull(result);
+    }
+
+    @Test(expectedExceptions = ConsentManagementException.class)
+    public void testUpdateConsentAndCreateAuthResourcesWithMissingConsentID() throws ConsentManagementException {
+
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setConsentID(null);
+        // Should throw an exception
+        consentCoreServiceImpl.updateConsentAndCreateAuthResources(detailedConsentResource, "test-user");
+    }
+
 
     @Test
     public void testGetConsent() throws Exception {
@@ -3156,5 +3208,44 @@ public class ConsentMgtCoreServiceTests {
                 anyString(), any());
         doReturn(true).when(mockedConsentCoreDAO).storeConsentAttributes(any(),
                 any(ConsentAttributes.class));
+    }
+
+    @Test
+    public void testUpdateAuthorizationResources_shouldReturnTrue() throws Exception {
+
+        List<AuthorizationResource> authorizationResources =
+                ConsentMgtServiceTestData.getSampleAuthorizationResourcesList(
+                        new ArrayList<>(List.of(ConsentMgtServiceTestData.CONSENT_ID)));
+
+        // Simulate DAO successfully updating all records
+        doReturn(true).when(mockedConsentCoreDAO).updateAuthorizationResources(any(), anyList());
+
+        boolean result = consentCoreServiceImpl.updateAuthorizationResources(authorizationResources);
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testCreateConsentMappingResources_shouldReturnStoredList() throws Exception {
+
+        List<ConsentMappingResource> inputResources =
+                ConsentMgtServiceTestData.getSampleConsentMappingResourcesList(
+                        new ArrayList<>(List.of(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1)));
+        // Mock DAO to return the same list
+        doReturn(inputResources).when(mockedConsentCoreDAO).storeConsentMappingResources(any(), eq(inputResources));
+
+        List<ConsentMappingResource> result = consentCoreServiceImpl.createConsentMappingResources(inputResources);
+        Assert.assertEquals(result, inputResources);
+    }
+
+    @Test
+    public void testUpdateConsentMappingResources_shouldReturnTrue() throws Exception {
+
+        List<ConsentMappingResource> mappingResources =
+                ConsentMgtServiceTestData.getSampleConsentMappingResourcesList(
+                        new ArrayList<>(List.of(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1)));
+        doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingResources(any(), eq(mappingResources));
+
+        boolean result = consentCoreServiceImpl.updateConsentMappingResources(mappingResources);
+        Assert.assertTrue(result);
     }
 }

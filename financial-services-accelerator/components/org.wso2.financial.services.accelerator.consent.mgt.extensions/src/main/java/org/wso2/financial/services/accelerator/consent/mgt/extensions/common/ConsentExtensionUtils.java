@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementRuntimeException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -31,6 +30,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -46,7 +47,8 @@ public class ConsentExtensionUtils {
      * @param requestPath  Request path of the request
      * @return Consent Type
      */
-    public static String getConsentType(String requestPath) throws ConsentManagementException {
+    public static String getConsentType(String requestPath) throws ConsentException {
+
         if (requestPath.contains(ConsentExtensionConstants.ACCOUNT_CONSENT_PATH)) {
             return ConsentExtensionConstants.ACCOUNTS;
         } else if (requestPath.contains(ConsentExtensionConstants.COF_CONSENT_PATH)) {
@@ -54,7 +56,8 @@ public class ConsentExtensionUtils {
         } else if (requestPath.contains(ConsentExtensionConstants.PAYMENT_CONSENT_PATH)) {
             return ConsentExtensionConstants.PAYMENTS;
         } else {
-            throw new ConsentManagementException("Invalid consent type");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid request path found.",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
         }
     }
 
@@ -81,13 +84,29 @@ public class ConsentExtensionUtils {
     }
 
     /**
+     * Validate whether the date is a valid ISO 8601 format.
+     * @param dateValue
+     * @return
+     */
+    public static boolean isValid8601(String dateValue) {
+        try {
+            OffsetDateTime.parse(dateValue);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+
+    /**
      * Method to construct Initiation response.
      *
-     * @param response       Response of the request
-     * @param createdConsent Consent response received from service layer
+     * @param responseObj       Response of the request
+     * @param createdConsent    Consent response received from service layer
      * @return  JSONObject Initiation Response
      */
-    public static JSONObject getInitiationResponse(JSONObject response, DetailedConsentResource createdConsent) {
+    public static JSONObject getInitiationResponse(Object responseObj, DetailedConsentResource createdConsent) {
+        JSONObject response = (JSONObject) responseObj;
         JSONObject dataObject = response.getJSONObject(ConsentExtensionConstants.DATA);
         dataObject.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getConsentID());
         dataObject.put(ConsentExtensionConstants.CREATION_DATE_TIME, convertToISO8601(createdConsent.getCreatedTime()));

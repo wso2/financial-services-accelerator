@@ -17,22 +17,26 @@
 
 # command to execute
 # ./merge.sh <WSO2_APIM_HOME>
-
-source $(pwd)/../repository/conf/configure.properties
 WSO2_APIM_HOME=$1
-
-# set accelerator home
-cd ../
-ACCELERATOR_HOME=$(pwd)
-echo "Accelerator Home: ${ACCELERATOR_HOME}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ACCELERATOR_HOME="$(dirname "$SCRIPT_DIR")"
 
 # set product home
-if [ "${WSO2_APIM_HOME}" == "" ]
+if [ "${WSO2_APIM_HOME}" == "" ];
   then
     cd ../
+    # set accelerator home
+    ACCELERATOR_HOME=$(pwd)
+    cd ../
     WSO2_APIM_HOME=$(pwd)
-    echo "Product Home: ${WSO2_APIM_HOME}"
+    echo "Product home is: ${WSO2_APIM_HOME}"
+    echo "Accelerator home is: ${ACCELERATOR_HOME}"
+else
+    echo "Product home is: ${WSO2_APIM_HOME}"
+    echo "Accelerator home is: ${ACCELERATOR_HOME}"
 fi
+
+source "${ACCELERATOR_HOME}/repository/conf/configure.properties"
 
 # validate product home
 if [ ! -d "${WSO2_APIM_HOME}/repository/components" ]; then
@@ -52,7 +56,7 @@ configure_datasources() {
             # APIM
             sed -i -e 's|DB_APIMGT_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_APIMGT}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_AM_CONFIG_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_AM_CONFIG}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
-            sed -i -e 's|DB_GOV_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_GOV}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
+            sed -i -e 's|DB_GOV_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_AM_CONFIG}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_USER_STORE_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_USER_STORE}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_USER|'${DB_USER}'|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_PASS|'${DB_PASS}'|g' ${DEPLOYMENT_TOML_FILE}
@@ -62,7 +66,7 @@ configure_datasources() {
             # IS
             sed -i -e 's|DB_APIMGT_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_APIMGT}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_AM_CONFIG_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_AM_CONFIG}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
-            sed -i -e 's|DB_GOV_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_GOV}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
+            sed -i -e 's|DB_GOV_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_AM_CONFIG}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_USER_STORE_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_USER_STORE}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_USER|'${DB_USER}'|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_PASS|'${DB_PASS}'|g' ${DEPLOYMENT_TOML_FILE}
@@ -114,9 +118,6 @@ create_mysql_databases() {
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_AM_CONFIG}; CREATE DATABASE ${DB_AM_CONFIG};
     ALTER DATABASE ${DB_AM_CONFIG} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
     echo "Database Created: ${DB_AM_CONFIG}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "DROP DATABASE IF EXISTS ${DB_GOV}; CREATE DATABASE ${DB_GOV};
-    ALTER DATABASE ${DB_GOV} CHARACTER SET latin1 COLLATE latin1_swedish_ci";
-    echo "Database Created: ${DB_GOV}"
 };
 
 create_mysql_database_tables() {
@@ -124,8 +125,6 @@ create_mysql_database_tables() {
     echo "Database tables Created for: ${DB_APIMGT}"
     mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_AM_CONFIG} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/mysql.sql";
     echo "Database tables Created for: ${DB_AM_CONFIG}"
-    mysql -u${DB_USER} ${DB_MYSQL_PASS} -D${DB_GOV} -h${DB_HOST} -e "SOURCE ${WSO2_APIM_HOME}/dbscripts/mysql.sql";
-    echo "Database tables Created for: ${DB_GOV}"
 };
 
 add_json_fault_sequence() {
@@ -142,6 +141,8 @@ echo -e "================================================\n"
 sed -i -e 's|APIM_ADMIN_USERNAME|'${APIM_ADMIN_USERNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 sed -i -e 's|APIM_ADMIN_PASSWORD|'${APIM_ADMIN_PASSWORD}'|g' ${DEPLOYMENT_TOML_FILE}
 sed -i -e 's|APIM_ADMIN_NAME|'${APIM_ADMIN_NAME}'|g' ${DEPLOYMENT_TOML_FILE}
+sed -i -e 's|IS_ADMIN_USERNAME|'${IS_ADMIN_USERNAME}'|g' ${DEPLOYMENT_TOML_FILE}
+sed -i -e 's|IS_ADMIN_PASSWORD|'${IS_ADMIN_PASSWORD}'|g' ${DEPLOYMENT_TOML_FILE}
 
 echo -e "\nConfigure datasources \n"
 echo -e "================================================\n"

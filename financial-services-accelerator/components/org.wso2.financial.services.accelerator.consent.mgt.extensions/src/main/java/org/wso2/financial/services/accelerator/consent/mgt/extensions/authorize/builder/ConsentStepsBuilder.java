@@ -20,12 +20,19 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementRuntimeException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentPersistStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentRetrievalStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.NonRegulatoryConsentStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,19 +54,37 @@ public class ConsentStepsBuilder {
 
     private void build() {
 
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        boolean isExternalConsentRetrievalEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.POPULATE_CONSENT_AUTHORIZE_SCREEN);
+        boolean isExternalConsentPersistenceEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.PERSIST_AUTHORIZED_CONSENT);
+        boolean isExtensionsEnabled = configParser.isServiceExtensionsEndpointEnabled();
+
         try {
             Map<String, Map<Integer, String>> stepsConfig = ConsentExtensionsDataHolder.getInstance()
                     .getConfigurationService().getAuthorizeSteps();
             Map<Integer, String> persistIntegerStringMap = stepsConfig.get(PERSIST);
-            if (persistIntegerStringMap != null) {
+
+            if (isExtensionsEnabled && isExternalConsentPersistenceEnabled) {
+                consentPersistSteps = Collections.singletonList(new ExternalAPIConsentPersistStep());
+                log.debug("ExternalAPIConsentPersistStep loaded successfully");
+            } else if (persistIntegerStringMap != null) {
                 consentPersistSteps = persistIntegerStringMap.keySet().stream()
                         .map(integer -> ConsentExtensionUtils.getClassInstanceFromFQN(
                                 persistIntegerStringMap.get(integer), ConsentPersistStep.class))
                         .collect(Collectors.toList());
                 log.debug("Persistence steps loaded successfully");
             }
+
             Map<Integer, String> retrieveIntegerStringMap = stepsConfig.get(RETRIEVE);
-            if (retrieveIntegerStringMap != null) {
+            if (isExtensionsEnabled && isExternalConsentRetrievalEnabled) {
+                consentRetrievalSteps = Collections.unmodifiableList(Arrays.asList(
+                        new ExternalAPIConsentRetrievalStep(),
+                        new NonRegulatoryConsentStep()
+                ));
+                log.debug("ExternalAPIConsentRetrievalStep loaded successfully");
+            } else if (retrieveIntegerStringMap != null) {
                 consentRetrievalSteps = retrieveIntegerStringMap.keySet().stream()
                         .map(integer -> ConsentExtensionUtils.getClassInstanceFromFQN(
                                 retrieveIntegerStringMap.get(integer), ConsentRetrievalStep.class))

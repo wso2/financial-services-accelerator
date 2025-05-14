@@ -174,13 +174,13 @@ public class FSConfigParserTests {
     @Test(priority = 20)
     public void testGetConsentAPIUsername() {
 
-        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIUsername(), "admin");
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIUsername(), "is_admin@wso2.com");
     }
 
     @Test(priority = 21)
     public void testGetConsentAPIPassword() {
 
-        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIPassword(), "admin");
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance().getConsentAPIPassword(), "wso2123");
     }
 
     @Test(priority = 22)
@@ -305,6 +305,111 @@ public class FSConfigParserTests {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getDCRResponseParameters());
+    }
+
+    @Test(priority = 41)
+    public void testIsServiceExtensionsEndpointEnabled() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isServiceExtensionsEndpointEnabled());
+    }
+
+    @Test(priority = 42)
+    public void testGetServiceExtensionsEndpointBaseUrl() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointBaseUrl());
+    }
+
+    @Test(priority = 43)
+    public void testGetServiceExtensionsEndpointRetryCount() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointRetryCount(), 5);
+    }
+
+    @Test(priority = 44)
+    public void testGetServiceExtensionsEndpointConnectTimeoutInSeconds() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointConnectTimeoutInSeconds(), 5);
+    }
+
+    @Test(priority = 45)
+    public void testGetServiceExtensionsEndpointReadTimeoutInSeconds() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointReadTimeoutInSeconds(), 5);
+    }
+
+    @Test(priority = 46)
+    public void testGetServiceExtensionTypes() {
+
+        Assert.assertEquals(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionTypes().size(), 3);
+    }
+
+    @Test(priority = 47)
+    public void testGetServiceExtensionsEndpointSecurityType() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointSecurityType());
+    }
+
+    @Test(priority = 48)
+    public void testGetServiceExtensionsEndpointSecurityBasicAuthUsername() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointSecurityBasicAuthUsername());
+    }
+
+    @Test(priority = 49)
+    public void testGetServiceExtensionsEndpointSecurityBasicAuthPassword() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getServiceExtensionsEndpointSecurityBasicAuthPassword());
+    }
+
+    @Test(priority = 50)
+    public void testIsPreInitiatedConsent() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isPreInitiatedConsent());
+    }
+
+    @Test(priority = 51)
+    public void testGetStatusWordingForExpiredConsents() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getStatusWordingForExpiredConsents());
+    }
+
+    @Test(priority = 52)
+    public void testGetEligibleStatusesForConsentExpiry() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getEligibleStatusesForConsentExpiry());
+    }
+
+    @Test(priority = 53)
+    public void testIsConsentAmendmentHistoryEnabled() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isConsentAmendmentHistoryEnabled());
+    }
+
+    @Test(priority = 54)
+    public void testIsConsentExpirationPeriodicalJobEnabled() {
+
+        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
+                .isConsentExpirationPeriodicalJobEnabled());
+    }
+
+    @Test(priority = 55)
+    public void testGetConsentExpiryCronExpression() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getConsentExpiryCronExpression());
     }
 
 }

@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -40,52 +42,82 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
  */
 public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
+    private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(DefaultConsentRetrievalStep.class);
+
+    public DefaultConsentRetrievalStep() {
+
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+    }
+
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
         if (!consentData.isRegulatory()) {
             return;
         }
-
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
+        String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
+        JSONObject requestParameters = ConsentAuthorizeUtil.getRequestObjectJson(requestObject);
+        String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
+        JSONArray consentDataJSON;
+        ConsentResource consentResource;
 
         try {
-            String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-            String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
-            consentData.setConsentId(consentId);
-            ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+            if (isPreInitiatedConsent) {
 
-            if (!ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS.equals(consentResource.getCurrentStatus())) {
-                log.error("Consent not in authorizable state");
-                //Currently throwing error as 400 response. Developer also have the option of appending a fieldIS_ERROR
-                // to the jsonObject and showing it to the user in the webapp. If so, the IS_ERROR have to bechecked in
-                // any later steps.
-                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
-                        "Consent not in authorizable state", consentData.getState());
+                String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+                if (consentId == null) {
+                    log.error("intent_id not found in request object");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "intent_id not found in request object");
+                }
+
+                consentData.setConsentId(consentId);
+                consentResource = consentCoreService.getConsent(consentId, false);
+
+                if (!ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS.equals(consentResource.getCurrentStatus())) {
+                    log.error("Consent not in authorizable state");
+                    /* Currently throwing error as 400 response. Developer also have the option of appending a field
+                       IS_ERROR to the jsonObject and showing it to the user in the webapp. If so, the IS_ERROR have
+                       to be checked in any later steps. */
+                    throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
+                            "Consent not in authorizable state", consentData.getState());
+                }
+
+                AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
+                if (!authorizationResource.getAuthorizationStatus().equals(ConsentExtensionConstants.CREATED_STATUS)) {
+                    log.error("Authorisation not in authorizable state");
+                    /* Currently throwing error as 400 response. Developer also have the option of appending a
+                       field IS_ERROR to the jsonObject and showing it to the user in the webapp. If so,
+                       the IS_ERROR have to be checked in any later steps. */
+                    throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
+                            "Authorisation not in authorisable state", consentData.getState());
+                }
+
+                consentData.setAuthResource(authorizationResource);
+                consentDataJSON = ConsentAuthorizeUtil.getConsentDataForPreInitiatedConsent(consentResource);
+            } else {
+                // Create a default type consent resource using data from request object.
+                String receipt = ConsentAuthorizeUtil.getReceiptFromRequestObject(requestObject);
+                long defaultValidityPeriod = System.currentTimeMillis() / 1000 + 3600;
+
+                consentResource = new ConsentResource(consentData.getClientId(), receipt,
+                        ConsentExtensionConstants.DEFAULT, ConsentExtensionConstants.CREATED_STATUS);
+                consentResource.setValidityPeriod(defaultValidityPeriod);
+                consentDataJSON = ConsentAuthorizeUtil.getConsentDataForScope(scope);
             }
-
-            AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
-            if (!authorizationResource.getAuthorizationStatus().equals(ConsentExtensionConstants.CREATED_STATUS)) {
-                log.error("Authorisation not in authorisable state");
-                //Currently throwing error as 400 response. Developer also have the option of appending a fieldIS_ERROR
-                // to the jsonObject and showing it to the user in the webapp. If so, the IS_ERROR have to bechecked in
-                // any later steps.
-                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
-                        "Authorisation not in authorisable state", consentData.getState());
-            }
-
             consentData.setType(consentResource.getConsentType());
-            consentData.setAuthResource(authorizationResource);
             consentData.setConsentResource(consentResource);
+            jsonObject.put(ConsentExtensionConstants.CONSENT_DATA, consentDataJSON);
 
-            //Appending Consent Data
-            JSONArray consentDataJSON = ConsentAuthorizeUtil.getConsentData(consentResource);
-            jsonObject.put("consentData", consentDataJSON);
-
-            //Appending Dummy data for Accounts consent. Ideally should be separate step calling accounts service
+            /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
+             calling accounts service */
             JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
-            jsonObject.put("accounts", accountsJSON);
+            jsonObject.put(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
+
+            // Set request parameters as metadata to be used in persistence extension
+            consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
 
         } catch (ConsentManagementException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
@@ -93,16 +125,4 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         }
     }
 
-    /**
-     * Get the AuthErrorCode for the given ResponseStatus.
-     * @param responseStatus ResponseStatus
-     * @return AuthErrorCode
-     */
-    private AuthErrorCode getAuthErrorCode(ResponseStatus responseStatus) {
-        if (responseStatus == ResponseStatus.BAD_REQUEST) {
-            return AuthErrorCode.INVALID_REQUEST;
-        } else {
-            return AuthErrorCode.SERVER_ERROR;
-        }
-    }
 }

@@ -1,0 +1,102 @@
+  /**
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+  
+  .nv{
+    padding-right: 0;
+    padding-left: 0;
+  }
+  
+  .Navbar {
+    display: flex;
+    background-color: white;
+    box-shadow: 0 2px 2px -2px rgba(0,0,0,.2);
+    flex-grow: 1;
+  }
+
+  .navLogoImage {
+    width: 125px;
+  }
+
+  .navUserImage {
+    width: 50px;
+    margin-right: 1rem;
+  }
+
+  .navAppName {
+    margin: auto;
+    font-size: 2.5rem;
+    color: rgba(8, 18, 71, 1);
+    font-weight: 400;
+  }
+
+  .NavDropdown {
+    justify-content: flex-end;
+    margin: auto;
+    align-items: center;
+    display: flex;
+    }
+
+  #dropdown-custom-components {
+  align-items: center;
+  background-color: white;
+  border-style: none;
+  color: rgba(8, 18, 71, 1)
+  }                     
+
+  #dropdown-menu-items{                           
+    color: rgba(8, 18, 71, 1)
+  }                                                                                                  
+
+  .branding {
+    margin-left: inherit;
+    flex-grow: 2;                                                                                                                                                                                                                                                          
+  }
+
+  #navLinkStyle:hover{
+    text-decoration: none;
+  }
+
+  @media (max-width: 500px) {
+    .navAppName {                                                                                                                                                                                     
+      font-size: 1.3rem;                                        
+    }                                                                                       
+    .navLogoImage {                                                  
+      width: 50px;
+    }
+    .dropdown-userId {
+      display: none;
+    }
+    .navUserImage {
+      width: 25px;
+      margin-right: 8px;
+    }
+
+    .NavDropdown{
+      padding-right: 0.5em;
+    }
+
+    .branding {                                                 
+      align-content: center;
+      justify-content: center;
+      margin-top: 5px;
+      flex-grow: 3;
+      padding-left: 0em;
+      padding-right: 0em;
+
+    }
+  }

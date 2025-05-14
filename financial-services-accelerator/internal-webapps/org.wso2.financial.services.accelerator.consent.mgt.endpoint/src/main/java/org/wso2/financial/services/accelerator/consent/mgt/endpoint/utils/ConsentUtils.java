@@ -77,6 +77,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -523,5 +524,18 @@ public class ConsentUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Get only the allowed headers from the provided header map.
+     *
+     * @param headers            Map of all headers
+     * @param allowedHeaderNames List of allowed header names
+     * @return Map of allowed headers
+     */
+    public static Map<String, String> getAllowedHeaders(Map<String, String> headers, List<String> allowedHeaderNames) {
+        return headers.entrySet().stream()
+                .filter(entry -> allowedHeaderNames.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

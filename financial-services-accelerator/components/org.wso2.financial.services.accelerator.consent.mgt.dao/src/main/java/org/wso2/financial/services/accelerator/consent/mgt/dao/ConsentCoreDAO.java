@@ -56,6 +56,19 @@ public interface ConsentCoreDAO {
             throws ConsentDataInsertionException;
 
     /**
+     * This method is used to update an existing consent resource in the database.
+     * The following fields will be updated: receipt, consent type, current status,
+     * consent frequency, validity period, recurring indicator, and updated time.
+     * The client ID and created time will not be updated, as they are considered immutable.
+     *
+     * @param connection      connection object
+     * @param consentResource the consent resource object containing updated values
+     * @throws ConsentDataUpdationException thrown if a database error occurs or the update fails
+     */
+    void updateConsentResource(Connection connection, ConsentResource consentResource)
+            throws ConsentDataUpdationException;
+
+    /**
      * This method is used to retrieve a consent resource for the provided consent ID (without associated consent
      * attributes).
      *
@@ -173,6 +186,18 @@ public interface ConsentCoreDAO {
             throws ConsentDataUpdationException;
 
     /**
+     * This method is used to update the given list of authorization resources.
+     * Only the auth-type and auth-status will be updated. Other values sent in the
+     * AuthorizationResource object will be ignored.
+     *
+     * @param connection connection object
+     * @param authorizationResources a list of authorization resources that should be updated
+     * @throws ConsentDataUpdationException thrown if a database error occurs
+     */
+    boolean updateAuthorizationResources(Connection connection, List<AuthorizationResource> authorizationResources)
+            throws ConsentDataUpdationException;
+
+    /**
      * This method is used to store the consent mapping resource in the database. The request consent mapping object
      * must contain all the data in it without the consent mapping ID. It will be generated and set to the response
      * object if the insertion is successful.
@@ -185,6 +210,17 @@ public interface ConsentCoreDAO {
     ConsentMappingResource storeConsentMappingResource(Connection connection,
                                                        ConsentMappingResource consentMappingResource)
             throws ConsentDataInsertionException;
+
+    /**
+     * This method is used to store the consent mapping resources in the database.
+     *
+     * @param connection
+     * @param consentMappingResources
+     * @return
+     * @throws ConsentDataInsertionException
+     */
+    List<ConsentMappingResource> storeConsentMappingResources(Connection connection, List<ConsentMappingResource>
+            consentMappingResources) throws ConsentDataInsertionException;
 
     /**
      * This method is used to retrieve consent mapping resources for a given authorization ID.
@@ -206,9 +242,22 @@ public interface ConsentCoreDAO {
      * @param mappingStatus     the new mapping status that should be updated with
      * @throws ConsentDataUpdationException thrown if a database error occur or an update failure
      */
-    void updateConsentMappingStatus(Connection connection, ArrayList<String> mappingIDs,
-                                       String mappingStatus)
+    void updateConsentMappingStatus(Connection connection, ArrayList<String> mappingIDs, String mappingStatus)
             throws ConsentDataUpdationException;
+
+    /**
+     * This method is used to update the given consent mapping resources.
+     * Parameters allowed to update are mapping-status and permission.
+     * Other fields sent in the ConsentMappingResource object will be ignored.
+     * Consent mapping resources will be identified using the mapping ID.
+     *
+     * @param connection connection object
+     * @param consentMappingResources a list of consent mapping resources that should be updated
+     * @return true if the update is successful
+     * @throws ConsentDataUpdationException thrown if a database error occurs
+     */
+    public boolean updateConsentMappingResources(Connection connection, List<ConsentMappingResource>
+            consentMappingResources) throws ConsentDataUpdationException;
 
     /**
      * This method is used to store the consent attributes in the database. The request consent attributes object

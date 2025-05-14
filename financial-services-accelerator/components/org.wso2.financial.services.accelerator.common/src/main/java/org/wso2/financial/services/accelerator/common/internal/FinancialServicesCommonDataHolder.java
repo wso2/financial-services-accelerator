@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.common.internal;
 
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 
@@ -32,6 +33,7 @@ public class FinancialServicesCommonDataHolder {
     private int commonCacheAccessExpiry;
     private int commonCacheModifiedExpiry;
     private KeyStore trustStore = null;
+    private PoolingHttpClientConnectionManager connectionManager;
 
     private FinancialServicesCommonDataHolder() {
 
@@ -79,5 +81,13 @@ public class FinancialServicesCommonDataHolder {
 
     public void setTrustStore(KeyStore trustStore) {
         this.trustStore = trustStore;
+    }
+
+    public PoolingHttpClientConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
+
+    public void setConnectionManager(PoolingHttpClientConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 }

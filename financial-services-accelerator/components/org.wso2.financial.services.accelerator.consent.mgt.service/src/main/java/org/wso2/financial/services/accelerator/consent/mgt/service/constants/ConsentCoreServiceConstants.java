@@ -49,6 +49,9 @@ public class ConsentCoreServiceConstants {
     public static final String DEFAULT_PERMISSION_VALUE = "n/a";
     public static final String ADDITIONAL_AUTHORIZATION_RESOURCES =  "AdditionalAuthorizationResources";
     public static final String ADDITIONAL_MAPPING_RESOURCES = "AdditionalMappingResources";
+    public static final String AMENDMENT_REASON_CONSENT_AMENDMENT_FLOW = "ConsentAmendmentFlow";
+    public static final String AMENDMENT_REASON_CONSENT_REVOCATION = "ConsentRevocation";
+    public static final String AMENDMENT_REASON_CONSENT_EXPIRATION = "ConsentExpiration";
 
     // Error Constants
     public static final String DATA_INSERTION_ROLLBACK_ERROR_MSG = "Error occurred while inserting data. Rolling" +
@@ -65,8 +68,10 @@ public class ConsentCoreServiceConstants {
     public static final String DATA_RETRIEVE_ERROR_MSG = "Error occurred while retrieving data";
     public static final String DATA_UPDATE_ROLLBACK_ERROR_MSG = "Error occurred while updating consent data. Rolling " +
             "back the transaction";
-    public static final String NEW_CONSENT_STATUS_OR_APPLICABLE_STATUS_MISSING_ERROR = "New consent status or " +
-            "applicable status for file upload is missing. Cannot proceed";
+    public static final String APPLICABLE_STATUS_MISSING_ERROR = "Applicable status for file upload is missing. " +
+            "Cannot proceed";
+    public static final String NEW_CONSENT_STATUS_MISSING_ERROR = "New consent status for file upload is missing. " +
+            "Cannot proceed";
 
     public static final String ATTRIBUTE_UPDATE_ERROR_MSG = "Error occurred while updating consent attributes. " +
             "Rolling back the transaction";
@@ -98,6 +103,11 @@ public class ConsentCoreServiceConstants {
             " is not found, cannot proceed";
     public static final String ACC_MAPPING_ID_MISSING_ERROR_MSG = "Account mapping IDs are not provided, " +
             "cannot proceed";
+    public static final String UPDATE_MAPPING_MANDATORY_PARAMETERS_MISSING_ERROR_MSG = "Consent mapping ID or " +
+            "authorization ID is not provided, cannot proceed";
+    public static final String CREATE_MAPPING_MANDATORY_PARAMETERS_MISSING_ERROR_MSG = "Authorization ID or " +
+            "account ID is not provided, cannot proceed";
+
     public static final String CONSENT_STATUS_MISSING_ERROR_MSG = "Consent ID or new consent status is missing," +
             " cannot proceed";
     public static final String USER_ID_MISSING_ERROR_MSG = "User ID is required for token revocation, cannot proceed";

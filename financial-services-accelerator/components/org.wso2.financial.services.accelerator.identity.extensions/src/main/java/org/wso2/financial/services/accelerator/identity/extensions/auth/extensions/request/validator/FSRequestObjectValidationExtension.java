@@ -25,21 +25,23 @@ import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.identity.openidconnect.RequestObjectValidatorImpl;
 import org.wso2.carbon.identity.openidconnect.model.RequestObject;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
+import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityServiceExtensionUtils;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The extension of RequestObjectValidatorImpl to enforce Open Banking specific validations of the
+ * The extension of RequestObjectValidatorImpl to enforce Financial services specific validations of the
  * request object.
  */
 public class FSRequestObjectValidationExtension extends RequestObjectValidatorImpl {
@@ -48,39 +50,40 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
     // Get extension impl
     static FSRequestObjectValidator fsDefaultRequestObjectValidator =
             IdentityExtensionsDataHolder.getInstance().getObRequestObjectValidator();
+    static FinancialServicesValidator fsValidator = FinancialServicesValidator.getInstance();
 
     /**
-     * Validations related to clientId, response type, exp, redirect URL, mandatory params,
-     * issuer, audience are done. Called after signature validation.
+     * Validates the request object and throws an exception if invalid.
      *
-     * @param initialRequestObject request object
-     * @param oAuth2Parameters     oAuth2Parameters
-     * @throws RequestObjectException - RequestObjectException
+     * @param initialRequestObject The initial request object to be validated.
+     * @param oAuth2Parameters     The OAuth2 parameters associated with the request.
+     * @return                true if the request object is valid, false otherwise.
+     * @throws RequestObjectException
      */
     @Override
+    @Generated(message = "Ignoring since main logics in util methods are tested")
     public boolean validateRequestObject(RequestObject initialRequestObject, OAuth2Parameters oAuth2Parameters)
             throws RequestObjectException {
 
         try {
-            if (isRegulatory(oAuth2Parameters)) {
+            if (FinancialServicesUtils.isRegulatoryApp(oAuth2Parameters.getClientId())) {
 
                 FSRequestObject fsRequestObject = new FSRequestObject(initialRequestObject);
 
+                // Not required now but letting it be there to support older implementations
+                // or can use it if required in the future
                 Map<String, Object> dataMap = new HashMap<>();
-                final String allowedScopes = getAllowedScopes(oAuth2Parameters);
-                if (StringUtils.isNotBlank(allowedScopes)) {
-                    dataMap.put(IdentityCommonConstants.SCOPE, Arrays.asList(allowedScopes.split(" ")));
-                }
-                // perform FS customized validations
-                ValidationResponse validationResponse = fsDefaultRequestObjectValidator
-                        .validateFSConstraints(fsRequestObject, dataMap);
 
-                if (!validationResponse.isValid()) {
-                    log.error(String.format("Request object validation failed: %s",
-                            validationResponse.getViolationMessage().replaceAll("[\r\n]+", " ")));
-                    // Exception will be caught and converted to auth error by IS at endpoint.
-                    throw new RequestObjectException(RequestObjectException.ERROR_CODE_INVALID_REQUEST,
-                            validationResponse.getViolationMessage());
+                // Perform FS default validations
+                validate(defaultValidateRequestObject(fsRequestObject));
+
+                if (ServiceExtensionUtils.isInvokeExternalService(
+                            ServiceExtensionTypeEnum.VALIDATE_AUTHORIZATION_REQUEST)) {
+                    // Perform FS customized validations with service extension
+                    validate(IdentityServiceExtensionUtils.validateRequestObjectWithServiceExtension(fsRequestObject));
+                } else if (fsDefaultRequestObjectValidator != null) {
+                    // Perform FS customized validations
+                    validate(fsDefaultRequestObjectValidator.validateRequestObject(fsRequestObject, dataMap));
                 }
             }
             return validateIAMConstraints(initialRequestObject, oAuth2Parameters);
@@ -88,6 +91,9 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
         } catch (RequestObjectException e) {
             log.error("Error while retrieving regulatory property from sp metadata", e);
             throw new RequestObjectException(RequestObjectException.ERROR_CODE_INVALID_REQUEST, e.getErrorMessage());
+        } catch (FinancialServicesException e) {
+            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
+            throw new RequestObjectException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e.getMessage());
         }
     }
 
@@ -105,54 +111,32 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
         return super.validateRequestObject(requestObject, oAuth2Parameters);
     }
 
-
     /**
-     * Called by validateRequestObject.
-     *
-     * @param requestObject      request object
-     * @param oAuth2Parameters   oAuth2Parameters
-     * @return                true if valid audience
+     * Validates the response and throws an exception if invalid.
      */
-    @Generated(message = "Empty method")
-    @Override
-    protected boolean isValidAudience(RequestObject requestObject, OAuth2Parameters oAuth2Parameters) {
+    void validate(ValidationResponse response) throws RequestObjectException {
 
-        // converted to validation layer
-        return true;
-    }
-
-    /**
-     * Called by validateRequestObject.
-     *
-     * @param oAuth2Parameters
-     * @return
-     */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    protected String getAllowedScopes(OAuth2Parameters oAuth2Parameters) throws RequestObjectException {
-
-        try {
-             String scopesFromSP = IdentityCommonUtils.getAppPropertyFromSPMetaData(oAuth2Parameters.getClientId(),
-                     IdentityCommonConstants.SCOPE);
-             if (StringUtils.isNotBlank(scopesFromSP)) {
-                 return scopesFromSP;
-             } else {
-                    return "accounts payments fundsconfirmations";
-             }
-        } catch (FinancialServicesException e) {
-            log.error("Error while retrieving scopes property from sp metadata", e);
-            throw new RequestObjectException(e.getMessage(), e);
+        if (!response.isValid()) {
+            String sanitizedMessage = response.getViolationMessage().replaceAll("[\r\n]+", " ");
+            log.error("Request object validation failed: " + sanitizedMessage);
+            throw new RequestObjectException(RequestObjectException.ERROR_CODE_INVALID_REQUEST, sanitizedMessage);
         }
     }
 
     /**
-     * Get regulatory property from sp metadata.
+     * Performs accelerator layer default validations.
      *
-     * @param oAuth2Parameters oAuthParameters
-     * @return
+     * @param fsRequestObject The request object to be validated.
+     * @return A ValidationResponse indicating whether the request is valid.
      */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    protected boolean isRegulatory(OAuth2Parameters oAuth2Parameters) throws RequestObjectException {
+    ValidationResponse defaultValidateRequestObject(FSRequestObject fsRequestObject) {
 
-        return FinancialServicesUtils.isRegulatoryApp(oAuth2Parameters.getClientId());
+        String fsRequestObjectViolation = fsValidator.getFirstViolation(fsRequestObject);
+
+        if (StringUtils.isEmpty(fsRequestObjectViolation)) {
+            return new ValidationResponse(true);
+        } else {
+            return new ValidationResponse(false, fsRequestObjectViolation);
+        }
     }
 }

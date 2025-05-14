@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>financial-services</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-alpha-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -44,5 +44,6 @@
         <module>internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.event.notifications.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.demo.backend</module>
+        <module>react-apps</module>
     </modules>
 </project>

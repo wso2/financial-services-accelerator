@@ -21,7 +21,7 @@
     <groupId>org.wso2.financial.services.accelerator</groupId>
     <artifactId>financial-services</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0-alpha-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -42,8 +42,7 @@
             </activation>
             <modules>
                 <module>financial-services-accelerator</module>
-                <module>react-apps</module>
-                <module>integration-test-framework</module>
+                <module>financial-services-accelerator/accelerators</module>
             </modules>
             <build>
                 <plugins>
@@ -69,39 +68,17 @@
             </properties>
         </profile>
         <profile>
-            <id>solution</id>
+            <id>test-suite</id>
             <activation>
+                <activeByDefault>false</activeByDefault>
                 <property>
                     <name>profile</name>
-                    <value>solution</value>
+                    <value>test-suite</value>
                 </property>
             </activation>
             <modules>
-                <module>financial-services-accelerator</module>
-                <module>financial-services-accelerator/accelerators</module>
+                <module>fs-integration-test-suite</module>
             </modules>
-            <properties>
-                <npm.executable>npm</npm.executable>
-            </properties>
-        </profile>
-        <profile>
-            <id>open-banking-test-suite</id>
-            <activation>
-                <property>
-                    <name>profile</name>
-                    <value>open-banking-test-suite</value>
-                </property>
-            </activation>
-        </profile>
-        <profile>
-            <id>integration-test-suite</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>profile</name>
-                    <value>integration-test-suite</value>
-                </property>
-            </activation>
         </profile>
     </profiles>
 
@@ -110,7 +87,8 @@
 
     <modules>
         <module>financial-services-accelerator</module>
-        <module>react-apps</module>
+        <module>fs-integration-test-suite/bfsi-test-framework</module>
+        <module>fs-integration-test-suite/accelerator-test-framework</module>
     </modules>
 
     <repositories>
@@ -460,7 +438,7 @@
                 <version>${jjwt.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.quartz-scheduler</groupId>
+                <groupId>org.wso2.orbit.org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
             </dependency>
@@ -639,13 +617,13 @@
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
         <apache.tomcat-catalina.version>9.0.11</apache.tomcat-catalina.version>
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-        <quartz.version>2.3.2</quartz.version>
+        <quartz.version>2.3.2.wso2v1</quartz.version>
         <swagger.parser.v3.version>2.1.22.wso2v1</swagger.parser.v3.version>
         <jjwt.version>0.9.1</jjwt.version>
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
-        <identity.inbound.auth.oauth.version>7.0.228</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.oauth.version>7.0.229</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.oauth.version.range>[6.13.0, 7.1.0)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
         <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>

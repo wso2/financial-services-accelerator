@@ -30,6 +30,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -109,6 +110,51 @@ public interface ConsentCoreService {
     DetailedConsentResource getDetailedConsent(String consentID) throws ConsentManagementException;
 
     /**
+     * This method is used to store a detailed consent along with its associated authorizations,
+     * account mappings, and attributes. An audit record will be created after storage.
+     *
+     * @param detailedConsentResource the complete consent resource with nested data
+     * @return the stored detailed consent resource
+     * @throws ConsentManagementException thrown if an error occurs during the operation
+     */
+    DetailedConsentResource storeDetailedConsentResource(DetailedConsentResource detailedConsentResource)
+            throws ConsentManagementException;
+
+    /**
+     * This method is used to update an existing consent (excluding client ID and CreatedTime) and create
+     * new authorization and mapping records based on the given detailed consent.
+     * Consent attributes are also stored if provided. An audit record will be created.
+     *
+     * @param detailedConsentResource the detailed consent resource with updated values and new associations
+     * @param primaryUserId the user ID of the primary user
+     * @return the updated detailed consent resource
+     * @throws ConsentManagementException thrown if an error occurs during the operation
+     */
+    DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource,
+                                                                String primaryUserId) throws ConsentManagementException;
+
+    /**
+     * This method is used to create a consent file. The following functionality contains in this method.
+     *
+     * 1. Get the existing consent to validate the status according to the attribute "applicableStatusToFileUpload"
+     *      if the validateApplicableStatus is set to true.
+     * 2. Create the consent file
+     * 3. Update the consent status
+     * 4. Create an audit record for consent update
+     *
+     * @param consentFileResource            consent file resource
+     * @param newConsentStatus               new consent status
+     * @param userID                         user ID (optional)
+     * @param applicableStatusToFileUpload   status that the consent should have to upload a file
+     * @param validateApplicableStatus       whether applicableStatusToFileUpload validation should be enforced
+     * @return true if transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occur in the process
+     */
+    boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID,
+                              String applicableStatusToFileUpload, boolean validateApplicableStatus)
+            throws ConsentManagementException;
+
+    /**
      * This method is used to create a consent file. The following functionality contains in this method.
      *
      * 1. Get the existing consent to validate the status according to the attribute "applicableStatusToFileUpload"
@@ -125,6 +171,22 @@ public interface ConsentCoreService {
      */
     boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID,
                               String applicableStatusToFileUpload)
+            throws ConsentManagementException;
+
+    /**
+     * This method is used to create a consent file. The following functionality contains in this method.
+     *
+     * 1. Create the consent file
+     * 2. Update the consent status
+     * 3. Create an audit record for consent update
+     *
+     * @param consentFileResource            consent file resource
+     * @param newConsentStatus               new consent status
+     * @param userID                         user ID (optional)
+     * @return true if transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occur in the process
+     */
+    boolean createConsentFile(ConsentFile consentFileResource, String newConsentStatus, String userID)
             throws ConsentManagementException;
 
     /**
@@ -212,6 +274,18 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
+     * This method is used to update the given list of authorization resources.
+     * Only the auth-type and auth-status will be updated. Other values sent in the
+     * AuthorizationResource object will be ignored.
+     *
+     * @param authorizationResources list of authorization resources to be updated
+     * @return true if the transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    boolean updateAuthorizationResources(List<AuthorizationResource> authorizationResources)
+            throws ConsentManagementException;
+
+    /**
      * This method is used to bind user and accounts to the consent.
      *
      * @param consentResource consent resource
@@ -269,6 +343,17 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
+     * This method is used to create consent mapping resources by providing a list of ConsentMappingResource objects.
+     * The mapping ID will be generated automatically and returned with the created resources.
+     *
+     * @param consentMappingResources list of consent mapping resources to be created
+     * @return list of created consent mapping resources with generated mapping IDs
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    List<ConsentMappingResource> createConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+            throws ConsentManagementException;
+
+    /**
      * This method is used to deactivate account bindings of provided account mapping IDs.
      *
      * @param accountMappingIDs     list of account mapping IDs to be deactivated
@@ -287,6 +372,19 @@ public interface ConsentCoreService {
      */
     boolean updateAccountMappingStatus(ArrayList<String> accountMappingIDs, String newMappingStatus) throws
             ConsentManagementException;
+
+    /**
+     * This method is used to update the given consent mapping resources.
+     * Parameters allowed to update are mapping-status and permission.
+     * Other fields sent in the ConsentMappingResource object will be ignored.
+     * Consent mapping resources will be identified using the mapping ID.
+     *
+     * @param consentMappingResources list of consent mapping resources to be updated
+     * @return true if the transaction is a success, throws an exception otherwise
+     * @throws ConsentManagementException thrown if any error occurs
+     */
+    boolean updateConsentMappingResources(List<ConsentMappingResource> consentMappingResources)
+            throws ConsentManagementException;
 
     /**
      * This method is used to revoke a consent. The following functionality contains in this method.
@@ -663,6 +761,16 @@ public interface ConsentCoreService {
                                                  ArrayList<String>> accountIDsMapWithPermissions,
                                                  String newConsentStatus, Map<String, String> consentAttributes,
                                                  String userID, Map<String, Object> additionalAmendmentData)
+            throws ConsentManagementException;
+
+    /**
+     * This method is used to fetch consents which has a expiring time as a consent attribute
+     * (eligible for expiration)
+     * @param statusesEligibleForExpiration
+     * @return
+     * @throws ConsentManagementException
+     */
+    ArrayList<DetailedConsentResource> getConsentsEligibleForExpiration(String statusesEligibleForExpiration)
             throws ConsentManagementException;
 
 }

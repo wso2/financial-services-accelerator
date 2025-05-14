@@ -137,7 +137,7 @@ public class ConsentAdminUtils {
             JSONObject resourceJSON = new JSONObject();
             resourceJSON.put(ConsentExtensionConstants.MAPPING_ID, resource.getMappingID());
             resourceJSON.put(ConsentExtensionConstants.AUTH_ID, resource.getAuthorizationID());
-            resourceJSON.put(ConsentExtensionConstants.ACCOUNT_ID, resource.getAccountID());
+            resourceJSON.put(ConsentExtensionConstants.ACCOUNT_ID_CC, resource.getAccountID());
             resourceJSON.put(ConsentExtensionConstants.PERMISSION, resource.getPermission());
             resourceJSON.put(ConsentExtensionConstants.MAPPING_STATUS, resource.getMappingStatus());
             consentMappingResources.put(resourceJSON);

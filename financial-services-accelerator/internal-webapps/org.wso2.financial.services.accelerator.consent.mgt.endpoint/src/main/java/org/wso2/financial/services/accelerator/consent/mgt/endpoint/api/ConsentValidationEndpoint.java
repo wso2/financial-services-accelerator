@@ -121,23 +121,23 @@ public class ConsentValidationEndpoint {
                     requestData = new JSONObject(decodedRequest);
                 } else {
                     log.error("Error while decoding the JWT request payload");
-                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
                             "Error while decoding the JWT request payload");
                 }
             } catch (ConsentManagementException e) {
                 log.error("Error while validating JWT signature", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while validating JWT " +
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Error while validating JWT " +
                         "signature");
             } catch (JSONException | ParseException e) {
                 log.error("Error while decoding validation JWT", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while decoding validation JWT");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Error while decoding validation JWT");
             }
         } else {
             try {
                 requestData = new JSONObject(payload);
             } catch (JSONException e) {
                 log.error("Unable to parse the request payload", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Unable to parse the request payload");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Unable to parse the request payload");
             }
         }
 
@@ -170,8 +170,7 @@ public class ConsentValidationEndpoint {
             resourceParamsMap = ConsentUtils.addQueryParametersToResourceParamMap(resourceParams);
         } catch (URISyntaxException e) {
             log.error("Error while extracting query parameters", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error while extracting query parameters");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Error while extracting query parameters");
         }
 
         ConsentValidateData consentValidateData = new ConsentValidateData(requestHeaders, requestPayload,
@@ -182,7 +181,7 @@ public class ConsentValidationEndpoint {
             consentValidateData.setComprehensiveConsent(consentResource);
         } catch (ConsentManagementException e) {
             log.error("Exception while getting consent", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Exception while getting consent");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Exception while getting consent");
         }
 
         ConsentValidationResult validationResult = new ConsentValidationResult();

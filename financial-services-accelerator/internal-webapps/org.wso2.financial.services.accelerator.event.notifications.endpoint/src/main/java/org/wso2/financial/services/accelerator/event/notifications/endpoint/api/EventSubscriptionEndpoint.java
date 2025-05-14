@@ -23,20 +23,16 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.event.notifications.endpoint.constants.EventNotificationEndPointConstants;
 import org.wso2.financial.services.accelerator.event.notifications.endpoint.util.EventSubscriptionUtils;
 import org.wso2.financial.services.accelerator.event.notifications.service.constants.EventNotificationConstants;
 import org.wso2.financial.services.accelerator.event.notifications.service.dto.EventSubscriptionDTO;
-import org.wso2.financial.services.accelerator.event.notifications.service.exception.FSEventNotificationException;
 import org.wso2.financial.services.accelerator.event.notifications.service.handler.EventSubscriptionServiceHandler;
 import org.wso2.financial.services.accelerator.event.notifications.service.model.EventSubscriptionResponse;
 import org.wso2.financial.services.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -86,12 +82,13 @@ public class EventSubscriptionEndpoint {
         if (StringUtils.isBlank(clientId)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                     getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID).toString()).build();
         }
         // extract the payload from the request
         try {
             JSONObject requestPayload = EventSubscriptionUtils.getJSONObjectPayload(request);
-            EventSubscriptionDTO eventSubscriptionDTO = mapSubscriptionRequestToDTo(requestPayload);
+            EventSubscriptionDTO eventSubscriptionDTO = new EventSubscriptionDTO();
+            eventSubscriptionDTO.setRequestData(requestPayload);
             eventSubscriptionDTO.setClientId(request.getHeader(EventNotificationEndPointConstants.X_WSO2_CLIENT_ID));
 
             EventSubscriptionResponse eventSubscriptionResponse = eventSubscriptionServiceHandler.
@@ -102,10 +99,7 @@ public class EventSubscriptionEndpoint {
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(EventNotificationServiceUtil.
                             getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
-                                    EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
-        } catch (FSEventNotificationException e) {
-            return Response.status(e.getStatus()).entity(EventNotificationServiceUtil.
-                    getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST, e.getMessage())).build();
+                                    EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR).toString()).build();
         }
     }
 
@@ -124,19 +118,13 @@ public class EventSubscriptionEndpoint {
         if (StringUtils.isBlank(clientId)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                     getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID).toString()).build();
         }
 
-        EventSubscriptionResponse eventSubscriptionResponse = null;
-        try {
-            eventSubscriptionResponse = eventSubscriptionServiceHandler.
-                    getEventSubscription(clientId, uriInfo.getPathParameters()
-                            .getFirst(EventNotificationConstants.SUBSCRIPTION_ID_PARAM));
-            return EventSubscriptionUtils.mapEventSubscriptionServiceResponse(eventSubscriptionResponse);
-        } catch (FSEventNotificationException e) {
-            return Response.status(e.getStatus()).entity(EventNotificationServiceUtil.
-                    getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST, e.getMessage())).build();
-        }
+        EventSubscriptionResponse eventSubscriptionResponse = eventSubscriptionServiceHandler.
+                getEventSubscription(clientId, uriInfo.getPathParameters()
+                        .getFirst(EventNotificationConstants.SUBSCRIPTION_ID_PARAM));
+        return EventSubscriptionUtils.mapEventSubscriptionServiceResponse(eventSubscriptionResponse);
     }
 
     /**
@@ -154,19 +142,13 @@ public class EventSubscriptionEndpoint {
         if (StringUtils.isBlank(clientId)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                     getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID).toString()).build();
         }
 
-        EventSubscriptionResponse eventSubscriptionResponse = null;
-        try {
-            eventSubscriptionResponse = eventSubscriptionServiceHandler.
-                    getAllEventSubscriptions(clientId);
+        EventSubscriptionResponse eventSubscriptionResponse = eventSubscriptionServiceHandler.
+                getAllEventSubscriptions(clientId);
 
-            return EventSubscriptionUtils.mapEventSubscriptionServiceResponse(eventSubscriptionResponse);
-        } catch (FSEventNotificationException e) {
-            return Response.status(e.getStatus()).entity(EventNotificationServiceUtil.
-                    getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST, e.getMessage())).build();
-        }
+        return EventSubscriptionUtils.mapEventSubscriptionServiceResponse(eventSubscriptionResponse);
     }
 
     /**
@@ -185,18 +167,13 @@ public class EventSubscriptionEndpoint {
         if (StringUtils.isBlank(clientId)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                     getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID).toString()).build();
         }
 
-        EventSubscriptionResponse eventSubscriptionResponse = null;
-        try {
-            eventSubscriptionResponse = eventSubscriptionServiceHandler.getEventSubscriptionsByEventType(clientId,
-                    uriInfo.getPathParameters().getFirst(EventNotificationConstants.EVENT_TYPE_PARAM));
+        EventSubscriptionResponse eventSubscriptionResponse = eventSubscriptionServiceHandler
+                .getEventSubscriptionsByEventType(clientId,
+                        uriInfo.getPathParameters().getFirst(EventNotificationConstants.EVENT_TYPE_PARAM));
             return EventSubscriptionUtils.mapEventSubscriptionServiceResponse(eventSubscriptionResponse);
-        } catch (FSEventNotificationException e) {
-            return Response.status(e.getStatus()).entity(EventNotificationServiceUtil.
-                    getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST, e.getMessage())).build();
-        }
     }
 
     /**
@@ -215,13 +192,14 @@ public class EventSubscriptionEndpoint {
         if (StringUtils.isBlank(clientId)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                     getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID).toString()).build();
         }
 
         // extract the payload from the request
         try {
             JSONObject requestPayload = EventSubscriptionUtils.getJSONObjectPayload(request);
-            EventSubscriptionDTO eventSubscriptionDTO = mapSubscriptionRequestToDTo(requestPayload);
+            EventSubscriptionDTO eventSubscriptionDTO = new EventSubscriptionDTO();
+            eventSubscriptionDTO.setRequestData(requestPayload);
             eventSubscriptionDTO.setClientId(request.getHeader(EventNotificationEndPointConstants.X_WSO2_CLIENT_ID));
 
             eventSubscriptionDTO.setSubscriptionId(uriInfo.getPathParameters()
@@ -234,10 +212,7 @@ public class EventSubscriptionEndpoint {
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(EventNotificationServiceUtil.
                             getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST_PAYLOAD,
-                                    EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR)).build();
-        } catch (FSEventNotificationException e) {
-            return Response.status(e.getStatus()).entity(EventNotificationServiceUtil.
-                    getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST, e.getMessage())).build();
+                                    EventNotificationEndPointConstants.REQUEST_PAYLOAD_ERROR).toString()).build();
         }
     }
 
@@ -256,42 +231,12 @@ public class EventSubscriptionEndpoint {
         if (StringUtils.isBlank(clientId)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(EventNotificationServiceUtil.
                     getErrorDTO(EventNotificationEndPointConstants.MISSING_REQUEST_HEADER,
-                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID)).build();
+                            EventNotificationConstants.MISSING_HEADER_PARAM_CLIENT_ID).toString()).build();
         }
 
-        EventSubscriptionResponse eventSubscriptionResponse = null;
-        try {
-            eventSubscriptionResponse = eventSubscriptionServiceHandler.deleteEventSubscription(clientId,
-                    uriInfo.getPathParameters().getFirst(EventNotificationConstants.SUBSCRIPTION_ID_PARAM));
-            return EventSubscriptionUtils.mapEventSubscriptionServiceResponse(eventSubscriptionResponse);
-        } catch (FSEventNotificationException e) {
-            return Response.status(e.getStatus()).entity(EventNotificationServiceUtil.
-                    getErrorDTO(EventNotificationEndPointConstants.INVALID_REQUEST, e.getMessage())).build();
-        }
+        EventSubscriptionResponse eventSubscriptionResponse = eventSubscriptionServiceHandler
+                .deleteEventSubscription(clientId,
+                uriInfo.getPathParameters().getFirst(EventNotificationConstants.SUBSCRIPTION_ID_PARAM));
+        return EventSubscriptionUtils.mapEventSubscriptionServiceResponse(eventSubscriptionResponse);
     }
-
-    /**
-     * Method to map the Subscription Request to DTO.
-     * @param requestPayload   Subscription Request Payload
-     * @return EventSubscriptionDTO
-     */
-    private EventSubscriptionDTO mapSubscriptionRequestToDTo(JSONObject requestPayload) {
-        EventSubscriptionDTO eventSubscriptionDTO = new EventSubscriptionDTO();
-        eventSubscriptionDTO.setCallbackUrl(requestPayload.has(EventNotificationConstants.CALLBACK_URL_PARAM) ?
-                requestPayload.getString(EventNotificationConstants.CALLBACK_URL_PARAM) : null);
-        eventSubscriptionDTO.setSpecVersion(requestPayload.has(EventNotificationConstants.VERSION_PARAM) ?
-                requestPayload.getString(EventNotificationConstants.VERSION_PARAM) : null);
-        eventSubscriptionDTO.setRequestData(requestPayload.toString());
-
-        List<String> eventTypesList = new ArrayList<>();
-        if (requestPayload.has(EventNotificationConstants.EVENT_TYPES_PARAM)) {
-            JSONArray eventTypes = requestPayload.getJSONArray(EventNotificationConstants.EVENT_TYPES_PARAM);
-            eventTypes.iterator().forEachRemaining(eventType -> {
-                eventTypesList.add(eventType.toString());
-            });
-            eventSubscriptionDTO.setEventTypes(eventTypesList);
-        }
-        return eventSubscriptionDTO;
-    }
-
 }

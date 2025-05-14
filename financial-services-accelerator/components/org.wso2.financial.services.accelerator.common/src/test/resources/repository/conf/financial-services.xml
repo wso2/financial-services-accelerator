@@ -96,7 +96,7 @@
             <Validators>
                 <Validator>
                     <Name>RequiredParamsValidator</Name>
-                    <Class>org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.RequiredParamsValidator</Class>
+                    <Class>org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.RequiredParamsValidator</Class>
                     <Enable>true</Enable>
                     <Priority>1</Priority>
                     <AllowedValues>
@@ -104,7 +104,7 @@
                 </Validator>
                 <Validator>
                     <Name>IssuerValidator</Name>
-                    <Class>org.wso2.financial.services.accelerator.identity.extensions.dcr.validators.IssuerValidator</Class>
+                    <Class>org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.IssuerValidator</Class>
                     <Enable>true</Enable>
                     <Priority>2</Priority>
                     <AllowedValues>
@@ -175,6 +175,7 @@
 
     </Gateway>
     <Consent>
+        <PreInitiatedConsent>true</PreInitiatedConsent>
         <AuthorizeSteps>
             <Retrieve>
                 <Step class="org.wso2.financial.services.accelerator.common.test.CustomStep1" priority="1"/>
@@ -189,6 +190,12 @@
                 <Step class="org.wso2.financial.services.accelerator.common.test.CustomStep4" priority="4"/>
             </Persist>
         </AuthorizeSteps>
+        <PeriodicalExpiration>
+            <Enabled>true</Enabled>
+            <CronValue>0 0/2 * * * ?</CronValue>
+            <ExpiredConsentStatusValue>Expired</ExpiredConsentStatusValue>
+            <EligibleStatuses>Authorised</EligibleStatuses>
+        </PeriodicalExpiration>
         <AmendmentHistory>
             <Enabled>true</Enabled>
         </AmendmentHistory>
@@ -259,4 +266,21 @@
             <RequestGenerator>org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator</RequestGenerator>
         </Realtime>
     </EventNotifications>
+    <ExtensionsEndpoint>
+        <Enable>true</Enable>
+        <AllowedExtensions>
+            <AllowedExtension>issue_refresh_token</AllowedExtension>
+            <AllowedExtension>validate_authorization_request</AllowedExtension>
+            <AllowedExtension>map_accelerator_error_response</AllowedExtension>
+        </AllowedExtensions>
+        <BaseURL>https://www.extension.com</BaseURL>
+        <RetryCount>5</RetryCount>
+        <ConnectTimeout>5</ConnectTimeout>
+        <ReadTimeout>5</ReadTimeout>
+        <Security>
+            <Type>Basic-Auth</Type>
+            <Username>is_admin@wso2.com</Username>
+            <Password>abc</Password>
+        </Security>
+    </ExtensionsEndpoint>
 </Server>
