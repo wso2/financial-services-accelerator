@@ -81,7 +81,6 @@ public final class JDBCPersistenceManager {
         }
         synchronized (JDBCPersistenceManager.class) {
             try {
-//                String dataSourceName = FinancialServicesConfigParser.getInstance().getDataSourceName();
                 String dataSourceName = "jdbc/WSO2FS_DB";
                 if (StringUtils.isNotBlank(dataSourceName)) {
                     Context context = new InitialContext();

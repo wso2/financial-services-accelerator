@@ -186,7 +186,6 @@ public class ConsentManagementDAOUtil {
         return detailedConsentResource;
     }
 
-
     /**
      * Set consent data from the result set to DetailedConsentResource object.
      *
@@ -276,7 +275,6 @@ public class ConsentManagementDAOUtil {
 
         return authorizationResource;
     }
-
 
     /**
      * Construct the where clause of thr prepared statement for consent search.

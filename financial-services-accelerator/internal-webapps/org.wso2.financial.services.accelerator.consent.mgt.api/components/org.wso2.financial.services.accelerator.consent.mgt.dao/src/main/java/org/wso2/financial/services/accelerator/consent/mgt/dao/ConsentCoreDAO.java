@@ -67,7 +67,6 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataRetrievalException;
 
-
     /**
      * This method is used to retrieve a detailed consent resource for the provided consent ID (includes
      * authorization resources, account mapping resources and consent attributes).
@@ -94,7 +93,6 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataRetrievalException;
 
-
     /**
      * This method is used to update the status of a consent resource. The request consent resource object must be
      * set with a consent ID and the new consent status.
@@ -107,7 +105,6 @@ public interface ConsentCoreDAO {
     void updateConsentStatus(Connection connection, String consentId, String consentStatus)
             throws
             ConsentDataUpdationException;
-
 
     /**
      * This method is used to update consent validity time.
@@ -161,8 +158,6 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataUpdationException;
 
-    // delete authorization resource
-
     /**
      * This method is used to delete an authorization resource for the provided authorization ID.
      *
@@ -173,7 +168,6 @@ public interface ConsentCoreDAO {
     void deleteAuthorizationResource(Connection connection, String authorizationId)
             throws
             ConsentDataDeletionException;
-
 
     /**
      * This method is used to store the consent attributes in the database. The request consent attributes object
@@ -266,7 +260,6 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataDeletionException;
 
-
     /**
      * This method is used to search detailed consents for the given lists of parameters. The search will be
      * performed according to the provided input. Any list can contain any number of elements. The conjunctive result
@@ -296,7 +289,6 @@ public interface ConsentCoreDAO {
             throws
             ConsentDataRetrievalException;
 
-
     /**
      * This method is used to store the consent status audit record in the database. The request consent status audit
      * record object must contain all the data in it without the status audit ID and actionTime. They will be generated
@@ -311,7 +303,6 @@ public interface ConsentCoreDAO {
                                                            ConsentStatusAuditRecord consentStatusAuditRecord)
             throws
             ConsentDataInsertionException;
-
 
     /**
      * This method is used to retrieve consent status audit records. It queries the consent audit records by the
@@ -388,6 +379,9 @@ public interface ConsentCoreDAO {
             ConsentDataRetrievalException;
 
     /**
+     * Deletes all the consent data related to the given consent ID. This includes the consent resource,
+     * authorization resources, consent attributes and consent status audit records.
+     *
      * @param connection
      * @param consentId
      */

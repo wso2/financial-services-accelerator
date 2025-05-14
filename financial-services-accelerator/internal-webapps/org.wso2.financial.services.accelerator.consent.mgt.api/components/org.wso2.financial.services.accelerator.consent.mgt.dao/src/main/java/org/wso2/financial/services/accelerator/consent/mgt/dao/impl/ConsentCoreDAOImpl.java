@@ -161,8 +161,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-
-
     @Override
     public DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgInfo)
             throws
@@ -237,7 +235,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-
     @Override
     public void updateConsentStatus(Connection connection, String consentId, String newConsentStatus)
             throws
@@ -269,7 +266,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             throw new ConsentDataUpdationException(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE);
         }
     }
-
 
     @Override
     public void updateConsentExpiryTime(Connection connection, String consentId, long expiryTime)
@@ -468,8 +464,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     ///  TODO : consent attributes not yet implemented and tested in the api
-
-
     @Override
     public boolean storeConsentAttributes(Connection connection, ConsentAttributes consentAttributes)
             throws
@@ -768,8 +762,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     //                  ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
     // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
     // Suppressed warning count - 1
-
-
     public ArrayList<DetailedConsentResource> searchConsents(Connection connection,
                                                              String orgInfo, ArrayList<String> consentIDs,
                                                              ArrayList<String> clientIDs,
@@ -1155,7 +1147,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-
     @Override
     @SuppressFBWarnings("SQL_INJECTION_JDBC")
     // Suppressed content - connection.prepareStatement(getConsentHistoryPrepStatement)
@@ -1198,7 +1189,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     ConsentMgtDAOConstants.CONSENT_AMENDMENT_HISTORY_RETRIEVE_ERROR_MSG, e);
         }
     }
-
 
     @Override
     public void deleteConsent(Connection connection, String consentId) throws
