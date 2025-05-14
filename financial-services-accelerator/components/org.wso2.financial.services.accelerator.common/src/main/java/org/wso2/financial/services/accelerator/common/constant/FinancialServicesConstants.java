@@ -47,7 +47,12 @@ public class FinancialServicesConstants {
 
     public static final String IDEMPOTENCY_IS_ENABLED = "Consent.Idempotency.Enabled";
     public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
+    public static final String IDEMPOTENCY_HEADER_NAME = "Consent.Idempotency.HeaderName";
+    public static final String IDEMPOTENCY_ALLOWED_FOR_ALL_APIS = "Consent.Idempotency.AllowedForAllAPIs";
+    public static final String IDEMPOTENCY_ALLOWED_API_RESOURCES = "Consent.Idempotency.AllowedAPIResources" +
+            ".AllowedAPIResource";
     public static final String MANAGE_HANDLER = "Consent.ManageHandler";
+    public static final String MANAGE_VALIDATOR = "Consent.ManageValidator";
     public static final String AUTHORIZE_STEPS_CONFIG_TAG = "AuthorizeSteps";
     public static final String STEP_CONFIG_TAG = "Step";
     public static final String CONSENT_JWT_PAYLOAD_VALIDATION = "Consent.Validation.JWTPayloadValidation";
@@ -55,15 +60,27 @@ public class FinancialServicesConstants {
     public static final String CONSENT_VALIDATOR = "Consent.Validation.Validator";
     public static final String ADMIN_HANDLER = "Consent.AdminHandler";
     public static final String PRESERVE_CONSENT = "Consent.PreserveConsentLink";
-    public static final String CONSENT_API_USERNAME = "Consent.ConsentAPICredentials.Username";
-    public static final String CONSENT_API_PASSWORD = "Consent.ConsentAPICredentials.Password";
+    public static final String ADMIN_USERNAME = "Admin.Username";
+    public static final String ADMIN_PASSWORD = "Admin.Password";
     public static final String MAX_INSTRUCTED_AMOUNT = "Consent.Payments.MaximumInstructedAmount";
+    public static final String STATUS_FOR_EXPIRED_CONSENT = "Consent.PeriodicalExpiration.ExpiredConsentStatusValue";
+    public static final String ELIGIBLE_STATUSES_FOR_CONSENT_EXPIRY =
+            "Consent.PeriodicalExpiration.EligibleStatuses";
+    public static final String IS_CONSENT_AMENDMENT_HISTORY_ENABLED = "Consent.AmendmentHistory.Enabled";
+    public static final String CONSENT_PERIODICAL_EXPIRATION_CRON = "Consent.PeriodicalExpiration.CronValue";
+    public static final String IS_CONSENT_PERIODICAL_EXPIRATION_ENABLED = "Consent.PeriodicalExpiration.Enabled";
 
     public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
+    public static final String GRANT_HANDLER = "Identity.Extensions.GrantHandler";
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
+    public static final String INTROSPECTION_DATA_PROVIDER = "Identity.Extensions.IntrospectionDataProvider";
     public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
+    public static final String APPEND_CONSENT_ID_TO_ID_TOKEN = "Identity.AppendConsentIdToIdToken";
+    public static final String APPEND_CONSENT_ID_TO_ACCESS_TOKEN = "Identity.AppendConsentIdToAccessToken";
+    public static final String APPEND_CONSENT_ID_TO_TOKEN_INTROSPECT_RESPONSE = "Identity" +
+            ".AppendConsentIdToTokenIntrospectResponse";
     public static final String REMOVE_USER_STORE_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
     public static final String REMOVE_TENANT_DOMAIN_FROM_SUBJECT =
@@ -175,14 +192,14 @@ public class FinancialServicesConstants {
     public static final String TENANT_DOMAIN = "carbon.super";
     public static final String UUID_REGEX =
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+    public static final String CONTENT_TYPE_TAG = "Content-Type";
+    public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    public static final String ACCEPT = "Accept";
+    public static final String COLON = ":";
     public static final String AUTH_HEADER = "Authorization";
     public static final String BEARER_TAG = "Bearer ";
     public static final String BASIC_TAG = "Basic ";
-    public static final String CONTENT_TYPE_TAG = "Content-Type";
-    public static final String JSON_CONTENT_TYPE = "application/json";
-    public static final String COLON = ":";
-    public static final String URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
-    public static final String ACCEPT = "Accept";
     public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final String SCOPE = "scope";
 }
