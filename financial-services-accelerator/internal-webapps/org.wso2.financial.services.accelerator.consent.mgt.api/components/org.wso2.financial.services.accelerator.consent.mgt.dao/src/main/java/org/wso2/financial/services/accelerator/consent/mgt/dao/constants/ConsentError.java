@@ -36,7 +36,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.constants;
  *     <li><strong>CMGT_11025 – 11050</strong>: Consent attribute-specific errors in dao level</li>
  *     <li><strong>CMGT_11050 – 11075</strong>: Consent attribute-specific errors in service level</li>
  *     <li><strong>CMGT_11075 – 11099</strong>: Consent attribute-specific errors in api level</li>
-*     <li><strong>CMGT_12000 – 12025</strong>: Authorization resource-specific errors in database level</li>
+ *     <li><strong>CMGT_12000 – 12025</strong>: Authorization resource-specific errors in database level</li>
  *     <li><strong>CMGT_12025 – 12050</strong>: Authorization resource-specific errors in dao level</li>
  *     <li><strong>CMGT_12050 – 12075</strong>: Authorization resource-specific errors in service level</li>
  *     <li><strong>CMGT_12075 – 12099</strong>: Authorization resource-specific errors in api level</li>
@@ -187,6 +187,8 @@ public enum ConsentError {
     CONSENT_HISTORY_RETRIEVAL_ERROR("CMGT_15100", "Failed to retrieve consent history",
             "A general error occurred while fetching consent history."),
 
+    DATABASE_CONNECTION_ERROR("CMGT_20002", "Database connection failure",
+            "Unbale to connect to the database services."),
     // General
     UNKNOWN_ERROR("CMGT_99998", "An unknown error occurred",
             "An unexpected exception or system error was encountered.");

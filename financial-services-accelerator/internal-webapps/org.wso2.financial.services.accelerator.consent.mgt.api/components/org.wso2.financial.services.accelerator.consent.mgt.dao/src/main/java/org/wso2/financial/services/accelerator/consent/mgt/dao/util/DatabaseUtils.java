@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -41,7 +41,8 @@ public class DatabaseUtils {
      * @throws ConsentMgtException Error when getting a database connection to Consent Management database
      */
     public static Connection getDBConnection() throws
-            ConsentMgtException {
+            ConsentMgtException,
+            SQLException {
 
         return JDBCPersistenceManager.getInstance().getDBConnection();
     }
