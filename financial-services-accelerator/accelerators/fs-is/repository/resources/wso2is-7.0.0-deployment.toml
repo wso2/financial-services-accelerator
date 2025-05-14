@@ -248,8 +248,8 @@ drop_unregistered_scopes = true
 authorize_all_scopes = true
 
 [oauth.endpoints.v2]
-oauth2_consent_page = "${carbon.protocol}://localhost:${carbon.management.port}/fs/authenticationendpoint/oauth2_authz.do"
-oidc_consent_page = "${carbon.protocol}://localhost:${carbon.management.port}/fs/authenticationendpoint/oauth2_consent.do"
+oauth2_consent_page = "${carbon.protocol}://IS_HOSTNAME:${carbon.management.port}/fs/authenticationendpoint/oauth2_authz.do"
+oidc_consent_page = "${carbon.protocol}://IS_HOSTNAME:${carbon.management.port}/fs/authenticationendpoint/oauth2_consent.do"
 
 [oauth.token_generation]
 access_token_type = "self_contained"
@@ -553,7 +553,7 @@ client_id="consent_management_portal_client_id"
 client_secret="consent_management_portal_client_secret"
 
 [financial_services.consent.portal.params]
-identity_server_base_url="https://localhost:9446"
+identity_server_base_url="https://IS_HOSTNAME:9446"
 application_name_param="client_name"
 application_logo_uri_param="software_logo_uri"
 
