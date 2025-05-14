@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 public class ConsentMgtException extends Exception {
 
     private static final long serialVersionUID = -5686395831712095972L;
-    private Response.Status errorCode;
+    private final Response.Status errorCode;
 
     public ConsentMgtException(Response.Status errorCode, Throwable cause) {
 
