@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentMgtException;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
 /**
  * Utility class for database operations.
  */
+@SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class DatabaseUtils {
 
     private static final Log log = LogFactory.getLog(DatabaseUtils.class);
