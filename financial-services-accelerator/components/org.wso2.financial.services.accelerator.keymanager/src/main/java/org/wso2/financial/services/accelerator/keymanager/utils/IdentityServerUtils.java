@@ -36,9 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,11 +47,10 @@ public class IdentityServerUtils {
     public static String getAppIdFromClientId(String clientId) throws FinancialServicesException {
         // Implementation goes here
         try {
-            String queryParam = "?filter=clientId+eq+".concat(clientId);
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL + queryParam;
+            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL;
             URIBuilder builder = new URIBuilder(url);
             builder.setParameter("filter", "clientId+eq+".concat(clientId));
-            HttpGet httpGet = new HttpGet(url);
+            HttpGet httpGet = new HttpGet(builder.build());
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
             String password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD);
@@ -78,8 +75,9 @@ public class IdentityServerUtils {
         String appId = getAppIdFromClientId(clientId);
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL + "/" + appId;
+            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL;
             URIBuilder builder = new URIBuilder(url);
+            builder.setPathSegments(appId);
             HttpGet httpGet = new HttpGet(builder.build());
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
