@@ -133,9 +133,6 @@ export const getConsentsFromAPIForSearch = (searchObj, user, consent) => {
                 } else {
                     searchUrl = searchUrl + "&" + key + "=" + currentUserEmail;
                 }
-            } else if (key === 'clientIds') {
-                searchUrl = searchUrl + "&" + key + "=" +
-                    getClientIdsFromSoftwareProvider(searchObj[key], appInfo);
             } else {
                 searchUrl = searchUrl + "&" + key + "=" + searchObj[key];
             }

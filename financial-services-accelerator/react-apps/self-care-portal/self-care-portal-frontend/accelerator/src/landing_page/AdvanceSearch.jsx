@@ -121,7 +121,7 @@ export const AdvanceSearch = () => {
                             type="text"
                             className="inputBox"
                             id="inputSearch"
-                            placeholder="Software Product"
+                            placeholder="Application"
                             value={softwareId}
                             onChange={(e) => {
                                 // softwareId is converted to clientId in API call
