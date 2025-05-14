@@ -43,7 +43,7 @@ import javax.ws.rs.core.Response;
 // control
 @Path("/consents")
     @Api(description = "the consents API")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-14T10:31:36.523077+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-14T10:48:09.597893+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentsApi {
 ConsentAPIImpl consentApiImpl = new ConsentAPIImpl();
 

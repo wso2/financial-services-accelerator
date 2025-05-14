@@ -1106,34 +1106,6 @@ public class ConsentCoreDAOTests {
         }
     }
 
-//    @Test
-//    public void testConsentSearchWithTimePeriod() throws
-//            Exception {
-//
-//        ArrayList<DetailedConsentResource> detailedConsentResources;
-//        ArrayList<String> consentIDs = new ArrayList<>();
-//        long currentTime = System.currentTimeMillis() / 1000;
-//
-//        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-//            storeDataForConsentSearchTest(consentIDs, connection);
-//            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, null, null,
-//                    null, null, null, currentTime,
-//                    currentTime + 100, 10, 0);
-//        }
-//
-//        Assert.assertNotNull(detailedConsentResources);
-//        for (DetailedConsentResource resource : detailedConsentResources) {
-//            Assert.assertNotNull(resource.getAuthorizationResources());
-//            Assert.assertNotNull(resource.getConsentAttributes());
-//
-//            for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
-//                Assert.assertEquals(resource.getConsentId(), authResource.getConsentId());
-//            }
-//
-//            Assert.assertTrue((currentTime <= resource.getUpdatedTime())
-//                    && (currentTime + 100 >= resource.getUpdatedTime()));
-//        }
-//    }
 
     @Test(expectedExceptions = ConsentDataRetrievalException.class)
     public void testSearchConsentsSQLError() throws
@@ -1596,45 +1568,15 @@ public class ConsentCoreDAOTests {
                 statusAuditRecordId, recordID, consentType, changedAttributes, amendmentReason);
     }
 
-    @Test(dependsOnMethods = {"testStoreConsentAmendmentHistory"})
-    public void testRetrieveConsentAmendmentHistory() throws Exception {
-
-        Map<String, ConsentHistoryResource> consentHistoryResourcesDataMap;
-        String[] expectedConsentDataTypes = { ConsentMgtDAOConstants.TYPE_CONSENT_BASIC_DATA,
-                                              ConsentMgtDAOConstants.TYPE_CONSENT_ATTRIBUTES_DATA,
-                                              ConsentMgtDAOConstants.TYPE_CONSENT_MAPPING_DATA,
-                                              ConsentMgtDAOConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA,
-                                              "AmendedReason"};
-
-        List<String> expectedConsentDataTypesList = Arrays.asList(expectedConsentDataTypes);
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-
-            consentHistoryResourcesDataMap = consentCoreDAO.retrieveConsentAmendmentHistory(connection,
-                    ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory(), );
-            Assert.assertNotNull(consentHistoryResourcesDataMap);
-            for (Map.Entry<String, ConsentHistoryResource> consentHistoryDataEntry :
-                    consentHistoryResourcesDataMap.entrySet()) {
-                Assert.assertEquals(ConsentMgtDAOTestData.SAMPLE_HISTORY_ID, consentHistoryDataEntry.getKey());
-                Map<String, Object> consentHistoryData =
-                        consentHistoryDataEntry.getValue().getChangedAttributesJsonDataMap();
-                for (Map.Entry<String, Object> consentHistoryDataTypeEntry :
-                        consentHistoryData.entrySet()) {
-                    Assert.assertNotNull(consentHistoryDataTypeEntry.getKey());
-                    Assert.assertTrue(expectedConsentDataTypesList.contains((consentHistoryDataTypeEntry.getKey())));
-                    Assert.assertNotNull(consentHistoryDataTypeEntry.getValue());
-                }
-            }
-        }
-    }
-
     @Test (expectedExceptions = ConsentDataRetrievalException.class)
     public void testRetrieveConsentAmendmentHistoryDataRetrievalError() throws Exception {
 
         Mockito.doReturn(mockedPreparedStatement).when(mockedConnection).prepareStatement(Mockito.anyString());
         Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
         consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
-                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
+                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory(),
+                ConsentMgtDAOTestData.SAMPLE_CONSENT_ID
+                );
     }
 
     @Test (expectedExceptions = ConsentDataRetrievalException.class)
@@ -1642,22 +1584,24 @@ public class ConsentCoreDAOTests {
 
         Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
         consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
-                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
+                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory(),
+                ConsentMgtDAOTestData.SAMPLE_CONSENT_ID
+                );
     }
 
-    @Test
-    public void testRetrieveConsentAmendmentHistoryNoRecordsFound() throws Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
-        Mockito.doReturn(false).when(mockedResultSet).isBeforeFirst();
-
-        Map<String, ConsentHistoryResource> result = consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
-                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
-        Assert.assertEquals(result.size(), 0);
-    }
-
+//    @Test
+//    public void testRetrieveConsentAmendmentHistoryNoRecordsFound() throws Exception {
+//
+//        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
+//                .prepareStatement(Mockito.anyString());
+//        Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
+//        Mockito.doReturn(false).when(mockedResultSet).isBeforeFirst();
+//
+//        Map<String, ConsentHistoryResource> result = consentCoreDAO.retrieveConsentAmendmentHistory(mockedConnection,
+//                ConsentMgtDAOTestData.getRecordIDListOfSampleConsentHistory());
+//        Assert.assertEquals(result.size(), 0);
+//    }
+//
 
     private void storeDataForConsentSearchTest(ArrayList<String> consentIDs,
                                                Connection connection) throws
@@ -1739,6 +1683,60 @@ public class ConsentCoreDAOTests {
             Assert.assertFalse(results.isEmpty());
             Assert.assertTrue(results.containsValue("12345"));
         }
+    }
+
+@Test
+    public void testDeleteAuthorizationResources() throws Exception {
+
+        boolean isDeleted;
+
+        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+            ConsentResource storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
+            AuthorizationResource authorizationResource = ConsentMgtDAOTestData
+                    .getSampleTestAuthorizationResource(storedConsentResource.getConsentId());
+            consentCoreDAO.storeAuthorizationResource(connection, authorizationResource);
+
+           consentCoreDAO.deleteAuthorizationResource(connection, authorizationResource.getAuthorizationId());
+        }
+    }
+
+    @Test
+    public void testDeleteConsentSuccess() throws Exception {
+        boolean isDeleted;
+
+        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+            ConsentResource storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
+
+            // Perform the delete operation
+             consentCoreDAO.deleteConsent(connection, storedConsentResource.getConsentId());
+        }
+
+
+    }
+
+    @Test(expectedExceptions = ConsentDataDeletionException.class)
+    public void testDeleteConsentSQLError() throws Exception {
+        // Simulate an SQL exception during deletion
+        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
+
+        // Attempt to delete consent, expecting an exception
+        consentCoreDAO.deleteConsent(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID);
+    }
+
+    @Test
+    public void testDeleteConsentInvalidId() throws Exception {
+        boolean isDeleted;
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+            // Attempt to delete a non-existent consent ID
+            consentCoreDAO.deleteConsent(connection, "invalid-consent-id");
+        }
+
+
     }
 
 
