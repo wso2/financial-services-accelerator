@@ -135,7 +135,8 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
-        Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
+        Assert.assertEquals(errorMessage, "Authorization failure. Authorization information was " +
+                "invalid or missing from your request.")
     }
 
     @Test

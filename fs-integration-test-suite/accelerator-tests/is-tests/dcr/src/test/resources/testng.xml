@@ -17,7 +17,7 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Open Banking - Dynamic Client Registration Flow Test">
+<suite name="WSO2 Open Banking - Dynamic Client Registration Flow Test" parallel="none" preserve-order="true">
     <test name="Dynamic Client Registration Flow" parallel="false" enabled="true" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.is.test.dcr.DCREndToEndFlow"/>
