@@ -56,6 +56,7 @@ import java.util.List;
 public class ServiceExtensionUtils {
 
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
@@ -187,7 +188,6 @@ public class ServiceExtensionUtils {
      */
     public static <T> T mapResponse(String jsonResponse, Class<T> clazz) throws JsonProcessingException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(jsonResponse, clazz);
     }
 
