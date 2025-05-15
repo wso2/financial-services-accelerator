@@ -846,5 +846,6 @@ class JWTGenerator {
         } catch (JSONException e) {
             e.printStackTrace()
         }
+        return payload.toString()
     }
 }
