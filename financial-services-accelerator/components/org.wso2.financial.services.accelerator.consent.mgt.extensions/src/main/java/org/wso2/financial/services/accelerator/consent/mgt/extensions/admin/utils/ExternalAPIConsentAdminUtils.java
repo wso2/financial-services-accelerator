@@ -38,6 +38,8 @@ import java.util.UUID;
  */
 public class ExternalAPIConsentAdminUtils {
 
+    private static final Gson gson = new Gson();
+
     /**
      * Method to call external service for revoke
      *
@@ -50,7 +52,7 @@ public class ExternalAPIConsentAdminUtils {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIAdminConsentRevokeResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIAdminConsentRevokeResponseDTO.class);
     }
 
     /**
@@ -65,7 +67,7 @@ public class ExternalAPIConsentAdminUtils {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH_RESPONSE);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIAdminConsentSearchResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIAdminConsentSearchResponseDTO.class);
     }
 
     /**

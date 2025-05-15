@@ -56,6 +56,7 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
 
     private static final Log log = LogFactory.getLog(FSApplicationManagementListener.class);
     private final IdentityExtensionsDataHolder identityDataHolder = IdentityExtensionsDataHolder.getInstance();
+    private static final Gson gson = new Gson();
 
     @Override
     public int getDefaultOrderId() {
@@ -179,7 +180,7 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
                 updateAuthenticator = true;
             }
             // Checking whether any change have been made in the Local & Outbound Configs of the SP
-            if (!new Gson().toJson(localAndOutboundAuthenticationConfig).equals(new Gson().toJson(existingSP
+            if (!gson.toJson(localAndOutboundAuthenticationConfig).equals(gson.toJson(existingSP
                     .getLocalAndOutBoundAuthenticationConfig()))) {
                 updateAuthenticator = true;
             }

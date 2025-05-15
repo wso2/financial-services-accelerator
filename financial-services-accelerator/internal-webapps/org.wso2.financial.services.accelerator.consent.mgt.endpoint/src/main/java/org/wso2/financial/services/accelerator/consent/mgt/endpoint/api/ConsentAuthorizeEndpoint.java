@@ -88,6 +88,7 @@ public class ConsentAuthorizeEndpoint {
     private static List<ConsentPersistStep> consentPersistSteps = null;
     private static List<ConsentRetrievalStep> consentRetrievalSteps = null;
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+    private static final Gson gson = new Gson();
 
     public ConsentAuthorizeEndpoint() {
 
@@ -225,7 +226,6 @@ public class ConsentAuthorizeEndpoint {
                     ConsentConstants.ERROR_SERVER_ERROR, state);
         }
         ConsentUtils.setCommonDataToResponse(consentData, jsonObject);
-        Gson gson = new Gson();
         String consent = gson.toJson(consentData);
         Map<String, String> authorizeData = new HashMap<>();
         authorizeData.put(consentData.getSessionDataKey(), consent);
