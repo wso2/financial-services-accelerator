@@ -62,6 +62,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     private final ConsentCoreService consentCoreService;
     private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentPersistStep.class);
+    private static final Gson gson = new Gson();
 
     public ExternalAPIConsentPersistStep() {
 
@@ -178,7 +179,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentPersistResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIPreConsentPersistResponseDTO.class);
     }
 
     /**
