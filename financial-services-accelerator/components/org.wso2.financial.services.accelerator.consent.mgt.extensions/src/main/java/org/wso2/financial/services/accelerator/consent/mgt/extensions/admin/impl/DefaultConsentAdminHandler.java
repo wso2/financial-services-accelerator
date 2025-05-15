@@ -27,6 +27,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
@@ -336,6 +337,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     }
 
     @Override
+    @Generated(message = "Ignoring since method contains no logics")
     public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException {
 
         try {

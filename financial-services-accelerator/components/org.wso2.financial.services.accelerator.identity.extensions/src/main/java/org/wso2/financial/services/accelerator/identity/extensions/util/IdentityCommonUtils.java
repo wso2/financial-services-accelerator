@@ -19,8 +19,6 @@
 package org.wso2.financial.services.accelerator.identity.extensions.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +31,7 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
@@ -43,8 +42,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
@@ -201,11 +198,12 @@ public class IdentityCommonUtils {
 
         String authFlowConsentIdSource = (String) identityExtensionsDataHolder.getConfigurationMap()
                 .get(FinancialServicesConstants.AUTH_FLOW_CONSENT_ID_SOURCE);
-        if (IdentityCommonConstants.REQUEST_OBJECT.equals(authFlowConsentIdSource)) {
-            return getConsentIdFromEssentialClaims(oauthAuthzMsgCtx.getAuthorizationReqDTO().getEssentialClaims());
+        if (FinancialServicesConstants.REQUEST_OBJECT.equals(authFlowConsentIdSource)) {
+            return FinancialServicesUtils
+                    .getConsentIdFromEssentialClaims(oauthAuthzMsgCtx.getAuthorizationReqDTO().getEssentialClaims());
         }
 
-        if (IdentityCommonConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
+        if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
             return getConsentIdFromRequestParam(oauthAuthzMsgCtx.getAuthorizationReqDTO());
         }
 
@@ -254,22 +252,6 @@ public class IdentityCommonUtils {
         return null;
     }
 
-    static String getConsentIdFromEssentialClaims(String essentialClaims)
-            throws JsonProcessingException {
-
-        String jsonPath = (String) identityExtensionsDataHolder.getConfigurationMap()
-                .get(FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH);
-
-        if (StringUtils.isBlank(essentialClaims) || StringUtils.isBlank(jsonPath)) {
-            return null; // Return null if input is invalid
-        }
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(essentialClaims);
-        JsonNode targetNode = node.at(jsonPath);
-        return extractConsentIdFromRegex(targetNode.asText());
-    }
-
     private static String getConsentIdFromRequestParam(OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO) {
 
         String key = (String) identityExtensionsDataHolder.getConfigurationMap()
@@ -277,47 +259,11 @@ public class IdentityCommonUtils {
 
         // TODO: need to support other request parameters based on requirements
         switch (key) {
-            case IdentityCommonConstants.SCOPE:
-                return getConsentIdFromScopesRequestParam(oAuth2AuthorizeReqDTO.getScopes());
+            case FinancialServicesConstants.SCOPE:
+                return FinancialServicesUtils.getConsentIdFromScopesRequestParam(oAuth2AuthorizeReqDTO.getScopes());
             default:
                 return null;
         }
-    }
-
-    /**
-     * Get consent ID from the scopes request parameter.
-     * Used to extract the consent ID from the scopes request parameter. Eg: "pis ais:123456 cbpii"
-     *
-     * @param scopes Scopes
-     * @return Consent ID
-     */
-    static String getConsentIdFromScopesRequestParam(String[] scopes) {
-
-        StringBuilder scopesString = new StringBuilder();
-        for (String scope : scopes) {
-            scopesString.append(scope).append(IdentityCommonConstants.SPACE_SEPARATOR);
-        }
-
-        return extractConsentIdFromRegex(scopesString.toString().trim());
-    }
-
-    static String extractConsentIdFromRegex(String value) {
-
-        if (StringUtils.isBlank(value)) {
-            return value;
-        }
-
-        String patternString = (String) identityExtensionsDataHolder.getConfigurationMap()
-                .get(FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN);
-
-        if (StringUtils.isBlank(patternString)) {
-            return value;
-        }
-
-        Pattern pattern = Pattern.compile(patternString);
-
-        Matcher matcher = pattern.matcher(value);
-        return matcher.find() ? matcher.group(1) : null;
     }
 
     /**
@@ -331,7 +277,7 @@ public class IdentityCommonUtils {
                         .get(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ACCESS_TOKEN));
         if (shouldAddConsentIdClaimToTokenResponse) {
             String consentId = getConsentIdFromScopesArray(oAuth2AccessTokenRespDTO.getAuthorizedScopes()
-                    .split(IdentityCommonConstants.SPACE_SEPARATOR));
+                    .split(FinancialServicesConstants.SPACE_SEPARATOR));
             String consentIdClaimName = getConfiguredConsentIdClaimName();
             oAuth2AccessTokenRespDTO.addParameter(consentIdClaimName, consentId);
         }

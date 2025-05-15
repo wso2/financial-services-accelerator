@@ -92,7 +92,6 @@ public class FSAdditionalAttributeFilterTest {
         Mockito.when(configurationService.getConfigurations()).thenReturn(confMap);
         Mockito.when(configurationService.getDCRParamsConfig()).thenReturn(getDcrParamConfigs());
         Mockito.when(configurationService.getDCRValidatorsConfig()).thenReturn(getDcrValidatorConfigs());
-        identityExtensionsDataHolder.setConfigurationService(configurationService);
 
         identityExtensionsDataHolderMockedStatic = Mockito.mockStatic(IdentityExtensionsDataHolder.class);
         identityExtensionsDataHolderMockedStatic.when(IdentityExtensionsDataHolder::getInstance)
@@ -103,6 +102,8 @@ public class FSAdditionalAttributeFilterTest {
         doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
         doReturn(new ArrayList<>()).when(configParserMock).getServiceExtensionTypes();
         configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+        identityExtensionsDataHolder.setConfigurationService(configurationService);
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree("{" +
@@ -206,7 +207,7 @@ public class FSAdditionalAttributeFilterTest {
         Assert.assertNotNull(resultMap);
         Assert.assertTrue(resultMap.contains(IdentityCommonConstants.SOFTWARE_ID));
         Assert.assertTrue(resultMap.contains(IdentityCommonConstants.APPLICATION_TYPE));
-        Assert.assertTrue(resultMap.contains(IdentityCommonConstants.SCOPE));
+        Assert.assertTrue(resultMap.contains(FinancialServicesConstants.SCOPE));
     }
 
     private static Map<String, Map<String, Object>> getDcrParamConfigs() {
