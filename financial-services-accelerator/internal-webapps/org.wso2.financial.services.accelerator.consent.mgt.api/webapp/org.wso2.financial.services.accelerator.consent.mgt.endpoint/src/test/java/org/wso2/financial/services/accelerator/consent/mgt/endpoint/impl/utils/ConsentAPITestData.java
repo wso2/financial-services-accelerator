@@ -71,7 +71,7 @@ public class ConsentAPITestData {
     // get stored consent mapping resource
     public static ConsentMappingResource getStoredConsentMappingResource() {
         ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-        consentMappingResource.setMappingID(testMappingId);
+        consentMappingResource.setMappingId(testMappingId);
         consentMappingResource.setResource(testMappingResource);
 
         return consentMappingResource;

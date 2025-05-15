@@ -28,11 +28,13 @@
   <listener>
     <listener-class>org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.DatabaseInitializer</listener-class>
   </listener>
+
   <servlet>
-    <servlet-name>AccountServiceJAXServlet</servlet-name>
+    <servlet-name>ConsentAPIJAXServlet</servlet-name>
     <servlet-class>
       org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet
     </servlet-class>
+
     <init-param>
       <param-name>service-list-stylesheet</param-name>
       <param-value>servicelist.css</param-value>
@@ -40,15 +42,13 @@
     <init-param>
       <param-name>jersey.config.server.provider.classnames</param-name>
       <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature,
-        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.ConstraintViolationExceptionMapper</param-value>
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions.ConstraintViolationExceptionMapper</param-value>
     </init-param>
-
-
     <init-param>
       <param-name>jaxrs.providers</param-name>
-      <param-value>com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.ConstraintViolationExceptionMapper,
-        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.MismatchedInputExceptionMapper,
-        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.JsonParseExceptionMapper
+      <param-value>com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions.ConstraintViolationExceptionMapper,
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions.MismatchedInputExceptionMapper,
+        org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions.JsonParseExceptionMapper
       </param-value>
     </init-param>
     <init-param>
@@ -70,7 +70,7 @@
 
 
   <servlet-mapping>
-    <servlet-name>AccountServiceJAXServlet</servlet-name>
+    <servlet-name>ConsentAPIJAXServlet</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 

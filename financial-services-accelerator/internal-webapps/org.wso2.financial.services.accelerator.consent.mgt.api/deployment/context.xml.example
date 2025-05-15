@@ -4,6 +4,5 @@
           maxActive="50" maxIdle="30" maxWait="10000"
           username="<USER_NAME>" password="<PASSWORD>"
           driverClassName="com.mysql.cj.jdbc.Driver"
-          url="jdbc:mysql://<DATABASE_HOST>:3306/<DATABASE_NAME"/>
-<!--    <Resources cacheMaxSize="20250" />-->
+          url="<DATABASE_CONNECTION_URI>"/>
 </Context>

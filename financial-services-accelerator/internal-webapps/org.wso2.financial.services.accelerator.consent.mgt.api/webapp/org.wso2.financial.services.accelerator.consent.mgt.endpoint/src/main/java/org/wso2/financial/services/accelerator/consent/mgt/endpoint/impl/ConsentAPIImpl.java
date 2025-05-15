@@ -8,6 +8,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.model.AuthorizationResourceMapper;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.model.ConsentResourceMapper;
+import org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.model.DetailedConsentResourceMapper;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceResponseBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.BulkConsentStatusUpdateResourceRequestBody;
@@ -16,10 +19,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceResponseBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentRevokeRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentStatusUpdateRequestBody;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.AuthorizationResourceMapper;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentResourceMapper;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.DetailedConsentResourceMapper;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.util.ArrayList;
@@ -46,9 +46,7 @@ public class ConsentAPIImpl {
         this.consentCoreService = consentCoreService;
     }
 
-
-
-    /**
+        /**
      * Handles the API request to create a new consent resource.
      * <p>
      * This method processes the payload containing the consent resource, authorization resources,
@@ -90,7 +88,6 @@ public class ConsentAPIImpl {
             return handleConsentMgtException(e);
         }
     }
-
 
     /**
      * Handles the API request to retrieve a specific consent resource by its ID.
@@ -137,7 +134,6 @@ public class ConsentAPIImpl {
             String consentType, String consentStatus
             , String clientId, String userId, long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
         try {
-            //------------ initialize the search query ---------------//
             ArrayList<String> consentIDs = new ArrayList<>();
             ArrayList<String> clientIDs = new ArrayList<>();
             ArrayList<String> consentTypes = new ArrayList<>();
