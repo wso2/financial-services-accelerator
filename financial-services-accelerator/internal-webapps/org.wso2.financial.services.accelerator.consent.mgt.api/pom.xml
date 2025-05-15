@@ -32,7 +32,6 @@
     <modules>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.dao</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.service</module>
-
         <module>webapp/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
 
     </modules>
