@@ -101,7 +101,7 @@ public class ConsentCoreServiceConstants {
             " are not present, cannot proceed";
     public static final String CONSENT_UPDATE_DETAILS_MISSING_ERROR = "Consent ID, userId or newConsentStatus" +
             " is missing. Cannot proceed.";
-    public static final String ACC_MAPPING_DETAILS_MISSING_ERROR = "Authorization ID, accountID/permission map" +
+    public static final String ACC_MAPPING_DETAILS_MISSING_ERROR = "Authorization ID, accountId/permission map" +
             " is not found, cannot proceed";
     public static final String ACC_MAPPING_ID_MISSING_ERROR_MSG = "Account mapping IDs are not provided, " +
             "cannot proceed";

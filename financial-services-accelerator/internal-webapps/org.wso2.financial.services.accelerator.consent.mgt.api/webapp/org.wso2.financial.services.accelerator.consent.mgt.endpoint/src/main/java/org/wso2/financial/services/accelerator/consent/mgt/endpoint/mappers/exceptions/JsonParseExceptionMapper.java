@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers;
+package org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;

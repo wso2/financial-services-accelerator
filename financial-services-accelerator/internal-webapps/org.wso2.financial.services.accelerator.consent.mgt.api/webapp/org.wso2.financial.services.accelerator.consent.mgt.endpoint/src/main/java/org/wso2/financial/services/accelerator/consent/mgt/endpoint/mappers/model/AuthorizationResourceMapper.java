@@ -1,4 +1,4 @@
-package org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils;
+package org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.model;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

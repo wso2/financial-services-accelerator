@@ -419,8 +419,8 @@ public class ConsentCoreServiceUtil {
         for (ConsentMappingResource newMapping : newConsentMappings) {
             JSONObject changedConsentMappingJson = new JSONObject();
             for (ConsentMappingResource oldMapping : oldConsentMappings) {
-                if (newMapping.getMappingID().equals(oldMapping.getMappingID())) {
-                    existingConsentMappingIds.add(newMapping.getMappingID());
+                if (newMapping.getMappingId().equals(oldMapping.getMappingId())) {
+                    existingConsentMappingIds.add(newMapping.getMappingId());
                     if (!newMapping.getMappingStatus().equals(oldMapping.getMappingStatus())) {
                         //store only the mapping-ids with a changed Mapping Status to the consent amendment history
                         changedConsentMappingJson.put(ConsentCoreServiceConstants.MAPPING_STATUS,
@@ -430,12 +430,12 @@ public class ConsentCoreServiceUtil {
                 }
             }
             if (!changedConsentMappingJson.isEmpty()) {
-                changedConsentMappingsJsonDataMap.put(newMapping.getMappingID(), changedConsentMappingJson);
+                changedConsentMappingsJsonDataMap.put(newMapping.getMappingId(), changedConsentMappingJson);
             }
             // store any new mapping-ids in current consent to the immediate past consent amendment history with
             // 'null' value
-            if (!existingConsentMappingIds.contains(newMapping.getMappingID())) {
-                changedConsentMappingsJsonDataMap.put(newMapping.getMappingID(), null);
+            if (!existingConsentMappingIds.contains(newMapping.getMappingId())) {
+                changedConsentMappingsJsonDataMap.put(newMapping.getMappingId(), null);
             }
         }
         return changedConsentMappingsJsonDataMap;
@@ -503,7 +503,7 @@ public class ConsentCoreServiceUtil {
         recordIdsList.add(detailedConsentResource.getConsentId());
 
         for (ConsentMappingResource mappingResource : detailedConsentResource.getConsentMappingResources()) {
-            recordIdsList.add(mappingResource.getMappingID());
+            recordIdsList.add(mappingResource.getMappingId());
         }
         for (AuthorizationResource authResource : detailedConsentResource.getAuthorizationResources()) {
             recordIdsList.add(authResource.getAuthorizationId());
@@ -581,10 +581,10 @@ public class ConsentCoreServiceUtil {
                             currentConsentResource.getConsentMappingResources();
                     ArrayList<ConsentMappingResource> consentMappingsHistory = new ArrayList<>();
                     for (ConsentMappingResource mapping : consentMappings) {
-                        String mappingID = mapping.getMappingID();
-                        if (changedConsentMappingsDataMap.containsKey(mappingID)) {
+                        String mappingId = mapping.getMappingId();
+                        if (changedConsentMappingsDataMap.containsKey(mappingId)) {
                             JSONObject changedValuesJSON = parseChangedAttributeJsonString(
-                                    changedConsentMappingsDataMap.get(mappingID).toString());
+                                    changedConsentMappingsDataMap.get(mappingId).toString());
                             if (changedValuesJSON.isEmpty()) {
                                 //Skip setting the mapping to consent history if the value is null
                                 continue;

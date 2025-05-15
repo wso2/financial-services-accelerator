@@ -134,11 +134,11 @@ public class ConsentUtils {
         for (ConsentMappingResource resource : mappingArray) {
             JSONObject resourceJSON = new JSONObject();
             resourceJSON.put(ConsentConstant.MAPPING_ID,
-                    resource.getMappingID());
+                    resource.getMappingId());
             resourceJSON.put(ConsentConstant.AUTH_ID,
                     resource.getAuthorizationId());
             resourceJSON.put(ConsentConstant.ACCOUNT_ID,
-                    resource.getAccountID());
+                    resource.getAccountId());
             resourceJSON.put(ConsentConstant.PERMISSION,
                     resource.getPermission());
             resourceJSON.put(ConsentConstant.MAPPING_STATUS,

@@ -273,7 +273,7 @@ public class ConsentMgtServiceTestData {
         ConsentMappingResource consentMappingResource = new ConsentMappingResource(authorizationId,
                 ConsentMgtServiceTestData.SAMPLE_RESOURCE,
                 ConsentMgtServiceTestData.SAMPLE_MAPPING_STATUS);
-        consentMappingResource.setMappingID(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID);
+        consentMappingResource.setMappingId(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID);
 
         return consentMappingResource;
     }
@@ -283,10 +283,10 @@ public class ConsentMgtServiceTestData {
 
         ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-        consentMappingResource.setAccountID(ConsentMgtServiceTestData.SAMPLE_ACCOUNT_ID);
+        consentMappingResource.setAccountId(ConsentMgtServiceTestData.SAMPLE_ACCOUNT_ID);
         consentMappingResource.setResource(ConsentMgtServiceTestData.SAMPLE_RESOURCE);
         consentMappingResource.setMappingStatus(ConsentMgtServiceTestData.SAMPLE_MAPPING_STATUS);
-        consentMappingResource.setMappingID(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID);
+        consentMappingResource.setMappingId(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID);
 
         consentMappingResources.add(consentMappingResource);
         consentMappingResources.add(consentMappingResource);
@@ -298,7 +298,7 @@ public class ConsentMgtServiceTestData {
     public static ConsentMappingResource getSampleTestInactiveConsentMappingResource(String authorizationId) {
 
         ConsentMappingResource consentMappingResource = getSampleTestConsentMappingResource(authorizationId);
-        consentMappingResource.setMappingID(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID_2);
+        consentMappingResource.setMappingId(ConsentMgtServiceTestData.SAMPLE_MAPPING_ID_2);
         consentMappingResource.setResource(ConsentMgtServiceTestData.SAMPLE_RESOURCE);
         consentMappingResource.setMappingStatus(ConsentMgtServiceTestData.SAMPLE_NEW_MAPPING_STATUS);
 
@@ -328,10 +328,10 @@ public class ConsentMgtServiceTestData {
                 .getSampleStoredTestAuthorizationResource());
 
         ConsentMappingResource mappingResource1 = new ConsentMappingResource();
-        mappingResource1.setAccountID(UUID.randomUUID().toString());
+        mappingResource1.setAccountId(UUID.randomUUID().toString());
 
         ConsentMappingResource mappingResource2 = new ConsentMappingResource();
-        mappingResource2.setAccountID(UUID.randomUUID().toString());
+        mappingResource2.setAccountId(UUID.randomUUID().toString());
 
         ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         consentMappingResources.add(mappingResource1);
@@ -345,7 +345,7 @@ public class ConsentMgtServiceTestData {
     public static ConsentMappingResource getSampleStoredTestConsentMappingResource(String authorizationId) {
 
         ConsentMappingResource consentMappingResource = getSampleTestConsentMappingResource(authorizationId);
-        consentMappingResource.setMappingID(UUID.randomUUID().toString());
+        consentMappingResource.setMappingId(UUID.randomUUID().toString());
 
         return consentMappingResource;
     }
@@ -378,7 +378,7 @@ public class ConsentMgtServiceTestData {
                                                                                     String mappingId) {
 
         ConsentMappingResource consentMappingResource = getSampleTestConsentMappingResource(authorizationId);
-        consentMappingResource.setMappingID(mappingId);
+        consentMappingResource.setMappingId(mappingId);
 
         return consentMappingResource;
     }

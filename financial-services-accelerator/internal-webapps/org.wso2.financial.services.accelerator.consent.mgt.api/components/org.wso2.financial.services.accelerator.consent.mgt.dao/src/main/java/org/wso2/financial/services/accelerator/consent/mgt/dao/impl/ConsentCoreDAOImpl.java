@@ -123,7 +123,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public ConsentResource getConsentResource(Connection connection, String consentId)
+    public ConsentResource getConsentResource(Connection connection, String consentId, String orgInfo)
             throws ConsentDataRetrievalException {
 
         String getConsentResourcePrepStatement = sqlStatements.getGetConsentPreparedStatement();
@@ -134,6 +134,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.debug("Setting parameters to prepared statement to retrieve consent resource");
 
             getConsentResourcePreparedStmt.setString(1, consentId);
+            getConsentResourcePreparedStmt.setString(2, orgInfo);
 
             try (ResultSet resultSet = getConsentResourcePreparedStmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -195,6 +196,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
+    //TODO : have to remove after implementing the new consent history feature. ( used in
+    // previous history storing implementation
     @Override
     public DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId)
             throws ConsentDataRetrievalException {
@@ -495,7 +498,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public ConsentAttributes getConsentAttributes(Connection connection, String consentId)
+    public ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgInfo)
             throws  ConsentDataRetrievalException {
 
         Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
@@ -507,6 +510,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.debug("Setting parameters to prepared statement to retrieve consent attributes");
 
             getConsentAttributesPreparedStmt.setString(1, consentId);
+            getConsentAttributesPreparedStmt.setString(2, orgInfo);
 
             try (ResultSet resultSet = getConsentAttributesPreparedStmt.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
@@ -535,7 +539,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public ConsentAttributes getConsentAttributes(Connection connection, String consentId,
+    public ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgInfo,
                                                   ArrayList<String> consentAttributeKeys)
             throws ConsentDataRetrievalException {
 
@@ -548,6 +552,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.debug("Setting parameters to prepared statement to retrieve consent attributes");
 
             getConsentAttributesPreparedStmt.setString(1, consentId);
+            getConsentAttributesPreparedStmt.setString(2, orgInfo);
 
             try (ResultSet resultSet = getConsentAttributesPreparedStmt.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
@@ -586,7 +591,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public Map<String, String> getConsentAttributesByName(Connection connection, String attributeName)
+    public Map<String, String> getConsentAttributesByKey(Connection connection, String attributeKey)
             throws  ConsentDataRetrievalException {
 
         Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
@@ -597,9 +602,9 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Setting parameters to prepared statement to retrieve consent attributes" +
-                        " for the provided key: %s", attributeName.replaceAll("[\r\n]", "")));
+                        " for the provided key: %s", attributeKey.replaceAll("[\r\n]", "")));
             }
-            getConsentAttributesByNamePreparedStmt.setString(1, attributeName);
+            getConsentAttributesByNamePreparedStmt.setString(1, attributeKey);
 
             try (ResultSet resultSet = getConsentAttributesByNamePreparedStmt.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
@@ -610,7 +615,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 }
             } catch (SQLException e) {
                 String errorMessage = String.format("Error occurred while retrieving consent attributes for " +
-                        "attribute key: %s", attributeName);
+                        "attribute key: %s", attributeKey);
                 log.error(errorMessage.replaceAll("[\r\n]", ""), e);
                 throw new ConsentDataRetrievalException(errorMessage, e);
             }
@@ -622,7 +627,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public ArrayList<String> getConsentIdByConsentAttributeNameAndValue(Connection connection, String attributeName,
+    public ArrayList<String> getConsentIdByConsentAttributeKeyAndValue(Connection connection, String attributeKey,
                                                                         String attributeValue)
             throws ConsentDataRetrievalException {
 
@@ -635,10 +640,10 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Setting parameters to prepared statement to retrieve consent id for the" +
-                                " provided key: %s and value: %s", attributeName.replaceAll("[\r\n]", ""),
+                                " provided key: %s and value: %s", attributeKey.replaceAll("[\r\n]", ""),
                         attributeValue.replaceAll("[\r\n]", "")));
             }
-            getConsentAttributesByNamePreparedStmt.setString(1, attributeName);
+            getConsentAttributesByNamePreparedStmt.setString(1, attributeKey);
             getConsentAttributesByNamePreparedStmt.setString(2, attributeValue);
 
             try (ResultSet resultSet = getConsentAttributesByNamePreparedStmt.executeQuery()) {
@@ -649,13 +654,13 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("No records are found for the provided attribute key : %s " +
-                                        "and value: %s", attributeName.replaceAll("[\r\n]", ""),
+                                        "and value: %s", attributeKey.replaceAll("[\r\n]", ""),
                                 attributeValue.replaceAll("[\r\n]", "")));
                     }
                 }
             } catch (SQLException e) {
                 String errorMessage = String.format("Error occurred while retrieving consent " +
-                        "attributes for attribute key: %s  and value: %s", attributeName, attributeValue);
+                        "attributes for attribute key: %s  and value: %s", attributeKey, attributeValue);
                 log.error(errorMessage.replaceAll("[\r\n]", ""), e);
                 throw new ConsentDataRetrievalException(errorMessage, e);
             }
@@ -1346,7 +1351,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 if (authIds != null && authIds.length > index) {
                     consentMappingResource.setAuthorizationId(authIds[index]);
                 }
-                consentMappingResource.setMappingID(mappingIds[index]);
+                consentMappingResource.setMappingId(mappingIds[index]);
 
                 if (mappingStatues != null && mappingStatues.length > index) {
                     consentMappingResource.setMappingStatus(mappingStatues[index]);

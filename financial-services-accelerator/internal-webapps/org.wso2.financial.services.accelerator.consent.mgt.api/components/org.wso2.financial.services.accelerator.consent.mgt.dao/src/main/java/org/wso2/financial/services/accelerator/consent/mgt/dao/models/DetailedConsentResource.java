@@ -251,7 +251,7 @@ public class DetailedConsentResource {
         if (this.consentMappingResources != null) {
             for (ConsentMappingResource mapping : this.consentMappingResources) {
                 ConsentMappingResource mappingClone =  new ConsentMappingResource();
-                mappingClone.setMappingID(mapping.getMappingID());
+                mappingClone.setMappingId(mapping.getMappingId());
                 mappingClone.setResource(mapping.getResource());
                 mappingClone.setMappingStatus(mapping.getMappingStatus());
                 copiedMappingResources.add(mappingClone); // assuming .clone() exists

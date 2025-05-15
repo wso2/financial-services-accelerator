@@ -327,9 +327,9 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
                 if (authIds != null && authIds.length > index) {
                     consentMappingResource.setAuthorizationId(authIds[index]);
                 }
-                consentMappingResource.setMappingID(mappingIds[index]);
+                consentMappingResource.setMappingId(mappingIds[index]);
                 if (accountIds != null && accountIds.length > index) {
-                    consentMappingResource.setAccountID(accountIds[index]);
+                    consentMappingResource.setAccountId(accountIds[index]);
                 }
                 if (mappingStatues != null && mappingStatues.length > index) {
                     consentMappingResource.setMappingStatus(mappingStatues[index]);

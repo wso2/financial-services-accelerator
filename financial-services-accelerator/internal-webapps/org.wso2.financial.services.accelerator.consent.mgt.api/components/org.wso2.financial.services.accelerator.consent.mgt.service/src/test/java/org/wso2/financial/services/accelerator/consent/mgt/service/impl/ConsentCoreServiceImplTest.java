@@ -604,7 +604,6 @@ public class ConsentCoreServiceImplTest {
     }
 
 
-
     @Test
     public void testGetDetailedConsent() throws
             Exception {
@@ -635,8 +634,6 @@ public class ConsentCoreServiceImplTest {
 
 
     }
-
-
 
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -886,11 +883,11 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentResource())
-                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString(), any());
         doReturn(ConsentMgtServiceTestData
                 .getSampleTestConsentAttributesObject(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID))
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString(),
-                        any());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(),
+                        any(), any());
         ConsentAttributes consentAttributes =
                 consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                         ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
@@ -908,6 +905,7 @@ public class ConsentCoreServiceImplTest {
                 consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                         ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
     }
+
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testGetConsentAttributesWithoutConsentID() throws
             Exception {
@@ -921,7 +919,7 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), anyString());
         consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                 new ArrayList<>());
     }
@@ -941,9 +939,9 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentResource())
-                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentResource(any(), any(), any());
         doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString(), any());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString(), any(), any());
         consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
     }
@@ -953,10 +951,10 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentResource())
-                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString(), any());
         doReturn(ConsentMgtServiceTestData
                 .getSampleTestConsentAttributesObject(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID))
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), any());
         ConsentAttributes consentAttributes =
                 consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID);
         Assert.assertNotNull(consentAttributes);
@@ -967,7 +965,7 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), anyString());
         consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID);
     }
 
@@ -983,10 +981,10 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString(), any());
         doReturn(ConsentMgtServiceTestData
                 .getSampleTestConsentAttributesObject(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID))
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), any(), any());
         ConsentAttributes consentAttributes =
                 consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID);
         Assert.assertNotNull(consentAttributes);
@@ -997,9 +995,9 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentResource())
-                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString(), any());
         doThrow(ConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
-                .getConsentAttributes(any(), anyString());
+                .getConsentAttributes(any(), any(), any());
         ConsentAttributes consentAttributes =
                 consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID);
         Assert.assertNotNull(consentAttributes);
@@ -1014,7 +1012,7 @@ public class ConsentCoreServiceImplTest {
                 anyString(), anyMap());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentAttributesObject(
                 ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID))
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), anyString());
         consentCoreServiceImpl.updateConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
     }
@@ -1061,7 +1059,7 @@ public class ConsentCoreServiceImplTest {
                 .updateConsentAttributes(any(), anyString(), anyMap());
         doReturn(ConsentMgtServiceTestData.getSampleTestConsentAttributesObject(
                 ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID))
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString());
+                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), anyString());
         consentCoreServiceImpl.updateConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
     }
@@ -1073,7 +1071,7 @@ public class ConsentCoreServiceImplTest {
         doNothing().when(mockedConsentCoreDAO).updateConsentAttributes(any(),
                 anyString(), anyMap());
         doThrow(ConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
-                .getConsentAttributes(any(), anyString());
+                .getConsentAttributes(any(), any(), any());
         consentCoreServiceImpl.updateConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
     }
@@ -1437,7 +1435,6 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
         // Call the method
@@ -1638,7 +1635,8 @@ public class ConsentCoreServiceImplTest {
 
 
     @Test(expectedExceptions = ConsentMgtException.class)
-    public void testUpdateAuthorizatationResource_SQLException() throws Exception {
+    public void testUpdateAuthorizatationResource_SQLException() throws
+            Exception {
 
         // Mock the static DatabaseUtils.getDBConnection() to throw SQLException
 
@@ -1694,18 +1692,19 @@ public class ConsentCoreServiceImplTest {
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetAuthorizationResource_SQLException() throws Exception {
+    public void testGetAuthorizationResource_SQLException() throws
+            Exception {
 
         // Mock the static DatabaseUtils.getDBConnection() to throw SQLException
 
 
-            databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
-                    .thenThrow(new SQLException("DB connection failed"));
+        databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
+                .thenThrow(new SQLException("DB connection failed"));
 
 
-            // Call method - should throw ConsentMgtException
-            consentCoreServiceImpl.getAuthorizationResource(ConsentMgtServiceTestData.AUTHORIZATION_ID
-                    , ConsentMgtServiceTestData.ORG_INFO);
+        // Call method - should throw ConsentMgtException
+        consentCoreServiceImpl.getAuthorizationResource(ConsentMgtServiceTestData.AUTHORIZATION_ID
+                , ConsentMgtServiceTestData.ORG_INFO);
     }
 
 }

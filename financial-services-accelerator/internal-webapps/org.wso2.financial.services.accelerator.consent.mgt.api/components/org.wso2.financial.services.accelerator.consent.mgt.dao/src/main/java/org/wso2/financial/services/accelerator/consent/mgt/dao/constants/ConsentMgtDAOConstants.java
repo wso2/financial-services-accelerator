@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.constants;
 
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -93,88 +92,86 @@ public class ConsentMgtDAOConstants {
     public static final String TABLE_FS_CONSENT_FILE = "FS_CONSENT_FILE";
 
     //Numbers are assigned to each consent DB table & used as the reference for each table when storing CA history
-    public static final Map<String, String> TABLES_MAP = new HashMap<>();
+    public static final Map<String, String> TABLES_MAP = Map.of(
+        TABLE_FS_CONSENT, "01",
+        TABLE_FS_CONSENT_AUTH_RESOURCE, "02",
+        TABLE_FS_CONSENT_MAPPING, "03",
+        TABLE_FS_CONSENT_ATTRIBUTE, "04",
+        TABLE_FS_CONSENT_FILE, "05"
+    );
 
-
-    static {
-        TABLES_MAP.put(TABLE_FS_CONSENT, "01");
-        TABLES_MAP.put(TABLE_FS_CONSENT_AUTH_RESOURCE, "02");
-        TABLES_MAP.put(TABLE_FS_CONSENT_MAPPING, "03");
-        TABLES_MAP.put(TABLE_FS_CONSENT_ATTRIBUTE, "04");
-        TABLES_MAP.put(TABLE_FS_CONSENT_FILE, "05");
-    }
-
-    public static final Map<String, String> COLUMNS_MAP = new HashMap<>();
-
-    static {
-        COLUMNS_MAP.put(CONSENT_IDS, "CONSENT_ID");
-        COLUMNS_MAP.put(CLIENT_IDS, "CLIENT_ID");
-        COLUMNS_MAP.put(CONSENT_TYPES, "CONSENT_TYPE");
-        COLUMNS_MAP.put(ORG_INFO, "ORG_INFO");
-        COLUMNS_MAP.put(CONSENT_STATUSES, "CURRENT_STATUS");
-        COLUMNS_MAP.put(USER_IDS, "OCAR.USER_ID");
-    }
-
+    public static final Map<String, String> COLUMNS_MAP = Map.of(
+    CONSENT_IDS, "CONSENT_ID",
+    CLIENT_IDS, "CLIENT_ID",
+    CONSENT_TYPES, "CONSENT_TYPE",
+    ORG_INFO, "ORG_INFO",
+    CONSENT_STATUSES, "CURRENT_STATUS",
+    USER_IDS, "OCAR.USER_ID"
+);
     //Error Messages
-    public static final String CONSENT_RESOURCE_STORE_ERROR_MSG = "Error occurred while storing consent resource in " +
-            "the database";
-    public static final String ERROR_TO_STORE_ERROR_MSG = "Failed to store the consent resource in the database.";
-    public static final String NO_RECORDS_FOUND_ERROR_MSG = "No records are found for the given inputs";
-    public static final String CONSENT_RESOURCE_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent " +
-            "resource from the database";
-    public static final String CONSENT_WITH_ATTRIBUTES_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent " +
-            "resource with consent attributes from the database for the given consent ID";
-    public static final String DETAILED_CONSENT_RESOURCE_RETRIEVE_ERROR_MSG = "Error occurred while retrieving " +
-            "detailed consent resource from the database";
-    public static final String CONSENT_STATUS_UPDATE_ERROR_MSG = "Error occurred while updating consent status in the" +
-            " database";
-    public static final String AUTHORIZATION_RESOURCE_STORE_ERROR_MSG = "Error occurred while storing authorization " +
-            "resource in the database";
-    public static final String CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG = "Error occurred while retrieving " +
-            "consent authorization resource from the database";
-    public static final String CONSENT_AUTHORIZATION_STATUS_UPDATE_ERROR_MSG = "Error occurred while updating " +
-            "authorization status in the database";
-    public static final String CONSENT_AUTHORIZATION_USER_UPDATE_ERROR_MSG = "Error occurred while updating " +
-            "authorization user in the database";
-    public static final String CONSENT_MAPPING_RESOURCE_STORE_ERROR_MSG = "Error occurred while storing consent " +
-            "mapping resource in the database";
-    public static final String CONSENT_MAPPING_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent mapping " +
-            "resources from the database";
-    public static final String CONSENT_MAPPING_STATUS_UPDATE_ERROR_MSG = "Error occurred while updating consent " +
-            "mapping status in the database";
-    public static final String CONSENT_ATTRIBUTES_STORE_ERROR_MSG = "Error occurred while storing consent attributes ";
-    public static final String CONSENT_ATTRIBUTES_STORE_DATABASE_ERROR_MSG = "Error occurred while storing consent " +
-            "attributes " +
-            "in the database";
-    public static final String CONSENT_ATTRIBUTES_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent " +
-            "attributes from the database for the given consent ID";
-    public static final String CONSENT_ATTRIBUTES_KEYS_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent " +
-            "attributes from the database for the given consent ID and attribute keys";
-    public static final String CONSENT_ID_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent id from the " +
-            "database for the given attribute key and attribute value";
-    public static final String CONSENT_ATTRIBUTES_UPDATE_ERROR_MSG = "Error occurred while updating consent " +
-            "attributes in the database";
-    public static final String CONSENT_ATTRIBUTES_DELETE_ERROR_MSG = "Error occurred while deleting consent " +
-            "attributes in the database";
-    public static final String CONSENT_FILE_STORE_ERROR_MSG = "Error occurred while storing consent file resource in " +
-            "the database";
-    public static final String CONSENT_FILE_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent file " +
-            "resource from the database";
-    public static final String CONSENT_SEARCH_ERROR_MSG = "Error occurred while searching consents";
-    public static final String AUDIT_RECORD_STORE_ERROR_MSG = "Error occurred while storing consent status audit " +
-            "record in the database";
-    public static final String AUDIT_RECORDS_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent status " +
-            "audit records";
-    public static final String CONSENT_AMENDMENT_HISTORY_RETRIEVE_ERROR_MSG = "Error occurred while retrieving " +
-            "consent amendment history records from the database for the given consent ID";
-    public static final Object CONSENT_DELETE_ERROR_MSG =
-            "Error occurred while deleting consent resource from the database";
-    public static final String CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG = "Error occurred while updating " +
-            "consent authorization resource in the database";
-
-    public static final String CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG = "Error occurred while deleting " +
-            "consent authorization resource from the database";
-
-    // error codes
+   public static final String CONSENT_RESOURCE_STORE_ERROR_MSG =
+                    "Error occurred while storing consent resource in the database";
+            public static final String ERROR_TO_STORE_ERROR_MSG =
+                    "Failed to store the consent resource in the database.";
+            public static final String NO_RECORDS_FOUND_ERROR_MSG =
+                    "No records are found for the given inputs";
+            public static final String CONSENT_RESOURCE_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent resource from the database";
+            public static final String CONSENT_WITH_ATTRIBUTES_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent resource with consent attributes from the database for " +
+                            "the given consent ID";
+            public static final String DETAILED_CONSENT_RESOURCE_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving detailed consent resource from the database";
+            public static final String CONSENT_STATUS_UPDATE_ERROR_MSG =
+                    "Error occurred while updating consent status in the database";
+            public static final String AUTHORIZATION_RESOURCE_STORE_ERROR_MSG =
+                    "Error occurred while storing authorization resource in the database";
+            public static final String CONSENT_AUTHORIZATION_RESOURCE_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent authorization resource from the database";
+            public static final String CONSENT_AUTHORIZATION_STATUS_UPDATE_ERROR_MSG =
+                    "Error occurred while updating authorization status in the database";
+            public static final String CONSENT_AUTHORIZATION_USER_UPDATE_ERROR_MSG =
+                    "Error occurred while updating authorization user in the database";
+            public static final String CONSENT_MAPPING_RESOURCE_STORE_ERROR_MSG =
+                    "Error occurred while storing consent mapping resource in the database";
+            public static final String CONSENT_MAPPING_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent mapping resources from the database";
+            public static final String CONSENT_MAPPING_STATUS_UPDATE_ERROR_MSG =
+                    "Error occurred while updating consent mapping status in the database";
+            public static final String CONSENT_ATTRIBUTES_STORE_ERROR_MSG =
+                    "Error occurred while storing consent attributes";
+            public static final String CONSENT_ATTRIBUTES_STORE_DATABASE_ERROR_MSG =
+                    "Error occurred while storing consent attributes in the database";
+            public static final String CONSENT_ATTRIBUTES_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent attributes from the database for the given consent ID";
+            public static final String CONSENT_ATTRIBUTES_KEYS_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent attributes from the database for the given consent ID " +
+                            "and attribute keys";
+            public static final String CONSENT_ID_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent id from the database for the given attribute key and " +
+                            "attribute value";
+            public static final String CONSENT_ATTRIBUTES_UPDATE_ERROR_MSG =
+                    "Error occurred while updating consent attributes in the database";
+            public static final String CONSENT_ATTRIBUTES_DELETE_ERROR_MSG =
+                    "Error occurred while deleting consent attributes in the database";
+            public static final String CONSENT_FILE_STORE_ERROR_MSG =
+                    "Error occurred while storing consent file resource in the database";
+            public static final String CONSENT_FILE_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent file resource from the database";
+            public static final String CONSENT_SEARCH_ERROR_MSG =
+                    "Error occurred while searching consents";
+            public static final String AUDIT_RECORD_STORE_ERROR_MSG =
+                    "Error occurred while storing consent status audit record in the database";
+            public static final String AUDIT_RECORDS_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent status audit records";
+            public static final String CONSENT_AMENDMENT_HISTORY_RETRIEVE_ERROR_MSG =
+                    "Error occurred while retrieving consent amendment history records from the database for the" +
+                            " given consent ID";
+            public static final Object CONSENT_DELETE_ERROR_MSG =
+                    "Error occurred while deleting consent resource from the database";
+            public static final String CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG =
+                    "Error occurred while updating consent authorization resource in the database";
+            public static final String CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG =
+                    "Error occurred while deleting consent authorization resource from the database";
 
 }

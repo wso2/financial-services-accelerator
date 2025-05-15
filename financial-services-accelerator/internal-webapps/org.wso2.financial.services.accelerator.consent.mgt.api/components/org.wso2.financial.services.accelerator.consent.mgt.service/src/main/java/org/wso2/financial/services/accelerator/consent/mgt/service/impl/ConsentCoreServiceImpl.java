@@ -627,7 +627,9 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
 
             try {
-                ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId);
+                //TODO : pass orgInfo
+                ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId,
+                        null);
                 if (retrievedConsentResource == null) {
                     String errorMessage = String.format("Consent ID  : %s is not available in the database",
                             consentId.replaceAll("[\r\n]", ""));
@@ -644,7 +646,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     log.debug(String.format("Retrieving consent attributes for given keys for consent ID: %s",
                             consentId.replaceAll("[\r\n]", "")));
                 }
-                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId,
+                //TODO : pass orgInfo
+                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId, null,
                         consentAttributeKeys);
 
                 // Commit transactions
@@ -678,7 +681,9 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
 
             try {
-                ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId);
+                //TODO : pass orgInfo
+                ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId,
+                        null);
                 if (retrievedConsentResource == null) {
                     String errorMessage = String.format("Consent ID  : %s is not available in the database",
                             consentId.replaceAll("[\r\n]", ""));
@@ -695,7 +700,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     log.debug(String.format("Retrieving consent attributes for consent ID: %s",
                             consentId.replaceAll("[\r\n]", "")));
                 }
-                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId);
+                //TODO : pass orgInfo
+                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId, null);
 
                 // Commit transactions
                 DatabaseUtils.commitTransaction(connection);
@@ -737,7 +743,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     }
                 }
                 consentCoreDAO.updateConsentAttributes(connection, consentId, consentAttributes);
-                updatedAttributes = consentCoreDAO.getConsentAttributes(connection, consentId);
+                //TODO : pass orgInfo
+                updatedAttributes = consentCoreDAO.getConsentAttributes(connection, consentId, null);
 
                 // Commit transactions
                 DatabaseUtils.commitTransaction(connection);
