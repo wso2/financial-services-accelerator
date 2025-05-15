@@ -259,7 +259,7 @@ public class ConsentMgtDAOTestData {
             for (int j = 0; j < 2; j++) {
                 ConsentMappingResource consentMappingResource = new ConsentMappingResource();
                 consentMappingResource.setAuthorizationId(authIDs.get(i));
-                consentMappingResource.setAccountID(SAMPLE_ACCOUNT_ID);
+                consentMappingResource.setAccountId(SAMPLE_ACCOUNT_ID);
                 consentMappingResource.setResource(SAMPLE_RESOURCE);
                 consentMappingResource.setMappingStatus(SAMPLE_MAPPING_STATUS);
                 consentMappingResources.add(consentMappingResource);
@@ -311,7 +311,7 @@ public class ConsentMgtDAOTestData {
     }
 
     public static ConsentMappingResource getSampleTestConsentMappingResourceWithResource(String authorizationId,
-                                                                                         String accountID) {
+                                                                                         String accountId) {
 
         ConsentMappingResource consentMappingResource = new ConsentMappingResource();
         consentMappingResource.setAuthorizationId(authorizationId);

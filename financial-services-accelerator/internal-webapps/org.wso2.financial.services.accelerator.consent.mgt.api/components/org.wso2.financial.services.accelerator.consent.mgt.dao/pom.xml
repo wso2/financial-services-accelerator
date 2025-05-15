@@ -222,35 +222,35 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>
-                            ${project.artifactId}
-                        </Bundle-SymbolicName>
-                        <Private-Package>
-                            org.wso2.financial.services,accelerator.consent.mgt.dao.internal
-                        </Private-Package>
-                        <Import-Package>
-                            org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
-                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
-                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",
-                            org.apache.commons.lang3;version="${commons-lang3.version}",
-                            org.apache.commons.collections4;version="${commons-collections.version}",
-                            org.apache.commons.logging;version="${commons.logging.version}",
-                            net.minidev.json; version="${json-smart.version}"
-                        </Import-Package>
-                        <Export-Package>
-                            !org.wso2.financial.services,accelerator.consent.mgt.dao.internal,
-                            org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",
-                        </Export-Package>
-                        <_dsannotations>*</_dsannotations>
-                    </instructions>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.felix</groupId>-->
+<!--                <artifactId>maven-bundle-plugin</artifactId>-->
+<!--                <extensions>true</extensions>-->
+<!--                <configuration>-->
+<!--                    <instructions>-->
+<!--                        <Bundle-SymbolicName>-->
+<!--                            ${project.artifactId}-->
+<!--                        </Bundle-SymbolicName>-->
+<!--                        <Private-Package>-->
+<!--                            org.wso2.financial.services,accelerator.consent.mgt.dao.internal-->
+<!--                        </Private-Package>-->
+<!--                        <Import-Package>-->
+<!--                            org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",-->
+<!--                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",-->
+<!--                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",-->
+<!--                            org.apache.commons.lang3;version="${commons-lang3.version}",-->
+<!--                            org.apache.commons.collections4;version="${commons-collections.version}",-->
+<!--                            org.apache.commons.logging;version="${commons.logging.version}",-->
+<!--                            net.minidev.json; version="${json-smart.version}"-->
+<!--                        </Import-Package>-->
+<!--                        <Export-Package>-->
+<!--                            !org.wso2.financial.services,accelerator.consent.mgt.dao.internal,-->
+<!--                            org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",-->
+<!--                        </Export-Package>-->
+<!--                        <_dsannotations>*</_dsannotations>-->
+<!--                    </instructions>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>

@@ -41,7 +41,7 @@ public class ConsentMgtCommonDBQueries {
 
     public String getGetConsentPreparedStatement() {
 
-        return "SELECT * FROM FS_CONSENT WHERE CONSENT_ID = ?";
+        return "SELECT * FROM FS_CONSENT WHERE CONSENT_ID = ? AND ORG_INFO = COALESCE(?, ORG_INFO)";
     }
 
     public String getGetConsentWithConsentAttributesPreparedStatement() {
@@ -126,7 +126,10 @@ public class ConsentMgtCommonDBQueries {
 
     public String getGetConsentAttributesPreparedStatement() {
 
-        return "SELECT * FROM FS_CONSENT_ATTRIBUTE WHERE CONSENT_ID = ?";
+        return "SELECT ca.*\n" +
+                "FROM FS_CONSENT_ATTRIBUTE ca\n" +
+                "JOIN FS_CONSENT c ON ca.CONSENT_ID = c.CONSENT_ID\n" +
+                "WHERE ca.CONSENT_ID = ? AND c.ORG_INFO = COALESCE(?, c.ORG_INFO);";
     }
 
     public String getGetConsentAttributesByNamePreparedStatement() {
