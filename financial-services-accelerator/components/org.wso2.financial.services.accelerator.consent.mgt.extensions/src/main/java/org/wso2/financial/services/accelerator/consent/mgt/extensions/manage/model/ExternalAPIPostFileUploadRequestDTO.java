@@ -23,12 +23,12 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 public class ExternalAPIPostFileUploadRequestDTO {
 
     private String consentId;
-    private String fileUploadedCreatedTime;
+    private String fileUploadCreatedTime;
 
 
-    public ExternalAPIPostFileUploadRequestDTO(String consentId, String fileUploadedCreatedTime) {
+    public ExternalAPIPostFileUploadRequestDTO(String consentId, String fileUploadCreatedTime) {
         this.consentId = consentId;
-        this.fileUploadedCreatedTime = fileUploadedCreatedTime;
+        this.fileUploadCreatedTime = fileUploadCreatedTime;
     }
 
     public String getConsentId() {
@@ -40,10 +40,10 @@ public class ExternalAPIPostFileUploadRequestDTO {
     }
 
     public String getFileUploadedCreatedTime() {
-        return fileUploadedCreatedTime;
+        return fileUploadCreatedTime;
     }
 
-    public void setFileUploadedCreatedTime(String fileUploadedCreatedTime) {
-        this.fileUploadedCreatedTime = fileUploadedCreatedTime;
+    public void setFileUploadedCreatedTime(String fileUploadCreatedTime) {
+        this.fileUploadCreatedTime = fileUploadCreatedTime;
     }
 }
