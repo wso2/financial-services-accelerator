@@ -131,7 +131,7 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-extension-providers</artifactId>
-            <version>4.0.3</version>  <!-- Use the correct version for your CXF -->
+            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>

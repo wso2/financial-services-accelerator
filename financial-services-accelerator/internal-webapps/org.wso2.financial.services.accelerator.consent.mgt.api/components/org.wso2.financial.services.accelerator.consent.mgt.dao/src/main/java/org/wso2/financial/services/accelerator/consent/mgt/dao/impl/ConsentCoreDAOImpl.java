@@ -76,8 +76,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public ConsentResource storeConsentResource(Connection connection, ConsentResource consentResource)
-            throws
-            ConsentDataInsertionException {
+            throws ConsentDataInsertionException {
 
         String consentId = StringUtils.isBlank(consentResource.getConsentId()) ? UUID.randomUUID().toString() :
                 consentResource.getConsentId();
@@ -125,8 +124,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public ConsentResource getConsentResource(Connection connection, String consentId)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         String getConsentResourcePrepStatement = sqlStatements.getGetConsentPreparedStatement();
 
@@ -163,8 +161,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgInfo)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         String getDetailedConsentResourcePrepStatement = sqlStatements.getGetDetailedConsentPreparedStatement();
 
@@ -200,8 +197,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         String getDetailedConsentResourcePrepStatement = sqlStatements.getGetDetailedConsentPreparedStatement();
 
@@ -237,8 +233,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public void updateConsentStatus(Connection connection, String consentId, String newConsentStatus)
-            throws
-            ConsentDataUpdationException {
+            throws ConsentDataUpdationException {
 
         long updatedTime = System.currentTimeMillis() / 1000;
         String updateConsentStatusPrepStatement = sqlStatements.getUpdateConsentStatusPreparedStatement();
@@ -269,8 +264,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public void updateConsentExpiryTime(Connection connection, String consentId, long expiryTime)
-            throws
-            ConsentDataUpdationException {
+            throws ConsentDataUpdationException {
 
         String updateConsentReceiptPrepStatement = sqlStatements.getUpdateConsentExpiryTimePreparedStatement();
         long updatedTime = System.currentTimeMillis() / 1000;
@@ -304,8 +298,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     @Override
     public AuthorizationResource storeAuthorizationResource(Connection connection,
                                                             AuthorizationResource authorizationResource)
-            throws
-            ConsentDataInsertionException {
+            throws ConsentDataInsertionException {
 
         String authorizationId = StringUtils.isEmpty(authorizationResource.getAuthorizationId()) ?
                 UUID.randomUUID().toString() : authorizationResource.getAuthorizationId();
@@ -353,8 +346,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public AuthorizationResource getAuthorizationResource(Connection connection, String authorizationId, String orgInfo)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         String getAuthorizationResourcePrepStatement = sqlStatements.getGetAuthorizationResourcePreparedStatement();
 
@@ -397,8 +389,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     public AuthorizationResource updateAuthorizationResource(Connection connection, String authorizationId,
                                                              AuthorizationResource authorizationResource)
 
-            throws
-            ConsentDataUpdationException {
+            throws  ConsentDataUpdationException {
         String updateAuthorizationResourcePrepStatement = sqlStatements
                 .getUpdateAuthorizationResourcePreparedStatement();
         try (PreparedStatement updateAuthorizationResourcePreparedStmt =
@@ -436,7 +427,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public void deleteAuthorizationResource(Connection connection, String authorizationId) throws
-
             ConsentDataDeletionException {
 
         String deleteAuthorizationResourcePrepStatement =
@@ -466,8 +456,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     ///  TODO : consent attributes not yet implemented and tested in the api
     @Override
     public boolean storeConsentAttributes(Connection connection, ConsentAttributes consentAttributes)
-            throws
-            ConsentDataInsertionException {
+            throws  ConsentDataInsertionException {
 
         int[] result;
         String storeConsentAttributesPrepStatement = sqlStatements.getStoreConsentAttributesPreparedStatement();
@@ -507,8 +496,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public ConsentAttributes getConsentAttributes(Connection connection, String consentId)
-            throws
-            ConsentDataRetrievalException {
+            throws  ConsentDataRetrievalException {
 
         Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
         String getConsentAttributesPrepStatement = sqlStatements.getGetConsentAttributesPreparedStatement();
@@ -549,8 +537,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     @Override
     public ConsentAttributes getConsentAttributes(Connection connection, String consentId,
                                                   ArrayList<String> consentAttributeKeys)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
         String getConsentAttributesPrepStatement = sqlStatements.getGetConsentAttributesPreparedStatement();
@@ -600,8 +587,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public Map<String, String> getConsentAttributesByName(Connection connection, String attributeName)
-            throws
-            ConsentDataRetrievalException {
+            throws  ConsentDataRetrievalException {
 
         Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
         String getConsentAttributesByNamePrepStatement = sqlStatements.getGetConsentAttributesByNamePreparedStatement();
@@ -638,8 +624,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     @Override
     public ArrayList<String> getConsentIdByConsentAttributeNameAndValue(Connection connection, String attributeName,
                                                                         String attributeValue)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         ArrayList<String> retrievedConsentIdList = new ArrayList<>();
         String getConsentIdByConsentAttributeNameAndValuePrepStatement = sqlStatements
@@ -683,8 +668,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public void updateConsentAttributes(Connection connection, String consentId, Map<String, String> consentAttributes)
-            throws
-            ConsentDataUpdationException {
+            throws ConsentDataUpdationException {
 
         int[] result;
         String updateConsentAttributesPrepStatement = sqlStatements.getUpdateConsentAttributesPreparedStatement();
@@ -721,8 +705,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     @Override
     public boolean deleteConsentAttributes(Connection connection, String consentId,
                                            ArrayList<String> consentAttributeKeys)
-            throws
-            ConsentDataDeletionException {
+            throws ConsentDataDeletionException {
 
         int[] result;
         String deleteConsentAttributePrepStatement = sqlStatements.getDeleteConsentAttributePreparedStatement();
@@ -769,8 +752,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                                                              ArrayList<String> consentStatuses,
                                                              ArrayList<String> userIDs, Long fromTime, Long toTime,
                                                              Integer limit, Integer offset)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         boolean shouldLimit = true;
         boolean shouldOffset = true;
@@ -876,8 +858,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     @Override
     public ConsentStatusAuditRecord storeConsentStatusAuditRecord(Connection connection,
                                                                   ConsentStatusAuditRecord consentStatusAuditRecord)
-            throws
-            ConsentDataInsertionException {
+            throws ConsentDataInsertionException {
 
         int result;
         String statusAuditID = StringUtils.isEmpty(consentStatusAuditRecord.getStatusAuditID()) ?
@@ -930,8 +911,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                                                                             String currentStatus, String actionBy,
                                                                             Long fromTime, Long toTime,
                                                                             String statusAuditID)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         ArrayList<ConsentStatusAuditRecord> retrievedAuditRecords = new ArrayList<>();
         String getConsentStatusAuditRecordsPrepStatement =
@@ -1028,8 +1008,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     public ArrayList<ConsentStatusAuditRecord> getConsentStatusAuditRecordsByConsentId(Connection connection,
                                                                                        ArrayList<String> consentIDs,
                                                                                        Integer limit, Integer offset)
-            throws
-            ConsentDataRetrievalException {
+            throws ConsentDataRetrievalException {
 
         boolean shouldLimit = true;
         boolean shouldOffset = true;
@@ -1105,10 +1084,10 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     public boolean storeConsentAmendmentHistory(Connection connection, String historyID, long timestamp,
                                                 String statusAuditRecordID, String recordID, String consentDataType,
                                                 String changedAttributesJsonString, String amendmentReason)
-            throws
-            ConsentDataInsertionException {
+            throws  ConsentDataInsertionException {
 
-        String tableID = ConsentManagementDAOUtil.generateConsentTableId(consentDataType.replaceAll("[\r\n]", ""));
+        String tableID = ConsentManagementDAOUtil.generateConsentTableId(consentDataType.replaceAll("[\r\n]",
+                ""));
 
 
         int result;
@@ -1191,8 +1170,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public void deleteConsent(Connection connection, String consentId) throws
-            ConsentDataDeletionException {
+    public void deleteConsent(Connection connection, String consentId) throws ConsentDataDeletionException {
 
         List<String> deleteStatements = sqlStatements.getDeleteConsentCascadeStatements();
 
@@ -1259,8 +1237,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     ArrayList<DetailedConsentResource> constructDetailedConsentsSearchResult(ResultSet resultSet, int resultSetSize)
-            throws
-            SQLException {
+            throws SQLException {
 
         ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
 
@@ -1299,8 +1276,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     protected void setAuthorizationDataInResponseForGroupedQuery(ArrayList<AuthorizationResource>
                                                                          authorizationResources,
                                                                  ResultSet resultSet, String consentId)
-            throws
-            SQLException {
+            throws SQLException {
 
         //identify duplicate auth data
         Set<String> authIdSet = new HashSet<>();
@@ -1348,8 +1324,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     protected void setAccountConsentMappingDataInResponse(ArrayList<ConsentMappingResource> consentMappingResources,
-                                                          ResultSet resultSet) throws
-            SQLException {
+                                                          ResultSet resultSet) throws SQLException {
 
         //identify duplicate mappingIds
         Set<String> mappingIdSet = new HashSet<>();
