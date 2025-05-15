@@ -18,6 +18,9 @@
 
 package org.wso2.financial.services.accelerator.test.framework.request_builder
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
@@ -29,6 +32,9 @@ import com.nimbusds.jwt.JWT
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.id.ClientID
 import com.nimbusds.oauth2.sdk.id.Issuer
+import com.nimbusds.oauth2.sdk.pkce.CodeChallenge
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
+import org.json.JSONException
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
 import org.wso2.bfsi.test.framework.keystore.KeyStore
 import org.wso2.bfsi.test.framework.request_builder.JSONRequestGenerator
@@ -479,14 +485,26 @@ class JWTGenerator {
         }
     }
 
+    /**
+     * Return JWT for Authorization request without consent id
+     * @param scopeString
+     * @param clientId
+     * @param iss
+     * @param state
+     * @param nonce
+     * @param response_type
+     * @param audienceValue
+     * @param redirectUrl
+     * @return
+     */
     JWT getSignedAuthRequestObjectWithoutConsentId(String scopeString,
-                                   ClientID clientId,
-                                   Issuer iss,
-                                   String state = ConnectorTestConstants.STATE_PARAMETER,
-                                   String nonce = ConnectorTestConstants.NONCE_PARAMETER,
-                                   String response_type = ConnectorTestConstants.RESPONSE_TYPE_PARAMETER,
-                                   String audienceValue = acceleratorConfiguration.getConsentAudienceValue(),
-                                   String redirectUrl = acceleratorConfiguration.getAppDCRRedirectUri()) {
+                                                   ClientID clientId,
+                                                   Issuer iss,
+                                                   String state = ConnectorTestConstants.STATE_PARAMETER,
+                                                   String nonce = ConnectorTestConstants.NONCE_PARAMETER,
+                                                   String response_type = ConnectorTestConstants.RESPONSE_TYPE_PARAMETER,
+                                                   String audienceValue = acceleratorConfiguration.getConsentAudienceValue(),
+                                                   String redirectUrl = acceleratorConfiguration.getAppDCRRedirectUri()) {
 
         def expiryDate = Instant.now().plus(58, ChronoUnit.MINUTES)
         def notBefore = Instant.now()
@@ -552,5 +570,282 @@ class JWTGenerator {
                 .addRefreshToken(refreshToken)
                 .getPayload()
         return accessTokenPayload
+    }
+
+    /**
+     * Get Client Assertion.
+     * @param clientId - Client ID
+     * @return clientAssertion - Client Assertion
+     */
+    String getClientAssertionJwt(String clientId=null) {
+        JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
+                .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
+
+        String payload = getSignedRequestObject(clientAssertion.toString())
+        return payload
+    }
+
+    /**
+     * Get Client Assertion without IAT.
+     * @param clientId
+     * @return
+     */
+    String getClientAssertionJwtWithoutIAT(String clientId=null) {
+        JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
+                .addSubject(clientId).addAudience().addExpireDate().addJti().getJsonObject()
+
+        String payload = getSignedRequestObject(clientAssertion.toString())
+        return payload
+    }
+
+    /**
+     * Get Client Assertion with customized Issuer and Audience
+     * @param issuer Issuer
+     * @param audience Audience
+     * @return jwt
+     */
+    String getClientAssertionJwt(String issuer, String audience) {
+        JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(issuer)
+                .addSubject(issuer).addAudience(audience).addExpireDate().addIssuedAt().addJti().getJsonObject()
+
+        String payload = getSignedRequestObject(clientAssertion.toString())
+        return payload
+    }
+
+    /**
+     * Get Request Object for Pushed Authorisation Request.
+     * @param scopeString
+     * @param consentId
+     * @param redirect_uri
+     * @param clientId
+     * @param responseType
+     * @param isStateRequired
+     * @param state
+     * @param responseMode
+     * @param expiryDate
+     * @param notBefore
+     * @param codeChallengeMethod
+     * @return
+     */
+    JWT getRequestObjectClaim(String scopeString, String consentId, String redirect_uri, String clientId, String responseType,
+                              boolean isStateRequired = true, String state,
+                              Instant expiryDate = Instant.now().plus(1, ChronoUnit.HOURS),
+                              Instant notBefore = Instant.now(), CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.S256) {
+        String claims
+
+        //Generate Code Challenge
+        CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, ConnectorTestConstants.CODE_VERIFIER)
+        String codeChallengeValue = codeChallenge.getValue()
+
+        //Define additional claims
+        JSONObject acr = new JSONObject().put(ConnectorTestConstants.ESSENTIAL, true).put(ConnectorTestConstants.VALUES, new ArrayList<String>() {
+            {
+                add(ConnectorTestConstants.ACR_CA_URL)
+                add(ConnectorTestConstants.ACR_SCA_URL)
+            }
+        })
+        JSONObject openbankingIntentString = new JSONObject().put(ConnectorTestConstants.VALUE_PARAMETER, consentId).put(ConnectorTestConstants.ESSENTIAL, true)
+        JSONObject authTimeString = new JSONObject().put("essential", true)
+        JSONObject maxAgeString = new JSONObject().put("essential", true).put("max_age", 86400)
+        JSONObject userInfoString = new JSONObject().put("name", null).put("given_name", null).put("family_name", null).put("updated_at", Instant.now())
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString).put(ConnectorTestConstants.INTENT_ID_PARAMETER, openbankingIntentString))
+                .put(ConnectorTestConstants.USER_INFO_PARAMETER, new JSONObject().put(ConnectorTestConstants.INTENT_ID_PARAMETER, openbankingIntentString))
+
+
+        if (isStateRequired) {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addState(state)
+                    .addNonce()
+                    .addCustomValue("max_age", maxAgeString)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                    .addCustomJson("claims", claimsString)
+                    .addCustomValue("userinfo", userInfoString)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
+                    .getJsonObject().toString()
+        } else {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addNonce()
+                    .addCustomValue("max_age", maxAgeString)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                    .addCustomJson("claims", claimsString)
+                    .addCustomValue("userinfo", userInfoString)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
+                    .getJsonObject().toString()
+        }
+
+        String payload = getSignedRequestObject(claims)
+
+        Reporter.log("Authorisation Request Object")
+        Reporter.log("JWS Payload ${new Payload(claims).toString()}")
+
+        return SignedJWT.parse(payload)
+    }
+
+    /**
+     * Return JWT for user access token generation with Code Verifier
+     * @param authMethodType
+     * @param clientId
+     * @param code
+     * @return
+     * @throws TestFrameworkException
+     */
+    String getUserAccessTokenJwtWithCodeVerifier(String authMethodType, String clientId = null, String code = "")
+            throws TestFrameworkException {
+        if(authMethodType == ConnectorTestConstants.TLS_AUTH_METHOD){
+            String accessTokenJWT = new PayloadGenerator().addGrantType(ConnectorTestConstants.AUTH_CODE).addCode(code)
+                    .addScopes(scopesList).addClientID(clientId).addRedirectUri()
+                    .addCodeVerifier(ConnectorTestConstants.CODE_VERIFIER.getValue()).getPayload()
+            return accessTokenJWT
+        }
+
+        //Adding Client Assertion for other Auth Method types
+        else{
+            JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
+                    .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
+
+            String payload = getSignedRequestObject(clientAssertion.toString())
+            String accessTokenJWT = new PayloadGenerator().addGrantType(ConnectorTestConstants.AUTH_CODE).addCode(code)
+                    .addScopes(scopesList).addClientAsType().addClientAssertion(payload).addRedirectUri()
+                    .addCodeVerifier(ConnectorTestConstants.CODE_VERIFIER.getValue()).getPayload()
+            return accessTokenJWT
+        }
+    }
+
+    /**
+     * Remove claims from request object
+     * @param claims
+     * @param nodeToBeRemoved
+     * @return
+     */
+    static String removeClaimsFromRequestObject(String claims, String nodeToBeRemoved) {
+
+        // Parse the JSON payload
+        ObjectMapper objectMapper = new ObjectMapper()
+        JsonNode rootNode = objectMapper.readTree(claims)
+
+        // Remove elements from the JSON payload
+        if (rootNode instanceof ObjectNode) {
+            ObjectNode objectNode = (ObjectNode) rootNode
+            objectNode.remove(nodeToBeRemoved)
+        }
+
+        // Convert the modified JSON back to a string
+        String modifiedJsonPayload = objectMapper.writeValueAsString(rootNode)
+        System.out.println(modifiedJsonPayload)
+
+        return modifiedJsonPayload
+    }
+
+    /**
+     * Get Request Object for Pushed Authorisation Request.
+     * @param scopeString
+     * @param consentId
+     * @param redirect_uri
+     * @param clientId
+     * @param responseType
+     * @param isStateRequired
+     * @param state
+     * @param expiryDate
+     * @param notBefore
+     * @param codeChallengeMethod
+     * @return
+     */
+    String getRequestObjectClaimString(String scopeString, String consentId, String redirect_uri, String clientId, String responseType,
+                              boolean isStateRequired = true, String state,
+                              Instant expiryDate = Instant.now().plus(1, ChronoUnit.HOURS),
+                              Instant notBefore = Instant.now(), CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.S256) {
+        String claims
+
+        //Generate Code Challenge
+        CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, ConnectorTestConstants.CODE_VERIFIER)
+        String codeChallengeValue = codeChallenge.getValue()
+
+        //Define additional claims
+        JSONObject acr = new JSONObject().put(ConnectorTestConstants.ESSENTIAL, true).put(ConnectorTestConstants.VALUES, new ArrayList<String>() {
+            {
+                add(ConnectorTestConstants.ACR_CA_URL)
+                add(ConnectorTestConstants.ACR_SCA_URL)
+            }
+        })
+        JSONObject openbankingIntentString = new JSONObject().put(ConnectorTestConstants.VALUE_PARAMETER, consentId).put(ConnectorTestConstants.ESSENTIAL, true)
+        JSONObject authTimeString = new JSONObject().put("essential", true)
+        JSONObject maxAgeString = new JSONObject().put("essential", true).put("max_age", 86400)
+        JSONObject userInfoString = new JSONObject().put("name", null).put("given_name", null).put("family_name", null).put("updated_at", Instant.now())
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString).put(ConnectorTestConstants.INTENT_ID_PARAMETER, openbankingIntentString))
+                .put(ConnectorTestConstants.USER_INFO_PARAMETER, new JSONObject().put(ConnectorTestConstants.INTENT_ID_PARAMETER, openbankingIntentString))
+
+
+        if (isStateRequired) {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addState(state)
+                    .addNonce()
+                    .addCustomValue("max_age", maxAgeString)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                    .addCustomJson("claims", claimsString)
+                    .addCustomValue("userinfo", userInfoString)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
+                    .getJsonObject().toString()
+        } else {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addNonce()
+                    .addCustomValue("max_age", maxAgeString)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                    .addCustomJson("claims", claimsString)
+                    .addCustomValue("userinfo", userInfoString)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
+                    .getJsonObject().toString()
+        }
+
+        return claims
+    }
+
+    /**
+     * Add claims to request object
+     * @param claims
+     * @param updatedClaim
+     * @param nodeToBeAdded
+     * @return
+     */
+    static String addClaimsFromRequestObject(String claims, String updatedClaim, String nodeToBeAdded) {
+
+        JSONObject payload = new JSONObject(claims)
+        try {
+            payload.put(updatedClaim, nodeToBeAdded)
+        } catch (JSONException e) {
+            e.printStackTrace()
+        }
+        return payload.toString()
     }
 }
