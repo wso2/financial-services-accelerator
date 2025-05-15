@@ -45,6 +45,8 @@ import java.util.UUID;
  */
 public class ExternalAPIConsentManageUtils {
 
+    private static final Gson gson = new Gson();
+
     /**
      * Method to call external service for pre consent generation.
      *
@@ -58,7 +60,7 @@ public class ExternalAPIConsentManageUtils {
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentGenerateResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIPreConsentGenerateResponseDTO.class);
     }
 
     /**
@@ -74,7 +76,7 @@ public class ExternalAPIConsentManageUtils {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 
     /**
@@ -90,7 +92,7 @@ public class ExternalAPIConsentManageUtils {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
     }
 
     /**
@@ -106,7 +108,7 @@ public class ExternalAPIConsentManageUtils {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 
     /**
@@ -122,7 +124,7 @@ public class ExternalAPIConsentManageUtils {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_FILE_UPLOAD);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIPreFileUploadResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIPreFileUploadResponseDTO.class);
     }
 
     /**
@@ -138,7 +140,7 @@ public class ExternalAPIConsentManageUtils {
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 
     /**
@@ -154,7 +156,7 @@ public class ExternalAPIConsentManageUtils {
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 
     /**
