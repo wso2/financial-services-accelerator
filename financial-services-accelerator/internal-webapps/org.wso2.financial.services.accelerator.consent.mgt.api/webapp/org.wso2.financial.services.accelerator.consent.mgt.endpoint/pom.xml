@@ -257,11 +257,10 @@
                                             </apiPackage>
                                             <xJavaType>true</xJavaType>
                                         </configOptions>
-
-
-
-                                        <generateApis>true</generateApis>
-                                        <generateModels>true</generateModels>
+                                        <generateApis>false</generateApis> <!-- Set to true to generate API
+                                                                            classes -->
+                                        <generateModels>false</generateModels> <!-- Set to true to generate Model
+                                                                            classes -->
                                         <generateSupportingFiles>false</generateSupportingFiles>
                                         <generateApiTests>false</generateApiTests>
                                         <generateModelTests>false</generateModelTests>
@@ -305,7 +304,6 @@
                         </resource>
                     </webResources>
                     <warName>consent</warName>
-<!--                    <packagingExcludes>WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>-->
                 </configuration>
             </plugin>
 
@@ -362,25 +360,12 @@
                         <exclude>**/*Component.class</exclude>
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*Exception.class</exclude>
-
-
-                        <!-- Excluding the generated classes in org/wso2/financial/services/accelerator/consent/mgt/endpoint/model-->
                         <exclude>org/wso2/financial/services/accelerator/consent/mgt/endpoint/model/**</exclude>
-
                         <exclude>**/*SwaggerApplication.class</exclude>
                         <exclude>**/*DatabaseInitializer.class</exclude>
                         <exclude>**/*ConsentsApi.class</exclude>
                         <exclude>**/*ConsentUtils.class</exclude>
                         <exclude>**/*Mapper.class</exclude>
-
-
-
-
-
-
-
-
-
 
                     </excludes>
                 </configuration>

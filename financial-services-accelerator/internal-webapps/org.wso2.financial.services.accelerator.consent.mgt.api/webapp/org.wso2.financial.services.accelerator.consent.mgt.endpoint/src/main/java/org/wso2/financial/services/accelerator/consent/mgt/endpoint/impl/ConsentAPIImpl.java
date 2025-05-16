@@ -46,7 +46,7 @@ public class ConsentAPIImpl {
         this.consentCoreService = consentCoreService;
     }
 
-        /**
+    /**
      * Handles the API request to create a new consent resource.
      * <p>
      * This method processes the payload containing the consent resource, authorization resources,

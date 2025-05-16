@@ -47,9 +47,10 @@ public class DatabaseUtils {
         return JDBCPersistenceManager.getInstance().getDBConnection();
     }
 
-    public static void closeConnection(Connection dbConnection) {
+    public static void closeConnection(Connection dbConnection) throws
+            SQLException {
 
-        if (dbConnection != null) {
+        if (dbConnection != null && !dbConnection.isClosed()) {
             try {
                 dbConnection.close();
             } catch (SQLException e) {
