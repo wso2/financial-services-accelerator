@@ -25,45 +25,14 @@ import java.util.Map;
 /**
  * Model for Detailed Consent Resource.
  */
-public class DetailedConsentResource {
+public class DetailedConsentResource extends ConsentResource {
 
-    private String orgInfo;
-    private String consentId;
-    private String clientId;
-    private String receipt;
-    private String consentType;
-    private String currentStatus;
-    private long expiryTime;
-    private long createdTime;
-    private long updatedTime;
-    private boolean recurringIndicator;
+
     private Map<String, String> consentAttributes;
     private ArrayList<AuthorizationResource> authorizationResources;
     private ArrayList<ConsentMappingResource> consentMappingResources;
 
     public DetailedConsentResource() {
-
-    }
-
-    public DetailedConsentResource(String consentId, String clientId, String receipt,
-                                   String consentType,
-                                   String currentStatus, long expiryTime, long createdTime,
-                                   long updatedTime, boolean recurringIndicator,
-                                   Map<String, String> consentAttributes,
-                                   ArrayList<AuthorizationResource> authorizationResources,
-                                   ArrayList<ConsentMappingResource> consentMappingResources) {
-        this.consentId = consentId;
-        this.clientId = clientId;
-        this.receipt = receipt;
-        this.consentType = consentType;
-        this.currentStatus = currentStatus;
-        this.expiryTime = expiryTime;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
-        this.recurringIndicator = recurringIndicator;
-        this.consentAttributes = consentAttributes;
-        this.authorizationResources = authorizationResources;
-        this.consentMappingResources = consentMappingResources;
 
     }
 
@@ -74,125 +43,14 @@ public class DetailedConsentResource {
                                    Map<String, String> consentAttributes,
                                    ArrayList<AuthorizationResource> authorizationResources,
                                    ArrayList<ConsentMappingResource> consentMappingResources) {
-        this.orgInfo = orgInfo;
-        this.consentId = consentId;
-        this.clientId = clientId;
-        this.receipt = receipt;
-        this.consentType = consentType;
-        this.currentStatus = currentStatus;
-        this.expiryTime = expiryTime;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
-        this.recurringIndicator = recurringIndicator;
+        super(orgInfo, consentId, clientId, receipt, consentType, expiryTime, recurringIndicator, currentStatus,
+                createdTime, updatedTime);
         this.consentAttributes = consentAttributes;
         this.authorizationResources = authorizationResources;
         this.consentMappingResources = consentMappingResources;
 
     }
 
-    public long getUpdatedTime() {
-
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(long updatedTime) {
-
-        this.updatedTime = updatedTime;
-    }
-
-    public String getConsentId() {
-
-        return consentId;
-    }
-
-    public String getOrgInfo() {
-        return orgInfo;
-    }
-
-    public void setOrgID(String orgInfo) {
-        this.orgInfo = orgInfo;
-    }
-
-    public void setConsentId(String consentId) {
-
-        this.consentId = consentId;
-    }
-
-    public String getClientId() {
-
-        return clientId;
-    }
-
-
-    public void setClientId(String clientId) {
-
-        this.clientId = clientId;
-    }
-
-    public String getReceipt() {
-
-        return receipt;
-    }
-
-    public void setReceipt(String receipt) {
-
-        this.receipt = receipt;
-    }
-
-    public String getConsentType() {
-
-        return consentType;
-    }
-
-    public void setConsentType(String consentType) {
-
-        this.consentType = consentType;
-    }
-
-    public long getExpiryTime() {
-
-        return expiryTime;
-    }
-
-    public void setExpiryTime(long expiryTime) {
-
-        this.expiryTime = expiryTime;
-    }
-
-    public boolean isRecurringIndicator() {
-
-        return recurringIndicator;
-    }
-
-    public void setRecurringIndicator(boolean recurringIndicator) {
-
-        this.recurringIndicator = recurringIndicator;
-    }
-
-    public boolean getRecurringIndicator() {
-
-        return recurringIndicator;
-    }
-
-    public String getCurrentStatus() {
-
-        return currentStatus;
-    }
-
-    public void setCurrentStatus(String currentStatus) {
-
-        this.currentStatus = currentStatus;
-    }
-
-    public long getCreatedTime() {
-
-        return createdTime;
-    }
-
-    public void setCreatedTime(long createdTime) {
-
-        this.createdTime = createdTime;
-    }
 
     public Map<String, String> getConsentAttributes() {
 
@@ -250,7 +108,7 @@ public class DetailedConsentResource {
         ArrayList<ConsentMappingResource> copiedMappingResources = new ArrayList<>();
         if (this.consentMappingResources != null) {
             for (ConsentMappingResource mapping : this.consentMappingResources) {
-                ConsentMappingResource mappingClone =  new ConsentMappingResource();
+                ConsentMappingResource mappingClone = new ConsentMappingResource();
                 mappingClone.setMappingId(mapping.getMappingId());
                 mappingClone.setResource(mapping.getResource());
                 mappingClone.setMappingStatus(mapping.getMappingStatus());
@@ -260,16 +118,16 @@ public class DetailedConsentResource {
 
         // Create new instance
         return new DetailedConsentResource(
-                this.orgInfo,
-                this.consentId,
-                this.clientId,
-                this.receipt,
-                this.consentType,
-                this.currentStatus,
-                this.expiryTime,
-                this.createdTime,
-                this.updatedTime,
-                this.recurringIndicator,
+                getOrgInfo(),
+                getConsentId(),
+                getClientId(),
+                getReceipt(),
+                getConsentType(),
+                getCurrentStatus(),
+                getExpiryTime(),
+                getCreatedTime(),
+                getUpdatedTime(),
+                isRecurringIndicator(),
                 copiedConsentAttributes,
                 copiedAuthResources,
                 copiedMappingResources
