@@ -16,6 +16,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentResourceResponseBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentRevokeRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.ConsentStatusUpdateRequestBody;
+
 import java.util.List;
 
 
@@ -35,426 +36,419 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 /**
-* Represents a collection of functions to interact with the API endpoints.
-*/
+ * Represents a collection of functions to interact with the API endpoints.
+ */
 @SuppressFBWarnings("JAXRS_ENDPOINT")
 // Suppressed content - Endpoints
 // Suppression reason - False Positive : These endpoints are secured with access
 // control
 @Path("/consents")
-    @Api(description = "the consents API")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-15T17:01:46.199695+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@Api(description = "the consents API")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
+        date = "2025-05-16T09:24:29.903308+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentsApi {
-ConsentAPIImpl consentApiImpl = new ConsentAPIImpl();
+    ConsentAPIImpl consentApiImpl = new ConsentAPIImpl();
 
 
-            @GET
+    @GET
     @Path("/{consentId}/authorization-resources")
-    @Produces({ "application/json" })
+    @Produces({"application/json"})
     @Operation(
-    summary = "Retrieve Consent Authorization Resources",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = String.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Retrieve Consent Authorization Resources",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Authorization Resource")
     public Response consentAuthorizationGet(
+            @PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent id") String consentId,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentAuthorizationGet( consentId, orgInfo);
+        return consentApiImpl.consentAuthorizationGet(consentId, orgInfo);
 
     }
 
-            @DELETE
+    @DELETE
     @Path("/{consentId}/authorization-resource/{authorizationId}")
-    @Produces({ "application/json" })
+    @Produces({"application/json"})
     @Operation(
-    summary = "Delete Consent Authorization Resource",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "204",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = String.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id, or authorization resource id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Delete Consent Authorization Resource",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id, or authorization resource id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+            )
+            }
     )
     @Tag(name = "Authorization Resource")
     public Response consentAuthorizationIdDelete(
 
-@PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
+            @PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
+            @PathParam("consentId") @ApiParam("Consent Id") String consentId,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related" +
+                    " information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent Id") String consentId,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentAuthorizationIdDelete( authorizationId, consentId, orgInfo);
+        return consentApiImpl.consentAuthorizationIdDelete(authorizationId, consentId, orgInfo);
 
     }
 
-            @GET
+    @GET
     @Path("/{consentId}/authorization-resource/{authorizationId}")
-    @Produces({ "application/json" })
+    @Produces({"application/json"})
     @Operation(
-    summary = "Retrieve Consent Authorization Resource",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Retrieve Consent Authorization Resource",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Authorization Resource")
     public Response consentAuthorizationIdGet(
+            @PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
+            @PathParam("consentId") @ApiParam("Consent Id") String consentId,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
-
-@PathParam("consentId") @ApiParam("Consent Id") String consentId,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentAuthorizationIdGet( authorizationId, consentId, orgInfo);
+        return consentApiImpl.consentAuthorizationIdGet(authorizationId, consentId, orgInfo);
 
     }
 
-            @POST
+    @POST
     @Path("/{consentId}/authorization-resource")
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
     @Operation(
-    summary = "Add Consent Authorization Resource",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = String.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Add Consent Authorization Resource",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Authorization Resource")
     public Response consentAuthorizationIdPost(
+            @PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @Valid @NotNull List<@Valid AuthorizationResourceRequestBody> authorizationResourceRequestBody,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related" +
+                    " information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent id") String consentId,
-
-@Valid @NotNull List<@Valid AuthorizationResourceRequestBody> authorizationResourceRequestBody,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentAuthorizationIdPost( consentId, authorizationResourceRequestBody, orgInfo);
+        return consentApiImpl.consentAuthorizationIdPost(consentId, authorizationResourceRequestBody, orgInfo);
 
     }
 
-            @PUT
+    @PUT
     @Path("/{consentId}/authorization-resource/{authorizationId}")
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
     @Operation(
-    summary = "Update Consent Authorization Resource",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = String.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Update Consent Authorization Resource",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Authorization Resource")
     public Response consentAuthorizationIdPut(
 
-@PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
+            @PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
+            @PathParam("consentId") @ApiParam("Consent Id") String consentId,
+            @Valid @NotNull AuthorizationResourceRequestBody authorizationResourceRequestBody,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related " +
+                    "information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent Id") String consentId,
-
-@Valid @NotNull AuthorizationResourceRequestBody authorizationResourceRequestBody,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentAuthorizationIdPut( authorizationId, consentId, authorizationResourceRequestBody, orgInfo);
+        return consentApiImpl.consentAuthorizationIdPut(authorizationId, consentId, authorizationResourceRequestBody,
+                orgInfo);
 
     }
 
-            @DELETE
+    @DELETE
     @Path("/{consentId}")
     @Operation(
-    summary = "Consent Purging",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "204",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Consent Purging",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = Void.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentConsentIdDelete(
 
-@PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing " +
+                    "tenant-related information") String orgInfo) {
 
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentConsentIdDelete( consentId, orgInfo);
+        return consentApiImpl.consentConsentIdDelete(consentId, orgInfo);
 
     }
 
-            @PUT
+    @PUT
     @Path("/{consentId}/expiry-time")
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
     @Operation(
-    summary = "Consent Expiry Time Update (Seconds)",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = String.class))
-        ),        @ApiResponse(
-        responseCode = "400",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Consent Expiry Time Update (Seconds)",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+            )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentConsentIdExpiryTimePut(
+            @PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @Valid @NotNull ConsentExpiryTimeUpdateRequestBody consentExpiryTimeUpdateRequestBody,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent id") String consentId,
-
-@Valid @NotNull ConsentExpiryTimeUpdateRequestBody consentExpiryTimeUpdateRequestBody,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentConsentIdExpiryTimePut( consentId, consentExpiryTimeUpdateRequestBody, orgInfo);
+        return consentApiImpl.consentConsentIdExpiryTimePut(consentId, consentExpiryTimeUpdateRequestBody, orgInfo);
 
     }
 
-            @GET
+    @GET
     @Path("/{consentId}")
-    @Produces({ "application/json" })
+    @Produces({"application/json"})
     @Operation(
-    summary = "Consent Retrieval",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Consent Retrieval",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentConsentIdGet(
+            @PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent id") String consentId,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentConsentIdGet( consentId, orgInfo);
+        return consentApiImpl.consentConsentIdGet(consentId, orgInfo);
 
     }
 
-            @PUT
+    @PUT
     @Path("/{consentId}/status")
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
     @Operation(
-    summary = "Consent Status Update",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = String.class))
-        ),        @ApiResponse(
-        responseCode = "400",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Consent Status Update",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentConsentIdStatusPut(
+            @PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @Valid @NotNull ConsentStatusUpdateRequestBody consentStatusUpdateRequestBody,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent id") String consentId,
-
-@Valid @NotNull ConsentStatusUpdateRequestBody consentStatusUpdateRequestBody,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentConsentIdStatusPut( consentId, consentStatusUpdateRequestBody, orgInfo);
+        return consentApiImpl.consentConsentIdStatusPut(consentId, consentStatusUpdateRequestBody, orgInfo);
 
     }
 
-            @GET
-    @Produces({ "application/json" })
+    @GET
+    @Produces({"application/json"})
     @Operation(
-    summary = "Consent Search",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
-        ),        @ApiResponse(
-        responseCode = "400",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Consent Search",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentGet(
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo,
+            @QueryParam("consentTypes") String consentTypes,
+            @QueryParam("consentStatuses") String consentStatuses,
+            @QueryParam("clientIds") String clientIds,
+            @QueryParam("userIds") String userIds,
+            @QueryParam("fromTime") int fromTime,
+            @QueryParam("toTime") int toTime,
+            @QueryParam("limit") int limit,
+            @QueryParam("offset") int offset) {
 
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo,@QueryParam("consentTypes") String consentTypes
-
-,@QueryParam("consentStatuses") String consentStatuses
-
-,@QueryParam("clientIds") String clientIds
-
-,@QueryParam("userIds") String userIds
-
-,@QueryParam("fromTime") int fromTime
-
-,@QueryParam("toTime") int toTime
-
-,@QueryParam("limit") int limit
-
-,@QueryParam("offset") int offset
-
-) {
-
-            return consentApiImpl.consentGet( orgInfo, consentTypes, consentStatuses, clientIds, userIds, fromTime, toTime, limit, offset);
+        return consentApiImpl.consentGet(orgInfo, consentTypes, consentStatuses, clientIds, userIds, fromTime, toTime,
+                limit, offset);
 
     }
 
-            @POST
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
+    @POST
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
     @Operation(
-    summary = "Consent Initiation",
-    description = " Creates ConsentResource, AuthorizationResource and ConsentMapping Entity in the database. Creates Authorization resources provided in the authorizationResources array if implicitAuth flag is true. ",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
-        ),        @ApiResponse(
-        responseCode = "400",
-        description = "Invalid request body",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Consent Initiation",
+            description = " Creates ConsentResource, AuthorizationResource and ConsentMapping Entity in the database." +
+                    " Creates Authorization resources provided in the authorizationResources array if implicitAuth " +
+                    "flag is true. ",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request body",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+                    )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentPost(
+            @Valid @NotNull ConsentResourceRequestBody consentResourceRequestBody,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@Valid @NotNull ConsentResourceRequestBody consentResourceRequestBody,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentPost( consentResourceRequestBody, orgInfo);
+        return consentApiImpl.consentPost(consentResourceRequestBody, orgInfo);
 
     }
 
-            @POST
+    @POST
     @Path("/{consentId}/revoke")
-    @Consumes({ "application/json" })
+    @Consumes({"application/json"})
     @Operation(
-    summary = "Consent Revoke",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "204",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        ),        @ApiResponse(
-        responseCode = "404",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Consent Revoke",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = Void.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+            )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentRevokeConsentIdPost(
+            @PathParam("consentId") @ApiParam("Consent id") String consentId,
+            @Valid @NotNull ConsentRevokeRequestBody consentRevokeRequestBody,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@PathParam("consentId") @ApiParam("Consent id") String consentId,
-
-@Valid @NotNull ConsentRevokeRequestBody consentRevokeRequestBody,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentRevokeConsentIdPost( consentId, consentRevokeRequestBody, orgInfo);
+        return consentApiImpl.consentRevokeConsentIdPost(consentId, consentRevokeRequestBody, orgInfo);
 
     }
 
-            @PUT
+    @PUT
     @Path("/status")
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
     @Operation(
-    summary = "Bulk Consent Status Change",
-    description = "",
-    responses = {
-        @ApiResponse(
-        responseCode = "200",
-        description = "Successful operation",
-        content = @Content(schema = @Schema(implementation = String.class))
-        ),        @ApiResponse(
-        responseCode = "400",
-        description = "Invalid consent id",
-        content = @Content(schema = @Schema(implementation = Void.class))
-        )
-    }
+            summary = "Bulk Consent Status Change",
+            description = "",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    ),
+                    @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid consent id",
+                    content = @Content(schema = @Schema(implementation = Void.class))
+            )
+            }
     )
     @Tag(name = "Consent Resource")
     public Response consentStatusPut(
+            @Valid @NotNull BulkConsentStatusUpdateResourceRequestBody bulkConsentStatusUpdateResourceRequestBody,
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
 
-@Valid @NotNull BulkConsentStatusUpdateResourceRequestBody bulkConsentStatusUpdateResourceRequestBody,
-
-@HeaderParam("orgInfo")  @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing tenant-related information") String orgInfo) {
-
-            return consentApiImpl.consentStatusPut( bulkConsentStatusUpdateResourceRequestBody, orgInfo);
+        return consentApiImpl.consentStatusPut(bulkConsentStatusUpdateResourceRequestBody, orgInfo);
 
     }
-    }
+}
