@@ -17,9 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("ConsentResourceResponseBody")
-
 public class ConsentResourceResponseBody implements Serializable {
     private String consentId;
     private String clientId;
@@ -63,7 +61,6 @@ public class ConsentResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "consentId")
     @NotNull @NotEmpty public String getConsentId() {
@@ -82,7 +79,6 @@ public class ConsentResourceResponseBody implements Serializable {
         this.clientId = clientId;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "clientId")
@@ -103,7 +99,6 @@ public class ConsentResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "consentType")
     @NotNull @NotEmpty @Size(min = 1) public String getConsentType() {
@@ -122,7 +117,6 @@ public class ConsentResourceResponseBody implements Serializable {
         this.currentStatus = currentStatus;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "currentStatus")
@@ -143,7 +137,6 @@ public class ConsentResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "receipt")
     @NotNull public Object getReceipt() {
@@ -162,7 +155,6 @@ public class ConsentResourceResponseBody implements Serializable {
         this.expiryTime = expiryTime;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "expiryTime")
@@ -183,7 +175,6 @@ public class ConsentResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "recurringIndicator")
     @NotNull public Boolean getRecurringIndicator() {
@@ -202,7 +193,6 @@ public class ConsentResourceResponseBody implements Serializable {
         this.consentAttributes = consentAttributes;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("consentAttributes")
@@ -223,7 +213,6 @@ public class ConsentResourceResponseBody implements Serializable {
         this.authorizationResources = authorizationResources;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("authorizationResources")
@@ -263,7 +252,6 @@ public class ConsentResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("createdTime")
     public Integer getCreatedTime() {
@@ -283,7 +271,6 @@ public class ConsentResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("updatedTime")
     public Integer getUpdatedTime() {
@@ -294,7 +281,6 @@ public class ConsentResourceResponseBody implements Serializable {
     public void setUpdatedTime(Integer updatedTime) {
         this.updatedTime = updatedTime;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -354,7 +340,6 @@ public class ConsentResourceResponseBody implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

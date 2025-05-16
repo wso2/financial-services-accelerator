@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -20,7 +20,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exc
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;
 
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,7 +27,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
 
 /**
  * Exception mapper to validate absent required fields.
@@ -38,7 +36,6 @@ public class MismatchedInputExceptionMapper implements ExceptionMapper<Mismatche
 
     @Override
     public Response toResponse(MismatchedInputException exception) {
-
 
         Map<String, String> error = new LinkedHashMap<>();
         error.put("errorCode", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR);
@@ -53,6 +50,5 @@ public class MismatchedInputExceptionMapper implements ExceptionMapper<Mismatche
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
-
 
 }

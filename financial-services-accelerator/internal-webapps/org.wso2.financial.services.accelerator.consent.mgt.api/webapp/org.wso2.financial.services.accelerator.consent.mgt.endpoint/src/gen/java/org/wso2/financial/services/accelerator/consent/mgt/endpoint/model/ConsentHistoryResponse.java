@@ -1,6 +1,5 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.model;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,9 +13,7 @@ import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("ConsentHistoryResponse")
-
 public class ConsentHistoryResponse implements Serializable {
     private ConsentResourceResponseBody detailedConsent;
     private String historyId;
@@ -34,7 +31,6 @@ public class ConsentHistoryResponse implements Serializable {
         this.detailedConsent = detailedConsent;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("detailedConsent")
@@ -55,7 +51,6 @@ public class ConsentHistoryResponse implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("historyId")
     public String getHistoryId() {
@@ -74,7 +69,6 @@ public class ConsentHistoryResponse implements Serializable {
         this.consentId = consentId;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("consentId")
@@ -95,7 +89,6 @@ public class ConsentHistoryResponse implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("timestamp")
     public Integer getTimestamp() {
@@ -115,7 +108,6 @@ public class ConsentHistoryResponse implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("reason")
     public String getReason() {
@@ -126,7 +118,6 @@ public class ConsentHistoryResponse implements Serializable {
     public void setReason(String reason) {
         this.reason = reason;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -173,7 +164,6 @@ public class ConsentHistoryResponse implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

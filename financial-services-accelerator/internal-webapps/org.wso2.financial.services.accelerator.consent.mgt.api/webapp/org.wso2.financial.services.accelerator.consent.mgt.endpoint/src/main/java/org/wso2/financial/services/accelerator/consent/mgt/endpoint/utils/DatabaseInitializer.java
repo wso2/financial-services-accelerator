@@ -1,4 +1,5 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.util.DatabaseUtils;
 
@@ -18,7 +19,6 @@ import javax.servlet.ServletContextListener;
 @SuppressFBWarnings("SQL_INJECTION_JDBC")
 public class DatabaseInitializer implements ServletContextListener {
 
-
     private static final String SQL_FILE_PATH = "/WEB-INF/schema.sql"; // Place schema.sql inside WEB-INF
 
     @SuppressFBWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
@@ -26,7 +26,6 @@ public class DatabaseInitializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         try (Connection conn = DatabaseUtils.getDBConnection();
              Statement stmt = conn.createStatement()) {
-
 
             // Read the SQL file from resources
             InputStream inputStream = sce.getServletContext().getResourceAsStream(SQL_FILE_PATH);
@@ -44,7 +43,6 @@ public class DatabaseInitializer implements ServletContextListener {
                     stmt.execute(query.trim());
                 }
             }
-
 
         } catch (Exception e) {
             throw new RuntimeException("Database initialization failed.", e);

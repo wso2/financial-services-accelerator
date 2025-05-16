@@ -17,9 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("ConsentStatusUpdateRequestBody")
-
 public class ConsentStatusUpdateRequestBody implements Serializable {
     private String status;
     private String reason;
@@ -39,14 +37,10 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
         this.userId = userId;
     }
 
-    /**
-     *
-     **/
     public ConsentStatusUpdateRequestBody status(String status) {
         this.status = status;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "status")
@@ -59,14 +53,10 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
         this.status = status;
     }
 
-    /**
-     *
-     **/
     public ConsentStatusUpdateRequestBody reason(String reason) {
         this.reason = reason;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "reason")
@@ -87,7 +77,6 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "userId")
     @NotNull @NotEmpty public String getUserId() {
@@ -98,7 +87,6 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -141,7 +129,6 @@ public class ConsentStatusUpdateRequestBody implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

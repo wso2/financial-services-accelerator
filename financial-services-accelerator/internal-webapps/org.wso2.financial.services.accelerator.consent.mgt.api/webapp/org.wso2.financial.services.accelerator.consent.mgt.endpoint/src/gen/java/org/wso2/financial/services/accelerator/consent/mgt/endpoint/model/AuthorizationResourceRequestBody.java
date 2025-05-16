@@ -17,9 +17,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("AuthorizationResourceRequestBody")
-
 public class AuthorizationResourceRequestBody implements Serializable {
     private String authorizationStatus;
     private String authorizationType;
@@ -48,7 +46,6 @@ public class AuthorizationResourceRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "authorizationStatus")
     @NotNull @NotEmpty public String getAuthorizationStatus() {
@@ -67,7 +64,6 @@ public class AuthorizationResourceRequestBody implements Serializable {
         this.authorizationType = authorizationType;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "authorizationType")
@@ -88,7 +84,6 @@ public class AuthorizationResourceRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "userId")
     @NotNull @NotEmpty public String getUserId() {
@@ -108,7 +103,6 @@ public class AuthorizationResourceRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("resource")
     public Object getResource() {
@@ -119,7 +113,6 @@ public class AuthorizationResourceRequestBody implements Serializable {
     public void setResource(Object resource) {
         this.resource = resource;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -164,7 +157,6 @@ public class AuthorizationResourceRequestBody implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

@@ -17,9 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("ConsentExpiryTimeUpdateRequestBody")
-
 public class ConsentExpiryTimeUpdateRequestBody implements Serializable {
     private Long expiryTime;
 
@@ -41,7 +39,6 @@ public class ConsentExpiryTimeUpdateRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "expiryTime")
     @NotNull public Long getExpiryTime() {
@@ -52,7 +49,6 @@ public class ConsentExpiryTimeUpdateRequestBody implements Serializable {
     public void setExpiryTime(Long expiryTime) {
         this.expiryTime = expiryTime;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -91,7 +87,6 @@ public class ConsentExpiryTimeUpdateRequestBody implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

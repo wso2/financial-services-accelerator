@@ -17,9 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("ConsentResourceRequestBody")
-
 public class ConsentResourceRequestBody implements Serializable {
     private String clientId;
     private String consentType;
@@ -56,7 +54,6 @@ public class ConsentResourceRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "clientId")
     @NotNull @NotEmpty public String getClientId() {
@@ -75,7 +72,6 @@ public class ConsentResourceRequestBody implements Serializable {
         this.consentType = consentType;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "consentType")
@@ -96,7 +92,6 @@ public class ConsentResourceRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "currentStatus")
     @NotNull @NotEmpty @Size(min = 3) public String getCurrentStatus() {
@@ -115,7 +110,6 @@ public class ConsentResourceRequestBody implements Serializable {
         this.receipt = receipt;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "receipt")
@@ -136,7 +130,6 @@ public class ConsentResourceRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "expiryTime")
     @NotNull public Integer getExpiryTime() {
@@ -155,7 +148,6 @@ public class ConsentResourceRequestBody implements Serializable {
         this.recurringIndicator = recurringIndicator;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("recurringIndicator")
@@ -176,7 +168,6 @@ public class ConsentResourceRequestBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("consentAttributes")
     public Object getConsentAttributes() {
@@ -196,7 +187,6 @@ public class ConsentResourceRequestBody implements Serializable {
         this.authorizationResources = authorizationResources;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("authorizationResources")
@@ -280,7 +270,6 @@ public class ConsentResourceRequestBody implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

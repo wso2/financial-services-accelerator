@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -28,7 +28,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-
 /**
  * Invalid JSON syntax Exception Mapper
  */
@@ -37,8 +36,6 @@ public class JsonParseExceptionMapper implements ExceptionMapper<JsonParseExcept
     @Override
     public Response toResponse(JsonParseException ex) {
         {
-
-
             Map<String, String> error = new LinkedHashMap<>();
             error.put("code", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR);
             error.put("message", "Invalid request payload");
