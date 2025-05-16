@@ -10,6 +10,7 @@ paths:
       tags:
         - Authorization Resource
       summary: Retrieve Consent Authorization Resource
+      description: Retrieve a specific authorization resource linked to a given consent.
       operationId: consentAuthorizationIdGet
       parameters:
         - name: authorizationId
@@ -43,6 +44,8 @@ paths:
       tags:
         - Authorization Resource
       summary: Update Consent Authorization Resource
+      description: Update the details of a specific authorization resource associated with the given consent.
+
       operationId: consentAuthorizationIdPut
       parameters:
         - name: authorizationId
@@ -82,6 +85,7 @@ paths:
       tags:
         - Authorization Resource
       summary: Delete Consent Authorization Resource
+      description: Delete a specific authorization resource associated with a given consent.
       operationId: consentAuthorizationIdDelete
       parameters:
         - name: authorizationId
@@ -116,6 +120,7 @@ paths:
       tags:
         - Authorization Resource
       summary: Retrieve Consent Authorization Resources
+      description: Retrieve all authorization resources associated with a specific consent.
       operationId: consentAuthorizationGet
       parameters:
         - name: consentId
@@ -144,6 +149,7 @@ paths:
       tags:
         - Authorization Resource
       summary: Add Consent Authorization Resource
+      description: Create new authorization resources and link them to the specified consent.
       operationId: consentAuthorizationIdPost
       parameters:
         - name: consentId
@@ -181,6 +187,7 @@ paths:
       tags:
         - Consent Resource
       summary: Consent Retrieval
+      description: Retrieve the details of a specific consent using its ID.
       operationId: consentConsentIdGet
       parameters:
         - name: consentId
@@ -208,6 +215,7 @@ paths:
       tags:
         - Consent Resource
       summary: Consent Purging
+      description: Permanently delete the consent and its associated records from the system.
       operationId: consentConsentIdDelete
       parameters:
         - name: consentId
@@ -232,6 +240,7 @@ paths:
       tags:
         - Consent Resource
       summary: Consent Expiry Time Update (Seconds)
+      description: Update the expiry time of the specified consent in seconds.
       operationId: consentConsentIdExpiryTimePut
       parameters:
         - name: consentId
@@ -268,6 +277,7 @@ paths:
         - Consent Resource
       summary: Consent Status Update
       operationId: consentConsentIdStatusPut
+      description: Update the status (e.g., ACTIVE, REVOKED) of the specified consent.
       parameters:
         - name: consentId
           in: path
@@ -301,6 +311,7 @@ paths:
       tags:
         - Consent Resource
       summary: Consent Search
+      description: Search for consents using filters such as type, status, client ID, user ID, and time range.
       operationId: consentGet
       parameters:
         - name: orgInfo
@@ -358,10 +369,9 @@ paths:
       tags:
         - Consent Resource
       summary: Consent Initiation
-      description: |2
+      description: |
+        Creates ConsentResource, AuthorizationResource and ConsentAttributes Entity in the database.
 
-        Creates ConsentResource, AuthorizationResource and ConsentMapping Entity in the database.
-        Creates Authorization resources provided in the authorizationResources array if implicitAuth flag is true.
       operationId: consentPost
       parameters:
         - name: orgInfo
@@ -391,6 +401,7 @@ paths:
         - Consent Resource
       summary: Consent Revoke
       operationId: consentRevokeConsentIdPost
+      description: Revoke a previously granted consent using its ID.
       parameters:
         - name: consentId
           in: path
@@ -421,6 +432,7 @@ paths:
         - Consent Resource
       summary: Bulk Consent Status Change
       operationId: consentStatusPut
+      description: Perform a bulk update to change the status of multiple consents.
       parameters:
         - name: orgInfo
           in: header
