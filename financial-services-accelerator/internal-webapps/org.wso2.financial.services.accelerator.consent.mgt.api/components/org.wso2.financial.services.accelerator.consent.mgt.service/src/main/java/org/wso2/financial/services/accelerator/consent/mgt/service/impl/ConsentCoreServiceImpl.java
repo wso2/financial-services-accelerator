@@ -74,8 +74,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     @Override
     public DetailedConsentResource createConsent(ConsentResource consentResource,
                                                  ArrayList<AuthorizationResource>
-                                                         authorizationResources) throws
-            ConsentMgtException {
+                                                         authorizationResources) throws ConsentMgtException {
 
         try {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
@@ -91,10 +90,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     }
 
-
     @Override
-    public DetailedConsentResource getDetailedConsent(String consentId, String orgInfo) throws
-            ConsentMgtException {
+    public DetailedConsentResource getDetailedConsent(String consentId, String orgInfo) throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
@@ -158,16 +155,12 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         return detailedConsentResources;
     }
 
-
     @Override
     public boolean updateConsentExpiryTime(String consentId, long consentExpiryTime, String orgInfo)
-            throws
-            ConsentMgtException {
-
+            throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
-
 
             if (System.currentTimeMillis() / 1000 > consentExpiryTime) {
 
@@ -202,11 +195,9 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     }
 
-
     @Override
     public void updateConsentStatus(String consentId, String newConsentStatus,
-                                    String reason, String userId, String orgInfo) throws
-            ConsentMgtException {
+                                    String reason, String userId, String orgInfo) throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
@@ -333,8 +324,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
 
     @Override
-    public boolean deleteConsent(String consentId) throws
-            ConsentMgtException {
+    public boolean deleteConsent(String consentId) throws ConsentMgtException {
 
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
@@ -362,8 +352,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     @Override
     public boolean revokeConsent(String consentId, String orgInfo, String actionBy, String revokedReason)
-            throws
-            ConsentMgtException {
+            throws ConsentMgtException {
 
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
@@ -418,8 +407,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     @Override
     public AuthorizationResource createConsentAuthorization(AuthorizationResource authorizationResource)
-            throws
-            ConsentMgtException {
+            throws  ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
@@ -492,11 +480,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
 
     @Override
-    public void updateAuthorizationResource(String authorizationId,
-                                            AuthorizationResource authorizationResource,
-                                            String orgInfo)
-            throws
-            ConsentMgtException {
+    public void updateAuthorizationResource(String authorizationId, AuthorizationResource authorizationResource,
+                                            String orgInfo) throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
 
@@ -528,8 +513,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public boolean deleteAuthorizationResource(String authorizationId) throws
-            ConsentMgtException {
+    public boolean deleteAuthorizationResource(String authorizationId) throws  ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
@@ -570,8 +554,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     //TODO : not yet implemented and tested
     @Override
     public boolean storeConsentAttributes(String consentId, Map<String, String> consentAttributes)
-            throws
-            ConsentMgtException {
+            throws ConsentMgtException {
 
         boolean isConsentAttributesStored;
 
@@ -613,8 +596,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     //TODO : not yet implemented and tested
     @Override
     public ConsentAttributes getConsentAttributes(String consentId, ArrayList<String> consentAttributeKeys)
-            throws
-            ConsentMgtException {
+            throws ConsentMgtException {
 
         if (StringUtils.isBlank(consentId) || CollectionUtils.isEmpty(consentAttributeKeys)) {
             log.error(ConsentCoreServiceConstants.CONSENT_ATTRIBUTE_KEYS_MISSING_ERROR_MSG);
@@ -667,8 +649,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     //TODO : not yet implemented and tested
     @Override
-    public ConsentAttributes getConsentAttributes(String consentId) throws
-            ConsentMgtException {
+    public ConsentAttributes getConsentAttributes(String consentId) throws ConsentMgtException {
 
         if (StringUtils.isBlank(consentId)) {
             log.error(ConsentCoreServiceConstants.CONSENT_ID_MISSING_ERROR_MSG);
@@ -722,8 +703,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     //TODO : not yet implemented and tested
     @Override
     public ConsentAttributes updateConsentAttributes(String consentId, Map<String, String> consentAttributes)
-            throws
-            ConsentMgtException {
+            throws  ConsentMgtException {
 
         if (StringUtils.isBlank(consentId) || consentAttributes == null || consentAttributes.isEmpty()) {
             log.error(ConsentCoreServiceConstants.ATTRIBUTE_MAP_MISSING_ERROR_MSG);
@@ -848,8 +828,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     @Override
     public ArrayList<ConsentStatusAuditRecord> getConsentStatusAuditRecords(ArrayList<String> consentIDs,
                                                                             Integer limit, Integer offset)
-            throws
-            ConsentMgtException {
+            throws ConsentMgtException {
 
 
         ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
@@ -873,8 +852,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     public boolean storeConsentAmendmentHistory(String statusAuditRecordId,
                                                 ConsentHistoryResource consentHistoryResource,
                                                 DetailedConsentResource detailedCurrentConsent)
-            throws
-            ConsentMgtException {
+            throws  ConsentMgtException {
 
         if (StringUtils.isBlank(statusAuditRecordId) || consentHistoryResource == null ||
                 StringUtils.isBlank(consentHistoryResource.getReason()) ||
