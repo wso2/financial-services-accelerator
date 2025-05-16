@@ -13,10 +13,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.Author
 public interface AuthorizationResourceMapper {
     AuthorizationResourceMapper INSTANCE = Mappers.getMapper(AuthorizationResourceMapper.class);
 
-    // DAO -> DTO
-    AuthorizationResourceRequestBody toAuthorizationResourceRequestBody(AuthorizationResource authorizationResource);
-
-    // DTO -> DAO
     AuthorizationResource toAuthorizationResource(AuthorizationResourceRequestBody authorizationResourceRequestBody);
 
     AuthorizationResourceResponseBody toAuthorizationResourceResponseBody(AuthorizationResource authorizationResource);

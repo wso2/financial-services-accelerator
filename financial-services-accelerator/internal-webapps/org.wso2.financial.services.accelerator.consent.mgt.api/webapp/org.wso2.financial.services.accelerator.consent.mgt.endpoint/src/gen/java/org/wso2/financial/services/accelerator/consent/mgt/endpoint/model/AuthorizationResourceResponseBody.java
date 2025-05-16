@@ -16,9 +16,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("AuthorizationResourceResponseBody")
-
 public class AuthorizationResourceResponseBody implements Serializable {
     private String authorizationId;
     private String authorizationStatus;
@@ -50,7 +48,6 @@ public class AuthorizationResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "authorizationId")
     @NotNull @NotEmpty public String getAuthorizationId() {
@@ -69,7 +66,6 @@ public class AuthorizationResourceResponseBody implements Serializable {
         this.authorizationStatus = authorizationStatus;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "authorizationStatus")
@@ -90,7 +86,6 @@ public class AuthorizationResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "authorizationType")
     @NotNull @NotEmpty public String getAuthorizationType() {
@@ -109,7 +104,6 @@ public class AuthorizationResourceResponseBody implements Serializable {
         this.userId = userId;
         return this;
     }
-
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty(required = true, value = "userId")
@@ -130,7 +124,6 @@ public class AuthorizationResourceResponseBody implements Serializable {
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("resource")
     public Object getResource() {
@@ -141,7 +134,6 @@ public class AuthorizationResourceResponseBody implements Serializable {
     public void setResource(Object resource) {
         this.resource = resource;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -188,7 +180,6 @@ public class AuthorizationResourceResponseBody implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

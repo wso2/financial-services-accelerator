@@ -1,4 +1,3 @@
-
 <!--
  ~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  ~
@@ -21,7 +20,6 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-
   <display-name>WSO2 Financial Services - Consent API</display-name>
   <description>WSO2 Financial Services - Consent API</description>
 
@@ -34,7 +32,6 @@
     <servlet-class>
       org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet
     </servlet-class>
-
     <init-param>
       <param-name>service-list-stylesheet</param-name>
       <param-value>servicelist.css</param-value>
@@ -63,52 +60,12 @@
         org.wso2.financial.services.accelerator.consent.mgt.endpoint.api.ConsentsApi
       </param-value>
     </init-param>
-
     <load-on-startup>1</load-on-startup>
-
   </servlet>
-
 
   <servlet-mapping>
     <servlet-name>ConsentAPIJAXServlet</servlet-name>
     <url-pattern>/*</url-pattern>
-  </servlet-mapping>
-
-
-  <servlet>
-    <servlet-name>CXFServlet</servlet-name>
-    <servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
-    <init-param>
-      <param-name>jaxrs.serviceClasses</param-name>
-      <param-value> org.wso2.financial.services.accelerator.consent.mgt.endpoint.SwaggerApplication,io.swagger.v3.jaxrs2.integration.resources.OpenApiResource
-
-      </param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>CXFServlet</servlet-name>
-    <url-pattern>/api/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>SwaggerUI</servlet-name>
-    <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
-    <init-param>
-      <param-name>resourceBase</param-name>
-      <param-value>/swagger-ui/</param-value>
-    </init-param>
-    <init-param>
-      <param-name>directoryAllowed</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>SwaggerUI</servlet-name>
-    <url-pattern>/swagger-ui/*</url-pattern>
   </servlet-mapping>
 
   <resource-ref>

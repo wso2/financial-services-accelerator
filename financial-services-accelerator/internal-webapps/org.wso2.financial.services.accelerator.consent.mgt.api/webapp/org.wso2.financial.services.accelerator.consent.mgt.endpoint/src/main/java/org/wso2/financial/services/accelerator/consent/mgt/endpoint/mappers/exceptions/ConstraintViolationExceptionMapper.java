@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -30,7 +30,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-
 /**
  * Exception mapper for ConstraintViolationException.
  */
@@ -53,7 +52,6 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
             error.put("description", "Please ensure the JSON structure matches the expected " +
                     "schema. Violation: " + violation.getPropertyPath().toString() + " " +
                     violation.getMessage());
-
 
         }
         // Return a BAD_REQUEST response with the violation details in JSON format

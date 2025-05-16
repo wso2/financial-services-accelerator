@@ -1,6 +1,5 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.model;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,9 +13,7 @@ import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
-
 @JsonTypeName("ConsentRevokeRequestBody")
-
 public class ConsentRevokeRequestBody implements Serializable {
     private String reason;
     private String userId;
@@ -24,14 +21,10 @@ public class ConsentRevokeRequestBody implements Serializable {
     public ConsentRevokeRequestBody() {
     }
 
-    /**
-     *
-     **/
     public ConsentRevokeRequestBody reason(String reason) {
         this.reason = reason;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("reason")
@@ -44,14 +37,10 @@ public class ConsentRevokeRequestBody implements Serializable {
         this.reason = reason;
     }
 
-    /**
-     *
-     **/
     public ConsentRevokeRequestBody userId(String userId) {
         this.userId = userId;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("userId")
@@ -63,7 +52,6 @@ public class ConsentRevokeRequestBody implements Serializable {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -104,7 +92,6 @@ public class ConsentRevokeRequestBody implements Serializable {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 

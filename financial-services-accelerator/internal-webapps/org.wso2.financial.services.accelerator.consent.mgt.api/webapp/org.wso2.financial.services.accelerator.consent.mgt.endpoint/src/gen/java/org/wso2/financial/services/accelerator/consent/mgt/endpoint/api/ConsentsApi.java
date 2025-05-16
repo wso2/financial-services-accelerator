@@ -19,7 +19,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.Consen
 
 import java.util.List;
 
-
 import javax.validation.constraints.NotNull;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -49,7 +48,6 @@ import javax.ws.rs.core.Response;
 public class ConsentsApi {
     ConsentAPIImpl consentApiImpl = new ConsentAPIImpl();
 
-
     @GET
     @Path("/{consentId}/authorization-resources")
     @Produces({"application/json"})
@@ -63,9 +61,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "404",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -92,10 +90,10 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id, or authorization resource id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
-            )
+                            responseCode = "404",
+                            description = "Invalid consent id, or authorization resource id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
+                    )
             }
     )
     @Tag(name = "Authorization Resource")
@@ -123,9 +121,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "404",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -154,9 +152,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "404",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -185,9 +183,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "404",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -217,9 +215,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = Void.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "404",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -227,7 +225,7 @@ public class ConsentsApi {
     public Response consentConsentIdDelete(
 
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")  @ApiParam("JWT header containing " +
+            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing " +
                     "tenant-related information") String orgInfo) {
 
         return consentApiImpl.consentConsentIdDelete(consentId, orgInfo);
@@ -248,10 +246,10 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
-            )
+                            responseCode = "400",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
+                    )
             }
     )
     @Tag(name = "Consent Resource")
@@ -278,9 +276,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "404",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -308,9 +306,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "400",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -337,9 +335,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
                     ),
                     @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "400",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -376,9 +374,9 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
                     ),
                     @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request body",
-                    content = @Content(schema = @Schema(implementation = Void.class))
+                            responseCode = "400",
+                            description = "Invalid request body",
+                            content = @Content(schema = @Schema(implementation = Void.class))
                     )
             }
     )
@@ -405,10 +403,10 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = Void.class))
                     ),
                     @ApiResponse(
-                    responseCode = "404",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
-            )
+                            responseCode = "404",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
+                    )
             }
     )
     @Tag(name = "Consent Resource")
@@ -436,10 +434,10 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid consent id",
-                    content = @Content(schema = @Schema(implementation = Void.class))
-            )
+                            responseCode = "400",
+                            description = "Invalid consent id",
+                            content = @Content(schema = @Schema(implementation = Void.class))
+                    )
             }
     )
     @Tag(name = "Consent Resource")

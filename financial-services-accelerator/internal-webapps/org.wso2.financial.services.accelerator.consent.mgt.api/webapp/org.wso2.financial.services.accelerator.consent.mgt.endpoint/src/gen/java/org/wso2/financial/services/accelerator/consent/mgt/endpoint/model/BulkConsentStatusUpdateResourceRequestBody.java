@@ -13,9 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-
 @JsonTypeName("BulkConsentStatusUpdateResourceRequestBody")
-
 public class BulkConsentStatusUpdateResourceRequestBody implements Serializable {
     private String clientId;
     private String consentType;
@@ -34,7 +32,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         this.clientId = clientId;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("clientId")
@@ -55,7 +52,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("consentType")
     public String getConsentType() {
@@ -75,7 +71,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         this.applicableStatusesForStateChange = applicableStatusesForStateChange;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("applicableStatusesForStateChange")
@@ -115,7 +110,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("status")
     public String getStatus() {
@@ -134,7 +128,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         this.reason = reason;
         return this;
     }
-
 
     @ApiModelProperty(value = "")
     @JsonProperty("reason")
@@ -155,7 +148,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         return this;
     }
 
-
     @ApiModelProperty(value = "")
     @JsonProperty("userId")
     public String getUserId() {
@@ -166,7 +158,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -218,7 +209,6 @@ public class BulkConsentStatusUpdateResourceRequestBody implements Serializable 
         }
         return o.toString().replace("\n", "\n    ");
     }
-
 
 }
 
