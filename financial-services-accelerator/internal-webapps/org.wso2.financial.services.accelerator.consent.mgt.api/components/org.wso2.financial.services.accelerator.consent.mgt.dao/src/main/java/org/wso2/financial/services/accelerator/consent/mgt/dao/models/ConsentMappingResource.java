@@ -54,52 +54,42 @@ public class ConsentMappingResource {
     }
 
     public String getMappingId() {
-
         return mappingId;
     }
 
     public void setMappingId(String mappingId) {
-
         this.mappingId = mappingId;
     }
 
     public String getAuthorizationId() {
-
         return authorizationId;
     }
 
     public void setAuthorizationId(String authorizationId) {
-
         this.authorizationId = authorizationId;
     }
 
     public String getAccountId() {
-
         return accountId;
     }
 
     public void setAccountId(String accountId) {
-
         this.accountId = accountId;
     }
 
     public String getPermission() {
-
         return permission;
     }
 
     public void setPermission(String permission) {
-
         this.permission = permission;
     }
 
     public String getMappingStatus() {
-
         return mappingStatus;
     }
 
     public void setMappingStatus(String mappingStatus) {
-
         this.mappingStatus = mappingStatus;
     }
 

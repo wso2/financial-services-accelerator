@@ -130,7 +130,7 @@ public class ConsentCoreDAOTests {
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
             storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
             retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-                    storedConsentResource.getConsentId(), storedConsentResource.getOrgInfo());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgId());
         }
 
         Assert.assertNotNull(retrievedConsentResource);
@@ -194,7 +194,7 @@ public class ConsentCoreDAOTests {
                     ConsentMgtDAOTestData.getSampleTestAuthorizationResource(storedConsentResource.getConsentId()));
 
             retrievedDetailedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId(), storedConsentResource.getOrgInfo());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgId());
         }
 
         Assert.assertNotNull(retrievedDetailedConsentResource);
@@ -234,7 +234,7 @@ public class ConsentCoreDAOTests {
 
             retrievedDetailedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
                     storedAuthorizationResource.getConsentId()
-                    , storedConsentResource.getOrgInfo());
+                    , storedConsentResource.getOrgId());
         }
 
         Assert.assertNotNull(retrievedDetailedConsentResource);
@@ -279,7 +279,7 @@ public class ConsentCoreDAOTests {
             storedAuthorizationResourceTwo = consentCoreDAO.storeAuthorizationResource(connection,
                     ConsentMgtDAOTestData.getSampleTestAuthorizationResource(storedConsentResource.getConsentId()));
             retrievedDetailedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId(), storedConsentResource.getOrgInfo());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgId());
         }
 
         Assert.assertNotNull(retrievedDetailedConsentResource);
@@ -471,7 +471,7 @@ public class ConsentCoreDAOTests {
                     authorizationResource);
 
             retrievedAuthorizationResource = consentCoreDAO.getAuthorizationResource(connection,
-                    storedAuthorizationResource.getAuthorizationId(), storedConsentResource.getOrgInfo());
+                    storedAuthorizationResource.getAuthorizationId(), storedConsentResource.getOrgId());
         }
         Assert.assertTrue(retrievedAuthorizationResource.getUpdatedTime() > 0L);
         Assert.assertNotNull(retrievedAuthorizationResource.getAuthorizationStatus());
@@ -553,7 +553,7 @@ public class ConsentCoreDAOTests {
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
             consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
             ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-                    consentResource.getConsentId(), consentResource.getOrgInfo());
+                    consentResource.getConsentId(), consentResource.getOrgId());
 
             ConsentAttributes consentAttributesResource = ConsentMgtDAOTestData
                     .getSampleTestConsentAttributesObject(retrievedConsentResource.getConsentId());
@@ -561,7 +561,7 @@ public class ConsentCoreDAOTests {
             consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
 
             retrievedConsentAttributesResource = consentCoreDAO.getConsentAttributes(connection,
-                    retrievedConsentResource.getConsentId(), retrievedConsentResource.getOrgInfo());
+                    retrievedConsentResource.getConsentId(), retrievedConsentResource.getOrgId());
         }
         Assert.assertNotNull(retrievedConsentAttributesResource.getConsentId());
         Assert.assertNotNull(retrievedConsentAttributesResource.getConsentAttributes());
@@ -577,10 +577,10 @@ public class ConsentCoreDAOTests {
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
             consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
             ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-                    consentResource.getConsentId(), consentResource.getOrgInfo());
+                    consentResource.getConsentId(), consentResource.getOrgId());
 
             retrievedConsentAttributesResource = consentCoreDAO.getConsentAttributes(connection,
-                    retrievedConsentResource.getConsentId(), retrievedConsentResource.getOrgInfo());
+                    retrievedConsentResource.getConsentId(), retrievedConsentResource.getOrgId());
         }
         Assert.assertNotNull(retrievedConsentAttributesResource.getConsentId());
         Assert.assertTrue(retrievedConsentAttributesResource.getConsentAttributes().isEmpty());
@@ -641,7 +641,7 @@ public class ConsentCoreDAOTests {
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
             consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
             retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentResource.getConsentId(),
-                    consentResource.getOrgInfo());
+                    consentResource.getOrgId());
 
             consentAttributesResource = ConsentMgtDAOTestData
                     .getSampleTestConsentAttributesObject(retrievedConsentResource.getConsentId());
@@ -685,7 +685,7 @@ public class ConsentCoreDAOTests {
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
             consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
             ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-                    consentResource.getConsentId(), consentResource.getOrgInfo());
+                    consentResource.getConsentId(), consentResource.getOrgId());
             ConsentAttributes consentAttributesResource = ConsentMgtDAOTestData
                     .getSampleTestConsentAttributesObject(retrievedConsentResource.getConsentId());
             consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
@@ -747,12 +747,12 @@ public class ConsentCoreDAOTests {
             consentAttributesResource.setConsentAttributes(ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
             consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
             createdConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId(), storedConsentResource.getOrgInfo());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgId());
 
             consentCoreDAO.updateConsentAttributes(connection, storedConsentResource.getConsentId(),
                     ConsentMgtDAOTestData.CONSENT_ATTRIBUTES_MAP_FOR_UPDATE);
             updatedConsentResource = consentCoreDAO.getDetailedConsentResource(connection,
-                    storedConsentResource.getConsentId(), storedConsentResource.getOrgInfo());
+                    storedConsentResource.getConsentId(), storedConsentResource.getOrgId());
         }
         Assert.assertEquals(createdConsentResource.getConsentId(), updatedConsentResource.getConsentId());
         Assert.assertNotEquals(createdConsentResource.getConsentAttributes(),
@@ -1010,13 +1010,10 @@ public class ConsentCoreDAOTests {
         Mockito.doReturn(null).when(mockedResultSetTemp).getString(ConsentMgtDAOConstants.MAPPING_ID);
         ConsentCoreDAOImpl dao = new ConsentCoreDAOImpl(new ConsentMgtCommonDBQueries());
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         dao.setAuthorizationDataInResponseForGroupedQuery(authorizationResources,
                 mockedResultSetTemp, "");
-        dao.setAccountConsentMappingDataInResponse(consentMappingResources,
-                mockedResultSetTemp);
+
         Assert.assertEquals(authorizationResources.size(), 0);
-        Assert.assertEquals(consentMappingResources.size(), 0);
     }
 
     @Test
@@ -1661,7 +1658,7 @@ public class ConsentCoreDAOTests {
 
             ConsentAttributes retrievedAttributes = ((ConsentCoreDAOImpl) consentCoreDAO)
                     .getConsentAttributes(connection, storedConsentResource.getConsentId(),
-                            storedConsentResource.getOrgInfo(), keys);
+                            storedConsentResource.getOrgId(), keys);
 
             Assert.assertNotNull(retrievedAttributes);
             Assert.assertEquals(retrievedAttributes.getConsentAttributes().size(), 1);

@@ -55,17 +55,17 @@ public class ConsentAPIImpl {
      *
      * @param createConsentResourceRequestBody The payload containing the consent resource,
      *                                         authorization resources, and consent attributes.
-     * @param orgInfo                          The tenant or organization information.
+     * @param orgId                          The tenant or organization information.
      * @return Response                        A JAX-RS Response containing the created consent resource
      * or an error message if the operation fails.
      **/
     public Response consentPost(
-            ConsentResourceRequestBody createConsentResourceRequestBody, String orgInfo) {
+            ConsentResourceRequestBody createConsentResourceRequestBody, String orgId) {
 
         try {
             ConsentResource consentResource = ConsentResourceMapper.INSTANCE.toConsentResource(
                     createConsentResourceRequestBody);
-            consentResource.setOrgID(orgInfo);
+            consentResource.setOrgId(orgId);
             ArrayList<AuthorizationResource> authorizations = new ArrayList<>();
             if (createConsentResourceRequestBody.getAuthorizationResources() != null) {
                 for (AuthorizationResourceRequestBody authorizationResourceDTO :
@@ -93,15 +93,15 @@ public class ConsentAPIImpl {
      * associated user, client information, and any custom attributes.
      *
      * @param consentId Unique identifier of the consent resource to retrieve.
-     * @param orgInfo   Object containing tenant or organization-related context information.
+     * @param orgId   Object containing tenant or organization-related context information.
      * @return A JAX-RS Response containing the consent resource details, or an error message if the retrieval fails.
      */
     public Response consentConsentIdGet(
-            String consentId, String orgInfo) {
+            String consentId, String orgId) {
 
         try {
             DetailedConsentResource detailedConsentResource =
-                    consentCoreService.getDetailedConsent(consentId, orgInfo);
+                    consentCoreService.getDetailedConsent(consentId, orgId);
             ConsentResourceResponseBody consentResponse =
                     DetailedConsentResourceMapper.INSTANCE.
                             toConsentResourceRequestBody(detailedConsentResource);
@@ -115,7 +115,7 @@ public class ConsentAPIImpl {
     /**
      * This method is used to handle the API used to search the consent resource
      *
-     * @param orgInfo       Object containing tenant or organization-related context information.
+     * @param orgId       Object containing tenant or organization-related context information.
      * @param consentType   Type of the consent to filter the search results.
      * @param consentStatus Status of the consent (e.g., ACTIVE, REVOKED) to filter results.
      * @param clientId      Identifier of the client application that created the consent.
@@ -127,7 +127,7 @@ public class ConsentAPIImpl {
      * @return Response      A JAX-RS Response object containing the filtered list of consents or an error message.
      */
     public Response consentGet(
-            String orgInfo,
+            String orgId,
             String consentType, String consentStatus
             , String clientId, String userId, long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
         try {
@@ -160,7 +160,7 @@ public class ConsentAPIImpl {
 
             ArrayList<DetailedConsentResource> results;
             results = consentCoreService.searchDetailedConsents(
-                    orgInfo,
+                    orgId,
                     consentIDs,
                     clientIDs,
                     consentTypes,
@@ -188,19 +188,19 @@ public class ConsentAPIImpl {
      * This method is used to handle the API used to update the consent status
      *
      * @param consentId                   Unique identifier of the consent resource to be updated.
-     * @param orgInfo                     Object containing tenant or organization-related context information.
+     * @param orgId                     Object containing tenant or organization-related context information.
      * @param consentStatusUpdateResource Object containing the new status and any associated update information.
      * @return Response A JAX-RS Response indicating the result of the update operation—success or failure with details.
      */
     public Response consentConsentIdStatusPut(
             String consentId, ConsentStatusUpdateRequestBody consentStatusUpdateResource
-            , String orgInfo) {
+            , String orgId) {
         try {
             consentCoreService.updateConsentStatus(consentId,
                     consentStatusUpdateResource.getStatus(),
                     consentStatusUpdateResource.getReason(),
                     consentStatusUpdateResource.getUserId(),
-                    orgInfo);
+                    orgId);
 
             JSONObject message = new JSONObject();
             message.put("message", "Status Updated");
@@ -217,16 +217,16 @@ public class ConsentAPIImpl {
      * administrative operations or automated workflows where multiple consents need to be updated simultaneously.
      *
      * @param bulkConsentStatusUpdateResource Object containing the list of consent IDs and the status to apply.
-     * @param orgInfo                         Object containing tenant or organization-related context information.
+     * @param orgId                         Object containing tenant or organization-related context information.
      * @return Response                       A JAX-RS Response summarizing the outcome of the operation, including
      * the number of successful updates and any failures.
      */
     public Response consentStatusPut(BulkConsentStatusUpdateResourceRequestBody bulkConsentStatusUpdateResource,
-                                     String orgInfo) {
+                                     String orgId) {
         try {
 
             consentCoreService.bulkUpdateConsentStatus(
-                    orgInfo,
+                    orgId,
                     bulkConsentStatusUpdateResource.getClientId(),
                     bulkConsentStatusUpdateResource.getStatus(),
                     bulkConsentStatusUpdateResource.getReason(),
@@ -247,16 +247,16 @@ public class ConsentAPIImpl {
      * the new expiry time is set.
      *
      * @param consentId                  Unique identifier of the consent resource whose expiry time is being updated.
-     * @param orgInfo                    Object containing tenant or organization-related context information.
+     * @param orgId                    Object containing tenant or organization-related context information.
      * @param consentExpiryTimeUpdateDTO Data transfer object (DTO) containing the new expiry time for the consent.
      * @return Response                 A JAX-RS Response indicating the result of the update operation—success or
      * failure with details.
      */
     public Response consentConsentIdExpiryTimePut(String consentId, ConsentExpiryTimeUpdateRequestBody
-            consentExpiryTimeUpdateDTO, String orgInfo) {
+            consentExpiryTimeUpdateDTO, String orgId) {
         try {
             boolean result = consentCoreService.updateConsentExpiryTime(consentId,
-                    consentExpiryTimeUpdateDTO.getExpiryTime(), orgInfo);
+                    consentExpiryTimeUpdateDTO.getExpiryTime(), orgId);
             if (result) {
 
                 JSONObject message = new JSONObject();
@@ -279,13 +279,13 @@ public class ConsentAPIImpl {
      * permanently removed, and it will no longer be accessible or retrievable through the API.
      *
      * @param consentId Unique identifier of the consent resource to be deleted.
-     * @param orgInfo   Object containing tenant or organization-related context information.
+     * @param orgId   Object containing tenant or organization-related context information.
      * @return Response A JAX-RS Response indicating the result of the deletion operation—success or failure with details.
      */
-    public Response consentConsentIdDelete(String consentId, String orgInfo) {
+    public Response consentConsentIdDelete(String consentId, String orgId) {
         try {
             // check if the consent exists, else throws exception
-            consentCoreService.getDetailedConsent(consentId, orgInfo);
+            consentCoreService.getDetailedConsent(consentId, orgId);
 
             boolean result = consentCoreService.deleteConsent(consentId);
             if (result) {
@@ -309,15 +309,15 @@ public class ConsentAPIImpl {
      * permanently removed, and it will no longer be accessible or retrievable through the API.
      *
      * @param consentId Unique identifier of the consent resource to be deleted.
-     * @param orgInfo   Object containing tenant or organization-related context information.
+     * @param orgId   Object containing tenant or organization-related context information.
      * @return Response A JAX-RS Response indicating the result of the deletion operation—success or failure with
      * details.
      */
     public Response consentRevokeConsentIdPost(String consentId,
-                                               ConsentRevokeRequestBody consentStatusUpdateResource, String orgInfo) {
+                                               ConsentRevokeRequestBody consentStatusUpdateResource, String orgId) {
         try {
             boolean result = consentCoreService.revokeConsent(consentId,
-                    orgInfo,
+                    orgId,
                     consentStatusUpdateResource.getUserId(),
                     consentStatusUpdateResource.getReason());
             if (result) {
@@ -343,16 +343,16 @@ public class ConsentAPIImpl {
      * contains any relevant permissions or metadata related to the authorization for the consent.
      *
      * @param authorizationId Unique identifier of the authorization resource to retrieve.
-     * @param orgInfo         Object containing tenant or organization-related context information.
+     * @param orgId         Object containing tenant or organization-related context information.
      * @param consentId       Unique identifier of the consent resource associated with the authorization.
      * @return Response      A JAX-RS Response containing the authorization details if found, or an error message if
      * not.
      */
-    public Response consentAuthorizationIdGet(String authorizationId, String consentId, String orgInfo) {
+    public Response consentAuthorizationIdGet(String authorizationId, String consentId, String orgId) {
 
         try {
             AuthorizationResource authorizationResource = consentCoreService.getAuthorizationResource(authorizationId,
-                    orgInfo);
+                    orgId);
             AuthorizationResourceResponseBody authorizationResourceResponseBody =
                     AuthorizationResourceMapper.INSTANCE.toAuthorizationResourceResponseBody(authorizationResource);
             return Response.ok().entity(authorizationResourceResponseBody).build();
@@ -369,13 +369,13 @@ public class ConsentAPIImpl {
      * The returned resource includes any metadata or specific rules/permissions related to the consent's authorization.
      *
      * @param consentId Unique identifier of the consent resource whose authorization details are being retrieved.
-     * @param orgInfo   Object containing tenant or organization-related context information.
+     * @param orgId   Object containing tenant or organization-related context information.
      * @return Response A JAX-RS Response containing the consent authorization details if found, or an error message
      * if not.
      */
-    public Response consentAuthorizationGet(String consentId, String orgInfo) {
+    public Response consentAuthorizationGet(String consentId, String orgId) {
         try {
-            DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId, orgInfo);
+            DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId, orgId);
             List<AuthorizationResource> authorizationResources = consentResource.getAuthorizationResources();
             return Response.ok().entity(authorizationResources).build();
 
@@ -393,7 +393,7 @@ public class ConsentAPIImpl {
      *
      * @param consentId                    Unique identifier of the consent resource to associate the authorization
      *                                     with.
-     * @param orgInfo                      Object containing tenant or organization-related context information.
+     * @param orgId                      Object containing tenant or organization-related context information.
      * @param authorizationResourceDTOList List of data transfer objects (DTOs) representing the authorization
      *                                     resources to be created.
      * @return Response                  A JAX-RS Response indicating the result of the creation operation—success or
@@ -402,10 +402,10 @@ public class ConsentAPIImpl {
     public Response consentAuthorizationIdPost(String consentId,
                                                List<AuthorizationResourceRequestBody>
                                                        authorizationResourceDTOList,
-                                               String orgInfo) {
+                                               String orgId) {
         try {
             ///  check if the consent exists, else throws exception
-            consentCoreService.getDetailedConsent(consentId, orgInfo);
+            consentCoreService.getDetailedConsent(consentId, orgId);
 
             List<AuthorizationResourceResponseBody> authorizationResourceResponseBodyList =
                     new ArrayList<>();
@@ -432,23 +432,23 @@ public class ConsentAPIImpl {
      *
      * @param authorizationId                  Unique identifier of the authorization resource to be updated.
      * @param consentId                        Unique identifier of the consent resource related to the authorization.
-     * @param orgInfo                          Object containing tenant or organization-related context information.
+     * @param orgId                          Object containing tenant or organization-related context information.
      * @param authorizationResourceRequestBody Object containing the new authorization details to be updated.
      * @return Response                    A JAX-RS Response indicating the result of the update operation—success or
      * failure with details.
      */
     public Response consentAuthorizationIdPut(String authorizationId, String consentId,
                                               AuthorizationResourceRequestBody authorizationResourceRequestBody,
-                                              String orgInfo) {
+                                              String orgId) {
 
         try {
             ///  check if the consent exists, else throws exception
-            consentCoreService.getDetailedConsent(consentId, orgInfo);
+            consentCoreService.getDetailedConsent(consentId, orgId);
 
             AuthorizationResource authorizationResource =
                     AuthorizationResourceMapper.INSTANCE.toAuthorizationResource(authorizationResourceRequestBody);
 
-            consentCoreService.updateAuthorizationResource(authorizationId, authorizationResource, orgInfo);
+            consentCoreService.updateAuthorizationResource(authorizationId, authorizationResource, orgId);
 
             return Response.ok().entity("Authorization Resource Updated").build();
 
@@ -464,13 +464,13 @@ public class ConsentAPIImpl {
      *
      * @param authorizationId Unique identifier of the authorization resource to be deleted.
      * @param consentId       Unique identifier of the consent resource associated with the authorization.
-     * @param orgInfo         Object containing tenant or organization-related context information.
+     * @param orgId         Object containing tenant or organization-related context information.
      * @return Response       A JAX-RS Response indicating the result of the deletion operation—success or failure with details.
      */
-    public Response consentAuthorizationIdDelete(String authorizationId, String consentId, String orgInfo) {
+    public Response consentAuthorizationIdDelete(String authorizationId, String consentId, String orgId) {
         try {
             ///  check if the consent exists, else throws exception
-            consentCoreService.getDetailedConsent(consentId, orgInfo);
+            consentCoreService.getDetailedConsent(consentId, orgId);
 
             boolean result = consentCoreService.deleteAuthorizationResource(authorizationId);
             if (result) {

@@ -30,7 +30,7 @@ public class ConsentMgtCommonDBQueries {
 
     public String getStoreConsentPreparedStatement() {
 
-        return "INSERT INTO FS_CONSENT (ORG_INFO, CONSENT_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, " +
+        return "INSERT INTO FS_CONSENT (ORG_ID, CONSENT_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, " +
                 "CONSENT_TYPE, " +
                 "CURRENT_STATUS, EXPIRY_TIME, RECURRING_INDICATOR) VALUES ( COALESCE(?, " +
                 "'DEFAULT_ORG')" +
@@ -41,12 +41,12 @@ public class ConsentMgtCommonDBQueries {
 
     public String getGetConsentPreparedStatement() {
 
-        return "SELECT * FROM FS_CONSENT WHERE CONSENT_ID = ? AND ORG_INFO = COALESCE(?, ORG_INFO)";
+        return "SELECT * FROM FS_CONSENT WHERE CONSENT_ID = ? AND ORG_ID = COALESCE(?, ORG_ID)";
     }
 
     public String getGetConsentWithConsentAttributesPreparedStatement() {
 
-        return "SELECT FS_CONSENT.CONSENT_ID, ORG_INFO, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, CONSENT_TYPE," +
+        return "SELECT FS_CONSENT.CONSENT_ID, ORG_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, CONSENT_TYPE," +
                 " " +
                 "CURRENT_STATUS, EXPIRY_TIME, RECURRING_INDICATOR, " +
                 "FS_CONSENT_ATTRIBUTE.ATT_KEY, FS_CONSENT_ATTRIBUTE.ATT_VALUE FROM FS_CONSENT LEFT JOIN " +
@@ -57,7 +57,7 @@ public class ConsentMgtCommonDBQueries {
     public String getGetDetailedConsentPreparedStatement() {
 
         return "SELECT obc.CONSENT_ID," +
-                "ORG_INFO, " +
+                "ORG_ID, " +
                 "RECEIPT, " +
                 "CLIENT_ID, " +
                 "CONSENT_TYPE, " +
@@ -77,7 +77,7 @@ public class ConsentMgtCommonDBQueries {
                 "FROM FS_CONSENT obc " +
                 "LEFT JOIN FS_CONSENT_ATTRIBUTE ca ON obc.CONSENT_ID=ca.CONSENT_ID " +
                 "LEFT JOIN FS_CONSENT_AUTH_RESOURCE ocar ON obc.CONSENT_ID=ocar.CONSENT_ID " +
-                "WHERE (obc.CONSENT_ID = ? AND obc.ORG_INFO = COALESCE(?, obc.ORG_INFO)) ";
+                "WHERE (obc.CONSENT_ID = ? AND obc.ORG_ID = COALESCE(?, obc.ORG_ID)) ";
     }
 
     public String getUpdateConsentStatusPreparedStatement() {
@@ -97,13 +97,14 @@ public class ConsentMgtCommonDBQueries {
                 "UPDATED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?)";
     }
 
+
     public String getGetAuthorizationResourcePreparedStatement() {
 
         return "SELECT ACR.*\n" +
                 "FROM FS_CONSENT_AUTH_RESOURCE ACR  \n" +
                 "LEFT JOIN FS_CONSENT C ON ACR.CONSENT_ID = C.CONSENT_ID  \n" +
                 "WHERE ACR.AUTH_ID = ? \n" +
-                "AND (C.ORG_INFO = ?)";
+                "AND (C.ORG_ID = ?)";
     }
 
 
@@ -129,7 +130,7 @@ public class ConsentMgtCommonDBQueries {
         return "SELECT ca.*\n" +
                 "FROM FS_CONSENT_ATTRIBUTE ca\n" +
                 "JOIN FS_CONSENT c ON ca.CONSENT_ID = c.CONSENT_ID\n" +
-                "WHERE ca.CONSENT_ID = ? AND c.ORG_INFO = COALESCE(?, c.ORG_INFO);";
+                "WHERE ca.CONSENT_ID = ? AND c.ORG_ID = COALESCE(?, c.ORG_ID);";
     }
 
     public String getGetConsentAttributesByNamePreparedStatement() {
@@ -164,7 +165,7 @@ public class ConsentMgtCommonDBQueries {
         }
 
         StringBuilder query = new StringBuilder("SELECT OBC.CONSENT_ID, " +
-                "ORG_INFO, " +
+                "ORG_ID, " +
                 "RECEIPT, " +
                 "CLIENT_ID, " +
                 "CONSENT_TYPE, " +

@@ -75,7 +75,7 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
     // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
     // Suppressed warning count - 1
     public ArrayList<DetailedConsentResource> searchConsents(Connection connection,
-                                                             String orgInfo, ArrayList<String> consentIDs,
+                                                             String orgId, ArrayList<String> consentIDs,
                                                              ArrayList<String> clientIDs,
                                                              ArrayList<String> consentTypes,
                                                              ArrayList<String> consentStatuses,
@@ -206,7 +206,6 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
             setAuthorizationDataInResponseForGroupedQuery(authorizationResources, resultSet,
                     detailedConsentResource.getConsentId());
             // Set consent account mapping data if available
-            setAccountConsentMappingDataInResponse(consentMappingResources, resultSet);
 
             detailedConsentResource.setConsentAttributes(consentAttributesMap);
             detailedConsentResource.setAuthorizationResources(authorizationResources);

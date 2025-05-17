@@ -146,8 +146,6 @@
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*Exception.class</exclude>
                         <exclude>**/*ConsentCoreServiceUtil.class</exclude>
-
-
                     </excludes>
                 </configuration>
                 <executions>
@@ -201,41 +199,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.felix</groupId>-->
-<!--                <artifactId>maven-bundle-plugin</artifactId>-->
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <instructions>-->
-<!--                        <Bundle-SymbolicName>-->
-<!--                            ${project.artifactId}-->
-<!--                        </Bundle-SymbolicName>-->
-<!--                        <Private-Package>-->
-<!--                            org.wso2.financial.services.accelerator.consent.mgt.service.internal-->
-<!--                        </Private-Package>-->
-<!--                        <Import-Package>-->
-<!--                            org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",-->
-<!--                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",-->
-<!--                            org.apache.commons.lang3;version="${commons-lang3.version}",-->
-<!--                            net.minidev.json.*;version="${json-smart.version}",-->
-<!--                            org.apache.commons.collections4;version="${commons-collections.version.range}",-->
-<!--                            org.apache.commons.logging;version="${commons.logging.version}",-->
-<!--                            org.wso2.carbon.identity.oauth2.*;version="${identity.inbound.auth.oauth.version.range}",-->
-<!--                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",-->
-<!--                            org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",-->
-<!--                            com.google.gson;version="${google.gson.version.range}",-->
-<!--                            org.apache.oltu.oauth2.*;version="${oltu.version}",-->
-<!--                            org.wso2.carbon.identity.application.authentication.framework.model;version="${carbon.identity.framework.version.range}",-->
-<!--                            org.wso2.carbon.user.core.util;version=${carbon.kernel.version}-->
-<!--                        </Import-Package>-->
-<!--                        <Export-Package>-->
-<!--                            !org.wso2.financial.services.accelerator.consent.mgt.service.internal,-->
-<!--                            org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",-->
-<!--                        </Export-Package>-->
-<!--                        <_dsannotations>*</_dsannotations>-->
-<!--                    </instructions>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 

@@ -39,6 +39,7 @@ public interface ConsentResourceMapper {
             Map<String, Object> map = objectMapper.convertValue(value, Map.class);
             if (map == null) {
                 return new HashMap<>();
+
             }
             return map.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString()));

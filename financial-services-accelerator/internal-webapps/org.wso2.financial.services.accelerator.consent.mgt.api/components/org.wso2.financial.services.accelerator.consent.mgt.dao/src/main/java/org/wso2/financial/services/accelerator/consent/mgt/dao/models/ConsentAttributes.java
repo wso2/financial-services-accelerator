@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -28,7 +28,7 @@ public class ConsentAttributes {
     private String consentId;
     private Map<String, String> consentAttributes;
 
-    public ConsentAttributes(){
+    public ConsentAttributes() {
 
     }
 
@@ -38,22 +38,18 @@ public class ConsentAttributes {
     }
 
     public String getConsentId() {
-
         return consentId;
     }
 
     public void setConsentId(String consentId) {
-
         this.consentId = consentId;
     }
 
     public Map<String, String> getConsentAttributes() {
-
         return consentAttributes;
     }
 
     public void setConsentAttributes(Map<String, String> consentAttributes) {
-
         this.consentAttributes = consentAttributes;
     }
 }

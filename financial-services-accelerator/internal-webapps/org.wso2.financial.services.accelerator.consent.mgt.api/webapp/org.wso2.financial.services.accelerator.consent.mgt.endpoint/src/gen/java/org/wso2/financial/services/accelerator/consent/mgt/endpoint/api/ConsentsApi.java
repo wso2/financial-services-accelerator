@@ -70,10 +70,10 @@ public class ConsentsApi {
     @Tag(name = "Authorization Resource")
     public Response consentAuthorizationGet(
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentAuthorizationGet(consentId, orgInfo);
+        return consentApiImpl.consentAuthorizationGet(consentId, orgId);
 
     }
 
@@ -101,10 +101,10 @@ public class ConsentsApi {
 
             @PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
             @PathParam("consentId") @ApiParam("Consent Id") String consentId,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related" +
-                    " information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related" +
+                    " information") String orgId) {
 
-        return consentApiImpl.consentAuthorizationIdDelete(authorizationId, consentId, orgInfo);
+        return consentApiImpl.consentAuthorizationIdDelete(authorizationId, consentId, orgId);
 
     }
 
@@ -131,10 +131,10 @@ public class ConsentsApi {
     public Response consentAuthorizationIdGet(
             @PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
             @PathParam("consentId") @ApiParam("Consent Id") String consentId,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentAuthorizationIdGet(authorizationId, consentId, orgInfo);
+        return consentApiImpl.consentAuthorizationIdGet(authorizationId, consentId, orgId);
 
     }
 
@@ -162,10 +162,10 @@ public class ConsentsApi {
     public Response consentAuthorizationIdPost(
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
             @Valid @NotNull List<@Valid AuthorizationResourceRequestBody> authorizationResourceRequestBody,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related" +
-                    " information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related" +
+                    " information") String orgId) {
 
-        return consentApiImpl.consentAuthorizationIdPost(consentId, authorizationResourceRequestBody, orgInfo);
+        return consentApiImpl.consentAuthorizationIdPost(consentId, authorizationResourceRequestBody, orgId);
 
     }
 
@@ -195,11 +195,11 @@ public class ConsentsApi {
             @PathParam("authorizationId") @ApiParam("Authorization Id") String authorizationId,
             @PathParam("consentId") @ApiParam("Consent Id") String consentId,
             @Valid @NotNull AuthorizationResourceRequestBody authorizationResourceRequestBody,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related " +
-                    "information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing tenant-related " +
+                    "information") String orgId) {
 
         return consentApiImpl.consentAuthorizationIdPut(authorizationId, consentId, authorizationResourceRequestBody,
-                orgInfo);
+                orgId);
 
     }
 
@@ -225,10 +225,10 @@ public class ConsentsApi {
     public Response consentConsentIdDelete(
 
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing " +
-                    "tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing " +
+                    "tenant-related information") String orgId) {
 
-        return consentApiImpl.consentConsentIdDelete(consentId, orgInfo);
+        return consentApiImpl.consentConsentIdDelete(consentId, orgId);
 
     }
 
@@ -256,10 +256,10 @@ public class ConsentsApi {
     public Response consentConsentIdExpiryTimePut(
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
             @Valid @NotNull ConsentExpiryTimeUpdateRequestBody consentExpiryTimeUpdateRequestBody,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentConsentIdExpiryTimePut(consentId, consentExpiryTimeUpdateRequestBody, orgInfo);
+        return consentApiImpl.consentConsentIdExpiryTimePut(consentId, consentExpiryTimeUpdateRequestBody, orgId);
 
     }
 
@@ -285,10 +285,10 @@ public class ConsentsApi {
     @Tag(name = "Consent Resource")
     public Response consentConsentIdGet(
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentConsentIdGet(consentId, orgInfo);
+        return consentApiImpl.consentConsentIdGet(consentId, orgId);
 
     }
 
@@ -316,10 +316,10 @@ public class ConsentsApi {
     public Response consentConsentIdStatusPut(
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
             @Valid @NotNull ConsentStatusUpdateRequestBody consentStatusUpdateRequestBody,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentConsentIdStatusPut(consentId, consentStatusUpdateRequestBody, orgInfo);
+        return consentApiImpl.consentConsentIdStatusPut(consentId, consentStatusUpdateRequestBody, orgId);
 
     }
 
@@ -343,8 +343,8 @@ public class ConsentsApi {
     )
     @Tag(name = "Consent Resource")
     public Response consentGet(
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo,
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId,
             @QueryParam("consentTypes") String consentTypes,
             @QueryParam("consentStatuses") String consentStatuses,
             @QueryParam("clientIds") String clientIds,
@@ -354,7 +354,7 @@ public class ConsentsApi {
             @QueryParam("limit") int limit,
             @QueryParam("offset") int offset) {
 
-        return consentApiImpl.consentGet(orgInfo, consentTypes, consentStatuses, clientIds, userIds, fromTime, toTime,
+        return consentApiImpl.consentGet(orgId, consentTypes, consentStatuses, clientIds, userIds, fromTime, toTime,
                 limit, offset);
 
     }
@@ -383,10 +383,10 @@ public class ConsentsApi {
     @Tag(name = "Consent Resource")
     public Response consentPost(
             @Valid @NotNull ConsentResourceRequestBody consentResourceRequestBody,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentPost(consentResourceRequestBody, orgInfo);
+        return consentApiImpl.consentPost(consentResourceRequestBody, orgId);
 
     }
 
@@ -413,10 +413,10 @@ public class ConsentsApi {
     public Response consentRevokeConsentIdPost(
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
             @Valid @NotNull ConsentRevokeRequestBody consentRevokeRequestBody,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentRevokeConsentIdPost(consentId, consentRevokeRequestBody, orgInfo);
+        return consentApiImpl.consentRevokeConsentIdPost(consentId, consentRevokeRequestBody, orgId);
 
     }
 
@@ -443,10 +443,10 @@ public class ConsentsApi {
     @Tag(name = "Consent Resource")
     public Response consentStatusPut(
             @Valid @NotNull BulkConsentStatusUpdateResourceRequestBody bulkConsentStatusUpdateResourceRequestBody,
-            @HeaderParam("orgInfo") @DefaultValue("DEFAULT_ORG")
-            @ApiParam("JWT header containing tenant-related information") String orgInfo) {
+            @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG")
+            @ApiParam("JWT header containing tenant-related information") String orgId) {
 
-        return consentApiImpl.consentStatusPut(bulkConsentStatusUpdateResourceRequestBody, orgInfo);
+        return consentApiImpl.consentStatusPut(bulkConsentStatusUpdateResourceRequestBody, orgId);
 
     }
 }

@@ -186,7 +186,7 @@ public class ConsentMgtDAOTestData {
     public static ConsentResource getSampleTestConsentResource() {
 
         ConsentResource consentResource = new ConsentResource();
-        consentResource.setOrgID(ConsentMgtDAOConstants.DEFAULT_ORG);
+        consentResource.setOrgId(ConsentMgtDAOConstants.DEFAULT_ORG);
         consentResource.setReceipt(ConsentMgtDAOTestData.SAMPLE_CONSENT_RECEIPT);
         consentResource.setClientId(UUID.randomUUID().toString());
         consentResource.setConsentType(ConsentMgtDAOTestData.SAMPLE_CONSENT_TYPE);
