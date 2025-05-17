@@ -634,7 +634,7 @@ public class ConsentCoreDAOTests {
             Exception {
 
         ConsentAttributes consentAttributesResource;
-        Map<String, String> retrievedValuesMap;
+        Map<String, Object> retrievedValuesMap;
         ConsentResource retrievedConsentResource;
         ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
 
@@ -673,60 +673,6 @@ public class ConsentCoreDAOTests {
                 .prepareStatement(Mockito.anyString());
         Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
         consentCoreDAO.getConsentAttributesByKey(mockedConnection, Mockito.anyString());
-    }
-
-    @Test
-    public void testRetrieveConsentIdByConsentAttributeNameAndValue() throws
-            Exception {
-
-        ArrayList<String> consentIdList;
-        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
-
-        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            consentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
-            ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection,
-                    consentResource.getConsentId(), consentResource.getOrgId());
-            ConsentAttributes consentAttributesResource = ConsentMgtDAOTestData
-                    .getSampleTestConsentAttributesObject(retrievedConsentResource.getConsentId());
-            consentCoreDAO.storeConsentAttributes(connection, consentAttributesResource);
-            consentIdList = consentCoreDAO.getConsentIdByConsentAttributeKeyAndValue(connection,
-                    "payment-type", "domestic-payments");
-
-        }
-        Assert.assertFalse(consentIdList.isEmpty());
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testRetrieveConsentIdByConsentAttributeNameAndValueSQLError() throws
-            Exception {
-
-        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
-        consentCoreDAO.getConsentIdByConsentAttributeKeyAndValue(mockedConnection, "payment-type",
-                "domestic-payments");
-    }
-
-    @Test(expectedExceptions = ConsentDataRetrievalException.class)
-    public void testRetrieveConsentIdByConsentAttributeNameAndValueResultSetError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doThrow(SQLException.class).when(mockedPreparedStatement).executeQuery();
-        consentCoreDAO.getConsentIdByConsentAttributeKeyAndValue(mockedConnection, "payment-type",
-                "domestic-payments");
-    }
-
-    @Test
-    public void testRetrieveConsentIdByConsentAttributeNameAndValueNoRecordsFoundError() throws
-            Exception {
-
-        Mockito.doReturn(mockedPreparedStatement).when(mockedConnection)
-                .prepareStatement(Mockito.anyString());
-        Mockito.doReturn(mockedResultSet).when(mockedPreparedStatement).executeQuery();
-        Mockito.doReturn(false).when(mockedResultSet).isBeforeFirst();
-        ArrayList<String> consentIdList = consentCoreDAO.getConsentIdByConsentAttributeKeyAndValue(mockedConnection,
-                "payment-type", "domestic-payments");
-        Assert.assertTrue(consentIdList.isEmpty());
     }
 
     @Test
@@ -819,7 +765,6 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(detailedConsentResources);
         for (DetailedConsentResource resource : detailedConsentResources) {
             Assert.assertNotNull(resource.getAuthorizationResources());
-            Assert.assertNotNull(resource.getConsentMappingResources());
             Assert.assertNotNull(resource.getConsentAttributes());
 
             for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
@@ -863,7 +808,6 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(detailedConsentResources);
         for (DetailedConsentResource resource : detailedConsentResources) {
             Assert.assertNotNull(resource.getAuthorizationResources());
-            Assert.assertNotNull(resource.getConsentMappingResources());
             Assert.assertNotNull(resource.getConsentAttributes());
 
             for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
@@ -915,7 +859,6 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(detailedConsentResources);
         for (DetailedConsentResource resource : detailedConsentResources) {
             Assert.assertNotNull(resource.getAuthorizationResources());
-            Assert.assertNotNull(resource.getConsentMappingResources());
             Assert.assertNotNull(resource.getConsentAttributes());
 
             for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
@@ -941,7 +884,6 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(detailedConsentResources);
         for (DetailedConsentResource resource : detailedConsentResources) {
             Assert.assertNotNull(resource.getAuthorizationResources());
-            Assert.assertNotNull(resource.getConsentMappingResources());
             Assert.assertNotNull(resource.getConsentAttributes());
 
             for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
@@ -992,7 +934,6 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(detailedConsentResources);
         for (DetailedConsentResource resource : detailedConsentResources) {
             Assert.assertNotNull(resource.getAuthorizationResources());
-            Assert.assertNotNull(resource.getConsentMappingResources());
             Assert.assertNotNull(resource.getConsentAttributes());
 
             for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
@@ -1076,7 +1017,6 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(detailedConsentResources);
         for (DetailedConsentResource resource : detailedConsentResources) {
             Assert.assertNotNull(resource.getAuthorizationResources());
-            Assert.assertNotNull(resource.getConsentMappingResources());
             Assert.assertNotNull(resource.getConsentAttributes());
 
             for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
@@ -1102,7 +1042,6 @@ public class ConsentCoreDAOTests {
         Assert.assertNotNull(detailedConsentResources);
         for (DetailedConsentResource resource : detailedConsentResources) {
             Assert.assertNotNull(resource.getAuthorizationResources());
-            Assert.assertNotNull(resource.getConsentMappingResources());
             Assert.assertNotNull(resource.getConsentAttributes());
 
             for (AuthorizationResource authResource : resource.getAuthorizationResources()) {
@@ -1678,13 +1617,13 @@ public class ConsentCoreDAOTests {
 
             ConsentAttributes consentAttributes = new ConsentAttributes();
             consentAttributes.setConsentId(storedConsentResource.getConsentId());
-            Map<String, String> attributes = new HashMap<>();
+            Map<String, Object> attributes = new HashMap<>();
             attributes.put("accountId", "12345");
 
             consentAttributes.setConsentAttributes(attributes);
             consentCoreDAO.storeConsentAttributes(connection, consentAttributes);
 
-            Map<String, String> results = ((ConsentCoreDAOImpl) consentCoreDAO)
+            Map<String, Object> results = ((ConsentCoreDAOImpl) consentCoreDAO)
                     .getConsentAttributesByKey(connection, "accountId");
 
             Assert.assertNotNull(results);

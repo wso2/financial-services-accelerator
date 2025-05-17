@@ -20,7 +20,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONValue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,25 +55,15 @@ public class ConsentManagementDAOUtil {
     private static final String PLACEHOLDER = "?";
     private static final String LEFT_PARENTHESIS = "(";
     private static final String RIGHT_PARENTHESIS = ")";
-
-    private static final Map<String, String> DB_OPERATORS_MAP = new HashMap<>();
-
-    static {
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.IN,
-                "IN");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.AND,
-                "AND");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.OR,
-                "OR");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.WHERE,
-                "WHERE");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.PLACEHOLDER,
-                "?,");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.PLAIN_PLACEHOLDER,
-                "?");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.EQUALS,
-                "=");
-    }
+private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
+    ConsentMgtDAOConstants.IN, "IN",
+    ConsentMgtDAOConstants.AND, "AND",
+    ConsentMgtDAOConstants.OR, "OR",
+    ConsentMgtDAOConstants.WHERE, "WHERE",
+    ConsentMgtDAOConstants.PLACEHOLDER, "?,",
+    ConsentMgtDAOConstants.PLAIN_PLACEHOLDER, "?",
+    ConsentMgtDAOConstants.EQUALS, "="
+);
 
     /**
      * Set data from the result set to ConsentResource object.
@@ -100,28 +89,6 @@ public class ConsentManagementDAOUtil {
     }
 
     /**
-     * Set data from the result set to ConsentResource object with consent attributes.
-     *
-     * @param resultSet result set
-     * @return ConsentResource with attributes constructed using the result set
-     */
-    public static ConsentResource setDataToConsentResourceWithAttributes(ResultSet resultSet)
-            throws
-            SQLException {
-        ConsentResource consentResource = setDataToConsentResource(resultSet);
-        Map<String, String> retrievedConsentAttributeMap = new HashMap<>();
-        // Point the cursor to the beginning of the result set to read attributes
-        resultSet.beforeFirst();
-        while (resultSet.next()) {
-            retrievedConsentAttributeMap.put(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY),
-                    resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE));
-        }
-        consentResource.setConsentAttributes(retrievedConsentAttributeMap);
-
-        return consentResource;
-    }
-
-    /**
      * Set data from the result set to DetailedConsentResource object.
      *
      * @param resultSet result set
@@ -132,7 +99,7 @@ public class ConsentManagementDAOUtil {
             SQLException,
             JsonProcessingException {
 
-        Map<String, String> consentAttributesMap = new HashMap<>();
+        Map<String, Object> consentAttributesMap = new HashMap<>();
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         ArrayList<String> authIds = new ArrayList<>();
@@ -143,14 +110,9 @@ public class ConsentManagementDAOUtil {
             detailedConsentResource = setConsentDataToDetailedConsentResource(resultSet);
             // Set data related to consent attributes
             if (StringUtils.isNotBlank(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY))) {
-                String attributeValue = resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE);
-
-                // skip adding all temporary session data to consent attributes
-                if (!(JSONValue.isValidJson(attributeValue) &&
-                        attributeValue.contains(ConsentMgtDAOConstants.SESSION_DATA_KEY))) {
-                    consentAttributesMap.put(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY),
-                            attributeValue);
-                }
+                Object attributeValue = objectMapper.readValue(resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE),
+                                Object.class);
+                consentAttributesMap.put(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY), attributeValue);
             }
 
             // Set data related to authorization resources
@@ -182,7 +144,6 @@ public class ConsentManagementDAOUtil {
         // Set consent attributes, auth resources and account mappings to detailed consent resource
         detailedConsentResource.setConsentAttributes(consentAttributesMap);
         detailedConsentResource.setAuthorizationResources(authorizationResources);
-        detailedConsentResource.setConsentMappingResources(consentMappingResources);
         return detailedConsentResource;
     }
 
@@ -209,7 +170,6 @@ public class ConsentManagementDAOUtil {
                 resultSet.getLong(ConsentMgtDAOConstants.CONSENT_UPDATED_TIME),
                 resultSet.getBoolean(ConsentMgtDAOConstants.RECURRING_INDICATOR),
                 new HashMap<>(),
-                new ArrayList<>(),
                 new ArrayList<>()
         );
     }

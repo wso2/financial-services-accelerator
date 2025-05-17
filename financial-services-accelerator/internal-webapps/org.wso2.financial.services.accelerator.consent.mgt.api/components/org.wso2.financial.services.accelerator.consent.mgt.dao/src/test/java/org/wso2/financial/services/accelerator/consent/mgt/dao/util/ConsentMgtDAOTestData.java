@@ -84,7 +84,7 @@ public class ConsentMgtDAOTestData {
     public static final Long SAMPLE_UPDATED_TIME = 1638337892L;
     public static final String SAMPLE_AMENDMENT_REASON = "sampleReason";
     public static final String SAMPLE_CONSENT_FILE = "sample file content";
-    public static final Map<String, String> SAMPLE_CONSENT_ATTRIBUTES_MAP = new HashMap<String, String>() {
+    public static final Map<String, Object> SAMPLE_CONSENT_ATTRIBUTES_MAP = new HashMap<String, Object>() {
         {
             put("x-request-id", UUID.randomUUID().toString());
             put("idempotency-key", UUID.randomUUID().toString());
@@ -92,7 +92,7 @@ public class ConsentMgtDAOTestData {
             put("sessionDataKey", "{\"sessionDataKey\":\"a0c8cd6d-eca0-4c4d-9544-2b39e7e1c180\",\"userId\":\"01Z79\"}");
         }
     };
-    public static final Map<String, String> CONSENT_ATTRIBUTES_MAP_FOR_UPDATE = new HashMap<String, String>() {
+    public static final Map<String, Object> CONSENT_ATTRIBUTES_MAP_FOR_UPDATE = new HashMap<String, Object>() {
         {
             put("payment-type", "international-payments");
         }

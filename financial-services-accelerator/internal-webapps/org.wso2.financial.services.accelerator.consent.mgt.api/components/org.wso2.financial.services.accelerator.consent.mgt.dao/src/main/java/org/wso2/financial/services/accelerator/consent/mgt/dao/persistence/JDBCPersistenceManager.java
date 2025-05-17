@@ -83,6 +83,7 @@ public final class JDBCPersistenceManager {
         }
         synchronized (JDBCPersistenceManager.class) {
             try {
+                //TODO : get the data source name from the configuration file
                 String dataSourceName = "jdbc/WSO2FS_DB";
                 if (StringUtils.isNotBlank(dataSourceName)) {
                     Context context = new InitialContext();

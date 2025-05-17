@@ -42,7 +42,11 @@ public class ConsentStoreInitializer {
     private static final String MS_SQL = "MSSQL";
     private static final String POSTGRE = "PostgreSQL";
     private static final String ORACLE = "Oracle";
-    private static ConsentCoreDAO consentCoreDAO = null;
+    private static volatile ConsentCoreDAO consentCoreDAO = null;
+
+    // hiding the constructor to prevent instantiation
+    private ConsentStoreInitializer() {
+    }
 
     /**
      * Return the DAO implementation initialized for the relevant database type.

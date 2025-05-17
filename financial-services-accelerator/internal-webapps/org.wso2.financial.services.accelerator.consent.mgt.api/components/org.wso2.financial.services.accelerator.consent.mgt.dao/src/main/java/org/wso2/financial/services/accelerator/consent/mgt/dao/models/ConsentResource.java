@@ -62,7 +62,7 @@ public class ConsentResource {
         this.updatedTime = updatedTime;
     }
 
-    private Map<String, String> consentAttributes;
+    private Map<String, Object> consentAttributes;
 
     public String getOrgId() {
         return orgId;
@@ -144,11 +144,11 @@ public class ConsentResource {
         this.updatedTime = updatedTime;
     }
 
-    public Map<String, String> getConsentAttributes() {
+    public Map<String, Object> getConsentAttributes() {
         return consentAttributes;
     }
 
-    public void setConsentAttributes(Map<String, String> consentAttributes) {
+    public void setConsentAttributes(Map<String, Object> consentAttributes) {
         this.consentAttributes = consentAttributes;
     }
 }
