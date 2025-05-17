@@ -6,10 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentMgtException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.model.AuthorizationResourceMapper;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.model.ConsentResourceMapper;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.model.DetailedConsentResourceMapper;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.model.AuthorizationResourceResponseBody;
@@ -55,7 +53,7 @@ public class ConsentAPIImpl {
      *
      * @param createConsentResourceRequestBody The payload containing the consent resource,
      *                                         authorization resources, and consent attributes.
-     * @param orgId                          The tenant or organization information.
+     * @param orgId                            The tenant or organization information.
      * @return Response                        A JAX-RS Response containing the created consent resource
      * or an error message if the operation fails.
      **/
@@ -63,21 +61,10 @@ public class ConsentAPIImpl {
             ConsentResourceRequestBody createConsentResourceRequestBody, String orgId) {
 
         try {
-            ConsentResource consentResource = ConsentResourceMapper.INSTANCE.toConsentResource(
-                    createConsentResourceRequestBody);
-            consentResource.setOrgId(orgId);
-            ArrayList<AuthorizationResource> authorizations = new ArrayList<>();
-            if (createConsentResourceRequestBody.getAuthorizationResources() != null) {
-                for (AuthorizationResourceRequestBody authorizationResourceDTO :
-                        createConsentResourceRequestBody.getAuthorizationResources()) {
-                    AuthorizationResource authorizationResource =
-                            AuthorizationResourceMapper.INSTANCE.
-                                    toAuthorizationResource(authorizationResourceDTO);
-
-                    authorizations.add(authorizationResource);
-                }
-            }
-            DetailedConsentResource result = consentCoreService.createConsent(consentResource, authorizations);
+           DetailedConsentResource detailedConsentResource = DetailedConsentResourceMapper.INSTANCE.
+                   toDetailedConsentResource(createConsentResourceRequestBody);
+            detailedConsentResource.setOrgId(orgId);
+            DetailedConsentResource result = consentCoreService.createConsent(detailedConsentResource);
             ConsentResourceResponseBody consentResourceResponseBody =
                     DetailedConsentResourceMapper.INSTANCE.toConsentResourceRequestBody(result);
             return Response.status(Response.Status.CREATED).entity(consentResourceResponseBody).build();
@@ -93,7 +80,7 @@ public class ConsentAPIImpl {
      * associated user, client information, and any custom attributes.
      *
      * @param consentId Unique identifier of the consent resource to retrieve.
-     * @param orgId   Object containing tenant or organization-related context information.
+     * @param orgId     Object containing tenant or organization-related context information.
      * @return A JAX-RS Response containing the consent resource details, or an error message if the retrieval fails.
      */
     public Response consentConsentIdGet(
@@ -115,7 +102,7 @@ public class ConsentAPIImpl {
     /**
      * This method is used to handle the API used to search the consent resource
      *
-     * @param orgId       Object containing tenant or organization-related context information.
+     * @param orgId         Object containing tenant or organization-related context information.
      * @param consentType   Type of the consent to filter the search results.
      * @param consentStatus Status of the consent (e.g., ACTIVE, REVOKED) to filter results.
      * @param clientId      Identifier of the client application that created the consent.
@@ -188,7 +175,7 @@ public class ConsentAPIImpl {
      * This method is used to handle the API used to update the consent status
      *
      * @param consentId                   Unique identifier of the consent resource to be updated.
-     * @param orgId                     Object containing tenant or organization-related context information.
+     * @param orgId                       Object containing tenant or organization-related context information.
      * @param consentStatusUpdateResource Object containing the new status and any associated update information.
      * @return Response A JAX-RS Response indicating the result of the update operation—success or failure with details.
      */
@@ -217,7 +204,7 @@ public class ConsentAPIImpl {
      * administrative operations or automated workflows where multiple consents need to be updated simultaneously.
      *
      * @param bulkConsentStatusUpdateResource Object containing the list of consent IDs and the status to apply.
-     * @param orgId                         Object containing tenant or organization-related context information.
+     * @param orgId                           Object containing tenant or organization-related context information.
      * @return Response                       A JAX-RS Response summarizing the outcome of the operation, including
      * the number of successful updates and any failures.
      */
@@ -247,7 +234,7 @@ public class ConsentAPIImpl {
      * the new expiry time is set.
      *
      * @param consentId                  Unique identifier of the consent resource whose expiry time is being updated.
-     * @param orgId                    Object containing tenant or organization-related context information.
+     * @param orgId                      Object containing tenant or organization-related context information.
      * @param consentExpiryTimeUpdateDTO Data transfer object (DTO) containing the new expiry time for the consent.
      * @return Response                 A JAX-RS Response indicating the result of the update operation—success or
      * failure with details.
@@ -274,13 +261,14 @@ public class ConsentAPIImpl {
 
     /**
      * Handles the API request to delete a specific consent resource.
-     *
+     * <p>
      * This method deletes the consent resource identified by its ID. Once deleted, the consent record is
      * permanently removed, and it will no longer be accessible or retrievable through the API.
      *
      * @param consentId Unique identifier of the consent resource to be deleted.
-     * @param orgId   Object containing tenant or organization-related context information.
-     * @return Response A JAX-RS Response indicating the result of the deletion operation—success or failure with details.
+     * @param orgId     Object containing tenant or organization-related context information.
+     * @return Response A JAX-RS Response indicating the result of the deletion operation—success or failure with
+     * details.
      */
     public Response consentConsentIdDelete(String consentId, String orgId) {
         try {
@@ -309,7 +297,7 @@ public class ConsentAPIImpl {
      * permanently removed, and it will no longer be accessible or retrievable through the API.
      *
      * @param consentId Unique identifier of the consent resource to be deleted.
-     * @param orgId   Object containing tenant or organization-related context information.
+     * @param orgId     Object containing tenant or organization-related context information.
      * @return Response A JAX-RS Response indicating the result of the deletion operation—success or failure with
      * details.
      */
@@ -343,7 +331,7 @@ public class ConsentAPIImpl {
      * contains any relevant permissions or metadata related to the authorization for the consent.
      *
      * @param authorizationId Unique identifier of the authorization resource to retrieve.
-     * @param orgId         Object containing tenant or organization-related context information.
+     * @param orgId           Object containing tenant or organization-related context information.
      * @param consentId       Unique identifier of the consent resource associated with the authorization.
      * @return Response      A JAX-RS Response containing the authorization details if found, or an error message if
      * not.
@@ -369,7 +357,7 @@ public class ConsentAPIImpl {
      * The returned resource includes any metadata or specific rules/permissions related to the consent's authorization.
      *
      * @param consentId Unique identifier of the consent resource whose authorization details are being retrieved.
-     * @param orgId   Object containing tenant or organization-related context information.
+     * @param orgId     Object containing tenant or organization-related context information.
      * @return Response A JAX-RS Response containing the consent authorization details if found, or an error message
      * if not.
      */
@@ -393,7 +381,7 @@ public class ConsentAPIImpl {
      *
      * @param consentId                    Unique identifier of the consent resource to associate the authorization
      *                                     with.
-     * @param orgId                      Object containing tenant or organization-related context information.
+     * @param orgId                        Object containing tenant or organization-related context information.
      * @param authorizationResourceDTOList List of data transfer objects (DTOs) representing the authorization
      *                                     resources to be created.
      * @return Response                  A JAX-RS Response indicating the result of the creation operation—success or
@@ -432,7 +420,7 @@ public class ConsentAPIImpl {
      *
      * @param authorizationId                  Unique identifier of the authorization resource to be updated.
      * @param consentId                        Unique identifier of the consent resource related to the authorization.
-     * @param orgId                          Object containing tenant or organization-related context information.
+     * @param orgId                            Object containing tenant or organization-related context information.
      * @param authorizationResourceRequestBody Object containing the new authorization details to be updated.
      * @return Response                    A JAX-RS Response indicating the result of the update operation—success or
      * failure with details.
@@ -464,8 +452,9 @@ public class ConsentAPIImpl {
      *
      * @param authorizationId Unique identifier of the authorization resource to be deleted.
      * @param consentId       Unique identifier of the consent resource associated with the authorization.
-     * @param orgId         Object containing tenant or organization-related context information.
-     * @return Response       A JAX-RS Response indicating the result of the deletion operation—success or failure with details.
+     * @param orgId           Object containing tenant or organization-related context information.
+     * @return Response       A JAX-RS Response indicating the result of the deletion operation—success or failure
+     * with details.
      */
     public Response consentAuthorizationIdDelete(String authorizationId, String consentId, String orgId) {
         try {
@@ -486,12 +475,13 @@ public class ConsentAPIImpl {
 
     }
 
-  /**
-   * This method is used to build the error response by setting the HTTP status
-   * based on the error code provided in the exception.
-   * @param e The ConsentMgtException containing the error details.
-   * @return Response A JAX-RS Response object with the appropriate status and error details.
-   */
+    /**
+     * This method is used to build the error response by setting the HTTP status
+     * based on the error code provided in the exception.
+     *
+     * @param e The ConsentMgtException containing the error details.
+     * @return Response A JAX-RS Response object with the appropriate status and error details.
+     */
     private Response handleConsentMgtException(ConsentMgtException e) {
 
         // parse status code from error code
