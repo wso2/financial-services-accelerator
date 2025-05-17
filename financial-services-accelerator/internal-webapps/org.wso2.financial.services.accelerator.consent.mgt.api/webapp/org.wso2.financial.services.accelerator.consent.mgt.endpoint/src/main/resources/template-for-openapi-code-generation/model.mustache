@@ -1,0 +1,10 @@
+package {{package}};
+
+{{#models}}
+    {{#model}}
+        {{#isEnum}}
+            {{>enumOuterClass}}
+        {{/isEnum}}
+        {{^isEnum}}{{>pojo}}{{/isEnum}}
+    {{/model}}
+{{/models}}
