@@ -56,7 +56,6 @@ import java.util.UUID;
 
 import javax.ws.rs.core.Response;
 
-
 /**
  * Consent Core Service Util.
  */
@@ -64,7 +63,6 @@ import javax.ws.rs.core.Response;
 public class ConsentCoreServiceUtil {
 
     private static final Log log = LogFactory.getLog(ConsentCoreServiceUtil.class);
-
 
     /**
      * Create an authorizable consent with audit record.
@@ -88,7 +86,6 @@ public class ConsentCoreServiceUtil {
 
         boolean isConsentAttributesStored = false;
         AuthorizationResource storedAuthorizationResource;
-
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
 
@@ -120,25 +117,20 @@ public class ConsentCoreServiceUtil {
             ArrayList<AuthorizationResource> storedAuthorizationResources = new ArrayList<>();
 
             // Store authorization resource if available
-            if (authorizationResources != null) {
-                for (AuthorizationResource authorizationResource : authorizationResources) {
-                    authorizationResource.setUpdatedTime(System.currentTimeMillis());
-                    authorizationResource.setConsentId(consentId);
+            if (authorizationResources != null && !authorizationResources.isEmpty()) {
 
-                    if (log.isDebugEnabled()) {
-                        log.debug(("Storing authorization resource for consent of ID: " + authorizationResource
-                                .getConsentId()).replaceAll("[\r\n]", ""));
-                    }
-                    storedAuthorizationResource = consentCoreDAO.storeAuthorizationResource(connection,
-                            authorizationResource);
-
-                    storedAuthorizationResources.add(storedAuthorizationResource);
+                if (log.isDebugEnabled()) {
+                    log.debug(("Storing authorization resource for consent of ID: " + consentResource.getConsentId()
+                    ).replaceAll("[\r\n]", ""));
                 }
+                storedAuthorizationResources = consentCoreDAO.storeBulkAuthorizationResources(connection, consentId,
+                        (ArrayList<AuthorizationResource>) authorizationResources);
+
             }
 
             // TODO : handle history
             DetailedConsentResource detailedConsentResource =
-                    new DetailedConsentResource(storedConsentResource.getOrgInfo(), consentId,
+                    new DetailedConsentResource(storedConsentResource.getOrgId(), consentId,
                             storedConsentResource.getClientId(), storedConsentResource.getReceipt(),
                             storedConsentResource.getConsentType(), storedConsentResource.getCurrentStatus(),
                             storedConsentResource.getExpiryTime(),
@@ -146,7 +138,6 @@ public class ConsentCoreServiceUtil {
                             storedConsentResource.isRecurringIndicator(), consentResource.getConsentAttributes(),
                             new ArrayList<>(),
                             new ArrayList<>());
-
 
             if (isConsentAttributesStored) {
                 detailedConsentResource.setConsentAttributes(consentResource.getConsentAttributes());
@@ -175,7 +166,6 @@ public class ConsentCoreServiceUtil {
                     null, ConsentCoreServiceConstants.CREATE_CONSENT_REASON,
                     consentResource.getClientId(), consentDataMap);
 
-
             DatabaseUtils.commitTransaction(connection);
 
             return detailedConsentResource;
@@ -186,7 +176,6 @@ public class ConsentCoreServiceUtil {
 
         }
     }
-
 
     /**
      * Method to create an audit record in post consent state change.
@@ -248,7 +237,6 @@ public class ConsentCoreServiceUtil {
                     consentId));
         }
 
-
     }
 
     /**
@@ -284,7 +272,6 @@ public class ConsentCoreServiceUtil {
         return consentCoreDAO.storeConsentStatusAuditRecord(connection, consentStatusAuditRecord);
     }
 
-
     /**
      * Construct an ArrayList with a single field.
      *
@@ -298,7 +285,6 @@ public class ConsentCoreServiceUtil {
             }
         };
     }
-
 
     /**
      * Method to update the consent attributes.
@@ -571,7 +557,6 @@ public class ConsentCoreServiceUtil {
                                     attributeValue.toString());
                             currentConsentResource.setConsentAttributes(consentAttributes);
 
-
                         }
                     }
 
@@ -623,7 +608,6 @@ public class ConsentCoreServiceUtil {
         return consentAmendmentHistoryDataMap;
     }
 
-
     /**
      * Method to parse the changed attribute JSON string to a JSON Object.
      *
@@ -668,7 +652,6 @@ public class ConsentCoreServiceUtil {
             ConsentDataInsertionException {
         for (AuthorizationResource authResource : newAuthorizationResources) {
 
-
             if (StringUtils.isBlank(authResource.getConsentId()) ||
                     StringUtils.isBlank(authResource.getAuthorizationType()) ||
                     StringUtils.isBlank(authResource.getAuthorizationStatus())) {
@@ -681,16 +664,15 @@ public class ConsentCoreServiceUtil {
             AuthorizationResource authorizationResource =
                     consentCoreDAO.storeAuthorizationResource(connection, authResource);
 
-
         }
     }
 
-    public static boolean validateOrgInfo(String headerOrg, String orgInfo) throws
+    public static boolean validateOrgInfo(String headerOrg, String orgId) throws
             ConsentMgtException {
 
         if (headerOrg == null) {
             headerOrg = ConsentMgtDAOConstants.DEFAULT_ORG;
         }
-        return headerOrg.equals(orgInfo);
+        return headerOrg.equals(orgId);
     }
 }

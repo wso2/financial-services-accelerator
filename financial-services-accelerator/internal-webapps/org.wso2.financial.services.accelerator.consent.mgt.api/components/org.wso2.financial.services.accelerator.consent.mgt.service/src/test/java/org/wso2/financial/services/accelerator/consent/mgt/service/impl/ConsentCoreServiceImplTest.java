@@ -321,7 +321,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
 
 
     }
@@ -346,7 +346,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
 
 
     }
@@ -364,7 +364,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
 
 
     }
@@ -385,7 +385,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
 
     }
 
@@ -403,7 +403,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
 
     }
 
@@ -426,7 +426,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
 
     }
 
@@ -448,7 +448,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
     }
 
     // unit tests for updateConsentStatus with exceptions
@@ -474,7 +474,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON,
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.ORG_INFO);
+                ConsentMgtServiceTestData.ORG_ID);
 
     }
 
@@ -495,7 +495,7 @@ public class ConsentCoreServiceImplTest {
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
                 .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
                         any(), any(), any(), any(), any(), any(), any());
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
@@ -513,7 +513,7 @@ public class ConsentCoreServiceImplTest {
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
                 .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
                         any(), any(), any(), any(), any(), any(), any());
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
@@ -534,7 +534,7 @@ public class ConsentCoreServiceImplTest {
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
                 .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
                         any(), any(), any(), any(), any(), any(), any());
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
@@ -559,7 +559,7 @@ public class ConsentCoreServiceImplTest {
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
                 .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
                         any(), any(), any(), any(), any(), any(), any());
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
@@ -583,7 +583,7 @@ public class ConsentCoreServiceImplTest {
         doThrow(ConsentDataRetrievalException.class)
                 .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
                         any(), any(), any(), any(), any(), any(), any());
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
@@ -597,7 +597,7 @@ public class ConsentCoreServiceImplTest {
 
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_INFO,
+        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
                 ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
@@ -614,7 +614,7 @@ public class ConsentCoreServiceImplTest {
         // Get consent
         DetailedConsentResource retrievedConsentResource = consentCoreServiceImpl
                 .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentId(),
-                        ConsentMgtServiceTestData.ORG_INFO);
+                        ConsentMgtServiceTestData.ORG_ID);
 
         Assert.assertNotNull(retrievedConsentResource);
     }
@@ -630,7 +630,7 @@ public class ConsentCoreServiceImplTest {
         // Get consent
         DetailedConsentResource retrievedConsentResource = consentCoreServiceImpl
                 .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentId(),
-                        ConsentMgtServiceTestData.ORG_INFO);
+                        ConsentMgtServiceTestData.ORG_ID);
 
 
     }
@@ -645,7 +645,7 @@ public class ConsentCoreServiceImplTest {
 
         // Get consent
         consentCoreServiceImpl.getDetailedConsent(ConsentMgtServiceTestData
-                .getSampleStoredConsentResource().getConsentId(), ConsentMgtServiceTestData.ORG_INFO);
+                .getSampleStoredConsentResource().getConsentId(), ConsentMgtServiceTestData.ORG_ID);
     }
 
 
@@ -1398,7 +1398,7 @@ public class ConsentCoreServiceImplTest {
         // Call the method
         boolean result = consentCoreServiceImpl.revokeConsent(
                 ConsentMgtServiceTestData.CONSENT_ID,
-                ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_ACTION_BY,
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                                              );
@@ -1421,7 +1421,7 @@ public class ConsentCoreServiceImplTest {
         // Call the method
         boolean result = consentCoreServiceImpl.revokeConsent(
                 ConsentMgtServiceTestData.CONSENT_ID,
-                ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_ACTION_BY,
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                                              );
@@ -1440,7 +1440,7 @@ public class ConsentCoreServiceImplTest {
         // Call the method
         boolean result = consentCoreServiceImpl.revokeConsent(
                 ConsentMgtServiceTestData.CONSENT_ID,
-                ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_ACTION_BY,
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                                              );
@@ -1463,7 +1463,7 @@ public class ConsentCoreServiceImplTest {
         // Call the method
         consentCoreServiceImpl.revokeConsent(
                 ConsentMgtServiceTestData.CONSENT_ID,
-                ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_ACTION_BY,
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                             );
@@ -1481,7 +1481,7 @@ public class ConsentCoreServiceImplTest {
         // Call the method
         consentCoreServiceImpl.revokeConsent(
                 ConsentMgtServiceTestData.CONSENT_ID,
-                ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.SAMPLE_ACTION_BY,
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                             );
@@ -1704,7 +1704,7 @@ public class ConsentCoreServiceImplTest {
 
         // Call method - should throw ConsentMgtException
         consentCoreServiceImpl.getAuthorizationResource(ConsentMgtServiceTestData.AUTHORIZATION_ID
-                , ConsentMgtServiceTestData.ORG_INFO);
+                , ConsentMgtServiceTestData.ORG_ID);
     }
 
 }

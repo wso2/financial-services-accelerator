@@ -40,7 +40,7 @@ public class ConsentMgtServiceTestData {
             " \"recurringIndicator\": false, \"combinedServiceIndicator\": true}";
     public static final String SAMPLE_CONSENT_TYPE = "accounts";
     public static final String SAMPLE_CLIENT_ID = "sampleClientID";
-    public static final String ORG_INFO = "orgA";
+    public static final String ORG_ID = "orgA";
     public static final String DEFAULT_ORG = "DEFAULT_ORG";
     public static final int SAMPLE_CONSENT_FREQUENCY = 1;
     public static final Long SAMPLE_CONSENT_VALIDITY_PERIOD = 1638337852L;
@@ -138,7 +138,7 @@ public class ConsentMgtServiceTestData {
 
     public static ConsentResource getSampleTestConsentResource(String status) {
 
-        return new ConsentResource(ConsentMgtServiceTestData.ORG_INFO, null, UUID.randomUUID().toString(),
+        return new ConsentResource(ConsentMgtServiceTestData.ORG_ID, null, UUID.randomUUID().toString(),
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
                 (System.currentTimeMillis() / 1000) + 100,
                 ConsentMgtServiceTestData.SAMPLE_RECURRING_INDICATOR, status,
@@ -167,7 +167,7 @@ public class ConsentMgtServiceTestData {
             ArrayList<AuthorizationResource> authResources, ArrayList<ConsentMappingResource> mappingResources) {
 
         return new DetailedConsentResource(
-                ConsentMgtServiceTestData.ORG_INFO,
+                ConsentMgtServiceTestData.ORG_ID,
                 ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, UUID.randomUUID().toString(),
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
