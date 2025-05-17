@@ -22,11 +22,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -43,12 +41,10 @@ public interface ConsentCoreService {
      * 4. If isImplicitAuth parameter is true, creates an authorization resource
      *
      * @param consentResource        consent resource
-     * @param authorizationResources auth resources
      * @return returns DetailedConsentResource
      * @throws ConsentMgtException thrown if any error occur in the process
      */
-    DetailedConsentResource createConsent(ConsentResource consentResource, ArrayList<AuthorizationResource>
-            authorizationResources) throws ConsentMgtException;
+    DetailedConsentResource createConsent(DetailedConsentResource consentResource) throws ConsentMgtException;
 
     /**
      * This method is used to get a detailed consent for the provided consent ID. The detailed consent includes

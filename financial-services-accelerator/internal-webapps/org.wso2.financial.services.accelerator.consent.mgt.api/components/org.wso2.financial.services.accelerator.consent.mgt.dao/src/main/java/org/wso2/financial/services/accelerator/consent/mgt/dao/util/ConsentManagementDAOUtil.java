@@ -20,7 +20,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONValue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,28 +89,6 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
     }
 
     /**
-     * Set data from the result set to ConsentResource object with consent attributes.
-     *
-     * @param resultSet result set
-     * @return ConsentResource with attributes constructed using the result set
-     */
-    public static ConsentResource setDataToConsentResourceWithAttributes(ResultSet resultSet)
-            throws
-            SQLException {
-        ConsentResource consentResource = setDataToConsentResource(resultSet);
-        Map<String, Object> retrievedConsentAttributeMap = new HashMap<>();
-        // Point the cursor to the beginning of the result set to read attributes
-        resultSet.beforeFirst();
-        while (resultSet.next()) {
-            retrievedConsentAttributeMap.put(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY),
-                    resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE));
-        }
-        consentResource.setConsentAttributes(retrievedConsentAttributeMap);
-
-        return consentResource;
-    }
-
-    /**
      * Set data from the result set to DetailedConsentResource object.
      *
      * @param resultSet result set
@@ -167,7 +144,6 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
         // Set consent attributes, auth resources and account mappings to detailed consent resource
         detailedConsentResource.setConsentAttributes(consentAttributesMap);
         detailedConsentResource.setAuthorizationResources(authorizationResources);
-        detailedConsentResource.setConsentMappingResources(consentMappingResources);
         return detailedConsentResource;
     }
 
@@ -194,7 +170,6 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
                 resultSet.getLong(ConsentMgtDAOConstants.CONSENT_UPDATED_TIME),
                 resultSet.getBoolean(ConsentMgtDAOConstants.RECURRING_INDICATOR),
                 new HashMap<>(),
-                new ArrayList<>(),
                 new ArrayList<>()
         );
     }

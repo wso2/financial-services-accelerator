@@ -71,20 +71,15 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public DetailedConsentResource createConsent(ConsentResource consentResource,
-                                                 ArrayList<AuthorizationResource>
-                                                         authorizationResources) throws
+    public DetailedConsentResource createConsent(DetailedConsentResource detailedConsentResource) throws
             ConsentMgtException {
 
         try {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
             return ConsentCoreServiceUtil
-                    .createConsentWithAuditRecord(consentCoreDAO, consentResource, authorizationResources);
+                    .createConsentWithAuditRecord(consentCoreDAO, detailedConsentResource);
         } catch (ConsentDataInsertionException e) {
             log.error(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG);
-            throw new ConsentMgtException(e.getConsentError());
-        } catch (ConsentDataRetrievalException e) {
-            log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
             throw new ConsentMgtException(e.getConsentError());
         }
 
@@ -875,20 +870,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                             detailedCurrentConsent.getConsentId(),
                             ConsentCoreServiceConstants.TYPE_CONSENT_ATTRIBUTES_DATA,
                             String.valueOf(changedConsentAttributesJson), amendmentReason);
-                }
-            }
-
-            if (detailedCurrentConsent.getConsentMappingResources() != null) {
-                // store only the changes in consent mappings to CA history
-                Map<String, JSONObject> changedConsentMappingsJsonDataMap = ConsentCoreServiceUtil
-                        .getChangedConsentMappingDataJSONMap(detailedCurrentConsent.getConsentMappingResources(),
-                                detailedHistoryConsent.getConsentMappingResources());
-                for (Map.Entry<String, JSONObject> changedConsentMapping :
-                        changedConsentMappingsJsonDataMap.entrySet()) {
-                    consentCoreDAO.storeConsentAmendmentHistory(connection, historyID, amendedTimestamp,
-                            statusAuditRecordId, changedConsentMapping.getKey(),
-                            ConsentCoreServiceConstants.TYPE_CONSENT_MAPPING_DATA,
-                            String.valueOf(changedConsentMapping.getValue()), amendmentReason);
                 }
             }
 

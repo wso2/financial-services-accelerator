@@ -50,7 +50,6 @@ public class ConsentAPITestData {
         detailedConsentResource.setAuthorizationResources(authorizationResources);
         ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         consentMappingResources.add(getStoredConsentMappingResource());
-        detailedConsentResource.setConsentMappingResources(consentMappingResources);
         return detailedConsentResource;
     }
 

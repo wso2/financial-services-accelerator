@@ -47,7 +47,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.constants.Con
 import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentCoreServiceUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.service.util.ConsentMgtServiceTestData;
 
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -85,7 +84,6 @@ public class ConsentCoreServiceImplTest {
     MockedStatic<DatabaseUtils> databaseUtilMockedStatic;
     MockedStatic<ConsentStoreInitializer> consentStoreInitializerMockedStatic;
 
-
     @BeforeClass
     public void initTest() {
 
@@ -121,11 +119,9 @@ public class ConsentCoreServiceImplTest {
 
         databaseUtilMockedStatic.close();
 
-
         consentStoreInitializerMockedStatic.close();
 
     }
-
 
     @Test
     public void testCreateAuthorizableConsentWithBulkAuth() throws
@@ -143,8 +139,7 @@ public class ConsentCoreServiceImplTest {
 
         DetailedConsentResource detailedConsentResource =
                 consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                                .getSampleTestConsentResource(),
-                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+                                .getSampleDetailedConsentResource());
 
         Assert.assertNotNull(detailedConsentResource);
         Assert.assertNotNull(detailedConsentResource.getConsentId());
@@ -158,14 +153,12 @@ public class ConsentCoreServiceImplTest {
     public void testCreateAuthorizableConsentWithBulkAuthWithDatabaseConnectionExpection() throws
             Exception {
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
 
         DetailedConsentResource detailedConsentResource =
                 consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                                .getSampleTestConsentResource(),
-                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+                        .getSampleDetailedConsentResource());
 
     }
 
@@ -187,8 +180,7 @@ public class ConsentCoreServiceImplTest {
 
         DetailedConsentResource detailedConsentResource =
                 consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                                .getSampleStoredTestConsentResourceWithAttributes(),
-                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+                        .getSampleDetailedConsentResource());
 
         Assert.assertNotNull(detailedConsentResource);
         Assert.assertNotNull(detailedConsentResource.getConsentId());
@@ -215,8 +207,7 @@ public class ConsentCoreServiceImplTest {
 
         DetailedConsentResource detailedConsentResource =
                 consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                                .getSampleStoredTestConsentResourceWithAttributes(),
-                        ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+                        .getSampleDetailedConsentResource());
 
         Assert.assertNotNull(detailedConsentResource);
         Assert.assertNotNull(detailedConsentResource.getConsentId());
@@ -226,42 +217,20 @@ public class ConsentCoreServiceImplTest {
         Assert.assertNotNull(detailedConsentResource.getCurrentStatus());
     }
 
-
     // unit test for ImplicitAndNoAuthType
-
 
     // unit tests for createConsent with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testCreateAuthorizableConsentWithBulkAuthRollback() throws
             Exception {
 
-
         doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
                 .storeConsentResource(any(), any());
 
-        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                        .getSampleTestConsentResource(),
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+        DetailedConsentResource detailedConsentResource =
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                        .getSampleDetailedConsentResource());
     }
-
-
-    // unit tests for createConsent with exceptions
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testCreateAuthorizableConsentWithBulkAuthRollbackWhenAuditRecord() throws
-            Exception {
-
-        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
-                .storeConsentResource(any(), any());
-        doReturn(ConsentMgtServiceTestData.getSampleTestAuthorizationResource(null, null))
-                .when(mockedConsentCoreDAO).storeAuthorizationResource(any(), any());
-        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
-                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
-
-        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                        .getSampleTestConsentResource(),
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
-    }
-
 
     // unit tests for createConsent with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -271,13 +240,12 @@ public class ConsentCoreServiceImplTest {
         doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
                 .storeConsentResource(any(), any());
         doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
-                .storeAuthorizationResource(any(), any());
+                .storeBulkAuthorizationResources(any(), any(), any());
 
-        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                        .getSampleTestConsentResource(),
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+        DetailedConsentResource detailedConsentResource =
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                        .getSampleDetailedConsentResource());
     }
-
 
     // unit tests for createConsent with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -287,23 +255,24 @@ public class ConsentCoreServiceImplTest {
         doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
                 .storeConsentResource(any(), any());
         doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
-                .storeAuthorizationResource(any(), any());
+                .storeBulkAuthorizationResources(any(), any(), any());
         doReturn(ConsentMgtServiceTestData
                 .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                         ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
                 .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
                         any(ConsentStatusAuditRecord.class));
 
-        consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
-                        .getSampleTestConsentResource(),
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResourcesList(null, null));
+        DetailedConsentResource detailedConsentResource =
+                consentCoreServiceImpl.createConsent(ConsentMgtServiceTestData
+                        .getSampleDetailedConsentResource());
     }
+
+
 
     // unit tests for updateConsentStatus
     @Test
     public void testUpdateConsentStatus() throws
             Exception {
-
 
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
@@ -323,7 +292,6 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.ORG_ID);
 
-
     }
 
     // set debug true
@@ -335,11 +303,9 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
         detailedConsentResource.setCurrentStatus(ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS);
 
-
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
         doReturn(detailedConsentResource).when(mockedConsentCoreDAO).
                 getDetailedConsentResource(any(), any(), any());
-
 
         consentCoreServiceImpl.updateConsentStatus(ConsentMgtServiceTestData
                         .getSampleStoredConsentResource().getConsentId(),
@@ -348,13 +314,11 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.ORG_ID);
 
-
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testUpdateStatusWithDatabaseConnectionExpection() throws
             Exception {
-
 
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
@@ -366,9 +330,7 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.ORG_ID);
 
-
     }
-
 
     // unit tests for updateConsentStatus with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -397,7 +359,6 @@ public class ConsentCoreServiceImplTest {
         doThrow(ConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
                 .getDetailedConsentResource(any(), any(), any());
 
-
         consentCoreServiceImpl.updateConsentStatus(ConsentMgtServiceTestData
                         .getSampleStoredConsentResource().getConsentId(),
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
@@ -406,7 +367,6 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.ORG_ID);
 
     }
-
 
     // unit tests for updateConsentStatus with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -519,7 +479,6 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
     }
 
-
     // unit test for bulkUpdateConsentStatus with exceptions
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testBulkUpdateConsentStatusRollbackWhenAuditRecord() throws
@@ -594,7 +553,6 @@ public class ConsentCoreServiceImplTest {
     public void testBulkUpdateConsentStatusWithDatabaseConnectionException() throws
             Exception {
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
         consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
@@ -602,7 +560,6 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
     }
-
 
     @Test
     public void testGetDetailedConsent() throws
@@ -619,11 +576,9 @@ public class ConsentCoreServiceImplTest {
         Assert.assertNotNull(retrievedConsentResource);
     }
 
-
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testGetDetailedConsentWithDataBaseConnectionException() throws
             Exception {
-
 
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
@@ -632,9 +587,7 @@ public class ConsentCoreServiceImplTest {
                 .getDetailedConsent(ConsentMgtServiceTestData.getSampleStoredConsentResource().getConsentId(),
                         ConsentMgtServiceTestData.ORG_ID);
 
-
     }
-
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testGetDetailedConsentWithDataRetrievalException() throws
@@ -647,7 +600,6 @@ public class ConsentCoreServiceImplTest {
         consentCoreServiceImpl.getDetailedConsent(ConsentMgtServiceTestData
                 .getSampleStoredConsentResource().getConsentId(), ConsentMgtServiceTestData.ORG_ID);
     }
-
 
     @Test
     public void testCreateConsentAuthorization() throws
@@ -708,7 +660,6 @@ public class ConsentCoreServiceImplTest {
         AuthorizationResource storedAuthorizationResource =
                 consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
 
-
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -719,11 +670,9 @@ public class ConsentCoreServiceImplTest {
         AuthorizationResource sampleAuthorizationResource =
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
 
-
         // Get consent
         consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
     }
-
 
     @Test
     public void testGetAuthorizationResource() throws
@@ -748,12 +697,10 @@ public class ConsentCoreServiceImplTest {
                         .getSampleStoredTestAuthorizationResource().getAuthorizationId(), null);
     }
 
-
     // test for ConsentCoreServiceUtil
     @Test
     public void testGetConsentStatusAuditRecord() throws
             Exception {
-
 
         List<String> consentStatusAuditRecord = ConsentCoreServiceUtil
                 .getRecordIdListForConsentHistoryRetrieval(ConsentMgtServiceTestData
@@ -761,7 +708,7 @@ public class ConsentCoreServiceImplTest {
         Assert.assertNotNull(consentStatusAuditRecord);
 
         // assert
-        Assert.assertEquals(consentStatusAuditRecord.size(), 4);
+        Assert.assertEquals(consentStatusAuditRecord.size(), 2);
 
     }
 
@@ -775,7 +722,7 @@ public class ConsentCoreServiceImplTest {
         Assert.assertNotNull(consentStatusAuditRecord);
 
         // assert
-        Assert.assertEquals(consentStatusAuditRecord.size(), 4);
+        Assert.assertEquals(consentStatusAuditRecord.size(), 2);
 
     }
 
@@ -790,7 +737,6 @@ public class ConsentCoreServiceImplTest {
                         ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourceWithMultipleAccountIDs());
         Assert.assertNotNull(changedBasicConsentDataJSON);
     }
-
 
     // test getChangedConsentAttributesDataJSON
     @Test
@@ -815,7 +761,6 @@ public class ConsentCoreServiceImplTest {
                         ConsentMgtServiceTestData.getSampleTestConsentMappingResourceListWithMappingId());
         Assert.assertNotNull(changedConsentMappingDataJSON);
     }
-
 
     @Test
     public void storeConsentAttributes() throws
@@ -1003,7 +948,6 @@ public class ConsentCoreServiceImplTest {
         Assert.assertNotNull(consentAttributes);
     }
 
-
     @Test
     public void testUpdateConsentAttributes() throws
             Exception {
@@ -1020,7 +964,6 @@ public class ConsentCoreServiceImplTest {
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testUpdateConsentAttributesWithDatabaseConnectionException() throws
             Exception {
-
 
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
@@ -1101,13 +1044,11 @@ public class ConsentCoreServiceImplTest {
     public void testDeleteConsentAttributesDatabaseConnectionException() throws
             Exception {
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
         consentCoreServiceImpl.deleteConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
     }
-
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testDeleteConsentAttributesWithoutConsentID() throws
@@ -1275,7 +1216,6 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.getSampleDetailedStoredTestCurrentConsentResource());
     }
 
-
     @Test
     public void testSearchConsents() throws
             Exception {
@@ -1298,7 +1238,6 @@ public class ConsentCoreServiceImplTest {
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testSearchConsentsWithDatabaseConnectionException() throws
             Exception {
-
 
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
@@ -1369,7 +1308,6 @@ public class ConsentCoreServiceImplTest {
     public void testDeleteConsentWithDatabaseConnectionException() throws
             Exception {
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
 
@@ -1377,11 +1315,9 @@ public class ConsentCoreServiceImplTest {
         consentCoreServiceImpl.deleteConsent(ConsentMgtServiceTestData.CONSENT_ID);
     }
 
-
     @Test
     public void testRevokeConsent() throws
             Exception {
-
 
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
                 .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any(), any());
@@ -1407,11 +1343,9 @@ public class ConsentCoreServiceImplTest {
         Assert.assertTrue(result);
     }
 
-
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testRevokeRevokedConsent() throws
             Exception {
-
 
         DetailedConsentResource detailedConsentResource =
                 ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
@@ -1434,7 +1368,6 @@ public class ConsentCoreServiceImplTest {
     public void testRevokeConsentWithDatabaseConnectionexception() throws
             Exception {
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
         // Call the method
@@ -1445,20 +1378,17 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                                              );
 
-
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testRevokeConsentWithException() throws
             Exception {
 
-
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
                 .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any(), any());
         // Mock DAO to throw an exception
         doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
                 .updateConsentStatus(any(), any(), any());
-
 
         // Call the method
         consentCoreServiceImpl.revokeConsent(
@@ -1469,11 +1399,9 @@ public class ConsentCoreServiceImplTest {
                                             );
     }
 
-
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testRevokeConsentWithRetrievalException() throws
             Exception {
-
 
         doThrow(ConsentDataRetrievalException.class)
                 .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any(), any());
@@ -1486,7 +1414,6 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.SAMPLE_REASON
                                             );
     }
-
 
     // Test for successful update of consent expiry time
     @Test
@@ -1516,7 +1443,6 @@ public class ConsentCoreServiceImplTest {
                         mockedConsentCoreDAO).
                 getDetailedConsentResource(any(), any(), any());
 
-
         doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
                 .updateConsentExpiryTime(any(), anyString(), anyLong());
 
@@ -1535,7 +1461,6 @@ public class ConsentCoreServiceImplTest {
         doThrow(ConsentDataRetrievalException.class).when(
                         mockedConsentCoreDAO).
                 getDetailedConsentResource(any(), any(), any());
-
 
         // Call the method
         consentCoreServiceImpl.updateConsentExpiryTime(
@@ -1563,7 +1488,6 @@ public class ConsentCoreServiceImplTest {
 
     }
 
-
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testUpdateConsentExpiryTimeFoRevokedConsent() throws
             Exception {
@@ -1583,7 +1507,6 @@ public class ConsentCoreServiceImplTest {
                                                       );
 
     }
-
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testUpdateConsentExpiryTimeConnectionExpection() throws
@@ -1633,17 +1556,14 @@ public class ConsentCoreServiceImplTest {
                                                           );
     }
 
-
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testUpdateAuthorizatationResource_SQLException() throws
             Exception {
 
         // Mock the static DatabaseUtils.getDBConnection() to throw SQLException
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
-
 
         consentCoreServiceImpl.updateAuthorizationResource(
                 ConsentMgtServiceTestData.AUTHORIZATION_ID,
@@ -1697,14 +1617,37 @@ public class ConsentCoreServiceImplTest {
 
         // Mock the static DatabaseUtils.getDBConnection() to throw SQLException
 
-
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
                 .thenThrow(new SQLException("DB connection failed"));
-
 
         // Call method - should throw ConsentMgtException
         consentCoreServiceImpl.getAuthorizationResource(ConsentMgtServiceTestData.AUTHORIZATION_ID
                 , ConsentMgtServiceTestData.ORG_ID);
     }
 
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testDeleteAuthorizationResource_SQLException() throws
+            Exception {
+
+        // Mock the static DatabaseUtils.getDBConnection() to throw SQLException
+
+        databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
+                .thenThrow(new SQLException("DB connection failed"));
+
+        // Call method - should throw ConsentMgtException
+        consentCoreServiceImpl.deleteAuthorizationResource(ConsentMgtServiceTestData.AUTHORIZATION_ID);
+    }
+
+    @Test(expectedExceptions = ConsentMgtException.class)
+    public void testGetConsentAttributes_SQLException() throws
+            Exception {
+
+        // Mock the static DatabaseUtils.getDBConnection() to throw SQLException
+
+        databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection)
+                .thenThrow(new SQLException("DB connection failed"));
+
+        // Call method - should throw ConsentMgtException
+        consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.AUTHORIZATION_ID);
+    }
 }

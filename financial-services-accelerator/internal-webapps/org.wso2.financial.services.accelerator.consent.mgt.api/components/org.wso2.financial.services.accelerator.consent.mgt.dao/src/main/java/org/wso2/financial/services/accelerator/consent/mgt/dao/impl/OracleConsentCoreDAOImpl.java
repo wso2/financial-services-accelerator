@@ -216,8 +216,6 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
 
             detailedConsentResource.setConsentAttributes(consentAttributesMap);
             detailedConsentResource.setAuthorizationResources(authorizationResources);
-            detailedConsentResource.setConsentMappingResources(consentMappingResources);
-
             detailedConsentResources.add(detailedConsentResource);
 
         }

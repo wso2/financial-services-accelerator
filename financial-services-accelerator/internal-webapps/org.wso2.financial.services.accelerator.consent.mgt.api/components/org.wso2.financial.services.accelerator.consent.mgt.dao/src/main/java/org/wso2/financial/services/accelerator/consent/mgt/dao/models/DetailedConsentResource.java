@@ -27,10 +27,8 @@ import java.util.Map;
  */
 public class DetailedConsentResource extends ConsentResource {
 
-
     private Map<String, Object> consentAttributes;
     private ArrayList<AuthorizationResource> authorizationResources;
-    private ArrayList<ConsentMappingResource> consentMappingResources;
 
     public DetailedConsentResource() {
 
@@ -41,16 +39,13 @@ public class DetailedConsentResource extends ConsentResource {
                                    String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
                                    Map<String, Object> consentAttributes,
-                                   ArrayList<AuthorizationResource> authorizationResources,
-                                   ArrayList<ConsentMappingResource> consentMappingResources) {
+                                   ArrayList<AuthorizationResource> authorizationResources) {
         super(orgId, consentId, clientId, receipt, consentType, expiryTime, recurringIndicator, currentStatus,
                 createdTime, updatedTime);
         this.consentAttributes = consentAttributes;
         this.authorizationResources = authorizationResources;
-        this.consentMappingResources = consentMappingResources;
 
     }
-
 
     public Map<String, Object> getConsentAttributes() {
 
@@ -70,16 +65,6 @@ public class DetailedConsentResource extends ConsentResource {
     public void setAuthorizationResources(ArrayList<AuthorizationResource> authorizationResources) {
 
         this.authorizationResources = authorizationResources;
-    }
-
-    public ArrayList<ConsentMappingResource> getConsentMappingResources() {
-
-        return consentMappingResources;
-    }
-
-    public void setConsentMappingResources(ArrayList<ConsentMappingResource> consentMappingResources) {
-
-        this.consentMappingResources = consentMappingResources;
     }
 
     public DetailedConsentResource clone() {
@@ -104,18 +89,6 @@ public class DetailedConsentResource extends ConsentResource {
             }
         }
 
-        // Deep copy of consentMappingResources
-        ArrayList<ConsentMappingResource> copiedMappingResources = new ArrayList<>();
-        if (this.consentMappingResources != null) {
-            for (ConsentMappingResource mapping : this.consentMappingResources) {
-                ConsentMappingResource mappingClone = new ConsentMappingResource();
-                mappingClone.setMappingId(mapping.getMappingId());
-                mappingClone.setResource(mapping.getResource());
-                mappingClone.setMappingStatus(mapping.getMappingStatus());
-                copiedMappingResources.add(mappingClone); // assuming .clone() exists
-            }
-        }
-
         // Create new instance
         return new DetailedConsentResource(
                 getOrgId(),
@@ -129,8 +102,7 @@ public class DetailedConsentResource extends ConsentResource {
                 getUpdatedTime(),
                 isRecurringIndicator(),
                 copiedConsentAttributes,
-                copiedAuthResources,
-                copiedMappingResources
+                copiedAuthResources
         );
     }
 }

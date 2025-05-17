@@ -35,7 +35,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -527,7 +526,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 storeConsentAttributesPreparedStmt.setString(1, consentAttributes.getConsentId());
                 storeConsentAttributesPreparedStmt.setString(2, entry.getKey());
                 storeConsentAttributesPreparedStmt.setString(3,
-
                         objectMapper.writeValueAsString(entry.getValue()));
                 storeConsentAttributesPreparedStmt.addBatch();
             }
@@ -613,13 +611,16 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             try (ResultSet resultSet = getConsentAttributesPreparedStmt.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
+                    ObjectMapper objectMapper = new ObjectMapper();
                     while (resultSet.next()) {
                         String attributeKey = resultSet.getString(ConsentMgtDAOConstants.ATT_KEY);
                         String attributeValue = resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE);
 
                         // Filter the needed attributes
                         if (consentAttributeKeys.contains(attributeKey)) {
-                            retrievedConsentAttributesMap.put(attributeKey, attributeValue);
+
+                            retrievedConsentAttributesMap.put(attributeKey, objectMapper.readValue(
+                                    attributeValue , Object.class));
                             if (retrievedConsentAttributesMap.size() == consentAttributeKeys.size()) {
                                 break;
                             }
@@ -629,7 +630,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     log.debug(String.format("No records are found for consent ID : %s and consent attribute keys",
                             consentId.replaceAll("[\r\n]", "")));
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | JsonProcessingException e) {
                 String errorMessage = String.format("Error occurred while retrieving consent attributes for " +
                         "consent ID : %s and provided consent attributes", consentId.replaceAll("[\r\n]", ""));
                 log.error(errorMessage, e);
@@ -648,10 +649,10 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public Map<String, String> getConsentAttributesByKey(Connection connection, String attributeKey)
+    public Map<String, Object> getConsentAttributesByKey(Connection connection, String attributeKey)
             throws ConsentDataRetrievalException {
 
-        Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
+        Map<String, Object> retrievedConsentAttributesMap = new HashMap<>();
         String getConsentAttributesByNamePrepStatement = sqlStatements.getGetConsentAttributesByNamePreparedStatement();
 
         try (PreparedStatement getConsentAttributesByNamePreparedStmt =
@@ -665,12 +666,14 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             try (ResultSet resultSet = getConsentAttributesByNamePreparedStmt.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
+                    ObjectMapper objectMapper = new ObjectMapper();
                     while (resultSet.next()) {
                         retrievedConsentAttributesMap.put(resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID),
-                                resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE));
+                               objectMapper.readValue(resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE),
+                                       Object.class));
                     }
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | JsonProcessingException e) {
                 String errorMessage = String.format("Error occurred while retrieving consent attributes for " +
                         "attribute key: %s", attributeKey);
                 log.error(errorMessage.replaceAll("[\r\n]", ""), e);
@@ -681,51 +684,6 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_ATTRIBUTES_RETRIEVE_ERROR_MSG, e);
         }
         return retrievedConsentAttributesMap;
-    }
-
-    @Override
-    public ArrayList<String> getConsentIdByConsentAttributeKeyAndValue(Connection connection, String attributeKey,
-                                                                       String attributeValue)
-            throws ConsentDataRetrievalException {
-
-        ArrayList<String> retrievedConsentIdList = new ArrayList<>();
-        String getConsentIdByConsentAttributeNameAndValuePrepStatement = sqlStatements
-                .getConsentIdByConsentAttributeNameAndValuePreparedStatement();
-
-        try (PreparedStatement getConsentAttributesByNamePreparedStmt =
-                     connection.prepareStatement(getConsentIdByConsentAttributeNameAndValuePrepStatement)) {
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Setting parameters to prepared statement to retrieve consent id for the" +
-                                " provided key: %s and value: %s", attributeKey.replaceAll("[\r\n]", ""),
-                        attributeValue.replaceAll("[\r\n]", "")));
-            }
-            getConsentAttributesByNamePreparedStmt.setString(1, attributeKey);
-            getConsentAttributesByNamePreparedStmt.setString(2, attributeValue);
-
-            try (ResultSet resultSet = getConsentAttributesByNamePreparedStmt.executeQuery()) {
-                if (resultSet.isBeforeFirst()) {
-                    while (resultSet.next()) {
-                        retrievedConsentIdList.add(resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID));
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("No records are found for the provided attribute key : %s " +
-                                        "and value: %s", attributeKey.replaceAll("[\r\n]", ""),
-                                attributeValue.replaceAll("[\r\n]", "")));
-                    }
-                }
-            } catch (SQLException e) {
-                String errorMessage = String.format("Error occurred while retrieving consent " +
-                        "attributes for attribute key: %s  and value: %s", attributeKey, attributeValue);
-                log.error(errorMessage.replaceAll("[\r\n]", ""), e);
-                throw new ConsentDataRetrievalException(errorMessage, e);
-            }
-        } catch (SQLException e) {
-            log.error(ConsentMgtDAOConstants.CONSENT_ID_RETRIEVE_ERROR_MSG);
-            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_ID_RETRIEVE_ERROR_MSG, e);
-        }
-        return retrievedConsentIdList;
     }
 
     @Override
@@ -740,7 +698,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             ObjectMapper objectMapper = new ObjectMapper();
             for (Map.Entry<String, Object> entry : consentAttributes.entrySet()) {
-                updateConsentAttributesPreparedStmt.setString(1,objectMapper.writeValueAsString(entry.getValue()));
+                updateConsentAttributesPreparedStmt.setString(1, objectMapper.writeValueAsString(entry.getValue()));
                 updateConsentAttributesPreparedStmt.setString(2, consentId);
                 updateConsentAttributesPreparedStmt.setString(3, entry.getKey());
                 updateConsentAttributesPreparedStmt.addBatch();

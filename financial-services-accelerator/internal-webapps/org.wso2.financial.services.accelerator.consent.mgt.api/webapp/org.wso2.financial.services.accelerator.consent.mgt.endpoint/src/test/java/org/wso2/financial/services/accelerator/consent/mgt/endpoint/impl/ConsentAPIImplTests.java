@@ -143,7 +143,7 @@ public class ConsentAPIImplTests {
         // Mock service call response
         DetailedConsentResource detailedConsentResource = mock(DetailedConsentResource.class);
         doReturn(detailedConsentResource).when(mockedConsentCoreServiceImpl)
-                .createConsent(any(), any());
+                .createConsent(any());
 
 
         // Act
@@ -175,7 +175,7 @@ public class ConsentAPIImplTests {
 
         // Mock service call response
         DetailedConsentResource detailedConsentResource = mock(DetailedConsentResource.class);
-        when(mockedConsentCoreServiceImpl.createConsent(any(), any())).thenReturn(
+        when(mockedConsentCoreServiceImpl.createConsent(any())).thenReturn(
                 detailedConsentResource);
 
         // Act
@@ -564,7 +564,7 @@ public class ConsentAPIImplTests {
         when(consentResourceDTO.getAuthorizationResources()).thenReturn(null); // Missing resources
         // Act
         DetailedConsentResource detailedConsentResource = ConsentAPITestData.getStoredDetailedConsentResource();
-        when(mockedConsentCoreServiceImpl.createConsent(any(), any())).thenReturn(
+        when(mockedConsentCoreServiceImpl.createConsent(any())).thenReturn(
                 detailedConsentResource);
         Response response = consentAPIImpl.consentPost(consentResourceDTO, orgId);
 

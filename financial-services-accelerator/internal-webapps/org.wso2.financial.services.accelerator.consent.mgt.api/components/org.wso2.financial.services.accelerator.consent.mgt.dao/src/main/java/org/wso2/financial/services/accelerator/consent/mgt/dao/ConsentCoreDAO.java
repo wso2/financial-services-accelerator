@@ -225,21 +225,7 @@ public interface ConsentCoreDAO {
      * @return a map with the consent ID and the related attribute value
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    Map<String, String> getConsentAttributesByKey(Connection connection, String attributeKey)
-            throws
-            ConsentDataRetrievalException;
-
-    /**
-     * This method is used to retrieve consent id using the attribute key and value.
-     *
-     * @param connection     connection object
-     * @param attributeKey  attribute key
-     * @param attributeValue attribute value
-     * @return Consent ID related to the given attribute key and value
-     * @throws ConsentDataRetrievalException `thrown if a database error occurs
-     */
-    ArrayList<String> getConsentIdByConsentAttributeKeyAndValue(Connection connection, String attributeKey,
-                                                                 String attributeValue)
+    Map<String, Object> getConsentAttributesByKey(Connection connection, String attributeKey)
             throws
             ConsentDataRetrievalException;
 
