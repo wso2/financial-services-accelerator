@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.service.impl;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +55,6 @@ import javax.ws.rs.core.Response;
 /**
  * Consent core service implementation.
  */
-@SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     private static final Log log = LogFactory.getLog(ConsentCoreServiceImpl.class);
@@ -71,20 +69,15 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public DetailedConsentResource createConsent(ConsentResource consentResource,
-                                                 ArrayList<AuthorizationResource>
-                                                         authorizationResources) throws
+    public DetailedConsentResource createConsent(DetailedConsentResource detailedConsentResource) throws
             ConsentMgtException {
 
         try {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
             return ConsentCoreServiceUtil
-                    .createConsentWithAuditRecord(consentCoreDAO, consentResource, authorizationResources);
+                    .createConsentWithAuditRecord(consentCoreDAO, detailedConsentResource);
         } catch (ConsentDataInsertionException e) {
             log.error(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG);
-            throw new ConsentMgtException(e.getConsentError());
-        } catch (ConsentDataRetrievalException e) {
-            log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
             throw new ConsentMgtException(e.getConsentError());
         }
 
@@ -114,7 +107,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 throw new ConsentMgtException(e.getConsentError());
             }
         } catch (SQLException e) {
-            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage(), e);
+            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
         }
     }
@@ -148,7 +141,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             DatabaseUtils.commitTransaction(connection);
             log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_SEARCH_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_SEARCH_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.CONSENT_SEARCH_ERROR);
         }
         return detailedConsentResources;
@@ -186,7 +179,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             throw new ConsentMgtException(e.getConsentError());
 
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_EXPIRY_TIME_UPDATE_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_EXPIRY_TIME_UPDATE_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""), e);
             throw new ConsentMgtException(ConsentError.CONSENT_EXPIRY_TIME_UPDATE_ERROR);
         }
 
@@ -247,7 +241,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             } catch (ConsentDataRetrievalException e) {
                 log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
-
                 throw new ConsentMgtException(e.getConsentError());
             } catch (ConsentDataInsertionException e) {
                 log.error(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG, e);
@@ -261,7 +254,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.CONSENT_STATUS_UPDATE_ERROR);
         }
     }
@@ -296,16 +289,16 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         null, null, null);
 
             } catch (ConsentDataRetrievalException e) {
-                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage(), e);
+                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
                 throw new ConsentMgtException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_UPDATE_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_UPDATE_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.CONSENT_UPDATE_ERROR);
         }
 
         if (detailedConsentResources.isEmpty()) {
-            log.error(ConsentError.CONSENT_NOT_FOUND.getMessage());
+            log.error(ConsentError.CONSENT_NOT_FOUND.getMessage().replaceAll("[\r\n]", ""));
             throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
         }
         for (DetailedConsentResource consent : detailedConsentResources) {
@@ -336,7 +329,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             log.error(ConsentCoreServiceConstants.DATA_DELETION_ROLLBACK_ERROR_MSG, e);
             throw new ConsentMgtException(e.getConsentError());
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_DELETE_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_DELETE_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.CONSENT_DELETE_ERROR);
         }
     }
@@ -388,7 +381,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         e.getConsentError());
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_REVOKE_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_REVOKE_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.CONSENT_REVOKE_ERROR);
         }
         return true;
@@ -431,7 +424,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             }
         } catch (SQLException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR.getMessage(), e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR);
         }
     }
@@ -462,7 +455,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             }
         } catch (SQLException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR.getMessage(), e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR);
         }
     }
@@ -493,7 +486,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             }
         } catch (SQLException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR.getMessage(), e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR);
         }
     }
@@ -531,14 +524,14 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             }
 
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
     }
 
     //TODO : not yet implemented and tested
     @Override
-    public boolean storeConsentAttributes(String consentId, Map<String, String> consentAttributes)
+    public boolean storeConsentAttributes(String consentId, Map<String, Object> consentAttributes)
             throws  ConsentMgtException {
 
         boolean isConsentAttributesStored;
@@ -570,7 +563,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG, e);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
 
@@ -625,7 +618,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
     }
@@ -677,14 +670,14 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
     }
 
     //TODO : not yet implemented and tested
     @Override
-    public ConsentAttributes updateConsentAttributes(String consentId, Map<String, String> consentAttributes)
+    public ConsentAttributes updateConsentAttributes(String consentId, Map<String, Object> consentAttributes)
             throws ConsentMgtException {
 
         if (StringUtils.isBlank(consentId) || consentAttributes == null || consentAttributes.isEmpty()) {
@@ -721,7 +714,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
 
@@ -758,7 +751,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         ConsentCoreServiceConstants.CONSENT_ATTRIBUTES_DELETE_ERROR_MSG);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
     }
@@ -796,7 +789,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             DatabaseUtils.commitTransaction(connection);
             log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
         return auditRecords;
@@ -819,7 +812,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             throw new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR,
                     ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
     }
@@ -878,20 +871,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 }
             }
 
-            if (detailedCurrentConsent.getConsentMappingResources() != null) {
-                // store only the changes in consent mappings to CA history
-                Map<String, JSONObject> changedConsentMappingsJsonDataMap = ConsentCoreServiceUtil
-                        .getChangedConsentMappingDataJSONMap(detailedCurrentConsent.getConsentMappingResources(),
-                                detailedHistoryConsent.getConsentMappingResources());
-                for (Map.Entry<String, JSONObject> changedConsentMapping :
-                        changedConsentMappingsJsonDataMap.entrySet()) {
-                    consentCoreDAO.storeConsentAmendmentHistory(connection, historyID, amendedTimestamp,
-                            statusAuditRecordId, changedConsentMapping.getKey(),
-                            ConsentCoreServiceConstants.TYPE_CONSENT_MAPPING_DATA,
-                            String.valueOf(changedConsentMapping.getValue()), amendmentReason);
-                }
-            }
-
             // store only the changes in consent Auth Resources to CA history
             Map<String, JSONObject> changedConsentAuthResourcesJsonDataMap = ConsentCoreServiceUtil
                     .getChangedConsentAuthResourcesDataJSONMap(detailedCurrentConsent.getAuthorizationResources(),
@@ -914,7 +893,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             throw new ConsentMgtException(Response.Status.INTERNAL_SERVER_ERROR,
                     ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG, e);
         } catch (SQLException e) {
-            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DATABASE_CONNECTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.DATABASE_CONNECTION_ERROR);
         }
     }
