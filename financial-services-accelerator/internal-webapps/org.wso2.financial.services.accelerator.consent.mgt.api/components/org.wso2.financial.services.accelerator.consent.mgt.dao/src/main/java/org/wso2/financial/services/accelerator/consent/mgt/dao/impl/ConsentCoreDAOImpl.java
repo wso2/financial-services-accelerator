@@ -517,22 +517,25 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
         int[] result;
         String storeConsentAttributesPrepStatement = sqlStatements.getStoreConsentAttributesPreparedStatement();
-        Map<String, String> consentAttributesMap = consentAttributes.getConsentAttributes();
+        Map<String, Object> consentAttributesMap = consentAttributes.getConsentAttributes();
+        ObjectMapper objectMapper = new ObjectMapper();
 
         try (PreparedStatement storeConsentAttributesPreparedStmt =
                      connection.prepareStatement(storeConsentAttributesPrepStatement)) {
 
-            for (Map.Entry<String, String> entry : consentAttributesMap.entrySet()) {
+            for (Map.Entry<String, Object> entry : consentAttributesMap.entrySet()) {
                 storeConsentAttributesPreparedStmt.setString(1, consentAttributes.getConsentId());
                 storeConsentAttributesPreparedStmt.setString(2, entry.getKey());
-                storeConsentAttributesPreparedStmt.setString(3, entry.getValue());
+                storeConsentAttributesPreparedStmt.setString(3,
+
+                        objectMapper.writeValueAsString(entry.getValue()));
                 storeConsentAttributesPreparedStmt.addBatch();
             }
 
             // with result, we can determine whether the updating was successful or not
             result = storeConsentAttributesPreparedStmt.executeBatch();
 
-        } catch (SQLException e) {
+        } catch (SQLException | JsonProcessingException e) {
             log.error(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR.getMessage(), e);
             throw new ConsentDataInsertionException(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR, e);
         }
@@ -555,7 +558,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     public ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgId)
             throws  ConsentDataRetrievalException {
 
-        Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
+        Map<String, Object> retrievedConsentAttributesMap = new HashMap<>();
         String getConsentAttributesPrepStatement = sqlStatements.getGetConsentAttributesPreparedStatement();
 
         try (PreparedStatement getConsentAttributesPreparedStmt =
@@ -597,7 +600,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                                                   ArrayList<String> consentAttributeKeys)
             throws ConsentDataRetrievalException {
 
-        Map<String, String> retrievedConsentAttributesMap = new HashMap<>();
+        Map<String, Object> retrievedConsentAttributesMap = new HashMap<>();
         String getConsentAttributesPrepStatement = sqlStatements.getGetConsentAttributesPreparedStatement();
 
         try (PreparedStatement getConsentAttributesPreparedStmt =
@@ -726,7 +729,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public void updateConsentAttributes(Connection connection, String consentId, Map<String, String> consentAttributes)
+    public void updateConsentAttributes(Connection connection, String consentId, Map<String, Object> consentAttributes)
             throws ConsentDataUpdationException {
 
         int[] result;
@@ -735,8 +738,9 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         try (PreparedStatement updateConsentAttributesPreparedStmt =
                      connection.prepareStatement(updateConsentAttributesPrepStatement)) {
 
-            for (Map.Entry<String, String> entry : consentAttributes.entrySet()) {
-                updateConsentAttributesPreparedStmt.setString(1, entry.getValue());
+            ObjectMapper objectMapper = new ObjectMapper();
+            for (Map.Entry<String, Object> entry : consentAttributes.entrySet()) {
+                updateConsentAttributesPreparedStmt.setString(1,objectMapper.writeValueAsString(entry.getValue()));
                 updateConsentAttributesPreparedStmt.setString(2, consentId);
                 updateConsentAttributesPreparedStmt.setString(3, entry.getKey());
                 updateConsentAttributesPreparedStmt.addBatch();
@@ -744,7 +748,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             // with result, we can determine whether the updating was successful or not
             result = updateConsentAttributesPreparedStmt.executeBatch();
-        } catch (SQLException e) {
+        } catch (SQLException | JsonProcessingException e) {
             log.error(ConsentMgtDAOConstants.CONSENT_ATTRIBUTES_UPDATE_ERROR_MSG, e);
             throw new ConsentDataUpdationException(ConsentMgtDAOConstants.CONSENT_ATTRIBUTES_UPDATE_ERROR_MSG, e);
         }
@@ -1298,7 +1302,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
         while (resultSet.next()) {
 
-            Map<String, String> consentAttributesMap = new HashMap<>();
+            Map<String, Object> consentAttributesMap = new HashMap<>();
             ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
             DetailedConsentResource detailedConsentResource = ConsentManagementDAOUtil
                     .setConsentDataToDetailedConsentResource(resultSet);

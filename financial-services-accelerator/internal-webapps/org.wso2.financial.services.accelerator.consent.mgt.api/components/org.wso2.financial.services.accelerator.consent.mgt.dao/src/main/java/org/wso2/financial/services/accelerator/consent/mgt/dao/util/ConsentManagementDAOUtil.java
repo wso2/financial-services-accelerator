@@ -109,7 +109,7 @@ public class ConsentManagementDAOUtil {
             throws
             SQLException {
         ConsentResource consentResource = setDataToConsentResource(resultSet);
-        Map<String, String> retrievedConsentAttributeMap = new HashMap<>();
+        Map<String, Object> retrievedConsentAttributeMap = new HashMap<>();
         // Point the cursor to the beginning of the result set to read attributes
         resultSet.beforeFirst();
         while (resultSet.next()) {
@@ -132,7 +132,7 @@ public class ConsentManagementDAOUtil {
             SQLException,
             JsonProcessingException {
 
-        Map<String, String> consentAttributesMap = new HashMap<>();
+        Map<String, Object> consentAttributesMap = new HashMap<>();
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         ArrayList<String> authIds = new ArrayList<>();
@@ -143,14 +143,14 @@ public class ConsentManagementDAOUtil {
             detailedConsentResource = setConsentDataToDetailedConsentResource(resultSet);
             // Set data related to consent attributes
             if (StringUtils.isNotBlank(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY))) {
-                String attributeValue = resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE);
 
-                // skip adding all temporary session data to consent attributes
-                if (!(JSONValue.isValidJson(attributeValue) &&
-                        attributeValue.contains(ConsentMgtDAOConstants.SESSION_DATA_KEY))) {
+                Object attributeValue = objectMapper.readValue(resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE),
+                                Object.class);
+
+
                     consentAttributesMap.put(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY),
                             attributeValue);
-                }
+
             }
 
             // Set data related to authorization resources

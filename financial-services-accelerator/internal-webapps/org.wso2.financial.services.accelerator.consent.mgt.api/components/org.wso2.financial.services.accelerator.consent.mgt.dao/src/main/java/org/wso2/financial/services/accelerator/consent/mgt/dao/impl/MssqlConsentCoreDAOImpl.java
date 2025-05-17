@@ -180,7 +180,7 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
 
         while (resultSet.next()) {
 
-            Map<String, String> consentAttributesMap = new HashMap<>();
+            Map<String, Object> consentAttributesMap = new HashMap<>();
             ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
             ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
             DetailedConsentResource detailedConsentResource = new DetailedConsentResource();

@@ -28,7 +28,7 @@ import java.util.Map;
 public class DetailedConsentResource extends ConsentResource {
 
 
-    private Map<String, String> consentAttributes;
+    private Map<String, Object> consentAttributes;
     private ArrayList<AuthorizationResource> authorizationResources;
     private ArrayList<ConsentMappingResource> consentMappingResources;
 
@@ -40,7 +40,7 @@ public class DetailedConsentResource extends ConsentResource {
                                    String consentType,
                                    String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
-                                   Map<String, String> consentAttributes,
+                                   Map<String, Object> consentAttributes,
                                    ArrayList<AuthorizationResource> authorizationResources,
                                    ArrayList<ConsentMappingResource> consentMappingResources) {
         super(orgId, consentId, clientId, receipt, consentType, expiryTime, recurringIndicator, currentStatus,
@@ -52,12 +52,12 @@ public class DetailedConsentResource extends ConsentResource {
     }
 
 
-    public Map<String, String> getConsentAttributes() {
+    public Map<String, Object> getConsentAttributes() {
 
         return consentAttributes;
     }
 
-    public void setConsentAttributes(Map<String, String> consentAttributes) {
+    public void setConsentAttributes(Map<String, Object> consentAttributes) {
 
         this.consentAttributes = consentAttributes;
     }
@@ -83,7 +83,7 @@ public class DetailedConsentResource extends ConsentResource {
     }
 
     public DetailedConsentResource clone() {
-        Map<String, String> copiedConsentAttributes = new HashMap<>();
+        Map<String, Object> copiedConsentAttributes = new HashMap<>();
         if (this.consentAttributes != null) {
             copiedConsentAttributes.putAll(this.consentAttributes);
         }

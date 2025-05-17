@@ -1678,7 +1678,7 @@ public class ConsentCoreDAOTests {
 
             ConsentAttributes consentAttributes = new ConsentAttributes();
             consentAttributes.setConsentId(storedConsentResource.getConsentId());
-            Map<String, String> attributes = new HashMap<>();
+            Map<String, Object> attributes = new HashMap<>();
             attributes.put("accountId", "12345");
 
             consentAttributes.setConsentAttributes(attributes);

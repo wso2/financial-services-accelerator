@@ -32,7 +32,7 @@ public interface ConsentResourceMapper {
     /**
      * Converts an Object to a Map<String, String> if possible.
      */
-    default Map<String, String> mapObjectToMap(Object value) throws
+    default Map<String, Object> mapObjectToMap(Object value) throws
             ConsentMgtException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -42,7 +42,7 @@ public interface ConsentResourceMapper {
 
             }
             return map.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString()));
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()));
         } catch (IllegalArgumentException e) {
             throw new ConsentMgtException(Response.Status.BAD_REQUEST, ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR);
         }

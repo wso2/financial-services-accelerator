@@ -538,7 +538,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     //TODO : not yet implemented and tested
     @Override
-    public boolean storeConsentAttributes(String consentId, Map<String, String> consentAttributes)
+    public boolean storeConsentAttributes(String consentId, Map<String, Object> consentAttributes)
             throws  ConsentMgtException {
 
         boolean isConsentAttributesStored;
@@ -684,7 +684,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     //TODO : not yet implemented and tested
     @Override
-    public ConsentAttributes updateConsentAttributes(String consentId, Map<String, String> consentAttributes)
+    public ConsentAttributes updateConsentAttributes(String consentId, Map<String, Object> consentAttributes)
             throws ConsentMgtException {
 
         if (StringUtils.isBlank(consentId) || consentAttributes == null || consentAttributes.isEmpty()) {

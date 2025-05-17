@@ -73,7 +73,7 @@ public class ConsentMgtServiceTestData {
     public static final String SAMPLE_AUTHORIZATION_ID_2 = "99999";
     public static final String SAMPLE_HISTORY_ID = "sampleHistoryID";
     public static final String SAMPLE_NEW_USER_ID = "ann@gold.com";
-    public static final Map<String, String> SAMPLE_CONSENT_ATTRIBUTES_MAP = new HashMap<String, String>() {
+    public static final Map<String, Object> SAMPLE_CONSENT_ATTRIBUTES_MAP = new HashMap<String, Object>() {
         {
             put("x-request-id", UUID.randomUUID().toString());
             put("idempotency-key", UUID.randomUUID().toString());
@@ -82,7 +82,7 @@ public class ConsentMgtServiceTestData {
         }
     };
 
-    public static final Map<String, String> SAMPLE_CHANGED_CONSENT_ATTRIBUTES_MAP = new HashMap<String, String>() {
+    public static final Map<String, Object> SAMPLE_CHANGED_CONSENT_ATTRIBUTES_MAP = new HashMap<String, Object>() {
         {
             put("x-request-id", UUID.randomUUID().toString());
             put("idempotency-key", UUID.randomUUID().toString());

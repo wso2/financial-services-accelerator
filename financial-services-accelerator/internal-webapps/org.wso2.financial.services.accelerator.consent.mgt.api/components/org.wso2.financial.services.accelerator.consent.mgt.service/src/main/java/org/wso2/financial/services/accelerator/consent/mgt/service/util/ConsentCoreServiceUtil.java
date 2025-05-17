@@ -297,7 +297,7 @@ public class ConsentCoreServiceUtil {
      * @throws ConsentDataDeletionException  If an error occurs when deleting data
      */
     public static void updateConsentAttributes(Connection connection, ConsentCoreDAO consentCoreDAO,
-                                               String consentId, Map<String, String> consentAttributes)
+                                               String consentId, Map<String, Object> consentAttributes)
             throws
             ConsentDataInsertionException,
             ConsentDataDeletionException {
@@ -354,8 +354,8 @@ public class ConsentCoreServiceUtil {
      * @param oldConsentAttributes Existing consent attributes
      * @return JSON object with the changed consent attributes
      */
-    public static JSONObject getChangedConsentAttributesDataJSON(Map<String, String> newConsentAttributes,
-                                                                 Map<String, String> oldConsentAttributes) {
+    public static JSONObject getChangedConsentAttributesDataJSON(Map<String, Object> newConsentAttributes,
+                                                                 Map<String, Object> oldConsentAttributes) {
 
         JSONObject changedConsentAttributesJson = new JSONObject();
 
@@ -376,7 +376,7 @@ public class ConsentCoreServiceUtil {
         });
 
         // get same keys in old and new consent attributes
-        for (Map.Entry<String, String> newConsentAttribute : newConsentAttributes.entrySet()) {
+        for (Map.Entry<String, Object> newConsentAttribute : newConsentAttributes.entrySet()) {
             if (oldConsentAttributes.containsKey(newConsentAttribute.getKey())) {
                 if (!newConsentAttribute.getValue().equals(oldConsentAttributes.get(newConsentAttribute.getKey()))) {
                     //store only the consent attributes with a changed value to the consent amendment history
@@ -552,7 +552,7 @@ public class ConsentCoreServiceUtil {
                             //Ignore the consent attribute from the consent history if it's value is stored as null
                             currentConsentResource.getConsentAttributes().remove(attribute.getKey());
                         } else {
-                            Map<String, String> consentAttributes = currentConsentResource.getConsentAttributes();
+                            Map<String, Object> consentAttributes = currentConsentResource.getConsentAttributes();
                             consentAttributes.put(attribute.getKey(),
                                     attributeValue.toString());
                             currentConsentResource.setConsentAttributes(consentAttributes);

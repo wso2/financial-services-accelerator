@@ -168,7 +168,7 @@ public interface ConsentCoreService {
      * @return a consent attributes resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    boolean storeConsentAttributes(String consentId, Map<String, String> consentAttributes)
+    boolean storeConsentAttributes(String consentId, Map<String, Object> consentAttributes)
             throws ConsentMgtException;
 
     /**
@@ -200,7 +200,7 @@ public interface ConsentCoreService {
      * @return updated consent attributes
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    ConsentAttributes updateConsentAttributes(String consentId, Map<String, String> consentAttributes)
+    ConsentAttributes updateConsentAttributes(String consentId, Map<String, Object> consentAttributes)
             throws ConsentMgtException;
 
     /**

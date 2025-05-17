@@ -251,7 +251,7 @@ public interface ConsentCoreDAO {
      * @param consentAttributes a map of attributes that should be updated
      * @throws ConsentDataUpdationException thrown if a database error occurs
      */
-    void updateConsentAttributes(Connection connection, String consentId, Map<String, String> consentAttributes)
+    void updateConsentAttributes(Connection connection, String consentId, Map<String, Object> consentAttributes)
             throws
             ConsentDataUpdationException;
 
