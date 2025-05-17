@@ -626,7 +626,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                         }
                     }
                 } else {
-                    log.error(String.format("No records are found for consent ID : %s and consent attribute keys",
+                    log.debug(String.format("No records are found for consent ID : %s and consent attribute keys",
                             consentId.replaceAll("[\r\n]", "")));
                 }
             } catch (SQLException e) {
@@ -761,6 +761,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         if (result.length != 0 && IntStream.of(result).noneMatch(value -> value == -3)) {
             log.debug("Updated the consent attributes successfully");
         } else {
+            log.error(ConsentMgtDAOConstants.CONSENT_ATTRIBUTES_UPDATE_ERROR_MSG);
             throw new ConsentDataUpdationException("Failed to update consent attribute data properly.");
         }
     }
@@ -797,6 +798,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             }
             return true;
         } else {
+            log.error(ConsentMgtDAOConstants.CONSENT_ATTRIBUTES_DELETE_ERROR_MSG);
             throw new ConsentDataDeletionException("Failed to delete consent attribute properly.");
         }
     }
@@ -904,8 +906,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     detailedConsentResources = constructDetailedConsentsSearchResult(resultSet, resultSetSize);
                 }
                 return detailedConsentResources;
-            } catch (SQLException e) {
-                log.error("Error occurred while searching detailed consent resources", e);
+            } catch (SQLException | JsonProcessingException e) {
+                log.error(ConsentError.CONSENT_SEARCH_ERROR_IN_DATABASE.getMessage(), e);
                 throw new ConsentDataRetrievalException(ConsentError.CONSENT_SEARCH_ERROR_IN_DATABASE, e);
             }
         } catch (SQLException e) {
@@ -1265,6 +1267,19 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
+    /**
+     * Validates and sets the search conditions for consent management queries.
+     * This method checks if the provided lists of search parameters are not empty
+     * and maps them to their corresponding database column names in the
+     * `applicableConditionsMap`.
+     *
+     * @param orgIDs                 A list of organization IDs to filter the search.
+     * @param applicableConditionsMap A map to store the applicable search conditions.
+     * @param consentIDs             A list of consent IDs to filter the search.
+     * @param clientIDs              A list of client IDs to filter the search.
+     * @param consentTypes           A list of consent types to filter the search.
+     * @param consentStatuses        A list of consent statuses to filter the search.
+     */
     void validateAndSetSearchConditions(ArrayList<String> orgIDs,
                                         Map<String, ArrayList<String>> applicableConditionsMap,
                                         ArrayList<String> consentIDs, ArrayList<String> clientIDs,
@@ -1294,9 +1309,19 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
+    /**
+     * Constructs a list of `DetailedConsentResource` objects from the given `ResultSet`.
+     * This method processes the result set to extract consent data, consent attributes,
+     * and authorization resources, and maps them to `DetailedConsentResource` objects.
+     *
+     * @param resultSet The `ResultSet` containing the consent data retrieved from the database.
+     * @param resultSetSize The size of the result set, used for processing.
+     * @return A list of `DetailedConsentResource` objects populated with consent data, attributes,
+     *         and authorization resources.
+     * @throws SQLException If an error occurs while accessing the `ResultSet`.
+     */
     ArrayList<DetailedConsentResource> constructDetailedConsentsSearchResult(ResultSet resultSet, int resultSetSize)
-            throws
-            SQLException {
+            throws SQLException, JsonProcessingException {
 
         ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
 
@@ -1317,8 +1342,11 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                         .getString(ConsentMgtDAOConstants.ATT_VALUE).split(GROUP_BY_SEPARATOR);
                 // check if all attribute keys has values
                 if (attributeKeys.length == attributeValues.length) {
+                    ObjectMapper objectMapper = new ObjectMapper();
                     for (int index = 0; index < attributeKeys.length; index++) {
-                        consentAttributesMap.put(attributeKeys[index], attributeValues[index]);
+                        Object attributeValue = objectMapper.readValue(attributeValues[index],
+                                Object.class);
+                        consentAttributesMap.put(attributeKeys[index], attributeValue);
                     }
                 }
             }

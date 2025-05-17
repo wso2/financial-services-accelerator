@@ -133,14 +133,9 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
             detailedConsentResource = setConsentDataToDetailedConsentResource(resultSet);
             // Set data related to consent attributes
             if (StringUtils.isNotBlank(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY))) {
-
                 Object attributeValue = objectMapper.readValue(resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE),
                                 Object.class);
-
-
-                    consentAttributesMap.put(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY),
-                            attributeValue);
-
+                consentAttributesMap.put(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY), attributeValue);
             }
 
             // Set data related to authorization resources
