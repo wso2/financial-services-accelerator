@@ -172,6 +172,14 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         }
     }
 
+    /**
+     * Construct detailed consent search result.
+     *
+     * @param resultSet     Result set
+     * @param resultSetSize Result set size
+     * @return Detailed consent resources
+     * @throws SQLException SQL exception
+     */
     ArrayList<DetailedConsentResource> constructDetailedConsentsSearchResult(ResultSet resultSet, int resultSetSize)
             throws SQLException {
 
@@ -216,6 +224,13 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         return detailedConsentResources;
     }
 
+    /**
+     * Set consent data to detailed consent resource.
+     *
+     * @param resultSet                 Result set
+     * @param detailedConsentResource   Detailed consent resource
+     * @throws SQLException SQL exception
+     */
     void setConsentDataToDetailedConsentInSearchResponse(ResultSet resultSet,
                                                          DetailedConsentResource detailedConsentResource)
             throws SQLException {
@@ -257,6 +272,14 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         recurringIndicator.ifPresent(detailedConsentResource::setRecurringIndicator);
     }
 
+    /**
+     * Set authorization data to response.
+     *
+     * @param authorizationResources   Authorization resources
+     * @param resultSet                Result set
+     * @param consentId                Consent ID
+     * @throws SQLException SQL exception
+     */
     protected void setAuthorizationDataInResponseForGroupedQuery(ArrayList<AuthorizationResource>
                                                                          authorizationResources,
                                                                  ResultSet resultSet, String consentId)
@@ -301,47 +324,18 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
 
     }
 
-    protected void setAccountConsentMappingDataInResponse(ArrayList<ConsentMappingResource> consentMappingResources,
-                                                          ResultSet resultSet) throws SQLException {
-
-        //identify duplicate mappingIds
-        Set<String> mappingIdSet = new HashSet<>();
-
-        // fetch values from group_concat
-        String[] authIds = resultSet.getString(ConsentMgtDAOConstants.AUTH_MAPPING_ID) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.AUTH_MAPPING_ID).split(GROUP_BY_SEPARATOR) : null;
-        String[] mappingIds = resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID).split(GROUP_BY_SEPARATOR) : null;
-        String[] accountIds = resultSet.getString(ConsentMgtDAOConstants.ACCOUNT_ID) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.ACCOUNT_ID).split(GROUP_BY_SEPARATOR) : null;
-        String[] mappingStatues = resultSet.getString(ConsentMgtDAOConstants.MAPPING_STATUS) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.MAPPING_STATUS).split(GROUP_BY_SEPARATOR) : null;
-        String[] permissions = resultSet.getString(ConsentMgtDAOConstants.PERMISSION) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.PERMISSION).split(GROUP_BY_SEPARATOR) : null;
-
-        for (int index = 0; index < (mappingIds != null ? mappingIds.length : 0); index++) {
-            if (!mappingIdSet.contains(mappingIds[index])) {
-                ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-                if (authIds != null && authIds.length > index) {
-                    consentMappingResource.setAuthorizationId(authIds[index]);
-                }
-                consentMappingResource.setMappingId(mappingIds[index]);
-                if (accountIds != null && accountIds.length > index) {
-                    consentMappingResource.setAccountId(accountIds[index]);
-                }
-                if (mappingStatues != null && mappingStatues.length > index) {
-                    consentMappingResource.setMappingStatus(mappingStatues[index]);
-                }
-                if (permissions != null && permissions.length > index) {
-                    consentMappingResource.setPermission(permissions[index]);
-                }
-                consentMappingResources.add(consentMappingResource);
-                mappingIdSet.add(mappingIds[index]);
-            }
-        }
-
-    }
-
+    /**
+     * Validates and sets the search conditions for consent management queries.
+     * This method checks if the provided lists of search parameters are not empty
+     * and maps them to their corresponding database column names in the
+     * `applicableConditionsMap`.
+     *
+     * @param applicableConditionsMap A map to store the applicable search conditions.
+     * @param consentIDs             A list of consent IDs to filter the search.
+     * @param clientIDs              A list of client IDs to filter the search.
+     * @param consentTypes           A list of consent types to filter the search.
+     * @param consentStatuses        A list of consent statuses to filter the search.
+     */
     void validateAndSetSearchConditions(Map<String, ArrayList<String>> applicableConditionsMap,
                                         ArrayList<String> consentIDs, ArrayList<String> clientIDs,
                                         ArrayList<String> consentTypes, ArrayList<String> consentStatuses) {

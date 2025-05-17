@@ -1360,6 +1360,16 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         return detailedConsentResources;
     }
 
+    /**
+     * Sets authorization data in the response for a grouped query.
+     * This method processes the `ResultSet` to extract authorization data
+     * and maps it to `AuthorizationResource` objects, avoiding duplicates.
+     *
+     * @param authorizationResources A list to store the extracted authorization resources.
+     * @param resultSet              The `ResultSet` containing the authorization data.
+     * @param consentId              The consent ID associated with the authorization resources.
+     * @throws SQLException If an error occurs while accessing the `ResultSet`.
+     */
     protected void setAuthorizationDataInResponseForGroupedQuery(ArrayList<AuthorizationResource>
                                                                          authorizationResources,
                                                                  ResultSet resultSet, String consentId)

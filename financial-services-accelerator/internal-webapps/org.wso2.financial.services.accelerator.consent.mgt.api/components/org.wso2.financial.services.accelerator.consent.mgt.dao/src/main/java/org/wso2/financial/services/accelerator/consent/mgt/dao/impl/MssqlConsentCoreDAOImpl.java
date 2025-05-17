@@ -173,6 +173,18 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         }
     }
 
+    /**
+     * Constructs a list of `DetailedConsentResource` objects from the given `ResultSet`.
+     * This method processes the result set to extract consent data, consent attributes,
+     * authorization resources, and consent mapping resources, and maps them to
+     * `DetailedConsentResource` objects.
+     *
+     * @param resultSet     The `ResultSet` containing the consent data retrieved from the database.
+     * @param resultSetSize The size of the result set, used for processing.
+     * @return A list of `DetailedConsentResource` objects populated with consent data, attributes,
+     *         authorization resources, and consent mapping resources.
+     * @throws SQLException If an error occurs while accessing the `ResultSet`.
+     */
     ArrayList<DetailedConsentResource> constructDetailedConsentsSearchResult(ResultSet resultSet, int resultSetSize)
             throws SQLException {
 
@@ -217,6 +229,13 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         return detailedConsentResources;
     }
 
+    /**
+     * Sets the consent data to the detailed consent resource in the search response.
+     *
+     * @param resultSet                   The result set containing the consent data.
+     * @param detailedConsentResource     The detailed consent resource to be populated.
+     * @throws SQLException               If an error occurs while accessing the result set.
+     */
     void setConsentDataToDetailedConsentInSearchResponse(ResultSet resultSet,
                                                          DetailedConsentResource detailedConsentResource)
             throws SQLException {
@@ -259,6 +278,14 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         recurringIndicator.ifPresent(e -> detailedConsentResource.setRecurringIndicator(Integer.parseInt(e) != 0));
     }
 
+    /**
+     * Sets the authorization data in the response for grouped query.
+     *
+     * @param authorizationResources The list of authorization resources to be populated.
+     * @param resultSet              The result set containing the authorization data.
+     * @param consentId              The consent ID associated with the authorization data.
+     * @throws SQLException If an error occurs while accessing the result set.
+     */
     protected void setAuthorizationDataInResponseForGroupedQuery(ArrayList<AuthorizationResource>
                                                                          authorizationResources,
                                                                  ResultSet resultSet, String consentId)
@@ -302,48 +329,18 @@ public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
         }
 
     }
-
-    protected void setAccountConsentMappingDataInResponse(ArrayList<ConsentMappingResource> consentMappingResources,
-                                                          ResultSet resultSet) throws SQLException {
-
-        //identify duplicate mappingIds
-        Set<String> mappingIdSet = new HashSet<>();
-
-        // fetch values from group_concat
-        String[] authIds = resultSet.getString(ConsentMgtDAOConstants.AUTH_MAPPING_ID) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.AUTH_MAPPING_ID).split(GROUP_BY_SEPARATOR) : null;
-        String[] mappingIds = resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.MAPPING_ID).split(GROUP_BY_SEPARATOR) : null;
-        String[] accountIds = resultSet.getString(ConsentMgtDAOConstants.ACCOUNT_ID) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.ACCOUNT_ID).split(GROUP_BY_SEPARATOR) : null;
-        String[] mappingStatues = resultSet.getString(ConsentMgtDAOConstants.MAPPING_STATUS) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.MAPPING_STATUS).split(GROUP_BY_SEPARATOR) : null;
-        String[] permissions = resultSet.getString(ConsentMgtDAOConstants.PERMISSION) != null ?
-                resultSet.getString(ConsentMgtDAOConstants.PERMISSION).split(GROUP_BY_SEPARATOR) : null;
-
-        for (int index = 0; index < (mappingIds != null ? mappingIds.length : 0); index++) {
-            if (!mappingIdSet.contains(mappingIds[index])) {
-                ConsentMappingResource consentMappingResource = new ConsentMappingResource();
-                if (authIds != null && authIds.length > index) {
-                    consentMappingResource.setAuthorizationId(authIds[index]);
-                }
-                consentMappingResource.setMappingId(mappingIds[index]);
-                if (accountIds != null && accountIds.length > index) {
-                    consentMappingResource.setAccountId(accountIds[index]);
-                }
-                if (mappingStatues != null && mappingStatues.length > index) {
-                    consentMappingResource.setMappingStatus(mappingStatues[index]);
-                }
-                if (permissions != null && permissions.length > index) {
-                    consentMappingResource.setPermission(permissions[index]);
-                }
-                consentMappingResources.add(consentMappingResource);
-                mappingIdSet.add(mappingIds[index]);
-            }
-        }
-
-    }
-
+    /**
+     * Validates and sets the search conditions for consent management queries.
+     * This method checks if the provided lists of search parameters are not empty
+     * and maps them to their corresponding database column names in the
+     * `applicableConditionsMap`.
+     *
+     * @param applicableConditionsMap A map to store the applicable search conditions.
+     * @param consentIDs             A list of consent IDs to filter the search.
+     * @param clientIDs              A list of client IDs to filter the search.
+     * @param consentTypes           A list of consent types to filter the search.
+     * @param consentStatuses        A list of consent statuses to filter the search.
+     */
     void validateAndSetSearchConditions(Map<String, ArrayList<String>> applicableConditionsMap,
                                         ArrayList<String> consentIDs, ArrayList<String> clientIDs,
                                         ArrayList<String> consentTypes, ArrayList<String> consentStatuses) {
