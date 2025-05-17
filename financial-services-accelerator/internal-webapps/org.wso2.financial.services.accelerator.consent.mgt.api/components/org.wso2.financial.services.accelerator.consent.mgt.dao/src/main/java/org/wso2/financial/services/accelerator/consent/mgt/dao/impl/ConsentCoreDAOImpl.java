@@ -61,7 +61,6 @@ import java.util.stream.IntStream;
  * database. The incoming data are pre-validated in the upper service layer. Therefore, no validations are done in
  * this layer.
  */
-@SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     private static final Log log = LogFactory.getLog(ConsentCoreDAOImpl.class);
@@ -111,11 +110,12 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 consentResource.setUpdatedTime(createdTime);
                 return consentResource;
             } else {
-                log.error(ConsentError.CONSENT_INSERTION_ERROR_IN_DATABASE.getMessage());
+                log.error(ConsentError.CONSENT_INSERTION_ERROR_IN_DATABASE.getMessage().replaceAll("[\r\n]",
+                        ""));
                 throw new ConsentDataInsertionException(ConsentError.CONSENT_INSERTION_ERROR_IN_DATABASE);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_INSERTION_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_INSERTION_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentDataInsertionException(ConsentError.CONSENT_INSERTION_ERROR);
         }
     }
@@ -153,7 +153,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 throw new ConsentDataRetrievalException(ConsentError.CONSENT_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_RETRIEVAL_ERROR, e);
+            log.error(ConsentError.CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentDataRetrievalException(ConsentError.CONSENT_RETRIEVAL_ERROR);
         }
     }
@@ -185,11 +185,12 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_NOT_FOUND);
                 }
             } catch (SQLException e) {
-                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE, e);
+                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE.
+                        getMessage().replaceAll("[\r\n]", ""), e);
                 throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR, e);
+            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
         }
     }
@@ -223,11 +224,13 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                     throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_NOT_FOUND);
                 }
             } catch (SQLException e) {
-                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE, e);
+                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE.getMessage().replaceAll(
+                        "[\r\n]", ""), e);
                 throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR, e);
+            log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll(
+                    "[\r\n]", ""), e);
             throw new ConsentDataRetrievalException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
         }
     }
@@ -254,11 +257,12 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             if (result > 0) {
                 log.debug("Updated the consent status successfully");
             } else {
-                log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE.getMessage());
+                log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE.getMessage().replaceAll("[\r\n]",
+                        ""));
                 throw new ConsentDataUpdationException(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR, e);
+            log.error(ConsentError.CONSENT_STATUS_UPDATE_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentDataUpdationException(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE);
         }
     }
@@ -286,7 +290,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 log.debug("Updated the consent validity time successfully");
             } else {
                 throw new ConsentDataUpdationException(
-                        ConsentError.CONSENT_EXPIRY_TIME_UPDATE_ERROR_IN_DATABASE.getMessage());
+                        ConsentError.CONSENT_EXPIRY_TIME_UPDATE_ERROR_IN_DATABASE.getMessage().replaceAll(
+                                "[\r\n]", ""));
             }
         } catch (SQLException e) {
             String errorMessage = String.format("Error while updating consent validity time for consent ID: %s",
@@ -335,12 +340,14 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 authorizationResource.setUpdatedTime(updatedTime);
                 return authorizationResource;
             } else {
-                log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE);
+                log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE.getMessage().replaceAll(
+                        "[\r\n]", ""));
                 throw new ConsentDataInsertionException(
                         ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR, e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR.getMessage().replaceAll(
+                    "[\r\n]", ""), e);
             throw new ConsentDataInsertionException(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR, e);
         }
     }
@@ -389,12 +396,14 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 log.debug("Stored the bulk authorization resource successfully");
                 return authorizationResources;
             } else {
-                log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE);
+                log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE.getMessage().replaceAll(
+                        "[\r\n]", ""));
                 throw new ConsentDataInsertionException(
                         ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR, e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR.getMessage().replaceAll(
+                    "[\r\n]", ""), e);
             throw new ConsentDataInsertionException(ConsentError.AUTHORIZATION_RESOURCE_INSERTION_ERROR, e);
         }
     }
@@ -435,7 +444,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                         ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR.getMessage(), e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""), e);
             throw new ConsentDataRetrievalException(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR);
         }
     }
@@ -471,11 +481,13 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 log.debug("Updated the authorization resource successfully");
                 return authorizationResource;
             } else {
-                log.error(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR_IN_DATABASE.getMessage());
+                log.error(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR_IN_DATABASE.getMessage().replaceAll(
+                        "[\r\n]", ""));
                 throw new ConsentDataUpdationException(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR_IN_DATABASE);
             }
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR.getMessage(), e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""), e);
             throw new ConsentDataUpdationException(ConsentError.AUTHORIZATION_RESOURCE_UPDATE_ERROR);
         }
     }
@@ -500,11 +512,13 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             if (result > 0) {
                 log.debug("Deleted the authorization resource successfully");
             } else {
-                log.error(ConsentError.AUTHORIZATION_RESOURCE_DELETE_ERROR_IN_DATABASE.getMessage());
+                log.error(ConsentError.AUTHORIZATION_RESOURCE_DELETE_ERROR_IN_DATABASE.getMessage().replaceAll(
+                        "[\r\n]", ""));
                 throw new ConsentDataDeletionException("Failed to delete authorization resource properly.");
             }
         } catch (SQLException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_DELETE_ERROR.getMessage());
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_DELETE_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""));
             throw new ConsentDataDeletionException(ConsentError.AUTHORIZATION_RESOURCE_DELETE_ERROR);
         }
     }
@@ -534,7 +548,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             result = storeConsentAttributesPreparedStmt.executeBatch();
 
         } catch (SQLException | JsonProcessingException e) {
-            log.error(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""), e);
             throw new ConsentDataInsertionException(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR, e);
         }
 
@@ -547,7 +562,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.debug("Stored the consent attributes successfully");
             return true;
         } else {
-            log.error(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR_DATABASE.getMessage());
+            log.error(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR_DATABASE.getMessage().replaceAll("[\r\n]",
+                    ""));
             throw new ConsentDataInsertionException(ConsentError.CONSENT_ATTRIBUTES_STORE_ERROR_DATABASE);
         }
     }
@@ -632,7 +648,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 }
             } catch (SQLException | JsonProcessingException e) {
                 String errorMessage = String.format("Error occurred while retrieving consent attributes for " +
-                        "consent ID : %s and provided consent attributes", consentId.replaceAll("[\r\n]", ""));
+                        "consent ID : %s and provided consent attributes", consentId.replaceAll("[\r\n]",
+                        ""));
                 log.error(errorMessage, e);
                 throw new ConsentDataRetrievalException(errorMessage, e);
             }
@@ -865,11 +882,12 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 }
                 return detailedConsentResources;
             } catch (SQLException | JsonProcessingException e) {
-                log.error(ConsentError.CONSENT_SEARCH_ERROR_IN_DATABASE.getMessage(), e);
+                log.error(ConsentError.CONSENT_SEARCH_ERROR_IN_DATABASE.getMessage().replaceAll("[\r\n]",
+                        ""), e);
                 throw new ConsentDataRetrievalException(ConsentError.CONSENT_SEARCH_ERROR_IN_DATABASE, e);
             }
         } catch (SQLException e) {
-            log.error(ConsentError.CONSENT_SEARCH_ERROR.getMessage(), e);
+            log.error(ConsentError.CONSENT_SEARCH_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentDataRetrievalException(ConsentError.CONSENT_SEARCH_ERROR);
         }
     }
@@ -921,7 +939,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             consentStatusAuditRecord.setActionTime(actionTime);
             return consentStatusAuditRecord;
         } else {
-            log.error(ConsentError.STATUS_AUDIT_INSERTION_ERROR_IN_DATABASE.getMessage());
+            log.error(ConsentError.STATUS_AUDIT_INSERTION_ERROR_IN_DATABASE.getMessage().replaceAll("[\r\n]",
+                    ""));
             throw new ConsentDataInsertionException(ConsentError.CONSENT_STATUS_UPDATE_ERROR_IN_DATABASE);
         }
     }

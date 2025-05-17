@@ -233,20 +233,6 @@ public class ConsentCoreServiceUtil {
     }
 
     /**
-     * Construct an ArrayList with a single field.
-     *
-     * @param field Field to be added to the ArrayList
-     * @return ArrayList with a single field
-     */
-    public static ArrayList<String> constructArrayList(String field) {
-        return new ArrayList<String>() {
-            {
-                add(field);
-            }
-        };
-    }
-
-    /**
      * Method to update the consent attributes.
      *
      * @param connection        Database connection
