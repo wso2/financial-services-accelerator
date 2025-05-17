@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.dao.models;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -51,5 +52,12 @@ public class ConsentAttributes {
 
     public void setConsentAttributes(Map<String, Object> consentAttributes) {
         this.consentAttributes = consentAttributes;
+    }
+
+    public void setConsentAttribute(String key, Object value) {
+        if (this.consentAttributes == null) {
+            this.consentAttributes = new HashMap<>();
+        }
+        this.consentAttributes.put(key, value);
     }
 }

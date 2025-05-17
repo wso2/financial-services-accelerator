@@ -56,25 +56,15 @@ public class ConsentManagementDAOUtil {
     private static final String PLACEHOLDER = "?";
     private static final String LEFT_PARENTHESIS = "(";
     private static final String RIGHT_PARENTHESIS = ")";
-
-    private static final Map<String, String> DB_OPERATORS_MAP = new HashMap<>();
-
-    static {
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.IN,
-                "IN");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.AND,
-                "AND");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.OR,
-                "OR");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.WHERE,
-                "WHERE");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.PLACEHOLDER,
-                "?,");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.PLAIN_PLACEHOLDER,
-                "?");
-        DB_OPERATORS_MAP.put(ConsentMgtDAOConstants.EQUALS,
-                "=");
-    }
+private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
+    ConsentMgtDAOConstants.IN, "IN",
+    ConsentMgtDAOConstants.AND, "AND",
+    ConsentMgtDAOConstants.OR, "OR",
+    ConsentMgtDAOConstants.WHERE, "WHERE",
+    ConsentMgtDAOConstants.PLACEHOLDER, "?,",
+    ConsentMgtDAOConstants.PLAIN_PLACEHOLDER, "?",
+    ConsentMgtDAOConstants.EQUALS, "="
+);
 
     /**
      * Set data from the result set to ConsentResource object.
