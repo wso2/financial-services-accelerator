@@ -36,14 +36,14 @@ public class DetailedConsentResource extends ConsentResource {
 
     }
 
-    public DetailedConsentResource(String orgInfo, String consentId, String clientId, String receipt,
+    public DetailedConsentResource(String orgId, String consentId, String clientId, String receipt,
                                    String consentType,
                                    String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
                                    Map<String, String> consentAttributes,
                                    ArrayList<AuthorizationResource> authorizationResources,
                                    ArrayList<ConsentMappingResource> consentMappingResources) {
-        super(orgInfo, consentId, clientId, receipt, consentType, expiryTime, recurringIndicator, currentStatus,
+        super(orgId, consentId, clientId, receipt, consentType, expiryTime, recurringIndicator, currentStatus,
                 createdTime, updatedTime);
         this.consentAttributes = consentAttributes;
         this.authorizationResources = authorizationResources;
@@ -118,7 +118,7 @@ public class DetailedConsentResource extends ConsentResource {
 
         // Create new instance
         return new DetailedConsentResource(
-                getOrgInfo(),
+                getOrgId(),
                 getConsentId(),
                 getClientId(),
                 getReceipt(),

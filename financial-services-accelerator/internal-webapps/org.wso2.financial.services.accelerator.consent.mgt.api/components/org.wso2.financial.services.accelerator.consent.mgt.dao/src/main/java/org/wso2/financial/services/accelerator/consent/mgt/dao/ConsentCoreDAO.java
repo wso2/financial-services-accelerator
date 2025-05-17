@@ -59,11 +59,11 @@ public interface ConsentCoreDAO {
      *
      * @param connection connection object
      * @param consentId  consent ID
-     * @param orgInfo   tenant related information
+     * @param orgId   tenant related information
      * @return returns the consent resource related to the provided consent ID without consent attributes.
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    ConsentResource getConsentResource(Connection connection, String consentId, String orgInfo)
+    ConsentResource getConsentResource(Connection connection, String consentId, String orgId)
             throws ConsentDataRetrievalException;
 
     /**
@@ -72,10 +72,11 @@ public interface ConsentCoreDAO {
      *
      * @param connection connection object
      * @param consentId  consent ID
+     * @param orgId    tenant related information
      * @return returns a detailed consent resource related to the provided consent ID
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgInfo)
+    DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgId)
             throws ConsentDataRetrievalException;
 
     /**
@@ -127,15 +128,30 @@ public interface ConsentCoreDAO {
             throws ConsentDataInsertionException;
 
     /**
+     * This method is used to store the authorization resource in the database. The request authorization resource
+     * object must contain data all in it without the authorization ID and the updated time. Both of them will be
+     * generated and set to the response object if the insertion is successful.
+     *
+     * @param connection            connection object
+     * @param consentId             consent ID
+     * @param authorizationResource authorization resource with all required data
+     * @return returns the list of authorization resources with the updated time if insertion is successful
+     * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
+     */
+    ArrayList<AuthorizationResource> storeBulkAuthorizationResources(Connection connection, String consentId,
+                                                      ArrayList<AuthorizationResource> authorizationResource)
+            throws ConsentDataInsertionException;
+
+    /**
      * This method is used to retrieve an authorization resource for the provided authorization ID.
      *
      * @param connection      connection object
      * @param authorizationId authorization ID
-     * @param orgInfo        tenant related information
+     * @param orgId        tenant related information
      * @return the relevant authorization resource
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    AuthorizationResource getAuthorizationResource(Connection connection, String authorizationId, String orgInfo)
+    AuthorizationResource getAuthorizationResource(Connection connection, String authorizationId, String orgId)
             throws ConsentDataRetrievalException;
 
     /**
@@ -179,11 +195,11 @@ public interface ConsentCoreDAO {
      *
      * @param connection connection object
      * @param consentId  consent ID
-     * @param orgInfo    tenant related information
+     * @param orgId    tenant related information
      * @return returns the consent attributes that matches the provided consentId and consent attribute keys
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgInfo)
+    ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgId)
             throws  ConsentDataRetrievalException;
 
     /**
@@ -191,12 +207,12 @@ public interface ConsentCoreDAO {
      *
      * @param connection           connection object
      * @param consentId            consent ID
-     * @param orgInfo             tenant related information
+     * @param orgId             tenant related information
      * @param consentAttributeKeys the keys of the consent attributes that need to be retrieved
      * @return returns the consent attributes that matches the provided consentId and consent attribute keys
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgInfo,
+    ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgId,
                                            ArrayList<String> consentAttributeKeys)
             throws
             ConsentDataRetrievalException;
@@ -273,7 +289,7 @@ public interface ConsentCoreDAO {
      * if all parameters are null
      * @throws ConsentDataRetrievalException thrown if any error occur
      */
-    ArrayList<DetailedConsentResource> searchConsents(Connection connection, String orgInfo,
+    ArrayList<DetailedConsentResource> searchConsents(Connection connection, String orgId,
                                                       ArrayList<String> consentIDs,
                                                       ArrayList<String> clientIDs, ArrayList<String> consentTypes,
                                                       ArrayList<String> consentStatuses, ArrayList<String> userIDs,

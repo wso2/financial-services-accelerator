@@ -86,7 +86,7 @@ public class ConsentManagementDAOUtil {
             SQLException {
 
         return new ConsentResource(
-                resultSet.getString(ConsentMgtDAOConstants.ORG_INFO),
+                resultSet.getString(ConsentMgtDAOConstants.ORG_ID),
                 resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID),
                 resultSet.getString(ConsentMgtDAOConstants.CLIENT_ID),
                 resultSet.getString(ConsentMgtDAOConstants.RECEIPT),
@@ -198,7 +198,7 @@ public class ConsentManagementDAOUtil {
             SQLException {
 
         return new DetailedConsentResource(
-                resultSet.getString(ConsentMgtDAOConstants.ORG_INFO),
+                resultSet.getString(ConsentMgtDAOConstants.ORG_ID),
                 resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID),
                 resultSet.getString(ConsentMgtDAOConstants.CLIENT_ID),
                 resultSet.getString(ConsentMgtDAOConstants.RECEIPT),
@@ -417,11 +417,11 @@ public class ConsentManagementDAOUtil {
             sortedIndexesMap.put(indexOfConsentStatusesList,
                     applicableConditionsMap.get(columnsMap.get(ConsentMgtDAOConstants.CONSENT_STATUSES)));
         }
-        if (preparedStatement.contains(columnsMap.get(ConsentMgtDAOConstants.ORG_INFO))) {
+        if (preparedStatement.contains(columnsMap.get(ConsentMgtDAOConstants.ORG_ID))) {
             indexOfConsentStatusesList = preparedStatement
-                    .indexOf(columnsMap.get(ConsentMgtDAOConstants.ORG_INFO));
+                    .indexOf(columnsMap.get(ConsentMgtDAOConstants.ORG_ID));
             sortedIndexesMap.put(indexOfConsentStatusesList,
-                    applicableConditionsMap.get(columnsMap.get(ConsentMgtDAOConstants.ORG_INFO)));
+                    applicableConditionsMap.get(columnsMap.get(ConsentMgtDAOConstants.ORG_ID)));
         }
         if (preparedStatement.contains(columnsMap.get(ConsentMgtDAOConstants.USER_IDS))) {
             indexOfUserIDsList = preparedStatement.indexOf(columnsMap.get(ConsentMgtDAOConstants.USER_IDS));

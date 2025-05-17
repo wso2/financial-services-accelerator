@@ -243,6 +243,11 @@ public enum ConsentError {
             "Failed to delete authorization resource",
             "Occurs when deletion of the authorization data fails."
     ),
+    AUTHORIZATION_RESOURCE_DELETE_ERROR_IN_DATABASE(
+            "CMGT_12308",
+            "Failed to delete authorization resource",
+            "Occurs when deletion of the authorization data fails."
+    ),
 
     // Detailed Consent Resource (13)
     // database level

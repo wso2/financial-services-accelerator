@@ -57,72 +57,58 @@ public class ConsentStatusAuditRecord {
     }
 
     public String getStatusAuditID() {
-
         return statusAuditID;
     }
 
     public void setStatusAuditID(String statusAuditID) {
-
         this.statusAuditID = statusAuditID;
     }
 
     public String getConsentId() {
-
         return consentId;
     }
 
     public void setConsentId(String consentId) {
-
         this.consentId = consentId;
     }
 
     public String getCurrentStatus() {
-
         return currentStatus;
     }
 
     public void setCurrentStatus(String currentStatus) {
-
         this.currentStatus = currentStatus;
     }
 
     public long getActionTime() {
-
         return actionTime;
     }
 
     public void setActionTime(long actionTime) {
-
         this.actionTime = actionTime;
     }
 
     public String getReason() {
-
         return reason;
     }
 
     public void setReason(String reason) {
-
         this.reason = reason;
     }
 
     public String getActionBy() {
-
         return actionBy;
     }
 
     public void setActionBy(String actionBy) {
-
         this.actionBy = actionBy;
     }
 
     public String getPreviousStatus() {
-
         return previousStatus;
     }
 
     public void setPreviousStatus(String previousStatus) {
-
         this.previousStatus = previousStatus;
     }
 }

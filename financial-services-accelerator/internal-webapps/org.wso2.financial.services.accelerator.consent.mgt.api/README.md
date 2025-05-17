@@ -65,5 +65,3 @@ docker build -t consent-rest-api -f deployment/Dockerfile .
 docker run -p 8080:8080 consent-rest-api
 
 ```
-
-Explore the APIs available in the Swagger UI at http://localhost:8080/swagger-ui/index.html?url=http://localhost:8080/api/openapi.json

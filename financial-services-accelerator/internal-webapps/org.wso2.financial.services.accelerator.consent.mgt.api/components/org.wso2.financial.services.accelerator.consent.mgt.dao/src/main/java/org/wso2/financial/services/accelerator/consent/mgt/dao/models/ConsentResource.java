@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class ConsentResource {
 
-    private String orgInfo;
+    private String orgId;
     private String consentId;
     private String clientId;
     private String receipt;
@@ -39,18 +39,18 @@ public class ConsentResource {
     public ConsentResource() {
     }
 
-    public ConsentResource(String orgInfo, String clientId, String receipt, String consentType, String currentStatus) {
-        this.orgInfo = orgInfo;
+    public ConsentResource(String orgId, String clientId, String receipt, String consentType, String currentStatus) {
+        this.orgId = orgId;
         this.clientId = clientId;
         this.receipt = receipt;
         this.consentType = consentType;
         this.currentStatus = currentStatus;
     }
 
-    public ConsentResource(String orgInfo, String consentId, String clientId, String receipt, String consentType,
+    public ConsentResource(String orgId, String consentId, String clientId, String receipt, String consentType,
                            long expiryTime, boolean recurringIndicator,
                            String currentStatus, long createdTime, long updatedTime) {
-        this.orgInfo = orgInfo;
+        this.orgId = orgId;
         this.consentId = consentId;
         this.clientId = clientId;
         this.receipt = receipt;
@@ -64,112 +64,91 @@ public class ConsentResource {
 
     private Map<String, String> consentAttributes;
 
-    public long getUpdatedTime() {
-
-        return updatedTime;
+    public String getOrgId() {
+        return orgId;
     }
 
-    public void setUpdatedTime(long updatedTime) {
-
-        this.updatedTime = updatedTime;
-    }
-
-    public Map<String, String> getConsentAttributes() {
-
-        return consentAttributes;
-    }
-
-    public void setConsentAttributes(Map<String, String> consentAttributes) {
-
-        this.consentAttributes = consentAttributes;
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
     public String getConsentId() {
-
         return consentId;
     }
 
     public void setConsentId(String consentId) {
-
         this.consentId = consentId;
     }
 
-    public String getOrgInfo() {
-        return orgInfo;
-    }
-
-    public void setOrgID(String orgInfo) {
-        this.orgInfo = orgInfo;
-    }
-
     public String getClientId() {
-
         return clientId;
     }
 
     public void setClientId(String clientId) {
-
         this.clientId = clientId;
     }
 
     public String getReceipt() {
-
         return receipt;
     }
 
     public void setReceipt(String receipt) {
-
         this.receipt = receipt;
     }
 
     public String getConsentType() {
-
         return consentType;
     }
 
     public void setConsentType(String consentType) {
-
         this.consentType = consentType;
     }
 
-
     public long getExpiryTime() {
-
         return expiryTime;
     }
 
     public void setExpiryTime(long expiryTime) {
-
         this.expiryTime = expiryTime;
     }
 
     public boolean isRecurringIndicator() {
-
         return recurringIndicator;
     }
 
     public void setRecurringIndicator(boolean recurringIndicator) {
-
         this.recurringIndicator = recurringIndicator;
     }
 
     public String getCurrentStatus() {
-
         return currentStatus;
     }
 
     public void setCurrentStatus(String currentStatus) {
-
         this.currentStatus = currentStatus;
     }
 
     public long getCreatedTime() {
-
         return createdTime;
     }
 
     public void setCreatedTime(long createdTime) {
-
         this.createdTime = createdTime;
+    }
+
+    public long getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(long updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    public Map<String, String> getConsentAttributes() {
+        return consentAttributes;
+    }
+
+    public void setConsentAttributes(Map<String, String> consentAttributes) {
+        this.consentAttributes = consentAttributes;
     }
 }
