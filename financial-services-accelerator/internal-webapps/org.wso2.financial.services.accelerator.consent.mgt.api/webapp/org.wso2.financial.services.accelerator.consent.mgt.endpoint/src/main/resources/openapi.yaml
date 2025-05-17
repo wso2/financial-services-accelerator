@@ -25,7 +25,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -60,7 +60,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -100,7 +100,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -129,7 +129,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -158,7 +158,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -196,7 +196,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -224,7 +224,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -249,7 +249,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -285,7 +285,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -314,7 +314,7 @@ paths:
       description: Search for consents using filters such as type, status, client ID, user ID, and time range.
       operationId: consentGet
       parameters:
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -374,7 +374,7 @@ paths:
 
       operationId: consentPost
       parameters:
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -409,7 +409,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
@@ -434,7 +434,7 @@ paths:
       operationId: consentStatusPut
       description: Perform a bulk update to change the status of multiple consents.
       parameters:
-        - name: orgInfo
+        - name: orgId
           in: header
           description: JWT header containing tenant-related information
           schema:
