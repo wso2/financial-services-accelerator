@@ -1,8 +1,0 @@
-<Context>
-
-    <Resource name="jdbc/WSO2FS_DB" auth="Container" type="javax.sql.DataSource"
-              maxActive="50" maxIdle="30" maxWait="10000"
-              username="root" password="password"
-              driverClassName="com.mysql.cj.jdbc.Driver"
-              url="jdbc:mysql://localhost:3306/fs_consentdb_test?useSSL=false"/>
-</Context>
