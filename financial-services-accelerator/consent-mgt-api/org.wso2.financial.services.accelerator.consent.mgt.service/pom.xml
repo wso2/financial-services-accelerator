@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
- ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -26,12 +26,11 @@
         <version>5.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-
-    <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
-    <name>WSO2 Financial Services - Consent DAO</name>
-    <description>WSO2 Financial Services - Consent DAO Module</description>
+    <artifactId>org.wso2.financial.services.accelerator.consent.mgt.service</artifactId>
+    <name>WSO2 Financial Services - Consent Service</name>
+    <description>WSO2 Financial Services - Consent Service Module</description>
     <url>http://maven.apache.org</url>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
@@ -39,45 +38,41 @@
             <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
             <artifactId>json-smart</artifactId>
+            <version>${json-smart.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
-            <artifactId>org.wso2.financial.services.accelerator.common</artifactId>
+            <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs-annotations</artifactId>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>2.1.6</version>
         </dependency>
+
+
         <!-- Unit Test Dependencies -->
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.agent</artifactId>
-            <classifier>runtime</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -85,10 +80,16 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-testng</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
@@ -138,17 +139,11 @@
                 <configuration>
                     <excludes>
                         <!--Excluding them in coverage reports-->
-                        <exclude>**/*ServiceComponent.class</exclude>
                         <exclude>**/*Constants.class</exclude>
+                        <exclude>**/*Component.class</exclude>
+                        <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*Exception.class</exclude>
-                        <!-- Excluded since involves datasource initialization -->
-                        <exclude>**/ConsentStoreInitializer.class</exclude>
-                        <exclude>**/ConsentRetentionDataStoreInitializer.class</exclude>
-                        <exclude>**/MssqlConsentCoreDAOImpl.class</exclude>
-                        <exclude>**/ConsentMgtMssqlDBQueries.class</exclude>
-                        <exclude>**/OracleConsentCoreDAOImpl.class</exclude>
-                        <exclude>**/ConsentMgtOracleDBQueries.class</exclude>
-                        <exclude>**/ConsentMgtPostgresDBQueries.class</exclude>
+                        <exclude>**/*ConsentCoreServiceUtil.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -201,41 +196,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>
-                            ${project.artifactId}
-                        </Bundle-SymbolicName>
-                        <Private-Package>
-                            org.wso2.financial.services,accelerator.consent.mgt.dao.internal
-                        </Private-Package>
-                        <Import-Package>
-                            org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
-                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
-                            org.wso2.financial.services.accelerator.common.*;version="${project.version}",
-                            org.apache.commons.lang3;version="${commons-lang3.version}",
-                            org.apache.commons.collections4;version="${commons-collections.version}",
-                            org.apache.commons.logging;version="${commons.logging.version}",
-                            net.minidev.json; version="${json-smart.version}"
-                        </Import-Package>
-                        <Export-Package>
-                            !org.wso2.financial.services,accelerator.consent.mgt.dao.internal,
-                            org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",
-                        </Export-Package>
-                        <_dsannotations>*</_dsannotations>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>

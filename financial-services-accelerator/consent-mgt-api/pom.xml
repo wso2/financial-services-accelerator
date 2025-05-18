@@ -1,5 +1,5 @@
-<!--
- ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+ ~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -15,26 +15,28 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <name>Consent Management REST API</name>
+    <artifactId>org.wso2.financial.services.accelerator.consent.mgt.api</artifactId>
+    <packaging>pom</packaging>
+    <version>5.0.0-SNAPSHOT</version>
 
     <parent>
+        <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <artifactId>financial-services</artifactId>
         <version>5.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>financial-services-accelerator-modules</artifactId>
-    <packaging>pom</packaging>
-    <name>WSO2 Financial Services Accelerator Modules</name>
-    <url>http://wso2.org</url>
-
     <modules>
-        <module>fs-apim</module>
-        <!--TODO: uncomment after fixing consent extensions-->
-        <!--<module>fs-is</module>-->
+        <module>org.wso2.financial.services.accelerator.consent.mgt.dao</module>
+        <module>org.wso2.financial.services.accelerator.consent.mgt.service</module>
+        <module>org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
+
     </modules>
+
+
+
 </project>
