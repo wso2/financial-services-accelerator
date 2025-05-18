@@ -18,7 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,8 +37,8 @@ public class JsonParseExceptionMapper implements ExceptionMapper<JsonParseExcept
     public Response toResponse(JsonParseException ex) {
         {
             Map<String, String> error = new LinkedHashMap<>();
-            error.put("code", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR);
-            error.put("message", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR_MESSAGE);
+            error.put("code", ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getCode());
+            error.put("message", ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getMessage());
             error.put("description", ex.getOriginalMessage());
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(error)

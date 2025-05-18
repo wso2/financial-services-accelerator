@@ -17,7 +17,7 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions;
 
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,10 +47,10 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
         if (!violations.isEmpty()) {
 
             ConstraintViolation<?> violation = violations.iterator().next();
-            error.put("code", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR);
-            error.put("message", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR_MESSAGE);
+            error.put("code", ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getCode());
+            error.put("message", ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getMessage());
             error.put("description",
-                    ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR_DESCRIPTION + " Violation: " +
+                    ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getDescription() + " Violation: " +
                             violation.getPropertyPath().toString() + " " +
                             violation.getMessage());
 

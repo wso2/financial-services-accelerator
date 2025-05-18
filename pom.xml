@@ -21,7 +21,7 @@
     <groupId>org.wso2.financial.services.accelerator</groupId>
     <artifactId>financial-services</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-M2</version>
+    <version>5.0.0-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -42,44 +42,23 @@
             </activation>
             <modules>
                 <module>financial-services-accelerator</module>
-<!--                <module>financial-services-accelerator/accelerators</module>-->
-<!--                <module>integration-test-framework</module>-->
+                <module>financial-services-accelerator/accelerators</module>
+                <module>integration-test-framework</module>
             </modules>
             <build>
                 <plugins>
-<!--                    <plugin>-->
-<!--                        <groupId>org.apache.maven.plugins</groupId>-->
-<!--                        <artifactId>maven-javadoc-plugin</artifactId>-->
-<!--                        <configuration>-->
-
-<!--                            <sourcepath>src/main/java</sourcepath>-->
-<!--                            <sourcepath>src/gen/java</sourcepath>-->
-<!--                        </configuration>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>attach-javadocs</id>-->
-<!--                                <goals>-->
-<!--                                    <goal>jar</goal>-->
-<!--                                </goals>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.4.0</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <sourcepath>src/main/java</sourcepath>
+                        </configuration>
                         <executions>
                             <execution>
-                                <id>add-source</id>
-                                <phase>generate-sources</phase>
+                                <id>attach-javadocs</id>
                                 <goals>
-                                    <goal>add-source</goal>
+                                    <goal>jar</goal>
                                 </goals>
-                                <configuration>
-                                    <sources>
-                                        <source>src/gen/java</source>
-                                    </sources>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -583,13 +562,6 @@
                 <artifactId>org.jacoco.agent</artifactId>
                 <classifier>runtime</classifier>
                 <version>${jacoco.version}</version>
-            </dependency>
-
-            <!--- Consent Management API Dependencies -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>${jackson-version}</version>
             </dependency>
         </dependencies>
 

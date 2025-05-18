@@ -18,7 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.mappers.exceptions;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.constants.ConsentConstant;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,10 +38,10 @@ public class MismatchedInputExceptionMapper implements ExceptionMapper<Mismatche
     public Response toResponse(MismatchedInputException exception) {
 
         Map<String, String> error = new LinkedHashMap<>();
-        error.put("errorCode", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR);
-        error.put("message", ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR_MESSAGE);
+        error.put("errorCode", ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getCode());
+        error.put("message", ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getMessage());
         error.put("description",
-                ConsentConstant.PAYLOAD_SCHEMA_VALIDATION_ERROR_DESCRIPTION + " Missing required field: " +
+                ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR.getDescription() + " Missing required field: " +
                         exception.getPathReference().replaceAll("([a-zA-Z0" +
                                 "-9_]+\\.)" +
                                 "+[A-Z][a-zA-Z0-9_]+", ""));

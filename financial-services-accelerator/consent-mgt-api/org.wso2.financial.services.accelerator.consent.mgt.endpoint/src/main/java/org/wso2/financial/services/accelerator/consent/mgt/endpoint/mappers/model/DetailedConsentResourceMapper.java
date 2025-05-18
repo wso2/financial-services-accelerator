@@ -13,9 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.Response;
-
-
 /**
  * This interface is used to map the detailed consent resource.
  */
@@ -39,8 +36,10 @@ public interface DetailedConsentResourceMapper {
      * @return the detailed consent resource
      */
     DetailedConsentResource toDetailedConsentResource(ConsentResourceRequestBody consentResourceResponseBody);
+
     /**
      * Converts an Object to a Map<String, String> if possible.
+     * used to parse the consentAttributes Object to a Map<String, Object>
      */
     default Map<String, Object> mapObjectToMap(Object value) throws
             ConsentMgtException {
@@ -49,12 +48,11 @@ public interface DetailedConsentResourceMapper {
             Map<String, Object> map = objectMapper.convertValue(value, Map.class);
             if (map == null) {
                 return new HashMap<>();
-
             }
             return map.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()));
         } catch (IllegalArgumentException e) {
-            throw new ConsentMgtException(Response.Status.BAD_REQUEST, ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR);
+            throw new ConsentMgtException(ConsentError.PAYLOAD_SCHEMA_VALIDATION_ERROR);
         }
     }
 
