@@ -20,37 +20,13 @@ package org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions;
 
 import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentError;
 
-import javax.ws.rs.core.Response;
-
 /**
  * Used for creating runtime exceptions for financial services modules.
  */
 public class ConsentMgtException extends Exception {
 
     private static final long serialVersionUID = -5686395831712095972L;
-    private Response.Status statusCode;
     private ConsentError error;
-
-    // TODO : have to remove unwanted constructors after implementing consent attributes ( still some of the
-    //  constructors are in use in the code used for consent attributes)
-    public ConsentMgtException(Response.Status statusCode, Throwable cause) {
-
-        super(cause);
-        this.statusCode = statusCode;
-    }
-
-
-    public ConsentMgtException(Response.Status statusCode, ConsentError error) {
-        this.statusCode = statusCode;
-        this.error = error;
-    }
-
-    public ConsentMgtException(Response.Status statusCode, ConsentError error, Throwable e) {
-        super(e);
-        this.statusCode = statusCode;
-        this.error = error;
-    }
-
 
 
     public ConsentMgtException(String message) {
@@ -63,30 +39,18 @@ public class ConsentMgtException extends Exception {
         this.error = e;
     }
 
-    public ConsentMgtException(Response.Status statusCode, String message) {
-
-        super(message);
-        this.statusCode = statusCode;
-    }
 
 
     public ConsentMgtException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ConsentMgtException(Response.Status statusCode, String message, Throwable cause) {
-        super(message, cause);
-        this.statusCode = statusCode;
 
-    }
     public ConsentError getError() {
 
         return error;
     }
 
-    public Response.Status getStatusCode() {
-        return statusCode;
-    }
 
 
 }

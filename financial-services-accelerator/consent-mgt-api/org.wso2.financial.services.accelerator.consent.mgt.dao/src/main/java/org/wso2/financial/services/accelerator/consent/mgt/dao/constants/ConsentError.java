@@ -308,11 +308,24 @@ public enum ConsentError {
             "Database connection failure",
             "Unable to connect to the database services."
     ),
+
+    AMENDMENT_DETAILS_MISSING(
+            "CMGT_20003",
+            "Missing amendment details",
+            "Amendment details are required for the consent history."
+    ),
+
+
     // General
     UNKNOWN_ERROR(
             "CMGT_99998",
             "An unknown error occurred",
             "An unexpected exception or system error was encountered."
+    ),
+    JSON_PROCESSING_ERROR(
+            "CMGT_99999",
+            "JSON processing error",
+            "An error occurred while processing JSON data."
     );
 
 

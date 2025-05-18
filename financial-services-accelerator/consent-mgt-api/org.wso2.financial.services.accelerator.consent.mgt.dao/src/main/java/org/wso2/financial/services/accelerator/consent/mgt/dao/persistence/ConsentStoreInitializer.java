@@ -71,6 +71,7 @@ public class ConsentStoreInitializer {
             Connection connection = JDBCPersistenceManager.getInstance().getDBConnection();
             String driverName = connection.getMetaData().getDriverName();
 
+
             ConsentCoreDAO dao;
             if (driverName.contains(MYSQL)) {
                 dao = new ConsentCoreDAOImpl(new ConsentMgtCommonDBQueries());

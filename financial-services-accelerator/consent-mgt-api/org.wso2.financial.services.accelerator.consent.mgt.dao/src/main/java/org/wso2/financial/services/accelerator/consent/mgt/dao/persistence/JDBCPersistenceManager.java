@@ -88,6 +88,7 @@ public final class JDBCPersistenceManager {
                 if (StringUtils.isNotBlank(dataSourceName)) {
                     Context context = new InitialContext();
                     dataSource = (DataSource) context.lookup("java:/comp/env/" + dataSourceName);
+                    log.debug(dataSourceName.replaceAll("\r\n", ""));
                 } else {
                     throw new ConsentMgtException("Persistence Manager configuration for Financial " +
                             "Services is not available in financial-services.xml file. Terminating the JDBC " +

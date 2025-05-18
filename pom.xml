@@ -21,7 +21,7 @@
     <groupId>org.wso2.financial.services.accelerator</groupId>
     <artifactId>financial-services</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-M2</version>
+    <version>5.0.0-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -89,7 +89,7 @@
 
     <modules>
         <module>financial-services-accelerator</module>
-        <module>integration-test-framework</module>
+<!--        <module>integration-test-framework</module>-->
     </modules>
 
     <repositories>
@@ -564,6 +564,9 @@
                 <version>${jacoco.version}</version>
             </dependency>
         </dependencies>
+
+
+
     </dependencyManagement>
 
     <properties>
@@ -643,5 +646,13 @@
         <org.apache.commons.io.version.range>[2.15.1, 2.16.0)</org.apache.commons.io.version.range>
         <org.json.version.range>[3.0.0, 4.0.0)</org.json.version.range>
         <jjwt.version.range>[0.9.1, 0.9.2)</jjwt.version.range>
+
+        <org.wso2.orbit.org.mapstruct.version>1.4.1.wso2v1</org.wso2.orbit.org.mapstruct.version>
+        <org.slf4j.version>1.7.21</org.slf4j.version>
+        <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
+        <io.swagger.version>1.5.3</io.swagger.version>
+        <jakarta.validation.version>3.0.2</jakarta.validation.version>
+        <io.swagger.core.v3.version>2.2.20</io.swagger.core.v3.version>
+        <jackson-version>2.17.1</jackson-version>
     </properties>
 </project>
