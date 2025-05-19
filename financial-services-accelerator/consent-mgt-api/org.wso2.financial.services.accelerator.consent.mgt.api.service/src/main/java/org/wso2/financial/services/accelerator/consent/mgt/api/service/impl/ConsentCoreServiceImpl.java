@@ -286,7 +286,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
         }
 
-//
         for (DetailedConsentResource consent : detailedConsentResources) {
             updateConsentStatus(consent.getConsentId(), status, reason, userId, orgId);
         }
