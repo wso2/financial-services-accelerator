@@ -30,6 +30,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.ServiceExt
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.ConsentAdminHandler;
@@ -219,8 +220,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 String userId = ConsentAdminUtils.validateAndGetQueryParam(queryParams,
                         ConsentExtensionConstants.USER_ID_PARAM);
                 ConsentCoreService coreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
-                DetailedConsentResource consentResource = coreService
-                        .getDetailedConsent(consentId);
+                ConsentResource consentResource = coreService
+                        .getConsent(consentId , false);
                 //if the OpenAPI extension is enabled for admin-consent revoke
                 if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
                     // Call external service before revoking consent.
