@@ -31,10 +31,9 @@
     </parent>
 
     <modules>
-        <module>org.wso2.financial.services.accelerator.consent.mgt.dao</module>
-        <module>org.wso2.financial.services.accelerator.consent.mgt.service</module>
-        <module>org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
-
+        <module>org.wso2.financial.services.accelerator.consent.mgt.api.dao</module>
+        <module>org.wso2.financial.services.accelerator.consent.mgt.api.service</module>
+        <module>org.wso2.financial.services.accelerator.consent.mgt.api.endpoint</module>
     </modules>
 
 
