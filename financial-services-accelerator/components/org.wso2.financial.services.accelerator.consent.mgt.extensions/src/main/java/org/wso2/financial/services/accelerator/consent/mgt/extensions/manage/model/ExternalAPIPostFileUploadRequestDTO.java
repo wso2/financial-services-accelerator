@@ -39,11 +39,11 @@ public class ExternalAPIPostFileUploadRequestDTO {
         this.consentId = consentId;
     }
 
-    public String getFileUploadedCreatedTime() {
+    public String getFileUploadCreatedTime() {
         return fileUploadCreatedTime;
     }
 
-    public void setFileUploadedCreatedTime(String fileUploadCreatedTime) {
+    public void setFileUploadCreatedTime(String fileUploadCreatedTime) {
         this.fileUploadCreatedTime = fileUploadCreatedTime;
     }
 }
