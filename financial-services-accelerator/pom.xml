@@ -43,8 +43,8 @@
         <module>internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.event.notifications.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.demo.backend</module>
-<!--        <module>consent-mgt-api/org.wso2.financial.services.accelerator.consent.mgt.api.dao</module>-->
-<!--        <module>consent-mgt-api/org.wso2.financial.services.accelerator.consent.mgt.api.service</module>-->
-<!--        <module>consent-mgt-api/org.wso2.financial.services.accelerator.consent.mgt.api.endpoint</module>-->
+        <module>consent-mgt-api/org.wso2.financial.services.accelerator.consent.mgt.api.dao</module>
+        <module>consent-mgt-api/org.wso2.financial.services.accelerator.consent.mgt.api.service</module>
+        <module>consent-mgt-api/org.wso2.financial.services.accelerator.consent.mgt.api.endpoint</module>
     </modules>
 </project>
