@@ -22,7 +22,6 @@ import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
-import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +59,7 @@ public interface FSKeyManagerExtensionInterface {
      */
 
     void doPreUpdateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties,
-                                ServiceProvider serviceProvider)
+                                JSONObject serviceProvider)
             throws APIManagementException;
 
     /**

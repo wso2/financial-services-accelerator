@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.keymanager.utils;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -34,6 +35,7 @@ import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDat
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -44,19 +46,23 @@ import java.util.Map;
  */
 public class IdentityServerUtils {
 
+    @SuppressFBWarnings("HTTP_PARAMETER_POLLUTION")
     public static String getAppIdFromClientId(String clientId) throws FinancialServicesException {
-        // Implementation goes here
+
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL;
             URIBuilder builder = new URIBuilder(url);
-            builder.setParameter("filter", "clientId+eq+".concat(clientId));
-            HttpGet httpGet = new HttpGet(builder.build());
+            URI uri = builder.build();
+            HttpGet httpGet = new HttpGet(uri.toString() + "?filter=clientId+eq+".concat(clientId));
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
             String password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD);
             httpGet.setHeader(FinancialServicesConstants.AUTH_HEADER,
                     FinancialServicesUtils.getBasicAuthHeader(userName, password));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new FinancialServicesException("Error while getting app id from client id");
+            }
             InputStream in = response.getEntity().getContent();
             JSONObject responseObj = new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
             JSONArray appArray = responseObj.getJSONArray("applications");
@@ -72,12 +78,12 @@ public class IdentityServerUtils {
     }
 
     public static JSONObject getSPApplicationFromClientId(String clientId) throws FinancialServicesException {
+
         String appId = getAppIdFromClientId(clientId);
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL;
+            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL + appId;
             URIBuilder builder = new URIBuilder(url);
-            builder.setPathSegments(appId);
             HttpGet httpGet = new HttpGet(builder.build());
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
@@ -85,10 +91,13 @@ public class IdentityServerUtils {
             httpGet.setHeader(FinancialServicesConstants.AUTH_HEADER,
                     FinancialServicesUtils.getBasicAuthHeader(userName, password));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new FinancialServicesException("Error while getting sp application from client id");
+            }
             InputStream in = response.getEntity().getContent();
             return new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
         } catch (IOException e) {
-            throw new FinancialServicesException("Error while getting app id from client id", e);
+            throw new FinancialServicesException("Error while getting sp application from client id", e);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -98,7 +107,7 @@ public class IdentityServerUtils {
             throws FinancialServicesException {
 
         JSONObject spApplication = new JSONObject();
-        spApplication.put("token_endpoint_auth_method", "private_key_jwt");
+//        spApplication.put("token_endpoint_auth_method", "private_key_jwt");
         spApplication.put("client_name", appName);
         spApplication.put("tls_client_certificate_bound_access_tokens", true);
         spApplication.put("additionalAttributes", attributes);
@@ -147,15 +156,68 @@ public class IdentityServerUtils {
                 .getFirstProperty(FSKeyManagerConstants.API_KEY_VALIDATOR_URL).split(FSKeyManagerConstants.SERVICE)[0];
     }
 
-    public static Map<String, Object> constructSPPropertiesList(JSONArray spProperties) {
+    public static Map<String, Object> constructSPPropertiesList(JSONArray spProperties,
+                                                                HashMap<String, String> additionalProperties) {
         // Implementation goes here
         Map<String, Object> serviceProviderProperties = new HashMap<>();
         for (int i = 0; i < spProperties.length(); i++) {
             JSONObject property = spProperties.getJSONObject(i);
             serviceProviderProperties.put(property.getString("name"), property.getString("value"));
         }
+        serviceProviderProperties.putAll(additionalProperties);
 
         return serviceProviderProperties;
+    }
+
+    /**
+     * Method to get the SP metadata from the SP app details.
+     *
+     * @param appData  SP app data
+     * @return SP metadata
+     */
+    public static JSONArray getSPMetadataFromSPApp(JSONObject appData) {
+        JSONArray spData = new JSONArray();
+        if (appData.has("advancedConfigurations")) {
+            JSONObject configs = appData.getJSONObject("advancedConfigurations");
+            if (configs.has("additionalSpProperties")) {
+                spData = configs.getJSONArray("additionalSpProperties");
+            }
+        }
+        return spData;
+    }
+
+    /**
+     * Method to get the regulatory property from the SP metadata.
+     *
+     * @param appData  SP app data
+     * @return regulatory property
+     */
+    public static String getRegulatoryPropertyFromSPMetadata(JSONObject appData) {
+        JSONArray spData = getSPMetadataFromSPApp(appData);
+        String regulatoryProperty = null;
+
+        for (int i = 0; i < spData.length(); i++) {
+            JSONObject spObj = spData.getJSONObject(i);
+            if (spObj.has("name") && spObj.getString("name").equals("regulatory")) {
+                regulatoryProperty = spObj.getString("value");
+                break;
+            }
+        }
+        return regulatoryProperty;
+    }
+
+    public static String getSpPropertyFromSPMetaData(String propertyName, JSONArray spProperties) {
+
+        String propertyValue = null;
+
+        for (int i = 0; i < spProperties.length(); i++) {
+            JSONObject spObj = spProperties.getJSONObject(i);
+            if (spObj.has("name") && spObj.getString("name").equals(propertyName)) {
+                propertyValue = spObj.getString("value");
+                break;
+            }
+        }
+        return propertyValue;
     }
 
 }

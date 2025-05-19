@@ -21,7 +21,6 @@ package org.wso2.financial.services.accelerator.keymanager.utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
@@ -102,7 +101,9 @@ public class FSKeyManagerUtil {
 
         // Add values of additional properties defined in the config to the default additional property list JSON object
         for (String key : keyManagerAdditionalProperties.keySet()) {
-            additionalProperties.put(key, additionalPropertiesJSON.getString(key));
+            if (additionalPropertiesJSON.has(key)) {
+                additionalProperties.put(key, additionalPropertiesJSON.getString(key));
+            }
         }
         return additionalProperties;
     }
@@ -192,16 +193,4 @@ public class FSKeyManagerUtil {
             return tenantId;
         }
     }
-
-    public static JSONArray getSPMetadataFromSPApp(JSONObject appData) {
-        JSONArray spData = new JSONArray();
-        if (appData.has("advancedConfigurations")) {
-            JSONObject configs = appData.getJSONObject("advancedConfigurations");
-            if (configs.has("additionalSpProperties")) {
-                spData = configs.getJSONArray("additionalSpProperties");
-            }
-        }
-        return spData;
-    }
-
 }

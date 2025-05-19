@@ -65,6 +65,9 @@ public class FSKeyManagerConfiguration implements KeyManagerConnectorConfigurati
         configurationDtoList
                 .add(new ConfigurationDto("Password", "Password", "input",
                         "Password of Admin user", "", true, true, Collections.emptyList(), false));
+        configurationDtoList
+                .add(new ConfigurationDto("ServerURL", "ServerURL", "input",
+                        "ServerURL", "", true, true, Collections.emptyList(), false));
         return configurationDtoList;
 
     }

@@ -197,8 +197,8 @@ key = ""
 [apim.key_manager]
 enable_lightweight_apikey_generation = true
 #service_url = "https://localhost:${mgt.transport.https.port}/services/"
-username = "$ref{super_admin.username}"
-password = "$ref{super_admin.password}"
+username = "IS_ADMIN_USERNAME"
+password = "IS_ADMIN_PASSWORD"
 #pool.init_idle_capacity = 50
 #pool.max_idle = 100
 #key_validation_handler_type = "default"

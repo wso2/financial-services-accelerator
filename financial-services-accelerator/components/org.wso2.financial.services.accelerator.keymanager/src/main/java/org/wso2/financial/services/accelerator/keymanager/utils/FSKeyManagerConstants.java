@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.keymanager.utils;
 
+import java.util.Map;
+
 /**
  * FS Key Manager Constants.
  */
@@ -29,8 +31,15 @@ public class FSKeyManagerConstants {
     public static final String API_KEY_VALIDATOR_URL = "APIKeyValidator.ServerURL";
     public static final String SERVICE = "/services";
 
-    public static final String APP_RETRIEVAL_URL = "/api/server/v1/applications";
+    public static final String APP_RETRIEVAL_URL = "/api/server/v1/applications/";
     public static final String DCR_EP = "/api/identity/oauth2/dcr/v1.1/register/";
 
+    public static final Map<String, String> APP_CONFIG_MAPPING = Map.of(
+            "refresh_token_expiry_time", "ext_refresh_token_lifetime",
+            "id_token_expiry_time", "ext_id_token_lifetime",
+            "application_access_token_expiry_time", "ext_application_token_lifetime",
+            "user_access_token_expiry_time", "ext_user_token_lifetime",
+            "sp_certificate", "sp_certificate",
+            "regulatory", "regulatory");
 
 }
