@@ -46,11 +46,11 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
-            <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
+            <artifactId>dao</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
-            <artifactId>org.wso2.financial.services.accelerator.consent.mgt.service</artifactId>
+            <artifactId>service</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
