@@ -103,6 +103,8 @@ public interface ConsentCoreDAO {
     void updateConsentStatus(Connection connection, String consentId, String consentStatus)
             throws ConsentDataUpdationException;
 
+    void bulkUpdateConsentStatus(Connection connection, List<String> consentIds, String consentStatus)
+            throws ConsentDataUpdationException;
     /**
      * This method is used to update consent validity time.
      *

@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>org.wso2.financial.services.accelerator.consent.mgt.api.dao</artifactId>
-<!--            <version>5.0.0-SNAPSHOT</version>-->
+            <version>5.0.0-SNAPSHOT</version>
         </dependency>
         <!-- Unit Test Dependencies -->
         <dependency>
