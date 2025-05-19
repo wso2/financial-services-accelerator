@@ -73,5 +73,6 @@ public class IdentityCommonConstants {
     public static final String ISSUE_REFRESH_TOKEN = "issueRefreshToken";
     public static final String REQUEST_OBJECT = "requestObject";
     public static final String REQUEST_PARAM = "requestParam";
+    public static final String REGULATORY = "regulatory";
 }
 
