@@ -503,12 +503,12 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.financial.services.accelerator</groupId>
-                <artifactId>dao</artifactId>
+                <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.financial.services.accelerator</groupId>
-                <artifactId>service</artifactId>
+                <artifactId>org.wso2.financial.services.accelerator.consent.mgt.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
