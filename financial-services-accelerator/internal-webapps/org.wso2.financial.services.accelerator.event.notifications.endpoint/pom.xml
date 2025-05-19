@@ -99,12 +99,12 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
-            <artifactId>org.wso2.financial.services.accelerator.consent.mgt.service</artifactId>
+            <artifactId>service</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
-            <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
+            <artifactId>dao</artifactId>
             <scope>provided</scope>
         </dependency>
 
