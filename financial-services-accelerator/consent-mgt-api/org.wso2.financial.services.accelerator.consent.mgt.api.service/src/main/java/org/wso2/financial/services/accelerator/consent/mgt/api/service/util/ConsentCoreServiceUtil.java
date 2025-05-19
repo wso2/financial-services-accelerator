@@ -116,13 +116,13 @@ public class ConsentCoreServiceUtil {
                             detailedConsentResource.getConsentId()
                     ).replaceAll("[\r\n]", ""));
                 }
+                ArrayList<AuthorizationResource> storedAuthorizationResources = consentCoreDAO.
+                        storeBulkAuthorizationResources(connection, consentId, authorizationResources);
+                detailedConsentResource.setAuthorizationResources(storedAuthorizationResources);
 
            }
-
             // TODO : handle history
-
             DatabaseUtils.commitTransaction(connection);
-
             return detailedConsentResource;
         } catch (SQLException e) {
             log.error(ConsentError.DETAILED_CONSENT_RESOURCE_INSERTION_ERROR.getMessage(), e);

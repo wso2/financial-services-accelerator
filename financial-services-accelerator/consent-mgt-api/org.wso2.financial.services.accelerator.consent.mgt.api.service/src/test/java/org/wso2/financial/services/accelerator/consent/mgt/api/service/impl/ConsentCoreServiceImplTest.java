@@ -610,16 +610,11 @@ public class ConsentCoreServiceImplTest {
 
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).
                 when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
-        //Create a consent authorization resource
-        AuthorizationResource storedAuthorizationResource =
-                consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
 
-        Assert.assertNotNull(storedAuthorizationResource);
-        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationId());
-        Assert.assertNotNull(storedAuthorizationResource.getConsentId());
-        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationType());
-        Assert.assertNotNull(storedAuthorizationResource.getUserId());
-        Assert.assertNotNull(storedAuthorizationResource.getAuthorizationStatus());
+        //Create a consent authorization resource
+        consentCoreServiceImpl.createConsentAuthorizations(ConsentMgtServiceTestData.
+                        getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID, null),
+                ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -627,14 +622,13 @@ public class ConsentCoreServiceImplTest {
             Exception {
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).
                 when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
-        AuthorizationResource sampleAuthorizationResource =
-                ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
-
         doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
-                .storeAuthorizationResource(any(), any());
+                .storeBulkAuthorizationResources(any(), any(), any());
 
         // Get consent
-        consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+        consentCoreServiceImpl.createConsentAuthorizations(ConsentMgtServiceTestData.
+                        getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID, null),
+                ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -647,7 +641,10 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
 
         // Get consent
-        consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+        // Get consent
+        consentCoreServiceImpl.createConsentAuthorizations(ConsentMgtServiceTestData.
+                        getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID, null),
+                ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -665,11 +662,10 @@ public class ConsentCoreServiceImplTest {
 
         doReturn(detailedConsentResource).
                 when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
-
-        //Create a consent authorization resource
-        AuthorizationResource storedAuthorizationResource =
-                consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
-
+        // Get consent
+        consentCoreServiceImpl.createConsentAuthorizations(ConsentMgtServiceTestData.
+                        getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID, null),
+                ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -681,7 +677,10 @@ public class ConsentCoreServiceImplTest {
                 ConsentMgtServiceTestData.getSampleTestAuthorizationResource(sampleID, null);
 
         // Get consent
-        consentCoreServiceImpl.createConsentAuthorization(sampleAuthorizationResource);
+        // Get consent
+        consentCoreServiceImpl.createConsentAuthorizations(ConsentMgtServiceTestData.
+                        getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID, null),
+                ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test

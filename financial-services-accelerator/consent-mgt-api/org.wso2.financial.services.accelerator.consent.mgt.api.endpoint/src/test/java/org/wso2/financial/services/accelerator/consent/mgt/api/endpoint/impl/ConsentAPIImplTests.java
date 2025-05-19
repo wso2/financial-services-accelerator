@@ -695,7 +695,7 @@ public class ConsentAPIImplTests {
         doReturn(detailedConsentResource).when(mockedConsentCoreServiceImpl).getDetailedConsent(consentId, orgId);
 
         doReturn(mock(AuthorizationResource.class)).when(mockedConsentCoreServiceImpl)
-                .createConsentAuthorization(any());
+                .createConsentAuthorizations(any(), any());
 
         Response response = consentAPIImpl.consentAuthorizationIdPost(consentId, authorizationResources, orgId);
 

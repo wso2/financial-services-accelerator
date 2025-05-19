@@ -63,12 +63,13 @@ public interface ConsentCoreService {
 
     /**
      * This method is used to create an authorization for a consent.
-     *
+     * @param consentId consent ID
      * @param authorizationResource authorization resource
      * @return returns AuthorizationResource
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    AuthorizationResource createConsentAuthorization(AuthorizationResource authorizationResource)
+    ArrayList<AuthorizationResource> createConsentAuthorizations(ArrayList<AuthorizationResource> authorizationResource,
+                                                                 String consentId)
             throws ConsentMgtException;
 
     /**
