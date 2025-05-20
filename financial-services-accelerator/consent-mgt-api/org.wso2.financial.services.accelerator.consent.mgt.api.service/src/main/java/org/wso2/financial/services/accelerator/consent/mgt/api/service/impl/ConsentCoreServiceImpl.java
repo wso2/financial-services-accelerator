@@ -274,7 +274,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         consentTypes, applicableExistingStatus, null, null,
                         null, null, null);
 
-
                 if (detailedConsentResources.isEmpty()) {
                     log.error(ConsentError.CONSENT_NOT_FOUND.getMessage().replaceAll("[\r\n]", ""));
                     throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
