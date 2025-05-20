@@ -26,6 +26,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.Consen
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.DetailedConsentResource;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,8 +69,9 @@ public interface ConsentCoreService {
      * @return returns AuthorizationResource
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    ArrayList<AuthorizationResource> createConsentAuthorizations(ArrayList<AuthorizationResource> authorizationResource,
-                                                                 String consentId)
+    List<AuthorizationResource> createConsentAuthorizations(String consentId,
+                                                              List<AuthorizationResource> authorizationResource
+                                                               )
             throws ConsentMgtException;
 
     /**
@@ -130,8 +132,8 @@ public interface ConsentCoreService {
      *                                 parameter)
      * @throws ConsentMgtException Thrown if any error occurs during the process
      */
-    void bulkUpdateConsentStatus(String orgId, String clientId, String status, String reason, String userId,
-                                 String consentType, ArrayList<String> applicableExistingStatus)
+    void consentStatusBulkUpdate(String orgId, String clientId, String status, String reason, String userId,
+                                 String consentType, List<String> applicableExistingStatus)
             throws ConsentMgtException;
 
     /**
@@ -176,7 +178,7 @@ public interface ConsentCoreService {
      * @return a consent attributes resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    ConsentAttributes getConsentAttributes(String consentId, ArrayList<String> consentAttributeKeys)
+    ConsentAttributes getConsentAttributes(String consentId, List<String> consentAttributeKeys)
             throws ConsentMgtException;
 
     /**
@@ -208,7 +210,7 @@ public interface ConsentCoreService {
      * @return true if deletion is successful
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    boolean deleteConsentAttributes(String consentId, ArrayList<String> attributeKeysList)
+    boolean deleteConsentAttributes(String consentId, List<String> attributeKeysList)
             throws ConsentMgtException;
 
     /**
@@ -220,25 +222,25 @@ public interface ConsentCoreService {
      * @param actionBy      user who performed the status change
      * @param fromTime      from time
      * @param toTime        to time
-     * @param statusAuditID ID of a specific audit record that need to be searched
+     * @param statusAuditId ID of a specific audit record that need to be searched
      * @return a list of consent status audit records
      * @throws ConsentMgtException thrown if an error occurs
      */
     ArrayList<ConsentStatusAuditRecord> searchConsentStatusAuditRecords(String consentId, String status,
                                                                         String actionBy, Long fromTime, Long toTime,
-                                                                        String statusAuditID)
+                                                                        String statusAuditId)
             throws ConsentMgtException;
 
     /**
      * This method is used to retrieve a list of consent status audit records by consent_id.
      *
-     * @param consentIDs list of consentIDs (optional)
+     * @param consentIds list of consentIds (optional)
      * @param limit      limit
      * @param offset     offset
      * @return returns a list of consent status audit records.
      * @throws ConsentMgtException thrown if a database error occurs
      */
-    ArrayList<ConsentStatusAuditRecord> getConsentStatusAuditRecords(ArrayList<String> consentIDs, Integer limit,
+    List<ConsentStatusAuditRecord> getConsentStatusAuditRecords(List<String> consentIds, Integer limit,
                                                                      Integer offset)
             throws ConsentMgtException;
 
@@ -271,7 +273,7 @@ public interface ConsentCoreService {
      * <p>
      * (All above lists are optional)
      *
-     * @param consentIDs      consent IDs optional list
+     * @param consentIds      consent IDs optional list
      * @param clientIDs       client IDs optional list
      * @param consentTypes    consent types optional list
      * @param consentStatuses consent statuses optional list
@@ -283,11 +285,11 @@ public interface ConsentCoreService {
      * @return a list of detailed consent resources according to the provided parameters
      * @throws ConsentMgtException thrown if any error occur
      */
-    ArrayList<DetailedConsentResource> searchDetailedConsents(String orgId, ArrayList<String> consentIDs,
-                                                              ArrayList<String> clientIDs,
-                                                              ArrayList<String> consentTypes,
-                                                              ArrayList<String> consentStatuses,
-                                                              ArrayList<String> userIDs, Long fromTime, Long toTime,
+    List<DetailedConsentResource> searchDetailedConsents(String orgId, List<String> consentIds,
+                                                              List<String> clientIDs,
+                                                              List<String> consentTypes,
+                                                              List<String> consentStatuses,
+                                                              List<String> userIDs, Long fromTime, Long toTime,
                                                               Integer limit, Integer offset)
             throws ConsentMgtException;
 
