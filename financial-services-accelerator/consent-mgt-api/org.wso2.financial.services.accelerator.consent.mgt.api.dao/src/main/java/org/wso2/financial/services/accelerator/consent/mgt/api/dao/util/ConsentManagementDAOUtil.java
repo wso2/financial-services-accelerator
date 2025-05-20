@@ -101,9 +101,7 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
 
         Map<String, Object> consentAttributesMap = new HashMap<>();
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         ArrayList<String> authIds = new ArrayList<>();
-        ArrayList<String> consentMappingIds = new ArrayList<>();
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
 
         while (resultSet.next()) {
