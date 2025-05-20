@@ -103,6 +103,11 @@ public class ConsentCoreServiceUtil {
                     log.debug(String.format("Storing consent attributes for the consent of ID: %s", consentAttributes
                             .getConsentId().replaceAll("[\r\n]", "")));
                 }
+                isConsentAttributesStored = consentCoreDAO.storeConsentAttributes(connection,
+                        consentAttributes);
+                if (isConsentAttributesStored) {
+                    detailedConsentResource.setConsentAttributes(detailedConsentResource.getConsentAttributes());
+                }
             }
 
             // Store authorization resource if available
