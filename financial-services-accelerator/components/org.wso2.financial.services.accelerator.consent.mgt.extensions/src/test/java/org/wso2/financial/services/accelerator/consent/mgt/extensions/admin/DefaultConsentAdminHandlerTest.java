@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -170,6 +171,7 @@ public class DefaultConsentAdminHandlerTest {
         try (MockedStatic<ExternalAPIConsentAdminUtils> mockedStatic =
                      mockStatic(ExternalAPIConsentAdminUtils.class)) {
             ExternalAPIAdminConsentSearchResponseDTO mockResponse = new ExternalAPIAdminConsentSearchResponseDTO();
+            mockResponse.setEnrichedSearchResult(new JSONArray());
 
             mockedStatic.when(() ->
                     ExternalAPIConsentAdminUtils.callExternalService(any(ExternalAPIAdminConsentSearchRequestDTO.class))
