@@ -448,6 +448,56 @@
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
             </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>${com.fasterxml.jackson.jaxrs}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-extension-providers</artifactId>
+                <version>${org.apache.cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${org.wso2.orbit.org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>${javax.servlet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-jaxrs2</artifactId>
+                <version>${io.swagger.core.v3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${io.swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.api.version}</version>
+            </dependency>
             <!--Base Products related dependencies-->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -529,6 +579,16 @@
             <dependency>
                 <groupId>org.wso2.financial.services.accelerator</groupId>
                 <artifactId>org.wso2.financial.services.accelerator.event.notifications.service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.consent.mgt.api.dao</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.consent.mgt.api.service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Test Dependencies -->
@@ -657,5 +717,6 @@
         <io.swagger.core.v3.version>2.2.20</io.swagger.core.v3.version>
         <com.fasterxml.jackson.jaxrs>2.17.1</com.fasterxml.jackson.jaxrs>
         <google.gson.version>2.12.1</google.gson.version>
+       <javax.servlet.version>2.5</javax.servlet.version>
     </properties>
 </project>
