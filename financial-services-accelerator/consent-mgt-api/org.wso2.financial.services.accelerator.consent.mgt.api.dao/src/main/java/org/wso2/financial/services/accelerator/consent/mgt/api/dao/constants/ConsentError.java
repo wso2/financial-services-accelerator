@@ -147,6 +147,16 @@ public enum ConsentError {
             "Unable to revoke consent resource",
             "Occurs when the system fails to revoke a consent."
     ),
+    CONSENT_STATUS_BULK_UPDATE_ERROR_IN_DATABASE(
+            "CMGT_10046",
+            "Unable to update consent status",
+            "Occurs when the system fails to update the status of a consent in database."
+    ),
+    CONSENT_STATUS_BULK_UPDATE_ERROR(
+            "CMGT_10047",
+            "Unable to update consent status",
+            "Occurs when the system fails to update the status of a consent."
+    ),
 
     // service level
     CONSENT_ALREADY_REVOKED_ERROR(

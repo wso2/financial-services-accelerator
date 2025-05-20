@@ -396,6 +396,37 @@ public class ConsentCoreDAOTests {
                 ConsentMgtDAOTestData.SAMPLE_CONSENT_VALIDITY_PERIOD);
     }
 
+    // test bulk consent status update
+    @Test
+    public  void testBulkConsentStatusUpdate() throws
+            Exception {
+
+        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
+        ArrayList<String> consentIds = new ArrayList<>();
+        consentIds.add(consentResource.getConsentId());
+        consentIds.add(UUID.randomUUID().toString());
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+            consentCoreDAO.storeConsentResource(connection, consentResource);
+            consentCoreDAO.bulkConsentStatusUpdate(connection, consentIds,
+                    ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS, ConsentMgtDAOTestData.SAMPLE_ORG_ID);
+        }
+    }
+
+    @Test(expectedExceptions = ConsentDataUpdationException.class)
+    public void testBulkConsentStatusUpdateWithEmptyConsentIds() throws
+            Exception {
+
+        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
+        ArrayList<String> consentIds = new ArrayList<>();
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+            consentCoreDAO.storeConsentResource(connection, consentResource);
+            consentCoreDAO.bulkConsentStatusUpdate(connection, consentIds,
+                    ConsentMgtDAOTestData.SAMPLE_CURRENT_STATUS, ConsentMgtDAOTestData.SAMPLE_ORG_ID);
+        }
+    }
+
     @Test
     public void testStoreAuthorizationResource() throws
             Exception {
