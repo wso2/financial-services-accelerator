@@ -56,4 +56,13 @@ public interface DetailedConsentResourceMapper {
         }
     }
 
+    /**
+     * Converts a Map<String, String> to Object (if needed).
+     * This may be useful depending on how the ConsentResource model stores the attributes.
+     */
+    default Object mapMapToObject(Map<String, String> map) {
+        return map;
+    }
+
+
 }

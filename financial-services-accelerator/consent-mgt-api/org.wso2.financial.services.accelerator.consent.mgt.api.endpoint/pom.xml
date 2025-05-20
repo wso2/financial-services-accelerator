@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson-version}</version>
+            <version>${com.fasterxml.jackson.jaxrs}</version>
         </dependency>
 
         <!-- To add provider classes for cxf servlets-->

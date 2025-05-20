@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.exceptions.ConsentMgtException;
 import org.wso2.financial.services.accelerator.consent.mgt.api.endpoint.impl.ConsentAPIImpl;
 import org.wso2.financial.services.accelerator.consent.mgt.api.endpoint.model.AuthorizationResourceRequestBody;
 import org.wso2.financial.services.accelerator.consent.mgt.api.endpoint.model.BulkConsentStatusUpdateResourceRequestBody;
@@ -47,6 +48,10 @@ import javax.ws.rs.core.Response;
         date = "2025-05-16T09:24:29.903308+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentsApi {
     ConsentAPIImpl consentApiImpl = new ConsentAPIImpl();
+
+    public ConsentsApi() throws
+            ConsentMgtException {
+    }
 
     @GET
     @Path("/{consentId}/authorization-resources")

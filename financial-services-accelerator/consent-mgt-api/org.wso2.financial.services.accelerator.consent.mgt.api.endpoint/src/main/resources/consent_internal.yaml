@@ -313,7 +313,7 @@ paths:
         - Admin
       parameters:
         - in: query
-          name: consentIDs
+          name: consentIds
           schema:
             type: array
             items:
