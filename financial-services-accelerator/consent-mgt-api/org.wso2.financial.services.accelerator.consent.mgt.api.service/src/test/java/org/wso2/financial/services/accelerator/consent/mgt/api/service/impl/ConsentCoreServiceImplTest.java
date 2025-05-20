@@ -464,54 +464,9 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
-                .updateConsentStatus(any(), anyString(), anyString());
+                .bulkConsentStatusUpdate(any(), any(), any(), any());
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
                 getDetailedConsentResource(any(), any(), any());
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
-                .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
-                        any(), any(), any(), any(), any(), any(), any());
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
-                ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
-    }
-
-    // unit test for bulkUpdateConsentStatus with exceptions
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testBulkUpdateConsentStatusRollbackWhenAuditRecord() throws
-            Exception {
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
-                getDetailedConsentResource(any(), any(), any());
-        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
-                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
-
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
-                .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
-                        any(), any(), any(), any(), any(), any(), any());
-        consentCoreServiceImpl.bulkUpdateConsentStatus(ConsentMgtServiceTestData.ORG_ID,
-                ConsentMgtServiceTestData.SAMPLE_CLIENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
-                ConsentMgtServiceTestData.SAMPLE_REASON, ConsentMgtServiceTestData.SAMPLE_USER_ID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE, ConsentMgtServiceTestData.SAMPLE_CONSENT_STATUSES_LIST);
-    }
-
-    // unit test for bulkUpdateConsentStatus with exceptions
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testBulkUpdateConsentStatusRollbackWhenAuditRecordWithConsentResource() throws
-            Exception {
-
-        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
-        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO).
-                getDetailedConsentResource(any(), any(), any());
-        doReturn(ConsentMgtServiceTestData
-                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
-                        any(ConsentStatusAuditRecord.class));
-        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
-                .storeConsentStatusAuditRecord(any(), any(ConsentStatusAuditRecord.class));
-
         doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResourcesList())
                 .when(mockedConsentCoreDAO).searchConsents(any(), any(), any(), any(),
                         any(), any(), any(), any(), any(), any(), any());
