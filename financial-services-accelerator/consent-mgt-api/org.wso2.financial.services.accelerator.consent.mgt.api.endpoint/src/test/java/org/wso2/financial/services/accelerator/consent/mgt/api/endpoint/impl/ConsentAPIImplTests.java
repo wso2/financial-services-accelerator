@@ -50,7 +50,8 @@ public class ConsentAPIImplTests {
     private String sampleOrgID;
 
     @BeforeClass
-    public void setUp() {
+    public void setUp() throws
+            Exception {
 
         consentAPIImpl = new ConsentAPIImpl();
         sampleConsentID = String.valueOf(UUID.randomUUID());
@@ -409,7 +410,7 @@ public class ConsentAPIImplTests {
     public void testConsentStatusPutBulkSuccess() throws
             ConsentMgtException {
 
-        doNothing().when(mockedConsentCoreServiceImpl).bulkUpdateConsentStatus(any(), any(), any(), any(),
+        doNothing().when(mockedConsentCoreServiceImpl).consentStatusBulkUpdate(any(), any(), any(), any(),
                 any(), any(), any());
         BulkConsentStatusUpdateResourceRequestBody
                 bulkConsentStatusUpdateResource = mock(BulkConsentStatusUpdateResourceRequestBody.class);
@@ -856,7 +857,6 @@ public class ConsentAPIImplTests {
     public void testHandleConsentMgtExceptionBadRequest() throws
             Exception {
         // Arrange
-        ConsentAPIImpl consentAPIImpl = new ConsentAPIImpl();
         ConsentMgtException exception = new ConsentMgtException(ConsentError.INVALID_CONSENT_EXPIRY_TIME);
 
         // Invoke private method via reflection
@@ -874,7 +874,6 @@ public class ConsentAPIImplTests {
     public void testHandleConsentMgtExceptionNotFound() throws
             Exception {
         // Arrange
-        ConsentAPIImpl consentAPIImpl = new ConsentAPIImpl();
         ConsentMgtException exception = new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
 
         // Invoke private method via reflection
@@ -892,7 +891,6 @@ public class ConsentAPIImplTests {
     public void testHandleConsentMgtExceptionInternalServerError() throws
             Exception {
         // Arrange
-        ConsentAPIImpl consentAPIImpl = new ConsentAPIImpl();
         ConsentMgtException exception =
                 new ConsentMgtException(ConsentError.UNKNOWN_ERROR);
 

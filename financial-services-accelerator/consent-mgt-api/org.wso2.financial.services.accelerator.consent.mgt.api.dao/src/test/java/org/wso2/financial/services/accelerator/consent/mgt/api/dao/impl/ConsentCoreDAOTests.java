@@ -45,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -783,12 +784,12 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithConsentIDsList() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
-            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIDs, null,
+            storeDataForConsentSearchTest(consentIds, connection);
+            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIds, null,
                     null, null, null, null, null,
                     10, 0);
         }
@@ -808,12 +809,12 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithConsentIDsListAndTime() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
-            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIDs, null,
+            storeDataForConsentSearchTest(consentIds, connection);
+            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIds, null,
                     null, null, null, 1669917425L, 1669917425L,
                     10, 0);
         }
@@ -826,11 +827,11 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithClientIDsList() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
+            storeDataForConsentSearchTest(consentIds, connection);
             detailedConsentResources = consentCoreDAO.searchConsents(connection, null, null,
                     ConsentMgtDAOTestData.SAMPLE_CLIENT_IDS_LIST, null, null, null,
                     null, null, 10, 0);
@@ -852,10 +853,10 @@ public class ConsentCoreDAOTests {
 //            Exception {
 //
 //        ArrayList<DetailedConsentResource> detailedConsentResources;
-//        ArrayList<String> consentIDs = new ArrayList<>();
+//        ArrayList<String> consentIds = new ArrayList<>();
 //
 //        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-//            storeDataForConsentSearchTest(consentIDs, connection);
+//            storeDataForConsentSearchTest(consentIds, connection);
 //            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, null, null,
 //                    null, ConsentMgtDAOTestData.SAMPLE_CONSENT_STATUSES_LIST, null, null,
 //                    null, 10, 0);
@@ -877,11 +878,11 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithConsentTypesList() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
+            storeDataForConsentSearchTest(consentIds, connection);
             detailedConsentResources = consentCoreDAO.searchConsents(connection, null, null, null,
                     null, ConsentMgtDAOTestData.SAMPLE_CONSENT_STATUSES_LIST, null, null,
                     null, 10, 0);
@@ -902,11 +903,11 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithUserIDsList() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
+            storeDataForConsentSearchTest(consentIds, connection);
             detailedConsentResources = consentCoreDAO.searchConsents(connection, null, null, null,
                     null, null, ConsentMgtDAOTestData.SAMPLE_USER_IDS_LIST, null,
                     null, 10, 0);
@@ -927,12 +928,12 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithoutLimitAndOffset() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
-            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIDs, null,
+            storeDataForConsentSearchTest(consentIds, connection);
+            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIds, null,
                     null, null, null, null, null, null,
                     null);
         }
@@ -952,12 +953,12 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithoutLimitButOffset() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
-            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIDs, null,
+            storeDataForConsentSearchTest(consentIds, connection);
+            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIds, null,
                     null, null, null, null, null, null,
                     1);
         }
@@ -1035,12 +1036,12 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithoutOffsetButLimit() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
-            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIDs, null,
+            storeDataForConsentSearchTest(consentIds, connection);
+            detailedConsentResources = consentCoreDAO.searchConsents(connection, null, consentIds, null,
                     null, null, null, null, null, 1,
                     null);
         }
@@ -1060,11 +1061,11 @@ public class ConsentCoreDAOTests {
     public void testConsentSearchWithNoParams() throws
             Exception {
 
-        ArrayList<DetailedConsentResource> detailedConsentResources;
-        ArrayList<String> consentIDs = new ArrayList<>();
+        List<DetailedConsentResource> detailedConsentResources;
+        ArrayList<String> consentIds = new ArrayList<>();
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
-            storeDataForConsentSearchTest(consentIDs, connection);
+            storeDataForConsentSearchTest(consentIds, connection);
             detailedConsentResources = consentCoreDAO.searchConsents(connection, null, null, null,
                     null, null, null, null,
                     null, 10, 0);
@@ -1409,11 +1410,11 @@ public class ConsentCoreDAOTests {
         ConsentResource storedConsentResource;
         ConsentStatusAuditRecord consentStatusAuditRecord;
         ConsentStatusAuditRecord storedConsentStatusAuditRecord;
-        ArrayList<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecords;
-        ArrayList<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithLimit;
-        ArrayList<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithLimitAndOffset;
-        ArrayList<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithLimitOnly;
-        ArrayList<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithOffsetOnly;
+        List<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecords;
+        List<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithLimit;
+        List<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithLimitAndOffset;
+        List<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithLimitOnly;
+        List<ConsentStatusAuditRecord> retrievedConsentStatusAuditRecordsWithOffsetOnly;
 
         ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
 
@@ -1580,7 +1581,7 @@ public class ConsentCoreDAOTests {
 //    }
 //
 
-    private void storeDataForConsentSearchTest(ArrayList<String> consentIDs,
+    private void storeDataForConsentSearchTest(ArrayList<String> consentIds,
                                                Connection connection) throws
             ConsentDataInsertionException {
 
@@ -1589,19 +1590,19 @@ public class ConsentCoreDAOTests {
         // Store 3 consent resources
         ArrayList<ConsentResource> consentResources = ConsentMgtDAOTestData.getSampleConsentResourcesList();
         for (ConsentResource resource : consentResources) {
-            consentIDs.add(consentCoreDAO.storeConsentResource(connection, resource).getConsentId());
+            consentIds.add(consentCoreDAO.storeConsentResource(connection, resource).getConsentId());
         }
 
         // Store 2 authorization resources for each stored consent
         ArrayList<AuthorizationResource> authorizationResources =
-                ConsentMgtDAOTestData.getSampleAuthorizationResourcesList(consentIDs);
+                ConsentMgtDAOTestData.getSampleAuthorizationResourcesList(consentIds);
         for (AuthorizationResource resource : authorizationResources) {
             authIDs.add(consentCoreDAO.storeAuthorizationResource(connection, resource).getAuthorizationId());
         }
 
 
         // Store consent attributes
-        for (String consentId : consentIDs) {
+        for (String consentId : consentIds) {
             ConsentAttributes consentAttributesResource = new ConsentAttributes();
             consentAttributesResource.setConsentId(consentId);
             consentAttributesResource.setConsentAttributes(ConsentMgtDAOTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);

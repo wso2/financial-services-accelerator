@@ -19,7 +19,6 @@
 package org.wso2.financial.services.accelerator.consent.mgt.api.service.util;
 
 import com.google.gson.Gson;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -55,11 +54,13 @@ import java.util.UUID;
 /**
  * Consent Core Service Util.
  */
-@SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class ConsentCoreServiceUtil {
 
     private static final Log log = LogFactory.getLog(ConsentCoreServiceUtil.class);
 
+    private ConsentCoreServiceUtil() {
+
+    }
     /**
      * Create an authorizable consent with audit record.
      *
@@ -111,7 +112,7 @@ public class ConsentCoreServiceUtil {
             }
 
             // Store authorization resource if available
-            ArrayList<AuthorizationResource> authorizationResources =
+            List<AuthorizationResource> authorizationResources =
                     detailedConsentResource.getAuthorizationResources();
 
             if (authorizationResources != null && !authorizationResources.isEmpty()) {
@@ -121,16 +122,18 @@ public class ConsentCoreServiceUtil {
                             detailedConsentResource.getConsentId()
                     ).replaceAll("[\r\n]", ""));
                 }
-                ArrayList<AuthorizationResource> storedAuthorizationResources = consentCoreDAO.
+                List<AuthorizationResource> storedAuthorizationResources = consentCoreDAO.
                         storeBulkAuthorizationResources(connection, consentId, authorizationResources);
-                detailedConsentResource.setAuthorizationResources(storedAuthorizationResources);
+                detailedConsentResource.setAuthorizationResources(
+                        storedAuthorizationResources);
 
            }
             // TODO : handle history
             DatabaseUtils.commitTransaction(connection);
             return detailedConsentResource;
         } catch (SQLException e) {
-            log.error(ConsentError.DETAILED_CONSENT_RESOURCE_INSERTION_ERROR.getMessage(), e);
+            log.error(ConsentError.DETAILED_CONSENT_RESOURCE_INSERTION_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""), e);
             throw new ConsentMgtException(ConsentError.DETAILED_CONSENT_RESOURCE_INSERTION_ERROR);
 
         }
@@ -177,7 +180,7 @@ public class ConsentCoreServiceUtil {
         consentHistoryResource.setReason(reason);
         consentHistoryResource.setTimestamp(System.currentTimeMillis());
 
-        ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+        ConsentCoreServiceImpl consentCoreService = ConsentCoreServiceImpl.getInstance();
         boolean result = consentCoreService.storeConsentAmendmentHistory(
                 consentStatusAuditRecord.getStatusAuditID(),
                 consentHistoryResource,
@@ -186,11 +189,11 @@ public class ConsentCoreServiceUtil {
         if (result) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Consent Amendment History of consentId: %s persisted successfully.",
-                        consentId));
+                        consentId).replaceAll("[\r\n]", ""));
             }
         } else {
             log.error(String.format("Failed to persist Consent Amendment History of consentId : %s. ",
-                    consentId));
+                    consentId).replaceAll("[\r\n]", ""));
         }
 
     }
@@ -374,7 +377,7 @@ public class ConsentCoreServiceUtil {
      * @param oldConsentAuthResources Existing auth resources
      * @return JSON object with the changed consent mappings
      */
-    public static Map<String, JSONObject> getChangedConsentAuthResourcesDataJSONMap(ArrayList<AuthorizationResource>
+    public static Map<String, JSONObject> getChangedConsentAuthResourcesDataJSONMap(List<AuthorizationResource>
                                                                                             newConsentAuthResources,
                                                                                     ArrayList<AuthorizationResource>
                                                                                             oldConsentAuthResources) {
@@ -504,7 +507,7 @@ public class ConsentCoreServiceUtil {
 
                 } else if (ConsentCoreServiceConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA.equals(consentDataType)) {
                     Map<String, Object> changedConsentAuthResourceDataMap = (Map<String, Object>) changedAttributes;
-                    ArrayList<AuthorizationResource> consentAuthResources = currentConsentResource
+                    List<AuthorizationResource> consentAuthResources = currentConsentResource
                             .getAuthorizationResources();
                     ArrayList<AuthorizationResource> consentAuthResourceHistory = new ArrayList<>();
                     for (AuthorizationResource authResource : consentAuthResources) {

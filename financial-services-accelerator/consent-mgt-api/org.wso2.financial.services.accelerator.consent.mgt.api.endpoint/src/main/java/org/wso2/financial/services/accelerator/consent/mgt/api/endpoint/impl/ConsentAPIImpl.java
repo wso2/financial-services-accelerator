@@ -42,6 +42,8 @@ public class ConsentAPIImpl {
         this.consentCoreService = consentCoreService;
     }
 
+
+
     /**
      * Handles the API request to create a new consent resource.
      * This method processes the payload containing the consent resource, authorization resources,
@@ -116,7 +118,7 @@ public class ConsentAPIImpl {
             String consentType, String consentStatus
             , String clientId, String userId, long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
         try {
-            ArrayList<String> consentIDs = new ArrayList<>();
+            ArrayList<String> consentIds = new ArrayList<>();
             ArrayList<String> clientIDs = new ArrayList<>();
             ArrayList<String> consentTypes = new ArrayList<>();
             ArrayList<String> consentStatuses = new ArrayList<>();
@@ -143,10 +145,10 @@ public class ConsentAPIImpl {
             limit = limitValue == 0 ? null : limitValue;
             offset = offsetValue == 0 ? null : offsetValue;
 
-            ArrayList<DetailedConsentResource> results;
+            List<DetailedConsentResource> results;
             results = consentCoreService.searchDetailedConsents(
                     orgId,
-                    consentIDs,
+                    consentIds,
                     clientIDs,
                     consentTypes,
                     consentStatuses,
@@ -210,7 +212,7 @@ public class ConsentAPIImpl {
                                      String orgId) {
         try {
 
-            consentCoreService.bulkUpdateConsentStatus(
+            consentCoreService.consentStatusBulkUpdate(
                     orgId,
                     bulkConsentStatusUpdateResource.getClientId(),
                     bulkConsentStatusUpdateResource.getStatus(),
@@ -393,7 +395,7 @@ public class ConsentAPIImpl {
             ///  check if the consent exists, else throws exception
             consentCoreService.getDetailedConsent(consentId, orgId);
 
-            ArrayList<AuthorizationResource> authorizationResources =
+            List<AuthorizationResource> authorizationResources =
                     new ArrayList<>();
 
             for (AuthorizationResourceRequestBody authorizationResourceDTO : authorizationResourceDTOList) {
@@ -402,8 +404,8 @@ public class ConsentAPIImpl {
                 authorizationResource.setConsentId(consentId);
                 authorizationResources.add(authorizationResource);
             }
-            authorizationResources = consentCoreService.createConsentAuthorizations(authorizationResources,
-                    consentId);
+            authorizationResources = consentCoreService.createConsentAuthorizations(consentId,
+                    authorizationResources);
 
             List<AuthorizationResourceResponseBody> authorizationResourceResponseBodyList =
                     new ArrayList<>();

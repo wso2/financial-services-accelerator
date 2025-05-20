@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.api.dao.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Map;
 public class DetailedConsentResource extends ConsentResource {
 
     private Map<String, Object> consentAttributes;
-    private ArrayList<AuthorizationResource> authorizationResources;
+    private List<AuthorizationResource> authorizationResources;
 
     public DetailedConsentResource() {
 
@@ -39,7 +40,7 @@ public class DetailedConsentResource extends ConsentResource {
                                    String currentStatus, long expiryTime, long createdTime,
                                    long updatedTime, boolean recurringIndicator,
                                    Map<String, Object> consentAttributes,
-                                   ArrayList<AuthorizationResource> authorizationResources) {
+                                   List<AuthorizationResource> authorizationResources) {
         super(orgId, consentId, clientId, receipt, consentType, expiryTime, recurringIndicator, currentStatus,
                 createdTime, updatedTime);
         this.consentAttributes = consentAttributes;
@@ -57,12 +58,12 @@ public class DetailedConsentResource extends ConsentResource {
         this.consentAttributes = consentAttributes;
     }
 
-    public ArrayList<AuthorizationResource> getAuthorizationResources() {
+    public List<AuthorizationResource> getAuthorizationResources() {
 
         return authorizationResources;
     }
 
-    public void setAuthorizationResources(ArrayList<AuthorizationResource> authorizationResources) {
+    public void setAuthorizationResources(List<AuthorizationResource> authorizationResources) {
 
         this.authorizationResources = authorizationResources;
     }
