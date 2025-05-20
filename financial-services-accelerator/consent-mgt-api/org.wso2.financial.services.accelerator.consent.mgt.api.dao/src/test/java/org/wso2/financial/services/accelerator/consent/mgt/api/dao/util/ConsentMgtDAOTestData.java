@@ -233,14 +233,14 @@ public class ConsentMgtDAOTestData {
         return consentResources;
     }
 
-    public static ArrayList<AuthorizationResource> getSampleAuthorizationResourcesList(ArrayList<String> consentIDs) {
+    public static ArrayList<AuthorizationResource> getSampleAuthorizationResourcesList(ArrayList<String> consentIds) {
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<AuthorizationResource>();
 
-        for (int i = 0; i < consentIDs.size(); i++) {
+        for (int i = 0; i < consentIds.size(); i++) {
             for (int j = 0; j < 2; j++) {
                 AuthorizationResource authorizationResource = new AuthorizationResource();
-                authorizationResource.setConsentId(consentIDs.get(i));
+                authorizationResource.setConsentId(consentIds.get(i));
                 authorizationResource.setAuthorizationType(SAMPLE_AUTHORIZATION_TYPE);
                 authorizationResource.setUserId(SAMPLE_USER_IDS_LIST.get(i));
                 authorizationResource.setAuthorizationStatus(SAMPLE_AUTHORIZATION_STATUS);

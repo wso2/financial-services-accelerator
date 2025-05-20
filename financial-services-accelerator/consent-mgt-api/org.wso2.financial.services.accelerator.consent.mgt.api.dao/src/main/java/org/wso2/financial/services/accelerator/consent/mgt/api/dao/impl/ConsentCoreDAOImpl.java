@@ -386,9 +386,9 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         }
     }
 
-    @Override public ArrayList<AuthorizationResource> storeBulkAuthorizationResources(Connection connection,
+    @Override public List<AuthorizationResource> storeBulkAuthorizationResources(Connection connection,
                                                                                       String consentId,
-                                                                                      ArrayList<AuthorizationResource>
+                                                                                      List<AuthorizationResource>
                                                                                               authorizationResources)
             throws  ConsentDataInsertionException {
 
@@ -645,7 +645,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgId,
-                                                  ArrayList<String> consentAttributeKeys)
+                                                  List<String> consentAttributeKeys)
             throws ConsentDataRetrievalException {
 
         Map<String, Object> retrievedConsentAttributesMap = new HashMap<>();
@@ -777,7 +777,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
     @Override
     public boolean deleteConsentAttributes(Connection connection, String consentId,
-                                           ArrayList<String> consentAttributeKeys)
+                                           List<String> consentAttributeKeys)
             throws ConsentDataDeletionException {
 
         int[] result;
@@ -818,26 +818,26 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     //                  ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
     // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
     // Suppressed warning count - 1
-    public ArrayList<DetailedConsentResource> searchConsents(Connection connection,
-                                                             String orgId, ArrayList<String> consentIDs,
-                                                             ArrayList<String> clientIDs,
-                                                             ArrayList<String> consentTypes,
-                                                             ArrayList<String> consentStatuses,
-                                                             ArrayList<String> userIDs, Long fromTime, Long toTime,
+    public List<DetailedConsentResource> searchConsents(Connection connection,
+                                                             String orgId, List<String> consentIds,
+                                                             List<String> clientIDs,
+                                                             List<String> consentTypes,
+                                                             List<String> consentStatuses,
+                                                             List<String> userIDs, Long fromTime, Long toTime,
                                                              Integer limit, Integer offset)
             throws ConsentDataRetrievalException {
 
         boolean shouldLimit = true;
         boolean shouldOffset = true;
         int parameterIndex = 0;
-        Map<String, ArrayList<String>> applicableConditionsMap = new HashMap<>();
+        Map<String, List<String>> applicableConditionsMap = new HashMap<>();
 
         if (orgId == null) {
             orgId = ConsentMgtDAOConstants.DEFAULT_ORG;
         }
         ArrayList<String> orgIDs = new ArrayList<>();
         orgIDs.add(orgId);
-        validateAndSetSearchConditions(orgIDs, applicableConditionsMap, consentIDs, clientIDs, consentTypes,
+        validateAndSetSearchConditions(orgIDs, applicableConditionsMap, consentIds, clientIDs, consentTypes,
                 consentStatuses);
 
         // Don't limit if either of limit or offset is null
@@ -854,7 +854,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 ConsentManagementDAOUtil.constructConsentSearchPreparedStatement(applicableConditionsMap);
 
         String userIDFilterCondition = "";
-        Map<String, ArrayList<String>> userIdMap = new HashMap<>();
+        Map<String, List<String>> userIdMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(userIDs)) {
             userIdMap.put(ConsentMgtDAOConstants.COLUMNS_MAP.get(ConsentMgtDAOConstants.USER_IDS), userIDs);
             userIDFilterCondition = ConsentManagementDAOUtil.constructUserIdListFilterCondition(userIdMap);
@@ -870,7 +870,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             /* Since we don't know the order of the set condition clauses, have to determine the order of them to set
                the actual values to the  prepared statement */
-            Map<Integer, ArrayList<String>> orderedParamsMap = ConsentManagementDAOUtil.determineOrderOfParamsToSet(
+            Map<Integer, List<String>> orderedParamsMap = ConsentManagementDAOUtil.determineOrderOfParamsToSet(
                     constructedConditions, applicableConditionsMap, ConsentMgtDAOConstants.COLUMNS_MAP);
 
             log.debug("Setting parameters to prepared statement to search consents");
@@ -881,7 +881,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             //determine order of user Ids to set
             if (CollectionUtils.isNotEmpty(userIDs)) {
-                Map<Integer, ArrayList<String>> orderedUserIdsMap = ConsentManagementDAOUtil
+                Map<Integer, List<String>> orderedUserIdsMap = ConsentManagementDAOUtil
                         .determineOrderOfParamsToSet(userIDFilterCondition, userIdMap,
                                 ConsentMgtDAOConstants.COLUMNS_MAP);
                 parameterIndex = ConsentManagementDAOUtil.setDynamicConsentSearchParameters(searchConsentsPreparedStmt,
@@ -933,7 +933,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             throws ConsentDataInsertionException {
 
         int result;
-        String statusAuditID = StringUtils.isEmpty(consentStatusAuditRecord.getStatusAuditID()) ?
+        String statusAuditId = StringUtils.isEmpty(consentStatusAuditRecord.getStatusAuditID()) ?
                 UUID.randomUUID().toString() : consentStatusAuditRecord.getStatusAuditID();
         // Unix time in seconds
         long actionTime = (consentStatusAuditRecord.getActionTime() == 0) ? System.currentTimeMillis() :
@@ -947,7 +947,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             log.debug("Setting parameters to prepared statement to store consent audit record");
 
-            storeConsentStatusAuditRecordPreparedStmt.setString(1, statusAuditID);
+            storeConsentStatusAuditRecordPreparedStmt.setString(1, statusAuditId);
             storeConsentStatusAuditRecordPreparedStmt.setString(2, consentStatusAuditRecord
                     .getConsentId());
             storeConsentStatusAuditRecordPreparedStmt.setString(3, consentStatusAuditRecord
@@ -969,7 +969,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         // Confirm that the data are inserted successfully
         if (result > 0) {
             log.debug("Stored the consent status audit record successfully");
-            consentStatusAuditRecord.setStatusAuditID(statusAuditID);
+            consentStatusAuditRecord.setStatusAuditID(statusAuditId);
             consentStatusAuditRecord.setActionTime(actionTime);
             return consentStatusAuditRecord;
         } else {
@@ -983,7 +983,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     public ArrayList<ConsentStatusAuditRecord> getConsentStatusAuditRecords(Connection connection, String consentId,
                                                                             String currentStatus, String actionBy,
                                                                             Long fromTime, Long toTime,
-                                                                            String statusAuditID)
+                                                                            String statusAuditId)
             throws ConsentDataRetrievalException {
 
         ArrayList<ConsentStatusAuditRecord> retrievedAuditRecords = new ArrayList<>();
@@ -1018,9 +1018,9 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                 getConsentStatusAuditRecordPreparedStmt.setNull(3, Types.VARCHAR);
             }
 
-            // statusAuditID
-            if (StringUtils.trimToNull(statusAuditID) != null) {
-                getConsentStatusAuditRecordPreparedStmt.setString(4, statusAuditID);
+            // statusAuditId
+            if (StringUtils.trimToNull(statusAuditId) != null) {
+                getConsentStatusAuditRecordPreparedStmt.setString(4, statusAuditId);
             } else {
                 getConsentStatusAuditRecordPreparedStmt.setNull(4, Types.VARCHAR);
             }
@@ -1078,8 +1078,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     // Suppressed content - connection.prepareStatement(getConsentStatusAuditRecordsPrepStatement)
     // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
     // Suppressed warning count - 1
-    public ArrayList<ConsentStatusAuditRecord> getConsentStatusAuditRecordsByConsentId(Connection connection,
-                                                                                       ArrayList<String> consentIDs,
+    public List<ConsentStatusAuditRecord> getConsentStatusAuditRecordsByConsentId(Connection connection,
+                                                                                       List<String> consentIds,
                                                                                        Integer limit, Integer offset)
             throws ConsentDataRetrievalException {
 
@@ -1097,7 +1097,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
         ArrayList<ConsentStatusAuditRecord> retrievedAuditRecords = new ArrayList<>();
         String constructedConditions =
-                ConsentManagementDAOUtil.constructConsentAuditRecordSearchPreparedStatement(consentIDs);
+                ConsentManagementDAOUtil.constructConsentAuditRecordSearchPreparedStatement(consentIds);
 
         String getConsentStatusAuditRecordsPrepStatement =
                 sqlStatements.getConsentStatusAuditRecordsByConsentIdsPreparedStatement(constructedConditions,
@@ -1107,8 +1107,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                      connection.prepareStatement(getConsentStatusAuditRecordsPrepStatement)) {
 
             log.debug("Setting parameters to prepared statement to retrieve consent status audit records");
-            if (!CollectionUtils.isEmpty(consentIDs)) {
-                for (String consentId : consentIDs) {
+            if (!CollectionUtils.isEmpty(consentIds)) {
+                for (String consentId : consentIds) {
                     parameterIndex++;
                     getConsentStatusAuditRecordPreparedStmt.setString(parameterIndex, consentId);
                 }
@@ -1286,21 +1286,21 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
      *
      * @param orgIDs                 A list of organization IDs to filter the search.
      * @param applicableConditionsMap A map to store the applicable search conditions.
-     * @param consentIDs             A list of consent IDs to filter the search.
+     * @param consentIds             A list of consent IDs to filter the search.
      * @param clientIDs              A list of client IDs to filter the search.
      * @param consentTypes           A list of consent types to filter the search.
      * @param consentStatuses        A list of consent statuses to filter the search.
      */
-    void validateAndSetSearchConditions(ArrayList<String> orgIDs,
-                                        Map<String, ArrayList<String>> applicableConditionsMap,
-                                        ArrayList<String> consentIDs, ArrayList<String> clientIDs,
-                                        ArrayList<String> consentTypes, ArrayList<String> consentStatuses) {
+    void validateAndSetSearchConditions(List<String> orgIDs,
+                                        Map<String, List<String>> applicableConditionsMap,
+                                        List<String> consentIds, List<String> clientIDs,
+                                        List<String> consentTypes, List<String> consentStatuses) {
 
         log.debug("Validate applicable search conditions");
 
-        if (CollectionUtils.isNotEmpty(consentIDs)) {
+        if (CollectionUtils.isNotEmpty(consentIds)) {
             applicableConditionsMap.put(ConsentMgtDAOConstants.COLUMNS_MAP.get(ConsentMgtDAOConstants.CONSENT_IDS),
-                    consentIDs);
+                    consentIds);
         }
         if (CollectionUtils.isNotEmpty(clientIDs)) {
             applicableConditionsMap.put(ConsentMgtDAOConstants.COLUMNS_MAP.get(ConsentMgtDAOConstants.CLIENT_IDS),

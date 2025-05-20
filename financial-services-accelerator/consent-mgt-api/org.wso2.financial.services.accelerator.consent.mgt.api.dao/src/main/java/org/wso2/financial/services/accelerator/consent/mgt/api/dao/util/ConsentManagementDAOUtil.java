@@ -29,7 +29,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.api.dao.constants.Con
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.exceptions.ConsentDataInsertionException;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.ConsentHistoryResource;
-import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.DetailedConsentResource;
 
@@ -39,6 +38,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -101,9 +101,7 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
 
         Map<String, Object> consentAttributesMap = new HashMap<>();
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
         ArrayList<String> authIds = new ArrayList<>();
-        ArrayList<String> consentMappingIds = new ArrayList<>();
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
 
         while (resultSet.next()) {
@@ -242,7 +240,7 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
      * @param applicableConditions map of applicable conditions
      * @return where clause of the prepared statement
      */
-    public static String constructConsentSearchPreparedStatement(Map<String, ArrayList<String>> applicableConditions) {
+    public static String constructConsentSearchPreparedStatement(Map<String, List<String>> applicableConditions) {
 
         StringBuilder placeHoldersBuilder = new StringBuilder();
         StringBuilder whereClauseBuilder = new StringBuilder();
@@ -251,7 +249,7 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
         if (MapUtils.isEmpty(applicableConditions)) {
             return "";
         }
-        for (Map.Entry<String, ArrayList<String>> entry : applicableConditions.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : applicableConditions.entrySet()) {
             // Oracle only allows 1000 values to be used in a SQL "IN" clause. Since more than 1000 consent IDs
             // are used in some queries, "OR" clause is used
             if (entry.getKey().contains(ConsentMgtDAOConstants.CONSENT_ID)) {
@@ -305,12 +303,12 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
      * @param userIds map of user IDs
      * @return filter condition of the prepared statement
      */
-    public static String constructUserIdListFilterCondition(Map<String, ArrayList<String>> userIds) {
+    public static String constructUserIdListFilterCondition(Map<String, List<String>> userIds) {
 
         StringBuilder placeHoldersBuilder = new StringBuilder();
         StringBuilder userIdFilterBuilder = new StringBuilder();
 
-        for (Map.Entry<String, ArrayList<String>> entry : userIds.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : userIds.entrySet()) {
             for (int i = 0; i < entry.getValue().size(); i++) {
                 placeHoldersBuilder.append(DB_OPERATORS_MAP.get(ConsentMgtDAOConstants.PLACEHOLDER));
             }
@@ -340,8 +338,8 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
      * @param columnsMap              map of columns
      * @return ordered parameters map
      */
-    public static TreeMap<Integer, ArrayList<String>> determineOrderOfParamsToSet(String preparedStatement,
-                                                                                  Map<String, ArrayList<String>>
+    public static TreeMap<Integer, List<String>> determineOrderOfParamsToSet(String preparedStatement,
+                                                                                  Map<String, List<String>>
                                                                                           applicableConditionsMap,
                                                                                   Map<String, String> columnsMap) {
 
@@ -352,7 +350,7 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
         int indexOfUserIDsList;
 
         // Tree map naturally sorts values in ascending order according to the key
-        TreeMap<Integer, ArrayList<String>> sortedIndexesMap = new TreeMap<>();
+        TreeMap<Integer, List<String>> sortedIndexesMap = new TreeMap<>();
 
         /* Check whether the where condition clauses are in the prepared statement and get the index if exists to
            determine the order */
@@ -402,10 +400,10 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
      * @throws SQLException thrown if an error occurs in the process
      */
     public static int setDynamicConsentSearchParameters(PreparedStatement preparedStatement, Map<Integer,
-            ArrayList<String>> orderedParamsMap, int parameterIndex) throws
+            List<String>> orderedParamsMap, int parameterIndex) throws
             SQLException {
 
-        for (Map.Entry<Integer, ArrayList<String>> entry : orderedParamsMap.entrySet()) {
+        for (Map.Entry<Integer, List<String>> entry : orderedParamsMap.entrySet()) {
             for (int valueIndex = 0; valueIndex < entry.getValue().size(); valueIndex++) {
                 preparedStatement.setString(parameterIndex,
                         entry.getValue().get(valueIndex).trim());
@@ -465,15 +463,15 @@ private static final Map<String, String> DB_OPERATORS_MAP = Map.of(
     /**
      * Method to construct where clause for consent status audit search condition.
      *
-     * @param consentIDs List of consent IDs
+     * @param consentIds List of consent IDs
      * @return Filter condition for consent status audit
      */
-    public static String constructConsentAuditRecordSearchPreparedStatement(ArrayList<String> consentIDs) {
+    public static String constructConsentAuditRecordSearchPreparedStatement(List<String> consentIds) {
 
         StringBuilder whereClauseBuilder = new StringBuilder();
-        if (!CollectionUtils.isEmpty(consentIDs)) {
+        if (!CollectionUtils.isEmpty(consentIds)) {
             whereClauseBuilder.append(DB_OPERATORS_MAP.get(ConsentMgtDAOConstants.WHERE));
-            for (int count = 0; count < consentIDs.size(); count++) {
+            for (int count = 0; count < consentIds.size(); count++) {
                 whereClauseBuilder
                         .append(SPACE)
                         .append(ConsentMgtDAOConstants.CONSENT_ID)

@@ -149,8 +149,8 @@ public interface ConsentCoreDAO {
      * @return returns the list of authorization resources with the updated time if insertion is successful
      * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
      */
-    ArrayList<AuthorizationResource> storeBulkAuthorizationResources(Connection connection, String consentId,
-                                                      ArrayList<AuthorizationResource> authorizationResource)
+    List<AuthorizationResource> storeBulkAuthorizationResources(Connection connection, String consentId,
+                                                      List<AuthorizationResource> authorizationResource)
             throws ConsentDataInsertionException;
 
     /**
@@ -224,7 +224,7 @@ public interface ConsentCoreDAO {
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
     ConsentAttributes getConsentAttributes(Connection connection, String consentId, String orgId,
-                                           ArrayList<String> consentAttributeKeys)
+                                           List<String> consentAttributeKeys)
             throws ConsentDataRetrievalException;
 
     /**
@@ -258,7 +258,7 @@ public interface ConsentCoreDAO {
      * @return true if the deletion is successful
      * @throws ConsentDataDeletionException thrown if a database error occurs
      */
-    boolean deleteConsentAttributes(Connection connection, String consentId, ArrayList<String> consentAttributeKeys)
+    boolean deleteConsentAttributes(Connection connection, String consentId, List<String> consentAttributeKeys)
             throws ConsentDataDeletionException;
 
     /**
@@ -269,7 +269,7 @@ public interface ConsentCoreDAO {
      * parameters are null, all the consents will be returned.
      *
      * @param connection      connection object
-     * @param consentIDs      consent IDs optional list
+     * @param consentIds      consent IDs optional list
      * @param clientIDs       client IDs optional list
      * @param consentTypes    consent types optional list
      * @param consentStatuses consent statuses optional list
@@ -282,10 +282,10 @@ public interface ConsentCoreDAO {
      * if all parameters are null
      * @throws ConsentDataRetrievalException thrown if any error occur
      */
-    ArrayList<DetailedConsentResource> searchConsents(Connection connection, String orgId,
-                                                      ArrayList<String> consentIDs,
-                                                      ArrayList<String> clientIDs, ArrayList<String> consentTypes,
-                                                      ArrayList<String> consentStatuses, ArrayList<String> userIDs,
+    List<DetailedConsentResource> searchConsents(Connection connection, String orgId,
+                                                      List<String> consentIds,
+                                                      List<String> clientIDs, List<String> consentTypes,
+                                                      List<String> consentStatuses, List<String> userIDs,
                                                       Long fromTime, Long toTime, Integer limit, Integer offset)
             throws ConsentDataRetrievalException;
 
@@ -314,26 +314,26 @@ public interface ConsentCoreDAO {
      * @param actionBy      the user who performed the status update
      * @param fromTime      lower bound of the time of the needed records
      * @param toTime        upper bound of the time of the needed records
-     * @param statusAuditID status audit ID
+     * @param statusAuditId status audit ID
      * @return a list of retrieved audit records that matches the provided parameters
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
     ArrayList<ConsentStatusAuditRecord> getConsentStatusAuditRecords(Connection connection, String consentId,
                                                                      String currentStatus, String actionBy,
                                                                      Long fromTime, Long toTime,
-                                                                     String statusAuditID)
+                                                                     String statusAuditId)
             throws ConsentDataRetrievalException;
 
     /**
      * This method is used to retrieve a list of consent status audit records by consent_ids.
      *
      * @param connection connection object
-     * @param consentIDs consentIDs
+     * @param consentIds consentIds
      * @return returns a list of consent status audit records.
      * @throws ConsentDataRetrievalException thrown if a database error occurs
      */
-    ArrayList<ConsentStatusAuditRecord> getConsentStatusAuditRecordsByConsentId(Connection connection,
-                                                                                ArrayList<String> consentIDs,
+    List<ConsentStatusAuditRecord> getConsentStatusAuditRecordsByConsentId(Connection connection,
+                                                                                List<String> consentIds,
                                                                                 Integer limit, Integer offset)
             throws ConsentDataRetrievalException;
 

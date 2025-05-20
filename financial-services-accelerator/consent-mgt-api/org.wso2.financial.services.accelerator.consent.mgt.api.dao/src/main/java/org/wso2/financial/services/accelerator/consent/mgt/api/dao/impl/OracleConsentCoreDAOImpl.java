@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -74,21 +75,21 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
     //                  ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
     // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
     // Suppressed warning count - 1
-    public ArrayList<DetailedConsentResource> searchConsents(Connection connection,
-                                                             String orgId, ArrayList<String> consentIDs,
-                                                             ArrayList<String> clientIDs,
-                                                             ArrayList<String> consentTypes,
-                                                             ArrayList<String> consentStatuses,
-                                                             ArrayList<String> userIDs, Long fromTime,
-                                                             Long toTime, Integer limit, Integer offset)
+    public List<DetailedConsentResource> searchConsents(Connection connection,
+                                                        String orgId, List<String> consentIds,
+                                                        List<String> clientIDs,
+                                                        List<String> consentTypes,
+                                                        List<String> consentStatuses,
+                                                        List<String> userIDs, Long fromTime,
+                                                        Long toTime, Integer limit, Integer offset)
             throws ConsentDataRetrievalException {
 
         boolean shouldLimit = true;
         boolean shouldOffset = true;
         int parameterIndex = 0;
-        Map<String, ArrayList<String>> applicableConditionsMap = new HashMap<>();
+        Map<String, List<String>> applicableConditionsMap = new HashMap<>();
 
-        validateAndSetSearchConditions(applicableConditionsMap, consentIDs, clientIDs, consentTypes, consentStatuses);
+        validateAndSetSearchConditions(applicableConditionsMap, consentIds, clientIDs, consentTypes, consentStatuses);
 
         if (limit == null) {
             shouldLimit = false;
@@ -102,7 +103,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
                 .constructConsentSearchPreparedStatement(applicableConditionsMap);
 
         String userIDFilterCondition = "";
-        Map<String, ArrayList<String>> userIdMap = new HashMap<>();
+        Map<String, List<String>> userIdMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(userIDs)) {
             userIdMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.USER_IDS), userIDs);
             userIDFilterCondition = ConsentManagementDAOUtil.constructUserIdListFilterCondition(userIdMap);
@@ -117,7 +118,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
 
             //determine order of user Ids to set
             if (CollectionUtils.isNotEmpty(userIDs)) {
-                Map<Integer, ArrayList<String>> orderedUserIdsMap = ConsentManagementDAOUtil
+                Map<Integer, List<String>> orderedUserIdsMap = ConsentManagementDAOUtil
                         .determineOrderOfParamsToSet(userIDFilterCondition, userIdMap, COLUMNS_MAP);
                 parameterIndex = ConsentManagementDAOUtil.setDynamicConsentSearchParameters(searchConsentsPreparedStmt,
                         orderedUserIdsMap, ++parameterIndex);
@@ -126,7 +127,7 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
 
             /* Since we don't know the order of the set condition clauses, have to determine the order of them to set
                the actual values to the  prepared statement */
-            Map<Integer, ArrayList<String>> orderedParamsMap = ConsentManagementDAOUtil
+            Map<Integer, List<String>> orderedParamsMap = ConsentManagementDAOUtil
                     .determineOrderOfParamsToSet(constructedConditions, applicableConditionsMap, COLUMNS_MAP);
             parameterIndex = ConsentManagementDAOUtil.setDynamicConsentSearchParameters(searchConsentsPreparedStmt,
                     orderedParamsMap, ++parameterIndex);
@@ -329,19 +330,19 @@ public class OracleConsentCoreDAOImpl extends ConsentCoreDAOImpl {
      * `applicableConditionsMap`.
      *
      * @param applicableConditionsMap A map to store the applicable search conditions.
-     * @param consentIDs             A list of consent IDs to filter the search.
+     * @param consentIds             A list of consent IDs to filter the search.
      * @param clientIDs              A list of client IDs to filter the search.
      * @param consentTypes           A list of consent types to filter the search.
      * @param consentStatuses        A list of consent statuses to filter the search.
      */
-    void validateAndSetSearchConditions(Map<String, ArrayList<String>> applicableConditionsMap,
-                                        ArrayList<String> consentIDs, ArrayList<String> clientIDs,
-                                        ArrayList<String> consentTypes, ArrayList<String> consentStatuses) {
+    void validateAndSetSearchConditions(Map<String, List<String>> applicableConditionsMap,
+                                        List<String> consentIds, List<String> clientIDs,
+                                        List<String> consentTypes, List<String> consentStatuses) {
 
         log.debug("Validate applicable search conditions");
 
-        if (CollectionUtils.isNotEmpty(consentIDs)) {
-            applicableConditionsMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.CONSENT_IDS), consentIDs);
+        if (CollectionUtils.isNotEmpty(consentIds)) {
+            applicableConditionsMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.CONSENT_IDS), consentIds);
         }
         if (CollectionUtils.isNotEmpty(clientIDs)) {
             applicableConditionsMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.CLIENT_IDS), clientIDs);

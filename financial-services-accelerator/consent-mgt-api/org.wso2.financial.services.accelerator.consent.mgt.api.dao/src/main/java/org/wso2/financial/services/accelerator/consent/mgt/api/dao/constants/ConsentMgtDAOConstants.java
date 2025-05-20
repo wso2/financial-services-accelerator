@@ -72,7 +72,7 @@ public class ConsentMgtDAOConstants {
     public static final String TYPE_CONSENT_AUTH_RESOURCE_DATA = "ConsentAuthResourceData";
     public static final String TYPE_CONSENT_ATTRIBUTES_DATA = "ConsentAttributesData";
     public static final String TYPE_CONSENT_MAPPING_DATA = "ConsentMappingData";
-    public static final String CONSENT_IDS = "consentIDs";
+    public static final String CONSENT_IDS = "consentIds";
     public static final String CLIENT_IDS = "clientIDs";
     public static final String CONSENT_TYPES = "consentTypes";
     public static final String CONSENT_STATUSES = "consentStatuses";
