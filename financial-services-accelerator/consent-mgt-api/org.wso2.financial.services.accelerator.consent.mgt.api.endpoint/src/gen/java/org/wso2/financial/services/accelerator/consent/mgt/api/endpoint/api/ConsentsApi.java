@@ -454,4 +454,5 @@ public class ConsentsApi {
         return consentApiImpl.consentStatusPut(bulkConsentStatusUpdateResourceRequestBody, orgId);
 
     }
+
 }
