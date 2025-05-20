@@ -159,7 +159,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     orgId);
 
             if (consentResource.getCurrentStatus() != null) {
-                if (consentResource.getCurrentStatus().equals("revoked")) {
+                if (consentResource.getCurrentStatus().equals(ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS)) {
                     throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
                 }
             }
@@ -564,7 +564,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     //TODO : not yet implemented and tested
     @Override
-    public ConsentAttributes getConsentAttributes(String consentId, List<String> consentAttributeKeys)
+    public ConsentAttributes getConsentAttributes(String consentId, String orgId, List<String> consentAttributeKeys)
             throws ConsentMgtException {
 
 
@@ -572,9 +572,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
 
             try {
-                //TODO : pass orgId
                 ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId,
-                        null);
+                        orgId);
                 if (retrievedConsentResource == null) {
                     String errorMessage = String.format("Consent ID  : %s is not available in the database",
                             consentId.replaceAll("[\r\n]", ""));
@@ -590,8 +589,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     log.debug(String.format("Retrieving consent attributes for given keys for consent ID: %s",
                             consentId.replaceAll("[\r\n]", "")));
                 }
-                //TODO : pass orgId
-                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId, null,
+                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId, orgId,
                         consentAttributeKeys);
 
                 // Commit transactions
@@ -610,16 +608,15 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     //TODO : not yet implemented and tested
     @Override
-    public ConsentAttributes getConsentAttributes(String consentId) throws
+    public ConsentAttributes getConsentAttributes(String consentId, String orgId) throws
             ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
 
             try {
-                //TODO : pass orgId
                 ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId,
-                        null);
+                        orgId);
                 if (retrievedConsentResource == null) {
                     String errorMessage = String.format("Consent ID  : %s is not available in the database",
                             consentId.replaceAll("[\r\n]", ""));
@@ -636,8 +633,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     log.debug(String.format("Retrieving consent attributes for consent ID: %s",
                             consentId.replaceAll("[\r\n]", "")));
                 }
-                //TODO : pass orgId
-                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId, null);
+                retrievedConsentAttributes = consentCoreDAO.getConsentAttributes(connection, consentId, orgId);
 
                 // Commit transactions
                 DatabaseUtils.commitTransaction(connection);
