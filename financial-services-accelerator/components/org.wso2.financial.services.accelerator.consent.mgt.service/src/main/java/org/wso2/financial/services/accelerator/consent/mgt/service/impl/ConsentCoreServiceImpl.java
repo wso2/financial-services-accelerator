@@ -1180,6 +1180,28 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         .getDetailedConsentResource(connection, consentID);
                 String previousConsentStatus = retrievedDetailedConsentResource.getCurrentStatus();
 
+                // Extract userId from authorizationResources
+                ArrayList<AuthorizationResource> authorizationResources = retrievedDetailedConsentResource
+                        .getAuthorizationResources();
+
+                String consentUserID = "";
+                if (authorizationResources != null && !authorizationResources.isEmpty()) {
+                    consentUserID = authorizationResources.get(0).getUserID();
+                }
+
+                if (StringUtils.isBlank(consentUserID)) {
+                    log.error(ConsentCoreServiceConstants.USER_ID_MISSING_ERROR_MSG);
+                    throw new ConsentManagementException(ConsentCoreServiceConstants.USER_ID_MISSING_ERROR_MSG);
+                }
+
+                if (!ConsentCoreServiceUtil.isValidUserID(userID, consentUserID)) {
+                    final String errorMsg = String.format(ConsentCoreServiceConstants.USER_ID_MISMATCH_ERROR_MSG,
+                            userID.replaceAll("[\r\n]", ""),
+                            consentUserID.replaceAll("[\r\n]", ""));
+                    log.error(errorMsg);
+                    throw new ConsentManagementException(errorMsg);
+                }
+
                 // Update consent status as revoked
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Updating the status of the consent of ID: %s",
@@ -1188,27 +1210,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 consentCoreDAO.updateConsentStatus(connection, consentID, revokedConsentStatus);
 
                 if (shouldRevokeTokens) {
-                    // Extract userId from authorizationResources
-                    ArrayList<AuthorizationResource> authorizationResources = retrievedDetailedConsentResource
-                            .getAuthorizationResources();
-
-                    String consentUserID = "";
-                    if (authorizationResources != null && !authorizationResources.isEmpty()) {
-                        consentUserID = authorizationResources.get(0).getUserID();
-                    }
-
-                    if (StringUtils.isBlank(consentUserID)) {
-                        log.error(ConsentCoreServiceConstants.USER_ID_MISSING_ERROR_MSG);
-                        throw new ConsentManagementException(ConsentCoreServiceConstants.USER_ID_MISSING_ERROR_MSG);
-                    }
-
-                    if (!ConsentCoreServiceUtil.isValidUserID(userID, consentUserID)) {
-                        final String errorMsg = String.format(ConsentCoreServiceConstants.USER_ID_MISMATCH_ERROR_MSG,
-                                userID.replaceAll("[\r\n]", ""),
-                                consentUserID.replaceAll("[\r\n]", ""));
-                        log.error(errorMsg);
-                        throw new ConsentManagementException(errorMsg);
-                    }
                     TokenRevocationUtil.revokeTokens(retrievedDetailedConsentResource, consentUserID);
                 }
 
