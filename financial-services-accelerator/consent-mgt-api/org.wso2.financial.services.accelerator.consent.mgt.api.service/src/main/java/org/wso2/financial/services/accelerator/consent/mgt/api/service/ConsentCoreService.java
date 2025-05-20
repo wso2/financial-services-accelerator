@@ -178,7 +178,7 @@ public interface ConsentCoreService {
      * @return a consent attributes resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    ConsentAttributes getConsentAttributes(String consentId, List<String> consentAttributeKeys)
+    ConsentAttributes getConsentAttributes(String consentId, String orgId, List<String> consentAttributeKeys)
             throws ConsentMgtException;
 
     /**
@@ -188,7 +188,7 @@ public interface ConsentCoreService {
      * @return a consent attributes resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    ConsentAttributes getConsentAttributes(String consentId) throws
+    ConsentAttributes getConsentAttributes(String consentId, String orgId) throws
             ConsentMgtException;
 
     /**

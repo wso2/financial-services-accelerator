@@ -507,4 +507,6 @@ public class ConsentAPIImpl {
         return Response.status(status).entity(error).build();
     }
 
+
+
 }
