@@ -8,7 +8,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v1.0.0-ALPHA
+  version: v1.0.0-RC2
 servers:
   - url: https://virtserver.swaggerhub.com/wso2-f5b/OB4/1.0.0
     description: SwaggerHub API Auto Mocking
