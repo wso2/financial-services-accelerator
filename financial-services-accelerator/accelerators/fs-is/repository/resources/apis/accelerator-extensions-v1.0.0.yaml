@@ -568,7 +568,7 @@ paths:
                 status: ERROR
                 errorMessage: server_error
                 errorDescription: Failed to process the response
-  /enrich-consent-search-result:
+  /enrich-consent-search-response:
     post:
       tags:
         - Consent
@@ -1576,7 +1576,7 @@ components:
     SuccessResponseForConsentSearchData:
       type: object
       properties:
-        searchResult:
+        enrichedSearchResult:
           type: object
           description: Enriched search result
     SuccessResponseWithDetailedConsentData:
