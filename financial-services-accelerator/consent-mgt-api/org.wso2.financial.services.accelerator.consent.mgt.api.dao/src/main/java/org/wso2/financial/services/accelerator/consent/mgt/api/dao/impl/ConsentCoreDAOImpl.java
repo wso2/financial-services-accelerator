@@ -268,6 +268,40 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
+    public void bulkConsentStatusUpdate(Connection connection, List<String> consentIds, String consentStatus,
+                                       String orgId) throws ConsentDataUpdationException {
+
+        String bulkConsentStatusUpdatePrepStatement = sqlStatements.getUpdateConsentStatusPreparedStatement();
+        try (PreparedStatement bulkConsentStatusUpdatePreparedStmt =
+                     connection.prepareStatement(bulkConsentStatusUpdatePrepStatement)) {
+            long updatedTime = System.currentTimeMillis() / 1000;
+            log.debug("Setting parameters to prepared statement to update consent status");
+
+            for (String consentId : consentIds) {
+                bulkConsentStatusUpdatePreparedStmt.setString(1, consentStatus);
+                bulkConsentStatusUpdatePreparedStmt.setLong(2, updatedTime);
+                bulkConsentStatusUpdatePreparedStmt.setString(3, consentId);
+                bulkConsentStatusUpdatePreparedStmt.addBatch();
+            }
+            // with result, we can determine whether the updating was successful or not
+            int[] result = bulkConsentStatusUpdatePreparedStmt.executeBatch();
+            // Confirm that the data are updated successfully
+            if (result.length > 0 && IntStream.of(result).noneMatch(value -> value == -3)) {
+                log.debug("Updated the consent status successfully");
+            } else {
+                log.error(ConsentError.CONSENT_STATUS_BULK_UPDATE_ERROR_IN_DATABASE.getMessage().
+                        replaceAll("[\r\n]", ""));
+                throw new ConsentDataUpdationException(ConsentError.CONSENT_STATUS_BULK_UPDATE_ERROR_IN_DATABASE);
+            }
+        } catch (SQLException e) {
+            log.error(ConsentError.CONSENT_STATUS_BULK_UPDATE_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""), e);
+            throw new ConsentDataUpdationException(ConsentError.CONSENT_STATUS_BULK_UPDATE_ERROR);
+        }
+
+    }
+
+    @Override
     public void updateConsentExpiryTime(Connection connection, String consentId, long expiryTime)
             throws ConsentDataUpdationException {
 

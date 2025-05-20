@@ -45,8 +45,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Consent core service implementation.
@@ -272,22 +274,32 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         consentTypes, applicableExistingStatus, null, null,
                         null, null, null);
 
+
+                if (detailedConsentResources.isEmpty()) {
+                    log.error(ConsentError.CONSENT_NOT_FOUND.getMessage().replaceAll("[\r\n]", ""));
+                    throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
+                }
+                // extract list of consentIds
+                List<String> consentIds = detailedConsentResources.stream().
+                        map(DetailedConsentResource::getConsentId).collect(Collectors.toList());
+
+                // Update consent status
+                consentCoreDAO.bulkConsentStatusUpdate(connection, consentIds, status, orgId);
+                DatabaseUtils.commitTransaction(connection);
+
+                //TODO : handle history
+                log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
             } catch (ConsentDataRetrievalException e) {
                 log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
                 throw new ConsentMgtException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
+            } catch (ConsentDataUpdationException e) {
+                log.error(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
+                DatabaseUtils.rollbackTransaction(connection);
+                throw new ConsentMgtException(e.getConsentError());
             }
         } catch (SQLException e) {
             log.error(ConsentError.CONSENT_UPDATE_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
             throw new ConsentMgtException(ConsentError.CONSENT_UPDATE_ERROR);
-        }
-
-        if (detailedConsentResources.isEmpty()) {
-            log.error(ConsentError.CONSENT_NOT_FOUND.getMessage().replaceAll("[\r\n]", ""));
-            throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
-        }
-
-        for (DetailedConsentResource consent : detailedConsentResources) {
-            updateConsentStatus(consent.getConsentId(), status, reason, userId, orgId);
         }
 
     }

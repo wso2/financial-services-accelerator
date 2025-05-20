@@ -104,6 +104,17 @@ public interface ConsentCoreDAO {
             throws ConsentDataUpdationException;
 
     /**
+     * This method is used to update the status of a consent resource. The request consent resource object must be
+     * set with a consent ID and the new consent status.
+     *
+     * @param connection    connection object
+     * @param consentIds     consent ID of the consent needed to be updated
+     * @param consentStatus the new status that should be updated with
+     * @throws ConsentDataUpdationException thrown if a database error occur or an update failure
+     */
+    void bulkConsentStatusUpdate(Connection connection, List<String> consentIds, String consentStatus,
+                                String orgId) throws ConsentDataUpdationException;
+    /**
      * This method is used to update consent validity time.
      *
      * @param connection connection object
