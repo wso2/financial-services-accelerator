@@ -39,6 +39,7 @@ import java.util.UUID;
 public class ExternalAPIConsentAdminUtils {
 
     private static final Gson gson = new Gson();
+    private static final String ENRICH_SEARCH_RESULT = "enrichedSearchResult";
 
     /**
      * Method to call external service for revoke
@@ -68,7 +69,7 @@ public class ExternalAPIConsentAdminUtils {
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.ENRICH_CONSENT_SEARCH_RESPONSE);
         ExternalAPIAdminConsentSearchResponseDTO responseDTO = new ExternalAPIAdminConsentSearchResponseDTO();
-        responseDTO.setEnrichedSearchResult(responseJson.getJSONArray("enrichedSearchResult"));
+        responseDTO.setEnrichedSearchResult(responseJson.getJSONArray(ENRICH_SEARCH_RESULT));
         return responseDTO;
     }
 
