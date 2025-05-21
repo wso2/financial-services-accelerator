@@ -87,7 +87,6 @@ public class ConsentCoreServiceImplTest {
     public void initTest() {
 
         connectionMock = Mockito.mock(Connection.class);
-        consentCoreServiceImpl = new ConsentCoreServiceImpl();
         mockedConsentCoreDAO = Mockito.mock(ConsentCoreDAO.class);
         consentResourceMock = Mockito.mock(ConsentResource.class);
         consentServiceMock = Mockito.mock(ConsentCoreServiceImpl.class);
@@ -100,7 +99,8 @@ public class ConsentCoreServiceImplTest {
     }
 
     @BeforeMethod
-    private void mockStaticClasses() {
+    private void mockStaticClasses() throws
+            ConsentMgtException {
 
         databaseUtilMockedStatic = mockStatic(DatabaseUtils.class);
         databaseUtilMockedStatic.when(DatabaseUtils::getDBConnection).thenReturn(connectionMock);
@@ -108,6 +108,8 @@ public class ConsentCoreServiceImplTest {
         consentStoreInitializerMockedStatic = mockStatic(ConsentStoreInitializer.class);
         consentStoreInitializerMockedStatic.when(ConsentStoreInitializer::getInitializedConsentCoreDAOImpl)
                 .thenReturn(mockedConsentCoreDAO);
+        consentCoreServiceImpl = ConsentCoreServiceImpl.getInstance();
+
 
     }
 
