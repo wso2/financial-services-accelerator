@@ -385,8 +385,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     @Override
     public List<AuthorizationResource> createConsentAuthorizations(String consentId,
-                                                                   List<AuthorizationResource>
-                                                                           authorizationResources)
+                                                                   List<AuthorizationResource> authorizationResources)
             throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {

@@ -444,8 +444,7 @@ public class ConsentCoreServiceUtil {
      */
     public static Map<String, ConsentHistoryResource> processConsentAmendmentHistoryData(
             Map<String, ConsentHistoryResource> consentAmendmentHistoryRetrievalResult,
-            DetailedConsentResource currentConsentResource) throws
-            ConsentMgtException {
+            DetailedConsentResource currentConsentResource) throws ConsentMgtException {
 
         Gson gson = new Gson();
         Map<String, ConsentHistoryResource> consentAmendmentHistoryDataMap = new LinkedHashMap<>();

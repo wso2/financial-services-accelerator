@@ -347,7 +347,6 @@ public class ConsentAPIImpl {
      * not.
      */
     public Response consentAuthorizationIdGet(String authorizationId, String consentId, String orgId) {
-
         try {
             AuthorizationResource authorizationResource = consentCoreService.getAuthorizationResource(authorizationId,
                     orgId);
@@ -446,7 +445,6 @@ public class ConsentAPIImpl {
     public Response consentAuthorizationIdPut(String authorizationId, String consentId,
                                               AuthorizationResourceRequestBody authorizationResourceRequestBody,
                                               String orgId) {
-
         try {
             ///  check if the consent exists, else throws exception
             consentCoreService.getDetailedConsent(consentId, orgId);
@@ -484,7 +482,6 @@ public class ConsentAPIImpl {
                 return Response.ok().entity("Authorization Resource Deleted").build();
             } else {
                 return Response.serverError().build();
-
             }
 
         } catch (ConsentMgtException e) {
