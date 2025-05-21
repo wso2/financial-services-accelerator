@@ -1214,10 +1214,11 @@ public class ConsentCoreServiceImplTest {
     public void testDeleteConsent() throws
             Exception {
         // Mock DAO behavior
-        doNothing().when(mockedConsentCoreDAO).deleteConsent(any(), any());
+        doNothing().when(mockedConsentCoreDAO).deleteConsent(any(), any(), any());
 
         // Call the method
-        boolean result = consentCoreServiceImpl.deleteConsent(ConsentMgtServiceTestData.CONSENT_ID);
+        boolean result = consentCoreServiceImpl.deleteConsent(ConsentMgtServiceTestData.CONSENT_ID,
+                ConsentMgtServiceTestData.ORG_ID);
 
         // Assert the result
         Assert.assertTrue(result);
@@ -1228,10 +1229,11 @@ public class ConsentCoreServiceImplTest {
             Exception {
 
         // Mock DAO to throw an exception
-        doThrow(ConsentDataDeletionException.class).when(mockedConsentCoreDAO).deleteConsent(any(), any());
+        doThrow(ConsentDataDeletionException.class).when(mockedConsentCoreDAO).deleteConsent(any(), any(),
+                any());
 
         // Call the method
-        consentCoreServiceImpl.deleteConsent(ConsentMgtServiceTestData.CONSENT_ID);
+        consentCoreServiceImpl.deleteConsent(ConsentMgtServiceTestData.CONSENT_ID, ConsentMgtServiceTestData.ORG_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -1242,7 +1244,8 @@ public class ConsentCoreServiceImplTest {
                 .thenThrow(new SQLException("DB connection failed"));
 
         // Call the method
-        consentCoreServiceImpl.deleteConsent(ConsentMgtServiceTestData.CONSENT_ID);
+        consentCoreServiceImpl.deleteConsent(ConsentMgtServiceTestData.CONSENT_ID,
+                ConsentMgtServiceTestData.ORG_ID);
     }
 
     @Test
@@ -1511,7 +1514,7 @@ public class ConsentCoreServiceImplTest {
 
         // Call the method
         boolean result = consentCoreServiceImpl.deleteAuthorizationResource(
-                ConsentMgtServiceTestData.AUTHORIZATION_ID);
+                ConsentMgtServiceTestData.AUTHORIZATION_ID, ConsentMgtServiceTestData.ORG_ID);
 
         // Assert the result
         Assert.assertTrue(result);
@@ -1526,7 +1529,7 @@ public class ConsentCoreServiceImplTest {
 
         // Call the method
         consentCoreServiceImpl.deleteAuthorizationResource(
-                ConsentMgtServiceTestData.AUTHORIZATION_ID);
+                ConsentMgtServiceTestData.AUTHORIZATION_ID, ConsentMgtServiceTestData.ORG_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -1538,7 +1541,7 @@ public class ConsentCoreServiceImplTest {
 
         // Call the method
         consentCoreServiceImpl.deleteAuthorizationResource(
-                ConsentMgtServiceTestData.AUTHORIZATION_ID);
+                ConsentMgtServiceTestData.AUTHORIZATION_ID, ConsentMgtServiceTestData.ORG_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -1565,7 +1568,8 @@ public class ConsentCoreServiceImplTest {
                 .thenThrow(new SQLException("DB connection failed"));
 
         // Call method - should throw ConsentMgtException
-        consentCoreServiceImpl.deleteAuthorizationResource(ConsentMgtServiceTestData.AUTHORIZATION_ID);
+        consentCoreServiceImpl.deleteAuthorizationResource(ConsentMgtServiceTestData.AUTHORIZATION_ID,
+                ConsentMgtServiceTestData.ORG_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)

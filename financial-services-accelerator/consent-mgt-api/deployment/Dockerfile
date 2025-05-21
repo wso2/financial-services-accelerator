@@ -22,17 +22,14 @@ WORKDIR /app
 
 # Copy project files
 COPY . .
-
 COPY deployment/context.xml /app/org.wso2.financial.services.accelerator.consent.mgt.api.endpoint/src/main/webapp/META-INF/context.xml
 
 USER 10014
 FROM tomcat:9.0-jdk11
 
-# RUN cp -r $CATALINA_HOME/webapps.dist/* $CATALINA_HOME/webapps
 COPY --from=builder /app/org.wso2.financial.services.accelerator.consent.mgt.api.endpoint/target/consent.war /usr/local/tomcat/consent.war
 # Copy the startup script
 COPY deployment/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 EXPOSE 8080
-# USER 10014
 ENTRYPOINT ["/entrypoint.sh"]
