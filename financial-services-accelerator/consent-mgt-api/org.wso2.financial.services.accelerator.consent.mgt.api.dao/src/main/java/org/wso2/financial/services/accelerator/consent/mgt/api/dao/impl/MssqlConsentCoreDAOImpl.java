@@ -1,0 +1,363 @@
+/**
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ * <p>
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.financial.services.accelerator.consent.mgt.api.dao.impl;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.constants.ConsentMgtDAOConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.exceptions.ConsentDataRetrievalException;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.AuthorizationResource;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.ConsentMappingResource;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.queries.ConsentMgtMssqlDBQueries;
+import org.wso2.financial.services.accelerator.consent.mgt.api.dao.util.ConsentManagementDAOUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+//TODO : have to change if using MsSQL
+/**
+ * DAO implementation for MSSQL specific methods.
+ */
+public class MssqlConsentCoreDAOImpl extends ConsentCoreDAOImpl {
+
+    private static final Log log = LogFactory.getLog(MssqlConsentCoreDAOImpl.class);
+
+    private static final String GROUP_BY_SEPARATOR = "\\|\\|";
+    static final Map<String, String> COLUMNS_MAP = new HashMap<String, String>() {
+        {
+            put(ConsentMgtDAOConstants.CONSENT_IDS, "OBC.CONSENT_ID");
+            put(ConsentMgtDAOConstants.CLIENT_IDS, "OBC.CLIENT_ID");
+            put(ConsentMgtDAOConstants.CONSENT_TYPES, "OBC.CONSENT_TYPE");
+            put(ConsentMgtDAOConstants.CONSENT_STATUSES, "OBC.CURRENT_STATUS");
+            put(ConsentMgtDAOConstants.USER_IDS, "OCAR.USER_ID");
+        }
+    };
+
+    public MssqlConsentCoreDAOImpl(ConsentMgtMssqlDBQueries sqlStatements) {
+
+        super(sqlStatements);
+    }
+
+    @Override
+    @SuppressFBWarnings("SQL_INJECTION_JDBC")
+    // Suppressed content - connection.prepareStatement(searchConsentsPreparedStatement,
+    //                  ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
+    // Suppression reason - False Positive : Cannot bind variables separately as the query is complex
+    // Suppressed warning count - 1
+    public List<DetailedConsentResource> searchConsents(Connection connection,
+                                                        String orgId, List<String> consentIds,
+                                                        List<String> clientIDs,
+                                                        List<String> consentTypes,
+                                                        List<String> consentStatuses,
+                                                        List<String> userIDs, Long fromTime, Long toTime,
+                                                        Integer limit, Integer offset)
+            throws ConsentDataRetrievalException {
+
+
+        boolean shouldLimit = true;
+        boolean shouldOffset = true;
+        int parameterIndex = 0;
+        Map<String, List<String>> applicableConditionsMap = new HashMap<>();
+
+        validateAndSetSearchConditions(applicableConditionsMap, consentIds, clientIDs, consentTypes, consentStatuses);
+
+        if (limit == null) {
+            shouldLimit = false;
+        }
+        if (offset == null) {
+            shouldOffset = false;
+        }
+
+        // logic to set the prepared statement
+        String constructedConditions = ConsentManagementDAOUtil
+                .constructConsentSearchPreparedStatement(applicableConditionsMap);
+
+        String userIDFilterCondition = "";
+        Map<String, List<String>> userIdMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(userIDs)) {
+            userIdMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.USER_IDS), userIDs);
+            userIDFilterCondition = ConsentManagementDAOUtil.constructUserIdListFilterCondition(userIdMap);
+        }
+        String searchConsentsPreparedStatement =
+                sqlStatements.getSearchConsentsPreparedStatement(constructedConditions, shouldLimit,
+                        shouldOffset, userIDFilterCondition);
+
+        try (PreparedStatement searchConsentsPreparedStmt =
+                     connection.prepareStatement(searchConsentsPreparedStatement, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                             ResultSet.CONCUR_READ_ONLY)) {
+
+            /* Since we don't know the order of the set condition clauses, have to determine the order of them to set
+               the actual values to the  prepared statement */
+            Map<Integer, List<String>> orderedParamsMap = ConsentManagementDAOUtil
+                    .determineOrderOfParamsToSet(constructedConditions, applicableConditionsMap, COLUMNS_MAP);
+
+            log.debug("Setting parameters to prepared statement to search consents");
+
+            //determine order of user Ids to set
+            if (CollectionUtils.isNotEmpty(userIDs)) {
+                Map<Integer, List<String>> orderedUserIdsMap = ConsentManagementDAOUtil
+                        .determineOrderOfParamsToSet(userIDFilterCondition, userIdMap, COLUMNS_MAP);
+                parameterIndex = ConsentManagementDAOUtil.setDynamicConsentSearchParameters(searchConsentsPreparedStmt,
+                        orderedUserIdsMap, ++parameterIndex);
+                parameterIndex = parameterIndex - 1;
+            }
+
+            parameterIndex = ConsentManagementDAOUtil.setDynamicConsentSearchParameters(searchConsentsPreparedStmt,
+                    orderedParamsMap, ++parameterIndex);
+            parameterIndex = parameterIndex - 1;
+
+            if (fromTime != null) {
+                searchConsentsPreparedStmt.setLong(++parameterIndex, fromTime);
+            } else {
+                searchConsentsPreparedStmt.setNull(++parameterIndex, Types.BIGINT);
+            }
+
+            if (toTime != null) {
+                searchConsentsPreparedStmt.setLong(++parameterIndex, toTime);
+            } else {
+                searchConsentsPreparedStmt.setNull(++parameterIndex, Types.BIGINT);
+            }
+
+            if (offset != null && limit != null) {
+                searchConsentsPreparedStmt.setInt(++parameterIndex, offset);
+            }
+            if (limit != null) {
+                searchConsentsPreparedStmt.setInt(++parameterIndex, limit);
+            }
+
+            ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+
+            try (ResultSet resultSet = searchConsentsPreparedStmt.executeQuery()) {
+                if (resultSet.isBeforeFirst()) {
+                    int resultSetSize = ConsentManagementDAOUtil.getResultSetSize(resultSet);
+                    detailedConsentResources = constructDetailedConsentsSearchResult(resultSet, resultSetSize);
+                }
+                return detailedConsentResources;
+            } catch (SQLException e) {
+                log.error("Error occurred while searching detailed consent resources", e);
+                throw new ConsentDataRetrievalException("Error occurred while searching detailed " +
+                        "consent resources", e);
+            }
+        } catch (SQLException e) {
+            log.error(ConsentMgtDAOConstants.CONSENT_SEARCH_ERROR_MSG, e);
+            throw new ConsentDataRetrievalException(ConsentMgtDAOConstants.CONSENT_SEARCH_ERROR_MSG, e);
+        }
+    }
+
+    /**
+     * Constructs a list of `DetailedConsentResource` objects from the given `ResultSet`.
+     * This method processes the result set to extract consent data, consent attributes,
+     * authorization resources, and consent mapping resources, and maps them to
+     * `DetailedConsentResource` objects.
+     *
+     * @param resultSet     The `ResultSet` containing the consent data retrieved from the database.
+     * @param resultSetSize The size of the result set, used for processing.
+     * @return A list of `DetailedConsentResource` objects populated with consent data, attributes,
+     *         authorization resources, and consent mapping resources.
+     * @throws SQLException If an error occurs while accessing the `ResultSet`.
+     */
+    ArrayList<DetailedConsentResource> constructDetailedConsentsSearchResult(ResultSet resultSet, int resultSetSize)
+            throws SQLException {
+
+        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+
+        while (resultSet.next()) {
+
+            Map<String, Object> consentAttributesMap = new HashMap<>();
+            ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+            ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
+            DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+
+            setConsentDataToDetailedConsentInSearchResponse(resultSet, detailedConsentResource);
+
+            // Set consent attributes to map if available
+            if (resultSet.getString(ConsentMgtDAOConstants.ATT_KEY) != null &&
+                    StringUtils.isNotBlank(resultSet.getString(ConsentMgtDAOConstants.ATT_KEY))) {
+                // fetch attribute keys and values from group_concat
+                String[] attKeys = resultSet.getString(ConsentMgtDAOConstants.ATT_KEY).split(GROUP_BY_SEPARATOR);
+                String[] attValues = resultSet.getString(ConsentMgtDAOConstants.ATT_VALUE).split(GROUP_BY_SEPARATOR);
+                // check if all attribute keys has values
+                if (attKeys.length == attValues.length) {
+                    for (int index = 0; index < attKeys.length; index++) {
+                        if (!attKeys[index].isEmpty()) {
+                            consentAttributesMap.put(attKeys[index], attValues[index]);
+                        }
+                    }
+                }
+            }
+            // Set authorization data
+            setAuthorizationDataInResponseForGroupedQuery(authorizationResources, resultSet,
+                    detailedConsentResource.getConsentId());
+            // Set consent account mapping data if available
+
+            detailedConsentResource.setConsentAttributes(consentAttributesMap);
+            detailedConsentResource.setAuthorizationResources(authorizationResources);
+            detailedConsentResources.add(detailedConsentResource);
+
+        }
+        return detailedConsentResources;
+    }
+
+    /**
+     * Sets the consent data to the detailed consent resource in the search response.
+     *
+     * @param resultSet                   The result set containing the consent data.
+     * @param detailedConsentResource     The detailed consent resource to be populated.
+     * @throws SQLException               If an error occurs while accessing the result set.
+     */
+    void setConsentDataToDetailedConsentInSearchResponse(ResultSet resultSet,
+                                                         DetailedConsentResource detailedConsentResource)
+            throws SQLException {
+
+        Optional<String> consentId = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> clientId = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CLIENT_ID)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> receipt = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.RECEIPT)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> createdTime = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CONSENT_CREATED_TIME)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> consentUpdatedTime = Arrays.stream(
+                resultSet.getString(ConsentMgtDAOConstants.CONSENT_UPDATED_TIME)
+                        .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> consentType = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CONSENT_TYPE)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> currentStatus = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CURRENT_STATUS)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> frequency = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.CONSENT_FREQUENCY)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> expiryTime = Arrays.stream(resultSet.getString(ConsentMgtDAOConstants.EXPIRY_TIME)
+                .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+        Optional<String> recurringIndicator = Arrays.stream(
+                resultSet.getString(ConsentMgtDAOConstants.RECURRING_INDICATOR)
+                        .split(GROUP_BY_SEPARATOR)).distinct().findFirst();
+
+        if (consentId.isPresent() && clientId.isPresent()) {
+            detailedConsentResource.setConsentId(consentId.get());
+            detailedConsentResource.setClientId(clientId.get());
+        } else {
+            throw new SQLException("CLIENT_ID and CONSENT_ID could not be null.");
+        }
+        receipt.ifPresent(detailedConsentResource::setReceipt);
+        consentType.ifPresent(detailedConsentResource::setConsentType);
+        currentStatus.ifPresent(detailedConsentResource::setCurrentStatus);
+        createdTime.ifPresent(e -> detailedConsentResource.setCreatedTime(Long.parseLong(e)));
+        consentUpdatedTime.ifPresent(e -> detailedConsentResource.setUpdatedTime(Long.parseLong(e)));
+        expiryTime.ifPresent(e -> detailedConsentResource.setExpiryTime(Long.parseLong(e)));
+        recurringIndicator.ifPresent(e -> detailedConsentResource.setRecurringIndicator(Integer.parseInt(e) != 0));
+    }
+
+    /**
+     * Sets the authorization data in the response for grouped query.
+     *
+     * @param authorizationResources The list of authorization resources to be populated.
+     * @param resultSet              The result set containing the authorization data.
+     * @param consentId              The consent ID associated with the authorization data.
+     * @throws SQLException If an error occurs while accessing the result set.
+     */
+    protected void setAuthorizationDataInResponseForGroupedQuery(ArrayList<AuthorizationResource>
+                                                                         authorizationResources,
+                                                                 ResultSet resultSet, String consentId)
+            throws SQLException {
+
+        //identify duplicate auth data
+        Set<String> authIdSet = new HashSet<>();
+
+        // fetch values from group_concat
+        String[] authIds = resultSet.getString(ConsentMgtDAOConstants.AUTH_ID) != null ?
+                resultSet.getString(ConsentMgtDAOConstants.AUTH_ID).split(GROUP_BY_SEPARATOR) : null;
+        String[] authTypes = resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE) != null ?
+                resultSet.getString(ConsentMgtDAOConstants.AUTH_TYPE).split(GROUP_BY_SEPARATOR) : null;
+        String[] authStatues = resultSet.getString(ConsentMgtDAOConstants.AUTH_STATUS) != null ?
+                resultSet.getString(ConsentMgtDAOConstants.AUTH_STATUS).split(GROUP_BY_SEPARATOR) : null;
+        String[] updatedTimes = resultSet.getString(ConsentMgtDAOConstants.UPDATED_TIME) != null ?
+                resultSet.getString(ConsentMgtDAOConstants.UPDATED_TIME).split(GROUP_BY_SEPARATOR) : null;
+        String[] userIds = resultSet.getString(ConsentMgtDAOConstants.USER_ID) != null ?
+                resultSet.getString(ConsentMgtDAOConstants.USER_ID).split(GROUP_BY_SEPARATOR) : null;
+
+        for (int index = 0; index < (authIds != null ? authIds.length : 0); index++) {
+            if (!authIdSet.contains(authIds[index])) {
+                AuthorizationResource authorizationResource = new AuthorizationResource();
+                authIdSet.add(authIds[index]);
+                authorizationResource.setAuthorizationId(authIds[index]);
+                authorizationResource.setConsentId(consentId);
+                if (authTypes != null && authTypes.length > index) {
+                    authorizationResource.setAuthorizationType(authTypes[index]);
+                }
+                if (authStatues != null && authStatues.length > index) {
+                    authorizationResource.setAuthorizationStatus(authStatues[index]);
+                }
+                if (updatedTimes != null && updatedTimes.length > index) {
+                    authorizationResource.setUpdatedTime(Long.parseLong(updatedTimes[index]));
+                }
+                if (userIds != null && userIds.length > index) {
+                    authorizationResource.setUserId(userIds[index]);
+                }
+                authorizationResources.add(authorizationResource);
+            }
+        }
+
+    }
+    /**
+     * Validates and sets the search conditions for consent management queries.
+     * This method checks if the provided lists of search parameters are not empty
+     * and maps them to their corresponding database column names in the
+     * `applicableConditionsMap`.
+     *
+     * @param applicableConditionsMap A map to store the applicable search conditions.
+     * @param consentIds             A list of consent IDs to filter the search.
+     * @param clientIDs              A list of client IDs to filter the search.
+     * @param consentTypes           A list of consent types to filter the search.
+     * @param consentStatuses        A list of consent statuses to filter the search.
+     */
+    void validateAndSetSearchConditions(Map<String, List<String>> applicableConditionsMap,
+                                        List<String> consentIds, List<String> clientIDs,
+                                        List<String> consentTypes, List<String> consentStatuses) {
+
+        log.debug("Validate applicable search conditions");
+
+        if (CollectionUtils.isNotEmpty(consentIds)) {
+            applicableConditionsMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.CONSENT_IDS), consentIds);
+        }
+        if (CollectionUtils.isNotEmpty(clientIDs)) {
+            applicableConditionsMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.CLIENT_IDS), clientIDs);
+        }
+        if (CollectionUtils.isNotEmpty(consentTypes)) {
+            applicableConditionsMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.CONSENT_TYPES), consentTypes);
+        }
+        if (CollectionUtils.isNotEmpty(consentStatuses)) {
+            applicableConditionsMap.put(COLUMNS_MAP.get(ConsentMgtDAOConstants.CONSENT_STATUSES), consentStatuses);
+        }
+    }
+}
