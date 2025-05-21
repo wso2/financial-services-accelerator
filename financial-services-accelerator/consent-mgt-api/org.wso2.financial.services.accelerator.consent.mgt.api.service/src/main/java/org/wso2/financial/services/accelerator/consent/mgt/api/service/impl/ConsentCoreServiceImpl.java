@@ -60,8 +60,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     private static volatile ConsentCoreServiceImpl instance;
     private final ConsentCoreDAO consentCoreDAO;
 
-    public static ConsentCoreServiceImpl getInstance() throws
-            ConsentMgtException {
+    public static ConsentCoreServiceImpl getInstance() throws ConsentMgtException {
         if (instance == null) {
             synchronized (ConsentCoreServiceImpl.class) {
                 if (instance == null) {
