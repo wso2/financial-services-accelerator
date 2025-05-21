@@ -171,9 +171,11 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 log.debug(String.format("Updating the expiry time of the consent for ID: %s",
                         consentId.replaceAll("[\r\n]", "")));
             }
-
             consentCoreDAO.updateConsentExpiryTime(connection, consentId, consentExpiryTime);
 
+            // Commit transaction
+            DatabaseUtils.commitTransaction(connection);
+            log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
         } catch (ConsentDataUpdationException e) {
             log.error(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
             throw new ConsentMgtException(e.getConsentError());
