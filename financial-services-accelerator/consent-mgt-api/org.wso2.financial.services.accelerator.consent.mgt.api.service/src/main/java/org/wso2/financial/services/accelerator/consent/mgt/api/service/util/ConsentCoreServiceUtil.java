@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.api.service.util;
 
-import com.google.gson.Gson;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -28,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.ConsentCoreDAO;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.constants.ConsentError;
-import org.wso2.financial.services.accelerator.consent.mgt.api.dao.exceptions.ConsentDataDeletionException;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.exceptions.ConsentDataInsertionException;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.exceptions.ConsentDataRetrievalException;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.exceptions.ConsentMgtException;
@@ -47,10 +45,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 /**
  * Consent Core Service Util.
  */
@@ -229,36 +227,6 @@ public class ConsentCoreServiceUtil {
     }
 
     /**
-     * Method to update the consent attributes.
-     *
-     * @param connection        Database connection
-     * @param consentCoreDAO    Consent core DAO
-     * @param consentId         Consent ID
-     * @param consentAttributes Consent attributes
-     * @throws ConsentDataInsertionException If an error occurs when inserting data
-     * @throws ConsentDataDeletionException  If an error occurs when deleting data
-     */
-    public static void updateConsentAttributes(Connection connection, ConsentCoreDAO consentCoreDAO,
-                                               String consentId, Map<String, Object> consentAttributes)
-            throws ConsentDataInsertionException, ConsentDataDeletionException {
-
-        // delete existing consent attributes
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Deleting attributes for the consent ID: %s",
-                    consentId.replaceAll("[\r\n]", "")));
-        }
-        consentCoreDAO.deleteConsentAttributes(connection, consentId, new ArrayList<>(consentAttributes.keySet()));
-
-        // store new set of consent attributes
-        ConsentAttributes consentAttributesObject = new ConsentAttributes(consentId, consentAttributes);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Storing consent attributes for the consent of ID: %s",
-                    consentId.replaceAll("[\r\n]", "")));
-        }
-        consentCoreDAO.storeConsentAttributes(connection, consentAttributesObject);
-    }
-
-    /**
      * Method to get the changed values from consent amendment compared to the original consent.
      *
      * @param newConsentResource New Consent Resource after the amendment
@@ -434,99 +402,6 @@ public class ConsentCoreServiceUtil {
         return recordIdsList;
     }
 
-    /**
-     * Method to process the consent amendment history data.
-     *
-     * @param consentAmendmentHistoryRetrievalResult Consent amendment history retrieval result
-     * @param currentConsentResource                 Current consent resource
-     * @return Consent amendment history data map
-     * @throws ConsentMgtException Consent management exception
-     */
-    public static Map<String, ConsentHistoryResource> processConsentAmendmentHistoryData(
-            Map<String, ConsentHistoryResource> consentAmendmentHistoryRetrievalResult,
-            DetailedConsentResource currentConsentResource) throws
-            ConsentMgtException {
-
-        Gson gson = new Gson();
-        Map<String, ConsentHistoryResource> consentAmendmentHistoryDataMap = new LinkedHashMap<>();
-
-        for (Map.Entry<String, ConsentHistoryResource> consentHistoryDataEntry :
-                consentAmendmentHistoryRetrievalResult.entrySet()) {
-            String historyId = consentHistoryDataEntry.getKey();
-            ConsentHistoryResource consentHistoryResource = consentHistoryDataEntry.getValue();
-            consentHistoryResource.setDetailedConsentResource(currentConsentResource.clone());
-
-            for (Map.Entry<String, Object> consentHistoryDataTypeEntry :
-                    consentHistoryResource.getChangedAttributesJsonDataMap().entrySet()) {
-
-                String consentDataType = consentHistoryDataTypeEntry.getKey();
-                Object changedAttributes = consentHistoryDataTypeEntry.getValue();
-
-                if (ConsentCoreServiceConstants.TYPE_CONSENT_BASIC_DATA.equals(consentDataType)) {
-                    JSONObject changedValuesJSON = parseChangedAttributeJsonString(changedAttributes.toString());
-                    if (changedValuesJSON.containsKey(ConsentCoreServiceConstants.RECEIPT)) {
-                        currentConsentResource.setReceipt(
-                                (String) changedValuesJSON.get(ConsentCoreServiceConstants.RECEIPT));
-                    }
-                    if (changedValuesJSON.containsKey(ConsentCoreServiceConstants.EXPIRY_TIME)) {
-                        currentConsentResource.setExpiryTime(Long.parseLong((String)
-                                changedValuesJSON.get(ConsentCoreServiceConstants.EXPIRY_TIME)));
-                    }
-                    if (changedValuesJSON.containsKey(ConsentCoreServiceConstants.UPDATED_TIME)) {
-                        currentConsentResource.setUpdatedTime(Long.parseLong((String)
-                                changedValuesJSON.get(ConsentCoreServiceConstants.UPDATED_TIME)));
-                    }
-                    if (changedValuesJSON.containsKey(ConsentCoreServiceConstants.CURRENT_STATUS)) {
-                        currentConsentResource.setCurrentStatus((String)
-                                changedValuesJSON.get(ConsentCoreServiceConstants.CURRENT_STATUS));
-                    }
-
-                } else if (ConsentCoreServiceConstants.TYPE_CONSENT_ATTRIBUTES_DATA.equals(consentDataType)) {
-                    JSONObject changedValuesJSON = parseChangedAttributeJsonString(changedAttributes.toString());
-                    for (Map.Entry<String, Object> attribute : changedValuesJSON.entrySet()) {
-                        Object attributeValue = attribute.getValue();
-                        if (attributeValue == null) {
-                            //Ignore the consent attribute from the consent history if it's value is stored as null
-                            currentConsentResource.getConsentAttributes().remove(attribute.getKey());
-                        } else {
-                            Map<String, Object> consentAttributes = currentConsentResource.getConsentAttributes();
-                            consentAttributes.put(attribute.getKey(),
-                                    attributeValue.toString());
-                            currentConsentResource.setConsentAttributes(consentAttributes);
-
-                        }
-                    }
-
-                } else if (ConsentCoreServiceConstants.TYPE_CONSENT_MAPPING_DATA.equals(consentDataType)) {
-                    Map<String, Object> changedConsentMappingsDataMap = (Map<String, Object>) changedAttributes;
-
-                    ArrayList<ConsentMappingResource> consentMappingsHistory = new ArrayList<>();
-
-                } else if (ConsentCoreServiceConstants.TYPE_CONSENT_AUTH_RESOURCE_DATA.equals(consentDataType)) {
-                    Map<String, Object> changedConsentAuthResourceDataMap = (Map<String, Object>) changedAttributes;
-                    List<AuthorizationResource> consentAuthResources = currentConsentResource
-                            .getAuthorizationResources();
-                    ArrayList<AuthorizationResource> consentAuthResourceHistory = new ArrayList<>();
-                    for (AuthorizationResource authResource : consentAuthResources) {
-                        String authID = authResource.getAuthorizationId();
-                        if (changedConsentAuthResourceDataMap.containsKey(authID)) {
-                            JSONObject changedValuesJSON = parseChangedAttributeJsonString(
-                                    changedConsentAuthResourceDataMap.get(authID).toString());
-                            if (changedValuesJSON.isEmpty()) {
-                                //Skip setting the auth resource to consent history if the value is null
-                                continue;
-                            }
-                        }
-                        consentAuthResourceHistory.add(gson.fromJson(gson.toJson(authResource),
-                                AuthorizationResource.class));
-                    }
-                    currentConsentResource.setAuthorizationResources(consentAuthResourceHistory);
-                }
-            }
-            consentAmendmentHistoryDataMap.put(historyId, consentHistoryResource);
-        }
-        return consentAmendmentHistoryDataMap;
-    }
 
     /**
      * Method to parse the changed attribute JSON string to a JSON Object.

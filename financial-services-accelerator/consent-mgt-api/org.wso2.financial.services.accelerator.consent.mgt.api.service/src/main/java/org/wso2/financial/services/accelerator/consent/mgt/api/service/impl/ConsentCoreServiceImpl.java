@@ -83,7 +83,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             return ConsentCoreServiceUtil
                     .createConsentWithAuditRecord(consentCoreDAO, detailedConsentResource);
         } catch (ConsentDataInsertionException e) {
-            log.error(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG);
+            log.error(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG, e);
             throw new ConsentMgtException(e.getConsentError());
         }
 
@@ -159,9 +159,10 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             DetailedConsentResource consentResource = consentCoreDAO.getDetailedConsentResource(connection, consentId,
                     orgId);
-
-            if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(consentResource.getCurrentStatus())) {
-                throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
+            if (consentResource != null) {
+                if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(consentResource.getCurrentStatus())) {
+                    throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
+                }
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Updating the expiry time of the consent for ID: %s",
@@ -295,7 +296,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 //TODO : handle history
                 log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
             } catch (ConsentDataRetrievalException e) {
-                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
+                log.error(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]",
+                        ""), e);
                 throw new ConsentMgtException(ConsentError.DETAILED_CONSENT_RETRIEVAL_ERROR);
             } catch (ConsentDataUpdationException e) {
                 log.error(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
@@ -347,9 +349,11 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 DetailedConsentResource retrievedDetailedConsentResource = consentCoreDAO
                         .getDetailedConsentResource(connection, consentId, orgId);
 
-                String previousConsentStatus = retrievedDetailedConsentResource.getCurrentStatus();
-                if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(previousConsentStatus)) {
-                    throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
+                if (retrievedDetailedConsentResource != null) {
+                    String previousConsentStatus = retrievedDetailedConsentResource.getCurrentStatus();
+                    if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(previousConsentStatus)) {
+                        throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
+                    }
                 }
 
                 // Update consent status as revoked
@@ -384,9 +388,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public List<AuthorizationResource> createConsentAuthorizations(String consentId,
-                                                                   List<AuthorizationResource>
-                                                                           authorizationResources)
+    public List<AuthorizationResource> createConsentAuthorizations(List<AuthorizationResource> authorizationResources,
+                                                                   String consentId)
             throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
@@ -397,11 +400,13 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                             consentId.replaceAll("[\r\n]", "")));
                 }
 
-                // check wheather the consent is already revoked
+                // check whether the consent is already revoked
                 DetailedConsentResource consentResource = consentCoreDAO
                         .getDetailedConsentResource(connection, consentId);
-                if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(consentResource.getCurrentStatus())) {
-                    throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
+                if (consentResource != null) {
+                    if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(consentResource.getCurrentStatus())) {
+                        throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
+                    }
                 }
                 List<AuthorizationResource> storedAuthorizationResource =
                         consentCoreDAO.storeBulkAuthorizationResources(connection, consentId, authorizationResources);
@@ -449,7 +454,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             }
         } catch (SQLException e) {
-            log.error(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]", ""), e);
+            log.error(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR.getMessage().replaceAll("[\r\n]",
+                    ""), e);
             throw new ConsentMgtException(ConsentError.AUTHORIZATION_RESOURCE_RETRIEVAL_ERROR);
         }
     }

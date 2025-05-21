@@ -570,9 +570,9 @@ public class ConsentCoreServiceImplTest {
 
         //Create a consent authorization resource
         consentCoreServiceImpl.createConsentAuthorizations(
-                ConsentMgtServiceTestData.CONSENT_ID, ConsentMgtServiceTestData.
+                 ConsentMgtServiceTestData.
                         getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID,
-                                null));
+                                null), ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -585,9 +585,9 @@ public class ConsentCoreServiceImplTest {
 
         // Get consent
         consentCoreServiceImpl.createConsentAuthorizations(
-                ConsentMgtServiceTestData.CONSENT_ID, ConsentMgtServiceTestData.
+                ConsentMgtServiceTestData.
                         getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID,
-                                null));
+                                null), ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -602,9 +602,9 @@ public class ConsentCoreServiceImplTest {
         // Get consent
         // Get consent
         consentCoreServiceImpl.createConsentAuthorizations(
-                ConsentMgtServiceTestData.CONSENT_ID, ConsentMgtServiceTestData.
+                 ConsentMgtServiceTestData.
                         getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID,
-                                null));
+                                null), ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -624,9 +624,9 @@ public class ConsentCoreServiceImplTest {
                 when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
         // Get consent
         consentCoreServiceImpl.createConsentAuthorizations(
-                ConsentMgtServiceTestData.CONSENT_ID, ConsentMgtServiceTestData.
+                 ConsentMgtServiceTestData.
                         getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID,
-                                null));
+                                null), ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test(expectedExceptions = ConsentMgtException.class)
@@ -640,9 +640,9 @@ public class ConsentCoreServiceImplTest {
         // Get consent
         // Get consent
         consentCoreServiceImpl.createConsentAuthorizations(
-                ConsentMgtServiceTestData.CONSENT_ID, ConsentMgtServiceTestData.
+                 ConsentMgtServiceTestData.
                         getSampleTestAuthorizationResourcesList(ConsentMgtServiceTestData.CONSENT_ID,
-                                null));
+                                null), ConsentMgtServiceTestData.CONSENT_ID);
     }
 
     @Test
