@@ -37,8 +37,7 @@ public class ConsentAPIImpl {
 
     private static volatile ConsentAPIImpl instance;
 
-    public static ConsentAPIImpl getInstance() throws
-            ConsentMgtException {
+    public static ConsentAPIImpl getInstance() throws ConsentMgtException {
         if (instance == null) {
             synchronized (ConsentCoreServiceImpl.class) {
                 if (instance == null) {
@@ -49,8 +48,7 @@ public class ConsentAPIImpl {
         return instance;
     }
 
-    private ConsentAPIImpl() throws
-            ConsentMgtException {
+    private ConsentAPIImpl() throws ConsentMgtException {
         this.consentCoreService = ConsentCoreServiceImpl.getInstance();
     }
 
@@ -488,7 +486,7 @@ public class ConsentAPIImpl {
             ///  check if the consent exists, else throws exception
             consentCoreService.getDetailedConsent(consentId, orgId);
 
-            boolean result = consentCoreService.deleteAuthorizationResource(authorizationId);
+            boolean result = consentCoreService.deleteAuthorizationResource(authorizationId, orgId);
             if (result) {
                 return Response.ok().entity("Authorization Resource Deleted").build();
             } else {

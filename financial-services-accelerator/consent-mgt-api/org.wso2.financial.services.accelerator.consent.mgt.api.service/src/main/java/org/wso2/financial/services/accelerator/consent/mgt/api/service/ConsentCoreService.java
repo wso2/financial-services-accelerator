@@ -102,7 +102,7 @@ public interface ConsentCoreService {
      * @return true if the deletion is successful
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    boolean deleteAuthorizationResource(String authorizationId)
+    boolean deleteAuthorizationResource(String authorizationId, String orgId)
             throws ConsentMgtException;
 
     /**

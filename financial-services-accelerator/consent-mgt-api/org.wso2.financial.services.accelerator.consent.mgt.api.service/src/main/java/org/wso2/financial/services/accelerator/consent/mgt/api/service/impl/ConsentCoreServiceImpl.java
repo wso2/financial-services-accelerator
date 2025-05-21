@@ -72,8 +72,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         return instance;
     }
 
-    private ConsentCoreServiceImpl() throws
-            ConsentMgtException {
+    private ConsentCoreServiceImpl() throws ConsentMgtException {
         this.consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
     }
 
@@ -282,9 +281,11 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                         consentTypes, applicableExistingStatus, null, null,
                         null, null, null);
 
-                if (detailedConsentResources.isEmpty()) {
-                    log.error(ConsentError.CONSENT_NOT_FOUND.getMessage().replaceAll("[\r\n]", ""));
-                    throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
+                if (detailedConsentResources != null) {
+                    if (detailedConsentResources.isEmpty()) {
+                        log.error(ConsentError.CONSENT_NOT_FOUND.getMessage().replaceAll("[\r\n]", ""));
+                        throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
+                    }
                 }
                 // extract list of consentIds
                 List<String> consentIds = detailedConsentResources.stream().
@@ -489,19 +490,20 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public boolean deleteAuthorizationResource(String authorizationId) throws
+    public boolean deleteAuthorizationResource(String authorizationId, String orgId) throws
             ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             try {
+
+                // check if the authorization resource exists and validate the orgId
+                consentCoreDAO.getAuthorizationResource(connection, authorizationId, orgId);
+
                 // Delete authorization resource
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Deleting the authorization resource for ID: %s",
                             authorizationId.replaceAll("[\r\n]", "")));
                 }
-                // check if the authorization resource is already deleted
-                consentCoreDAO.getAuthorizationResource(connection, authorizationId, null);
-
                 consentCoreDAO.deleteAuthorizationResource(connection, authorizationId);
 
                 // Commit transaction
@@ -600,8 +602,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
     //TODO : not yet implemented and tested
     @Override
-    public ConsentAttributes getConsentAttributes(String consentId, String orgId) throws
-            ConsentMgtException {
+    public ConsentAttributes getConsentAttributes(String consentId, String orgId) throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             try {

@@ -807,7 +807,7 @@ public class ConsentAPIImplTests {
         when(mockedConsentCoreServiceImpl.getDetailedConsent(consentId, orgId)).
                 thenReturn(mock(DetailedConsentResource.class));
 
-        when(mockedConsentCoreServiceImpl.deleteAuthorizationResource(authorizationId)).thenReturn(true);
+        when(mockedConsentCoreServiceImpl.deleteAuthorizationResource(authorizationId, orgId)).thenReturn(true);
 
         Response response = consentAPIImpl.consentAuthorizationIdDelete(authorizationId, consentId, orgId);
 
