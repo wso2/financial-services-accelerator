@@ -72,8 +72,7 @@ public class ConsentAPIImpl {
      * @return Response                        A JAX-RS Response containing the created consent resource
      * or an error message if the operation fails.
      **/
-    public Response consentPost(
-            ConsentResourceRequestBody createConsentResourceRequestBody, String orgId) {
+    public Response consentPost(ConsentResourceRequestBody createConsentResourceRequestBody, String orgId) {
 
         try {
            DetailedConsentResource detailedConsentResource = DetailedConsentResourceMapper.INSTANCE.
@@ -98,8 +97,7 @@ public class ConsentAPIImpl {
      * @param orgId     Object containing tenant or organization-related context information.
      * @return A JAX-RS Response containing the consent resource details, or an error message if the retrieval fails.
      */
-    public Response consentConsentIdGet(
-            String consentId, String orgId) {
+    public Response consentConsentIdGet(String consentId, String orgId) {
 
         try {
             DetailedConsentResource detailedConsentResource =
@@ -128,10 +126,8 @@ public class ConsentAPIImpl {
      * @param offsetValue   Number of results to skip before starting to collect the result set (for pagination).
      * @return Response      A JAX-RS Response object containing the filtered list of consents or an error message.
      */
-    public Response consentGet(
-            String orgId,
-            String consentType, String consentStatus
-            , String clientId, String userId, long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
+    public Response consentGet(String orgId, String consentType, String consentStatus, String clientId, String userId,
+                               long fromTimeValue, long toTimeValue, int limitValue, int offsetValue) {
         try {
             ArrayList<String> consentIds = new ArrayList<>();
             ArrayList<String> clientIDs = new ArrayList<>();
@@ -194,9 +190,8 @@ public class ConsentAPIImpl {
      * @param consentStatusUpdateResource Object containing the new status and any associated update information.
      * @return Response A JAX-RS Response indicating the result of the update operation—success or failure with details.
      */
-    public Response consentConsentIdStatusPut(
-            String consentId, ConsentStatusUpdateRequestBody consentStatusUpdateResource
-            , String orgId) {
+    public Response consentConsentIdStatusPut(String consentId, ConsentStatusUpdateRequestBody
+            consentStatusUpdateResource, String orgId) {
         try {
             consentCoreService.updateConsentStatus(consentId,
                     consentStatusUpdateResource.getStatus(),
@@ -316,8 +311,8 @@ public class ConsentAPIImpl {
      * @return Response A JAX-RS Response indicating the result of the deletion operation—success or failure with
      * details.
      */
-    public Response consentRevokeConsentIdPost(String consentId,
-                                               ConsentRevokeRequestBody consentStatusUpdateResource, String orgId) {
+    public Response consentRevokeConsentIdPost(String consentId, ConsentRevokeRequestBody consentStatusUpdateResource,
+                                               String orgId) {
         try {
             boolean result = consentCoreService.revokeConsent(consentId,
                     orgId,
@@ -402,10 +397,8 @@ public class ConsentAPIImpl {
      * @return Response                  A JAX-RS Response indicating the result of the creation operation—success or
      * failure with details.
      */
-    public Response consentAuthorizationIdPost(String consentId,
-                                               List<AuthorizationResourceRequestBody>
-                                                       authorizationResourceDTOList,
-                                               String orgId) {
+    public Response consentAuthorizationIdPost(String consentId, List<AuthorizationResourceRequestBody>
+                                                       authorizationResourceDTOList, String orgId) {
         try {
             ///  check if the consent exists, else throws exception
             consentCoreService.getDetailedConsent(consentId, orgId);

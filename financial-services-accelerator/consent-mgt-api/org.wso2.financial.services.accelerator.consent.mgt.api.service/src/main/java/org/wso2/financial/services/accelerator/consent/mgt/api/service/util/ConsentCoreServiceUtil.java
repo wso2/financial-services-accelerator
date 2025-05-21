@@ -70,10 +70,8 @@ public class ConsentCoreServiceUtil {
      * @throws ConsentDataInsertionException Consent data insertion exception
      * @throws ConsentMgtException           Consent management exception
      */
-    public static DetailedConsentResource createConsentWithAuditRecord(
-
-            ConsentCoreDAO consentCoreDAO,
-            DetailedConsentResource detailedConsentResource)
+    public static DetailedConsentResource createConsentWithAuditRecord(ConsentCoreDAO consentCoreDAO,
+                                                                       DetailedConsentResource detailedConsentResource)
             throws ConsentDataInsertionException, ConsentMgtException {
 
         boolean isConsentAttributesStored = false;
@@ -215,8 +213,7 @@ public class ConsentCoreServiceUtil {
                                                              String consentId,
                                                              String userId, String newConsentStatus,
                                                              String previousConsentStatus,
-                                                             String reason) throws
-            ConsentDataInsertionException {
+                                                             String reason) throws ConsentDataInsertionException {
 
         // Create an audit record
         String actionBy = StringUtils.isNotEmpty(userId) ? userId : null;
