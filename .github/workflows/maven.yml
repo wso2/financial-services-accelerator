@@ -28,6 +28,7 @@ jobs:
     env:
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
       WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      WSO2_U2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_U2_PASSWORD }}
       WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
       STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       TEST_HOME: /home/runner/work/financial-services/financial-services
@@ -85,6 +86,7 @@ jobs:
       - name: Running the integration test suite
         run: |
           echo "Starting tests..."
+          echo "Using bot password: $WSO2_U2_PASSWORD"
           export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
           RUNNER_HOME=`pwd`
           chmod +x $RUNNER_HOME/test-automation/test.sh
