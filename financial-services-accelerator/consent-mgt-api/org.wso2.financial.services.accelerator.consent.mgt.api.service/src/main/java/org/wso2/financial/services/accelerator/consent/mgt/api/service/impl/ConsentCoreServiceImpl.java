@@ -312,7 +312,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public boolean deleteConsent(String consentId) throws
+    public boolean deleteConsent(String consentId, String orgId) throws
             ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {
@@ -321,7 +321,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 log.debug(String.format("Deleting the consent for ID: %s",
                         consentId.replaceAll("[\r\n]", "")));
             }
-            consentCoreDAO.deleteConsent(connection, consentId);
+            consentCoreDAO.deleteConsent(connection, consentId, orgId);
 
             // Commit transaction
             DatabaseUtils.commitTransaction(connection);

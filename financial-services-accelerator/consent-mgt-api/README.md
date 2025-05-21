@@ -46,7 +46,6 @@ cp deployment/context.xml.example deployment/context.xml
 | `<USER_NAME>`     | Your MySQL database username       | `wso2_user`             |
 | `<PASSWORD>`      | Your MySQL database password       | `your_secure_password` |
 | `<DATABASE_CONNECTION_URI>`   | Your MySQL database connection uri | `jdbc:mysql://localhost:3306/fs_consentdb_test?useSSL=false`   |
-| `<DATABASE_NAME>` | Name of your MySQL database        | `wso2_consent_db`       |
 
 ### 3. Build the Project
 

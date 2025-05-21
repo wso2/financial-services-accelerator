@@ -156,8 +156,6 @@ public class ConsentMgtServiceTestData {
     public static ConsentResource getSampleStoredTestConsentResourceWithAttributes() {
 
         ConsentResource consentResource = getSampleStoredConsentResource();
-        consentResource.setConsentAttributes(ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_MAP);
-
         return consentResource;
     }
 

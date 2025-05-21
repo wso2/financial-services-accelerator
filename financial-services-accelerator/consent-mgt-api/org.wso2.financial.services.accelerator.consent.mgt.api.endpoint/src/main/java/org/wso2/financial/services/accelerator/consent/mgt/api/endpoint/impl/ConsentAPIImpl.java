@@ -292,7 +292,7 @@ public class ConsentAPIImpl {
             // check if the consent exists, else throws exception
             consentCoreService.getDetailedConsent(consentId, orgId);
 
-            boolean result = consentCoreService.deleteConsent(consentId);
+            boolean result = consentCoreService.deleteConsent(consentId, orgId);
             if (result) {
                 JSONObject message = new JSONObject();
                 message.put("message", "Consent purged");

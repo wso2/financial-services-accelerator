@@ -42,7 +42,7 @@ public class ConsentStoreInitializer {
     private static final String MS_SQL = "MSSQL";
     private static final String POSTGRE = "PostgreSQL";
     private static final String ORACLE = "Oracle";
-    private static volatile ConsentCoreDAO consentCoreDAO = null;
+    private static volatile ConsentCoreDAO instance = null;
 
     // hiding the constructor to prevent instantiation
     private ConsentStoreInitializer() {
@@ -57,10 +57,14 @@ public class ConsentStoreInitializer {
     public static synchronized ConsentCoreDAO getInitializedConsentCoreDAOImpl() throws
             ConsentMgtException {
 
-        if (consentCoreDAO == null) {
-            consentCoreDAO = getDaoInstance();
+        if (instance == null) {
+            synchronized (JDBCPersistenceManager.class) {
+                if (instance == null) {
+                    instance = getDaoInstance();
+                }
+            }
         }
-        return consentCoreDAO;
+        return instance;
     }
 
     private static ConsentCoreDAO getDaoInstance()

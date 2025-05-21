@@ -46,7 +46,6 @@ public final class JDBCPersistenceManager {
 
     private JDBCPersistenceManager() throws
             ConsentMgtException {
-
         initDataSource();
     }
 

@@ -79,6 +79,8 @@ public interface ConsentCoreDAO {
     DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgId)
             throws ConsentDataRetrievalException;
 
+    //TODO : have to remove after implementing the new consent history feature. ( used in
+    // previous history storing implementation
     /**
      * This method is used to retrieve a detailed consent resource for the provided consent ID (includes
      * authorization resources, account mapping resources and consent attributes).
@@ -380,6 +382,6 @@ public interface ConsentCoreDAO {
      * @param connection connection object
      * @param consentId consent ID
      */
-    void deleteConsent(Connection connection, String consentId)
+    void deleteConsent(Connection connection, String consentId, String orgId)
             throws ConsentDataDeletionException;
 }

@@ -143,7 +143,7 @@ public interface ConsentCoreService {
      * @return true if the consent is successfully deleted, false otherwise
      * @throws ConsentMgtException if an error occurs during the deletion process
      */
-    boolean deleteConsent(String consentId)
+    boolean deleteConsent(String consentId, String orgId)
             throws ConsentMgtException;
 
     /**
