@@ -58,7 +58,7 @@ public class ConsentStoreInitializer {
             ConsentMgtException {
 
         if (instance == null) {
-            synchronized (JDBCPersistenceManager.class) {
+            synchronized (ConsentCoreDAO.class) {
                 if (instance == null) {
                     instance = getDaoInstance();
                 }
