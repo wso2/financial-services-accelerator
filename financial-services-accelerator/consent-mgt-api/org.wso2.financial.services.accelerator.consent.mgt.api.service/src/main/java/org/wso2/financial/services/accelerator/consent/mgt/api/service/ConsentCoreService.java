@@ -174,6 +174,7 @@ public interface ConsentCoreService {
      * This method is used to get consent attributes for a provided attribute keys list related to a particular consent.
      *
      * @param consentId            consent ID
+     * @param orgId             tenant related information
      * @param consentAttributeKeys consent attribute keys list
      * @return a consent attributes resource
      * @throws ConsentMgtException thrown if an error occurs in the process
@@ -185,11 +186,11 @@ public interface ConsentCoreService {
      * This method is used to get consent attributes related to a particular consent.
      *
      * @param consentId consent ID
+     * @param orgId   tenant related information
      * @return a consent attributes resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    ConsentAttributes getConsentAttributes(String consentId, String orgId) throws
-            ConsentMgtException;
+    ConsentAttributes getConsentAttributes(String consentId, String orgId) throws ConsentMgtException;
 
     /**
      * This method is used to delete the provided consent attributes for a particular consent.
