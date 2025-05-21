@@ -59,8 +59,7 @@ public interface ConsentCoreService {
      * @return a detailed consent resource
      * @throws ConsentMgtException thrown if any error occur in the process
      */
-    DetailedConsentResource getDetailedConsent(String consentId, String orgId) throws
-            ConsentMgtException;
+    DetailedConsentResource getDetailedConsent(String consentId, String orgId) throws ConsentMgtException;
 
     /**
      * This method is used to create an authorization for a consent.
@@ -69,10 +68,8 @@ public interface ConsentCoreService {
      * @return returns AuthorizationResource
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    List<AuthorizationResource> createConsentAuthorizations(String consentId,
-                                                              List<AuthorizationResource> authorizationResource
-                                                               )
-            throws ConsentMgtException;
+    List<AuthorizationResource> createConsentAuthorizations(String consentId, List<AuthorizationResource>
+            authorizationResource) throws ConsentMgtException;
 
     /**
      * This method is to retrieve an authorization resource using a given authorization ID.
@@ -81,8 +78,8 @@ public interface ConsentCoreService {
      * @return an authorization resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    AuthorizationResource getAuthorizationResource(String authorizationId, String orgId) throws
-            ConsentMgtException;
+    AuthorizationResource getAuthorizationResource(String authorizationId, String orgId)
+            throws ConsentMgtException;
 
     /***
      * this method is used to update the whole authorization resource
@@ -90,10 +87,8 @@ public interface ConsentCoreService {
      * @param authorizationResource authorization resource
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    void updateAuthorizationResource(String authorizationId,
-                                     AuthorizationResource authorizationResource,
-                                     String orgId)
-            throws ConsentMgtException;
+    void updateAuthorizationResource(String authorizationId, AuthorizationResource authorizationResource,
+                                     String orgId) throws ConsentMgtException;
 
     /**
      * This metho is used to delete an authorization resource using the given authorization ID.
@@ -114,9 +109,7 @@ public interface ConsentCoreService {
      * @param reason           reason
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    void updateConsentStatus(String consentId,
-                             String newConsentStatus, String userId,
-                             String reason, String orgId)
+    void updateConsentStatus(String consentId, String newConsentStatus, String userId, String reason, String orgId)
             throws ConsentMgtException;
 
     /**
@@ -143,8 +136,7 @@ public interface ConsentCoreService {
      * @return true if the consent is successfully deleted, false otherwise
      * @throws ConsentMgtException if an error occurs during the deletion process
      */
-    boolean deleteConsent(String consentId, String orgId)
-            throws ConsentMgtException;
+    boolean deleteConsent(String consentId, String orgId) throws ConsentMgtException;
 
     /**
      * This method is used to revoke a consent. The following functionality contains in this method.
@@ -167,8 +159,7 @@ public interface ConsentCoreService {
      * @return a consent attributes resource
      * @throws ConsentMgtException thrown if an error occurs in the process
      */
-    boolean storeConsentAttributes(String consentId, Map<String, Object> consentAttributes)
-            throws ConsentMgtException;
+    boolean storeConsentAttributes(String consentId, Map<String, Object> consentAttributes) throws ConsentMgtException;
 
     /**
      * This method is used to get consent attributes for a provided attribute keys list related to a particular consent.
@@ -242,8 +233,7 @@ public interface ConsentCoreService {
      * @throws ConsentMgtException thrown if a database error occurs
      */
     List<ConsentStatusAuditRecord> getConsentStatusAuditRecords(List<String> consentIds, Integer limit,
-                                                                     Integer offset)
-            throws ConsentMgtException;
+                                                                     Integer offset) throws ConsentMgtException;
 
     /**
      * This method is used to store the details of the previous consent when an consent amendment happens.
@@ -257,8 +247,7 @@ public interface ConsentCoreService {
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
     boolean storeConsentAmendmentHistory(String consentId, ConsentHistoryResource consentHistoryResource,
-                                         DetailedConsentResource currentConsentResource)
-            throws ConsentMgtException;
+                                         DetailedConsentResource currentConsentResource) throws ConsentMgtException;
 
     /**
      * This method is used to search detailed consents for the given lists of parameters. Following optional lists
