@@ -2,6 +2,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.api.endpoint.impl;
 
 import net.minidev.json.JSONObject;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.constants.ConsentError;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -48,19 +50,24 @@ public class ConsentAPIImplTests {
     private ConsentCoreServiceImpl mockedConsentCoreServiceImpl;
     private String sampleConsentID;
     private String sampleOrgID;
+    MockedStatic<ConsentCoreServiceImpl> consentCoreServiceImplMockedStatic;
+
 
     @BeforeClass
     public void setUp() throws
             Exception {
+        mockedConsentCoreServiceImpl = mock(ConsentCoreServiceImpl.class);
 
-        consentAPIImpl = new ConsentAPIImpl();
+        consentCoreServiceImplMockedStatic = mockStatic(ConsentCoreServiceImpl.class);
+        consentCoreServiceImplMockedStatic.when(ConsentCoreServiceImpl::getInstance)
+                .thenReturn(mockedConsentCoreServiceImpl);
+        consentAPIImpl = ConsentAPIImpl.getInstance();
         sampleConsentID = String.valueOf(UUID.randomUUID());
         sampleOrgID = "org123";
 
-        mockedConsentCoreServiceImpl = mock(ConsentCoreServiceImpl.class);
 
         // return mocked consent core service when the service is called
-        consentAPIImpl.setConsentCoreService(mockedConsentCoreServiceImpl);
+//        consentAPIImpl.setConsentCoreService(mockedConsentCoreServiceImpl);
 
     }
 

@@ -47,10 +47,11 @@ import javax.ws.rs.core.Response;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen",
         date = "2025-05-16T09:24:29.903308+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentsApi {
-    ConsentAPIImpl consentApiImpl = new ConsentAPIImpl();
+    ConsentAPIImpl consentApiImpl;
 
     public ConsentsApi() throws
             ConsentMgtException {
+        consentApiImpl = ConsentAPIImpl.getInstance();
     }
 
     @GET
