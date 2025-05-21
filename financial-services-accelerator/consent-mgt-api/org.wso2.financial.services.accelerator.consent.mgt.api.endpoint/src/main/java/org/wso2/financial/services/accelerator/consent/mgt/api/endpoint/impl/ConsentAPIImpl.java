@@ -34,9 +34,26 @@ public class ConsentAPIImpl {
     private static final Log log = LogFactory.getLog(ConsentAPIImpl.class);
     private ConsentCoreServiceImpl consentCoreService;
 
-    public ConsentAPIImpl() {
-        consentCoreService = new ConsentCoreServiceImpl();
+
+    private static volatile ConsentAPIImpl instance;
+
+    public static ConsentAPIImpl getInstance() throws
+            ConsentMgtException {
+        if (instance == null) {
+            synchronized (ConsentCoreServiceImpl.class) {
+                if (instance == null) {
+                    instance = new ConsentAPIImpl();
+                }
+            }
+        }
+        return instance;
     }
+
+    private ConsentAPIImpl() throws
+            ConsentMgtException {
+        this.consentCoreService = ConsentCoreServiceImpl.getInstance();
+    }
+
 
     public void setConsentCoreService(ConsentCoreServiceImpl consentCoreService) {
         this.consentCoreService = consentCoreService;
