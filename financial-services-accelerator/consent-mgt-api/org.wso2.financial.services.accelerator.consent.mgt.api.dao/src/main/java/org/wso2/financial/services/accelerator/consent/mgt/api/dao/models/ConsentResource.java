@@ -17,14 +17,10 @@
  */
 
 package org.wso2.financial.services.accelerator.consent.mgt.api.dao.models;
-
-import java.util.Map;
-
 /**
  * Model for the consent resource.
  */
 public class ConsentResource {
-
     private String orgId;
     private String consentId;
     private String clientId;
@@ -62,7 +58,6 @@ public class ConsentResource {
         this.updatedTime = updatedTime;
     }
 
-    private Map<String, Object> consentAttributes;
 
     public String getOrgId() {
         return orgId;
@@ -144,11 +139,4 @@ public class ConsentResource {
         this.updatedTime = updatedTime;
     }
 
-    public Map<String, Object> getConsentAttributes() {
-        return consentAttributes;
-    }
-
-    public void setConsentAttributes(Map<String, Object> consentAttributes) {
-        this.consentAttributes = consentAttributes;
-    }
 }

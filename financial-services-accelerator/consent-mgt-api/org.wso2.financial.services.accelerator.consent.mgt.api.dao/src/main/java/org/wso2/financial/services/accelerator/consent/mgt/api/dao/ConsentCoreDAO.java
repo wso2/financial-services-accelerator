@@ -79,6 +79,8 @@ public interface ConsentCoreDAO {
     DetailedConsentResource getDetailedConsentResource(Connection connection, String consentId, String orgId)
             throws ConsentDataRetrievalException;
 
+    //TODO : have to remove after implementing the new consent history feature. ( used in
+    // previous history storing implementation
     /**
      * This method is used to retrieve a detailed consent resource for the provided consent ID (includes
      * authorization resources, account mapping resources and consent attributes).
@@ -110,6 +112,7 @@ public interface ConsentCoreDAO {
      * @param connection    connection object
      * @param consentIds     consent ID of the consent needed to be updated
      * @param consentStatus the new status that should be updated with
+     * @param orgId   tenant related information
      * @throws ConsentDataUpdationException thrown if a database error occur or an update failure
      */
     void bulkConsentStatusUpdate(Connection connection, List<String> consentIds, String consentStatus,
@@ -145,12 +148,12 @@ public interface ConsentCoreDAO {
      *
      * @param connection            connection object
      * @param consentId             consent ID
-     * @param authorizationResource authorization resource with all required data
+     * @param authorizationResources authorization resources with all required data
      * @return returns the list of authorization resources with the updated time if insertion is successful
      * @throws ConsentDataInsertionException thrown if a database error occur or an insertion failure
      */
     List<AuthorizationResource> storeBulkAuthorizationResources(Connection connection, String consentId,
-                                                      List<AuthorizationResource> authorizationResource)
+                                                      List<AuthorizationResource> authorizationResources)
             throws ConsentDataInsertionException;
 
     /**
@@ -379,7 +382,8 @@ public interface ConsentCoreDAO {
      *
      * @param connection connection object
      * @param consentId consent ID
+     * @param orgId   tenant related information
      */
-    void deleteConsent(Connection connection, String consentId)
+    void deleteConsent(Connection connection, String consentId, String orgId)
             throws ConsentDataDeletionException;
 }

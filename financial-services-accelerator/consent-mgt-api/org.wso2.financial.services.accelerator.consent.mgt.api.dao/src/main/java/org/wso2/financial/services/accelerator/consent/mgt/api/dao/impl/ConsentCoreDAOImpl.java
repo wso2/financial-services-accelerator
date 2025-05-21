@@ -699,6 +699,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         return retrievedConsentAttributesResource;
     }
 
+    //TODO : not yet implemented nad tested
     @Override
     public Map<String, Object> getConsentAttributesByKey(Connection connection, String attributeKey)
             throws ConsentDataRetrievalException {
@@ -737,6 +738,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         return retrievedConsentAttributesMap;
     }
 
+    //TODO : not yet implemented nad tested
     @Override
     public void updateConsentAttributes(Connection connection, String consentId, Map<String, Object> consentAttributes)
             throws ConsentDataUpdationException {
@@ -774,7 +776,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             throw new ConsentDataUpdationException("Failed to update consent attribute data properly.");
         }
     }
-
+    //TODO : not yet implemented nad tested
     @Override
     public boolean deleteConsentAttributes(Connection connection, String consentId,
                                            List<String> consentAttributeKeys)
@@ -1241,23 +1243,31 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     }
 
     @Override
-    public void deleteConsent(Connection connection, String consentId) throws ConsentDataDeletionException {
+    public void deleteConsent(Connection connection, String consentId, String orgId)
+            throws ConsentDataDeletionException {
 
-        List<String> deleteStatements = sqlStatements.getDeleteConsentCascadeStatements();
+        String deleteStatement = sqlStatements.getDeleteConsentCascadeStatements();
 
         try {
-            connection.setAutoCommit(false); // Begin transaction
+            connection.setAutoCommit(false); // Start transaction
 
-            for (String query : deleteStatements) {
-                try (PreparedStatement ps = connection.prepareStatement(query)) {
-                    ps.setString(1, consentId);
-                    ps.executeUpdate();
+            try (PreparedStatement deleteConsentPreparedStmt =
+                         connection.prepareStatement(deleteStatement)) {
+
+                log.debug("Setting parameters to prepared statement to delete consent");
+
+                deleteConsentPreparedStmt.setString(1, consentId);
+                deleteConsentPreparedStmt.setString(2, orgId);
+
+                int result = deleteConsentPreparedStmt.executeUpdate();
+                if (result > 0) {
+                    log.debug("Deleted the consent successfully");
+                    connection.commit(); // Commit transaction
+                } else {
+                    log.error("Failed to delete consent");
+                    throw new ConsentDataDeletionException(ConsentError.CONSENT_DELETE_ERROR);
                 }
             }
-
-            connection.commit();
-            log.debug(String.format("Successfully deleted consent and related records for ID: %s",
-                    consentId.replaceAll("[\r\n]", "")));
 
         } catch (SQLException e) {
             try {

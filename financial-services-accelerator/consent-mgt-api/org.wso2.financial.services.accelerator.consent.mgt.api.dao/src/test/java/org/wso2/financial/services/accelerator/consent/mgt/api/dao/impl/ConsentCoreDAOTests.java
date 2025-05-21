@@ -1685,7 +1685,6 @@ public class ConsentCoreDAOTests {
     @Test
     public void testDeleteConsentSuccess() throws
             Exception {
-        boolean isDeleted;
 
         ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
 
@@ -1693,7 +1692,8 @@ public class ConsentCoreDAOTests {
             ConsentResource storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
 
             // Perform the delete operation
-            consentCoreDAO.deleteConsent(connection, storedConsentResource.getConsentId());
+            consentCoreDAO.deleteConsent(connection, storedConsentResource.getConsentId(),
+                    storedConsentResource.getOrgId());
         }
 
 
@@ -1706,17 +1706,19 @@ public class ConsentCoreDAOTests {
         Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
 
         // Attempt to delete consent, expecting an exception
-        consentCoreDAO.deleteConsent(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID);
+        consentCoreDAO.deleteConsent(mockedConnection, ConsentMgtDAOTestData.SAMPLE_CONSENT_ID,
+                ConsentMgtDAOTestData.SAMPLE_ORG_ID);
     }
 
-    @Test
+    @Test(expectedExceptions = ConsentDataDeletionException.class)
     public void testDeleteConsentInvalidId() throws
             Exception {
         boolean isDeleted;
 
         try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
             // Attempt to delete a non-existent consent ID
-            consentCoreDAO.deleteConsent(connection, "invalid-consent-id");
+            consentCoreDAO.deleteConsent(connection, "invalid-consent-id",
+                    ConsentMgtDAOConstants.ORG_ID);
         }
 
 

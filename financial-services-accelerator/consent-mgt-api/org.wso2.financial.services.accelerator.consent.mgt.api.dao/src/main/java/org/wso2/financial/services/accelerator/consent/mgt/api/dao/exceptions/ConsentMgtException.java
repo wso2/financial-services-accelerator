@@ -45,7 +45,4 @@ public class ConsentMgtException extends Exception {
 
         return error;
     }
-
-
-
 }
