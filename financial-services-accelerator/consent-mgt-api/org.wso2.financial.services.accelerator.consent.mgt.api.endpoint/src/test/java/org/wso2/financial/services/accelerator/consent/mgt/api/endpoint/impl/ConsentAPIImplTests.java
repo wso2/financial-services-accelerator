@@ -438,7 +438,7 @@ public class ConsentAPIImplTests {
         doReturn(consentResource).when(mockedConsentCoreServiceImpl).getDetailedConsent(any(), any());
         when(consentResource.getOrgId()).thenReturn(sampleOrgID); // Simulate mismatch
 
-        doReturn(true).when(mockedConsentCoreServiceImpl).deleteConsent(any());
+        doReturn(true).when(mockedConsentCoreServiceImpl).deleteConsent(any(), any());
 
         // Act
         Response response = consentAPIImpl.consentConsentIdDelete(sampleConsentID, sampleOrgID);
@@ -470,7 +470,7 @@ public class ConsentAPIImplTests {
 
         ConsentResource consentResource = mock(ConsentResource.class);
         when(consentResource.getOrgId()).thenReturn(orgId);
-        when(mockedConsentCoreServiceImpl.deleteConsent(consentId)).thenReturn(false);
+        when(mockedConsentCoreServiceImpl.deleteConsent(consentId, orgId)).thenReturn(false);
 
         Response response = consentAPIImpl.consentConsentIdDelete(consentId, orgId);
         assertNotNull(response);
@@ -807,7 +807,7 @@ public class ConsentAPIImplTests {
         when(mockedConsentCoreServiceImpl.getDetailedConsent(consentId, orgId)).
                 thenReturn(mock(DetailedConsentResource.class));
 
-        when(mockedConsentCoreServiceImpl.deleteAuthorizationResource(authorizationId)).thenReturn(true);
+        when(mockedConsentCoreServiceImpl.deleteAuthorizationResource(authorizationId, orgId)).thenReturn(true);
 
         Response response = consentAPIImpl.consentAuthorizationIdDelete(authorizationId, consentId, orgId);
 
