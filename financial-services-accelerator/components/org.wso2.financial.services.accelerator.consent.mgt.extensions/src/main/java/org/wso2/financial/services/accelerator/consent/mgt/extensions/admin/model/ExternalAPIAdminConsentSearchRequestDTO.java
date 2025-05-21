@@ -45,19 +45,19 @@ public class ExternalAPIAdminConsentSearchRequestDTO {
         this.searchType = searchType;
     }
 
-    public Map getQueryParams() {
+    public Map getEnrichmentParams() {
         return enrichmentParams;
     }
 
-    public void setQueryParams(Map enrichmentParams) {
+    public void setEnrichmentParams(Map enrichmentParams) {
         this.enrichmentParams = enrichmentParams;
     }
 
-    public JSONArray getResponsePayload() {
+    public JSONArray getSearchResult() {
         return searchResult;
     }
 
-    public void setResponsePayload(JSONArray searchResult) {
+    public void setSearchResult(JSONArray searchResult) {
         this.searchResult = searchResult;
     }
 

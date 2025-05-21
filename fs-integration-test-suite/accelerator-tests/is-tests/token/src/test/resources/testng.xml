@@ -17,7 +17,7 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Open Banking - Accelerator Token Flow Test" parallel="tests" >
+<suite name="WSO2 Open Banking - Accelerator Token Flow Test" parallel="none" preserve-order="true">
     <test name="Token Flow - Regulatory Application" enabled="true" group-by-instances="true">
             <classes>
               <class name="client_authenticator_enforcement.MtlsClientAuthenticationTest"/>

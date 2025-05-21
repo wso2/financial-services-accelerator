@@ -233,7 +233,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         //  Adding BFSI specific fields to be returned in the response.
         Set<String> responseAttributeKeys = getResponseParamsFromConfig();
         responseAttributeKeys.add(IdentityCommonConstants.SOFTWARE_ID);
-        responseAttributeKeys.add(IdentityCommonConstants.SCOPE);
+        responseAttributeKeys.add(FinancialServicesConstants.SCOPE);
         responseAttributeKeys.add(IdentityCommonConstants.RESPONSE_TYPES);
         responseAttributeKeys.add(IdentityCommonConstants.APPLICATION_TYPE);
         return new ArrayList<>(responseAttributeKeys);

@@ -17,7 +17,7 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Open Banking - Consent Management Flow Test">
+<suite name="WSO2 Open Banking - Consent Management Flow Test" parallel="none" preserve-order="true">
     <test name="Consent Management End to End Flow" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.is.test.consent.management.EndToEndTest.EndToEndConsentManagementFlowTestFactory"/>
@@ -54,6 +54,11 @@
     <test name="Consent Management Payment Consent Flow" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.is.test.consent.management.PaymentsApiTests.InitiationRequestHeaderValidationTests"/>
+        </classes>
+    </test>
+    <test name="Pushed Authorisation Flow" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.is.test.consent.management.PushedAuthorisation.PARValidationTests"/>
         </classes>
     </test>
 </suite>

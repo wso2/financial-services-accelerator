@@ -248,8 +248,8 @@ drop_unregistered_scopes = true
 authorize_all_scopes = true
 
 [oauth.endpoints.v2]
-oauth2_consent_page = "${carbon.protocol}://localhost:${carbon.management.port}/fs/authenticationendpoint/oauth2_authz.do"
-oidc_consent_page = "${carbon.protocol}://localhost:${carbon.management.port}/fs/authenticationendpoint/oauth2_consent.do"
+oauth2_consent_page = "${carbon.protocol}://IS_HOSTNAME:${carbon.management.port}/fs/authenticationendpoint/oauth2_authz.do"
+oidc_consent_page = "${carbon.protocol}://IS_HOSTNAME:${carbon.management.port}/fs/authenticationendpoint/oauth2_consent.do"
 
 [oauth.token_generation]
 access_token_type = "self_contained"
@@ -333,7 +333,7 @@ enabled = false
 allowed_extensions = ["pre_process_client_creation", "pre_process_client_update", "pre_process_client_retrieval",
     "pre_process_consent_creation", "enrich_consent_creation_response", "pre_process_consent_file_upload",
     "enrich_consent_file_response", "pre_process_consent_retrieval", "validate_consent_file_retrieval",
-    "pre_process_consent_revoke", "pre_process_bulk_consent_retrieval", "populate_consent_authorize_screen",
+    "pre_process_consent_revoke", "enrich_consent_search_response", "populate_consent_authorize_screen",
     "persist_authorized_consent", "validate_consent_access", "issue_refresh_token", "validate_authorization_request",
     "validate_event_subscription", "enrich_event_subscription_response", "validate_event_creation",
     "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
@@ -553,7 +553,7 @@ client_id="consent_management_portal_client_id"
 client_secret="consent_management_portal_client_secret"
 
 [financial_services.consent.portal.params]
-identity_server_base_url="https://localhost:9446"
+identity_server_base_url="https://IS_HOSTNAME:9446"
 application_name_param="client_name"
 application_logo_uri_param="software_logo_uri"
 
@@ -572,7 +572,8 @@ enabled=false
 
 [financial_services.identity]
 consent_id_claim_name="consent_id"
-append_consent_id_to_id_token=true
+append_consent_id_to_token_id_token=false
+append_consent_id_to_authz_id_token=true
 append_consent_id_to_access_token=false
 append_consent_id_to_token_introspect_response=false
 

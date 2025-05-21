@@ -379,7 +379,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                             ConsentExtensionConstants.REJECTED_STATUS.equals(consentResource.getCurrentStatus())) {
                         log.error("Consent is already in revoked or rejected state");
                         throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                                "Consent is already in revoked or rejected state");
+                                "Consent is already in revoked or rejected state", ConsentOperationEnum.CONSENT_DELETE);
                     }
                     shouldRevokeTokens = ConsentExtensionConstants.AUTHORIZED_STATUS.equals(
                             consentResource.getCurrentStatus());
@@ -428,24 +428,28 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID is missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
         String[] requestPathArray;
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource path not found in the request");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         } else {
             requestPathArray = resourcePath.split("/");
         }
         if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
             log.error("Invalid Request Path");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid",
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
         String consentId = requestPathArray[1];
         if (!ConsentExtensionUtils.isConsentIdValid(consentId)) {
             log.error("Invalid Request Path. Consent Id format is not valid.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid",
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
 
         //Perform idempotency validation
@@ -457,13 +461,15 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
             if (consentResource == null) {
                 log.error("Provided consent id is not found");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided consent id is not found");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided consent id is not found",
+                        ConsentOperationEnum.CONSENT_FILE_UPLOAD);
             }
 
             Object fileFromRequest = consentManageData.getPayload();
             if (!(fileFromRequest instanceof String)) {
                 log.error("Invalid file content found in the request.");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid file content found in the request.");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid file content found in the request.",
+                        ConsentOperationEnum.CONSENT_FILE_UPLOAD);
             }
             String fileContent = (String) fileFromRequest;
             ConsentFile consentFile = new ConsentFile(consentId, fileContent);
@@ -531,19 +537,22 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID is missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
         String[] requestPathArray;
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource path not found in the request");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         } else {
             requestPathArray = resourcePath.split("/");
         }
         if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
             log.error("Invalid Request Path");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid",
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
 
         String consentId = requestPathArray[1];
@@ -553,12 +562,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 if (consent == null) {
                     log.error("Consent not found");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
-                            ConsentOperationEnum.CONSENT_RETRIEVE); // ToDo: Check the use of operation enum
+                            ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
                 }
                 // Check whether the client id is matching
                 if (!consent.getClientID().equals(consentManageData.getClientId())) {
                     log.error("Client ID mismatch");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
+                            ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
                 }
                 ConsentFile consentFile = consentCoreService.getConsentFile(consentId);
 
@@ -578,7 +588,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     if (!consentType.equals(consent.getConsentType())) {
                         log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
                         throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
-                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
+                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
                     }
                 }
                 consentManageData.setResponsePayload(consentFile.getConsentFile());
@@ -586,12 +596,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             } catch (ConsentManagementException | JSONException e) {
                 log.error("Error Occurred while handling the request", e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_RETRIEVE);
+                        "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
             }
         } else {
             log.error("Invalid consent-id found");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid consent-id found",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
     }
 
@@ -605,7 +615,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             return consentCoreService.storeDetailedConsentResource(detailedConsentResource);
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent",
+                    ConsentOperationEnum.CONSENT_CREATE);
         }
     }
 

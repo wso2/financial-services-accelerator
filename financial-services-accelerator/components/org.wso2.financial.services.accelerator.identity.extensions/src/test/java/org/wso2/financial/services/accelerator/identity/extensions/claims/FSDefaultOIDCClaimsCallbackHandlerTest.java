@@ -27,7 +27,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenReqDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
         // Arrange
         JWTClaimsSet.Builder jwtClaimsSetBuilder = new JWTClaimsSet.Builder();
         Map<String, Object> claimsInJwtToken = new HashMap<>();
-        claimsInJwtToken.put(IdentityCommonConstants.SCOPE, "scope1 scope2 internal_scope");
+        claimsInJwtToken.put(FinancialServicesConstants.SCOPE, "scope1 scope2 internal_scope");
         claimsInJwtToken.put("customClaim", "customValue");
 
         // Mock the behavior of IdentityCommonUtils.removeInternalScopes
@@ -72,7 +72,7 @@ public class FSDefaultOIDCClaimsCallbackHandlerTest {
 
         // Assert
         JWTClaimsSet jwtClaimsSet = jwtClaimsSetBuilder.build();
-        Assert.assertEquals(jwtClaimsSet.getClaim(IdentityCommonConstants.SCOPE), "scope1 scope2");
+        Assert.assertEquals(jwtClaimsSet.getClaim(FinancialServicesConstants.SCOPE), "scope1 scope2");
         Assert.assertEquals(jwtClaimsSet.getClaim("customClaim"), "customValue");
     }
 
