@@ -125,7 +125,8 @@
                         <exclude>**/*Component.class</exclude>
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*Exception.class</exclude>
-                        <exclude>**/*ConsentCoreServiceUtil.class</exclude>
+                        <exclude>**/*ConsentCoreServiceUtil.class</exclude> <!-- remove this after added code
+                                                                                coverage tests for this class -->
                     </excludes>
                 </configuration>
                 <executions>
