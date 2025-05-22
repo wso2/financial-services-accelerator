@@ -229,11 +229,9 @@ public class ConsentsApi {
     )
     @Tag(name = "Consent Resource")
     public Response consentConsentIdDelete(
-
             @PathParam("consentId") @ApiParam("Consent id") String consentId,
             @HeaderParam("orgId") @DefaultValue("DEFAULT_ORG") @ApiParam("JWT header containing " +
                     "tenant-related information") String orgId) {
-
         return consentApiImpl.consentConsentIdDelete(consentId, orgId);
 
     }
@@ -312,7 +310,7 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
-                            responseCode = "400",
+                            responseCode = "404",
                             description = "Invalid consent id",
                             content = @Content(schema = @Schema(implementation = Void.class))
                     )
@@ -341,7 +339,7 @@ public class ConsentsApi {
                             content = @Content(schema = @Schema(implementation = ConsentResourceResponseBody.class))
                     ),
                     @ApiResponse(
-                            responseCode = "400",
+                            responseCode = "404",
                             description = "Invalid consent id",
                             content = @Content(schema = @Schema(implementation = Void.class))
                     )
