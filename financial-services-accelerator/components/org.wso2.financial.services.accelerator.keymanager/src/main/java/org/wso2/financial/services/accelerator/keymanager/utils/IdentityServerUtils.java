@@ -27,6 +27,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -103,14 +104,21 @@ public class IdentityServerUtils {
         }
     }
 
-    public static JSONObject updateSPApplication(String clientId, String appName, Map<String, Object> attributes)
+    /**
+     * Method to update the SP application in the Identity server.
+     *
+     * @param clientId                Client ID of the application
+     * @param appName                 Application name
+     * @param attributes              Map of attributes to be updated
+     * @param oAuthApplicationInfo    OAuth application info
+     * @throws FinancialServicesException   If an error occurs while updating the application
+     */
+    public static void updateSPApplication(String clientId, String appName, Map<String, Object> attributes,
+                                                 OAuthApplicationInfo oAuthApplicationInfo)
             throws FinancialServicesException {
 
-        JSONObject spApplication = new JSONObject();
-//        spApplication.put("token_endpoint_auth_method", "private_key_jwt");
-        spApplication.put("client_name", appName);
-        spApplication.put("tls_client_certificate_bound_access_tokens", true);
-        spApplication.put("additionalAttributes", attributes);
+        JSONObject spApplication = constructDCRUpdatePayload(appName, attributes, oAuthApplicationInfo);
+
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.DCR_EP + clientId;
             URIBuilder builder = new URIBuilder(url);
@@ -125,13 +133,47 @@ public class IdentityServerUtils {
             httpPut.setHeader(FinancialServicesConstants.AUTH_HEADER,
                     FinancialServicesUtils.getBasicAuthHeader(userName, password));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPut);
-            InputStream in = response.getEntity().getContent();
-            return new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
-        } catch (IOException e) {
-            throw new FinancialServicesException("Error while getting app id from client id", e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new FinancialServicesException("Error while updating sp application");
+            }
+        } catch (IOException | URISyntaxException e) {
+            throw new FinancialServicesException("Error while updating sp application", e);
         }
+    }
+
+    /**
+     * Method to construct the DCR payload for updating the SP application.
+     *
+     * @param appName                  Application name
+     * @param attributes               Map of attributes
+     * @param oAuthApplicationInfo     OAuth application info
+     * @return JSONObject             DCR payload
+     */
+    private static JSONObject constructDCRUpdatePayload(String appName, Map<String, Object> attributes,
+                                                        OAuthApplicationInfo oAuthApplicationInfo) {
+
+        JSONObject spApplication = new JSONObject();
+        spApplication.put("client_name", appName);
+        spApplication.put("tls_client_certificate_bound_access_tokens", true);
+        spApplication.put("additionalAttributes", attributes);
+
+//        JSONObject additionalPropertiesJSON = new JSONObject((String) oAuthApplicationInfo
+//                .getParameter(APIConstants.JSON_ADDITIONAL_PROPERTIES));
+//        for (String key : additionalPropertiesJSON.keySet()) {
+//            // Existing values in the additional properties JSON object will start with "ext_" prefix.
+//            // Updating values will come without the prefix, example if refresh_token_expiry_time is modified the
+//            // existing value will come as ext_refresh_token_lifetime, new value will come as refresh_token_expiry
+//            _time.
+//            // To update the values in IS DCR application we need add the updating value with the prefix.
+//            if (key.startsWith("ext_")) {
+//                String mappedKey = FSKeyManagerConstants.APP_CONFIG_MAPPING.get(key);
+//                if (additionalPropertiesJSON.has(mappedKey)) {
+//                    spApplication.put(key, additionalPropertiesJSON.getString(mappedKey));
+//                }
+//            }
+//        }
+
+        return spApplication;
     }
 
     /**

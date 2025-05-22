@@ -41,6 +41,7 @@ import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerCons
 import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerUtil;
 import org.wso2.financial.services.accelerator.keymanager.utils.IdentityServerUtils;
 import org.wso2.is7.client.WSO2IS7KeyManager;
+import org.wso2.is7.client.WSO2IS7KeyManagerConstants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,15 +116,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
                 for (ConfigurationDto configurationDto : applicationConfigurationDtoList) {
                     String key = configurationDto.getName();
-                    String values = null;
-                    if (additionalPropertiesJson.has(key))  {
-                        values = additionalPropertiesJson.getString(key);
-                    } else {
-                        String isDcrKey = FSKeyManagerConstants.APP_CONFIG_MAPPING.get(key);
-                        values = additionalPropertiesJson.has(isDcrKey) ?
-                                additionalPropertiesJson.get(FSKeyManagerConstants.APP_CONFIG_MAPPING.get(key))
-                                .toString() : null;
-                    }
+                    String values = additionalPropertiesJson.get(key).toString();
 
                     if (values == null) {
                         // AbstractKeyManager Validations
@@ -142,12 +135,27 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
                             if (StringUtils.isNotBlank(values) && !StringUtils
                                     .equals(values, APIConstants.KeyManager.NOT_APPLICABLE_VALUE)) {
                                 try {
-                                    long longValue = Long.parseLong(values);
-                                    if (longValue < 0) {
-                                        String errMsg = "Application configuration values cannot have negative values.";
-                                        throw new APIManagementException(errMsg, ExceptionCodes
-                                                .from(ExceptionCodes.INVALID_APPLICATION_ADDITIONAL_PROPERTIES,
-                                                        errMsg));
+                                    if (WSO2IS7KeyManagerConstants.PKCE_MANDATORY.equals(key) ||
+                                            WSO2IS7KeyManagerConstants.PKCE_SUPPORT_PLAIN.equals(key) ||
+                                            WSO2IS7KeyManagerConstants.PUBLIC_CLIENT.equals(key)) {
+
+                                        if (!(values.equals(Boolean.TRUE.toString()) ||
+                                                values.equals(Boolean.FALSE.toString()))) {
+                                            String errMsg = "Application configuration values cannot have negative " +
+                                                    "values.";
+                                            throw new APIManagementException(errMsg, ExceptionCodes
+                                                    .from(ExceptionCodes.INVALID_APPLICATION_ADDITIONAL_PROPERTIES,
+                                                            errMsg));
+                                        }
+                                    } else {
+                                        long longValue = Long.parseLong(values);
+                                        if (longValue < 0) {
+                                            String errMsg = "Application configuration values cannot have negative " +
+                                                    "values.";
+                                            throw new APIManagementException(errMsg, ExceptionCodes
+                                                    .from(ExceptionCodes.INVALID_APPLICATION_ADDITIONAL_PROPERTIES,
+                                                            errMsg));
+                                        }
                                     }
                                 } catch (NumberFormatException e) {
                                     String errMsg = "Application configuration values cannot have string values.";
@@ -203,7 +211,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
             JSONObject serviceProviderAppData = IdentityServerUtils.getSPApplicationFromClientId(
                     oAuthApplicationInfo.getClientId());
 
-            updateSpProperties(appName, serviceProviderAppData, additionalProperties, true);
+            updateSpProperties(appName, oAuthApplicationInfo, serviceProviderAppData, additionalProperties, true);
 
             if (Boolean.parseBoolean(additionalProperties.get("regulatory"))) {
                 String appNameProperty = IdentityServerUtils.getSpPropertyFromSPMetaData("DisplayName",
@@ -237,7 +245,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
             doPreUpdateApplication(oAuthAppRequest, additionalProperties, appData);
             String appName = appData.getString("name");
-            updateSpProperties(appName, appData, additionalProperties, false);
+            updateSpProperties(appName, oAuthApplicationInfo, appData, additionalProperties, false);
         } catch (FinancialServicesException e) {
             throw new RuntimeException(e);
         }
@@ -263,12 +271,14 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
     /**
      * @param spAppName               Generate service provider application name
+     * @param oAuthApplicationInfo    OAuthApplicationInfo from the request
      * @param serviceProviderAppData  Service provider application data
      * @param additionalProperties    new Service provider property map
      * @param isCreateApp             Whether this function is called at app creation
      * @throws APIManagementException when failed to update the application properties
      */
-    protected void updateSpProperties(String spAppName, JSONObject serviceProviderAppData,
+    protected void updateSpProperties(String spAppName, OAuthApplicationInfo oAuthApplicationInfo ,
+                                      JSONObject serviceProviderAppData,
                                       HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException {
 
@@ -280,7 +290,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
                     IdentityServerUtils.getSPMetadataFromSPApp(serviceProviderAppData), additionalProperties);
 
             IdentityServerUtils.updateSPApplication(serviceProviderAppData.getString("clientId"), spAppName,
-                    spProperties);
+                    spProperties, oAuthApplicationInfo);
         } catch (FinancialServicesException e) {
             log.error("Error while updating service provider application properties", e);
             throw new APIManagementException("Error while updating service provider application properties", e);

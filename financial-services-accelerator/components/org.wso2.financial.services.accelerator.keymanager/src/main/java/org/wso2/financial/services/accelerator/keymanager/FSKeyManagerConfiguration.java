@@ -26,6 +26,7 @@ import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.jwt.JWTValidatorImpl;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerConstants;
+import org.wso2.is7.client.WSO2IS7KeyManagerConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,9 +66,20 @@ public class FSKeyManagerConfiguration implements KeyManagerConnectorConfigurati
         configurationDtoList
                 .add(new ConfigurationDto("Password", "Password", "input",
                         "Password of Admin user", "", true, true, Collections.emptyList(), false));
-        configurationDtoList
-                .add(new ConfigurationDto("ServerURL", "ServerURL", "input",
-                        "ServerURL", "", true, true, Collections.emptyList(), false));
+        configurationDtoList.add(new ConfigurationDto("api_resource_management_endpoint",
+                "WSO2 Identity Server 7 API Resource Management Endpoint", "input",
+                String.format("E.g., %s/api/server/v1/api-resources",
+                        org.wso2.carbon.apimgt.api.APIConstants.DEFAULT_KEY_MANAGER_HOST), "", true, false,
+                Collections.emptyList(), false));
+        configurationDtoList.add(new ConfigurationDto("is7_roles_endpoint",
+                "WSO2 Identity Server 7 Roles Endpoint", "input",
+                String.format("E.g., %s/scim2/v2/Roles",
+                        org.wso2.carbon.apimgt.api.APIConstants.DEFAULT_KEY_MANAGER_HOST), "", true, false,
+                Collections.emptyList(), false));
+        configurationDtoList.add(new ConfigurationDto("enable_roles_creation",
+                "Create roles in WSO2 Identity Server 7", "checkbox",
+                "Create roles in WSO2 Identity Server 7, corresponding to the roles used in WSO2 API Manager.",
+                "Enable", false, false, Collections.singletonList("Enable"), false));
         return configurationDtoList;
 
     }
@@ -77,25 +89,42 @@ public class FSKeyManagerConfiguration implements KeyManagerConnectorConfigurati
 
         List<ConfigurationDto> applicationConfigurationsList = new ArrayList();
         applicationConfigurationsList
-                .add(new ConfigurationDto(APIConstants.KeyManager.APPLICATION_ACCESS_TOKEN_EXPIRY_TIME,
-                        "Application Access Token Expiry Time ", "input", "Type Application Access Token Expiry Time " +
+                .add(new ConfigurationDto(WSO2IS7KeyManagerConstants.APPLICATION_TOKEN_LIFETIME,
+                        "Lifetime of the Application Token ", "input", "Type Lifetime of the Application Token " +
                         "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
-                .add(new ConfigurationDto(APIConstants.KeyManager.USER_ACCESS_TOKEN_EXPIRY_TIME,
-                        "User Access Token Expiry Time ", "input", "Type User Access Token Expiry Time " +
+                .add(new ConfigurationDto(WSO2IS7KeyManagerConstants.USER_TOKEN_LIFETIME,
+                        "Lifetime of the User Token ", "input", "Type Lifetime of the User Token " +
                         "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
-                .add(new ConfigurationDto(APIConstants.KeyManager.REFRESH_TOKEN_EXPIRY_TIME,
-                        "Refresh Token Expiry Time ", "input", "Type Refresh Token Expiry Time " +
+                .add(new ConfigurationDto(WSO2IS7KeyManagerConstants.REFRESH_TOKEN_LIFETIME,
+                        "Lifetime of the Refresh Token ", "input", "Type Lifetime of the Refresh Token " +
                         "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
-                .add(new ConfigurationDto(APIConstants.KeyManager.ID_TOKEN_EXPIRY_TIME,
-                        "Id Token Expiry Time", "input", "Type ID Token Expiry Time " +
+                .add(new ConfigurationDto(WSO2IS7KeyManagerConstants.ID_TOKEN_LIFETIME,
+                        "Lifetime of the ID Token", "input", "Type Lifetime of the ID Token " +
                         "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
+
+        ConfigurationDto configurationDtoPkceMandatory = new ConfigurationDto(WSO2IS7KeyManagerConstants.PKCE_MANDATORY,
+                "Enable PKCE", "checkbox", "Enable PKCE", String.valueOf(false), false, false,
+                Collections.EMPTY_LIST, false);
+        applicationConfigurationsList.add(configurationDtoPkceMandatory);
+
+        ConfigurationDto configurationDtoPkcePlainText =
+                new ConfigurationDto(WSO2IS7KeyManagerConstants.PKCE_SUPPORT_PLAIN,
+                        "Support PKCE Plain text", "checkbox", "S256 is recommended, plain text too can be used.",
+                        String.valueOf(false), false, false, Collections.EMPTY_LIST, false);
+        applicationConfigurationsList.add(configurationDtoPkcePlainText);
+
+        ConfigurationDto configurationDtoBypassClientCredentials =
+                new ConfigurationDto(WSO2IS7KeyManagerConstants.PUBLIC_CLIENT,
+                        "Public client", "checkbox", "Allow authentication without the client secret.",
+                        String.valueOf(false), false, false, Collections.EMPTY_LIST, false);
+        applicationConfigurationsList.add(configurationDtoBypassClientCredentials);
 
         Map<String, Map<String, String>> keyManagerAdditionalProperties = FinancialServicesConfigParser.getInstance()
                 .getKeyManagerAdditionalProperties();
