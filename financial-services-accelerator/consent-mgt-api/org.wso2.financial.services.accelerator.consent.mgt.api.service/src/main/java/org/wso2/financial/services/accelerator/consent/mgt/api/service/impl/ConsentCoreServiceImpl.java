@@ -159,11 +159,10 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             DetailedConsentResource consentResource = consentCoreDAO.getDetailedConsentResource(connection, consentId,
                     orgId);
-            if (consentResource != null) {
                 if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(consentResource.getCurrentStatus())) {
                     throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
                 }
-            }
+
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Updating the expiry time of the consent for ID: %s",
                         consentId.replaceAll("[\r\n]", "")));
@@ -347,12 +346,11 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 DetailedConsentResource retrievedDetailedConsentResource = consentCoreDAO
                         .getDetailedConsentResource(connection, consentId, orgId);
 
-                if (retrievedDetailedConsentResource != null) {
-                    String previousConsentStatus = retrievedDetailedConsentResource.getCurrentStatus();
-                    if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(previousConsentStatus)) {
-                        throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
-                    }
+                String previousConsentStatus = retrievedDetailedConsentResource.getCurrentStatus();
+                if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(previousConsentStatus)) {
+                    throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
                 }
+
 
                 // Update consent status as revoked
                 if (log.isDebugEnabled()) {
@@ -401,11 +399,11 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 // check whether the consent is already revoked
                 DetailedConsentResource consentResource = consentCoreDAO
                         .getDetailedConsentResource(connection, consentId);
-                if (consentResource != null) {
-                    if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(consentResource.getCurrentStatus())) {
-                        throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
-                    }
+
+                if (ConsentCoreServiceConstants.CONSENT_REVOKE_STATUS.equals(consentResource.getCurrentStatus())) {
+                    throw new ConsentMgtException(ConsentError.CONSENT_ALREADY_REVOKED_ERROR);
                 }
+
                 List<AuthorizationResource> storedAuthorizationResource =
                         consentCoreDAO.storeBulkAuthorizationResources(connection, consentId, authorizationResources);
 
@@ -564,12 +562,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             try {
                 ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId,
                         orgId);
-                if (retrievedConsentResource == null) {
-                    String errorMessage = String.format("Consent ID  : %s is not available in the database",
-                            consentId.replaceAll("[\r\n]", ""));
-                    log.error(errorMessage);
-                    throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
-                }
+
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Consent ID  : %s is available in the database",
                             consentId.replaceAll("[\r\n]", "")));
@@ -604,12 +597,6 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             try {
                 ConsentResource retrievedConsentResource = consentCoreDAO.getConsentResource(connection, consentId,
                         orgId);
-                if (retrievedConsentResource == null) {
-                    String errorMessage = String.format("Consent ID  : %s is not available in the database",
-                            consentId.replaceAll("[\r\n]", ""));
-                    log.error(errorMessage);
-                    throw new ConsentMgtException(ConsentError.CONSENT_NOT_FOUND);
-                }
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Consent ID  : %s is available in the database",
                             consentId.replaceAll("[\r\n]", "")));
