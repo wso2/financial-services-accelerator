@@ -125,7 +125,6 @@
                         <exclude>**/*Component.class</exclude>
                         <exclude>**/*DataHolder.class</exclude>
                         <exclude>**/*Exception.class</exclude>
-                        <exclude>**/*ConsentCoreServiceUtil.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
