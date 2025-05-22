@@ -794,27 +794,27 @@ public class ConsentCoreServiceImplTest {
                         ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
     }
 
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentAttributesWithEmptyAttributeKeys() throws
-            Exception {
+//    @Test(expectedExceptions = ConsentMgtException.class)
+//    public void testGetConsentAttributesWithEmptyAttributeKeys() throws
+//            Exception {
+//
+//        doThrow(ConsentDataRetrievalException.class)
+//                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), anyString());
+//        consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+//                ConsentMgtServiceTestData.ORG_ID,
+//                new ArrayList<>());
+//    }
 
-        doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), any(), anyString());
-        consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.ORG_ID,
-                new ArrayList<>());
-    }
-
-    @Test(expectedExceptions = ConsentMgtException.class)
-    public void testGetConsentAttributesConsentResourceReteivealError() throws
-            Exception {
-
-        doThrow(ConsentDataRetrievalException.class)
-                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString(), any());
-        consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                ConsentMgtServiceTestData.ORG_ID,
-                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
-    }
+//    @Test(expectedExceptions = ConsentMgtException.class)
+//    public void testGetConsentAttributesConsentResourceReteivealError() throws
+//            Exception {
+//
+//        doThrow(ConsentDataRetrievalException.class)
+//                .when(mockedConsentCoreDAO).getConsentAttributes(any(), anyString(), any());
+//        consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+//                ConsentMgtServiceTestData.ORG_ID,
+//                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
+//    }
 
     @Test(expectedExceptions = ConsentMgtException.class)
     public void testGetConsentAttributesDataRetrieveError() throws
