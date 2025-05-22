@@ -411,8 +411,7 @@ public class ConsentAPIImpl {
                 authorizationResource.setConsentId(consentId);
                 authorizationResources.add(authorizationResource);
             }
-            authorizationResources = consentCoreService.createConsentAuthorizations(consentId,
-                    authorizationResources);
+            authorizationResources = consentCoreService.createConsentAuthorizations(authorizationResources, consentId);
 
             List<AuthorizationResourceResponseBody> authorizationResourceResponseBodyList =
                     new ArrayList<>();

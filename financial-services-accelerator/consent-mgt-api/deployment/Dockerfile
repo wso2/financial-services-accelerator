@@ -22,9 +22,10 @@ WORKDIR /app
 
 # Copy project files
 COPY . .
-COPY deployment/context.xml /app/org.wso2.financial.services.accelerator.consent.mgt.api.endpoint/src/main/webapp/META-INF/context.xml
+#COPY deployment/context.xml /app/org.wso2.financial.services.accelerator.consent.mgt.api.endpoint/src/main/webapp/META-INF/context.xml
 
-USER 10014
+#USER 10014
+
 FROM tomcat:9.0-jdk11
 
 COPY --from=builder /app/org.wso2.financial.services.accelerator.consent.mgt.api.endpoint/target/consent.war /usr/local/tomcat/consent.war
