@@ -68,8 +68,9 @@ public interface ConsentCoreService {
      * @return returns AuthorizationResource
      * @throws ConsentMgtException thrown if any error occurs in the process
      */
-    List<AuthorizationResource> createConsentAuthorizations(List<AuthorizationResource> authorizationResource,
-                                                            String consentId) throws ConsentMgtException;
+    List<AuthorizationResource> createConsentAuthorizations(String consentId,
+                                                            List<AuthorizationResource> authorizationResource)
+            throws ConsentMgtException;
 
     /**
      * This method is to retrieve an authorization resource using a given authorization ID.

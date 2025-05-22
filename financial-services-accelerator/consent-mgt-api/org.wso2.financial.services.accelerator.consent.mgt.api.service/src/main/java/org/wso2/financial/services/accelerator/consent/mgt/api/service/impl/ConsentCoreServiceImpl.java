@@ -275,9 +275,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         try (Connection connection = DatabaseUtils.getDBConnection()) {
             try {
                 detailedConsentResources = consentCoreDAO.searchConsents(connection, orgId, new ArrayList<>(),
-                        clientIds,
-                        consentTypes, applicableExistingStatus, null, null,
-                        null, null, null);
+                        clientIds, consentTypes, applicableExistingStatus, null, null, null,
+                        null, null);
 
                 if (detailedConsentResources != null) {
                     if (detailedConsentResources.isEmpty()) {
@@ -387,8 +386,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
-    public List<AuthorizationResource> createConsentAuthorizations(List<AuthorizationResource> authorizationResources,
-                                                                   String consentId)
+    public List<AuthorizationResource> createConsentAuthorizations(String consentId, List<AuthorizationResource>
+            authorizationResources)
             throws ConsentMgtException {
 
         try (Connection connection = DatabaseUtils.getDBConnection()) {

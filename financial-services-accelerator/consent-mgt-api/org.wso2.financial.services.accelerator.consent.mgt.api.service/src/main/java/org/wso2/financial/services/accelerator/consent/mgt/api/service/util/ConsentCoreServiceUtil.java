@@ -19,10 +19,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.api.service.util;
 
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.financial.services.accelerator.consent.mgt.api.dao.ConsentCoreDAO;
@@ -200,7 +197,7 @@ public class ConsentCoreServiceUtil {
      * @param connection            database connection
      * @param consentCoreDAO        consent core DAO
      * @param consentId             consent ID
-     * @param userId                user ID
+     * @param actionBy                user ID
      * @param newConsentStatus      new consent status
      * @param previousConsentStatus previous consent status
      * @param reason                reason for the status change
@@ -209,12 +206,11 @@ public class ConsentCoreServiceUtil {
      */
     public static ConsentStatusAuditRecord createAuditRecord(Connection connection, ConsentCoreDAO consentCoreDAO,
                                                              String consentId,
-                                                             String userId, String newConsentStatus,
+                                                             String actionBy, String newConsentStatus,
                                                              String previousConsentStatus,
                                                              String reason) throws ConsentDataInsertionException {
 
         // Create an audit record
-        String actionBy = StringUtils.isNotEmpty(userId) ? userId : null;
         ConsentStatusAuditRecord consentStatusAuditRecord = new ConsentStatusAuditRecord(consentId, newConsentStatus,
                 0, reason, actionBy, previousConsentStatus);
 
@@ -402,28 +398,8 @@ public class ConsentCoreServiceUtil {
         return recordIdsList;
     }
 
-
-    /**
-     * Method to parse the changed attribute JSON string to a JSON Object.
-     *
-     * @param changedAttributes Changed attribute JSON string
-     * @return JSON object with the changed attributes
-     * @throws ConsentMgtException If there is an error while parsing the JSON String
-     */
-    static JSONObject parseChangedAttributeJsonString(String changedAttributes)
-            throws ConsentMgtException {
-
-        Object changedValues;
-        try {
-            changedValues = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(changedAttributes);
-        } catch (ParseException e) {
-            throw new ConsentMgtException(ConsentError.JSON_PROCESSING_ERROR);
-        }
-        if (changedValues == null) {
-            return new JSONObject();
-        }
-        return (JSONObject) changedValues;
-
+    public static String sanitize(String input) {
+        return input == null ? "" : input.replaceAll("[\r\n]", "");
     }
 
 

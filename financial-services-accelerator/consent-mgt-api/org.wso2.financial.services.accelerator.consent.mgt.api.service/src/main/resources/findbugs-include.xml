@@ -19,4 +19,8 @@
     <Match>
         <Bug category="SECURITY"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.consent.mgt.api.service.util.ConsentCoreServiceUtil" />
+        <Method name="sanitize" params="java.lang.String" returns="java.lang.String" />
+    </Match>
 </FindBugsFilter>
