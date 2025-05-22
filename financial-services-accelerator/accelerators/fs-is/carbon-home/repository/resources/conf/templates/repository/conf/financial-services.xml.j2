@@ -245,10 +245,15 @@
         {% else %}
         <ConsentIDClaimName>consent_id</ConsentIDClaimName>
         {% endif %}
-        {% if financial_services.identity.append_consent_id_to_id_token is defined %}
-        <AppendConsentIdToIdToken>{{financial_services.identity.append_consent_id_to_id_token}}</AppendConsentIdToIdToken>
+        {% if financial_services.identity.append_consent_id_to_token_id_token is defined %}
+        <AppendConsentIdToTokenIdToken>{{financial_services.identity.append_consent_id_to_token_id_token}}</AppendConsentIdToTokenIdToken>
         {% else %}
-        <AppendConsentIdToIdToken>false</AppendConsentIdToIdToken>
+        <AppendConsentIdToTokenIdToken>false</AppendConsentIdToTokenIdToken>
+        {% endif %}
+        {% if financial_services.identity.append_consent_id_to_authz_id_token is defined %}
+        <AppendConsentIdToAuthzIdToken>{{financial_services.identity.append_consent_id_to_authz_id_token}}</AppendConsentIdToAuthzIdToken>
+        {% else %}
+        <AppendConsentIdToAuthzIdToken>false</AppendConsentIdToAuthzIdToken>
         {% endif %}
         {% if financial_services.identity.append_consent_id_to_access_token is defined %}
         <AppendConsentIdToAccessToken>{{financial_services.identity.append_consent_id_to_access_token}}</AppendConsentIdToAccessToken>

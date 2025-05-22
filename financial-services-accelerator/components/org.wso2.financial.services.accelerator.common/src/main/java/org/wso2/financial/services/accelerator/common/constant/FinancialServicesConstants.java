@@ -77,7 +77,8 @@ public class FinancialServicesConstants {
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
     public static final String INTROSPECTION_DATA_PROVIDER = "Identity.Extensions.IntrospectionDataProvider";
     public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
-    public static final String APPEND_CONSENT_ID_TO_ID_TOKEN = "Identity.AppendConsentIdToIdToken";
+    public static final String APPEND_CONSENT_ID_TO_TOKEN_ID_TOKEN = "Identity.AppendConsentIdToTokenIdToken";
+    public static final String APPEND_CONSENT_ID_TO_AUTHZ_ID_TOKEN = "Identity.AppendConsentIdToAuthzIdToken";
     public static final String APPEND_CONSENT_ID_TO_ACCESS_TOKEN = "Identity.AppendConsentIdToAccessToken";
     public static final String APPEND_CONSENT_ID_TO_TOKEN_INTROSPECT_RESPONSE = "Identity" +
             ".AppendConsentIdToTokenIntrospectResponse";
@@ -197,9 +198,12 @@ public class FinancialServicesConstants {
     public static final String URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
     public static final String ACCEPT = "Accept";
     public static final String COLON = ":";
+    public static final String SPACE_SEPARATOR = " ";
     public static final String AUTH_HEADER = "Authorization";
     public static final String BEARER_TAG = "Bearer ";
     public static final String BASIC_TAG = "Basic ";
     public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final String SCOPE = "scope";
+    public static final String REQUEST_OBJECT = "requestObject";
+    public static final String REQUEST_PARAM = "requestParam";
 }

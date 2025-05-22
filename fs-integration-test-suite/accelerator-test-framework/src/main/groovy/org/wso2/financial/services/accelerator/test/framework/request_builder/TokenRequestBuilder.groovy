@@ -252,10 +252,17 @@ class TokenRequestBuilder {
      * @param code
      * @return
      */
-    static Response getUserAccessTokenResponse(String authMethodType, List<String> scopes, String clientId, String code) {
+    static Response getUserAccessTokenResponse(String authMethodType, List<String> scopes, String clientId, String code,
+                                               boolean isCodeVerifierRequired = false) {
         JWTGenerator acceleratorJWTGenerator = new JWTGenerator()
         acceleratorJWTGenerator.setScopes(scopes)
-        String jwt = acceleratorJWTGenerator.getUserAccessTokenJwt(authMethodType, clientId, code)
+        String jwt
+
+        if(isCodeVerifierRequired) {
+            jwt = acceleratorJWTGenerator.getUserAccessTokenJwtWithCodeVerifier(authMethodType, clientId, code)
+        } else {
+            jwt = acceleratorJWTGenerator.getUserAccessTokenJwt(authMethodType, clientId, code)
+        }
 
         RestAssured.baseURI = configuration.getISServerUrl()
         Response response

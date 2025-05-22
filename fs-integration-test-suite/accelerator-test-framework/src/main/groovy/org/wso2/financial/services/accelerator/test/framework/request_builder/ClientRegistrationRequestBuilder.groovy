@@ -189,8 +189,6 @@ class ClientRegistrationRequestBuilder {
                     "code id_token"
                     ],
                 "id_token_signed_response_alg": "${idTokenSignedAlg}",
-                "id_token_encrypted_response_alg": "RSA-OAEP",
-                "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "${reqObjSignedAlg}",                            
                 "application_type": "web",
                 "software_id": "${iss}",

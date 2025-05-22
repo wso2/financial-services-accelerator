@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.DefaultOIDCClaimsCallbackHandler;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
@@ -81,12 +82,12 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
                                              Map<String, Object> claimsInJwtToken) {
 
         for (Map.Entry<String, Object> claimEntry : claimsInJwtToken.entrySet()) {
-            if (IdentityCommonConstants.SCOPE.equals(claimEntry.getKey())) {
+            if (FinancialServicesConstants.SCOPE.equals(claimEntry.getKey())) {
                 String[] nonInternalScopes = IdentityCommonUtils
                         .removeInternalScopes(claimEntry.getValue().toString()
-                                .split(IdentityCommonConstants.SPACE_SEPARATOR));
-                jwtClaimsSetBuilder.claim(IdentityCommonConstants.SCOPE, StringUtils.join(nonInternalScopes,
-                        IdentityCommonConstants.SPACE_SEPARATOR));
+                                .split(FinancialServicesConstants.SPACE_SEPARATOR));
+                jwtClaimsSetBuilder.claim(FinancialServicesConstants.SCOPE, StringUtils.join(nonInternalScopes,
+                        FinancialServicesConstants.SPACE_SEPARATOR));
             } else {
                 jwtClaimsSetBuilder.claim(claimEntry.getKey(), claimEntry.getValue());
             }

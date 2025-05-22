@@ -27,8 +27,10 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.ConsentAdminHandler;
@@ -161,26 +163,26 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         //if the OpenAPI extension is enabled for admin-consent search
         if (isExtensionsEnabled && isExternalEnrichConsentSearchResponseEnabled) {
-            JSONArray searchResult = new JSONArray();
-            searchResult.put(consentAdminData.getResponsePayload());
             // Call external service to enrich consent search response
             ExternalAPIAdminConsentSearchRequestDTO externalAPISearchRequest =
-                    new ExternalAPIAdminConsentSearchRequestDTO(SearchTypeEnum.BULK_SEARCH.getValue(), searchResult,
+                    new ExternalAPIAdminConsentSearchRequestDTO(SearchTypeEnum.BULK_SEARCH.getValue(),
+                            response.getJSONArray(ConsentExtensionConstants.DATA.toLowerCase()),
                             consentAdminData.getQueryParams());
             try {
                 ExternalAPIAdminConsentSearchResponseDTO responseDTO =
                         ExternalAPIConsentAdminUtils.callExternalService(externalAPISearchRequest);
                 consentAdminData.setResponseStatus(ResponseStatus.OK);
                 JSONObject enrichedSearchResult = new JSONObject();
-                JSONArray enrichedSearchResultArray = responseDTO.getResponsePayload();
-                if (enrichedSearchResultArray != null) {
-                    for (int i = 0; i < enrichedSearchResultArray.length(); i++) {
-                        JSONObject obj = enrichedSearchResultArray.getJSONObject(i);
-                        for (String key : obj.keySet()) {
-                            enrichedSearchResult.put(key, obj.get(key));
-                        }
-                    }
-                }
+                JSONArray enrichedSearchResultArray = responseDTO.getEnrichedSearchResult();
+
+                enrichedSearchResult.put(ConsentExtensionConstants.DATA.toLowerCase(), enrichedSearchResultArray);
+                JSONObject metadata = new JSONObject();
+                metadata.put(ConsentExtensionConstants.COUNT, enrichedSearchResultArray.length());
+                metadata.put(ConsentExtensionConstants.OFFSET, offset);
+                metadata.put(ConsentExtensionConstants.LIMIT, limit);
+                metadata.put(ConsentExtensionConstants.TOTAL, total);
+
+                enrichedSearchResult.put(ConsentExtensionConstants.METADATA, metadata);
                 consentAdminData.setResponsePayload(enrichedSearchResult);
             } catch (FinancialServicesException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -196,11 +198,10 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             response.put(ConsentExtensionConstants.METADATA, metadata);
             consentAdminData.setResponseStatus(ResponseStatus.OK);
             consentAdminData.setResponsePayload(response);
-
-            // Filter consent data based on the accounts if accounts are available in the query params.
-            if (consentAdminData.getQueryParams().containsKey(ConsentExtensionConstants.ACCOUNT_IDS)) {
-                filterConsentsByAccount(consentAdminData);
-            }
+        }
+        // Filter consent data based on the accounts if accounts are available in the query params.
+        if (consentAdminData.getQueryParams().containsKey(ConsentExtensionConstants.ACCOUNT_IDS)) {
+            filterConsentsByAccount(consentAdminData);
         }
     }
 
@@ -218,8 +219,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 String userId = ConsentAdminUtils.validateAndGetQueryParam(queryParams,
                         ConsentExtensionConstants.USER_ID_PARAM);
                 ConsentCoreService coreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
-                DetailedConsentResource consentResource = coreService
-                        .getDetailedConsent(consentId);
+                ConsentResource consentResource = coreService
+                        .getConsent(consentId , false);
                 //if the OpenAPI extension is enabled for admin-consent revoke
                 if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
                     // Call external service before revoking consent.
@@ -311,8 +312,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 try {
                     ExternalAPIAdminConsentSearchResponseDTO responseDTO =
                             ExternalAPIConsentAdminUtils.callExternalService(externalAPISearchRequest);
-                    response.put(ConsentExtensionConstants.AMENDMENT_HISTORY, responseDTO.getResponsePayload());
-                    count = responseDTO.getResponsePayload().length();
+                    response.put(ConsentExtensionConstants.AMENDMENT_HISTORY, responseDTO.getEnrichedSearchResult());
+                    count = responseDTO.getEnrichedSearchResult().length();
 
                 } catch (FinancialServicesException e) {
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -336,6 +337,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
     }
 
     @Override
+    @Generated(message = "Ignoring since method contains no logics")
     public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException {
 
         try {

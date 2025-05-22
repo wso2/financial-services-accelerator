@@ -852,7 +852,7 @@ class ClientRegistrationTests extends FSConnectorTest {
     }
 
     @Test
-    void "Invoke registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for for private_key_jwt method" (){
+    void "Invoke registration request enabling token_endpoint_allow_reuse_pvt_key_jwt for private_key_jwt method" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
                 configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))

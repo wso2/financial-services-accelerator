@@ -1121,9 +1121,57 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Method to get Key Manager Extension Impl config for event notifications.
-     * @return
+     * Returns the JSON path to extract the consent ID from the request object.
+     *
+     * @return String JSON path to extract the consent ID
      */
+    public String getConsentIdExtractionJsonPath() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_ID_EXTRACTION_JSON_PATH);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Returns the regex pattern to extract the consent ID from the extracted consent ID.
+     *
+     * @return String regex pattern to extract the consent ID
+     */
+    public String getConsentIdExtractionRegexPattern() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_ID_EXTRACTION_REGEX_PATTERN);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Returns the source of the consent ID for the authorization flow.
+     *
+     * @return String source of the consent ID
+     */
+    public String getAuthFlowConsentIdSource() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.AUTH_FLOW_CONSENT_ID_SOURCE);
+        return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Returns the key to extract the consent ID from the request param.
+     *
+     * @return String key to extract the consent ID from request param
+     */
+    public String getConsentIdExtractionKey() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_ID_EXTRACTION_KEY);
+        return config.map(String::trim).orElse(null);
+    }
+    
+    /**
+     * Method to get Key Manager Extension Impl config for event notifications.
+    * @return
+    */
     public String getKeyManagerExtensionImpl() {
 
         Optional<String> source = getConfigurationFromKeyAsString(
