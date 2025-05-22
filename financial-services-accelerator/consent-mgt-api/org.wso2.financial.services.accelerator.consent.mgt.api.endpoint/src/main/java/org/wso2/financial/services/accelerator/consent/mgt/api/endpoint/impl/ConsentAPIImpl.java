@@ -199,9 +199,7 @@ public class ConsentAPIImpl {
                     consentStatusUpdateResource.getUserId(),
                     orgId);
 
-            JSONObject message = new JSONObject();
-            message.put("message", "Status Updated");
-            return Response.ok().entity(message).build();
+            return Response.ok().entity(consentStatusUpdateResource).build();
         } catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
         }
@@ -231,7 +229,7 @@ public class ConsentAPIImpl {
                     bulkConsentStatusUpdateResource.getConsentType(),
                     new ArrayList<>(bulkConsentStatusUpdateResource.getApplicableStatusesForStateChange()));
 
-            return Response.ok().entity("Status Updated").build();
+            return Response.ok().entity(bulkConsentStatusUpdateResource).build();
         } catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
         }
@@ -255,10 +253,7 @@ public class ConsentAPIImpl {
             boolean result = consentCoreService.updateConsentExpiryTime(consentId,
                     consentExpiryTimeUpdateDTO.getExpiryTime(), orgId);
             if (result) {
-
-                JSONObject message = new JSONObject();
-                message.put("message", "Expiry Time Updated");
-                return Response.ok().entity(message).build();
+                return Response.ok().entity(consentExpiryTimeUpdateDTO).build();
             } else {
                 return Response.serverError().build();
 
@@ -287,9 +282,7 @@ public class ConsentAPIImpl {
 
             boolean result = consentCoreService.deleteConsent(consentId, orgId);
             if (result) {
-                JSONObject message = new JSONObject();
-                message.put("message", "Consent purged");
-                return Response.ok().entity(message).build();
+                return Response.noContent().build();
             } else {
                 return Response.serverError().build();
 
@@ -453,7 +446,7 @@ public class ConsentAPIImpl {
 
             consentCoreService.updateAuthorizationResource(authorizationId, authorizationResource, orgId);
 
-            return Response.ok().entity("Authorization Resource Updated").build();
+            return Response.ok().entity(authorizationResourceRequestBody).build();
 
         } catch (ConsentMgtException e) {
             return handleConsentMgtException(e);
@@ -478,7 +471,7 @@ public class ConsentAPIImpl {
 
             boolean result = consentCoreService.deleteAuthorizationResource(authorizationId, orgId);
             if (result) {
-                return Response.ok().entity("Authorization Resource Deleted").build();
+                return Response.noContent().build();
             } else {
                 return Response.serverError().build();
             }
