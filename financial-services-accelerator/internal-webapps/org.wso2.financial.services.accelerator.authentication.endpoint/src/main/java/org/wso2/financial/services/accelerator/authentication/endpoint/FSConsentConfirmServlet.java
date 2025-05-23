@@ -27,7 +27,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.poi.sl.draw.geom.PresetGeometries;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
