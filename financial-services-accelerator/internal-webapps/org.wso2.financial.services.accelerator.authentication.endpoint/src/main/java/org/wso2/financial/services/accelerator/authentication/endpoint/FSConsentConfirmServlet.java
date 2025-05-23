@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -108,8 +109,20 @@ public class FSConsentConfirmServlet extends HttpServlet {
 
         consentData.put(Constants.METADATA, metadata);
 
+        String sessionDataKey = request.getParameter(Constants.SESSION_DATA_KEY_CONSENT);
+
+        // validating session data key format
+        try {
+            UUID.fromString(sessionDataKey);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid UUID", e);
+            session.invalidate();
+            response.sendRedirect("retry.do?status=Error&statusMsg=Invalid UUID");
+            return;
+        }
+
         String redirectURL = persistConsentData(
-                consentData, request.getParameter(Constants.SESSION_DATA_KEY_CONSENT), getServletContext());
+                consentData, sessionDataKey, getServletContext());
 
         // Invoke authorize flow
         if (redirectURL != null) {
