@@ -27,6 +27,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.poi.sl.draw.geom.PresetGeometries;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -69,9 +70,22 @@ public class FSConsentConfirmServlet extends HttpServlet {
     // Suppressed warning count - 1
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        String sessionDataKey = request.getParameter(Constants.SESSION_DATA_KEY_CONSENT);
+        HttpSession session = request.getSession();
+
+        // validating session data key format
+        try {
+            UUID.fromString(sessionDataKey);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid UUID", e);
+            session.invalidate();
+            response.sendRedirect("retry.do?status=Error&statusMsg=Invalid UUID");
+            return;
+        }
+
         fsAuthServletTK = AuthenticationUtils.getAuthExtension();
 
-        HttpSession session = request.getSession();
+
         Map<String, String> metadata = new HashMap<>();
         Map<String, String> browserCookies = new HashMap<>();
         JSONObject consentData = new JSONObject();
@@ -108,18 +122,6 @@ public class FSConsentConfirmServlet extends HttpServlet {
         }
 
         consentData.put(Constants.METADATA, metadata);
-
-        String sessionDataKey = request.getParameter(Constants.SESSION_DATA_KEY_CONSENT);
-
-        // validating session data key format
-        try {
-            UUID.fromString(sessionDataKey);
-        } catch (IllegalArgumentException e) {
-            log.error("Invalid UUID", e);
-            session.invalidate();
-            response.sendRedirect("retry.do?status=Error&statusMsg=Invalid UUID");
-            return;
-        }
 
         String redirectURL = persistConsentData(
                 consentData, sessionDataKey, getServletContext());

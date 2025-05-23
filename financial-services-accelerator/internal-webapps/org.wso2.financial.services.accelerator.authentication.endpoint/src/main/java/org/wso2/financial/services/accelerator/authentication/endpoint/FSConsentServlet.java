@@ -77,8 +77,8 @@ public class FSConsentServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest originalRequest, HttpServletResponse response)
             throws IOException, ServletException {
+
         HttpServletRequest request = originalRequest;
-        fsAuthServletTK = AuthenticationUtils.getAuthExtension();
 
         // get consent data
         String sessionDataKey = request.getParameter(Constants.SESSION_DATA_KEY_CONSENT);
@@ -92,6 +92,8 @@ public class FSConsentServlet extends HttpServlet {
             response.sendRedirect("retry.do?status=Error&statusMsg=Invalid UUID");
             return;
         }
+
+        fsAuthServletTK = AuthenticationUtils.getAuthExtension();
 
         HttpResponse consentDataResponse = getConsentDataWithKey(sessionDataKey, getServletContext());
         JSONObject dataSet = new JSONObject();
