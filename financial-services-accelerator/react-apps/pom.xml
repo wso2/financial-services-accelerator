@@ -23,7 +23,7 @@
     <parent>
         <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-RC1-SNAPSHOT</version>
+        <version>4.0.0-RC3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
