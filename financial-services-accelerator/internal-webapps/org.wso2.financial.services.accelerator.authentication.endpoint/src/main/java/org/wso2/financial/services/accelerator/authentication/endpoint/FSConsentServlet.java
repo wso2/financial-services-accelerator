@@ -87,9 +87,9 @@ public class FSConsentServlet extends HttpServlet {
         try {
             UUID.fromString(sessionDataKey);
         } catch (IllegalArgumentException e) {
-            log.error("Invalid UUID", e);
+            log.error("Invalid session data key", e);
             request.getSession().invalidate();
-            response.sendRedirect("retry.do?status=Error&statusMsg=Invalid UUID");
+            response.sendRedirect("retry.do?status=Error&statusMsg=Invalid session data key");
             return;
         }
 
