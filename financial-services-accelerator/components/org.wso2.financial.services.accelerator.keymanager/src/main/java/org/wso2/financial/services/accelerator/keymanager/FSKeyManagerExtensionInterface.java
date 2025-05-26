@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
+import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,11 +66,12 @@ public interface FSKeyManagerExtensionInterface {
     /**
      * Do changes to service provider before updating the service provider properties.
      *
+     * @param  oAuthApplicationInfo OAuth Application Info
      * @param  spAppData            Service provider data
      * @param  additionalProperties Values for additional property list defined in the config
      * @param isCreateApp           Whether this functions is called at app creation
      * @throws APIManagementException when failed to validate a given property
      */
-    void doPreUpdateSpApp(JSONObject spAppData, HashMap<String, String> additionalProperties, boolean isCreateApp)
+    void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData, HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException;
 }

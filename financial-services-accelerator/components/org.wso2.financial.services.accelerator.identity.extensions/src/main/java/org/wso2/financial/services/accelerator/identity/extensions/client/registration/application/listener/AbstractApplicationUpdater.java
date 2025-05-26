@@ -31,18 +31,20 @@ import java.util.Map;
  */
 public abstract class AbstractApplicationUpdater {
 
-    public abstract void setOauthAppProperties(OAuthConsumerAppDTO oauthApplication, Map<String, Object> spMetaData)
+    public abstract void setOauthAppProperties(boolean isRegulatoryApp, OAuthConsumerAppDTO oauthApplication,
+                                               Map<String, Object> spMetaData)
             throws FinancialServicesException;
 
-    public abstract void setServiceProviderProperties(ServiceProvider serviceProvider,
+    public abstract void setServiceProviderProperties(boolean isRegulatoryApp, ServiceProvider serviceProvider,
                                            ServiceProviderProperty[] serviceProvideProperties)
             throws FinancialServicesException;
 
-    public abstract void setAuthenticators(String tenantDomain, ServiceProvider serviceProvider,
+    public abstract void setAuthenticators(boolean isRegulatoryApp, String tenantDomain,
+                                           ServiceProvider serviceProvider,
                                            LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig)
             throws FinancialServicesException;
 
-    public abstract void setConditionalAuthScript (ServiceProvider serviceProvider,
+    public abstract void setConditionalAuthScript(boolean isRegulatoryApp, ServiceProvider serviceProvider,
                                            LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig)
             throws FinancialServicesException;
 
@@ -50,14 +52,15 @@ public abstract class AbstractApplicationUpdater {
                                             LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig,
                                             String tenantDomain, String userName) throws FinancialServicesException;
 
-    public abstract void doPostCreateApplication(ServiceProvider serviceProvider,
+    public abstract void doPostCreateApplication(boolean isRegulatoryApp, ServiceProvider serviceProvider,
                                              LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig,
                                             String tenantDomain, String userName) throws FinancialServicesException;
 
     public abstract void doPostGetApplication(ServiceProvider serviceProvider, String applicationName,
                                             String tenantDomain) throws FinancialServicesException;
 
-    public abstract void doPreUpdateApplication(OAuthConsumerAppDTO oauthApplication, ServiceProvider serviceProvider,
+    public abstract void doPreUpdateApplication(boolean isRegulatory, OAuthConsumerAppDTO oauthApplication,
+                                                ServiceProvider serviceProvider,
                                             LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig,
                                             String tenantDomain, String userName)
             throws FinancialServicesException;

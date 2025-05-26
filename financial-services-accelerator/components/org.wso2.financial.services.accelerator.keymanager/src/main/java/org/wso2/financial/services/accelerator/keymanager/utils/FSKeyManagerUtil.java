@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.ExceptionCodes;
+import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
@@ -36,12 +37,16 @@ import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.util.CertificateUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.keymanager.FSKeyManagerExtensionInterface;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
 
 import java.lang.reflect.InvocationTargetException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -192,5 +197,54 @@ public class FSKeyManagerUtil {
         } else {
             return tenantId;
         }
+    }
+
+    /**
+     * Obtain the value from Configuration DTO object.
+     * @param obAdditionalProperties Additional Property Map
+     * @param propertyName Property Name
+     * @return value for given property
+     * @throws APIManagementException
+     */
+    public static String getValueForAdditionalProperty(Map<String, ConfigurationDto> obAdditionalProperties,
+                                                       String propertyName) throws APIManagementException {
+        ConfigurationDto property = obAdditionalProperties.get(propertyName);
+        if (property != null) {
+            List<Object> values = property.getValues();
+            if (values.size() > 0) {
+                return (String) values.get(0);
+            } else {
+                String msg = "No value found for additional property: " + propertyName;
+                log.error(msg);
+                throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+            }
+        } else {
+            String msg = propertyName + " property not found in additional properties";
+            log.error(msg);
+            throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+        }
+    }
+
+    /**
+     * Validate certificate provided as user input.
+     * @param cert Certificate string
+     * @throws APIManagementException if the certificate is invalid or expired
+     */
+    @Generated(message = "Excluding from code coverage since it is covered from other method")
+    public static void validateCertificate(String cert) throws APIManagementException {
+        X509Certificate certificate;
+        try {
+            certificate = CertificateUtils.parseCertificate(cert);
+        } catch (FinancialServicesException e) {
+            String msg = "Certificate unavailable";
+            log.error(msg);
+            throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+        }
+        if (CertificateUtils.isExpired(certificate)) {
+            String msg = "Provided certificate expired";
+            log.error(msg);
+            throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+        }
+        log.debug("Provided certificate successfully validated");
     }
 }

@@ -94,6 +94,7 @@ public class FinancialServicesConstants {
     public static final String DCR_PARAM_NAME_TAG = "Name";
     public static final String POST_APPLICATION_LISTENER = "AppRegistration.ApplicationUpdaterImpl";
     public static final String DCR_SERVICE_EXTENSION = "AppRegistration.DCR.DCRServiceExtension";
+    public static final String DCR_REGULATORY_ISSUERS = "DCR.RegulatoryIssuers.Issuer";
     public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
             ".DisplayName";
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
@@ -206,4 +207,5 @@ public class FinancialServicesConstants {
     public static final String SCOPE = "scope";
     public static final String REQUEST_OBJECT = "requestObject";
     public static final String REQUEST_PARAM = "requestParam";
+    public static final String REGULATORY = "regulatory";
 }

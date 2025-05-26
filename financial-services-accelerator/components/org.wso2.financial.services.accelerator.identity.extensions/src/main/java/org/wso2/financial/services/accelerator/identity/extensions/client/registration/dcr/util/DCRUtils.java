@@ -21,15 +21,12 @@ package org.wso2.financial.services.accelerator.identity.extensions.client.regis
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
-import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
 import org.wso2.carbon.identity.oauth.dcr.exception.DCRMClientException;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -62,24 +59,6 @@ public class DCRUtils {
 
     private static final Log log = LogFactory.getLog(DCRUtils.class);
     private static final IdentityExtensionsDataHolder identityDataHolder = IdentityExtensionsDataHolder.getInstance();
-    private static final FinancialServicesConfigurationService configurationService =
-            identityDataHolder.getConfigurationService();
-
-    /**
-     * Method to extract Fapi Compliant Property From Service Provider.
-     * @param serviceProvider   Service Provider
-     *
-     * @return Fapi Compliant Property
-     * @throws IdentityOAuthAdminException When there is an error while retrieving OAuthConsumerAppDTO
-     * @throws RequestObjectException When there is an error while retrieving Fapi compliant property
-     */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    public static boolean getFapiCompliantPropertyFromSP(ServiceProvider serviceProvider)
-            throws IdentityOAuthAdminException, RequestObjectException {
-
-        OAuthConsumerAppDTO oAuthConsumerAppDTO = getOAuthConsumerAppDTO(serviceProvider.getApplicationName());
-        return FinancialServicesUtils.isRegulatoryApp(oAuthConsumerAppDTO.getOauthConsumerKey());
-    }
 
     /**
      * Method to get OAuthConsumerAppDTO using service provider application name.
@@ -104,7 +83,7 @@ public class DCRUtils {
 
         Set<String> responseParams = new HashSet<>();
 
-        Map<String, Map<String, Object>> dcrConfigs = configurationService.getDCRParamsConfig();
+        Map<String, Map<String, Object>> dcrConfigs = identityDataHolder.getConfigurationService().getDCRParamsConfig();
 
         dcrConfigs.forEach((key, value) -> {
             if (Boolean.parseBoolean(value.get(IdentityCommonConstants.INCLUDE_IN_RESPONSE).toString())) {
@@ -121,7 +100,8 @@ public class DCRUtils {
      */
     public static List<DynamicClientRegistrationValidator> getEnabledDcrValidators() {
 
-        Map<String, Map<String, Object>> dcrValidators = configurationService.getDCRValidatorsConfig();
+        Map<String, Map<String, Object>> dcrValidators = identityDataHolder.getConfigurationService()
+                .getDCRValidatorsConfig();
 
         Map<Integer, DynamicClientRegistrationValidator> validatorMap = new HashMap<>();
 

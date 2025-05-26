@@ -31,8 +31,9 @@ public class FSKeyManagerConstants {
     public static final String API_KEY_VALIDATOR_URL = "APIKeyValidator.ServerURL";
     public static final String SERVICE = "/services";
 
-    public static final String APP_RETRIEVAL_URL = "/api/server/v1/applications/";
+    public static final String APP_MGMT_API_URL = "/api/server/v1/applications/";
     public static final String DCR_EP = "/api/identity/oauth2/dcr/v1.1/register/";
+    public static final String SP_CERTIFICATE = "sp_certificate";
 
     public static final Map<String, String> APP_CONFIG_MAPPING = Map.of(
             "ext_refresh_token_lifetime", "refresh_token_expiry_time",

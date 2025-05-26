@@ -22,6 +22,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.util.CertificateUtils;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
@@ -51,7 +53,7 @@ public class IdentityServerUtils {
     public static String getAppIdFromClientId(String clientId) throws FinancialServicesException {
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL;
+            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL;
             URIBuilder builder = new URIBuilder(url);
             URI uri = builder.build();
             HttpGet httpGet = new HttpGet(uri.toString() + "?filter=clientId+eq+".concat(clientId));
@@ -83,7 +85,7 @@ public class IdentityServerUtils {
         String appId = getAppIdFromClientId(clientId);
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_RETRIEVAL_URL + appId;
+            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL + appId;
             URIBuilder builder = new URIBuilder(url);
             HttpGet httpGet = new HttpGet(builder.build());
 
@@ -104,20 +106,62 @@ public class IdentityServerUtils {
         }
     }
 
+    public static void updateSPApplication(String clientId, String certificate)
+            throws FinancialServicesException {
+
+        String appId = getAppIdFromClientId(clientId);
+
+        try {
+            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL + appId;
+            URIBuilder builder = new URIBuilder(url);
+            HttpPatch httpPatch = new HttpPatch(builder.build());
+
+            JSONObject appUpdatePayload = constructAppUpdatePayload(certificate);
+            StringEntity params = new StringEntity(appUpdatePayload.toString());
+            httpPatch.setEntity(params);
+            httpPatch.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
+                    FinancialServicesConstants.JSON_CONTENT_TYPE);
+            httpPatch.setHeader(FinancialServicesConstants.ACCEPT,
+                    FinancialServicesConstants.JSON_CONTENT_TYPE);
+
+            String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
+            String password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD);
+            httpPatch.setHeader(FinancialServicesConstants.AUTH_HEADER,
+                    FinancialServicesUtils.getBasicAuthHeader(userName, password));
+            CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPatch);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new FinancialServicesException("Error while getting sp application from client id");
+            }
+        } catch (IOException e) {
+            throw new FinancialServicesException("Error while getting sp application from client id", e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static JSONObject constructAppUpdatePayload(String certificateContent) throws FinancialServicesException {
+        JSONObject appUpdatePayload = new JSONObject();
+        JSONObject advancedConfigurations = new JSONObject();
+        JSONObject certificate = new JSONObject();
+        certificate.put("type", "PEM");
+        certificate.put("value", CertificateUtils.parseCertificate(certificateContent).toString());
+        advancedConfigurations.put("certificate", certificate);
+        appUpdatePayload.put("advancedConfigurations", advancedConfigurations);
+        return appUpdatePayload;
+    }
+
     /**
-     * Method to update the SP application in the Identity server.
+     * Method to update the DCR application in the Identity server.
      *
      * @param clientId                Client ID of the application
      * @param appName                 Application name
      * @param attributes              Map of attributes to be updated
-     * @param oAuthApplicationInfo    OAuth application info
      * @throws FinancialServicesException   If an error occurs while updating the application
      */
-    public static void updateSPApplication(String clientId, String appName, Map<String, Object> attributes,
-                                                 OAuthApplicationInfo oAuthApplicationInfo)
+    public static void updateDCRApplication(String clientId, String appName, Map<String, Object> attributes)
             throws FinancialServicesException {
 
-        JSONObject spApplication = constructDCRUpdatePayload(appName, attributes, oAuthApplicationInfo);
+        JSONObject spApplication = constructDCRUpdatePayload(appName, attributes);
 
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.DCR_EP + clientId;
@@ -146,32 +190,14 @@ public class IdentityServerUtils {
      *
      * @param appName                  Application name
      * @param attributes               Map of attributes
-     * @param oAuthApplicationInfo     OAuth application info
      * @return JSONObject             DCR payload
      */
-    private static JSONObject constructDCRUpdatePayload(String appName, Map<String, Object> attributes,
-                                                        OAuthApplicationInfo oAuthApplicationInfo) {
+    private static JSONObject constructDCRUpdatePayload(String appName, Map<String, Object> attributes) {
 
         JSONObject spApplication = new JSONObject();
         spApplication.put("client_name", appName);
         spApplication.put("tls_client_certificate_bound_access_tokens", true);
         spApplication.put("additionalAttributes", attributes);
-
-//        JSONObject additionalPropertiesJSON = new JSONObject((String) oAuthApplicationInfo
-//                .getParameter(APIConstants.JSON_ADDITIONAL_PROPERTIES));
-//        for (String key : additionalPropertiesJSON.keySet()) {
-//            // Existing values in the additional properties JSON object will start with "ext_" prefix.
-//            // Updating values will come without the prefix, example if refresh_token_expiry_time is modified the
-//            // existing value will come as ext_refresh_token_lifetime, new value will come as refresh_token_expiry
-//            _time.
-//            // To update the values in IS DCR application we need add the updating value with the prefix.
-//            if (key.startsWith("ext_")) {
-//                String mappedKey = FSKeyManagerConstants.APP_CONFIG_MAPPING.get(key);
-//                if (additionalPropertiesJSON.has(mappedKey)) {
-//                    spApplication.put(key, additionalPropertiesJSON.getString(mappedKey));
-//                }
-//            }
-//        }
 
         return spApplication;
     }

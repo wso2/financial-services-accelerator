@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
+import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class FSKeyManagerExtensionImpl implements FSKeyManagerExtensionInterface
     }
 
     @Override
-    public void doPreUpdateSpApp(JSONObject spAppData, HashMap<String, String> additionalProperties,
+    public void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData, HashMap<String, String> additionalProperties,
                                  boolean isCreateApp) throws APIManagementException {
 
     }

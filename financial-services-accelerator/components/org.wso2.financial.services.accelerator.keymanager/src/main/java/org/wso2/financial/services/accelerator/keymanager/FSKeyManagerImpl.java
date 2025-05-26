@@ -34,6 +34,7 @@ import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
@@ -116,7 +117,10 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
                 for (ConfigurationDto configurationDto : applicationConfigurationDtoList) {
                     String key = configurationDto.getName();
-                    String values = additionalPropertiesJson.get(key).toString();
+                    String values = null;
+                    if (additionalPropertiesJson.has(key)) {
+                        values = additionalPropertiesJson.get(key).toString();
+                    }
 
                     if (values == null) {
                         // AbstractKeyManager Validations
@@ -194,7 +198,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
         HashMap<String, String> additionalProperties = FSKeyManagerUtil
                 .getValuesForAdditionalProperties(oauthAppRequest);
-        if (Boolean.parseBoolean(additionalProperties.get("regulatory"))) {
+        if (Boolean.parseBoolean(additionalProperties.get(FinancialServicesConstants.REGULATORY))) {
             // Adding SP property to identify create request. Will be removed when setting up authenticators.
             additionalProperties.put("AppCreateRequest", "true");
         }
@@ -283,14 +287,23 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
             throws APIManagementException {
 
         try {
-            doPreUpdateSpApp(serviceProviderAppData, additionalProperties, isCreateApp);
+            doPreUpdateSpApp(oAuthApplicationInfo, serviceProviderAppData, additionalProperties, isCreateApp);
             // Iterate FS specific additional properties to check whether they override the value of any predefined
             // sp properties in application management listeners
             Map<String, Object> spProperties = IdentityServerUtils.constructSPPropertiesList(
                     IdentityServerUtils.getSPMetadataFromSPApp(serviceProviderAppData), additionalProperties);
 
-            IdentityServerUtils.updateSPApplication(serviceProviderAppData.getString("clientId"), spAppName,
-                    spProperties, oAuthApplicationInfo);
+            // Update the DCR application
+            IdentityServerUtils.updateDCRApplication(serviceProviderAppData.getString("clientId"), spAppName,
+                    spProperties);
+
+            boolean isAppCreateRequest = Boolean.parseBoolean(additionalProperties.get("AppCreateRequest"));
+            boolean isRegulatory = Boolean.parseBoolean(additionalProperties
+                    .get(FinancialServicesConstants.REGULATORY));
+            if (isAppCreateRequest && isRegulatory) {
+                String certificate = additionalProperties.get(FSKeyManagerConstants.SP_CERTIFICATE);
+                IdentityServerUtils.updateSPApplication(serviceProviderAppData.getString("clientId"), certificate);
+            }
         } catch (FinancialServicesException e) {
             log.error("Error while updating service provider application properties", e);
             throw new APIManagementException("Error while updating service provider application properties", e);
@@ -328,6 +341,14 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
     public void validateAdditionalProperties(Map<String, ConfigurationDto> fsAdditionalProperties)
             throws APIManagementException {
+
+        String regulatory = FSKeyManagerUtil.getValueForAdditionalProperty(fsAdditionalProperties,
+                FinancialServicesConstants.REGULATORY);
+        if (Boolean.parseBoolean(regulatory)) {
+            String spCertificate = FSKeyManagerUtil.getValueForAdditionalProperty(fsAdditionalProperties,
+                    FSKeyManagerConstants.SP_CERTIFICATE);
+            FSKeyManagerUtil.validateCertificate(spCertificate);
+        }
 
         FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
         if (keyManagerExtensionImpl != null) {
@@ -369,19 +390,20 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     /**
      * Do changes to service provider before updating the service provider properties.
      *
+     * @param oAuthApplicationInfo  OAuthApplicationInfo from the request
      * @param spAppData             Service provider application data
      * @param additionalProperties  AdditionalProperties
      * @param isCreateApp           Whether this function is called at app creation
      * @throws APIManagementException when failed to validate a given property
      */
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
-    public void doPreUpdateSpApp(JSONObject spAppData, HashMap<String, String> additionalProperties,
+    public void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData, HashMap<String, String> additionalProperties,
                                  boolean isCreateApp)
             throws APIManagementException {
 
         FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
         if (keyManagerExtensionImpl != null) {
-            keyManagerExtensionImpl.doPreUpdateSpApp(spAppData, additionalProperties, isCreateApp);
+            keyManagerExtensionImpl.doPreUpdateSpApp(oAuthApplicationInfo, spAppData, additionalProperties, isCreateApp);
         }
     }
 
