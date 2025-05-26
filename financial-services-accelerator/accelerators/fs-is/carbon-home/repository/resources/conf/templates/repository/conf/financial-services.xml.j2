@@ -47,6 +47,11 @@
         {% endif %}
     </JDBCPersistenceManager>
     <Consent>
+        {% if financial_services.consent.consent_id_claim_name is defined %}
+        <ConsentIDClaimName>{{financial_services.consent.consent_id_claim_name}}</ConsentIDClaimName>
+        {% else %}
+        <ConsentIDClaimName>consent_id</ConsentIDClaimName>
+        {% endif %}
         {% if financial_services.consent.is_pre_initiated_consent is defined %}
         <PreInitiatedConsent>{{financial_services.consent.is_pre_initiated_consent}}</PreInitiatedConsent>
         {% endif %}
@@ -240,11 +245,6 @@
             </ServletExtension>
             {% endif %}
         </AuthenticationWebApp>
-        {% if financial_services.identity.consent_id_claim_name is defined %}
-        <ConsentIDClaimName>{{financial_services.identity.consent_id_claim_name}}</ConsentIDClaimName>
-        {% else %}
-        <ConsentIDClaimName>consent_id</ConsentIDClaimName>
-        {% endif %}
         {% if financial_services.identity.append_consent_id_to_token_id_token is defined %}
         <AppendConsentIdToTokenIdToken>{{financial_services.identity.append_consent_id_to_token_id_token}}</AppendConsentIdToTokenIdToken>
         {% else %}

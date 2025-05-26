@@ -454,5 +454,5 @@ response_params = ["software_statement", "software_id", "token_endpoint_auth_sig
 max_connections = 2000
 max_connections_per_route = 1500
 
-[financial_services.identity]
+[financial_services.consent]
 consent_id_claim_name = "consent_id"

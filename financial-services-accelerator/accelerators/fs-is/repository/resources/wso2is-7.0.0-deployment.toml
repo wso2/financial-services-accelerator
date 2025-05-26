@@ -503,6 +503,7 @@ priority = 9
 
 #================consent management==============
 [financial_services.consent]
+consent_id_claim_name="consent_id"
 is_pre_initiated_consent=true # Set to true if the consent is pre-initiated by the TPP
 auth_flow_consent_id_source="requestObject" # can be one of "requestObject" or "requestParam"
 
@@ -571,7 +572,6 @@ allowed_api_resources=["domestic-payment-consents"]
 enabled=false
 
 [financial_services.identity]
-consent_id_claim_name="consent_id"
 append_consent_id_to_token_id_token=false
 append_consent_id_to_authz_id_token=true
 append_consent_id_to_access_token=false

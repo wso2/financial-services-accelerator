@@ -42,7 +42,7 @@
         <MaxConnections>2000</MaxConnections>
         <MaxConnectionsPerRoute>1500</MaxConnectionsPerRoute>
     </HTTPConnectionPool>
-    <Identity>
+    <Consent>
         <ConsentIDClaimName>consent_id</ConsentIDClaimName>
-    </Identity>
+    </Consent>
 </Server>

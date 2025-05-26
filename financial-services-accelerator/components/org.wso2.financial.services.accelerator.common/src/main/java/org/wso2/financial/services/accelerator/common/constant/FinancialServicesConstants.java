@@ -76,7 +76,6 @@ public class FinancialServicesConstants {
     public static final String GRANT_HANDLER = "Identity.Extensions.GrantHandler";
     public static final String CLAIM_PROVIDER = "Identity.Extensions.ClaimProvider";
     public static final String INTROSPECTION_DATA_PROVIDER = "Identity.Extensions.IntrospectionDataProvider";
-    public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
     public static final String APPEND_CONSENT_ID_TO_TOKEN_ID_TOKEN = "Identity.AppendConsentIdToTokenIdToken";
     public static final String APPEND_CONSENT_ID_TO_AUTHZ_ID_TOKEN = "Identity.AppendConsentIdToAuthzIdToken";
     public static final String APPEND_CONSENT_ID_TO_ACCESS_TOKEN = "Identity.AppendConsentIdToAccessToken";
@@ -172,6 +171,7 @@ public class FinancialServicesConstants {
     public static final String OAUTH2 = "OAuth2";
 
     // Consent ID extraction Constants
+    public static final String CONSENT_ID_CLAIM_NAME = "Consent.ConsentIDClaimName";
     public static final String IS_PRE_INITIATED_CONSENT = "Consent.PreInitiatedConsent";
     public static final String AUTH_FLOW_CONSENT_ID_SOURCE = "Consent.AuthFlowConsentIdSource";
     public static final String CONSENT_ID_EXTRACTION_JSON_PATH = "Consent.ConsentIdExtraction.JsonPath";

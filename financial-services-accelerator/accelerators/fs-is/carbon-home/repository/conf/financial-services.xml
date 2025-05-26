@@ -25,6 +25,7 @@
         <ConnectionVerificationTimeout>1</ConnectionVerificationTimeout>
     </JDBCPersistenceManager>
     <Consent>
+        <ConsentIDClaimName>consent_id</ConsentIDClaimName>
         <ManageHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl.DefaultConsentManageHandler</ManageHandler>
         <AuthorizeSteps>
             <Retrieve>
@@ -67,7 +68,6 @@
         <AuthenticationWebApp>
             <ServletExtension>org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl</ServletExtension>
         </AuthenticationWebApp>
-        <ConsentIDClaimName>consent_id</ConsentIDClaimName>
         <Extensions>
             <RequestObjectValidator>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator</RequestObjectValidator>
             <ResponseTypeHandler>org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl</ResponseTypeHandler>
