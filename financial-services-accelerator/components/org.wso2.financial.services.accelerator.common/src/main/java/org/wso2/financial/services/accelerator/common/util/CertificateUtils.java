@@ -71,7 +71,7 @@ public class CertificateUtils {
      * @param value certificate as a string
      * @return certificate without illegal base64 characters
      */
-    private static String removeIllegalBase64Characters(String value) {
+    public static String removeIllegalBase64Characters(String value) {
         if (value.contains(BEGIN_CERT)
                 && value.contains(END_CERT)) {
 

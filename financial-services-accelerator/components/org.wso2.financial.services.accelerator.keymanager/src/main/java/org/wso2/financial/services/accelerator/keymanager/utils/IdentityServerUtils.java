@@ -28,7 +28,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.CertificateUtils;
@@ -144,7 +143,7 @@ public class IdentityServerUtils {
         JSONObject advancedConfigurations = new JSONObject();
         JSONObject certificate = new JSONObject();
         certificate.put("type", "PEM");
-        certificate.put("value", CertificateUtils.parseCertificate(certificateContent).toString());
+        certificate.put("value", CertificateUtils.removeIllegalBase64Characters(certificateContent));
         advancedConfigurations.put("certificate", certificate);
         appUpdatePayload.put("advancedConfigurations", advancedConfigurations);
         return appUpdatePayload;

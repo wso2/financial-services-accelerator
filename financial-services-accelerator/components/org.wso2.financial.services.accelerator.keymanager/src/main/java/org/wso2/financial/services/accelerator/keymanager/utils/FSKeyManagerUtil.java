@@ -214,12 +214,14 @@ public class FSKeyManagerUtil {
             if (values.size() > 0) {
                 return (String) values.get(0);
             } else {
-                String msg = "No value found for additional property: " + propertyName;
+                String msg = String.format("No value found for additional property: %s",
+                        propertyName.replaceAll("[\r\n]", ""));
                 log.error(msg);
                 throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
             }
         } else {
-            String msg = propertyName + " property not found in additional properties";
+            String msg = String.format("%s property not found in additional properties",
+                    propertyName.replaceAll("[\r\n]", ""));
             log.error(msg);
             throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
         }

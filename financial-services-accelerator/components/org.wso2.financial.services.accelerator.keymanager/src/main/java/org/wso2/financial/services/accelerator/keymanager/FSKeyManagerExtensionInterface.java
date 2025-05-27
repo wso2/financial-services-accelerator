@@ -72,6 +72,7 @@ public interface FSKeyManagerExtensionInterface {
      * @param isCreateApp           Whether this functions is called at app creation
      * @throws APIManagementException when failed to validate a given property
      */
-    void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData, HashMap<String, String> additionalProperties, boolean isCreateApp)
+    void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData,
+                          HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException;
 }

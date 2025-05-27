@@ -51,8 +51,9 @@ public class FSKeyManagerExtensionImpl implements FSKeyManagerExtensionInterface
     }
 
     @Override
-    public void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData, HashMap<String, String> additionalProperties,
-                                 boolean isCreateApp) throws APIManagementException {
+    public void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData,
+                                 HashMap<String, String> additionalProperties, boolean isCreateApp)
+            throws APIManagementException {
 
     }
 }

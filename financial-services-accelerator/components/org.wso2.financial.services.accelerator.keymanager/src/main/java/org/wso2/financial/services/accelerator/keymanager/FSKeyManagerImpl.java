@@ -397,13 +397,14 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
      * @throws APIManagementException when failed to validate a given property
      */
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
-    public void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData, HashMap<String, String> additionalProperties,
-                                 boolean isCreateApp)
+    public void doPreUpdateSpApp(OAuthApplicationInfo oAuthApplicationInfo, JSONObject spAppData,
+                                 HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException {
 
         FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
         if (keyManagerExtensionImpl != null) {
-            keyManagerExtensionImpl.doPreUpdateSpApp(oAuthApplicationInfo, spAppData, additionalProperties, isCreateApp);
+            keyManagerExtensionImpl.doPreUpdateSpApp(oAuthApplicationInfo, spAppData, additionalProperties,
+                    isCreateApp);
         }
     }
 
