@@ -76,6 +76,18 @@
             </ResponseParams>
         </DCR>
     </Gateway>
+    <KeyManager>
+        {% if financial_services.keymanager.extension.impl is defined %}
+        <KeyManagerExtensionImpl>{{financial_services.keymanager.extension.impl.class}}</KeyManagerExtensionImpl>
+        {% endif %}
+        <KeyManagerAdditionalProperties>
+            {% if financial_services.keymanager.application.type.attributes is defined %}
+                {% for attribute in financial_services.keymanager.application.type.attributes %}
+                    <Property name="{{attribute.name}}" label="{{attribute.label}}" type="{{attribute.type}}" tooltip="{{attribute.tooltip}}" values="{{attribute.values}}" default="{{attribute.default}}" required="{{attribute.required}}" mask="{{attribute.mask}}" multiple="{{attribute.multiple}}" priority="{{attribute.priority}}" />
+                {% endfor %}
+            {% endif %}
+        </KeyManagerAdditionalProperties>
+    </KeyManager>
     {% if financial_services.publisher_url is defined %}
     <PublisherURL>{{financial_services.publisher_url}}</PublisherURL>
     {% else %}

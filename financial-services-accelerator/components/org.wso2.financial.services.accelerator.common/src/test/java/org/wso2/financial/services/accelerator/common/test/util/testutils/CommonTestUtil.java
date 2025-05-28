@@ -16,7 +16,10 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.common.test.util;
+package org.wso2.financial.services.accelerator.common.test.util.testutils;
+
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.util.CertificateUtils;
 
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateException;
@@ -171,5 +174,13 @@ public class CommonTestUtil {
             return true;
         }
         return false;
+    }
+
+    public static synchronized X509Certificate getExpiredSelfCertificate()
+            throws FinancialServicesException {
+        if (expiredSelfCertificate == null) {
+            expiredSelfCertificate = CertificateUtils.parseCertificate(EXPIRED_SELF_CERT);
+        }
+        return expiredSelfCertificate;
     }
 }

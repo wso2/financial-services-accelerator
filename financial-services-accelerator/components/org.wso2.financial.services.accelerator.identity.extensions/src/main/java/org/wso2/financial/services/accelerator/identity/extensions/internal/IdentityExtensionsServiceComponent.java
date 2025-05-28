@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
 import org.wso2.carbon.identity.application.mgt.listener.ApplicationMgtListener;
-import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
 import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
@@ -70,10 +69,8 @@ public class IdentityExtensionsServiceComponent {
                 new FSIntrospectionDataProvider(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
 
-        if (Boolean.parseBoolean(IdentityUtil.getProperty("OAuth.DCRM.EnableFAPIEnforcement"))) {
-            AdditionalAttributeFilter attributeFilter = new FSAdditionalAttributeFilter();
-            bundleContext.registerService(AdditionalAttributeFilter.class.getName(), attributeFilter, null);
-        }
+        AdditionalAttributeFilter attributeFilter = new FSAdditionalAttributeFilter();
+        bundleContext.registerService(AdditionalAttributeFilter.class.getName(), attributeFilter, null);
 
         log.debug("Registered FS related Identity services.");
     }
