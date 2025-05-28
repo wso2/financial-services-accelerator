@@ -123,8 +123,9 @@ public class RequiredParamsValidatorTest extends PowerMockTestCase {
         PathImpl propertyPath = PathImpl.createPathFromString("example.path");
         ConstraintValidatorContextImpl context = new ConstraintValidatorContextImpl(
                 null,
-                null,
                 propertyPath,
+                null,
+                null,
                 null,
                 null
         );
