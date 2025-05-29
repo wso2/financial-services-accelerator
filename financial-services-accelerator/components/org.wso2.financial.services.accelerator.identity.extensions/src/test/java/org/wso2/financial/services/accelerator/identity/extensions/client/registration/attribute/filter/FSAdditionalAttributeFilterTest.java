@@ -163,8 +163,7 @@ public class FSAdditionalAttributeFilterTest {
                 TestConstants.getSSAParamMap());
 
         Assert.assertNotNull(resultMap);
-        Assert.assertTrue(resultMap.isEmpty());
-
+        Assert.assertFalse(resultMap.isEmpty());
 
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
                 .isInvokeExternalService(any())).thenReturn(true);
@@ -235,7 +234,7 @@ public class FSAdditionalAttributeFilterTest {
                 TestConstants.getSSAParamMap(), serviceProviderProperties);
 
         Assert.assertNotNull(resultMap);
-        Assert.assertTrue(resultMap.isEmpty());
+        Assert.assertFalse(resultMap.isEmpty());
 
         serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
                 .isInvokeExternalService(any())).thenReturn(true);

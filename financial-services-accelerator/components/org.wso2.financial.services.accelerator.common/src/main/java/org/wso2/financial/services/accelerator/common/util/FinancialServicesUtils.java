@@ -24,10 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
@@ -131,27 +129,6 @@ public class FinancialServicesUtils {
             return input;
         } else {
             return input.substring(0, maxLength);
-        }
-    }
-
-    /**
-     * Check whether the client ID belongs to a regulatory app.
-     * 
-     * @param clientId client ID
-     * @return true if the client ID belongs to a regulatory app
-     * @throws RequestObjectException If an error occurs while checking the client ID
-     */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    public static boolean isRegulatoryApp(String clientId) throws RequestObjectException {
-
-        try {
-            return OAuth2Util.isFapiConformantApp(clientId);
-        } catch (InvalidOAuthClientException e) {
-            throw new RequestObjectException(OAuth2ErrorCodes.INVALID_CLIENT, "Could not find an existing app for " +
-                    "clientId: " + clientId, e);
-        } catch (IdentityOAuth2Exception e) {
-            throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
-                    "provider for clientId: " + clientId, e);
         }
     }
 

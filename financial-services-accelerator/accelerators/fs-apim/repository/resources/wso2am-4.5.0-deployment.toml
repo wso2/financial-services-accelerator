@@ -450,12 +450,9 @@ isRequestJWT= true
 jwks_endpoint_name= "software_jwks_endpoint"
 ssa_client_name= "software_client_name"
 use_softwareId_for_appName= true
-response_params = ["software_statement", "software_id", "token_endpoint_auth_signing_alg", "grant_types", "scope", "redirect_uris", "request_object_signing_alg", "token_endpoint_auth_method", "id_token_signed_response_alg"]
-
-#===================for Connection pool====================
-[financial_services.http_connection_pool]
-max_connections = 2000
-max_connections_per_route = 1500
+response_params = ["software_statement", "software_id", "token_endpoint_auth_signing_alg", "grant_types",
+    "scope", "redirect_uris", "request_object_signing_alg", "token_endpoint_auth_method",
+    "id_token_signed_response_alg"]
 
 [financial_services.identity]
 consent_id_claim_name = "consent_id"
@@ -482,3 +479,9 @@ required="false"
 mask="false"
 multiple="false"
 priority="2"
+
+#===================for Connection pool====================
+[financial_services.http_connection_pool]
+max_connections = 2000
+max_connections_per_route = 1500
+

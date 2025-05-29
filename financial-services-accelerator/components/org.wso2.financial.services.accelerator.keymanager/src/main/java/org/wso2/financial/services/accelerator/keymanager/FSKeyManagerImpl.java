@@ -57,8 +57,6 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
     private static final Log log = LogFactory.getLog(FSKeyManagerImpl.class);
 
-    public static final String OAUTH2 = "oauth2";
-
     @Override
     public AccessTokenInfo getNewApplicationAccessToken(AccessTokenRequest tokenRequest) throws APIManagementException {
 
@@ -203,9 +201,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
             additionalProperties.put("AppCreateRequest", "true");
         }
         doPreCreateApplication(oauthAppRequest, additionalProperties);
-        OAuthApplicationInfo oAuthApplicationInfo = oauthAppRequest.getOAuthApplicationInfo();
-        oauthAppRequest.setOAuthApplicationInfo(oAuthApplicationInfo);
-        oAuthApplicationInfo = super.createApplication(oauthAppRequest);
+        OAuthApplicationInfo oAuthApplicationInfo = super.createApplication(oauthAppRequest);
         // Need to get the application name after creating the application to obtain the generated app name
         String appName = oAuthApplicationInfo.getClientName();
         // Admin needs to have application role to retrieve and edit the app
@@ -214,8 +210,6 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
         try {
             JSONObject serviceProviderAppData = IdentityServerUtils.getSPApplicationFromClientId(
                     oAuthApplicationInfo.getClientId());
-
-            updateSpProperties(appName, oAuthApplicationInfo, serviceProviderAppData, additionalProperties, true);
 
             if (Boolean.parseBoolean(additionalProperties.get("regulatory"))) {
                 String appNameProperty = IdentityServerUtils.getSpPropertyFromSPMetaData("DisplayName",
@@ -227,6 +221,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
                 oauthAppRequest.getOAuthApplicationInfo().addParameter("tokenScope", null);
                 super.updateApplication(oauthAppRequest);
             }
+            updateSpProperties(appName, oAuthApplicationInfo, serviceProviderAppData, additionalProperties, true);
             return oAuthApplicationInfo;
 
         } catch (FinancialServicesException e) {

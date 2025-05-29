@@ -24,14 +24,23 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
+import org.wso2.carbon.identity.application.common.util.IdentityApplicationConstants;
+import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
+import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
+import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.identity.extensions.cache.IdentityCache;
+import org.wso2.financial.services.accelerator.identity.extensions.cache.IdentityCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCache;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.cache.JwtJtiCacheKey;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
@@ -42,6 +51,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
@@ -54,6 +64,7 @@ public class IdentityCommonUtils {
     private static final Log log = LogFactory.getLog(IdentityCommonUtils.class);
     private static final IdentityExtensionsDataHolder identityExtensionsDataHolder =
             IdentityExtensionsDataHolder.getInstance();
+    private static IdentityCache identityCache;
 
     /**
      * Remove the internal scopes from the scopes array.
@@ -310,6 +321,101 @@ public class IdentityCommonUtils {
 
         return (String) identityExtensionsDataHolder.getConfigurationMap()
                 .get(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME);
+    }
+
+    /**
+     * Check whether the client ID belongs to a regulatory app.
+     *
+     * @param clientId client ID
+     * @return true if the client ID belongs to a regulatory app
+     * @throws FinancialServicesException If an error occurs while checking the client ID
+     */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    public static boolean isRegulatoryApp(String clientId) throws FinancialServicesException {
+
+        if (StringUtils.isNotEmpty(clientId)) {
+            // Skip My account and Console service providers with non opaque clientIds
+            if (clientId.equals("CONSOLE") || clientId.equals("MY_ACCOUNT")) {
+                return false;
+            }
+
+            if (identityCache == null) {
+                log.debug("Creating new Identity cache");
+                identityCache = new IdentityCache();
+            }
+
+            IdentityCacheKey identityCacheKey = IdentityCacheKey.of(clientId
+                    .concat("_").concat(FinancialServicesConstants.REGULATORY));
+            Object regulatoryProperty = null;
+
+            regulatoryProperty = identityCache.getFromCacheOrRetrieve(identityCacheKey,
+                    () -> getAppPropertyFromSPMetaData(clientId, FinancialServicesConstants.REGULATORY));
+
+            if (regulatoryProperty != null) {
+                return Boolean.parseBoolean(regulatoryProperty.toString());
+            } else {
+                throw new FinancialServicesException("Unable to retrieve regulatory property from sp metadata");
+            }
+        } else {
+            throw new FinancialServicesException("Client id not found");
+        }
+    }
+
+    /**
+     * Utility method get the application property from SP Meta Data.
+     *
+     * @param clientId ClientId of the application
+     * @param property Property of the application
+     * @return the property value from SP metadata
+     * @throws FinancialServicesException If an error occurs while retrieving the property
+     */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    public static String getAppPropertyFromSPMetaData(String clientId, String property)
+            throws FinancialServicesException {
+
+        String spProperty = null;
+
+        if (StringUtils.isNotEmpty(clientId)) {
+            Optional<ServiceProvider> serviceProvider;
+            try {
+                serviceProvider = Optional.ofNullable(IdentityExtensionsDataHolder.getInstance()
+                        .getApplicationManagementService().getServiceProviderByClientId(clientId,
+                                IdentityApplicationConstants.OAuth2.NAME, getSpTenantDomain(clientId)));
+                if (serviceProvider.isPresent()) {
+                    spProperty = Arrays.stream(serviceProvider.get().getSpProperties())
+                            .collect(Collectors.toMap(ServiceProviderProperty::getName,
+                                    ServiceProviderProperty::getValue))
+                            .get(property);
+                }
+            } catch (IdentityApplicationManagementException e) {
+                log.error(String.format("Error occurred while retrieving OAuth2 application data for clientId %s",
+                        clientId.replaceAll("[\r\n]", "")), e);
+                throw new FinancialServicesException("Error occurred while retrieving OAuth2 application data for " +
+                        "clientId", e);
+            }
+        } else {
+            log.error("Client id not found");
+            throw new FinancialServicesException("Client id not found");
+        }
+
+        return spProperty;
+    }
+
+    /**
+     * Get Tenant Domain String for the client id.
+     * @param clientId the client id of the application
+     * @return tenant domain of the client
+     * @throws FinancialServicesException  if an error occurs while retrieving the tenant domain
+     */
+    @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
+    public static String getSpTenantDomain(String clientId) throws FinancialServicesException {
+
+        try {
+            return OAuth2Util.getTenantDomainOfOauthApp(clientId);
+        } catch (InvalidOAuthClientException | IdentityOAuth2Exception e) {
+            throw new FinancialServicesException("Error retrieving service provider tenant domain for client_id: "
+                    + clientId, e);
+        }
     }
 
 }

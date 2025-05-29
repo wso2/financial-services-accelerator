@@ -123,6 +123,11 @@
             <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.financial.services.accelerator</groupId>
+            <artifactId>org.wso2.financial.services.accelerator.identity.extensions</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
