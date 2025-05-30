@@ -31,6 +31,7 @@ import org.wso2.financial.services.accelerator.event.notifications.service.excep
 import org.wso2.financial.services.accelerator.event.notifications.service.queries.EventNotificationSqlStatements;
 import org.wso2.financial.services.accelerator.event.notifications.service.queries.EventSubscriptionSqlStatements;
 import org.wso2.financial.services.accelerator.event.notifications.service.queries.MSSQLEventNotificationSqlStatements;
+import org.wso2.financial.services.accelerator.event.notifications.service.queries.OracleSQLEventNotificationSqlStatements;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -60,7 +61,7 @@ public class EventNotificationStoreInitializer {
             } else if (driverName.contains(MSSQL)) {
                 eventNotificationDAO = new EventNotificationDAOImpl(new MSSQLEventNotificationSqlStatements());
             } else if (driverName.contains(ORACLE)) {
-                eventNotificationDAO = new EventNotificationDAOImpl(new EventNotificationSqlStatements());
+                eventNotificationDAO = new EventNotificationDAOImpl(new OracleSQLEventNotificationSqlStatements());
             } else {
                 throw new FSEventNotificationException("Unhandled DB driver: " + driverName + " detected");
             }
