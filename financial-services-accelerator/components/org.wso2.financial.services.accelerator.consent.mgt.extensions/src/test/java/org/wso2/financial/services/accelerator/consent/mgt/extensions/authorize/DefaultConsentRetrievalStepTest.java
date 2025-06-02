@@ -170,7 +170,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -192,7 +192,7 @@ public class DefaultConsentRetrievalStepTest {
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
 
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -213,7 +213,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -237,7 +237,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -261,7 +261,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 }
