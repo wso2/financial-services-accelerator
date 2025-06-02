@@ -40,4 +40,5 @@ public class ConsentAuthorizeConstants {
     public static final String DISPLAY_NAME = "displayName";
     public static final String ACCOUNT_ID = "accountId";
     public static final String SELECTED = "selected";
+    public static final String INITIATED_ACCOUNTS_FOR_CONSENT = "initiatedAccountsForConsent";
 }

@@ -337,7 +337,7 @@ public class ConsentAuthorizeUtil {
 
             // Adding Debtor Account
             if (initiation.has(ConsentExtensionConstants.DEBTOR_ACC)) {
-                populateDebtorAccount(initiation, basicConsentData);
+                populateDebtorAccount(initiation, basicConsentData, consentDataJSON);
             }
             // Adding Creditor Account
             populateCreditorAccount(initiation, basicConsentData);
@@ -457,7 +457,7 @@ public class ConsentAuthorizeUtil {
 
         if (initiation.get(ConsentExtensionConstants.DEBTOR_ACC) != null) {
             //Adding Debtor Account
-            populateDebtorAccount(initiation, basicConsentData);
+            populateDebtorAccount(initiation, basicConsentData, consentDataJSON);
         }
 
         consentDataJSON.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
@@ -467,29 +467,29 @@ public class ConsentAuthorizeUtil {
      * Method to add debtor account details to consent data to send it to the consent page.
      *
      * @param initiation      Initiation object from the request
-     * @param consentDataJSON Consent information object
+     * @param basicConsentData Consent information object
      */
-    public static void populateDebtorAccount(JSONObject initiation, JSONArray consentDataJSON) {
+    public static void populateDebtorAccount(JSONObject initiation, JSONArray basicConsentData,
+                                             JSONObject consentDataJSON) {
         if (initiation.get(ConsentExtensionConstants.DEBTOR_ACC) != null) {
             JSONObject debtorAccount = initiation.getJSONObject(ConsentExtensionConstants.DEBTOR_ACC);
             JSONArray debtorAccountArray = new JSONArray();
+            JSONObject initiatedAccount = new JSONObject();
 
             //Adding Debtor Account Scheme Name
             if (debtorAccount.getString(ConsentExtensionConstants.SCHEME_NAME) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.SCHEME_NAME_TITLE + " : " +
                         debtorAccount.getString(ConsentExtensionConstants.SCHEME_NAME));
-            }
-
-            //Adding Debtor Account Identification
-            if (debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION) != null) {
-                debtorAccountArray.put(ConsentExtensionConstants.IDENTIFICATION_TITLE + " : " +
-                        debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
+                initiatedAccount.put(ConsentExtensionConstants.SCHEME_NAME,
+                        debtorAccount.getString(ConsentExtensionConstants.SCHEME_NAME));
             }
 
             //Adding Debtor Account Name
             if (debtorAccount.has(ConsentExtensionConstants.NAME) &&
                     debtorAccount.getString(ConsentExtensionConstants.NAME) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.NAME_TITLE + " : " +
+                        debtorAccount.getString(ConsentExtensionConstants.NAME));
+                initiatedAccount.put(ConsentAuthorizeConstants.DISPLAY_NAME,
                         debtorAccount.getString(ConsentExtensionConstants.NAME));
             }
 
@@ -498,14 +498,32 @@ public class ConsentAuthorizeUtil {
                     debtorAccount.getString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.SECONDARY_IDENTIFICATION_TITLE + " : " +
                         debtorAccount.getString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
+                initiatedAccount.put(ConsentExtensionConstants.SECONDARY_IDENTIFICATION,
+                        debtorAccount.getString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
+                // Add secondary identification as account id for cases with no primary identification
+                initiatedAccount.put(ConsentAuthorizeConstants.ACCOUNT_ID,
+                        debtorAccount.getString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
             }
 
+            //Adding Debtor Account Identification
+            if (debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION) != null) {
+                debtorAccountArray.put(ConsentExtensionConstants.IDENTIFICATION_TITLE + " : " +
+                        debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
+                // Replace with proper identification if exists
+                initiatedAccount.put(ConsentAuthorizeConstants.ACCOUNT_ID,
+                        debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
+            }
 
             JSONObject jsonElementDebtor = new JSONObject();
             jsonElementDebtor.put(ConsentExtensionConstants.TITLE,
                     ConsentExtensionConstants.DEBTOR_ACC_TITLE);
             jsonElementDebtor.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA), debtorAccountArray);
-            consentDataJSON.put(jsonElementDebtor);
+            basicConsentData.put(jsonElementDebtor);
+
+            // Add as initiated account
+            JSONArray initiatedAccounts = new JSONArray();
+            initiatedAccounts.put(initiatedAccount);
+            consentDataJSON.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, initiatedAccounts);
         }
     }
 

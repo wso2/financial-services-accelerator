@@ -29,6 +29,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -113,8 +114,13 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
             /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
              calling accounts service */
-            JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
-            jsonObject.put(ConsentExtensionConstants.CONSUMER_DATA, accountsJSON);
+            // Append only when consent type is accounts or no initiated account for payment consents
+            if (ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
+                    (ConsentExtensionConstants.PAYMENTS.equals(consentResource.getConsentType()) &&
+                            !consentDataJSON.has(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT))) {
+                JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
+                jsonObject.put(ConsentExtensionConstants.CONSUMER_DATA, accountsJSON);
+            }
 
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
