@@ -352,6 +352,7 @@ public class IdentityCommonUtils {
                     () -> getAppPropertyFromSPMetaData(clientId, FinancialServicesConstants.REGULATORY));
 
             if (regulatoryProperty != null) {
+                identityCache.addToCache(identityCacheKey, regulatoryProperty);
                 return Boolean.parseBoolean(regulatoryProperty.toString());
             } else {
                 throw new FinancialServicesException("Unable to retrieve regulatory property from sp metadata");

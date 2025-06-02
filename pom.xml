@@ -479,11 +479,6 @@
                 <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.km.ext.wso2is</groupId>
-                <artifactId>wso2is7.key.manager</artifactId>
-                <version>2.0.5</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon.apimgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
                 <version>${org.wso2.carbon.apimgt.version}</version>
@@ -497,11 +492,6 @@
             <dependency>
                 <groupId>org.wso2.carbon.apimgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.common.gateway</artifactId>
-                <version>${org.wso2.carbon.apimgt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.apimgt</groupId>
-                <artifactId>org.wso2.carbon.apimgt.api</artifactId>
                 <version>${org.wso2.carbon.apimgt.version}</version>
             </dependency>
             <!-- Accelerator Dependencies -->
@@ -632,7 +622,7 @@
         <identity.inbound.auth.oauth.version.range>[6.13.0, 7.1.0)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
         <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>
-        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.31.100)</org.wso2.carbon.apimgt.version.range>
+        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.30.100)</org.wso2.carbon.apimgt.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>
         <mockito.version>5.3.1</mockito.version>
