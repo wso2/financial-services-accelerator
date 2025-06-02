@@ -30,4 +30,14 @@ public class ConsentAuthorizeConstants {
     public static final String CONSENT_EXPIRED = "Provided consent is expired";
     public static final String ACCOUNT_ID_NOT_FOUND_ERROR = "Account IDs not available in persist request";
     public static final String ACCOUNT_ID_FORMAT_ERROR = "Account IDs format error in persist request";
+
+    // For payload from populate consent authorize screen and payload forwarded to default consent page
+    public static final String TYPE = "type";
+    public static final String BASIC_CONSENT_DATA = "basicConsentData";
+    public static final String REQUESTED_PERMISSIONS = "requestedPermissions";
+    public static final String PERMISSIONS = "permissions";
+    public static final String DISPLAY_VALUES = "displayValues";
+    public static final String DISPLAY_NAME = "displayName";
+    public static final String ACCOUNT_ID = "accountId";
+    public static final String SELECTED = "selected";
 }

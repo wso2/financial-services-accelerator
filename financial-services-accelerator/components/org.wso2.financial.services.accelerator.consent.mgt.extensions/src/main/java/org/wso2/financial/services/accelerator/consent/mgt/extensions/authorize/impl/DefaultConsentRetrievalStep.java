@@ -61,7 +61,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
         JSONObject requestParameters = ConsentAuthorizeUtil.getRequestObjectJson(requestObject);
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
-        JSONArray consentDataJSON;
+        JSONObject consentDataJSON;
         ConsentResource consentResource;
 
         try {
@@ -114,7 +114,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
              calling accounts service */
             JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
-            jsonObject.put(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
+            jsonObject.put(ConsentExtensionConstants.CONSUMER_DATA, accountsJSON);
 
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);

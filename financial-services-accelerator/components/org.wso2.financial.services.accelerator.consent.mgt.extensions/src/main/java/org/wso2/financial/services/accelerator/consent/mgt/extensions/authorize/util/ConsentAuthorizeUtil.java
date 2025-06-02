@@ -196,11 +196,13 @@ public class ConsentAuthorizeUtil {
      *                        from database.
      * @return ConsentDataJson array
      */
-    public static JSONArray getConsentDataForPreInitiatedConsent(ConsentResource consentResource)
+    public static JSONObject getConsentDataForPreInitiatedConsent(ConsentResource consentResource)
             throws ConsentException {
 
-        JSONArray consentDataJSON = new JSONArray();
+        JSONObject consentDataJSON = new JSONObject();
         try {
+            // Append consent type
+            consentDataJSON.put(ConsentAuthorizeConstants.TYPE, consentResource.getConsentType());
 
             String receiptString = consentResource.getReceipt();
             JSONObject receipt = new JSONObject(receiptString);
@@ -240,11 +242,11 @@ public class ConsentAuthorizeUtil {
      * @param scope Scopes given in the request
      * @return ConsentDataJson array
      */
-    public static JSONArray getConsentDataForScope(String scope)
+    public static JSONObject getConsentDataForScope(String scope)
             throws ConsentException {
 
-        JSONArray consentDataJSON = new JSONArray();
-        JSONArray permissions = new JSONArray();
+        JSONObject consentDataJSON = new JSONObject();
+        JSONArray displayValues = new JSONArray();
 
         // Convert space-separated scopes into JSON array
         if (scope != null && !scope.trim().isEmpty()) {
@@ -254,18 +256,21 @@ public class ConsentAuthorizeUtil {
                 if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
                     continue;
                 }
-                permissions.put(item);
+                displayValues.put(item);
             }
         }
 
-        if (!permissions.isEmpty()) {
-            JSONObject jsonElementPermissions = new JSONObject();
-            jsonElementPermissions.put(ConsentExtensionConstants.TITLE,
-                    ConsentExtensionConstants.PERMISSIONS);
-            jsonElementPermissions.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
-                    permissions);
-            consentDataJSON.put(jsonElementPermissions);
+        JSONObject requestedPermissions = new JSONObject();
+        if (!displayValues.isEmpty()) {
+            JSONArray permissions = new JSONArray();
+            JSONObject permission = new JSONObject();
+            permission.put(ConsentAuthorizeConstants.DISPLAY_VALUES, displayValues);
+            permissions.put(permission);
+            requestedPermissions.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
         }
+
+        consentDataJSON.put(ConsentAuthorizeConstants.REQUESTED_PERMISSIONS, requestedPermissions);
+
         return consentDataJSON;
     }
 
@@ -275,10 +280,9 @@ public class ConsentAuthorizeUtil {
      * @param data            data request from the request
      * @param consentDataJSON Consent information
      */
-    private static void populatePaymentData(JSONObject data, JSONArray consentDataJSON) {
+    private static void populatePaymentData(JSONObject data, JSONObject consentDataJSON) {
 
-        JSONArray paymentTypeArray = new JSONArray();
-        JSONObject jsonElementPaymentType = new JSONObject();
+        JSONArray basicConsentData = new JSONArray();
 
         if (data.has(ConsentExtensionConstants.INITIATION)) {
             JSONObject initiation = data.getJSONObject(ConsentExtensionConstants.INITIATION);
@@ -293,7 +297,7 @@ public class ConsentAuthorizeUtil {
                         ConsentExtensionConstants.INSTRUCTION_IDENTIFICATION_TITLE);
                 jsonElementIdentification.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
                         identificationArray);
-                consentDataJSON.put(jsonElementIdentification);
+                basicConsentData.put(jsonElementIdentification);
             }
 
             //Adding EndToEndIdentification
@@ -307,7 +311,7 @@ public class ConsentAuthorizeUtil {
                         ConsentExtensionConstants.END_TO_END_IDENTIFICATION_TITLE);
                 jsonElementEndToEndIdentification.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
                         endToEndIdentificationArray);
-                consentDataJSON.put(jsonElementEndToEndIdentification);
+                basicConsentData.put(jsonElementEndToEndIdentification);
             }
 
             //Adding InstructedAmount
@@ -329,15 +333,16 @@ public class ConsentAuthorizeUtil {
                     ConsentExtensionConstants.INSTRUCTED_AMOUNT_TITLE);
             jsonElementInstructedAmount.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
                     instructedAmountArray);
-            consentDataJSON.put(jsonElementInstructedAmount);
+            basicConsentData.put(jsonElementInstructedAmount);
 
             // Adding Debtor Account
             if (initiation.has(ConsentExtensionConstants.DEBTOR_ACC)) {
-                populateDebtorAccount(initiation, consentDataJSON);
+                populateDebtorAccount(initiation, basicConsentData);
             }
             // Adding Creditor Account
-            populateCreditorAccount(initiation, consentDataJSON);
+            populateCreditorAccount(initiation, basicConsentData);
 
+            consentDataJSON.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
         }
     }
 
@@ -347,18 +352,21 @@ public class ConsentAuthorizeUtil {
      * @param data            data request from the request
      * @param consentDataJSON Consent information
      */
-    private static void populateAccountData(JSONObject data, JSONArray consentDataJSON) throws ConsentException {
+    private static void populateAccountData(JSONObject data, JSONObject consentDataJSON) throws ConsentException {
+
+        JSONObject requestedPermissions = new JSONObject();
+        JSONArray basicConsentData = new JSONArray();
 
         //Adding Permissions
-        JSONArray permissions = data.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
-        if (permissions != null) {
-            JSONObject jsonElementPermissions = new JSONObject();
-            jsonElementPermissions.put(ConsentExtensionConstants.TITLE,
-                    ConsentExtensionConstants.PERMISSIONS);
-            jsonElementPermissions.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
-                    permissions);
-            consentDataJSON.put(jsonElementPermissions);
+        JSONArray displayValues = data.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
+        if (displayValues != null) {
+            JSONArray permissions = new JSONArray();
+            JSONObject permission = new JSONObject();
+            permission.put(ConsentAuthorizeConstants.DISPLAY_VALUES, displayValues);
+            permissions.put(permission);
+            requestedPermissions.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
         }
+        consentDataJSON.put(ConsentAuthorizeConstants.REQUESTED_PERMISSIONS, requestedPermissions);
 
         //Adding Expiration Date Time
         String expirationDate = data.getString(ConsentExtensionConstants.EXPIRATION_DATE);
@@ -375,7 +383,7 @@ public class ConsentAuthorizeUtil {
                     ConsentExtensionConstants.EXPIRATION_DATE_TITLE);
             jsonElementExpiry.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
                     expiryArray);
-            consentDataJSON.put(jsonElementExpiry);
+            basicConsentData.put(jsonElementExpiry);
         }
 
         //Adding Transaction From Date Time
@@ -389,7 +397,7 @@ public class ConsentAuthorizeUtil {
                     ConsentExtensionConstants.TRANSACTION_FROM_DATE_TITLE);
             jsonElementFromDateTime.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
                     fromDateTimeArray);
-            consentDataJSON.put(jsonElementFromDateTime);
+            basicConsentData.put(jsonElementFromDateTime);
         }
 
         //Adding Transaction To Date Time
@@ -403,8 +411,10 @@ public class ConsentAuthorizeUtil {
                     ConsentExtensionConstants.TRANSACTION_TO_DATE_TITLE);
             jsonElementToDateTime.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA),
                     toDateTimeArray);
-            consentDataJSON.put(jsonElementToDateTime);
+            basicConsentData.put(jsonElementToDateTime);
         }
+
+        consentDataJSON.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
     }
 
     /**
@@ -413,7 +423,9 @@ public class ConsentAuthorizeUtil {
      * @param initiation      data from the request
      * @param consentDataJSON Consent information
      */
-    private static void populateCofData(JSONObject initiation, JSONArray consentDataJSON) throws ConsentException {
+    private static void populateCofData(JSONObject initiation, JSONObject consentDataJSON) throws ConsentException {
+
+        JSONArray basicConsentData = new JSONArray();
 
         //Adding Expiration Date Time
         if (initiation.getString(ConsentExtensionConstants.EXPIRATION_DATE) != null) {
@@ -431,7 +443,7 @@ public class ConsentAuthorizeUtil {
             jsonElementExpiry.put(ConsentExtensionConstants.TITLE,
                     ConsentExtensionConstants.EXPIRATION_DATE_TITLE);
             jsonElementExpiry.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA), expiryArray);
-            consentDataJSON.put(jsonElementExpiry);
+            basicConsentData.put(jsonElementExpiry);
         } else {
             JSONArray expiryArray = new JSONArray();
             expiryArray.put(ConsentExtensionConstants.OPEN_ENDED_AUTHORIZATION);
@@ -440,13 +452,15 @@ public class ConsentAuthorizeUtil {
             jsonElementExpiry.put(ConsentExtensionConstants.TITLE,
                     ConsentExtensionConstants.EXPIRATION_DATE_TITLE);
             jsonElementExpiry.put(StringUtils.lowerCase(ConsentExtensionConstants.DATA), expiryArray);
-            consentDataJSON.put(jsonElementExpiry);
+            basicConsentData.put(jsonElementExpiry);
         }
 
         if (initiation.get(ConsentExtensionConstants.DEBTOR_ACC) != null) {
             //Adding Debtor Account
-            populateDebtorAccount(initiation, consentDataJSON);
+            populateDebtorAccount(initiation, basicConsentData);
         }
+
+        consentDataJSON.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
     }
 
     /**
@@ -545,14 +559,16 @@ public class ConsentAuthorizeUtil {
 
         JSONArray accountsJSON = new JSONArray();
         JSONObject accountOne = new JSONObject();
-        accountOne.put("account_id", "30080012343456");
-        accountOne.put("display_name", "Salary Saver Account");
+        accountOne.put(ConsentAuthorizeConstants.ACCOUNT_ID, "30080012343456");
+        accountOne.put(ConsentAuthorizeConstants.DISPLAY_NAME, "Salary Saver Account");
+        accountOne.put(ConsentAuthorizeConstants.SELECTED, false);
 
         accountsJSON.put(accountOne);
 
         JSONObject accountTwo = new JSONObject();
-        accountTwo.put("account_id", "30080098763459");
-        accountTwo.put("display_name", "Max Bonus Account");
+        accountTwo.put(ConsentAuthorizeConstants.ACCOUNT_ID, "30080098763459");
+        accountTwo.put(ConsentAuthorizeConstants.DISPLAY_NAME, "Max Bonus Account");
+        accountTwo.put(ConsentAuthorizeConstants.SELECTED, false);
 
         accountsJSON.put(accountTwo);
 
