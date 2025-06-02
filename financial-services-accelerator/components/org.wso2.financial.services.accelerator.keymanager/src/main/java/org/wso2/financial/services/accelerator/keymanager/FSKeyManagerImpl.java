@@ -36,7 +36,9 @@ import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
 import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerConstants;
 import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerUtil;
@@ -360,10 +362,17 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     @Generated(message = "Excluding from code coverage since the method body is at toolkit")
     public void doPreCreateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties)
             throws APIManagementException {
-        FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
-        if (keyManagerExtensionImpl != null) {
-            keyManagerExtensionImpl.doPreCreateApplication(oAuthAppRequest, additionalProperties);
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_APPLICATION_CREATION)) {
+            log.debug("Executing external service call pre");
+            FSKeyManagerUtil.callExternalService(oAuthAppRequest, additionalProperties, null,
+                    ServiceExtensionTypeEnum.PRE_PROCESS_APPLICATION_CREATION);
+        } else {
+            FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
+            if (keyManagerExtensionImpl != null) {
+                keyManagerExtensionImpl.doPreCreateApplication(oAuthAppRequest, additionalProperties);
+            }
         }
+
     }
 
     /**
@@ -376,9 +385,15 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     public void doPreUpdateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties,
                                        JSONObject serviceProvider) throws APIManagementException {
 
-        FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
-        if (keyManagerExtensionImpl != null) {
-            keyManagerExtensionImpl.doPreUpdateApplication(oAuthAppRequest, additionalProperties, serviceProvider);
+        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_APPLICATION_UPDATE)) {
+            log.debug("Executing external service call to get custom attributes to store");
+            FSKeyManagerUtil.callExternalService(oAuthAppRequest, additionalProperties,
+                    serviceProvider, ServiceExtensionTypeEnum.PRE_PROCESS_APPLICATION_UPDATE);
+        } else {
+            FSKeyManagerExtensionInterface keyManagerExtensionImpl = FSKeyManagerUtil.getKeyManagerExtensionImpl();
+            if (keyManagerExtensionImpl != null) {
+                keyManagerExtensionImpl.doPreUpdateApplication(oAuthAppRequest, additionalProperties, serviceProvider);
+            }
         }
     }
 

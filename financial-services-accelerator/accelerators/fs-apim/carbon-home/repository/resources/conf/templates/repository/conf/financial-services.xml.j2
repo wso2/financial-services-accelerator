@@ -108,4 +108,44 @@
         <ConsentIDClaimName>consent_id</ConsentIDClaimName>
         {% endif %}
     </Identity>
+    <ExtensionsEndpoint>
+            {% if financial_services.extensions.endpoint.enabled is defined %}
+            <Enable>{{financial_services.extensions.endpoint.enabled}}</Enable>
+            {% else %}
+            <Enable>false</Enable>
+            {% endif %}
+            <AllowedExtensions>
+                {% for allowed_extension in financial_services.extensions.endpoint.allowed_extensions %}
+                <AllowedExtension>{{allowed_extension}}</AllowedExtension>
+                {% endfor %}
+            </AllowedExtensions>
+            {% if financial_services.extensions.endpoint.base_url is defined %}
+            <BaseURL>{{financial_services.extensions.endpoint.base_url}}</BaseURL>
+            {% endif %}
+            {% if financial_services.extensions.endpoint.retry_count is defined %}
+            <RetryCount>{{financial_services.extensions.endpoint.retry_count}}</RetryCount>
+            {% endif %}
+            {% if financial_services.extensions.endpoint.connect_timeout is defined %}
+            <ConnectTimeout>{{financial_services.extensions.endpoint.connect_timeout}}</ConnectTimeout>
+            {% endif %}
+            {% if financial_services.extensions.endpoint.read_timeout is defined %}
+            <ReadTimeout>{{financial_services.extensions.endpoint.read_timeout}}</ReadTimeout>
+            {% endif %}
+            <Security>
+                {% if financial_services.extensions.endpoint.security.type is defined %}
+                <Type>{{financial_services.extensions.endpoint.security.type}}</Type>
+                {% else %}
+                <Type>Basic-Auth</Type>
+                {% endif %}
+                {% if financial_services.extensions.endpoint.security.username is defined %}
+                <Username>{{financial_services.extensions.endpoint.security.username}}</Username>
+                {% endif %}
+                {% if financial_services.extensions.endpoint.security.password is defined %}
+                <Password>{{financial_services.extensions.endpoint.security.password}}</Password>
+                {% endif %}
+                {% if financial_services.extensions.endpoint.security.token is defined %}
+                <Token>{{financial_services.extensions.endpoint.security.token}}</UserName>
+                {% endif %}
+            </Security>
+        </ExtensionsEndpoint>
 </Server>

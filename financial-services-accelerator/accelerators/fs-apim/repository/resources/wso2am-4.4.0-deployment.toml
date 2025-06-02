@@ -456,3 +456,40 @@ max_connections_per_route = 1500
 
 [financial_services.identity]
 consent_id_claim_name = "consent_id"
+
+[[financial_services.keymanager.application.type.attributes]]
+name="regulatory"
+label="Regulatory Application"
+type="select"
+tooltip="Is this a Regulatory Application?"
+values="true,false"
+default=""
+required="true"
+mask="false"
+multiple="false"
+priority="1"
+
+[[financial_services.keymanager.application.type.attributes]]
+name = "sp_certificate"
+label="Application Certificate"
+type="input"
+tooltip="Application Certificate - Mandatory if private_key_jwt Token method is selected"
+default=""
+required="false"
+mask="false"
+multiple="false"
+priority="2"
+
+[financial_services.extensions.endpoint]
+enabled = false
+allowed_extensions = ["pre-process-application-generation"]
+base_url = ""
+retry_count = 5
+connect_timeout = 5
+read_timeout = 5
+
+[financial_services.extensions.endpoint.security]
+# supported types : Basic-Auth or OAuth2
+type = "Basic-Auth"
+username = ""
+password = ""

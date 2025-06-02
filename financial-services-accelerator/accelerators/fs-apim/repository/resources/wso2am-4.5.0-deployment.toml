@@ -454,6 +454,11 @@ response_params = ["software_statement", "software_id", "token_endpoint_auth_sig
     "scope", "redirect_uris", "request_object_signing_alg", "token_endpoint_auth_method",
     "id_token_signed_response_alg"]
 
+#===================for Connection pool====================
+[financial_services.http_connection_pool]
+max_connections = 2000
+max_connections_per_route = 1500
+
 [financial_services.identity]
 consent_id_claim_name = "consent_id"
 
@@ -480,8 +485,17 @@ mask="false"
 multiple="false"
 priority="2"
 
-#===================for Connection pool====================
-[financial_services.http_connection_pool]
-max_connections = 2000
-max_connections_per_route = 1500
+[financial_services.extensions.endpoint]
+enabled = false
+allowed_extensions = ["pre-process-application-generation"]
+base_url = ""
+retry_count = 5
+connect_timeout = 5
+read_timeout = 5
+
+[financial_services.extensions.endpoint.security]
+# supported types : Basic-Auth or OAuth2
+type = "Basic-Auth"
+username = ""
+password = ""
 
