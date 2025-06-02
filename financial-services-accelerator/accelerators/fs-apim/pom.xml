@@ -92,13 +92,6 @@
                                                 regex="org.wso2.financial.services.accelerator.gateway-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
                                     </fileset>
                                 </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/org.wso2.financial.services.accelerator.keymanager/target">
-                                        <filename
-                                                regex="org.wso2.financial.services.accelerator.keymanager-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
-                                    </fileset>
-                                </copy>
                                 <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.demo.backend/target/api#fs#backend.war"
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#fs#backend/"/>
                             </target>

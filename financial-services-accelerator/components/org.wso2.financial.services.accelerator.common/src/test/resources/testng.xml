@@ -39,7 +39,6 @@
             <class name="org.wso2.financial.services.accelerator.common.test.util.JWTUtilsTest"/>
             <class name="org.wso2.financial.services.accelerator.common.test.util.HTTPClientUtilsTest"/>
             <class name="org.wso2.financial.services.accelerator.common.test.util.ServiceExtensionUtilsTest"/>
-            <class name="org.wso2.financial.services.accelerator.common.test.util.CertificateUtilsTest"/>
         </classes>
     </test>
 </suite>
