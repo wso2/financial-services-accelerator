@@ -52,20 +52,7 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
     public Map<String, Object> updateRequestAttribute(HttpServletRequest request, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
 
-        if (isPreInitiatedConsent) {
-            switch (dataSet.getString("type")) {
-                case ConsentExtensionConstants.ACCOUNTS:
-                    return Utils.populateAccountsData(request, dataSet);
-                case ConsentExtensionConstants.PAYMENTS:
-                    return Utils.populatePaymentsData(request, dataSet);
-                case ConsentExtensionConstants.FUNDS_CONFIRMATIONS:
-                    return Utils.populateCoFData(request, dataSet);
-                default:
-                    return Collections.emptyMap();
-            }
-        } else {
-            return Utils.populateResourceData(request, dataSet);
-        }
+        return Utils.jsonObjectToMap(dataSet);
     }
 
     @Override

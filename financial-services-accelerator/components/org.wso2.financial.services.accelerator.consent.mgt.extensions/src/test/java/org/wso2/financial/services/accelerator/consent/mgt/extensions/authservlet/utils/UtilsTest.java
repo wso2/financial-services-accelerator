@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertNotNull;
 
 public class UtilsTest {
@@ -58,38 +60,90 @@ public class UtilsTest {
     }
 
     @Test
-    public void testPopulateResourceData_shouldSetAttributesAndReturnData() {
-        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+    public void testJsonObjectToMap_withPrimitiveValues() {
+        JSONObject input = new JSONObject();
+        input.put("claimId", "email");
+        input.put("claimIdx", 3);
+        input.put("isActive", true);
 
-        JSONObject dataEntry = new JSONObject();
-        dataEntry.put("title", "Account Info");
-        dataEntry.put("data", new JSONArray().put("account1").put("account2"));
+        Map<String, Object> result = Utils.jsonObjectToMap(input);
 
-        JSONArray consentData = new JSONArray().put(dataEntry);
+        assertEquals(result.get("claimId"), "email");
+        assertEquals(result.get("claimIdx"), 3);
+        assertEquals(result.get("isActive"), true);
+    }
 
-        JSONObject accountEntry = new JSONObject();
-        accountEntry.put(ConsentExtensionConstants.ACCOUNT_ID, "A123");
-        accountEntry.put(ConsentExtensionConstants.DISPLAY_NAME, "My Savings Account");
+    @Test
+    public void testJsonObjectToMap_withNestedJSONObject() {
+        JSONObject nested = new JSONObject();
+        nested.put("type", "Payment");
 
-        JSONArray accounts = new JSONArray().put(accountEntry);
+        JSONObject input = new JSONObject();
+        input.put("consentData", nested);
 
-        JSONObject dataset = new JSONObject();
-        dataset.put(ConsentExtensionConstants.CONSENT_DATA, consentData);
-        dataset.put("accounts", accounts);
+        Map<String, Object> result = Utils.jsonObjectToMap(input);
 
-        Map<String, Object> result = Utils.populateResourceData(mockRequest, dataset);
+        assertTrue(result.get("consentData") instanceof Map);
+        Map<String, Object> nestedMap = (Map<String, Object>) result.get("consentData");
+        assertEquals(nestedMap.get("type"), "Payment");
+    }
 
-        // Result assertions
-        assertNotNull(result);
-        assertEquals(result.size(), 1);
-        assertNotNull(result.get(ConsentExtensionConstants.DATA_REQUESTED));
-        Map<String, List<String>> dataRequested =
-                (Map<String, List<String>>) result.get(ConsentExtensionConstants.DATA_REQUESTED);
-        assertEquals(dataRequested.get("Account Info"), List.of("account1", "account2"));
+    @Test
+    public void testJsonObjectToMap_withJSONArray() {
+        JSONArray array = new JSONArray();
+        array.put("accounts");
+        array.put("balance");
+        array.put("transactions");
 
-        // Proper matchers
-        verify(mockRequest).setAttribute(eq(ConsentExtensionConstants.ACCOUNT_DATA), any());
-        verify(mockRequest).setAttribute(eq(ConsentExtensionConstants.CONSENT_TYPE),
-                eq(ConsentExtensionConstants.DEFAULT));
+        JSONObject input = new JSONObject();
+        input.put("access", array);
+
+        Map<String, Object> result = Utils.jsonObjectToMap(input);
+
+        assertTrue(result.get("access") instanceof List);
+        List<?> list = (List<?>) result.get("access");
+        assertEquals(Arrays.asList("accounts", "balance", "transactions"), list);
+    }
+
+    @Test
+    public void testJsonObjectToMap_withNestedArrayAndObject() {
+        JSONObject obj1 = new JSONObject();
+        obj1.put("id", 123);
+
+        JSONObject obj2 = new JSONObject();
+        obj2.put("id", 456);
+
+        JSONArray array = new JSONArray();
+        array.put(obj1);
+        array.put(obj2);
+
+        JSONObject input = new JSONObject();
+        input.put("accounts", array);
+
+        Map<String, Object> result = Utils.jsonObjectToMap(input);
+
+        assertTrue(result.get("accounts") instanceof List);
+        List<?> list = (List<?>) result.get("accounts");
+
+        Map<String, Object> first = (Map<String, Object>) list.get(0);
+        Map<String, Object> second = (Map<String, Object>) list.get(1);
+
+        assertEquals(first.get("id"), 123);
+        assertEquals(second.get("id"), 456);
+    }
+
+    @Test
+    public void testJsonObjectToMap_withEmptyObjects() {
+        JSONObject input = new JSONObject();
+        input.put("emptyObject", new JSONObject());
+        input.put("emptyArray", new JSONArray());
+
+        Map<String, Object> result = Utils.jsonObjectToMap(input);
+
+        assertTrue(result.get("emptyObject") instanceof Map);
+        assertTrue(((Map<?, ?>) result.get("emptyObject")).isEmpty());
+
+        assertTrue(result.get("emptyArray") instanceof List);
+        assertTrue(((List<?>) result.get("emptyArray")).isEmpty());
     }
 }

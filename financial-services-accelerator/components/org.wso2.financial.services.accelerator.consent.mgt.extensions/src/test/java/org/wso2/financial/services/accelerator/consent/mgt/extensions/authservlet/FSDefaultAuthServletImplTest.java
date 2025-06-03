@@ -86,7 +86,8 @@ public class FSDefaultAuthServletImplTest {
                 accountObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.CONSENT_DATA));
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.ACCOUNTS));
     }
 
     @Test
@@ -98,7 +99,7 @@ public class FSDefaultAuthServletImplTest {
                 cofObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.CONSENT_DATA));
     }
 
     @Test
@@ -112,7 +113,7 @@ public class FSDefaultAuthServletImplTest {
                 paymentObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.CONSENT_DATA));
     }
 
     @Test
@@ -123,7 +124,7 @@ public class FSDefaultAuthServletImplTest {
         Map<String, Object> requestAttributes = servletImpl.updateRequestAttribute(httpServletRequestMock,
                 object, resourceBundle);
 
-        assertTrue(requestAttributes.isEmpty());
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.TYPE));
     }
 
     @Test
