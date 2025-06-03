@@ -114,12 +114,11 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         // External service success response
         ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-        List<Map<String, Object>> consentDataList = new ArrayList<>();
-        consentDataList.add(Map.of("field", "value"));
+        Map<String, Object> consentDataObject = Map.of("field", "value");
         List<Map<String, Object>> consumerDataList = new ArrayList<>();
         consumerDataList.add(Map.of("account", "123"));
 
-        responseDTO.setConsentData(consentDataList);
+        responseDTO.setConsentData(consentDataObject);
         responseDTO.setConsumerData(consumerDataList);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -193,9 +192,9 @@ public class ExternalAPIConsentRetrievalStepTest {
         consentRetrievalStep.execute(realConsentData, jsonObject);
 
         assertTrue(jsonObject.has("consentData"));
-        assertTrue(jsonObject.has("accounts"));
-        assertEquals(jsonObject.getJSONArray("consentData").getJSONObject(0).getString("field"), "value");
-        assertEquals(jsonObject.getJSONArray("accounts").getJSONObject(0).getString("account"), "123");
+        assertTrue(jsonObject.has("consumerData"));
+        assertEquals(jsonObject.getJSONObject("consentData").getString("field"), "value");
+        assertEquals(jsonObject.getJSONArray("consumerData").getJSONObject(0).getString("account"), "123");
     }
 
 
@@ -262,17 +261,13 @@ public class ExternalAPIConsentRetrievalStepTest {
     private static ExternalServiceResponse getExternalServiceResponse() {
         ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
 
-        List<Map<String, Object>> consentDataList = new ArrayList<>();
-        Map<String, Object> consentEntry = new HashMap<>();
-        consentEntry.put("field", "value");
-        consentDataList.add(consentEntry);
+        Map<String, Object> consentDataObject = new HashMap<>();
+        consentDataObject.put("field", "value");
 
         List<Map<String, Object>> consumerDataList = new ArrayList<>();
-        Map<String, Object> consumerEntry = new HashMap<>();
-        consumerEntry.put("account", "123");
-        consumerDataList.add(consumerEntry);
+        consumerDataList.add(Map.of("account", "123"));
 
-        responseDTO.setConsentData(consentDataList);
+        responseDTO.setConsentData(consentDataObject);
         responseDTO.setConsumerData(consumerDataList);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
@@ -340,7 +335,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         Mockito.verify(spyConsentData).setAuthResource(any(AuthorizationResource.class));
 
         assertTrue(jsonObject.has("consentData"));
-        assertTrue(jsonObject.has("accounts"));
+        assertTrue(jsonObject.has("consumerData"));
     }
 
 }

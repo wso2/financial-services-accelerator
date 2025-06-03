@@ -102,12 +102,16 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
-            JSONArray consentDataJsonArray = new JSONArray(gson.toJson(responseDTO.getConsentData()));
-            JSONArray consumerDataJsonArray = new JSONArray(gson.toJson(responseDTO.getConsumerData()));
 
-            // Set data to json object to be displayed in consent page.
-            jsonObject.put("consentData", consentDataJsonArray);
-            jsonObject.put("accounts", consumerDataJsonArray);
+            // Append consumer data to json object to be displayed in consent page
+            JSONObject consentDataJsonObject = new JSONObject(gson.toJson(responseDTO.getConsentData()));
+            jsonObject.put("consentData", consentDataJsonObject);
+
+            // Append consumer data, if exists, to json object
+            if (responseDTO.getConsumerData() != null) {
+            JSONArray consumerDataJsonArray = new JSONArray(gson.toJson(responseDTO.getConsumerData()));
+            jsonObject.put("consumerData", consumerDataJsonArray);
+            }
 
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);

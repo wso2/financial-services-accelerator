@@ -25,14 +25,14 @@ import java.util.Map;
  */
 public class ExternalAPIPreConsentAuthorizeResponseDTO {
 
-    private List<Map<String, Object>> consentData;
+    private Map<String, Object> consentData;
     private List<Map<String, Object>> consumerData;
 
-    public List<Map<String, Object>> getConsentData() {
+    public Map<String, Object> getConsentData() {
         return consentData;
     }
 
-    public void setConsentData(List<Map<String, Object>> consentData) {
+    public void setConsentData(Map<String, Object> consentData) {
         this.consentData = consentData;
     }
 
