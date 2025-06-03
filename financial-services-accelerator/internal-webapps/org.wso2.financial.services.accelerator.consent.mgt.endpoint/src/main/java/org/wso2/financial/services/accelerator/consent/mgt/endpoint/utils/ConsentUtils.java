@@ -538,4 +538,163 @@ public class ConsentUtils {
                 .filter(entry -> allowedHeaderNames.contains(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
+
+    /**
+     * Validates the structure of the response retrieved from consent retrieval steps
+     *
+     * @param jsonObject response received from executing consent retrieval steps
+     * @param redirectURI redirect URI to end the authorize flow
+     * @param state state to return to the redirect URI
+     * @throws ConsentException if the payload format is invalid
+     */
+    public static void validateRetrievalPayload(JSONObject jsonObject, URI redirectURI, String state)
+            throws ConsentException {
+        // consentData is mandatory
+        if (!jsonObject.has("consentData")) {
+            log.error("Retrieval payload missing mandatory attribute consentData");
+            throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                    "Retrieval payload missing mandatory attribute \"consentData\"", state);
+        }
+        JSONObject consentData = jsonObject.getJSONObject("consentData");
+
+        // type is mandatory and must be string
+        if (!consentData.has("type") || !(consentData.get("type") instanceof String)) {
+            log.error("Retrieval payload missing mandatory string attribute \"type\"");
+            throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                    "Retrieval payload missing mandatory string attribute \"type\"", state);
+        }
+
+        // basicConsentData is mandatory and must be array
+        if (!consentData.has("basicConsentData") || !(consentData.get("basicConsentData") instanceof JSONArray)) {
+            log.error("Retrieval payload missing mandatory array attribute \"basicConsentData\"");
+            throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                    "Retrieval payload missing mandatory array attribute \"basicConsentData\"", state);
+        }
+        JSONArray basicConsentData = consentData.getJSONArray("basicConsentData");
+
+        for (int i = 0; i < basicConsentData.length(); i++) {
+            JSONObject item = basicConsentData.getJSONObject(i);
+            if (!item.has("title") || !(item.get("title") instanceof String)) {
+                log.error("Each item in basicConsentData must contain a string attribute \"title\"");
+                throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                        "Each item in basicConsentData must contain a string attribute \"title\"", state);
+            }
+
+            if (!item.has("data") || !(item.get("data") instanceof JSONArray)) {
+                log.error("Each item in basicConsentData must contain an array attribute \"data\"");
+                throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                        "Each item in basicConsentData must contain an array attribute \"data\"", state);
+            }
+            JSONArray dataArray = item.getJSONArray("data");
+            for (int j = 0; j < dataArray.length(); j++) {
+                if (!(dataArray.get(j) instanceof String)) {
+                    log.error("Items in basicConsentData.data array must be strings");
+                    throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                            "Items in basicConsentData.data array must be strings", state);
+                }
+            }
+        }
+
+        if (consentData.has("requestedPermissions")) {
+            JSONObject requestedPermissions = consentData.getJSONObject("requestedPermissions");
+
+            if (!requestedPermissions.has("permissions") || !(requestedPermissions.get("permissions") instanceof JSONArray)) {
+                log.error("requestedPermissions must contain mandatory array attribute \"permissions\"");
+                throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                        "requestedPermissions must contain mandatory array attribute \"permissions\"", state);
+            }
+
+            JSONArray permissions = requestedPermissions.getJSONArray("permissions");
+            for (int i = 0; i < permissions.length(); i++) {
+                JSONObject permission = permissions.getJSONObject(i);
+
+                if (!permission.has("displayValues") || !(permission.get("displayValues") instanceof JSONArray)) {
+                    log.error("Each permission must contain mandatory array attribute \"displayValues\"");
+                    throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                            "Each permission must contain mandatory array attribute \"displayValues\"", state);
+                }
+
+                JSONArray displayValues = permission.getJSONArray("displayValues");
+                for (int j = 0; j < displayValues.length(); j++) {
+                    if (!(displayValues.get(j) instanceof String)) {
+                        log.error("Items in permission.displayValues must be strings");
+                        throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                                "Items in permission.displayValues must be strings", state);
+                    }
+                }
+
+                if (permission.has("initiatedAccounts")) {
+                    JSONArray initiatedAccounts = permission.getJSONArray("initiatedAccounts");
+                    for (int j = 0; j < initiatedAccounts.length(); j++) {
+                        JSONObject acc = initiatedAccounts.getJSONObject(j);
+                        validateAccount(acc, "permission.initiatedAccounts[" + j + "]", redirectURI, state);
+                    }
+                }
+            }
+
+            if (requestedPermissions.has("initiatedAccountsForConsent")) {
+                JSONArray accounts = requestedPermissions.getJSONArray("initiatedAccountsForConsent");
+                for (int i = 0; i < accounts.length(); i++) {
+                    JSONObject acc = accounts.getJSONObject(i);
+                    validateAccount(acc, "requestedPermissions.initiatedAccountsForConsent[" + i + "]", redirectURI, state);
+                }
+            }
+
+            if (requestedPermissions.has("displayConsumerAccountsPerPermission") &&
+                    !(requestedPermissions.get("displayConsumerAccountsPerPermission") instanceof Boolean)) {
+                log.error("displayConsumerAccountsPerPermission must be a boolean");
+                throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                        "displayConsumerAccountsPerPermission must be a boolean", state);
+            }
+        }
+
+        if (consentData.has("isReauthorization") &&
+                !(consentData.get("isReauthorization") instanceof Boolean)) {
+            log.error("isReauthorization must be a boolean");
+            throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                    "isReauthorization must be a boolean", state);
+        }
+
+        if (jsonObject.has("consumerData")) {
+            JSONArray consumerData = jsonObject.getJSONArray("consumerData");
+            for (int i = 0; i < consumerData.length(); i++) {
+                JSONObject acc = consumerData.getJSONObject(i);
+                validateAccount(acc, "consumerData[" + i + "]", redirectURI, state);
+
+                if (acc.has("selected") && !(acc.get("selected") instanceof Boolean)) {
+                    log.error("consumerData.selected must be a boolean");
+                    throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                            "consumerData.selected must be a boolean", state);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method to validate account objects
+     *
+     * @param acc account object
+     * @param context context of the account object
+     * @param redirectURI redirect URI to end the authorize flow
+     * @param state state to return to the redirect URI
+     * @throws ConsentException if validation an account object failed
+     */
+    private static void validateAccount(JSONObject acc, String context, URI redirectURI, String state)
+            throws ConsentException {
+        if (!acc.has("displayName") || !(acc.get("displayName") instanceof String)) {
+            log.error(context.replaceAll("[\r\n]","") + " missing mandatory string " +
+                    "attribute \"displayName\"");
+            throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                    context.replaceAll("[\r\n]","") + " missing mandatory string " +
+                            "attribute \"displayName\"", state);
+        }
+
+        if (!acc.has("accountId") || !(acc.get("accountId") instanceof String)) {
+            log.error(context.replaceAll("[\r\n]","") + " missing mandatory string " +
+                    "attribute \"accountId\"");
+            throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
+                    context.replaceAll("[\r\n]","") + " missing mandatory string " +
+                            "attribute \"accountId\"", state);
+        }
+    }
 }
