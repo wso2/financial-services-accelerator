@@ -115,7 +115,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
              calling accounts service */
             // Append only when consent type is accounts or no initiated account for payment consents
-            if (ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
+            if (!isPreInitiatedConsent || ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
                     (ConsentExtensionConstants.PAYMENTS.equals(consentResource.getConsentType()) &&
                             !consentDataJSON.has(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT))) {
                 JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
