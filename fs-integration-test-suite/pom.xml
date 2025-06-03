@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>financial-services</artifactId>
-        <version>4.0.0-RC4</version>
+        <version>4.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -365,7 +365,7 @@
         <findsecbugs-plugin.version>1.10.1</findsecbugs-plugin.version>
         <maven.spotbugsplugin.version>4.2.3</maven.spotbugsplugin.version>
         <maven.checkstyleplugin.version>3.1.0</maven.checkstyleplugin.version>
-        <com.wso2.openbanking.test>4.0.0-RC4</com.wso2.openbanking.test>
+        <com.wso2.openbanking.test>4.0.0</com.wso2.openbanking.test>
         <com.google.guava.version>31.0.1-jre</com.google.guava.version>
         <com.google.inject.guice.version>4.2.3</com.google.inject.guice.version>
         <com.nimbusds.oidc.version>9.35</com.nimbusds.oidc.version>
@@ -373,7 +373,7 @@
         <org.codehaus.groovy.version>2.4.11</org.codehaus.groovy.version>
         <bcpkix-jdk15on.version>1.59</bcpkix-jdk15on.version>
         <jacoco.version>0.8.3</jacoco.version>
-        <bfsi-test-framework.version>4.0.0-RC4</bfsi-test-framework.version>
+        <bfsi-test-framework.version>4.0.0</bfsi-test-framework.version>
         <org.osgi.version>6.0.0</org.osgi.version>
         <org.apache.commons.logging.version>1.2</org.apache.commons.logging.version>
         <log4j.version>1.2.17</log4j.version>
