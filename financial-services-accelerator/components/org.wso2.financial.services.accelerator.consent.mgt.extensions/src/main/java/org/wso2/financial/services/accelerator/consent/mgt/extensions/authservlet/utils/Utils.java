@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.owasp.encoder.Encode;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class Utils {
     }
 
     /**
-     * Recursively converts jsonObject to a Map
+     * Recursively converts jsonObject to a Map.
      *
      * @param jsonObject JSONObject to be converted to a Map
      * @return jsonObject converted to a nested HashMap
@@ -113,7 +114,7 @@ public class Utils {
     }
 
     /**
-     * Recursively converts jsonObject to a Map
+     * Recursively converts jsonObject to a Map.
      *
      * @param jsonArray jsonArray to be converted to a Map
      * @return jsonArray converted to a nested ArrayList
@@ -133,5 +134,37 @@ public class Utils {
             }
         }
         return list;
+    }
+
+    /**
+     * Method to flatten basicConsentData.
+     *
+     * @param payload
+     */
+    public static void flattenBasicConsentData(JSONObject payload) {
+        if (payload.has(ConsentExtensionConstants.CONSENT_DATA)) {
+            JSONObject consentData = payload.getJSONObject(ConsentExtensionConstants.CONSENT_DATA);
+            if (consentData != null && consentData.has(ConsentAuthorizeConstants.BASIC_CONSENT_DATA)) {
+                JSONArray basicConsentArray = consentData.getJSONArray(ConsentAuthorizeConstants.BASIC_CONSENT_DATA);
+
+                if (basicConsentArray != null) {
+                    JSONObject flattened = new JSONObject();
+
+                    for (int i = 0; i < basicConsentArray.length(); i++) {
+                        JSONObject item = basicConsentArray.optJSONObject(i);
+                        if (item != null) {
+                            String title = item.optString(ConsentExtensionConstants.TITLE, null);
+                            JSONArray data = item.optJSONArray(ConsentExtensionConstants.DATA_CC);
+
+                            if (title != null && data != null) {
+                                flattened.put(title, data);
+                            }
+                        }
+                    }
+
+                    consentData.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, flattened);
+                }
+            }
+        }
     }
 }

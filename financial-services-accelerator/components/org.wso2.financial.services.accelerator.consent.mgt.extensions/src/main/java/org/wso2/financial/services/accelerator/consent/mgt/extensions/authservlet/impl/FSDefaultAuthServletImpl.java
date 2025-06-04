@@ -52,6 +52,9 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
     public Map<String, Object> updateRequestAttribute(HttpServletRequest request, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
 
+        // Flattens basicConsentData to process in JSP easier
+        Utils.flattenBasicConsentData(dataSet);
+
         return Utils.jsonObjectToMap(dataSet);
     }
 
