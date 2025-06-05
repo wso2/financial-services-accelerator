@@ -43,6 +43,7 @@ class CommonApplicationCreation extends FSConnectorTest {
     private String registrationPath
     String ssa
     ClientRegistrationRequestBuilder registrationRequestBuilder
+    File xmlFile = ConnectorTestConstants.CONFIG_FILE
 
     @BeforeClass(alwaysRun = true)
     void setup() {
@@ -50,6 +51,7 @@ class CommonApplicationCreation extends FSConnectorTest {
         dcrPath = configuration.getISServerUrl() + ConnectorTestConstants.REGISTRATION_ENDPOINT
         ssa = new File(configuration.getAppDCRSSAPath()).text
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
+        configuration.setTppNumber(0)
     }
 
     @Test(groups = "SmokeTest")
@@ -72,5 +74,9 @@ class CommonApplicationCreation extends FSConnectorTest {
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"))
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"))
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"))
+
+        //Write Client Id and Client Secret of TTP2 to config file.
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                configuration.getTppNumber())
     }
 }

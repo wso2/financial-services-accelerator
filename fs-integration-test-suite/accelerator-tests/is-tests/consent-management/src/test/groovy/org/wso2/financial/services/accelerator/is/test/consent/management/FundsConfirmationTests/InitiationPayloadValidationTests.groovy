@@ -130,7 +130,7 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
     }
 
     @Test
-    void "Funds Confirmation Initiation without identification "() {
+    void "Funds Confirmation Initiation without identification"() {
 
         doDefaultInitiation(CofRequestPayloads.initiationPayloadWithoutIdentification)
 
@@ -144,7 +144,7 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
     }
 
     @Test
-    void "Funds Confirmation Initiation without Name "() {
+    void "Funds Confirmation Initiation without Name"() {
 
         doDefaultInitiation(CofRequestPayloads.initiationPayloadWithoutName)
 
@@ -167,7 +167,7 @@ class InitiationPayloadValidationTests extends FSConnectorTest {
     }
 
     @Test
-    void "Funds Confirmation Initiation with invalid name "() {
+    void "Funds Confirmation Initiation with invalid name"() {
 
         doDefaultInitiation(CofRequestPayloads.initiationPayloadWithInvalidName)
 

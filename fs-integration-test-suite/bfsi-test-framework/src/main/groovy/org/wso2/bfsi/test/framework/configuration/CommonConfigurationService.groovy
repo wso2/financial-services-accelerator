@@ -606,5 +606,9 @@ class CommonConfigurationService {
                 .get(ConfigConstants.APPLICATION_TRANSPORT_KEYSTORE_ALIAS)
     }
 
+    String getIsVersion() {
+        return configuration.get(ConfigConstants.COMMON + "." + ConfigConstants.IS_VERSION)
+    }
+
 }
 

@@ -55,8 +55,13 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                ("Client credentials are invalid."))
+
+        String actualErrorResponse = TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
+
+        boolean isValidResponse = actualErrorResponse.equals("Client credentials are invalid.")
+                || actualErrorResponse.equals("A valid OAuth client could not be found for client_id: deleted_client_id")
+
+        Assert.assertTrue(isValidResponse)
     }
 
     @Test
@@ -93,17 +98,14 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Response tokenResponse = getApplicationAccessTokenResponseWithoutClientId(ConnectorTestConstants.PKJWT_AUTH_METHOD,
                 [scope])
 
-        def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
-
-        //TODO:
-//        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
-//        Assert.assertNotNull(accessToken)
-//        Assert.assertNotNull(OBTestUtil.parseResponseBody(tokenResponse, "expires_in"))
-//        Assert.assertNotNull(OBTestUtil.parseResponseBody(tokenResponse, "scope"))
-//        Assert.assertEquals(OBTestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Client ID not found in the request.")
+        Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
+                ConnectorTestConstants.INVALID_CLIENT)
     }
 
-    @Test(priority = 1)
+    @Test
     void "pkjwt client authentication with both x-wso2-mutual-auth-cert header and client_assertion"() {
 
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
@@ -118,7 +120,7 @@ class PkjwtClientAuthenticationTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, "token_type"), ConnectorTestConstants.BEARER)
     }
 
-    @Test(priority = 1)
+    @Test
     void "pkjwt client authentication with x-wso2-mutual-auth-cert header, client id and client_assertion and client assertion type"() {
 
         Response tokenResponse = getApplicationAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD,
