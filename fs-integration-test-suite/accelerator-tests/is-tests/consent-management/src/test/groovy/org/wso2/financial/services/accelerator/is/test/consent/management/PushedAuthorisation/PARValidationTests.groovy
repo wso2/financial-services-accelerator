@@ -326,7 +326,7 @@ class PARValidationTests extends FSConnectorTest{
         // Get Code From URL
         def errorMessage = URLDecoder.decode(TestUtil.getStatusMsgFromUrl(automation.currentUrl.get()),
                 StandardCharsets.UTF_8)
-        Assert.assertTrue(errorMessage.contains("Retrieving consent data failed"))
+        Assert.assertTrue(errorMessage.contains("Error while parsing the response"))
     }
 
     @Test

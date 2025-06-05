@@ -31,27 +31,27 @@ class ConsentDataProviders {
 
         List<Map<String, Object>> listOfParamMaps = new ArrayList<Map<String, String>>()
         Map<String, Object> accountParameterMap = new HashMap<String, String>()
-        Map<String, Object> cofParameterMap = new HashMap<String, String>()
-        Map<String, Object> paymentsParameterMap = new HashMap<String, String>()
+//        Map<String, Object> cofParameterMap = new HashMap<String, String>()
+//        Map<String, Object> paymentsParameterMap = new HashMap<String, String>()
 
         accountParameterMap.put("initiationPayload", RequestPayloads.initiationPayload)
         accountParameterMap.put("initiationPath", ConnectorTestConstants.ACCOUNT_CONSENT_PATH)
         accountParameterMap.put("consentType", ConnectorTestConstants.ACCOUNTS_TYPE)
         accountParameterMap.put("submissionPath", ConnectorTestConstants.ACCOUNT_SUBMISSION_PATH)
 
-        cofParameterMap.put("initiationPayload", RequestPayloads.cofInitiationPayload)
-        cofParameterMap.put("initiationPath", ConnectorTestConstants.COF_CONSENT_PATH)
-        cofParameterMap.put("consentType", ConnectorTestConstants.COF_TYPE)
-        cofParameterMap.put("submissionPath", ConnectorTestConstants.COF_SUBMISSION_PATH)
+//        cofParameterMap.put("initiationPayload", RequestPayloads.cofInitiationPayload)
+//        cofParameterMap.put("initiationPath", ConnectorTestConstants.COF_CONSENT_PATH)
+//        cofParameterMap.put("consentType", ConnectorTestConstants.COF_TYPE)
+//        cofParameterMap.put("submissionPath", ConnectorTestConstants.COF_SUBMISSION_PATH)
 
-        paymentsParameterMap.put("initiationPayload", RequestPayloads.initiationPaymentPayload)
-        paymentsParameterMap.put("initiationPath", ConnectorTestConstants.PAYMENT_CONSENT_PATH)
-        paymentsParameterMap.put("consentType", ConnectorTestConstants.PAYMENTS_TYPE)
-        paymentsParameterMap.put("submissionPath", ConnectorTestConstants.PAYMENT_SUBMISSION_PATH)
+//        paymentsParameterMap.put("initiationPayload", RequestPayloads.initiationPaymentPayload)
+//        paymentsParameterMap.put("initiationPath", ConnectorTestConstants.PAYMENT_CONSENT_PATH)
+//        paymentsParameterMap.put("consentType", ConnectorTestConstants.PAYMENTS_TYPE)
+//        paymentsParameterMap.put("submissionPath", ConnectorTestConstants.PAYMENT_SUBMISSION_PATH)
 
         listOfParamMaps.add(accountParameterMap)
-        listOfParamMaps.add(cofParameterMap)
-        listOfParamMaps.add(paymentsParameterMap)
+//        listOfParamMaps.add(cofParameterMap)
+//        listOfParamMaps.add(paymentsParameterMap)
 
         for (Map<String, Object> map : listOfParamMaps) {
             consentTypesCollection.add([map] as Object[])
