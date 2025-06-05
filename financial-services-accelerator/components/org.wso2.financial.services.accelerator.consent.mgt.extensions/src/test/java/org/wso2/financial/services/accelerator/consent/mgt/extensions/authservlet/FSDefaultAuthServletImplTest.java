@@ -87,7 +87,7 @@ public class FSDefaultAuthServletImplTest {
 
         assertFalse(requestAttributes.isEmpty());
         assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.CONSENT_DATA));
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.CONSUMER_DATA));
     }
 
     @Test

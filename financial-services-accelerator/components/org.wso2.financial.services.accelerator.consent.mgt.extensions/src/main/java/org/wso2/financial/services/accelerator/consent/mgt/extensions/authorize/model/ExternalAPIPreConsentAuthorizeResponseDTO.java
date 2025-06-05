@@ -26,7 +26,7 @@ import java.util.Map;
 public class ExternalAPIPreConsentAuthorizeResponseDTO {
 
     private Map<String, Object> consentData;
-    private List<Map<String, Object>> consumerData;
+    private Map<String, Object> consumerData;
 
     public Map<String, Object> getConsentData() {
         return consentData;
@@ -36,11 +36,11 @@ public class ExternalAPIPreConsentAuthorizeResponseDTO {
         this.consentData = consentData;
     }
 
-    public List<Map<String, Object>> getConsumerData() {
+    public Map<String, Object> getConsumerData() {
         return consumerData;
     }
 
-    public void setConsumerData(List<Map<String, Object>> consumerData) {
+    public void setConsumerData(Map<String, Object> consumerData) {
         this.consumerData = consumerData;
     }
 }

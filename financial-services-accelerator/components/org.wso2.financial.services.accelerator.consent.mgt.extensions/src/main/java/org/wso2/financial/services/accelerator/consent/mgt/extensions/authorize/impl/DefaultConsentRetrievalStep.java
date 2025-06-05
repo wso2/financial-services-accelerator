@@ -119,7 +119,9 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                     (ConsentExtensionConstants.PAYMENTS.equals(consentResource.getConsentType()) &&
                             !consentDataJSON.has(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT))) {
                 JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
-                jsonObject.put(ConsentExtensionConstants.CONSUMER_DATA, accountsJSON);
+                JSONObject consumerDataJSON = new JSONObject();
+                consumerDataJSON.put(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
+                jsonObject.put(ConsentExtensionConstants.CONSUMER_DATA, consumerDataJSON);
             }
 
             // Set request parameters as metadata to be used in persistence extension

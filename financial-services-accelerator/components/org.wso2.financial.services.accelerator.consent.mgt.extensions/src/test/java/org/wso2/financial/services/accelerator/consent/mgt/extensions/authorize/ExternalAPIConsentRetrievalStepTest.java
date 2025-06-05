@@ -114,12 +114,11 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         // External service success response
         ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-        Map<String, Object> consentDataObject = Map.of("field", "value");
-        List<Map<String, Object>> consumerDataList = new ArrayList<>();
-        consumerDataList.add(Map.of("account", "123"));
+        Map<String, Object> consentDataObject = Map.of("field1", "value1");
+        Map<String, Object> consumerDataObject = Map.of("field2", "value2");
 
         responseDTO.setConsentData(consentDataObject);
-        responseDTO.setConsumerData(consumerDataList);
+        responseDTO.setConsumerData(consumerDataObject);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
@@ -193,8 +192,8 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         assertTrue(jsonObject.has("consentData"));
         assertTrue(jsonObject.has("consumerData"));
-        assertEquals(jsonObject.getJSONObject("consentData").getString("field"), "value");
-        assertEquals(jsonObject.getJSONArray("consumerData").getJSONObject(0).getString("account"), "123");
+        assertEquals(jsonObject.getJSONObject("consentData").getString("field1"), "value1");
+        assertEquals(jsonObject.getJSONObject("consumerData").getString("field2"), "value2");
     }
 
 
@@ -262,13 +261,13 @@ public class ExternalAPIConsentRetrievalStepTest {
         ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
 
         Map<String, Object> consentDataObject = new HashMap<>();
-        consentDataObject.put("field", "value");
+        consentDataObject.put("field1", "value1");
 
-        List<Map<String, Object>> consumerDataList = new ArrayList<>();
-        consumerDataList.add(Map.of("account", "123"));
+        Map<String, Object> consumerDataObject = new HashMap<>();
+        consumerDataObject.put("field2", "value2");
 
         responseDTO.setConsentData(consentDataObject);
-        responseDTO.setConsumerData(consumerDataList);
+        responseDTO.setConsumerData(consumerDataObject);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
 

@@ -281,131 +281,174 @@ public class TestConstants {
             "   }\n" +
             "}";
 
-    public static final String ACCOUNT_AUTH_SERVLET_DATA = "{" +
-            "   \"consentData\": [" +
-            "       {" +
-            "           \"data\":[" +
-            "               \"ReadAccountsBasic\"," +
-            "               \"ReadAccountsDetail\"," +
-            "               \"ReadBalances\"," +
-            "               \"ReadBeneficiariesBasic\"," +
-            "               \"ReadBeneficiariesDetail\"," +
-            "               \"ReadDirectDebits\"," +
-            "               \"ReadProducts\"," +
-            "               \"ReadStandingOrdersBasic\"," +
-            "               \"ReadStandingOrdersDetail\"," +
-            "               \"ReadTransactionsBasic\"," +
-            "               \"ReadTransactionsCredits\"," +
-            "               \"ReadTransactionsDebits\"," +
-            "               \"ReadTransactionsDetail\"," +
-            "               \"ReadStatementsBasic\"," +
-            "               \"ReadStatementsDetail\"" +
-            "           ]," +
-            "           \"title\":\"Permissions\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[\"2021-07-19T13:51:43.347+05:30\"]," +
-            "           \"title\":\"Expiration Date Time\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[\"2021-07-14T13:51:43.397+05:30\"]," +
-            "           \"title\":\"Transaction From Date Time\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[\"2021-07-17T13:51:43.397+05:30\"]," +
-            "           \"title\":\"Transaction To Date Time\"" +
-            "       }" +
-            "   ]," +
-            "   \"application\":\"9b5usDpbNtmxDcTzs7GzKp\"," +
-            "   \"accounts\":[" +
-            "       {" +
-            "           \"accountId\":\"30080012343456\"," +
-            "           \"account_id\":\"30080012343456\"," +
-            "           \"authorizationMethod\":\"single\"," +
-            "           \"accountName\":\"account_1\"," +
-            "           \"nickName\":\"not-working\"," +
-            "           \"display_name\":\"account_1\"" +
-            "       }," +
-            "       {" +
-            "           \"accountId\":\"30080098763459\"," +
-            "           \"account_id\":\"30080098763459\"," +
-            "           \"authorizationMethod\":\"single\"," +
-            "           \"accountName\":\"account_2\"," +
-            "           \"display_name\":\"account_2\"" +
-            "       }" +
-            "   ]," +
-            "   \"type\":\"accounts\"" +
+    public static final String ACCOUNT_AUTH_SERVLET_DATA = "{\n" +
+            "  \"consentData\": {\n" +
+            "    \"type\": \"accounts\",\n" +
+            "    \"basicConsentData\": [\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"ReadAccountsBasic\",\n" +
+            "          \"ReadAccountsDetail\",\n" +
+            "          \"ReadBalances\",\n" +
+            "          \"ReadBeneficiariesBasic\",\n" +
+            "          \"ReadBeneficiariesDetail\",\n" +
+            "          \"ReadDirectDebits\",\n" +
+            "          \"ReadProducts\",\n" +
+            "          \"ReadStandingOrdersBasic\",\n" +
+            "          \"ReadStandingOrdersDetail\",\n" +
+            "          \"ReadTransactionsBasic\",\n" +
+            "          \"ReadTransactionsCredits\",\n" +
+            "          \"ReadTransactionsDebits\",\n" +
+            "          \"ReadTransactionsDetail\",\n" +
+            "          \"ReadStatementsBasic\",\n" +
+            "          \"ReadStatementsDetail\",\n" +
+            "          \"ReadOffers\",\n" +
+            "          \"ReadParty\",\n" +
+            "          \"ReadPartyPSU\",\n" +
+            "          \"ReadScheduledPaymentsBasic\",\n" +
+            "          \"ReadScheduledPaymentsDetail\",\n" +
+            "          \"ReadPAN\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Permissions\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"2025-06-02T10:58:09.581346300+05:30\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Expiration Date Time\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"2025-05-28T10:58:09.581346300+05:30\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Transaction From Date Time\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"2025-05-31T10:58:09.582341200+05:30\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Transaction To Date Time\"\n" +
+            "      }\n" +
+            "    ],\n" +
+            "    \"allowMultipleAccounts\": true\n" +
+            "  },\n" +
+            "  \"consumerData\": {\n" +
+            "    \"accounts\": [\n" +
+            "      {\n" +
+            "        \"displayName\": \"account_1\",\n" +
+            "        \"accountId\": \"30080012343456\",\n" +
+            "        \"selected\": \"false\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"displayName\": \"account_2\",\n" +
+            "        \"accountId\": \"30080098763459\",\n" +
+            "        \"selected\": \"false\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"displayName\": \"multi_auth_account\",\n" +
+            "        \"accountId\": \"30080098971337\",\n" +
+            "        \"selected\": \"false\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"displayName\": \"Extra_account\",\n" +
+            "        \"accountId\": \"650-000 N1232\",\n" +
+            "        \"selected\": \"false\"\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  }\n" +
             "}";
 
-    public static final String COF_AUTH_SERVLET_DATA = "{" +
-            "   \"consentData\":[" +
-            "       {" +
-            "           \"data\":[\"2021-07-19T20:14:11.069+05:30\"]," +
-            "           \"title\":\"Expiration Date Time\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[" +
-            "               \"Scheme Name : UK.OBIE.SortCodeAccountNumber\"," +
-            "               \"Identification : 1234\"," +
-            "               \"Name : Account1\"," +
-            "               \"Secondary Identification : Account1\"" +
-            "           ]," +
-            "           \"title\":\"Debtor Account\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[" +
-            "               {" +
-            "                   \"isReauthorization\":false" +
-            "               }" +
-            "           ]," +
-            "           \"title\":\"Reauthorization\"" +
-            "       }" +
-            "   ]," +
-            "   \"application\":\"9b5usDpbNtmxDcTzs7GzKp\"," +
-            "   \"type\":\"fundsconfirmations\"," +
-            "   \"debtor_account\":\"1234\"" +
+    public static final String COF_AUTH_SERVLET_DATA = "{\n" +
+            "  \"consentData\": {\n" +
+            "    \"type\": \"funds-confirmation\",\n" +
+            "    \"basicConsentData\": [\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"2025-06-02T12:14:23.061411600+05:30\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Expiration Date Time\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"Scheme Name : UK.OBIE.IBAN\",\n" +
+            "          \"Identification : 1234\",\n" +
+            "          \"Name : Account1\",\n" +
+            "          \"Secondary Identification : Account1\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Debtor Account\"\n" +
+            "      }\n" +
+            "    ],\n" +
+            "    \"initiatedAccountsForConsent\": [\n" +
+            "      {\n" +
+            "        \"displayName\": \"Account1\",\n" +
+            "        \"accountId\": \"1234\"\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  }\n" +
             "}";
 
-    public static final String PAYMENT_AUTH_SERVLET_DATA = "{" +
-            "   \"consentData\":[" +
-            "       {" +
-            "           \"data\":[\"Domestic Payments\"]," +
-            "           \"title\":\"Payment Type\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[\"ACME412\"]," +
-            "           \"title\":\"Instruction Identification\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[\"FRESCO.21302.GFX.20\"]," +
-            "           \"title\":\"End to End Identification\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[\"Amount : 30.80\",\"Currency : GBP\"]," +
-            "           \"title\":\"Instructed Amount\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[" +
-            "               \"Scheme Name : UK.OBIE.SortCodeAccountNumber\"," +
-            "               \"Identification : 30080012343456\"," +
-            "               \"Name : Andrea Smith\"," +
-            "               \"Secondary Identification : 30080012343456\"" +
-            "           ]," +
-            "           \"title\":\"Debtor Account\"" +
-            "       }," +
-            "       {" +
-            "           \"data\":[" +
-            "               \"Scheme Name : UK.OBIE.SortCodeAccountNumber\"," +
-            "               \"Identification : 08080021325698\"," +
-            "               \"Name : ACME Inc\"," +
-            "               \"Secondary Identification : 0002\"" +
-            "           ]," +
-            "           \"title\":\"Creditor Account\"" +
-            "       }" +
-            "   ]," +
-            "   \"application\":\"9b5usDpbNtmxDcTzs7GzKp\"," +
-            "   \"type\":\"payments\"," +
-            "   \"debtor_account\":\"30080012343456\"" +
+    public static final String PAYMENT_AUTH_SERVLET_DATA = "{\n" +
+            "  \"consentData\": {\n" +
+            "    \"type\": \"payments\",\n" +
+            "    \"basicConsentData\": [\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"Domestic Payments\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Payment Type\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"ACME412\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Instruction Identification\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"FRESCO.21302.GFX.20\"\n" +
+            "        ],\n" +
+            "        \"title\": \"End to End Identification\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"Amount : 30.80\",\n" +
+            "          \"Currency : GBP\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Instructed Amount\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"Scheme Name : UK.OBIE.SortCodeAccountNumber\",\n" +
+            "          \"Identification : 30080012343456\",\n" +
+            "          \"Name : Andrea Smith\",\n" +
+            "          \"Secondary Identification : 30080012343456\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Debtor Account\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"Scheme Name : UK.OBIE.SortCodeAccountNumber\",\n" +
+            "          \"Identification : 08080021325698\",\n" +
+            "          \"Name : ACME Inc\",\n" +
+            "          \"Secondary Identification : 0002\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Creditor Account\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"data\": [\n" +
+            "          \"Multi Authorisation Type : Any\",\n" +
+            "          \"Multi Authrisation Expiry : 1748848010149\"\n" +
+            "        ],\n" +
+            "        \"title\": \"Multi Authorisation\"\n" +
+            "      }\n" +
+            "    ],\n" +
+            "    \"initiatedAccountsForConsent\": [\n" +
+            "      {\n" +
+            "        \"displayName\": \"ACME Inc\",\n" +
+            "        \"accountId\": \"08080021325698\"\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  }\n" +
             "}";
 
     public static final String AUTH_SERVLET_JSON_WITH_TYPE = "{" +

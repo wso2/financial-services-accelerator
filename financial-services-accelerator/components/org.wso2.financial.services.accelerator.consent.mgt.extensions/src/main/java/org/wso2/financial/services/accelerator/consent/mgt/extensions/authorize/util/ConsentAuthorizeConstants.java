@@ -41,4 +41,12 @@ public class ConsentAuthorizeConstants {
     public static final String ACCOUNT_ID = "accountId";
     public static final String SELECTED = "selected";
     public static final String INITIATED_ACCOUNTS_FOR_CONSENT = "initiatedAccountsForConsent";
+    public static final String CONSENT_DATA = "consentData";
+    public static final String TITLE = "title";
+    public static final String DATA = "data";
+    public static final String IS_REAUTHORIZATION = "isReauthorization";
+    public static final String CONSUMER_DATA = "consumerData";
+    public static final String ACCOUNTS = "accounts";
+    public static final String INITIATED_ACCOUNTS = "initiatedAccounts";
+    public static final String DISPLAY_CONSUMER_ACCOUNTS_PER_PERMISSION = "displayConsumerAccountsPerPermission";
 }
