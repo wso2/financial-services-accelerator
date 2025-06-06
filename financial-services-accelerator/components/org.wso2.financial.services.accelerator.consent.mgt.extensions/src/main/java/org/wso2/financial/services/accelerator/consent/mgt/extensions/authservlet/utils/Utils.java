@@ -25,16 +25,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.owasp.encoder.Encode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Utility methods.
@@ -165,5 +161,65 @@ public class Utils {
         }
 
         consentData.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, formatted);
+    }
+
+    /**
+     * Expand sub-attributes within the retrieved payload
+     *
+     * @param dataSet dataSet received from the execution of retrieval steps
+     * @return updated request attribute map
+     */
+    public static Map<String, Object> returnAttributesFromDataSet(JSONObject dataSet) {
+        Map<String, Object> attributeMap = new HashMap<>();
+
+        if (dataSet == null) {
+            return attributeMap;
+        }
+
+        // Convert JSON object to map
+        Map<String, Object> dataSetMap = jsonObjectToMap(dataSet);
+
+        Map<String, Object> consentData = (Map<String, Object>) dataSetMap.get(ConsentAuthorizeConstants.CONSENT_DATA);
+        Map<String, Object> consumerData = (Map<String, Object>)
+                dataSetMap.get(ConsentAuthorizeConstants.CONSUMER_DATA);
+
+        Map<String, List<String>> basicConsentData = null;
+        Map<String, Object> requestedPermissions = null;
+        List<Object> initiatedAccountsForConsent = null;
+        Boolean isReauthorization = false;
+        Boolean allowMultipleAccounts = false;
+
+        if (consentData != null) {
+            basicConsentData = (Map<String, List<String>>) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.BASIC_CONSENT_DATA, null);
+            requestedPermissions = (Map<String, Object>) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.REQUESTED_PERMISSIONS, null);
+            initiatedAccountsForConsent = (List<Object>) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, null);
+            isReauthorization = (Boolean) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.IS_REAUTHORIZATION, false);
+            allowMultipleAccounts = (Boolean) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, false);
+        }
+
+        List<Map<String, Object>> permissions = null;
+        if (requestedPermissions != null) {
+            permissions = (List<Map<String, Object>>) requestedPermissions.get(ConsentAuthorizeConstants.PERMISSIONS);
+        }
+
+        List<Map<String, Object>> consumerAccounts = null;
+        if (consumerData != null) {
+            consumerAccounts = (List<Map<String, Object>>) consumerData.get(
+                    ConsentAuthorizeConstants.ACCOUNTS);
+        }
+
+        attributeMap.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
+        attributeMap.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
+        attributeMap.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, initiatedAccountsForConsent);
+        attributeMap.put(Constants.CONSUMER_ACCOUNTS, consumerAccounts);
+        attributeMap.put(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, allowMultipleAccounts);
+        attributeMap.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, isReauthorization);
+
+        return attributeMap;
     }
 }

@@ -22,46 +22,6 @@
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 
-<%
-    Map<String, Object> consentData = (Map<String, Object>) request.getAttribute("consentData");
-    Map<String, Object> consumerData = (Map<String, Object>) request.getAttribute("consumerData");
-
-    Map<String, List<String>> basicConsentData = (Map<String, List<String>>) consentData.get("basicConsentData");
-    Map<String, Object> requestedPermissions = (Map<String, Object>) consentData.getOrDefault("requestedPermissions", null);
-    List<Object> initiatedAccountsForConsent = (List<Object>) consentData.getOrDefault("initiatedAccountsForConsent", null);
-    Boolean isReauthorization = (Boolean) consentData.getOrDefault("isReauthorization", false);
-    Boolean allowMultipleAccounts = (Boolean) consentData.getOrDefault("allowMultipleAccounts", false);
-
-    // Expand requested permissions
-    List<Map<String, Object>> permissions = null;
-    if (requestedPermissions != null) {
-        permissions = (List<Map<String, Object>>) requestedPermissions.get("permissions");
-    }
-
-    // Extract consumer accounts
-    List<Map<String, Object>> consumerAccounts = null;
-    if (consumerData != null) {
-        consumerAccounts = (List<Map<String, Object>>) consumerData.getOrDefault("accounts", null);
-    }
-
-    // Logging
-    System.out.println("[JSP DEBUG] consentData is " + (consentData == null ? "null" : "present"));
-    System.out.println("[JSP DEBUG] consumerData is " + (consumerData == null ? "null" : "present"));
-    System.out.println("[JSP DEBUG] basicConsentData is " + (basicConsentData == null ? "null" : "present"));
-    System.out.println("[JSP DEBUG] requestedPermissions is " + (requestedPermissions == null ? "null" : "present"));
-    System.out.println("[JSP DEBUG] permissions is " + (permissions == null ? "null" : "present"));
-    System.out.println("[JSP DEBUG] initiatedAccountsForConsent is " + (initiatedAccountsForConsent == null ? "null" : "present"));
-    System.out.println("[JSP DEBUG] consumerAccounts is " + (consumerAccounts == null ? "null" : "present"));
-    System.out.println("[JSP DEBUG] isReauthorization = " + isReauthorization);
-    System.out.println("[JSP DEBUG] allowMultipleAccounts = " + allowMultipleAccounts);
-
-    // Set request attributes for EL access
-    request.setAttribute("permissions", permissions);
-    request.setAttribute("initiatedAccountsForConsent", initiatedAccountsForConsent);
-    request.setAttribute("consumerAccounts", consumerAccounts);
-    request.setAttribute("allowMultipleAccounts", allowMultipleAccounts);
-%>
-
 <html>
     <head>
         <jsp:include page="includes/head.jsp"/>
@@ -89,7 +49,7 @@
 
                                             <h4 class="section-heading-5 ui subheading">Data requested:</h4>
                                             <!--Display basic consent data-->
-                                            <c:forEach items="<%=basicConsentData%>" var="record">
+                                            <c:forEach items="${basicConsentData}" var="record">
                                                 <div class="padding" style="border:1px solid #555;">
                                                     <b>${record.key}</b>
                                                     <ul class="scopes-list padding">
@@ -101,7 +61,6 @@
                                             </c:forEach>
 
                                             <c:if test="${not empty permissions}">
-                                            <%-- Should be another case where initiatedAccountsForConsent exist but not requestedPermissions -->
                                             <%-- If requested permissions are specified --%>
                                                 <c:forEach items="${permissions}" var="permission" varStatus="permissionLoop">
                                                     <div class="padding" style="border:1px solid #555;">
@@ -139,10 +98,10 @@
                                                                         <b>Select the accounts you wish to authorize:</b>
                                                                         <c:choose>
                                                                             <c:when test="${allowMultipleAccounts}">
-                                                                                <div class="col-md-12" >
+                                                                                <div class="padding-left padding-top" >
                                                                                     <c:forEach items="${consumerAccounts}" var="record">
-                                                                                        <label for="${record['displayName']}">
-                                                                                            <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
+                                                                                        <label for="${record['displayName']}${permissionLoop.index}">
+                                                                                            <input type="checkbox" id="${record['displayName']}${permissionLoop.index}" name="chkAccounts"
                                                                                                 value="${record['accountId']}"/>
                                                                                                 ${record['displayName']}
                                                                                         </label>
@@ -151,7 +110,7 @@
                                                                                 </div>
                                                                             </c:when>
                                                                             <c:otherwise>
-                                                                                <div class="col-md-12">
+                                                                                <div class="padding-left padding-top">
                                                                                     <select name="selectedAccount${permissionLoop.index}" id="selectedAccount${permissionLoop.index}">
                                                                                         <option hidden disabled selected value> -- Select an Account  -- </option>
                                                                                         <c:forEach items="${consumerAccounts}" var="record">
@@ -176,9 +135,21 @@
                                             <c:if test="${empty permissions}">
                                                 <%-- If requested permissions are not specified --%>
                                                 <c:choose>
+                                                    <c:when test="${not empty initiatedAccountsForConsent}">
+                                                        <h5 class="ui body col-md-12">
+                                                            Access to following accounts shall be authorized:
+                                                        </h5>
+                                                        <b>
+                                                            <ul class="scopes-list padding padding-left-triple">
+                                                                <c:forEach items="${initiatedAccountsForConsent}" var="account">
+                                                                    <li>${account.displayName}</li>
+                                                                </c:forEach>
+                                                            </ul>
+                                                        </b>
+                                                    </c:when>
                                                     <c:when test="${not empty consumerAccounts}">
                                                         <h5 class="ui body col-md-12">
-                                                            Select the accounts you wish to authorize:
+                                                            Select the accounts to which you wish to authorize access:
                                                         </h5>
                                                         <c:choose>
                                                             <c:when test="${allowMultipleAccounts}">

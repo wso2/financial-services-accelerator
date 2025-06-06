@@ -284,52 +284,34 @@ public class TestConstants {
     public static final String ACCOUNT_AUTH_SERVLET_DATA = "{\n" +
             "  \"consentData\": {\n" +
             "    \"type\": \"accounts\",\n" +
-            "    \"basicConsentData\": [\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"ReadAccountsBasic\",\n" +
-            "          \"ReadAccountsDetail\",\n" +
-            "          \"ReadBalances\",\n" +
-            "          \"ReadBeneficiariesBasic\",\n" +
-            "          \"ReadBeneficiariesDetail\",\n" +
-            "          \"ReadDirectDebits\",\n" +
-            "          \"ReadProducts\",\n" +
-            "          \"ReadStandingOrdersBasic\",\n" +
-            "          \"ReadStandingOrdersDetail\",\n" +
-            "          \"ReadTransactionsBasic\",\n" +
-            "          \"ReadTransactionsCredits\",\n" +
-            "          \"ReadTransactionsDebits\",\n" +
-            "          \"ReadTransactionsDetail\",\n" +
-            "          \"ReadStatementsBasic\",\n" +
-            "          \"ReadStatementsDetail\",\n" +
-            "          \"ReadOffers\",\n" +
-            "          \"ReadParty\",\n" +
-            "          \"ReadPartyPSU\",\n" +
-            "          \"ReadScheduledPaymentsBasic\",\n" +
-            "          \"ReadScheduledPaymentsDetail\",\n" +
-            "          \"ReadPAN\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Permissions\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"2025-06-02T10:58:09.581346300+05:30\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Expiration Date Time\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"2025-05-28T10:58:09.581346300+05:30\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Transaction From Date Time\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"2025-05-31T10:58:09.582341200+05:30\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Transaction To Date Time\"\n" +
-            "      }\n" +
-            "    ],\n" +
+            "    \"basicConsentData\": {\n" +
+            "      \"Permissions\": [\n" +
+            "        \"ReadAccountsBasic\",\n" +
+            "        \"ReadAccountsDetail\",\n" +
+            "        \"ReadBalances\",\n" +
+            "        \"ReadBeneficiariesBasic\",\n" +
+            "        \"ReadBeneficiariesDetail\",\n" +
+            "        \"ReadDirectDebits\",\n" +
+            "        \"ReadProducts\",\n" +
+            "        \"ReadStandingOrdersBasic\",\n" +
+            "        \"ReadStandingOrdersDetail\",\n" +
+            "        \"ReadTransactionsBasic\",\n" +
+            "        \"ReadTransactionsCredits\",\n" +
+            "        \"ReadTransactionsDebits\",\n" +
+            "        \"ReadTransactionsDetail\",\n" +
+            "        \"ReadStatementsBasic\",\n" +
+            "        \"ReadStatementsDetail\",\n" +
+            "        \"ReadOffers\",\n" +
+            "        \"ReadParty\",\n" +
+            "        \"ReadPartyPSU\",\n" +
+            "        \"ReadScheduledPaymentsBasic\",\n" +
+            "        \"ReadScheduledPaymentsDetail\",\n" +
+            "        \"ReadPAN\"\n" +
+            "      ],\n" +
+            "      \"Expiration Date Time\": \"2025-06-02T10:58:09.581346300+05:30\",\n" +
+            "      \"Transaction From Date Time\": \"2025-05-28T10:58:09.581346300+05:30\",\n" +
+            "      \"Transaction To Date Time\": \"2025-05-31T10:58:09.582341200+05:30\"\n" +
+            "    },\n" +
             "    \"allowMultipleAccounts\": true\n" +
             "  },\n" +
             "  \"consumerData\": {\n" +
@@ -337,22 +319,22 @@ public class TestConstants {
             "      {\n" +
             "        \"displayName\": \"account_1\",\n" +
             "        \"accountId\": \"30080012343456\",\n" +
-            "        \"selected\": \"false\"\n" +
+            "        \"selected\": false\n" +
             "      },\n" +
             "      {\n" +
             "        \"displayName\": \"account_2\",\n" +
             "        \"accountId\": \"30080098763459\",\n" +
-            "        \"selected\": \"false\"\n" +
+            "        \"selected\": false\n" +
             "      },\n" +
             "      {\n" +
             "        \"displayName\": \"multi_auth_account\",\n" +
             "        \"accountId\": \"30080098971337\",\n" +
-            "        \"selected\": \"false\"\n" +
+            "        \"selected\": false\n" +
             "      },\n" +
             "      {\n" +
             "        \"displayName\": \"Extra_account\",\n" +
             "        \"accountId\": \"650-000 N1232\",\n" +
-            "        \"selected\": \"false\"\n" +
+            "        \"selected\": false\n" +
             "      }\n" +
             "    ]\n" +
             "  }\n" +
@@ -361,23 +343,15 @@ public class TestConstants {
     public static final String COF_AUTH_SERVLET_DATA = "{\n" +
             "  \"consentData\": {\n" +
             "    \"type\": \"funds-confirmation\",\n" +
-            "    \"basicConsentData\": [\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"2025-06-02T12:14:23.061411600+05:30\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Expiration Date Time\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"Scheme Name : UK.OBIE.IBAN\",\n" +
-            "          \"Identification : 1234\",\n" +
-            "          \"Name : Account1\",\n" +
-            "          \"Secondary Identification : Account1\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Debtor Account\"\n" +
-            "      }\n" +
-            "    ],\n" +
+            "    \"basicConsentData\": {\n" +
+            "      \"Expiration Date Time\": \"2025-06-02T12:14:23.061411600+05:30\",\n" +
+            "      \"Debtor Account\": [\n" +
+            "        \"Scheme Name : UK.OBIE.IBAN\",\n" +
+            "        \"Identification : 1234\",\n" +
+            "        \"Name : Account1\",\n" +
+            "        \"Secondary Identification : Account1\"\n" +
+            "      ]\n" +
+            "    },\n" +
             "    \"initiatedAccountsForConsent\": [\n" +
             "      {\n" +
             "        \"displayName\": \"Account1\",\n" +
@@ -390,58 +364,31 @@ public class TestConstants {
     public static final String PAYMENT_AUTH_SERVLET_DATA = "{\n" +
             "  \"consentData\": {\n" +
             "    \"type\": \"payments\",\n" +
-            "    \"basicConsentData\": [\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"Domestic Payments\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Payment Type\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"ACME412\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Instruction Identification\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"FRESCO.21302.GFX.20\"\n" +
-            "        ],\n" +
-            "        \"title\": \"End to End Identification\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"Amount : 30.80\",\n" +
-            "          \"Currency : GBP\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Instructed Amount\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"Scheme Name : UK.OBIE.SortCodeAccountNumber\",\n" +
-            "          \"Identification : 30080012343456\",\n" +
-            "          \"Name : Andrea Smith\",\n" +
-            "          \"Secondary Identification : 30080012343456\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Debtor Account\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"Scheme Name : UK.OBIE.SortCodeAccountNumber\",\n" +
-            "          \"Identification : 08080021325698\",\n" +
-            "          \"Name : ACME Inc\",\n" +
-            "          \"Secondary Identification : 0002\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Creditor Account\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"data\": [\n" +
-            "          \"Multi Authorisation Type : Any\",\n" +
-            "          \"Multi Authrisation Expiry : 1748848010149\"\n" +
-            "        ],\n" +
-            "        \"title\": \"Multi Authorisation\"\n" +
-            "      }\n" +
-            "    ],\n" +
+            "    \"basicConsentData\": {\n" +
+            "      \"Payment Type\": \"Domestic Payments\",\n" +
+            "      \"Instruction Identification\": \"ACME412\",\n" +
+            "      \"End to End Identification\": \"FRESCO.21302.GFX.20\",\n" +
+            "      \"Instructed Amount\": [\n" +
+            "        \"Amount : 30.80\",\n" +
+            "        \"Currency : GBP\"\n" +
+            "      ],\n" +
+            "      \"Debtor Account\": [\n" +
+            "        \"Scheme Name : UK.OBIE.SortCodeAccountNumber\",\n" +
+            "        \"Identification : 30080012343456\",\n" +
+            "        \"Name : Andrea Smith\",\n" +
+            "        \"Secondary Identification : 30080012343456\"\n" +
+            "      ],\n" +
+            "      \"Creditor Account\": [\n" +
+            "        \"Scheme Name : UK.OBIE.SortCodeAccountNumber\",\n" +
+            "        \"Identification : 08080021325698\",\n" +
+            "        \"Name : ACME Inc\",\n" +
+            "        \"Secondary Identification : 0002\"\n" +
+            "      ],\n" +
+            "      \"Multi Authorisation\": [\n" +
+            "        \"Multi Authorisation Type : Any\",\n" +
+            "        \"Multi Authrisation Expiry : 1748848010149\"\n" +
+            "      ]\n" +
+            "    },\n" +
             "    \"initiatedAccountsForConsent\": [\n" +
             "      {\n" +
             "        \"displayName\": \"ACME Inc\",\n" +
