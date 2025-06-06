@@ -36,6 +36,7 @@ import org.wso2.financial.services.accelerator.gateway.util.GatewayConstants;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,14 +45,24 @@ import java.util.Map;
 public class FSExtensionListenerImpl implements ExtensionListener {
 
     private static final Log log = LogFactory.getLog(FSExtensionListenerImpl.class);
+    private static final AbstractRequestRouter requestRouter = GatewayDataHolder.getInstance().getRequestRouter();
 
     @Override
     @Generated(message = "Ignoring since the method has covered in other tests")
     public ExtensionResponseDTO preProcessRequest(RequestContextDTO requestContextDTO) {
 
         FSAPIRequestContext fsApiRequestContext = new FSAPIRequestContext(requestContextDTO, new HashMap<>());
-        for (FinancialServicesGatewayExecutor gatewayExecutor :
-                GatewayDataHolder.getInstance().getRequestRouter().getExecutorsForRequest(fsApiRequestContext)) {
+
+        if (requestRouter == null) {
+            return null;
+        }
+
+        List<FinancialServicesGatewayExecutor> executors = requestRouter.getExecutorsForRequest(fsApiRequestContext);
+        if (executors == null) {
+            return null;
+        }
+
+        for (FinancialServicesGatewayExecutor gatewayExecutor : executors) {
             if (log.isDebugEnabled()) {
                 log.debug("Executing preProcessRequest for executor: " + gatewayExecutor.getClass().getName());
             }
@@ -73,8 +84,17 @@ public class FSExtensionListenerImpl implements ExtensionListener {
                 GatewayConstants.CONTEXT_PROP_CACHE_KEY);
 
         FSAPIRequestContext fsApiRequestContext = new FSAPIRequestContext(requestContextDTO, contextProps);
-        for (FinancialServicesGatewayExecutor gatewayExecutor :
-                GatewayDataHolder.getInstance().getRequestRouter().getExecutorsForRequest(fsApiRequestContext)) {
+
+        if (requestRouter == null) {
+            return null;
+        }
+
+        List<FinancialServicesGatewayExecutor> executors = requestRouter.getExecutorsForRequest(fsApiRequestContext);
+        if (executors == null) {
+            return null;
+        }
+
+        for (FinancialServicesGatewayExecutor gatewayExecutor : executors) {
             if (log.isDebugEnabled()) {
                 log.debug("Executing postProcessRequest for executor: " + gatewayExecutor.getClass().getName());
             }
@@ -95,8 +115,17 @@ public class FSExtensionListenerImpl implements ExtensionListener {
         Map<String, Object> contextProps = getPropertiesFromCache(responseContextDTO.getMsgInfo().getMessageId() +
                 GatewayConstants.CONTEXT_PROP_CACHE_KEY);
         FSAPIResponseContext fsApiResponseContext = new FSAPIResponseContext(responseContextDTO, contextProps);
-        for (FinancialServicesGatewayExecutor gatewayExecutor :
-                GatewayDataHolder.getInstance().getRequestRouter().getExecutorsForResponse(fsApiResponseContext)) {
+
+        if (requestRouter == null) {
+            return null;
+        }
+
+        List<FinancialServicesGatewayExecutor> executors = requestRouter.getExecutorsForResponse(fsApiResponseContext);
+        if (executors == null) {
+            return null;
+        }
+
+        for (FinancialServicesGatewayExecutor gatewayExecutor : executors) {
             if (log.isDebugEnabled()) {
                 log.debug("Executing preProcessResponse for executor: " + gatewayExecutor.getClass().getName());
             }
@@ -117,8 +146,17 @@ public class FSExtensionListenerImpl implements ExtensionListener {
         Map<String, Object> contextProps = getPropertiesFromCache(responseContextDTO.getMsgInfo().getMessageId() +
                 GatewayConstants.CONTEXT_PROP_CACHE_KEY);
         FSAPIResponseContext fsApiResponseContext = new FSAPIResponseContext(responseContextDTO, contextProps);
-        for (FinancialServicesGatewayExecutor gatewayExecutor :
-                GatewayDataHolder.getInstance().getRequestRouter().getExecutorsForResponse(fsApiResponseContext)) {
+
+        if (requestRouter == null) {
+            return null;
+        }
+
+        List<FinancialServicesGatewayExecutor> executors = requestRouter.getExecutorsForResponse(fsApiResponseContext);
+        if (executors == null) {
+            return null;
+        }
+
+        for (FinancialServicesGatewayExecutor gatewayExecutor : executors) {
             if (log.isDebugEnabled()) {
                 log.debug("Executing postProcessResponse for executor: " + gatewayExecutor.getClass().getName());
             }
