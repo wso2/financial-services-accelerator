@@ -44,7 +44,9 @@ public enum ServiceExtensionTypeEnum {
     VALIDATE_EVENT_CREATION("validate_event_creation"),
     VALIDATE_EVENT_POLLING("validate_event_polling"),
     ENRICH_EVENT_POLLING_RESPONSE("enrich_event_polling_response"),
-    MAP_ACCELERATOR_ERROR_RESPONSE("map_accelerator_error_response");
+    MAP_ACCELERATOR_ERROR_RESPONSE("map_accelerator_error_response"),
+    PRE_PROCESS_APPLICATION_CREATION("pre-process-application-creation"),
+    PRE_PROCESS_APPLICATION_UPDATE("pre-process-application-update");
 
     private final String type;
 

@@ -179,6 +179,12 @@ public class FinancialServicesConstants {
     public static final String CONSENT_ID_EXTRACTION_KEY = "Consent.ConsentIdExtraction.Key";
     public static final String CONSENT_ID_EXTRACTION_REGEX_PATTERN = "Consent.ConsentIdExtraction.RegexPattern";
 
+    // Key Manager Additional Property Configs
+    public static final String KEY_MANAGER_CONFIG_TAG = "KeyManager";
+    public static final String KEY_MANAGER_ADDITIONAL_PROPERTIES_CONFIG_TAG = "KeyManagerAdditionalProperties";
+    public static final String PROPERTY_CONFIG_TAG = "Property";
+    public static final String KEY_MANAGER_EXTENSION_IMPL = "KeyManager.KeyManagerExtensionImpl";
+
     public static final String JWT_HEAD = "head";
     public static final String JWT_BODY = "body";
     public static final String NEW_LINE = "[\r\n]";
