@@ -666,16 +666,6 @@ public class ConsentUtils {
                             state);
                 }
             }
-
-            if (requestedPermissions.has(ConsentAuthorizeConstants.DISPLAY_CONSUMER_ACCOUNTS_PER_PERMISSION)
-                    && !(requestedPermissions.get(ConsentAuthorizeConstants.DISPLAY_CONSUMER_ACCOUNTS_PER_PERMISSION)
-                    instanceof Boolean)) {
-                log.error(ConsentAuthorizeConstants.DISPLAY_CONSUMER_ACCOUNTS_PER_PERMISSION +
-                        " must be a boolean");
-                throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
-                        ConsentAuthorizeConstants.DISPLAY_CONSUMER_ACCOUNTS_PER_PERMISSION + " must be a boolean",
-                        state);
-            }
         }
 
         if (consentData.has(ConsentAuthorizeConstants.IS_REAUTHORIZATION)

@@ -48,5 +48,4 @@ public class ConsentAuthorizeConstants {
     public static final String CONSUMER_DATA = "consumerData";
     public static final String ACCOUNTS = "accounts";
     public static final String INITIATED_ACCOUNTS = "initiatedAccounts";
-    public static final String DISPLAY_CONSUMER_ACCOUNTS_PER_PERMISSION = "displayConsumerAccountsPerPermission";
 }

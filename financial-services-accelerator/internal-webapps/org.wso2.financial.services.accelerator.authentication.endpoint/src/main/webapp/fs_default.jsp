@@ -35,10 +35,8 @@
 
     // Expand requested permissions
     List<Map<String, Object>> permissions = null;
-    Boolean displayConsumerAccountsPerPermission = false;
     if (requestedPermissions != null) {
         permissions = (List<Map<String, Object>>) requestedPermissions.get("permissions");
-        displayConsumerAccountsPerPermission = (Boolean) requestedPermissions.getOrDefault("displayConsumerAccountsPerPermission", true);
     }
 
     // Extract consumer accounts
@@ -57,10 +55,8 @@
     System.out.println("[JSP DEBUG] consumerAccounts is " + (consumerAccounts == null ? "null" : "present"));
     System.out.println("[JSP DEBUG] isReauthorization = " + isReauthorization);
     System.out.println("[JSP DEBUG] allowMultipleAccounts = " + allowMultipleAccounts);
-    System.out.println("[JSP DEBUG] displayConsumerAccountsPerPermission = " + displayConsumerAccountsPerPermission);
 
     // Set request attributes for EL access
-    request.setAttribute("displayConsumerAccountsPerPermission", displayConsumerAccountsPerPermission);
     request.setAttribute("permissions", permissions);
     request.setAttribute("initiatedAccountsForConsent", initiatedAccountsForConsent);
     request.setAttribute("consumerAccounts", consumerAccounts);
@@ -132,143 +128,75 @@
 
                                             <c:if test="${not empty permissions}">
                                             <%-- If requested permissions are specified --%>
-                                                <c:choose>
-                                                    <c:when test="${!displayConsumerAccountsPerPermission}">
-                                                        <%-- If all permissions are grouped together --%>
-                                                        <%-- Initiated accounts per permissions ignored --%>
-                                                        <div class="padding" style="border:1px solid #555;">
-                                                            <b>Requested Permissions:</b>
-                                                            <ul class="scopes-list padding">
-                                                                <c:forEach items="${permissions}" var="permission">
-                                                                    <c:forEach items="${permission.displayValues}" var="displayValue">
-                                                                        <li>${displayValue}</li>
-                                                                    </c:forEach>
-                                                                </c:forEach>
-                                                            </ul>
+                                                <c:forEach items="${permissions}" var="permission" varStatus="permissionLoop">
+                                                    <div class="padding" style="border:1px solid #555;">
+                                                        <b>Requested Permissions:</b>
+                                                        <ul class="scopes-list padding">
+                                                            <c:forEach items="${permission.displayValues}" var="displayValue">
+                                                                <li>${displayValue}</li>
+                                                            </c:forEach>
+                                                        </ul>
 
-                                                            <c:choose>
-                                                                <c:when test="${not empty initiatedAccountsForConsent}">
-                                                                    <%-- If initiated accounts are specified for consent, display them --%>
-                                                                    <b>On following accounts:</b>
-                                                                    <ul class="scopes-list padding">
-                                                                        <c:forEach items="${initiatedAccountsForConsent}" var="account">
-                                                                            <li>${account.displayName}</li>
-                                                                        </c:forEach>
-                                                                    </ul>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <%-- If no initiated accounts are specified, allow selection from consumerAccounts --%>
-                                                                    <c:choose>
-                                                                        <c:when test="${not empty consumerAccounts}">
-                                                                            <b>Select the accounts you wish to authorize:</b>
-                                                                            <c:choose>
-                                                                                <c:when test="${allowMultipleAccounts}">
-                                                                                    <div class="col-md-12" >
-                                                                                        <c:forEach items="${consumerAccounts}" var="record">
-                                                                                            <label for="${record['displayName']}">
-                                                                                                <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
-                                                                                                    value="${record['accountId']}"/>
-                                                                                                    ${record['displayName']}
-                                                                                            </label>
-                                                                                            <br>
-                                                                                        </c:forEach>
-                                                                                    </div>
-                                                                                </c:when>
-                                                                                <c:otherwise>
-                                                                                    <div class="col-md-12">
-                                                                                        <select name="selectedAccount" id="selectedAccount">
-                                                                                            <option hidden disabled selected value> -- Select an Account  -- </option>
-                                                                                            <c:forEach items="${consumerAccounts}" var="record">
-                                                                                                <option  value="${record['accountId']}">
-                                                                                                        ${record['displayName']}</option>
-                                                                                            </c:forEach>
-                                                                                        </select>
-                                                                                    </div>
-                                                                                </c:otherwise>
-                                                                            </c:choose>
-                                                                        </c:when>
-                                                                        <c:otherwise>
-                                                                            <!-- 1 -->
-                                                                            <b>No consumer accounts provided for authroization.</b>
-                                                                        </c:otherwise>
-                                                                    </c:choose>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </div>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <%-- If permissions are separated --%>
-                                                        <c:forEach items="${permissions}" var="permission" varStatus="permissionLoop">
-                                                            <div class="padding" style="border:1px solid #555;">
-                                                                <b>Requested Permissions:</b>
+                                                        <%-- Ignores initiated accounts per permission if initiated accounts for consent are given --%>
+                                                        <c:choose>
+                                                            <c:when test="${not empty initiatedAccounts}">
+                                                                <%-- View consent initiated accounts --%>
+                                                                <b>On following accounts:</b>
                                                                 <ul class="scopes-list padding">
-                                                                    <c:forEach items="${permission.displayValues}" var="displayValue">
-                                                                        <li>${displayValue}</li>
+                                                                    <c:forEach items="${initiatedAccountsForConsent}" var="account">
+                                                                        <li>${account.displayName}</li>
                                                                     </c:forEach>
                                                                 </ul>
-
-                                                                <%-- Ignores initiated accounts per permission if initiated accounts for consent are given --%>
+                                                            </c:when>
+                                                            <c:when test="${not empty permission.initiatedAccounts}">
+                                                                <%-- View accounts initiated per permission --%>
+                                                                <b>On following accounts:</b>
+                                                                <ul class="scopes-list padding">
+                                                                    <c:forEach items="${permission.initiatedAccounts}" var="account">
+                                                                        <li>${account.displayName}</li>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <%-- View accounts from consumer data for selection --%>
                                                                 <c:choose>
-                                                                    <c:when test="${not empty initiatedAccounts}">
-                                                                        <%-- View consent initiated accounts --%>
-                                                                        <b>On following accounts:</b>
-                                                                        <ul class="scopes-list padding">
-                                                                            <c:forEach items="${initiatedAccountsForConsent}" var="account">
-                                                                                <li>${account.displayName}</li>
-                                                                            </c:forEach>
-                                                                        </ul>
-                                                                    </c:when>
-                                                                    <c:when test="${not empty permission.initiatedAccounts}">
-                                                                        <%-- View accounts initiated per permission --%>
-                                                                        <b>On following accounts:</b>
-                                                                        <ul class="scopes-list padding">
-                                                                            <c:forEach items="${permission.initiatedAccounts}" var="account">
-                                                                                <li>${account.displayName}</li>
-                                                                            </c:forEach>
-                                                                        </ul>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <%-- View accounts from consumer data for selection --%>
+                                                                    <c:when test="${not empty consumerAccounts}">
+                                                                        <b>Select the accounts you wish to authorize:</b>
                                                                         <c:choose>
-                                                                            <c:when test="${not empty consumerAccounts}">
-                                                                                <b>Select the accounts you wish to authorize:</b>
-                                                                                <c:choose>
-                                                                                    <c:when test="${allowMultipleAccounts}">
-                                                                                        <div class="col-md-12" >
-                                                                                            <c:forEach items="${consumerAccounts}" var="record">
-                                                                                                <label for="${record['displayName']}">
-                                                                                                    <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
-                                                                                                        value="${record['accountId']}"/>
-                                                                                                        ${record['displayName']}
-                                                                                                </label>
-                                                                                                <br>
-                                                                                            </c:forEach>
-                                                                                        </div>
-                                                                                    </c:when>
-                                                                                    <c:otherwise>
-                                                                                        <div class="col-md-12">
-                                                                                            <select name="selectedAccount${permissionLoop.index}" id="selectedAccount${permissionLoop.index}">
-                                                                                                <option hidden disabled selected value> -- Select an Account  -- </option>
-                                                                                                <c:forEach items="${consumerAccounts}" var="record">
-                                                                                                    <option  value="${record['accountId']}">
-                                                                                                            ${record['displayName']}</option>
-                                                                                                </c:forEach>
-                                                                                            </select>
-                                                                                        </div>
-                                                                                    </c:otherwise>
-                                                                                </c:choose>
+                                                                            <c:when test="${allowMultipleAccounts}">
+                                                                                <div class="col-md-12" >
+                                                                                    <c:forEach items="${consumerAccounts}" var="record">
+                                                                                        <label for="${record['displayName']}">
+                                                                                            <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
+                                                                                                value="${record['accountId']}"/>
+                                                                                                ${record['displayName']}
+                                                                                        </label>
+                                                                                        <br>
+                                                                                    </c:forEach>
+                                                                                </div>
                                                                             </c:when>
                                                                             <c:otherwise>
-                                                                                <!-- 2 -->
-                                                                                <b>No consumer accounts provided for authroization.</b>
+                                                                                <div class="col-md-12">
+                                                                                    <select name="selectedAccount${permissionLoop.index}" id="selectedAccount${permissionLoop.index}">
+                                                                                        <option hidden disabled selected value> -- Select an Account  -- </option>
+                                                                                        <c:forEach items="${consumerAccounts}" var="record">
+                                                                                            <option  value="${record['accountId']}">
+                                                                                                    ${record['displayName']}</option>
+                                                                                        </c:forEach>
+                                                                                    </select>
+                                                                                </div>
                                                                             </c:otherwise>
                                                                         </c:choose>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <!-- 2 -->
+                                                                        <b>No consumer accounts provided for authroization.</b>
                                                                     </c:otherwise>
                                                                 </c:choose>
-                                                            </div>
-                                                        </c:forEach>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </div>
+                                                </c:forEach>
                                             </c:if>
                                             <c:if test="${empty permissions}">
                                                 <%-- If requested permissions are not specified --%>
