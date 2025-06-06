@@ -568,47 +568,12 @@ public class ConsentUtils {
         }
 
         // basicConsentData is mandatory and must be array
-        if (!consentData.has(ConsentAuthorizeConstants.BASIC_CONSENT_DATA)
-                || !(consentData.get(ConsentAuthorizeConstants.BASIC_CONSENT_DATA) instanceof JSONArray)) {
-            log.error("Retrieval payload missing mandatory array attribute " +
+        if (!consentData.has(ConsentAuthorizeConstants.BASIC_CONSENT_DATA)) {
+            log.error("Retrieval payload missing mandatory attribute " +
                     ConsentAuthorizeConstants.BASIC_CONSENT_DATA);
             throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
-                    "Retrieval payload missing mandatory array attribute " +
+                    "Retrieval payload missing mandatory attribute " +
                             ConsentAuthorizeConstants.BASIC_CONSENT_DATA, state);
-        }
-
-        JSONArray basicConsentData = consentData.getJSONArray(ConsentAuthorizeConstants.BASIC_CONSENT_DATA);
-        for (int i = 0; i < basicConsentData.length(); i++) {
-            JSONObject item = basicConsentData.getJSONObject(i);
-
-            if (!item.has(ConsentAuthorizeConstants.TITLE)
-                    || !(item.get(ConsentAuthorizeConstants.TITLE) instanceof String)) {
-                log.error("Each item in " + ConsentAuthorizeConstants.BASIC_CONSENT_DATA +
-                        " must contain a string attribute " + ConsentAuthorizeConstants.TITLE);
-                throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
-                        "Each item in " + ConsentAuthorizeConstants.BASIC_CONSENT_DATA +
-                                " must contain a string attribute " + ConsentAuthorizeConstants.TITLE, state);
-            }
-
-            if (!item.has(ConsentAuthorizeConstants.DATA)
-                    || !(item.get(ConsentAuthorizeConstants.DATA) instanceof JSONArray)) {
-                log.error("Each item in " + ConsentAuthorizeConstants.BASIC_CONSENT_DATA +
-                        " must contain an array attribute " + ConsentAuthorizeConstants.DATA);
-                throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
-                        "Each item in " + ConsentAuthorizeConstants.BASIC_CONSENT_DATA +
-                                " must contain an array attribute " + ConsentAuthorizeConstants.DATA, state);
-            }
-
-            JSONArray dataArray = item.getJSONArray(ConsentAuthorizeConstants.DATA);
-            for (int j = 0; j < dataArray.length(); j++) {
-                if (!(dataArray.get(j) instanceof String)) {
-                    log.error("Items in " + ConsentAuthorizeConstants.BASIC_CONSENT_DATA + "." +
-                            ConsentAuthorizeConstants.DATA + " array must be strings");
-                    throw new ConsentException(redirectURI, AuthErrorCode.INVALID_REQUEST,
-                            "Items in " + ConsentAuthorizeConstants.BASIC_CONSENT_DATA + "." +
-                                    ConsentAuthorizeConstants.DATA + " array must be strings", state);
-                }
-            }
         }
 
         if (consentData.has(ConsentAuthorizeConstants.REQUESTED_PERMISSIONS)) {

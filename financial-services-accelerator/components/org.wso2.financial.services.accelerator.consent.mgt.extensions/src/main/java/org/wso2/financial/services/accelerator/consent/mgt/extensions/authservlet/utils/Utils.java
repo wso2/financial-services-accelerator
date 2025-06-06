@@ -137,34 +137,33 @@ public class Utils {
     }
 
     /**
-     * Method to flatten basicConsentData.
+     * Converts String occurrences of values in BasicConsentData to arrays with single value
      *
-     * @param payload
+     * @param dataSet dataSet to be formatted
      */
-    public static void flattenBasicConsentData(JSONObject payload) {
-        if (payload.has(ConsentExtensionConstants.CONSENT_DATA)) {
-            JSONObject consentData = payload.getJSONObject(ConsentExtensionConstants.CONSENT_DATA);
-            if (consentData != null && consentData.has(ConsentAuthorizeConstants.BASIC_CONSENT_DATA)) {
-                JSONArray basicConsentArray = consentData.getJSONArray(ConsentAuthorizeConstants.BASIC_CONSENT_DATA);
+    public static void formatBasicConsentData(JSONObject dataSet) {
+        if (dataSet == null) return;
 
-                if (basicConsentArray != null) {
-                    JSONObject flattened = new JSONObject();
+        JSONObject consentData = dataSet.optJSONObject(ConsentAuthorizeConstants.CONSENT_DATA);
+        if (consentData == null) return;
 
-                    for (int i = 0; i < basicConsentArray.length(); i++) {
-                        JSONObject item = basicConsentArray.optJSONObject(i);
-                        if (item != null) {
-                            String title = item.optString(ConsentExtensionConstants.TITLE, null);
-                            JSONArray data = item.optJSONArray(ConsentExtensionConstants.DATA_CC);
+        JSONObject basicConsentData = consentData.optJSONObject(ConsentAuthorizeConstants.BASIC_CONSENT_DATA);
+        if (basicConsentData == null) return;
 
-                            if (title != null && data != null) {
-                                flattened.put(title, data);
-                            }
-                        }
-                    }
+        JSONObject formatted = new JSONObject();
 
-                    consentData.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, flattened);
-                }
+        for (String key : basicConsentData.keySet()) {
+            Object value = basicConsentData.get(key);
+
+            if (value instanceof JSONArray) {
+                formatted.put(key, value);
+            } else {
+                JSONArray arr = new JSONArray();
+                arr.put(value);
+                formatted.put(key, arr);
             }
         }
+
+        consentData.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, formatted);
     }
 }

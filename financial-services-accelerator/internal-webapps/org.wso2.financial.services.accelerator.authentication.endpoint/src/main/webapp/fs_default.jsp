@@ -114,7 +114,7 @@
 
                                                         <%-- Ignores initiated accounts per permission if initiated accounts for consent are given --%>
                                                         <c:choose>
-                                                            <c:when test="${not empty initiatedAccounts}">
+                                                            <c:when test="${not empty initiatedAccountsForConsent}">
                                                                 <%-- View consent initiated accounts --%>
                                                                 <b>On following accounts:</b>
                                                                 <ul class="scopes-list padding">
@@ -177,36 +177,34 @@
                                                 <%-- If requested permissions are not specified --%>
                                                 <c:choose>
                                                     <c:when test="${not empty consumerAccounts}">
-                                                        <div class="form-group ui form select">
-                                                            <h5 class="ui body col-md-12">
-                                                                Select the accounts you wish to authorize:
-                                                            </h5>
-                                                            <c:choose>
-                                                                <c:when test="${allowMultipleAccounts}">
-                                                                    <div class="col-md-12" >
+                                                        <h5 class="ui body col-md-12">
+                                                            Select the accounts you wish to authorize:
+                                                        </h5>
+                                                        <c:choose>
+                                                            <c:when test="${allowMultipleAccounts}">
+                                                                <div class="col-md-12" >
+                                                                    <c:forEach items="${consumerAccounts}" var="record">
+                                                                        <label for="${record['displayName']}">
+                                                                            <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
+                                                                                value="${record['accountId']}"/>
+                                                                                ${record['displayName']}
+                                                                        </label>
+                                                                        <br>
+                                                                    </c:forEach>
+                                                                </div>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <div class="col-md-12">
+                                                                    <select name="selectedAccount" id="selectedAccount">
+                                                                        <option hidden disabled selected value> -- Select an Account  -- </option>
                                                                         <c:forEach items="${consumerAccounts}" var="record">
-                                                                            <label for="${record['displayName']}">
-                                                                                <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
-                                                                                    value="${record['accountId']}"/>
-                                                                                    ${record['displayName']}
-                                                                            </label>
-                                                                            <br>
+                                                                            <option  value="${record['accountId']}">
+                                                                                    ${record['displayName']}</option>
                                                                         </c:forEach>
-                                                                    </div>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <div class="col-md-12">
-                                                                        <select name="selectedAccount" id="selectedAccount">
-                                                                            <option hidden disabled selected value> -- Select an Account  -- </option>
-                                                                            <c:forEach items="${consumerAccounts}" var="record">
-                                                                                <option  value="${record['accountId']}">
-                                                                                        ${record['displayName']}</option>
-                                                                            </c:forEach>
-                                                                        </select>
-                                                                    </div>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </div>
+                                                                    </select>
+                                                                </div>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <!-- 3 -->
