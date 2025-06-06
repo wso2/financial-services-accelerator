@@ -26,7 +26,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Constants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
@@ -86,7 +88,12 @@ public class FSDefaultAuthServletImplTest {
                 accountObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(requestAttributes.containsKey(Constants.CONSUMER_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT));
     }
 
     @Test
@@ -98,7 +105,12 @@ public class FSDefaultAuthServletImplTest {
                 cofObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(requestAttributes.containsKey(Constants.CONSUMER_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT));
     }
 
     @Test
@@ -112,7 +124,12 @@ public class FSDefaultAuthServletImplTest {
                 paymentObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(requestAttributes.containsKey(Constants.CONSUMER_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT));
     }
 
     @Test
@@ -123,7 +140,8 @@ public class FSDefaultAuthServletImplTest {
         Map<String, Object> requestAttributes = servletImpl.updateRequestAttribute(httpServletRequestMock,
                 object, resourceBundle);
 
-        assertTrue(requestAttributes.isEmpty());
+        assertFalse(requestAttributes.containsKey(ConsentExtensionConstants.TYPE));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
     }
 
     @Test

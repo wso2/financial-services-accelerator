@@ -46,8 +46,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * Default consent retrieval step test.
@@ -170,7 +169,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -192,7 +191,7 @@ public class DefaultConsentRetrievalStepTest {
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
 
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -213,7 +212,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -237,7 +236,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertFalse(jsonObject.has("consumerData"));
         }
     }
 
@@ -261,7 +260,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertFalse(jsonObject.has("consumerData"));
         }
     }
 }

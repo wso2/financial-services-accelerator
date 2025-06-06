@@ -346,6 +346,10 @@ img.idp-image {
   padding: 20px;
 }
 
+.padding-left-triple {
+  padding-left: 30px;
+}
+
 .margin-left {
   margin-left: 10px;
 }

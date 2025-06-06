@@ -215,6 +215,7 @@ public class ConsentAuthorizeEndpoint {
         }
 
         executeRetrieval(consentData, jsonObject);
+        ConsentUtils.validateRetrievalPayload(jsonObject, redirectURI, state);
         if (isPreInitiatedConsent && consentData.getType() == null) {
             log.error(ConsentConstants.ERROR_NO_CONSENT_TYPE);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,

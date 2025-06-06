@@ -17,7 +17,6 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,22 +24,31 @@ import java.util.Map;
  */
 public class ExternalAPIPreConsentAuthorizeResponseDTO {
 
-    private List<Map<String, Object>> consentData;
-    private List<Map<String, Object>> consumerData;
+    private Map<String, Object> consentData;
+    private Map<String, Object> consumerData;
+    private Map<String, Object> metadata;
 
-    public List<Map<String, Object>> getConsentData() {
+    public Map<String, Object> getConsentData() {
         return consentData;
     }
 
-    public void setConsentData(List<Map<String, Object>> consentData) {
+    public void setConsentData(Map<String, Object> consentData) {
         this.consentData = consentData;
     }
 
-    public List<Map<String, Object>> getConsumerData() {
+    public Map<String, Object> getConsumerData() {
         return consumerData;
     }
 
-    public void setConsumerData(List<Map<String, Object>> consumerData) {
+    public void setConsumerData(Map<String, Object> consumerData) {
         this.consumerData = consumerData;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
     }
 }
