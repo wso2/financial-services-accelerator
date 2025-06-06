@@ -71,4 +71,7 @@ public abstract class AbstractApplicationUpdater {
     public abstract void doPostDeleteApplication(ServiceProvider serviceProvider, String tenantDomain, String userName)
             throws FinancialServicesException;
 
+    public abstract void publishData(Map<String, Object> spMetaData, OAuthConsumerAppDTO oAuthConsumerAppDTO)
+            throws FinancialServicesException;
+
 }
