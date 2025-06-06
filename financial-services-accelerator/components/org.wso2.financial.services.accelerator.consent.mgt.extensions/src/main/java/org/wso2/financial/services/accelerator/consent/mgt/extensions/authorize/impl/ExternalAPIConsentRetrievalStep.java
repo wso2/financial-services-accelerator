@@ -21,7 +21,6 @@ import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
@@ -39,6 +38,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -103,14 +103,15 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
 
+            // Filter out consent and consumer data
             // Append consumer data to json object to be displayed in consent page
-            JSONObject consentDataJsonObject = new JSONObject(gson.toJson(responseDTO.getConsentData()));
-            jsonObject.put("consentData", consentDataJsonObject);
+            JSONObject consentDataJsonObject = new JSONObject(responseDTO.getConsentData());
+            jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA, consentDataJsonObject);
 
             // Append consumer data, if exists, to json object
             if (responseDTO.getConsumerData() != null) {
-                JSONObject consumerDataJsonObject = new JSONObject(gson.toJson(responseDTO.getConsumerData()));
-                jsonObject.put("consumerData", consumerDataJsonObject);
+                JSONObject consumerDataJsonObject = new JSONObject(responseDTO.getConsumerData());
+                jsonObject.put(ConsentAuthorizeConstants.CONSUMER_DATA, consumerDataJsonObject);
             }
 
             // Set request parameters as metadata to be used in persistence extension
@@ -120,6 +121,12 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             if (!isPreInitiatedConsent) {
                 consentData.setType(ConsentExtensionConstants.DEFAULT);
             }
+
+            // Storing consent metadata for retrieval at persistence
+            if (responseDTO.getMetadata() != null) {
+                consentData.setMetaDataMap(responseDTO.getMetadata());
+            }
+
         } catch (FinancialServicesException e) {
             // ToDo: Improve error handling
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
