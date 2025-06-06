@@ -66,6 +66,7 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Map<Integer, String>> authorizeSteps = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrParams = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrValidators = new HashMap<>();
+    private final Map<String, Map<String, String>> keyManagerAdditionalProperties = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;
@@ -134,6 +135,7 @@ public final class FinancialServicesConfigParser {
             buildFSExecutors();
             buildConsentAuthSteps();
             buildDCRConfigs();
+            buildKeyManagerProperties();
         } catch (IOException | XMLStreamException | OMException e) {
             throw new FinancialServicesRuntimeException("Error occurred while building configuration from " +
                     "financial-services.xml", e);
@@ -383,6 +385,51 @@ public final class FinancialServicesConfigParser {
         return dcrResponseParamList;
     }
 
+    private void buildKeyManagerProperties() {
+
+        OMElement keyManagerElement = rootElement.getFirstChildWithName(
+                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                        FinancialServicesConstants.KEY_MANAGER_CONFIG_TAG));
+
+        if (keyManagerElement != null) {
+            OMElement keyManagerProperties = keyManagerElement.getFirstChildWithName(
+                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                            FinancialServicesConstants.KEY_MANAGER_ADDITIONAL_PROPERTIES_CONFIG_TAG));
+
+            if (keyManagerProperties != null) {
+                Iterator<OMElement> properties = keyManagerProperties.getChildrenWithName(
+                        new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                FinancialServicesConstants.PROPERTY_CONFIG_TAG));
+                if (properties != null) {
+                    while (properties.hasNext()) {
+                        OMElement propertyElement = properties.next();
+
+                        //Retrieve attributes from key manager config
+                        Map<String, String> property = new HashMap<>();
+                        property.put("priority", propertyElement.getAttributeValue(new QName("priority")));
+                        property.put("label", propertyElement.getAttributeValue(new QName("label")));
+                        property.put("type", propertyElement.getAttributeValue(new QName("type")));
+                        property.put("tooltip", propertyElement.getAttributeValue(new QName("tooltip")));
+                        property.put("default", propertyElement.getAttributeValue(new QName("default")));
+                        property.put("required", propertyElement.getAttributeValue(new QName("required")));
+                        property.put("mask", propertyElement.getAttributeValue(new QName("mask")));
+                        property.put("multiple", propertyElement.getAttributeValue(new QName("multiple")));
+                        property.put("values", propertyElement.getAttributeValue(new QName("values")));
+                        String propertyName = propertyElement.getAttributeValue(new QName("name"));
+
+                        if (StringUtils.isBlank(propertyName)) {
+                            //Throwing exceptions since we cannot proceed without property names
+                            throw new FinancialServicesRuntimeException("Additional property name is not defined " +
+                                    "correctly in open-banking.xml");
+                        }
+
+                        keyManagerAdditionalProperties.put(propertyName, property);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Method to read text configs from xml when root element is given.
      *
@@ -506,6 +553,11 @@ public final class FinancialServicesConfigParser {
     public Map<String, Map<String, Object>> getDCRValidatorsConfig() {
 
         return Collections.unmodifiableMap(dcrValidators);
+    }
+
+    public Map<String, Map<String, String>> getKeyManagerAdditionalProperties() {
+
+        return Collections.unmodifiableMap(keyManagerAdditionalProperties);
     }
 
     public String getDataSourceName() {
@@ -1114,6 +1166,17 @@ public final class FinancialServicesConfigParser {
         Optional<String> config = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.CONSENT_ID_EXTRACTION_KEY);
         return config.map(String::trim).orElse(null);
+    }
+    
+    /**
+     * Method to get Key Manager Extension Impl config for event notifications.
+    * @return
+    */
+    public String getKeyManagerExtensionImpl() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.KEY_MANAGER_EXTENSION_IMPL);
+        return source.map(String::trim).orElse("");
     }
 
 }
