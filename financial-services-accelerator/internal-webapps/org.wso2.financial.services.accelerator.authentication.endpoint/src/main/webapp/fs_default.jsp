@@ -31,7 +31,6 @@
     List<Object> initiatedAccountsForConsent = (List<Object>) consentData.getOrDefault("initiatedAccountsForConsent", null);
     Boolean isReauthorization = (Boolean) consentData.getOrDefault("isReauthorization", false);
     Boolean allowMultipleAccounts = (Boolean) consentData.getOrDefault("allowMultipleAccounts", false);
-    String consent_type = (String) consentData.get("type");
 
     // Expand requested permissions
     List<Map<String, Object>> permissions = null;
@@ -61,17 +60,6 @@
     request.setAttribute("initiatedAccountsForConsent", initiatedAccountsForConsent);
     request.setAttribute("consumerAccounts", consumerAccounts);
     request.setAttribute("allowMultipleAccounts", allowMultipleAccounts);
-
-    // Consent type mapping
-    if (consent_type.contains("payment")) {
-        request.setAttribute("generic_consent_type", "payments");
-    } else if (consent_type.contains("account")) {
-        request.setAttribute("generic_consent_type", "accounts");
-    } else if (consent_type.contains("funds") && consent_type.contains("confirmation")) {
-        request.setAttribute("generic_consent_type", "fundsconfirmations");
-    } else {
-        request.setAttribute("generic_consent_type", "default");
-    }
 %>
 
 <html>
@@ -96,21 +84,7 @@
                                     <div class="form-group ui form">
                                         <div class="col-md-12 ui box">
                                             <h3 class="ui header">
-                                                <%-- Change heading based on the consent type --%>
-                                                <c:choose>
-                                                    <c:when test="${generic_consent_type eq 'default'}">
-                                                        <strong>${app}</strong> requests following details.
-                                                    </c:when>
-                                                    <c:when test="${generic_consent_type eq 'accounts'}">
-                                                        <strong>${app}</strong> requests account details on your account.
-                                                    </c:when>
-                                                    <c:when test="${generic_consent_type eq 'fundsconfirmations'}">
-                                                        <strong>${app}</strong> requests access to confirm the availability of funds in your account.
-                                                    </c:when>
-                                                    <c:when test="${generic_consent_type eq 'payments'}">
-                                                        <strong>${app}</strong> requests consent to do a payment transaction ${intentSubText}
-                                                    </c:when>
-                                                </c:choose>
+                                                <strong>${app}</strong> requests following details.
                                             </h3>
 
                                             <h4 class="section-heading-5 ui subheading">Data requested:</h4>
@@ -127,6 +101,7 @@
                                             </c:forEach>
 
                                             <c:if test="${not empty permissions}">
+                                            <%-- Should be another case where initiatedAccountsForConsent exist but not requestedPermissions -->
                                             <%-- If requested permissions are specified --%>
                                                 <c:forEach items="${permissions}" var="permission" varStatus="permissionLoop">
                                                     <div class="padding" style="border:1px solid #555;">
