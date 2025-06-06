@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.keymanager.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,10 +38,20 @@ import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.CertificateUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.keymanager.FSKeyManagerExtensionInterface;
+import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplicationCreationRequestDTO;
+import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplicationCreationResponseDTO;
+import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplicationUpdateRequestDTO;
+import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplicationUpdateResponseDTO;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
 
 import java.lang.reflect.InvocationTargetException;
@@ -48,6 +59,7 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Util class for FS key manager.
@@ -55,6 +67,7 @@ import java.util.Map;
 public class FSKeyManagerUtil {
 
     private static final Log log = LogFactory.getLog(FSKeyManagerUtil.class);
+    private static final  ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Obtain FS Key Manager Extension Impl class from config.
@@ -75,7 +88,7 @@ public class FSKeyManagerUtil {
             }
 
         } catch (InstantiationException | IllegalAccessException |
-                InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+                 InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
             throw new APIManagementException("Failed to tain FS Key Manager Extension Impl instance", e);
         }
     }
@@ -97,7 +110,7 @@ public class FSKeyManagerUtil {
         try {
             // Get values for additional properties given at key generation step
             additionalPropertiesJSON = new JSONObject((String) oauthAppRequest.getOAuthApplicationInfo()
-                            .getParameter(APIConstants.JSON_ADDITIONAL_PROPERTIES));
+                    .getParameter(APIConstants.JSON_ADDITIONAL_PROPERTIES));
         } catch (JSONException e) {
             log.error(APIConstants.JSON_ADDITIONAL_PROPERTIES + " is not a JSON object");
             throw new APIManagementException(ExceptionCodes.JSON_PARSE_ERROR.getErrorMessage(),
@@ -248,5 +261,77 @@ public class FSKeyManagerUtil {
             throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
         }
         log.debug("Provided certificate successfully validated");
+    }
+
+    /**
+     * Method to invoke the external service
+     * .
+     * @param oAuthAppRequest            OAuth Application Details.
+     * @param additionalProperties       Additional properties.
+     * @param serviceProvider            Service provider details.
+     * @param serviceType                  Operation type (CREATE/UPDATE).
+     * @throws APIManagementException      When an error occurs while invoking the external service.
+     */
+    public static void callExternalService(OAuthAppRequest oAuthAppRequest,
+                                           HashMap<String, String> additionalProperties,
+                                           JSONObject serviceProvider,
+                                           ServiceExtensionTypeEnum serviceType)
+            throws APIManagementException  {
+
+        try {
+            log.debug("Executing external service call");
+            ExternalServiceResponse response = ServiceExtensionUtils.invokeExternalServiceCall(
+                    getExternalServiceRequest(oAuthAppRequest, additionalProperties, serviceProvider, serviceType),
+                    serviceType);
+            if (StatusEnum.SUCCESS.equals(response.getStatus())) {
+                if (ServiceExtensionTypeEnum.PRE_PROCESS_APPLICATION_CREATION.equals(serviceType)) {
+                    ExternalAPIApplicationCreationResponseDTO responseDTO = mapper.convertValue(
+                            response.getData(), ExternalAPIApplicationCreationResponseDTO.class);
+                    if (responseDTO.getClientId() != null) {
+                        log.debug("Setting client id from external service as OAuth App client Id");
+                        oAuthAppRequest.getOAuthApplicationInfo().setClientId(responseDTO.getClientId());
+                    }
+                    additionalProperties.putAll(responseDTO.getAdditionalAppData());
+                } else {
+                    ExternalAPIApplicationUpdateResponseDTO responseDTO = mapper.convertValue(
+                            response.getData(), ExternalAPIApplicationUpdateResponseDTO.class);
+                    additionalProperties.putAll(responseDTO.getAdditionalAppData());
+                }
+            } else {
+                String errorMessage = response.getData().path(FinancialServicesConstants.ERROR_MESSAGE)
+                        .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION);
+                throw new APIManagementException(errorMessage);
+            }
+        } catch (FinancialServicesException e) {
+            throw new APIManagementException("Error Occurred while invoking the external service", e);
+        }
+    }
+
+    /**
+     * Method to get the external service request.
+     *
+     * @param oAuthAppRequest            OAuth Application Details.
+     * @param additionalProperties       Additional properties.
+     * @param serviceProvider            Service provider details.
+     * @return               External service request.
+     */
+    public static ExternalServiceRequest getExternalServiceRequest(OAuthAppRequest oAuthAppRequest,
+                                                                   HashMap<String, String> additionalProperties,
+                                                                   JSONObject serviceProvider,
+                                                                   ServiceExtensionTypeEnum serviceType) {
+
+        Map<String, Object> oAuthAppRequestMap = mapper.convertValue(oAuthAppRequest, Map.class);
+        JSONObject dataObject = new JSONObject();
+        if (ServiceExtensionTypeEnum.PRE_PROCESS_APPLICATION_CREATION.equals(serviceType)) {
+            ExternalAPIApplicationCreationRequestDTO externalAPIApplicationCreationRequestDTO =
+                    new ExternalAPIApplicationCreationRequestDTO(oAuthAppRequestMap, additionalProperties);
+            dataObject = new JSONObject(externalAPIApplicationCreationRequestDTO);
+        } else {
+            ExternalAPIApplicationUpdateRequestDTO externalAPIApplicationUpdateRequestDTO =
+                    new ExternalAPIApplicationUpdateRequestDTO(oAuthAppRequestMap, additionalProperties,
+                            serviceProvider);
+            dataObject = new JSONObject(externalAPIApplicationUpdateRequestDTO);
+        }
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), dataObject);
     }
 }

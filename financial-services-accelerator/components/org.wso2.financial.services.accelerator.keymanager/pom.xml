@@ -24,13 +24,14 @@
     <parent>
         <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-RC1-SNAPSHOT</version>
+        <version>4.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>org.wso2.financial.services.accelerator.keymanager</artifactId>
     <name>WSO2 Financial Services - KeyManager Module</name>
     <description>WSO2 Financial Services - KeyManager Module</description>
+    <packaging>bundle</packaging>
 
     <dependencies>
         <dependency>
@@ -58,7 +59,6 @@
             <artifactId>org.wso2.financial.services.accelerator.common</artifactId>
         </dependency>
     </dependencies>
-    <packaging>bundle</packaging>
 
     <build>
         <plugins>
