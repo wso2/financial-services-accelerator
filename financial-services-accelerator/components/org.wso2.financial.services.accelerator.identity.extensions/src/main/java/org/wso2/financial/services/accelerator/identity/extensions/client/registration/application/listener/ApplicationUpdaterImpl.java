@@ -281,4 +281,9 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
     public void doPostDeleteApplication(ServiceProvider serviceProvider, String tenantDomain, String userName)
             throws FinancialServicesException {
     }
+
+    public void publishData(Map<String, Object> spMetaData, OAuthConsumerAppDTO oAuthConsumerAppDTO)
+            throws FinancialServicesException {
+
+    }
 }
