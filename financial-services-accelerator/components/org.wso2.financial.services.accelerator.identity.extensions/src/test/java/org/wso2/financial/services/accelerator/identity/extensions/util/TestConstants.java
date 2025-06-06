@@ -200,6 +200,44 @@ public class TestConstants {
             "   }\n" +
             "}\n";
 
+    public static final String DCR_APP_REQUEST_FOR_MCR = "{\n" +
+            "  \"redirectUris\": [" +
+            "       \"https://www.google.com/redirects/redirect1\"" +
+            "   ],\n" +
+            "  \"clientName\": \"9ZzFFBxSLGEjPZogRAbvFd\",\n" +
+            "  \"grantTypes\": [\n" +
+            "       \"authorization_code\", \n" +
+            "       \"client_credentials\", \n" +
+            "       \"refresh_token\"" +
+            "   ],\n" +
+            "  \"jwksURI\": \"https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/" +
+            "                   9ZzFFBxSLGEjPZogRAbvFd.jwks\",\n" +
+            "  \"tokenType\": \"JWT\",\n" +
+            "  \"extApplicationDisplayName\": \"WSO2_Open_Banking_TPP__Sandbox_\",\n" +
+            "  \"tokenEndpointAuthMethod\": \"private_key_jwt\",\n" +
+            "  \"tokenEndpointAuthSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"idTokenEncryptionAlgorithm\": \"RSA-OAEP\",\n" +
+            "  \"idTokenEncryptionMethod\": \"A256GCM\",\n" +
+            "  \"requestObjectSignatureAlgorithm\": \"PS256\",\n" +
+            "  \"requireSignedRequestObject\": true,\n" +
+            "  \"tlsClientCertificateBoundAccessTokens\": true,\n" +
+            "  \"softwareStatement\":" + SSA + ",\n" +
+            "  \"additionalAttributes\": {\n" +
+            "       \"software_id\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
+            "       \"aud\": [\"https://localbank.com\"], \n" +
+            "       \"application_type\": \"web\", \n" +
+            "       \"scope\": \"accounts payments\", \n" +
+            "       \"token_endpoint_allow_reuse_pvt_key_jwt\": false, \n" +
+            "       \"iss\": \"9ZzFFBxSLGEjPZogRAbvFd\", \n" +
+            "       \"exp\": 1739098988640, \n" +
+            "       \"iat\": 1738839788640, \n" +
+            "       \"jti\": \"1738839788640\", \n" +
+            "       \"regulatory\": true," +
+            "       \"response_types\": [\"code id_token\"]" +
+            "   }\n" +
+            "}\n";
+
     public static final String DCR_APP_REQUEST_WITHOUT_MANDATORY_FIELDS = "{\n" +
             "  \"redirectUris\": [" +
             "       \"https://www.google.com/redirects/redirect1\"" +
