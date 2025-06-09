@@ -1,0 +1,346 @@
+swagger: '2.0'
+info:
+  title: DynamicClientRegistrationAPI
+  description: >
+    This specification defines the APIs for a TPP to submit a Software Statement
+    Assertion to an ASPSP for the purpose of creating OAuth clients that are
+    registered with ASPSP.
+  version: v3.3.0
+basePath: /open-banking/{version}
+schemes:
+  - https
+consumes:
+  - application/jwt
+produces:
+  - application/json
+paths:
+  /register:
+    post:
+      summary: Register a client by way of a Software Statement Assertion
+      description: Endpoint will be secured by way of Mutual Authentication over TLS
+      tags:
+        - Client Registration
+      parameters:
+        - $ref: '#/parameters/ClientRegistrationRequest'
+      responses:
+        '201':
+          $ref: '#/responses/ClientRegistration'
+        '400':
+          $ref: '#/responses/400Error'
+      x-auth-type: None
+      x-throttling-tier: Unlimited
+  '/register/{ClientId}':
+    get:
+      summary: Get a client by way of Client ID
+      tags:
+        - Client Registration
+        - Optional
+      parameters:
+        - $ref: '#/parameters/ClientId'
+        - $ref: '#/parameters/Authorization'
+      responses:
+        '200':
+          $ref: '#/responses/ClientRegistration'
+        '401':
+          $ref: '#/responses/401Error'
+        '403':
+          $ref: '#/responses/403Error'
+      security:
+        - TPPOAuth2Security: []
+      x-auth-type: Application
+      x-throttling-tier: Unlimited
+    put:
+      summary: Update a client by way of Client ID
+      tags:
+        - Client Registration
+        - Optional
+      parameters:
+        - $ref: '#/parameters/ClientRegistrationRequest'
+        - $ref: '#/parameters/ClientId'
+        - $ref: '#/parameters/Authorization'
+      responses:
+        '200':
+          $ref: '#/responses/ClientRegistration'
+        '400':
+          $ref: '#/responses/400Error'
+        '401':
+          $ref: '#/responses/401Error'
+        '403':
+          $ref: '#/responses/403Error'
+      security:
+        - TPPOAuth2Security: []
+      x-auth-type: Application
+      x-throttling-tier: Unlimited
+    delete:
+      summary: Delete a client by way of Client ID
+      tags:
+        - Client Registration
+        - Optional
+      parameters:
+        - $ref: '#/parameters/ClientId'
+        - $ref: '#/parameters/Authorization'
+      responses:
+        '204':
+          description: Client deleted
+        '401':
+          $ref: '#/responses/401Error'
+        '403':
+          $ref: '#/responses/403Error'
+        '405':
+          $ref: '#/responses/403Error'
+      security:
+        - TPPOAuth2Security: []
+      x-auth-type: Application
+      x-throttling-tier: Unlimited
+parameters:
+  Authorization:
+    in: header
+    name: Authorization
+    type: string
+    required: true
+    description: 'An Authorisation Token as per https://tools.ietf.org/html/rfc6750'
+  ClientId:
+    name: ClientId
+    description: The client ID
+    in: path
+    type: string
+    required: true
+  ClientRegistrationRequest:
+    name: requestBody
+    description: A request to register a Software Statement Assertion with an ASPSP
+    in: body
+    schema:
+      type: string
+      format: ClientRegistration
+responses:
+  ClientRegistration:
+    description: Client registration
+    schema:
+      allOf:
+        - $ref: '#/definitions/ClientRegistration'
+        - required:
+            - client_id
+  400Error:
+    description: Request failed due to client error
+    schema:
+      $ref: '#/definitions/RegistrationError'
+  401Error:
+    description: Request failed due to unknown or invalid Client or invalid access token
+    headers:
+      WWW-Authenticate:
+        description: 'Response header field specified in https://tools.ietf.org/html/rfc6750'
+        type: string
+        pattern: ^Bearer .*
+  403Error:
+    description: 'The client does not have permission to read, update or delete the Client'
+  405Error:
+    description: Method Not Allowed
+definitions:
+  SupportedAlgorithms:
+    type: string
+    enum:
+      - RS256
+      - PS256
+      - ES256
+  RegistrationProperties:
+    type: object
+    required:
+      - redirect_uris
+      - token_endpoint_auth_method
+      - grant_types
+      - scope
+      - software_statement
+      - application_type
+      - id_token_signed_response_alg
+      - request_object_signing_alg
+    properties:
+      client_id:
+        description: OAuth 2.0 client identifier string
+        type: string
+        minLength: 1
+        maxLength: 36
+      client_secret:
+        description: OAuth 2.0 client secret string
+        type: string
+        minLength: 1
+        maxLength: 36
+      client_id_issued_at:
+        description: >-
+          Time at which the client identifier was issued expressed as seconds
+          since 1970-01-01T00:00:00Z as measured in UTC
+        type: integer
+        format: int32
+        minimum: 0
+      client_secret_expires_at:
+        description: >-
+          Time at which the client secret will expire expressed as seconds since
+          1970-01-01T00:00:00Z as measured in UTC. Set to 0 if does not expire
+        type: integer
+        format: int32
+        minimum: 0
+      redirect_uris:
+        type: array
+        items:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 256
+      token_endpoint_auth_method:
+        type: string
+        enum:
+          - private_key_jwt
+          - client_secret_jwt
+          - client_secret_basic
+          - client_secret_post
+          - tls_client_auth
+      grant_types:
+        type: array
+        items:
+          type: string
+          enum:
+            - client_credentials
+            - authorization_code
+            - refresh_token
+            - urn:openid:params:grant-type:ciba
+        minItems: 1
+      response_types:
+        type: array
+        items:
+          type: string
+          enum:
+            - code
+            - code id_token
+      software_id:
+        type: string
+        minLength: 1
+        maxLength: 22
+        pattern: '^[0-9a-zA-Z]{1,22}$'
+      scope:
+        type: string
+        minLength: 1
+        maxLength: 256
+      software_statement:
+        type: string
+        format: JWT
+      application_type:
+        type: string
+        enum:
+          - web
+          - mobile
+      id_token_signed_response_alg:
+        $ref: '#/definitions/SupportedAlgorithms'
+      request_object_signing_alg:
+        $ref: '#/definitions/SupportedAlgorithms'
+      token_endpoint_auth_signing_alg:
+        $ref: '#/definitions/SupportedAlgorithms'
+      tls_client_auth_subject_dn:
+        type: string
+        minLength: 1
+        maxLength: 128
+      backchannel_token_delivery_mode:
+        type: string
+        enum:
+          - poll
+          - ping
+          - push
+        description: >-
+          As defined in CIBA - Registration and Discovery Metadata. 
+          This value MUST be specified iff the grant_types includes 
+          urn:openid:params:grant-type:ciba
+      backchannel_client_notification_endpoint:
+        type: string
+        minLength: 1
+        maxLength: 256
+        description: >-
+          As defined in CIBA - Registration and Discovery Metadata. 
+          This value MUST be specified iff the grant_types includes 
+          urn:openid:params:grant-type:ciba and 
+          backchannel_token_delivery_mode is not poll. 
+          This must be a valid HTTPS URL
+      backchannel_authentication_request_signing_alg:
+        type: string
+        enum:
+          - RS256
+          - PS256
+          - ES256
+        description: >-
+          As defined in CIBA - Registration and Discovery Metadata. 
+          This value MUST be specified iff the grant_types includes 
+          urn:openid:params:grant-type:ciba.
+      backchannel_user_code_parameter_supported:
+        type: boolean
+        description: >-
+          As defined in CIBA - Registration and Discovery Metadata. 
+          This value MUST be specified only if the grant_types includes 
+          urn:openid:params:grant-type:ciba. 
+          If specified, it MUST be set to false.
+  ClientRegistration:
+    allOf:
+      - type: object
+        required:
+          - iss
+          - iat
+          - exp
+          - aud
+          - jti
+        properties:
+          iss:
+            description: Unique identifier for the TPP. Implemented as Base62 encoded GUID
+            type: string
+            pattern: '^[0-9a-zA-Z]{1,22}$'
+            minLength: 1
+            maxLength: 22
+          iat:
+            description: >-
+              The time at which the request was issued by the TPP  expressed as
+              seconds since 1970-01-01T00:00:00Z as measured in UTC
+            type: integer
+            format: int32
+          exp:
+            description: >-
+              The time at which the request expires expressed as seconds since
+              1970-01-01T00:00:00Z as measured in UTC
+            type: integer
+            format: int32
+          aud:
+            description: |
+              The audience for the request. This should be the unique identifier
+              for the ASPSP issued by the issuer of the software statement.
+              Implemented as Base62 encoded GUID
+            type: string
+            pattern: '^[0-9a-zA-Z]{1,18}$'
+            minLength: 1
+            maxLength: 18
+          jti:
+            description: Unique identifier for the JWT implemented as UUID v4
+            type: string
+            pattern: >-
+              ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+            minLength: 36
+            maxLength: 36
+      - $ref: '#/definitions/RegistrationProperties'
+  RegistrationError:
+    type: object
+    required:
+      - error
+    properties:
+      error:
+        type: string
+        enum:
+          - invalid_redirect_uri
+          - invalid_client_metadata
+          - invalid_software_statement
+          - unapproved_software_statement
+      error_description:
+        type: string
+        minLength: 1
+        maxLength: 500
+securityDefinitions:
+  TPPOAuth2Security:
+    type: oauth2
+    flow: application
+    description: >-
+      TPP client credential authorisation flow with the ASPSP. No scopes defined
+      as per specification
+    tokenUrl: 'https://authserver.example/token'
+    scopes: {}
