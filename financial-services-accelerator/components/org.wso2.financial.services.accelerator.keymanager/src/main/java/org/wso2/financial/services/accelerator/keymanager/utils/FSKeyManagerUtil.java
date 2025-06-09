@@ -89,7 +89,7 @@ public class FSKeyManagerUtil {
 
         } catch (InstantiationException | IllegalAccessException |
                  InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-            throw new APIManagementException("Failed to tain FS Key Manager Extension Impl instance", e);
+            throw new APIManagementException("Failed to obtain FS Key Manager Extension Impl instance", e);
         }
     }
 
@@ -112,8 +112,10 @@ public class FSKeyManagerUtil {
             additionalPropertiesJSON = new JSONObject((String) oauthAppRequest.getOAuthApplicationInfo()
                     .getParameter(APIConstants.JSON_ADDITIONAL_PROPERTIES));
         } catch (JSONException e) {
-            log.error(APIConstants.JSON_ADDITIONAL_PROPERTIES + " is not a JSON object");
-            throw new APIManagementException(ExceptionCodes.JSON_PARSE_ERROR.getErrorMessage(),
+            log.error(String.format("%s of the OAuth app %s is not a JSON object",
+                    APIConstants.JSON_ADDITIONAL_PROPERTIES.replaceAll("[\r\n]", ""),
+                            oauthAppRequest.getOAuthApplicationInfo().getClientId().replaceAll("[\r\n]", "")), e);
+            throw new APIManagementException(ExceptionCodes.JSON_PARSE_ERROR.getErrorMessage(), e,
                     ExceptionCodes.JSON_PARSE_ERROR);
         }
 
