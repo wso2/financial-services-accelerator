@@ -50,7 +50,7 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
         consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
         initiationPayload = RequestPayloads.initiationPayload
         //Consent initiation
-        doDefaultInitiation(initiationPayload)
+        doDefaultInitiation(initiationPayload, client_id)
         Assert.assertNotNull(consentId)
 
         //Consent Authorisation

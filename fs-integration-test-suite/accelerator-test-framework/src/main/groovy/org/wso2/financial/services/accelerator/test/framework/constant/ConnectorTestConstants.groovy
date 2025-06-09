@@ -320,4 +320,8 @@ class ConnectorTestConstants extends Constants{
     public static final MISSING_NBF_VALUE= "Request Object does not contain Not Before Time."
     public static final INVALID_EXPIRY_TIME = "Request Object expiry time is too far in the future than not before time."
 
+    //File Path
+    static final File CONFIG_FILE = new File(System.getProperty("user.dir").toString()
+            .concat("/../../../accelerator-test-framework/src/main/resources/TestConfiguration.xml"))
+
 }

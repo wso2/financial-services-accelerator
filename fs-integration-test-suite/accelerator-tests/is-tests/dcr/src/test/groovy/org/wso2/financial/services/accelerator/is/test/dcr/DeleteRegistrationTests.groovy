@@ -62,7 +62,7 @@ class DeleteRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
-    @Test (priority = 1)
+    @Test
     void "TC0104002_Delete client with an invalid access token"() {
 
         configuration.setPsuNumber(1)

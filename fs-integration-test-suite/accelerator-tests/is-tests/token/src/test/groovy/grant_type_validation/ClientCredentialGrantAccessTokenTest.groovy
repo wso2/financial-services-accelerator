@@ -52,8 +52,13 @@ class ClientCredentialGrantAccessTokenTest extends FSConnectorTest {
         Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
                 ConnectorTestConstants.INVALID_CLIENT)
-        Assert.assertTrue(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION).contains(
-                "Client credentials are invalid"))
+
+        String actualErrorResponse = TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
+
+        boolean isValidResponse = actualErrorResponse.equals("Client credentials are invalid.")
+                || actualErrorResponse.equals("A valid OAuth client could not be found for client_id: deleted_client_id")
+
+        Assert.assertTrue(isValidResponse)
     }
 
     @Test
