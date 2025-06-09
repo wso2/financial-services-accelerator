@@ -43,10 +43,18 @@
                                 <div class="login-form">
                                     <div class="form-group ui form">
                                         <div class="col-md-12 ui box">
-                                            <h3 class="ui header">
-                                                <strong>${app}</strong> requests following details.
-                                            </h3>
-
+                                            <c:choose>
+                                                <c:when test="${isReauthorization}">
+                                                    <h3 class="ui header">
+                                                        <strong>${app}</strong> requests to re-authenticate following details.
+                                                    </h3>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h3 class="ui header">
+                                                        <strong>${app}</strong> requests following details.
+                                                    </h3>
+                                                </c:otherwise>
+                                            </c:choose>
                                             <h4 class="section-heading-5 ui subheading">Data requested:</h4>
                                             <!--Display basic consent data-->
                                             <c:forEach items="${basicConsentData}" var="record">
@@ -98,11 +106,12 @@
                                                                         <b>Select the accounts you wish to authorize:</b>
                                                                         <c:choose>
                                                                             <c:when test="${allowMultipleAccounts}">
-                                                                                <div class="padding-left padding-top" >
+                                                                                <div class="padding-left padding-top">
                                                                                     <c:forEach items="${consumerAccounts}" var="record">
                                                                                         <label for="${record['displayName']}${permissionLoop.index}">
                                                                                             <input type="checkbox" id="${record['displayName']}${permissionLoop.index}" name="chkAccounts"
                                                                                                 value="${record['accountId']}"/>
+                                                                                                <%-- pre-selection ignored when displaying consumer accounts per permission --%>
                                                                                                 ${record['displayName']}
                                                                                         </label>
                                                                                         <br>
@@ -156,8 +165,11 @@
                                                                 <div class="col-md-12" >
                                                                     <c:forEach items="${consumerAccounts}" var="record">
                                                                         <label for="${record['displayName']}">
-                                                                            <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
-                                                                                value="${record['accountId']}"/>
+                                                                            <input type="checkbox"
+                                                                                id="${record['displayName']}"
+                                                                                name="chkAccounts"
+                                                                                value="${record['accountId']}"
+                                                                                <c:if test="${record['selected']}">checked</c:if> />
                                                                                 ${record['displayName']}
                                                                         </label>
                                                                         <br>
