@@ -326,7 +326,6 @@
         {% else %}
         <ConditionalAuthScriptFileName>common.auth.script.js</ConditionalAuthScriptFileName>
         {% endif %}
-        {% if financial_services.app_registration.dcr.params is defined %}
         <DCR>
             <Params>
                 {% for param in financial_services.app_registration.dcr.params %}
@@ -369,8 +368,12 @@
                 <CacheModifiedExpiry>{{financial_services.app_registration.dcr.jti_cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
                 {% endif %}
             </JTICache>
+            <RegulatoryIssuers>
+                {% for iss in financial_services.app_registration.dcr.regulatory_issuers.iss %}
+                   <Issuer>{{iss.name}}</Issuer>
+                {% endfor %}
+            </RegulatoryIssuers>
         </DCR>
-        {% endif %}
     </AppRegistration>
     <HTTPConnectionPool>
         {% if financial_services.http_connection_pool.max_connections is defined %}
