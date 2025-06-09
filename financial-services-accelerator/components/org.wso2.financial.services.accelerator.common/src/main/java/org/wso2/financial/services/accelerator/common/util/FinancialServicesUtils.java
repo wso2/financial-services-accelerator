@@ -37,7 +37,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -195,7 +194,7 @@ public class FinancialServicesUtils {
     public static String getBasicAuthHeader(String username, char[] password) {
 
         byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON +
-                Arrays.toString(password)).getBytes(StandardCharsets.UTF_8));
+                String.valueOf(password)).getBytes(StandardCharsets.UTF_8));
         return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
     }
 
