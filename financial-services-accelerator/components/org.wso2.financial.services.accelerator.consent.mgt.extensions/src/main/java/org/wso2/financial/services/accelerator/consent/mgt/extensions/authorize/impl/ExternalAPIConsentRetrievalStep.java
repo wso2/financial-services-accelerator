@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
+import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -66,6 +67,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
     private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    static FinancialServicesValidator fsValidator = FinancialServicesValidator.getInstance();
 
     public ExternalAPIConsentRetrievalStep() {
 
@@ -111,16 +113,11 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
 
             // Validating object
-            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-            Validator validator = factory.getValidator();
-            Set<ConstraintViolation<ExternalAPIPreConsentAuthorizeResponseDTO>> violations =
-                    validator.validate(responseDTO);
+            String responseDTOViolation = fsValidator.getFirstViolation(responseDTO);
 
-            if (!violations.isEmpty()) {
-                for (ConstraintViolation<ExternalAPIPreConsentAuthorizeResponseDTO> violation : violations) {
-                    throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
-                            violation.getMessage(), consentData.getState());
-                }
+            if (!StringUtils.isEmpty(responseDTOViolation)) {
+                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                        responseDTOViolation, consentData.getState());
             }
 
             // Filter out consent and consumer data
@@ -234,5 +231,6 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
         return objectMapper.readValue(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);
     }
+    
 
 }
