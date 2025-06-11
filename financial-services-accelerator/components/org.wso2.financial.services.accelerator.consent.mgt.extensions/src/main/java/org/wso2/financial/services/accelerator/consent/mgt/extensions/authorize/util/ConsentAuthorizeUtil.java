@@ -260,16 +260,14 @@ public class ConsentAuthorizeUtil {
             }
         }
 
-        JSONObject requestedPermissions = new JSONObject();
+        JSONArray permissions = new JSONArray();
         if (!displayValues.isEmpty()) {
-            JSONArray permissions = new JSONArray();
             JSONObject permission = new JSONObject();
             permission.put(ConsentAuthorizeConstants.DISPLAY_VALUES, displayValues);
             permissions.put(permission);
-            requestedPermissions.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
         }
 
-        consentDataJSON.put(ConsentAuthorizeConstants.REQUESTED_PERMISSIONS, requestedPermissions);
+        consentDataJSON.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
 
         return consentDataJSON;
     }
@@ -354,19 +352,17 @@ public class ConsentAuthorizeUtil {
      */
     private static void populateAccountData(JSONObject data, JSONObject consentDataJSON) throws ConsentException {
 
-        JSONObject requestedPermissions = new JSONObject();
+        JSONArray permissions = new JSONArray();
         JSONArray basicConsentData = new JSONArray();
 
         //Adding Permissions
         JSONArray displayValues = data.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
         if (displayValues != null) {
-            JSONArray permissions = new JSONArray();
             JSONObject permission = new JSONObject();
             permission.put(ConsentAuthorizeConstants.DISPLAY_VALUES, displayValues);
             permissions.put(permission);
-            requestedPermissions.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
         }
-        consentDataJSON.put(ConsentAuthorizeConstants.REQUESTED_PERMISSIONS, requestedPermissions);
+        consentDataJSON.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
 
         //Adding Expiration Date Time
         String expirationDate = data.getString(ConsentExtensionConstants.EXPIRATION_DATE);

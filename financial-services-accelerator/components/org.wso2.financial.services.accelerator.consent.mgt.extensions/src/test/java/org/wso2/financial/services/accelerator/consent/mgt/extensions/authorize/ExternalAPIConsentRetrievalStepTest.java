@@ -39,6 +39,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.net.URI;
@@ -113,14 +114,12 @@ public class ExternalAPIConsentRetrievalStepTest {
         when(consentCoreService.searchAuthorizations(anyString())).thenReturn(authList);
 
         // External service success response
-        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-        Map<String, Object> consentDataObject = Map.of("field1", "value1");
-        Map<String, Object> consumerDataObject = Map.of("field2", "value2");
-
-        responseDTO.setConsentData(consentDataObject);
-        responseDTO.setConsumerData(consumerDataObject);
-
         ObjectMapper mapper = new ObjectMapper();
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO;
+
+        responseDTO = mapper.readValue(TestConstants.ACCOUNT_AUTH_SERVLET_DATA,
+                ExternalAPIPreConsentAuthorizeResponseDTO.class);
+
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
 
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
@@ -192,8 +191,8 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         assertTrue(jsonObject.has("consentData"));
         assertTrue(jsonObject.has("consumerData"));
-        assertEquals(jsonObject.getJSONObject("consentData").getString("field1"), "value1");
-        assertEquals(jsonObject.getJSONObject("consumerData").getString("field2"), "value2");
+        assertEquals(jsonObject.getJSONObject("consentData").getString("type"), "accounts");
+        assertTrue(jsonObject.getJSONObject("consentData").getBoolean("allowMultipleAccounts"));
     }
 
 
@@ -257,18 +256,11 @@ public class ExternalAPIConsentRetrievalStepTest {
         return resource;
     }
 
-    private static ExternalServiceResponse getExternalServiceResponse() {
-        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-
-        Map<String, Object> consentDataObject = new HashMap<>();
-        consentDataObject.put("field1", "value1");
-
-        Map<String, Object> consumerDataObject = new HashMap<>();
-        consumerDataObject.put("field2", "value2");
-
-        responseDTO.setConsentData(consentDataObject);
-        responseDTO.setConsumerData(consumerDataObject);
+    private static ExternalServiceResponse getExternalServiceResponse() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO;
+        responseDTO = mapper.readValue(TestConstants.ACCOUNT_AUTH_SERVLET_DATA,
+                ExternalAPIPreConsentAuthorizeResponseDTO.class);
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
 
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();

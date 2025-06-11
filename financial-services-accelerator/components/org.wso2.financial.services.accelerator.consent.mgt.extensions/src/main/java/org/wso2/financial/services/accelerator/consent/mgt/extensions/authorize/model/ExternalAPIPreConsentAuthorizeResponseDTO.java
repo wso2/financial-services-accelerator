@@ -17,6 +17,9 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**
@@ -24,23 +27,30 @@ import java.util.Map;
  */
 public class ExternalAPIPreConsentAuthorizeResponseDTO {
 
-    private Map<String, Object> consentData;
-    private Map<String, Object> consumerData;
+    @Valid
+    @NotNull
+    private ConsentDataDTO consentData;
+
+    @Valid
+    private ConsumerDataDTO consumerData;
+
     private Map<String, Object> metadata;
 
-    public Map<String, Object> getConsentData() {
+    public ConsentDataDTO getConsentData() {
         return consentData;
     }
 
-    public void setConsentData(Map<String, Object> consentData) {
+    public void setConsentData(
+            ConsentDataDTO consentData) {
         this.consentData = consentData;
     }
 
-    public Map<String, Object> getConsumerData() {
+    public ConsumerDataDTO getConsumerData() {
         return consumerData;
     }
 
-    public void setConsumerData(Map<String, Object> consumerData) {
+    public void setConsumerData(
+            ConsumerDataDTO consumerData) {
         this.consumerData = consumerData;
     }
 

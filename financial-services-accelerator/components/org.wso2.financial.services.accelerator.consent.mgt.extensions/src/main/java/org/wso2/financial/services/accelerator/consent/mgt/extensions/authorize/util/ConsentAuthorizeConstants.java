@@ -34,7 +34,6 @@ public class ConsentAuthorizeConstants {
     // For payload from populate consent authorize screen and payload forwarded to default consent page
     public static final String TYPE = "type";
     public static final String BASIC_CONSENT_DATA = "basicConsentData";
-    public static final String REQUESTED_PERMISSIONS = "requestedPermissions";
     public static final String PERMISSIONS = "permissions";
     public static final String DISPLAY_VALUES = "displayValues";
     public static final String DISPLAY_NAME = "displayName";

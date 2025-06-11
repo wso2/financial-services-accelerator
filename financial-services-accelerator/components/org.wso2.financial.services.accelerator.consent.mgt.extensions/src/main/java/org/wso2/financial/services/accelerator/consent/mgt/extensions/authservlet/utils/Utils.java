@@ -92,12 +92,14 @@ public class Utils {
      * @return jsonObject converted to a nested HashMap
      */
     public static Map<String, Object> jsonObjectToMap(JSONObject jsonObject) {
-
         Map<String, Object> map = new HashMap<>();
 
         for (String key : jsonObject.keySet()) {
             Object value = jsonObject.get(key);
-            if (value instanceof JSONObject) {
+
+            if (value == JSONObject.NULL) {
+                map.put(key, null);
+            } else if (value instanceof JSONObject) {
                 map.put(key, jsonObjectToMap((JSONObject) value));
             } else if (value instanceof JSONArray) {
                 map.put(key, jsonArrayToList((JSONArray) value));
@@ -116,12 +118,14 @@ public class Utils {
      * @return jsonArray converted to a nested ArrayList
      */
     private static List<Object> jsonArrayToList(JSONArray jsonArray) {
-
         List<Object> list = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.length(); i++) {
             Object value = jsonArray.get(i);
-            if (value instanceof JSONObject) {
+
+            if (value == JSONObject.NULL) {
+                list.add(null);
+            } else if (value instanceof JSONObject) {
                 list.add(jsonObjectToMap((JSONObject) value));
             } else if (value instanceof JSONArray) {
                 list.add(jsonArrayToList((JSONArray) value));
@@ -129,6 +133,7 @@ public class Utils {
                 list.add(value);
             }
         }
+
         return list;
     }
 
@@ -184,7 +189,7 @@ public class Utils {
                 dataSetMap.get(ConsentAuthorizeConstants.CONSUMER_DATA);
 
         Map<String, List<String>> basicConsentData = null;
-        Map<String, Object> requestedPermissions = null;
+        List<Map<String, Object>> permissions = null;
         List<Object> initiatedAccountsForConsent = null;
         Boolean isReauthorization = false;
         Boolean allowMultipleAccounts = false;
@@ -192,19 +197,14 @@ public class Utils {
         if (consentData != null) {
             basicConsentData = (Map<String, List<String>>) consentData.getOrDefault(
                     ConsentAuthorizeConstants.BASIC_CONSENT_DATA, null);
-            requestedPermissions = (Map<String, Object>) consentData.getOrDefault(
-                    ConsentAuthorizeConstants.REQUESTED_PERMISSIONS, null);
+            permissions = (List<Map<String, Object>>) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.PERMISSIONS, null);
             initiatedAccountsForConsent = (List<Object>) consentData.getOrDefault(
                     ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, null);
             isReauthorization = (Boolean) consentData.getOrDefault(
                     ConsentAuthorizeConstants.IS_REAUTHORIZATION, false);
             allowMultipleAccounts = (Boolean) consentData.getOrDefault(
                     ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, false);
-        }
-
-        List<Map<String, Object>> permissions = null;
-        if (requestedPermissions != null) {
-            permissions = (List<Map<String, Object>>) requestedPermissions.get(ConsentAuthorizeConstants.PERMISSIONS);
         }
 
         List<Map<String, Object>> consumerAccounts = null;

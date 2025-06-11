@@ -17,6 +17,8 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -47,7 +49,12 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -58,7 +65,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
     private final ConsentCoreService consentCoreService;
     private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
-    private static final Gson gson = new Gson();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public ExternalAPIConsentRetrievalStep() {
 
@@ -103,14 +110,29 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
 
+            // Validating object
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<ExternalAPIPreConsentAuthorizeResponseDTO>> violations =
+                    validator.validate(responseDTO);
+
+            if (!violations.isEmpty()) {
+                for (ConstraintViolation<ExternalAPIPreConsentAuthorizeResponseDTO> violation : violations) {
+                    throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                            violation.getMessage(), consentData.getState());
+                }
+            }
+
             // Filter out consent and consumer data
             // Append consumer data to json object to be displayed in consent page
-            JSONObject consentDataJsonObject = new JSONObject(responseDTO.getConsentData());
+            JSONObject consentDataJsonObject = new JSONObject(objectMapper.writeValueAsString(
+                    responseDTO.getConsentData()));
             jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA, consentDataJsonObject);
 
             // Append consumer data, if exists, to json object
             if (responseDTO.getConsumerData() != null) {
-                JSONObject consumerDataJsonObject = new JSONObject(responseDTO.getConsumerData());
+                JSONObject consumerDataJsonObject = new JSONObject(objectMapper.writeValueAsString(
+                        responseDTO.getConsumerData()));
                 jsonObject.put(ConsentAuthorizeConstants.CONSUMER_DATA, consumerDataJsonObject);
             }
 
@@ -130,6 +152,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         } catch (FinancialServicesException e) {
             // ToDo: Improve error handling
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                    e.getMessage(), consentData.getState());
+        } catch (JsonProcessingException e) {
+            throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
                     e.getMessage(), consentData.getState());
         }
     }
@@ -184,7 +209,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
      * @return ExternalAPIConsentRetrievalResponseDTO
      */
     private ExternalAPIPreConsentAuthorizeResponseDTO callExternalService(
-            ExternalAPIPreConsentAuthorizeRequestDTO requestDTO) throws FinancialServicesException {
+            ExternalAPIPreConsentAuthorizeRequestDTO requestDTO)
+            throws FinancialServicesException, JsonProcessingException {
 
         ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(requestDTO);
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
@@ -206,7 +232,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
-        return gson.fromJson(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);
+        return objectMapper.readValue(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);
     }
 
 }
