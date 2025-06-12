@@ -26,6 +26,7 @@ import org.wso2.carbon.authenticator.stub.AuthenticationAdminStub;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.mgt.stub.UserAdminStub;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class KeyManagerDataHolder {
     private String backendServerURL = "";
     private RealmService realmService;
     private final Map<String, KeyManagerConnectorConfiguration> keyManagerConnectorConfigurationMap = new HashMap<>();
+    private static FinancialServicesConfigurationService configurationService;
 
     public static KeyManagerDataHolder getInstance() {
 
@@ -151,9 +153,19 @@ public class KeyManagerDataHolder {
         return realmService;
     }
 
-    void setRealmService(RealmService realmService) {
+    public void setRealmService(RealmService realmService) {
 
         this.realmService = realmService;
+    }
+
+    public FinancialServicesConfigurationService getConfigurationService() {
+
+        return configurationService;
+    }
+
+    public void setConfigurationService(FinancialServicesConfigurationService configurationService) {
+
+        KeyManagerDataHolder.configurationService = configurationService;
     }
 
 }

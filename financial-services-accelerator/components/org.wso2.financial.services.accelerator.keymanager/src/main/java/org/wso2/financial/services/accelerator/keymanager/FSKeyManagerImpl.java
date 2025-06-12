@@ -33,7 +33,7 @@ import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
@@ -58,6 +58,8 @@ import java.util.Map;
 public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
     private static final Log log = LogFactory.getLog(FSKeyManagerImpl.class);
+    FinancialServicesConfigurationService financialServicesConfigurationService = KeyManagerDataHolder
+            .getInstance().getConfigurationService();
 
     @Override
     public AccessTokenInfo getNewApplicationAccessToken(AccessTokenRequest tokenRequest) throws APIManagementException {
@@ -97,8 +99,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
         KeyManagerConnectorConfiguration keyManagerConnectorConfiguration = KeyManagerDataHolder.getInstance()
                 .getKeyManagerConnectorConfiguration(type);
         // Obtain additional key manager configurations defined in config
-        Map<String, Map<String, String>> keyManagerAdditionalProperties = FinancialServicesConfigParser.getInstance()
-                .getKeyManagerAdditionalProperties();
+        Map<String, Map<String, String>> keyManagerAdditionalProperties = financialServicesConfigurationService
+                .getKeyManagerConfigs();
 
         if (keyManagerConnectorConfiguration != null) {
             List<ConfigurationDto> applicationConfigurationDtoList = keyManagerConnectorConfiguration
@@ -122,7 +124,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
                         values = additionalPropertiesJson.get(key).toString();
                     }
 
-                    if (values == null) {
+                    if (values == null || "null".equals(values)) {
                         // AbstractKeyManager Validations
                         // Check if mandatory parameters are missing
                         if (configurationDto.isRequired()) {
@@ -145,8 +147,9 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
                                         if (!(values.equals(Boolean.TRUE.toString()) ||
                                                 values.equals(Boolean.FALSE.toString()))) {
-                                            String errMsg = "Application configuration values cannot have negative " +
-                                                    "values.";
+                                            String errMsg = String.format("Invalid value for %s. Expected boolean " +
+                                                    "value, but found: %s", key.replaceAll("[\r\n]+", " "),
+                                                    values.replaceAll("[\r\n]+", " "));
                                             throw new APIManagementException(errMsg, ExceptionCodes
                                                     .from(ExceptionCodes.INVALID_APPLICATION_ADDITIONAL_PROPERTIES,
                                                             errMsg));
@@ -162,7 +165,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
                                         }
                                     }
                                 } catch (NumberFormatException e) {
-                                    String errMsg = "Application configuration values cannot have string values.";
+                                    String errMsg = "Application configuration lifetime values cannot be parsed " +
+                                            "to a long value.";
                                     throw new APIManagementException(errMsg, e, ExceptionCodes
                                             .from(ExceptionCodes.INVALID_APPLICATION_ADDITIONAL_PROPERTIES, errMsg));
                                 }
@@ -193,7 +197,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
      * @throws APIManagementException when failed to create the application properly in Key Manager
      */
     @Override
-    @Generated(message = "Excluding from code coverage since it is covered from other method")
+    @Generated(message = "Excluding from code coverage since utils methods are covered in other tests")
     public OAuthApplicationInfo createApplication(OAuthAppRequest oauthAppRequest) throws APIManagementException {
 
         HashMap<String, String> additionalProperties = FSKeyManagerUtil
@@ -233,7 +237,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     }
 
     @Override
-    @Generated(message = "Excluding from code coverage since it is covered from other method")
+    @Generated(message = "Excluding from code coverage since utils methods are covered in other tests")
     public OAuthApplicationInfo updateApplication(OAuthAppRequest oAuthAppRequest) throws APIManagementException {
 
         HashMap<String, String> additionalProperties = FSKeyManagerUtil
@@ -256,7 +260,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     }
 
     @Override
-    @Generated(message = "Excluding from code coverage since it is covered from other method")
+    @Generated(message = "Excluding from code coverage since utils methods are covered in other tests")
     public OAuthApplicationInfo retrieveApplication(String consumerKey) throws APIManagementException {
 
         OAuthApplicationInfo oAuthApplicationInfo = super.retrieveApplication(consumerKey);
@@ -278,6 +282,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
      * @param isCreateApp             Whether this function is called at app creation
      * @throws APIManagementException when failed to update the application properties
      */
+    @Generated(message = "Excluding from code coverage since utils methods are covered in other tests")
     protected void updateSpProperties(String spAppName, OAuthApplicationInfo oAuthApplicationInfo ,
                                       JSONObject serviceProviderAppData,
                                       HashMap<String, String> additionalProperties, boolean isCreateApp)
@@ -315,8 +320,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     protected OAuthApplicationInfo updateAdditionalProperties(OAuthApplicationInfo oAuthApplicationInfo,
                                                               JSONArray spProperties) {
 
-        Map<String, Map<String, String>> keyManagerAdditionalProperties = FinancialServicesConfigParser.getInstance()
-                .getKeyManagerAdditionalProperties();
+        Map<String, Map<String, String>> keyManagerAdditionalProperties = financialServicesConfigurationService
+                .getKeyManagerConfigs();
         for (String key : keyManagerAdditionalProperties.keySet()) {
             for (int i = 0; i < spProperties.length(); i++) {
                 JSONObject spPropertyObj = spProperties.getJSONObject(i);
@@ -335,7 +340,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
      * @param fsAdditionalProperties Values for additional property list defined in the config
      * @throws APIManagementException when failed to validate a given property
      */
-    @Generated(message = "Excluding from code coverage since the method body is at toolkit")
+    @Generated(message = "Excluding from code coverage since utils methods are covered in other tests")
     public void validateAdditionalProperties(Map<String, ConfigurationDto> fsAdditionalProperties)
             throws APIManagementException {
 
@@ -359,7 +364,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
      * @param additionalProperties Values for additional property list defined in the config
      * @throws APIManagementException when failed to validate a given property
      */
-    @Generated(message = "Excluding from code coverage since the method body is at toolkit")
+    @Generated(message = "Excluding from code coverage since util methods are covered in other tests")
     public void doPreCreateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties)
             throws APIManagementException {
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_APPLICATION_CREATION)) {
@@ -381,7 +386,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
      * @param additionalProperties Values for additional property list defined in the config
      * @throws APIManagementException when failed to validate a given property
      */
-    @Generated(message = "Excluding from code coverage since the method body is at toolkit")
+    @Generated(message = "Excluding from code coverage since util methods are covered in other tests")
     public void doPreUpdateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties,
                                        JSONObject serviceProvider) throws APIManagementException {
 

@@ -133,6 +133,7 @@ public class FSKeyManagerUtil {
      * @param applicationName Application name
      * @return Application role name
      */
+    @Generated(message = "excluding from coverage because method doesn't contains any logic")
     protected static String getAppRoleName(String applicationName) {
 
         return org.wso2.carbon.identity.application.mgt.ApplicationConstants.APPLICATION_DOMAIN +
@@ -194,6 +195,7 @@ public class FSKeyManagerUtil {
      * @return
      * @throws IdentityRuntimeException
      */
+    @Generated(message = "Excluding since it involves an external call")
     public static int getTenantIdOfUser(String username) throws IdentityRuntimeException {
         int tenantId = -1;
         String domainName = MultitenantUtils.getTenantDomain(username);
@@ -216,14 +218,14 @@ public class FSKeyManagerUtil {
 
     /**
      * Obtain the value from Configuration DTO object.
-     * @param obAdditionalProperties Additional Property Map
+     * @param fsAdditionalProperties Additional Property Map
      * @param propertyName Property Name
      * @return value for given property
      * @throws APIManagementException
      */
-    public static String getValueForAdditionalProperty(Map<String, ConfigurationDto> obAdditionalProperties,
+    public static String getValueForAdditionalProperty(Map<String, ConfigurationDto> fsAdditionalProperties,
                                                        String propertyName) throws APIManagementException {
-        ConfigurationDto property = obAdditionalProperties.get(propertyName);
+        ConfigurationDto property = fsAdditionalProperties.get(propertyName);
         if (property != null) {
             List<Object> values = property.getValues();
             if (values.size() > 0) {
