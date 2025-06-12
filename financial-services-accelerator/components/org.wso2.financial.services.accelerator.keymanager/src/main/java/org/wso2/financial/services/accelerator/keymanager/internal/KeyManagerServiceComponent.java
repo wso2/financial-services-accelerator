@@ -31,6 +31,7 @@ import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 
 import java.util.Map;
 
@@ -125,4 +126,19 @@ public class KeyManagerServiceComponent {
         KeyManagerDataHolder.getInstance().setRealmService(null);
     }
 
+    @Reference(
+            service = FinancialServicesConfigurationService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetConfigService"
+    )
+    public void setConfigService(FinancialServicesConfigurationService configurationService) {
+
+        KeyManagerDataHolder.getInstance().setConfigurationService(configurationService);
+    }
+
+    public void unsetConfigService(FinancialServicesConfigurationService configurationService) {
+
+        KeyManagerDataHolder.getInstance().setConfigurationService(configurationService);
+    }
 }

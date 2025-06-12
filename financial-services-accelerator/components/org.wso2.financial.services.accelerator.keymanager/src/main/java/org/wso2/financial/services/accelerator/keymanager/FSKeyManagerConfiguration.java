@@ -24,7 +24,7 @@ import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.jwt.JWTValidatorImpl;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
 import org.wso2.financial.services.accelerator.keymanager.utils.FSKeyManagerConstants;
 import org.wso2.is7.client.WSO2IS7KeyManagerConstants;
 
@@ -126,8 +126,8 @@ public class FSKeyManagerConfiguration implements KeyManagerConnectorConfigurati
                         String.valueOf(false), false, false, Collections.EMPTY_LIST, false);
         applicationConfigurationsList.add(configurationDtoBypassClientCredentials);
 
-        Map<String, Map<String, String>> keyManagerAdditionalProperties = FinancialServicesConfigParser.getInstance()
-                .getKeyManagerAdditionalProperties();
+        Map<String, Map<String, String>> keyManagerAdditionalProperties = KeyManagerDataHolder.getInstance()
+                .getConfigurationService().getKeyManagerConfigs();
 
         for (Map.Entry<String, Map<String, String>> propertyElement : keyManagerAdditionalProperties.entrySet()) {
             String propertyName = propertyElement.getKey();

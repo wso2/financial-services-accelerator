@@ -40,4 +40,6 @@ public interface FinancialServicesConfigurationService {
 
     public List<String> getDCRResponseParameters();
 
+    public Map<String, Map<String, String>> getKeyManagerConfigs();
+
 }
