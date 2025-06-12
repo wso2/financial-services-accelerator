@@ -21,10 +21,14 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.constraints.NotEmpty;
+
+/**
+ * Account object for external API consent retrieval.
+ */
 public class AccountDTO {
     @NotEmpty
     private String displayName;

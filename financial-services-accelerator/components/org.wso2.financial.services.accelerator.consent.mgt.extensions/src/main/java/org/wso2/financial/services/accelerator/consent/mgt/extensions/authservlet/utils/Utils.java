@@ -138,18 +138,24 @@ public class Utils {
     }
 
     /**
-     * Converts String occurrences of values in BasicConsentData to arrays with single value
+     * Converts String occurrences of values in BasicConsentData to arrays with single value.
      *
      * @param dataSet dataSet to be formatted
      */
     public static void formatBasicConsentData(JSONObject dataSet) {
-        if (dataSet == null) return;
+        if (dataSet == null) {
+            return;
+        }
 
         JSONObject consentData = dataSet.optJSONObject(ConsentAuthorizeConstants.CONSENT_DATA);
-        if (consentData == null) return;
+        if (consentData == null) {
+            return;
+        }
 
         JSONObject basicConsentData = consentData.optJSONObject(ConsentAuthorizeConstants.BASIC_CONSENT_DATA);
-        if (basicConsentData == null) return;
+        if (basicConsentData == null) {
+            return;
+        }
 
         JSONObject formatted = new JSONObject();
 
@@ -169,7 +175,7 @@ public class Utils {
     }
 
     /**
-     * Expand sub-attributes within the retrieved payload
+     * Expand sub-attributes within the retrieved payload.
      *
      * @param dataSet dataSet received from the execution of retrieval steps
      * @return updated request attribute map

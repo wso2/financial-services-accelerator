@@ -18,9 +18,13 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import javax.validation.Valid;
 import java.util.List;
 
+import javax.validation.Valid;
+
+/**
+ * Consumer data object for external API consent retrieval.
+ */
 public class ConsumerDataDTO {
     @Valid
     private List<ConsumerAccountDTO> accounts;

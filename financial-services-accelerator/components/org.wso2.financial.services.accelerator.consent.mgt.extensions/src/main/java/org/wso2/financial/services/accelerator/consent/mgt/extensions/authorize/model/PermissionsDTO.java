@@ -18,9 +18,13 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+
+/**
+ * Permissions object for external API consent retrieval.
+ */
 public class PermissionsDTO {
     @NotEmpty
     private List<String> displayValues;

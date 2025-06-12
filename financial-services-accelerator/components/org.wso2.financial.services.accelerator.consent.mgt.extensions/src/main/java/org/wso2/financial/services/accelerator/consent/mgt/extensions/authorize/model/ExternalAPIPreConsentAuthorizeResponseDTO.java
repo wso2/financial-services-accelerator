@@ -17,10 +17,10 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * Wrapper for pre consent authorize flow external response data.

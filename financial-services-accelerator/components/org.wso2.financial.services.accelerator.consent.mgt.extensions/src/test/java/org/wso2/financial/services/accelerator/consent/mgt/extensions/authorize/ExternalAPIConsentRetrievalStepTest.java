@@ -57,6 +57,9 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Unit test class for ExternalAPIConsentRetrievalStep.
+ */
 public class ExternalAPIConsentRetrievalStepTest {
 
     private ExternalAPIConsentRetrievalStep consentRetrievalStep;

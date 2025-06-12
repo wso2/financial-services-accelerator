@@ -19,23 +19,18 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservl
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mockito.Mockito;
 import org.testng.annotations.Test;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertNotNull;
 
+/**
+ * Unit test class for utility methods.
+ */
 public class UtilsTest {
 
     @Test
