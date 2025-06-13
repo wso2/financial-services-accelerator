@@ -37,7 +37,7 @@
                 value="Go Back"/>
         <input type="hidden" id="hasApprovedAlways" name="hasApprovedAlways" value="false"/>
         <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
-        <input type="hidden" name="isApproved" id="isApproved" value="false"/>
+        <input type="hidden" name="consent" id="consent" value="false"/>
         <input type="hidden" name="type" id="type" value="${type}"/>
         <input type="hidden" name="isReauthorization" id="type" value="${isReauthorization}"/>
         <input type="hidden" name="encodedAccountsPermissionsData" value="${encodedAccountsPermissionsData}"/>

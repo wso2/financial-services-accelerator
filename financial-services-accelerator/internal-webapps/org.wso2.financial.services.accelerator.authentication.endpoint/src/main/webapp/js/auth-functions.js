@@ -17,13 +17,13 @@
  */
 
 function denyConsent() {
-    document.getElementById('isApproved').value = false;
+    document.getElementById('consent').value = false;
     document.getElementById("oauth2_authz_confirm").submit();
 }
 
 // Confirm sharing data
 function approvedConsent() {
-    document.getElementById('isApproved').value = true;
+    document.getElementById('consent').value = true;
     document.getElementById("oauth2_authz_confirm").submit();
 }
 

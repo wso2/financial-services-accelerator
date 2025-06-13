@@ -26,9 +26,9 @@
     <c:when test="${allowMultipleAccounts}">
         <div class="${accountSelectorClass} account-selections">
             <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
-                <label for="${account['displayName']}${idSuffix}">
+                <label for="<c:choose><c:when test='${not empty idSuffix}'>${account['displayName']}-${idSuffix}</c:when><c:otherwise>${account['displayName']}</c:otherwise></c:choose>">
                     <input type="checkbox"
-                        id="${account['displayName']}${idSuffix}"
+                        id="<c:choose><c:when test='${not empty idSuffix}'>${account['displayName']}-${idSuffix}</c:when><c:otherwise>${account['displayName']}</c:otherwise></c:choose>"
                         name="<c:choose><c:when test='${not empty idSuffix}'>accountsOpt-${idSuffix}</c:when><c:otherwise>accountsOpt</c:otherwise></c:choose>"
                         value="${accountIdx.index}"
                         <c:if test="${ignorePreSelect ne 'true' and account['selected']}">checked</c:if>
