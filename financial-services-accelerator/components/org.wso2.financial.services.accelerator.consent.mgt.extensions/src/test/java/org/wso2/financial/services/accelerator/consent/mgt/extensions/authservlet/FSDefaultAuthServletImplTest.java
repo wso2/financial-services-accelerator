@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -32,18 +33,21 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservle
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -140,7 +144,8 @@ public class FSDefaultAuthServletImplTest {
         Map<String, Object> requestAttributes = servletImpl.updateRequestAttribute(httpServletRequestMock,
                 object, resourceBundle);
 
-        assertFalse(requestAttributes.containsKey(ConsentExtensionConstants.TYPE));
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.TYPE));
+        assertNull(requestAttributes.get(ConsentExtensionConstants.TYPE));
         assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
     }
 
@@ -154,18 +159,244 @@ public class FSDefaultAuthServletImplTest {
     }
 
     @Test
-    public void testUpdateConsentData() {
+    public void testUpdateConsentData_withPermissionsAndSelectedConsumerAccounts() {
+        // isReauthorization = "true"
+        doReturn("true").when(httpServletRequestMock)
+                .getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
 
-        String param = "Test_parameter";
-        doReturn(param).when(httpServletRequestMock).getParameter(anyString());
-        HttpSession session = mock(HttpSession.class);
-        doReturn(session).when(httpServletRequestMock).getSession();
+        // Base64-encoded JSON for encodedAccountsPermissionsData
+        JSONObject mockData = new JSONObject();
+        mockData.put(ConsentAuthorizeConstants.PERMISSIONS, new JSONArray()
+                .put(new JSONObject().put(ConsentAuthorizeConstants.DISPLAY_VALUES, new JSONArray()
+                        .put("Read Account Information"))));
+        mockData.put(ConsentAuthorizeConstants.CONSUMER_ACCOUNTS, new JSONArray()
+                .put(new JSONObject().put("id", "acc1"))
+                .put(new JSONObject().put("id", "acc2")));
 
+        String encodedMockData = Base64.getUrlEncoder().encodeToString(mockData.toString()
+                .getBytes(StandardCharsets.UTF_8));
+        doReturn(encodedMockData)
+                .when(httpServletRequestMock).getParameter(ConsentAuthorizeConstants.ENCODED_ACCOUNTS_PERMISSIONS_DATA);
+
+        // Request parameter map (simulates form submissions like accountsOpt-0=0,1)
+        Map<String, String[]> parameterMap = new HashMap<>();
+        parameterMap.put("accountsOpt-0", new String[]{"0", "1"});
+
+        doReturn(parameterMap).when(httpServletRequestMock).getParameterMap();
+
+        // Call the method
         Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
+
         assertFalse(consentData.isEmpty());
-        assertTrue(consentData.containsKey(ConsentExtensionConstants.ACCOUNT_IDS));
-        assertTrue(consentData.containsKey(ConsentExtensionConstants.PAYMENT_ACCOUNT));
-        assertTrue(consentData.containsKey(ConsentExtensionConstants.COF_ACCOUNT));
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertEquals(consentData.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION), true);
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.AUTHORIZED_DATA));
+        JSONArray authorizedData = (JSONArray) consentData.get(ConsentAuthorizeConstants.AUTHORIZED_DATA);
+        assertEquals(authorizedData.length(), 1);
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.ACCOUNTS));
+        assertFalse(authEntry.getJSONArray(ConsentAuthorizeConstants.ACCOUNTS).isEmpty());
+    }
+
+    @Test
+    public void testUpdateConsentData_withPermissionsAndPermissionInitiatedAccounts() {
+        // isReauthorization = "false"
+        doReturn("false").when(httpServletRequestMock)
+                .getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
+
+        // Base64-encoded JSON for encodedAccountsPermissionsData
+        JSONObject mockData = new JSONObject();
+        mockData.put(ConsentAuthorizeConstants.PERMISSIONS, new JSONArray()
+                .put(new JSONObject().put(ConsentAuthorizeConstants.DISPLAY_VALUES, new JSONArray()
+                        .put("Read Account Information"))
+                    .put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS, new JSONArray()
+                        .put(new JSONObject().put("id", "acc1"))
+                        .put(new JSONObject().put("id", "acc2")))));
+
+        String encodedMockData = Base64.getUrlEncoder().encodeToString(mockData.toString()
+                .getBytes(StandardCharsets.UTF_8));
+        doReturn(encodedMockData)
+                .when(httpServletRequestMock).getParameter(ConsentAuthorizeConstants.ENCODED_ACCOUNTS_PERMISSIONS_DATA);
+
+        // Request parameter map (simulates form submissions like accountsOpt-0=0,1)
+        Map<String, String[]> parameterMap = new HashMap<>();
+
+        doReturn(parameterMap).when(httpServletRequestMock).getParameterMap();
+
+        // Call the method
+        Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
+
+        assertFalse(consentData.isEmpty());
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertEquals(consentData.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION), false);
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.AUTHORIZED_DATA));
+        JSONArray authorizedData = (JSONArray) consentData.get(ConsentAuthorizeConstants.AUTHORIZED_DATA);
+        assertEquals(authorizedData.length(), 1);
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.ACCOUNTS));
+        assertFalse(authEntry.getJSONArray(ConsentAuthorizeConstants.ACCOUNTS).isEmpty());
+    }
+
+    @Test
+    public void testUpdateConsentData_withPermissionsAndConsentInitiatedAccounts() {
+        // isReauthorization = "true"
+        doReturn("true").when(httpServletRequestMock)
+                .getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
+
+        // Base64-encoded JSON for encodedAccountsPermissionsData
+        JSONObject mockData = new JSONObject();
+        mockData.put(ConsentAuthorizeConstants.PERMISSIONS, new JSONArray()
+                .put(new JSONObject().put(ConsentAuthorizeConstants.DISPLAY_VALUES, new JSONArray()
+                        .put("Read Account Information"))));
+        mockData.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, new JSONArray()
+                .put(new JSONObject().put("id", "acc1"))
+                .put(new JSONObject().put("id", "acc2")));
+
+        String encodedMockData = Base64.getUrlEncoder().encodeToString(mockData.toString()
+                .getBytes(StandardCharsets.UTF_8));
+        doReturn(encodedMockData)
+                .when(httpServletRequestMock).getParameter(ConsentAuthorizeConstants.ENCODED_ACCOUNTS_PERMISSIONS_DATA);
+
+        // Request parameter map (simulates form submissions like accountsOpt-0=0,1)
+        Map<String, String[]> parameterMap = new HashMap<>();
+
+        doReturn(parameterMap).when(httpServletRequestMock).getParameterMap();
+
+        // Call the method
+        Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
+
+        assertFalse(consentData.isEmpty());
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertEquals(consentData.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION), true);
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.AUTHORIZED_DATA));
+        JSONArray authorizedData = (JSONArray) consentData.get(ConsentAuthorizeConstants.AUTHORIZED_DATA);
+        assertEquals(authorizedData.length(), 1);
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.ACCOUNTS));
+        assertFalse(authEntry.getJSONArray(ConsentAuthorizeConstants.ACCOUNTS).isEmpty());
+    }
+
+    @Test
+    public void testUpdateConsentData_withoutPermissionsWithConsumerAccounts() {
+        // isReauthorization = "true"
+        doReturn("true").when(httpServletRequestMock)
+                .getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
+
+        // Base64-encoded JSON for encodedAccountsPermissionsData
+        JSONObject mockData = new JSONObject();
+        mockData.put(ConsentAuthorizeConstants.CONSUMER_ACCOUNTS, new JSONArray()
+                .put(new JSONObject().put("id", "acc1")).put(new JSONObject().put("id", "acc2")));
+
+        String encodedMockData = Base64.getUrlEncoder().encodeToString(mockData.toString()
+                .getBytes(StandardCharsets.UTF_8));
+        doReturn(encodedMockData)
+                .when(httpServletRequestMock).getParameter(ConsentAuthorizeConstants.ENCODED_ACCOUNTS_PERMISSIONS_DATA);
+
+        // Request parameter map (simulates form submissions like accountsOpt-0=0,1)
+        Map<String, String[]> parameterMap = new HashMap<>();
+        parameterMap.put("accountsOpt", new String[]{"0", "1"});
+
+        doReturn(parameterMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))).when(httpServletRequestMock)
+                .getParameterMap();
+
+        // Call the method
+        Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
+
+        assertFalse(consentData.isEmpty());
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertEquals(consentData.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION), true);
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.AUTHORIZED_DATA));
+        JSONArray authorizedData = (JSONArray) consentData.get(ConsentAuthorizeConstants.AUTHORIZED_DATA);
+        assertEquals(authorizedData.length(), 1);
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertFalse(authEntry.has(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.ACCOUNTS));
+        assertFalse(authEntry.getJSONArray(ConsentAuthorizeConstants.ACCOUNTS).isEmpty());
+    }
+
+    @Test
+    public void testUpdateConsentData_withoutPermissionsWithConsentInitiatedAccounts() {
+        // isReauthorization = "true"
+        doReturn("true").when(httpServletRequestMock)
+                .getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
+
+        // Base64-encoded JSON for encodedAccountsPermissionsData
+        JSONObject mockData = new JSONObject();
+        mockData.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, new JSONArray()
+                .put(new JSONObject().put("id", "acc1"))
+                .put(new JSONObject().put("id", "acc2")));
+
+        String encodedMockData = Base64.getUrlEncoder().encodeToString(mockData.toString()
+                .getBytes(StandardCharsets.UTF_8));
+        doReturn(encodedMockData)
+                .when(httpServletRequestMock).getParameter(ConsentAuthorizeConstants.ENCODED_ACCOUNTS_PERMISSIONS_DATA);
+
+        // Request parameter map (simulates form submissions like accountsOpt-0=0,1)
+        Map<String, String[]> parameterMap = new HashMap<>();
+
+        doReturn(parameterMap).when(httpServletRequestMock).getParameterMap();
+
+        // Call the method
+        Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
+
+        assertFalse(consentData.isEmpty());
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertEquals(consentData.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION), true);
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.AUTHORIZED_DATA));
+        JSONArray authorizedData = (JSONArray) consentData.get(ConsentAuthorizeConstants.AUTHORIZED_DATA);
+        assertEquals(authorizedData.length(), 1);
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertFalse(authEntry.has(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(authEntry.has(ConsentAuthorizeConstants.ACCOUNTS));
+        assertFalse(authEntry.getJSONArray(ConsentAuthorizeConstants.ACCOUNTS).isEmpty());
+    }
+
+    @Test
+    public void testUpdateConsentData_withoutPermissionsWithoutAccounts() {
+        // isReauthorization = "true"
+        doReturn("true").when(httpServletRequestMock)
+                .getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
+
+        // Base64-encoded JSON for encodedAccountsPermissionsData
+        JSONObject mockData = new JSONObject();
+
+        String encodedMockData = Base64.getUrlEncoder().encodeToString(mockData.toString()
+                .getBytes(StandardCharsets.UTF_8));
+        doReturn(encodedMockData)
+                .when(httpServletRequestMock).getParameter(ConsentAuthorizeConstants.ENCODED_ACCOUNTS_PERMISSIONS_DATA);
+
+        // Request parameter map (simulates form submissions like accountsOpt-0=0,1)
+        Map<String, String[]> parameterMap = new HashMap<>();
+
+        doReturn(parameterMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))).when(httpServletRequestMock)
+                .getParameterMap();
+
+        // Call the method
+        Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
+
+        assertFalse(consentData.isEmpty());
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertEquals(consentData.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION), true);
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.AUTHORIZED_DATA));
+        JSONArray authorizedData = (JSONArray) consentData.get(ConsentAuthorizeConstants.AUTHORIZED_DATA);
+        assertEquals(authorizedData.length(), 0);
     }
 
     @Test
