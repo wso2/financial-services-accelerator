@@ -16,59 +16,15 @@
  * under the License.
  */
 
-
-// Update the selected account list according to the selected checkbox values.
-function updateAcc() {
-    var accIds = "";
-    var accNames = "";
-    //Get values from checked checkboxes
-    $("input:checkbox[name=chkAccounts]:checked").each(function(){
-        accIds =  accIds.concat(":", $(this).val());
-        accNames =  accNames.concat(":", $(this).attr("id"));
-    });
-    accIds = accIds.replace(/^\:/, '');
-    accNames = accNames.replace(/^\:/, '');
-    document.getElementById('account').value = accIds;
-    document.getElementById('accountName').value = accNames;
-}
-
-function deny() {
-    document.getElementById('consent').value = false;
+function denyConsent() {
+    document.getElementById('isApproved').value = false;
     document.getElementById("oauth2_authz_confirm").submit();
 }
 
 // Confirm sharing data
 function approvedConsent() {
-    document.getElementById('consent').value = true;
-    validateFrm();
-}
-
-// Submit data sharing from
-function validateFrm() {
-    if (document.getElementById('type').value === "accounts") {
-        document.getElementById("oauth2_authz_confirm").submit();
-    }
-
-    if (document.getElementById('type').value === "payments") {
-        if (document.getElementById('selectedAccount').value === "" ||
-            document.getElementById('selectedAccount').value === "default") {
-            $(".acc-err").show();
-            return false;
-        } else {
-            document.getElementById('paymentAccount').value =
-                document.getElementById('selectedAccount').value;
-            document.getElementById("oauth2_authz_confirm").submit();
-        }
-    }
-
-    if (document.getElementById('type').value === "fundsconfirmations") {
-        document.getElementById("oauth2_authz_confirm").submit();
-    }
-
-    if (document.getElementById('type').value === "default") {
-            document.getElementById("oauth2_authz_confirm").submit();
-    }
-
+    document.getElementById('isApproved').value = true;
+    document.getElementById("oauth2_authz_confirm").submit();
 }
 
 function approvedDefaultClaim() {

@@ -28,10 +28,18 @@
 <div class="form-group ui form row">
     <div class="ui body col-md-12">
         <input type="button" class="btn btn-primary" id="approve" name="approve"
+                onclick="javascript: approvedConsent(); return false;"
                 value="Confirm"/>
-        <input class="btn btn-primary" type="reset" value="Deny"/>
+        <input class="btn btn-primary" type="reset" value="Deny"
+                onclick="javascript: denyConsent(); return false;"/>
         <input type="button" class="btn btn-primary" id="back" name="back"
                 onclick="history.back();"
                 value="Go Back"/>
+        <input type="hidden" id="hasApprovedAlways" name="hasApprovedAlways" value="false"/>
+        <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
+        <input type="hidden" name="isApproved" id="isApproved" value="false"/>
+        <input type="hidden" name="type" id="type" value="${type}"/>
+        <input type="hidden" name="isReauthorization" id="type" value="${isReauthorization}"/>
+        <input type="hidden" name="encodedAccountsPermissionsData" value="${encodedAccountsPermissionsData}"/>
     </div>
 </div>

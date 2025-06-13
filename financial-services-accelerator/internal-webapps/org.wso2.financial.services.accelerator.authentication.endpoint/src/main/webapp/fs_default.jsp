@@ -25,6 +25,7 @@
 <html>
     <head>
         <jsp:include page="includes/head.jsp"/>
+        <script src="js/auth-functions.js"></script>
     </head>
 
     <body>
