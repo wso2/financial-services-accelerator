@@ -43,7 +43,7 @@ class PageObjects extends CommonPageObjects{
     public static final String CHK_PASSWORD_GRANT = "//input[@id='grant_password']"
 
     //Auth Flow page objects
-    public static final String CHK_SALARY_SAVER_ACC = "//input[@id='Salary Saver Account']"
+    public static final String CHK_SALARY_SAVER_ACC = "//input[@id='Salary Saver Account-0']"
     public static final String BTN_SIGN_IN = "//button[contains(text(),'Sign In')]";
     public static final String BTN_APPROVE = "//input[@id='approve']"
     public static final String BTN_CONFIRM = "//input[@value='Confirm']"
@@ -53,6 +53,6 @@ class PageObjects extends CommonPageObjects{
     public static final String LBL_INCORRECT_USERNAME = "//div[@id='error-msg']"
     public static final String AUTH_CONTINUE_XPATH = "//input[@value=\"Continue\"]"
     public static final String ACCOUNTS_PAGE_TXT = "//h5[contains(@class,'ui body')]"
-    static final String PAYMENTS_SELECT_XPATH = """//option[@value="30080012343456"]"""
+    static final String PAYMENTS_SELECT_XPATH = """//option[@value="0"]"""
     public static final String LBL_REDIRECT_ERROR = "//h3/following-sibling::p"
 }

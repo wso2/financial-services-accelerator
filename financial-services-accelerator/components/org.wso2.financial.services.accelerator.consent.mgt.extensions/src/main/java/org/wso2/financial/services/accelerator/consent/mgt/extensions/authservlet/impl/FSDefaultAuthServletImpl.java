@@ -18,18 +18,12 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -51,21 +45,14 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest request, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
+        // Format all entries of basic consent data to be JSONArrays
+        Utils.formatBasicConsentData(dataSet);
 
-        if (isPreInitiatedConsent) {
-            switch (dataSet.getString("type")) {
-                case ConsentExtensionConstants.ACCOUNTS:
-                    return Utils.populateAccountsData(request, dataSet);
-                case ConsentExtensionConstants.PAYMENTS:
-                    return Utils.populatePaymentsData(request, dataSet);
-                case ConsentExtensionConstants.FUNDS_CONFIRMATIONS:
-                    return Utils.populateCoFData(request, dataSet);
-                default:
-                    return Collections.emptyMap();
-            }
-        } else {
-            return Utils.populateResourceData(request, dataSet);
-        }
+        // Append encoded accounts permissions data to build persist payload in ConsentConfirmServlet
+        Utils.appendEncodedAccountsPermissionsData(dataSet);
+
+        // Extracts a map of attributes to push to the JSP
+        return Utils.returnAttributesFromDataSet(dataSet);
     }
 
     @Override
@@ -76,25 +63,10 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
     }
 
     @Override
-    @SuppressFBWarnings("SERVLET_PARAMETER")
-    // Suppressed content - request.getParameter("accounts[]")
-    // Suppression reason - False Positive : These endpoints are secured with access control
-    // as defined in the IS deployment.toml file
-    // Suppressed warning count - 1
     public Map<String, Object> updateConsentData(HttpServletRequest request) {
 
-        Map<String, Object> returnMaps = new HashMap<>();
-
-        String[] accounts = request.getParameter("accounts[]")
-                .replaceAll(FinancialServicesConstants.NEW_LINE, StringUtils.EMPTY).split(":");
-        returnMaps.put("accountIds", List.of(accounts));
-        returnMaps.put(ConsentExtensionConstants.PAYMENT_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.PAYMENT_ACCOUNT)
-                        .replaceAll(FinancialServicesConstants.NEW_LINE, StringUtils.EMPTY));
-        returnMaps.put(ConsentExtensionConstants.COF_ACCOUNT,
-                request.getParameter(ConsentExtensionConstants.COF_ACCOUNT)
-                        .replaceAll(FinancialServicesConstants.NEW_LINE, StringUtils.EMPTY));
-        return returnMaps;
+        // Builds response map to be forwarded to persistence
+        return Utils.buildResponseMap(request);
     }
 
     @Override

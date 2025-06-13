@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -146,59 +145,28 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         Map<String, ArrayList<String>> accountIDsMapWithPermissions = new HashMap<>();
         ArrayList<String> permissionsDefault = new ArrayList<>();
         permissionsDefault.add(ConsentExtensionConstants.PRIMARY);
+        boolean hasAuthorizedAccounts = false;
 
-        //Check whether payment account exists
-        //Payment Account is the debtor account sent in the payload
-        if (persistPayload.has(ConsentExtensionConstants.PAYMENT_ACCOUNT) &&
-                StringUtils.isNotBlank(persistPayload.getString(ConsentExtensionConstants.PAYMENT_ACCOUNT))) {
-            //Check whether account Id is in String format
-            if (!(persistPayload.get(ConsentExtensionConstants.PAYMENT_ACCOUNT) instanceof String)) {
-                log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-            }
+        if (persistPayload.has(ConsentAuthorizeConstants.AUTHORIZED_DATA)) {
+            JSONArray authorizedData = persistPayload.getJSONArray(ConsentAuthorizeConstants.AUTHORIZED_DATA);
 
-            String paymentAccount = persistPayload.getString(ConsentExtensionConstants.PAYMENT_ACCOUNT);
-            accountIDsMapWithPermissions.put(paymentAccount, permissionsDefault);
-        } else if (persistPayload.has(ConsentExtensionConstants.COF_ACCOUNT) &&
-                StringUtils.isNotBlank(persistPayload.getString(ConsentExtensionConstants.COF_ACCOUNT))) {
-            //Check whether account Id is in String format
-            if (!(persistPayload.get(ConsentExtensionConstants.COF_ACCOUNT) instanceof String)) {
-                log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-            }
-
-            String paymentAccount = persistPayload.getString(ConsentExtensionConstants.COF_ACCOUNT);
-            accountIDsMapWithPermissions.put(paymentAccount, permissionsDefault);
-        } else {
-            //Check whether account Ids are in array format
-            if (!(persistPayload.get(ConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
-                log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-            }
-
-            //Check whether account Ids are strings
-            JSONArray accountIds = persistPayload.getJSONArray(ConsentExtensionConstants.ACCOUNT_IDS);
-            for (Object account : accountIds) {
-                if (!(account instanceof String)) {
-                    log.error(ConsentAuthorizeConstants.ACCOUNT_ID_FORMAT_ERROR);
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            ConsentAuthorizeConstants.ACCOUNT_ID_FORMAT_ERROR);
+            for (Object authorizedObj : authorizedData) {
+                for (Object account : ((JSONObject) authorizedObj).getJSONArray(ConsentAuthorizeConstants.ACCOUNTS)) {
+                    hasAuthorizedAccounts = true;
+                    accountIDsMapWithPermissions.put(
+                            ((JSONObject) account).getString(ConsentAuthorizeConstants.ACCOUNT_ID), permissionsDefault);
                 }
-                if (((String) account).isEmpty()) {
-                    if (isApproved) {
-                        log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                                ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                    } else {
-                        account = "n/a";
-                    }
-                }
-                accountIDsMapWithPermissions.put((String) account, permissionsDefault);
             }
         }
+
+        if (!hasAuthorizedAccounts && isApproved) {
+            log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
+        } else {
+            accountIDsMapWithPermissions.put("n/a", permissionsDefault);
+        }
+
         return accountIDsMapWithPermissions;
     }
 }

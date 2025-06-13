@@ -41,7 +41,7 @@ public class PeriodicalConsentJobActivator {
     private static Log log = LogFactory.getLog(PeriodicalConsentJobActivator.class);
 
     /**
-     * activate the scheduler task
+     * activate the scheduler task.
      */
     @Generated(message = "Ignoring since method contains no unit testable logics")
     public void activate() {

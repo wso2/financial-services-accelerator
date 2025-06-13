@@ -29,6 +29,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -61,7 +62,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
         JSONObject requestParameters = ConsentAuthorizeUtil.getRequestObjectJson(requestObject);
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
-        JSONArray consentDataJSON;
+        JSONObject consentDataJSON;
         ConsentResource consentResource;
 
         try {
@@ -113,8 +114,15 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
             /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
              calling accounts service */
-            JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
-            jsonObject.put(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
+            // Append only when consent type is accounts or no initiated account for payment consents
+            if (!isPreInitiatedConsent || ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
+                    (ConsentExtensionConstants.PAYMENTS.equals(consentResource.getConsentType()) &&
+                            !consentDataJSON.has(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT))) {
+                JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
+                JSONObject consumerDataJSON = new JSONObject();
+                consumerDataJSON.put(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
+                jsonObject.put(ConsentExtensionConstants.CONSUMER_DATA, consumerDataJSON);
+            }
 
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
