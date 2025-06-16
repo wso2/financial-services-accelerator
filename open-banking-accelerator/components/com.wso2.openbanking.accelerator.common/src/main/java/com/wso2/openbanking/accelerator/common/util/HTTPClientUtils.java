@@ -59,6 +59,42 @@ public class HTTPClientUtils {
     public static final String HTTPS_PROTOCOL = "https";
     private static final String[] SUPPORTED_HTTP_PROTOCOLS = {"TLSv1.2"};
     private static final Log log = LogFactory.getLog(DatabaseUtil.class);
+    private static volatile PoolingHttpClientConnectionManager connectionManager;
+    private static volatile CloseableHttpClient httpsClient;
+
+    private HTTPClientUtils() {
+        // Prevent instantiation
+    }
+
+    /**
+     * Initialize the connection manager for HTTPS protocol.
+     *
+     * @param maxTotal     Maximum total connections
+     * @param maxPerRoute  Maximum connections per route
+     * @throws OpenBankingException OpenBankingException exception
+     */
+    private static void initConnectionManagerForHttpsProtocol(int maxTotal, int maxPerRoute)
+            throws OpenBankingException {
+
+        if (connectionManager == null) {
+            synchronized (HTTPClientUtils.class) {
+                if (connectionManager == null) {
+                    SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+
+                    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+                            .<ConnectionSocketFactory>create()
+                            .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                            .register(HTTPS_PROTOCOL, sslsf)
+                            .build();
+
+                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+
+                    connectionManager.setMaxTotal(maxTotal);
+                    connectionManager.setDefaultMaxPerRoute(maxPerRoute);
+                }
+            }
+        }
+    }
 
     /**
      * Get closeable https client.
@@ -69,23 +105,19 @@ public class HTTPClientUtils {
     @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
     public static CloseableHttpClient getHttpsClient() throws OpenBankingException {
 
-        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
-
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                .register(HTTPS_PROTOCOL, sslsf)
-                .build();
-
-        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
-                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
-                new PoolingHttpClientConnectionManager();
-
-        // configuring default maximum connections
-        connectionManager.setMaxTotal(OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections());
-        connectionManager.setDefaultMaxPerRoute(OpenBankingConfigParser.getInstance()
-                .getConnectionPoolMaxConnectionsPerRoute());
-
-        return HttpClients.custom().setConnectionManager(connectionManager).build();
+        if (httpsClient == null) {
+            synchronized (HTTPClientUtils.class) {
+                if (httpsClient == null) {
+                    int maxTotal = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections();
+                    int maxPerRoute = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
+                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
+                    httpsClient = HttpClients.custom()
+                            .setConnectionManager(connectionManager)
+                            .build();
+                }
+            }
+        }
+        return httpsClient;
     }
 
     /**
@@ -97,24 +129,21 @@ public class HTTPClientUtils {
     @Generated(message = "Ignoring since method contains no logics")
     public static CloseableHttpClient getRealtimeEventNotificationHttpsClient() throws OpenBankingException {
 
-        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+        if (httpsClient == null) {
+            synchronized (HTTPClientUtils.class) {
+                if (httpsClient == null) {
+                    int maxTotal = OpenBankingConfigParser.getInstance().getRealtimeEventNotificationMaxRetries() + 1;
+                    int maxPerRoute = OpenBankingConfigParser.getInstance()
+                            .getRealtimeEventNotificationMaxRetries() + 1;
+                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
+                    httpsClient = HttpClients.custom()
+                            .setConnectionManager(connectionManager)
+                            .build();
+                }
+            }
+        }
+        return httpsClient;
 
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
-                .register(HTTPS_PROTOCOL, sslsf)
-                .build();
-
-        final PoolingHttpClientConnectionManager connectionManager = (socketFactoryRegistry != null) ?
-                new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
-                new PoolingHttpClientConnectionManager();
-
-        // configuring default maximum connections
-        connectionManager.setMaxTotal(OpenBankingConfigParser.getInstance()
-                .getRealtimeEventNotificationMaxRetries() + 1);
-        connectionManager.setDefaultMaxPerRoute(OpenBankingConfigParser.getInstance()
-                .getRealtimeEventNotificationMaxRetries() + 1);
-
-        return HttpClients.custom().setConnectionManager(connectionManager).build();
     }
 
     /**
