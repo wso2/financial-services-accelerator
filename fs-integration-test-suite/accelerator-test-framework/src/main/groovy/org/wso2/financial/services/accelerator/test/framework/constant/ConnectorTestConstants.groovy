@@ -80,6 +80,7 @@ class ConnectorTestConstants extends Constants{
     static final String ERROR_ERRORS_MSG = "error.message"
     static final String ERROR_ERRORS_DESCRIPTION = "error.description"
     static final String ERROR_CODE = "errorCode"
+    static final String CODE = "code"
     static final String MESSAGE = "message"
     static final String DESCRIPTION = "description"
     static final String ERROR_MESSAGE = "errorMessage"
