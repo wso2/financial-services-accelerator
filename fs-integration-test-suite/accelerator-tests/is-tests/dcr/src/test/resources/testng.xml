@@ -23,8 +23,8 @@
             <class name="org.wso2.financial.services.accelerator.is.test.dcr.DCREndToEndFlow"/>
             <class name="org.wso2.financial.services.accelerator.is.test.dcr.ClientRegistrationTests"/>
             <class name="org.wso2.financial.services.accelerator.is.test.dcr.RegistrationDetailsRetrievalTests"/>
-            <class name="org.wso2.financial.services.accelerator.is.test.dcr.UpdateRegistrationTests"/>
             <class name="org.wso2.financial.services.accelerator.is.test.dcr.DeleteRegistrationTests"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.dcr.UpdateRegistrationTests"/>
         </classes>
     </test>
 </suite>

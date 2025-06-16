@@ -414,11 +414,10 @@ class FSConnectorTest extends CommonTest{
      * Account Consent Initiation Step with without ReadAccountsDetail permission .
      * @permissionsList
      */
-    void  doDefaultInitiation(String payload) {
+    void  doDefaultInitiation(String payload, String clientId = configuration.getAppInfoClientID()) {
 
         //initiation without ReadAccountsDetail
-        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(clientId)
                 .body(payload)
                 .baseUri(configuration.getISServerUrl())
                 .post(consentPath)
@@ -517,7 +516,6 @@ class FSConnectorTest extends CommonTest{
 
         consentValidateResponse = consentRequestBuilder.buildKeyManagerRequestForJWT(configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
                 .config(RestAssured.config()
                         .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(
                                 TestUtil.getSslSocketFactory()))
@@ -1042,11 +1040,10 @@ class FSConnectorTest extends CommonTest{
      * Account Consent Initiation Step with without ReadAccountsDetail permission .
      * @permissionsList
      */
-    Response doConsentInitiation(String payload) {
+    Response doConsentInitiation(String payload, String clientId=configuration.getAppInfoClientID()) {
 
         //initiation without ReadAccountsDetail
-        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(clientId)
                 .body(payload)
                 .baseUri(configuration.getISServerUrl())
                 .post(consentPath)
