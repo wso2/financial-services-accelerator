@@ -18,11 +18,8 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener;
 
-import com.google.gson.Gson;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.api.resource.mgt.APIResourceMgtException;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
@@ -33,20 +30,19 @@ import org.wso2.carbon.identity.application.common.model.LocalAndOutboundAuthent
 import org.wso2.carbon.identity.application.common.model.Scope;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
-import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.application.mgt.listener.AbstractApplicationMgtListener;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.util.ApplicationMgtListenerUtil;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.util.DCRUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,7 +52,6 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
 
     private static final Log log = LogFactory.getLog(FSApplicationManagementListener.class);
     private final IdentityExtensionsDataHolder identityDataHolder = IdentityExtensionsDataHolder.getInstance();
-    private static final Gson gson = new Gson();
 
     @Override
     public int getDefaultOrderId() {
@@ -127,7 +122,14 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
                         .addAuthorizedAPI(serviceProvider.getApplicationResourceId(), authorizedAPI, tenantDomain);
             }
 
-            identityDataHolder.getAbstractApplicationUpdater().doPostCreateApplication(serviceProvider,
+            Optional<ServiceProviderProperty> regulatoryProperty = Arrays.stream(spProperties)
+                    .filter(spProperty ->
+                            FinancialServicesConstants.REGULATORY.equals(spProperty.getName()))
+                    .findFirst();
+
+            boolean isRegulatory = ApplicationMgtListenerUtil.getRegulatoryProperty(Arrays.asList(spProperties));
+
+            identityDataHolder.getAbstractApplicationUpdater().doPostCreateApplication(isRegulatory, serviceProvider,
                     serviceProvider.getLocalAndOutBoundAuthenticationConfig(), tenantDomain, userName);
 
         } catch (APIResourceMgtException e) {
@@ -147,62 +149,23 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
             throws IdentityApplicationManagementException {
 
         try {
+
+            List<ServiceProviderProperty> spProperties = new ArrayList<>(Arrays.asList
+                    (serviceProvider.getSpProperties()));
+
+            boolean isRegulatory = ApplicationMgtListenerUtil.getRegulatoryProperty(spProperties);
+
+            serviceProvider.setSpProperties(ApplicationMgtListenerUtil.getUpdatedSpProperties(spProperties)
+                    .toArray(new ServiceProviderProperty[0]));
+
             OAuthConsumerAppDTO oAuthConsumerAppDTO = DCRUtils
                     .getOAuthConsumerAppDTO(serviceProvider.getApplicationName());
             LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig = serviceProvider
                     .getLocalAndOutBoundAuthenticationConfig();
 
             identityDataHolder.getAbstractApplicationUpdater()
-                    .doPreUpdateApplication(oAuthConsumerAppDTO, serviceProvider,
+                    .doPreUpdateApplication(isRegulatory, oAuthConsumerAppDTO, serviceProvider,
                             localAndOutboundAuthenticationConfig, tenantDomain, userName);
-
-            boolean updateAuthenticator = false;
-
-            if (localAndOutboundAuthenticationConfig == null) {
-                localAndOutboundAuthenticationConfig = new LocalAndOutboundAuthenticationConfig();
-            }
-
-            localAndOutboundAuthenticationConfig.setUseTenantDomainInLocalSubjectIdentifier(true);
-            localAndOutboundAuthenticationConfig.setUseUserstoreDomainInLocalSubjectIdentifier(true);
-
-            ApplicationManagementService applicationManagementService = IdentityExtensionsDataHolder.getInstance()
-                    .getApplicationManagementService();
-            ServiceProvider existingSP = applicationManagementService
-                    .getServiceProvider(serviceProvider.getApplicationID());
-
-            // Authenticators are updated only when creating the app or when an authenticator change
-            // is made from the IS carbon console
-
-            //If authentication steps are not set then it is a create request
-            if (existingSP.getLocalAndOutBoundAuthenticationConfig() == null ||
-                    existingSP.getLocalAndOutBoundAuthenticationConfig().getAuthenticationSteps() == null ||
-                    existingSP.getLocalAndOutBoundAuthenticationConfig().getAuthenticationSteps().length == 0) {
-                updateAuthenticator = true;
-            }
-            // Checking whether any change have been made in the Local & Outbound Configs of the SP
-            if (!gson.toJson(localAndOutboundAuthenticationConfig).equals(gson.toJson(existingSP
-                    .getLocalAndOutBoundAuthenticationConfig()))) {
-                updateAuthenticator = true;
-            }
-
-            if (updateAuthenticator) {
-                localAndOutboundAuthenticationConfig.setAuthenticationType("flow");
-                identityDataHolder.getAbstractApplicationUpdater().setAuthenticators(tenantDomain,
-                        serviceProvider, localAndOutboundAuthenticationConfig);
-                identityDataHolder.getAbstractApplicationUpdater().setConditionalAuthScript(serviceProvider,
-                        localAndOutboundAuthenticationConfig);
-            }
-            //update service provider Properties
-            identityDataHolder.getAbstractApplicationUpdater().setServiceProviderProperties(serviceProvider,
-                    serviceProvider.getSpProperties());
-            serviceProvider.setLocalAndOutBoundAuthenticationConfig(localAndOutboundAuthenticationConfig);
-            IdentityExtensionsDataHolder identityExtensionsDataHolder = IdentityExtensionsDataHolder.getInstance();
-            Map<String, Object> spMetaData = IdentityCommonUtils.getSpMetaData(serviceProvider);
-            //update oauth application
-            identityDataHolder.getAbstractApplicationUpdater().setOauthAppProperties(oAuthConsumerAppDTO, spMetaData);
-            if (StringUtils.isNotBlank(CarbonContext.getThreadLocalCarbonContext().getUsername())) {
-                identityExtensionsDataHolder.getOauthAdminService().updateConsumerApplication(oAuthConsumerAppDTO);
-            }
 
         } catch (FinancialServicesException e) {
             log.error("Error occurred while updating application.", e);

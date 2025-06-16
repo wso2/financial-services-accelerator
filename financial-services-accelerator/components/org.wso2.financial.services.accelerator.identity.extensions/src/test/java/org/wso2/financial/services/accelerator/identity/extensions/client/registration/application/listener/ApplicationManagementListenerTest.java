@@ -137,7 +137,6 @@ public class ApplicationManagementListenerTest {
                 .thenReturn(identityExtensionsDataHolder);
 
         dcrUtilsMockedStatic = Mockito.mockStatic(DCRUtils.class);
-        dcrUtilsMockedStatic.when(() -> DCRUtils.getFapiCompliantPropertyFromSP(any())).thenReturn(true);
         dcrUtilsMockedStatic.when(() -> DCRUtils.getOAuthConsumerAppDTO(anyString()))
                 .thenReturn(new OAuthConsumerAppDTO());
 
@@ -227,7 +226,7 @@ public class ApplicationManagementListenerTest {
 
         Mockito.when(applicationManagementService.getAllIdentityProviders(anyString())).
                 thenReturn(federatedIdPs);
-        applicationUpdaterImpl.setAuthenticators("carbon@super", serviceProvider,
+        applicationUpdaterImpl.setAuthenticators(true, "carbon@super", serviceProvider,
                 localAndOutboundAuthenticationConfig);
         Assert.assertNotNull(localAndOutboundAuthenticationConfig.getAuthenticationSteps());
 
@@ -251,7 +250,7 @@ public class ApplicationManagementListenerTest {
 
         Mockito.when(applicationManagementService.getAllIdentityProviders(anyString())).
                 thenReturn(federatedIdPs);
-        applicationUpdaterImpl.setAuthenticators("carbon@super", serviceProvider,
+        applicationUpdaterImpl.setAuthenticators(true, "carbon@super", serviceProvider,
                 localAndOutboundAuthenticationConfig);
         Assert.assertNotNull(localAndOutboundAuthenticationConfig.getAuthenticationSteps());
 
@@ -263,7 +262,7 @@ public class ApplicationManagementListenerTest {
         LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig =
                 new LocalAndOutboundAuthenticationConfig();
 
-        applicationUpdaterImpl.setConditionalAuthScript(serviceProvider,
+        applicationUpdaterImpl.setConditionalAuthScript(true, serviceProvider,
                 localAndOutboundAuthenticationConfig);
 
         Assert.assertNotNull(localAndOutboundAuthenticationConfig.getAuthenticationScriptConfig());
@@ -283,7 +282,7 @@ public class ApplicationManagementListenerTest {
         serviceProvider.setRequestPathAuthenticatorConfigs(new RequestPathAuthenticatorConfig[0]);
         Mockito.when(applicationManagementService.getServiceProvider(serviceProvider.getApplicationID()))
                 .thenReturn(serviceProvider);
-        applicationUpdaterImpl.doPreUpdateApplication(oAuthConsumerAppDTO, serviceProvider,
+        applicationUpdaterImpl.doPreUpdateApplication(true, oAuthConsumerAppDTO, serviceProvider,
                 localAndOutboundAuthenticationConfig, "carbon@super", "admin");
     }
 
@@ -302,7 +301,7 @@ public class ApplicationManagementListenerTest {
         serviceProviderProperty.setDisplayName("AppCreateRequest");
         serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
         serviceProvider.setRequestPathAuthenticatorConfigs(new RequestPathAuthenticatorConfig[0]);
-        applicationUpdaterImpl.doPreUpdateApplication(oAuthConsumerAppDTO, serviceProvider,
+        applicationUpdaterImpl.doPreUpdateApplication(true, oAuthConsumerAppDTO, serviceProvider,
                 localAndOutboundAuthenticationConfig, "carbon@super", "admin");
     }
 
