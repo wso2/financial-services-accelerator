@@ -53,8 +53,9 @@ public class IdentityServerUtils {
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL;
             URIBuilder builder = new URIBuilder(url);
+            builder.addParameter("filter", "clientId eq " + clientId);
             URI uri = builder.build();
-            HttpGet httpGet = new HttpGet(uri.toString() + "?filter=clientId+eq+".concat(clientId));
+            HttpGet httpGet = new HttpGet(uri);
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
             char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
@@ -83,7 +84,8 @@ public class IdentityServerUtils {
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL + appId;
             URIBuilder builder = new URIBuilder(url);
-            HttpGet httpGet = new HttpGet(builder.build());
+            URI uri = builder.build();
+            HttpGet httpGet = new HttpGet(uri);
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
             char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
@@ -131,7 +133,13 @@ public class IdentityServerUtils {
         }
     }
 
-    private static JSONObject constructAppUpdatePayload(String certificateContent) throws FinancialServicesException {
+    /**
+     * Method to construct the payload for updating the SP application with the certificate.
+     *
+     * @param certificateContent  Content of the certificate in PEM format
+     * @return  JSONObject containing the payload for updating the SP application
+     */
+    private static JSONObject constructAppUpdatePayload(String certificateContent) {
         JSONObject appUpdatePayload = new JSONObject();
         JSONObject advancedConfigurations = new JSONObject();
         JSONObject certificate = new JSONObject();

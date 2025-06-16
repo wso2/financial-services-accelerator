@@ -78,4 +78,9 @@ public class FinancialServicesConfigurationServiceImpl implements FinancialServi
 
         return configParser.getDCRResponseParameters();
     }
+
+    public Map<String, Map<String, String>> getKeyManagerConfigs() {
+
+        return configParser.getKeyManagerAdditionalProperties();
+    }
 }
