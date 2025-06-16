@@ -24,6 +24,8 @@
 
         <!-- Sample Values: 1.0.0 -->
         <SolutionVersion>Common.SolutionVersion</SolutionVersion>
+        <!-- Sample Values: 7.1.0 -->
+        <IS_Version>Common.IS_Version</IS_Version>
         <!-- Access token expire time in seconds -->
         <AccessTokenExpireTime>Common.AccessTokenExpireTime</AccessTokenExpireTime>
         <TenantDomain>Common.TenantDomain</TenantDomain>
