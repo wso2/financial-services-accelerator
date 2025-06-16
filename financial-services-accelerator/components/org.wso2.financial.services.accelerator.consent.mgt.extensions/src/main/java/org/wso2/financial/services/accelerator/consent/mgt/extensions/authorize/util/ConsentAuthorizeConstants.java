@@ -55,4 +55,5 @@ public class ConsentAuthorizeConstants {
     public static final String IS_APPROVED = "isApproved";
     public static final String CONSENT_TYPE = "consentType";
     public static final String AUTHORIZED_DATA = "authorizedData";
+    public static final String METADATA = "metadata";
 }

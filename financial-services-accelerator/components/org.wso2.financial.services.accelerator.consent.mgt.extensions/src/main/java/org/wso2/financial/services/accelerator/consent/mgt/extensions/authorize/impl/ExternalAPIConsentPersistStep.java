@@ -40,6 +40,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -127,6 +128,25 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     consentData.getMetaDataMap().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
                 }
             }
+
+            // Append metadata to userGrantedData
+            if (consentPersistData.getConsentData() != null
+                    && consentPersistData.getConsentData().getMetaDataMap() != null
+                    && !consentPersistData.getConsentData().getMetaDataMap().isEmpty()) {
+                JSONObject metadataJSON;
+                JSONObject consentPersistPayload = consentPersistData.getPayload();
+                if (consentPersistPayload.has(ConsentAuthorizeConstants.METADATA)) {
+                    metadataJSON = consentPersistPayload.getJSONObject(ConsentAuthorizeConstants.METADATA);
+                } else {
+                    metadataJSON = new JSONObject();
+                }
+
+                JSONObject consentMetadataJSON = new JSONObject(consentPersistData.getConsentData().getMetaDataMap());
+                consentMetadataJSON.keySet().forEach(k -> metadataJSON.put(k, consentMetadataJSON.get(k)));
+
+                consentPersistPayload.put(ConsentAuthorizeConstants.METADATA, metadataJSON);
+            }
+
             // Call external service
             ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO userGrantedData = new
                     ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO(consentPersistData.getPayload(),
