@@ -74,8 +74,9 @@ sed -i -e "s|ISSetup.ISAdminUserName|is_admin@wso2.com|g" ${ACCELERATION_INTEGRA
 sed -i -e "s|ISSetup.ISAdminPassword|wso2123|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 
 #----------------- Common -----------------#
-sed -i -e "s|Common.SolutionVersion|1.0.0|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
-sed -i -e "s|Common.AccessTokenExpireTime|200|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|Common.SolutionVersion|4.0.0|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|Common.IS_Version|7.0.0|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|Common.AccessTokenExpireTime|3600|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 sed -i -e "s|Common.TenantDomain|carbon.super|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 sed -i -e "s|Common.SigningAlgorithm|PS256|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 sed -i -e "s|Common.TestArtifactLocation|${TEST_ARTIFACTS}|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
