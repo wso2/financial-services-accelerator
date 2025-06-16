@@ -149,7 +149,7 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
 
         final String sql = sqlStatements.getEventSubscriptionsByClientIdQuery();
         try (PreparedStatement getEventSubscriptionsByClientIdStatement =
-                     connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+                     connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             getEventSubscriptionsByClientIdStatement.setString(1, clientId);
             try (ResultSet resultSet = getEventSubscriptionsByClientIdStatement.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {
@@ -192,7 +192,7 @@ public class EventSubscriptionDAOImpl implements EventSubscriptionDAO {
 
         final String sql = sqlStatements.getEventSubscriptionsByEventTypeQuery();
         try (PreparedStatement getEventSubscriptionsByClientIdAndEventTypeStatement =
-                     connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+                     connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             getEventSubscriptionsByClientIdAndEventTypeStatement.setString(1, eventType);
             try (ResultSet resultSet = getEventSubscriptionsByClientIdAndEventTypeStatement.executeQuery()) {
                 if (resultSet.isBeforeFirst()) {

@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -76,11 +77,24 @@ public class FSConsentServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest originalRequest, HttpServletResponse response)
             throws IOException, ServletException {
+
         HttpServletRequest request = originalRequest;
-        fsAuthServletTK = AuthenticationUtils.getAuthExtension();
 
         // get consent data
         String sessionDataKey = request.getParameter(Constants.SESSION_DATA_KEY_CONSENT);
+
+        // validating session data key format
+        try {
+            UUID.fromString(sessionDataKey);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid session data key", e);
+            request.getSession().invalidate();
+            response.sendRedirect("retry.do?status=Error&statusMsg=Invalid session data key");
+            return;
+        }
+
+        fsAuthServletTK = AuthenticationUtils.getAuthExtension();
+
         HttpResponse consentDataResponse = getConsentDataWithKey(sessionDataKey, getServletContext());
         JSONObject dataSet = new JSONObject();
         log.debug("HTTP response for consent retrieval" + consentDataResponse.toString());

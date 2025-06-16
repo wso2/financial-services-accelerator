@@ -57,7 +57,7 @@ public class EventSubscriptionSqlStatements {
 
     public String updateEventSubscriptionQuery() {
         return "UPDATE FS_NOTIFICATION_SUBSCRIPTION SET CALLBACK_URL = ?, TIMESTAMP = ?, REQUEST = ?" +
-                "WHERE SUBSCRIPTION_ID = ?";
+                " WHERE SUBSCRIPTION_ID = ?";
     }
 
     public String updateEventSubscriptionStatusQuery() {

@@ -46,7 +46,7 @@ export const specConfigurations =
     };
 export const account_lang = [
     {
-        id: "authorised",
+        id: "Authorised",
         label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: true,
@@ -127,7 +127,7 @@ export const account_lang = [
         }
     },
     {
-        id: "expired,revoked",
+        id: "Expired,Revoked",
         label: "Inactive",
         labelBadgeVariant: "secondary",
         isRevocableConsent: true,
@@ -210,7 +210,7 @@ export const account_lang = [
 ];
 export const cof_lang = [
     {
-        id: "authorised",
+        id: "Authorised",
         label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: true,
@@ -300,7 +300,7 @@ export const cof_lang = [
         }
     },
     {
-        id: "expired,revoked",
+        id: "Expired,Revoked",
         label: "Inactive",
         labelBadgeVariant: "secondary",
         description:
@@ -391,7 +391,7 @@ export const cof_lang = [
 ];
 export const payments_lang = [
     {
-        id: "authorised",
+        id: "Authorised",
         label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: false,
@@ -479,7 +479,7 @@ export const payments_lang = [
         }
     },
     {
-        id: "consumed,expired,revoked",
+        id: "Consumed,Expired,Revoked",
         label: "Inactive",
         labelBadgeVariant: "secondary",
         isRevocableConsent: false,
