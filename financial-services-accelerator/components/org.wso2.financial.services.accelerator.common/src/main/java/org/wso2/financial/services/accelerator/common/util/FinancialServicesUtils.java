@@ -191,10 +191,10 @@ public class FinancialServicesUtils {
      * @param password Password of Auth header
      * @return basic auth header
      */
-    public static String getBasicAuthHeader(String username, String password) {
+    public static String getBasicAuthHeader(String username, char[] password) {
 
-        byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON + password)
-                .getBytes(StandardCharsets.UTF_8));
+        byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON +
+                String.valueOf(password)).getBytes(StandardCharsets.UTF_8));
         return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
     }
 

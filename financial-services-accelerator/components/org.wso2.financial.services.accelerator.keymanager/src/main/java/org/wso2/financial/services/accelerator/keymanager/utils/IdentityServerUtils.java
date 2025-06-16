@@ -53,11 +53,12 @@ public class IdentityServerUtils {
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL;
             URIBuilder builder = new URIBuilder(url);
+            builder.addParameter("filter", "clientId eq " + clientId);
             URI uri = builder.build();
-            HttpGet httpGet = new HttpGet(uri.toString() + "?filter=clientId+eq+".concat(clientId));
+            HttpGet httpGet = new HttpGet(uri);
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            String password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD);
+            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpGet.setHeader(FinancialServicesConstants.AUTH_HEADER,
                     FinancialServicesUtils.getBasicAuthHeader(userName, password));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet);
@@ -71,10 +72,8 @@ public class IdentityServerUtils {
                 return appArray.getJSONObject(0).getString("id");
             }
             return null;
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new FinancialServicesException("Error while getting app id from client id", e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -85,10 +84,11 @@ public class IdentityServerUtils {
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL + appId;
             URIBuilder builder = new URIBuilder(url);
-            HttpGet httpGet = new HttpGet(builder.build());
+            URI uri = builder.build();
+            HttpGet httpGet = new HttpGet(uri);
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            String password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD);
+            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpGet.setHeader(FinancialServicesConstants.AUTH_HEADER,
                     FinancialServicesUtils.getBasicAuthHeader(userName, password));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet);
@@ -97,10 +97,8 @@ public class IdentityServerUtils {
             }
             InputStream in = response.getEntity().getContent();
             return new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new FinancialServicesException("Error while getting sp application from client id", e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -123,21 +121,25 @@ public class IdentityServerUtils {
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            String password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD);
+            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpPatch.setHeader(FinancialServicesConstants.AUTH_HEADER,
                     FinancialServicesUtils.getBasicAuthHeader(userName, password));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPatch);
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new FinancialServicesException("Error while getting sp application from client id");
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new FinancialServicesException("Error while getting sp application from client id", e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private static JSONObject constructAppUpdatePayload(String certificateContent) throws FinancialServicesException {
+    /**
+     * Method to construct the payload for updating the SP application with the certificate.
+     *
+     * @param certificateContent  Content of the certificate in PEM format
+     * @return  JSONObject containing the payload for updating the SP application
+     */
+    private static JSONObject constructAppUpdatePayload(String certificateContent) {
         JSONObject appUpdatePayload = new JSONObject();
         JSONObject advancedConfigurations = new JSONObject();
         JSONObject certificate = new JSONObject();
@@ -171,7 +173,7 @@ public class IdentityServerUtils {
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
 
             String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            String password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD);
+            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpPut.setHeader(FinancialServicesConstants.AUTH_HEADER,
                     FinancialServicesUtils.getBasicAuthHeader(userName, password));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPut);

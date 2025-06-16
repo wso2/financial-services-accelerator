@@ -385,6 +385,10 @@ public final class FinancialServicesConfigParser {
         return dcrResponseParamList;
     }
 
+    /**
+     * Method to build key manager additional properties.
+     * These properties will be displayed on the Key Generation page of the DevPortal
+     */
     private void buildKeyManagerProperties() {
 
         OMElement keyManagerElement = rootElement.getFirstChildWithName(
@@ -420,7 +424,7 @@ public final class FinancialServicesConfigParser {
                         if (StringUtils.isBlank(propertyName)) {
                             //Throwing exceptions since we cannot proceed without property names
                             throw new FinancialServicesRuntimeException("Additional property name is not defined " +
-                                    "correctly in open-banking.xml");
+                                    "correctly in financial-services.xml");
                         }
 
                         keyManagerAdditionalProperties.put(propertyName, property);
