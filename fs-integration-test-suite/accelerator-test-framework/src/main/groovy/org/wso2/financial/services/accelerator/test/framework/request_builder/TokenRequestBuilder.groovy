@@ -292,7 +292,7 @@ class TokenRequestBuilder {
         RestAssured.baseURI = configuration.getISServerUrl()
         Response response = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+//                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                 .body(payload)
                 .post(ConnectorTestConstants.INTROSPECTION_ENDPOINT)
@@ -383,6 +383,7 @@ class TokenRequestBuilder {
 
         Response response = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(payload)
                 .baseUri(configuration.getISServerUrl())
                 .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)

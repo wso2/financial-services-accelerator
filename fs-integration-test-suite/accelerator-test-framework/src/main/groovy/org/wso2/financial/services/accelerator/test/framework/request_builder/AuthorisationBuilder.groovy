@@ -459,4 +459,54 @@ class AuthorisationBuilder {
                     .customParameter("nonce", ConnectorTestConstants.NONCE_PARAMETER)
                     .build()
     }
+
+    /**
+     * Accelerator Authorisation Builder for Default Authorisation Flow
+     * @param clientId
+     * @param consentId
+     * @param scopes
+     * @param isRegulatory
+     */
+    AuthorizationRequest getAuthorizationRequestWithoutIntentId(String clientId = getClientID().getValue(),
+                                                                List<ConnectorTestConstants.ApiScope> scopes, boolean isRegulatory) {
+
+        JWTGenerator generator = new JWTGenerator()
+        String scopeString = getScopeString(scopes)
+
+        request = new AuthorizationRequest.Builder(new ResponseType(), new ClientID(clientId))
+                .responseType(ResponseType.parse(ConnectorTestConstants.AUTH_RESPONSE_TYPE))
+                .endpointURI(getEndpoint())
+                .redirectionURI(getRedirectURI())
+                .requestObject(generator.getSignedAuthRequestObjectWithoutConsentId(scopeString, new ClientID(clientId),
+                        new Issuer(clientId)))
+                .scope(new Scope(scopeString))
+                .state(getState())
+                .customParameter("nonce", ConnectorTestConstants.NONCE_PARAMETER)
+                .build()
+    }
+
+    /**
+     * Get Authorization Request With request Params
+     * @param clientId
+     * @param scope
+     * @param consentId
+     * @return
+     */
+    AuthorizationRequest getAuthorizationRequestWithRequestParams(String clientId = getClientID().getValue(), String scope,
+                                                                  String consentId) {
+
+        JWTGenerator generator = new JWTGenerator()
+
+        request = new AuthorizationRequest.Builder(new ResponseType(), new ClientID(clientId))
+                .responseType(ResponseType.parse(ConnectorTestConstants.AUTH_RESPONSE_TYPE))
+                .endpointURI(getEndpoint())
+                .redirectionURI(getRedirectURI())
+                .scope(new Scope(scope))
+                .requestObject(generator.getSignedAuthRequestObject(scope, new ClientID(clientId),
+                        new Issuer(clientId), consentId))
+                .state(getState())
+                .customParameter("nonce", ConnectorTestConstants.NONCE_PARAMETER)
+                .build()
+    }
+
 }

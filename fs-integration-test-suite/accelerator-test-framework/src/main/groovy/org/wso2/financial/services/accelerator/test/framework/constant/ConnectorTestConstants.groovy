@@ -101,6 +101,7 @@ class ConnectorTestConstants extends Constants{
     static final String ERROR_CODE_400 = "400"
     static final String ERROR_CODE_BAD_REQUEST = "Bad Request"
     static final String ERROR_CODE_FORBIDDEN = "Forbidden"
+    static final String ERROR_CODE_UNAUTHORIZED = "Unauthorized"
     static final String CONSENT_MGT_ERROR = "Consent Management Error"
     static final String CONSENT_ENFORCEMENT_ERROR = "Consent Enforcement Error"
     static final String MISSING_CREDENTIALS_ERROR = "Missing Credentials"
@@ -193,15 +194,15 @@ class ConnectorTestConstants extends Constants{
     static OffsetDateTime firstPaymentDate = OffsetDateTime.now().plusDays(5)
     static OffsetDateTime finalPaymentDate = OffsetDateTime.now().plusDays(50)
 
-    static final String AISP_PATH = "open-banking/v3.1/aisp/"
+    static final String AISP_PATH = "/open-banking/v3.1/aisp/"
     static final String CONSENT_API = "/api/fs/consent/manage"
     static final String CONSENT_PATH = CONSENT_API + "/account-access-consents"
     static final String ACCOUNT_CONSENT_PATH = CONSENT_API + "/account-access-consents"
     static final String ACCOUNT_SUBMISSION_PATH = "/accounts/"
     static final String PAYMENT_CONSENT_PATH = CONSENT_API + "/domestic-payment-consents"
-    static final String PAYMENT_SUBMISSION_PATH = "/payments"
+    static final String PAYMENT_SUBMISSION_PATH = "payments"
     static final String COF_CONSENT_PATH = CONSENT_API + "/funds-confirmation-consents"
-    static final String COF_SUBMISSION_PATH = "/funds-confirmations"
+    static final String COF_SUBMISSION_PATH = "funds-confirmations"
     static final String INCORRECT_CONSENT_PATH = AISP_PATH + "account-access-consent"
     static final String INCORRECT_ACCOUNT_VALIDATE_PATH = AISP_PATH + "account"
     static final String FILE_UPLOAD_POST = CONSENT_API + "/fileUpload"
@@ -305,4 +306,29 @@ class ConnectorTestConstants extends Constants{
     final static String URL_EVENT_SUBSCRIPTION_BY_EVENT_TYPE = "/type/" + RESOURCE_UPDATE_EVENT_TYPE
     final static String X_WSO2_RESOURCE_ID = "x-wso2-resource-id"
     final static String PATH_EVENT_SUBSCRIPTION_ID = "subscriptionId"
+    static final String X_JWS_SIGNATURE = "x-jws-signature"
+
+    static final String PISP_PATH = "open-banking/v3.1/pisp/"
+//    static final String accountID = "30080012343456"
+    static final String PAYMENTS_PATH = PISP_PATH + "domestic-payment-consents/" + accountID
+    static final String PAYMENTS_BULK_PATH = PISP_PATH + "domestic-payment-consents"
+    static final String ACCOUNT_SINGLE_PATH = ACCOUNTS_PATH + "/" + accountID
+    static final String BALANCES_SINGLE_PATH = ACCOUNTS_PATH + "/" + accountID + "/balances"
+    static final String TRANSACTIONS_SINGLE_PATH = ACCOUNTS_PATH + "/" + accountID + "/transactions"
+    static final String OBIE_ERROR_HEADER_INVALID="UK.OBIE.Header.Invalid"
+    static final String OBIE_ERROR_HEADER_MISSING="UK.OBIE.Header.Missing"
+    static final String X_JWS_SIGNATURE_MISSING = "x-jws-signature missing"
+    static final String RS256 = "RS256"
+    static final String JWS_TAN = "openbanking.org.uk"
+    static final String TYP_JOSE = "JOSE"
+    static final String OBIE_ERROR_SIGNATURE_MISSING_CLAIM = "UK.OBIE.Signature.MissingClaim"
+    static final String REVOKED_STATUS = "Revoked"
+    static final String CBPII_PATH = "/open-banking/v3.1/cbpii/"
+    static final String COF_CONSENT_API_PATH = CBPII_PATH + "funds-confirmation-consents"
+    static final String PAYMENT_CONSENT_API_PATH = PISP_PATH + "payment-consents"
+    public static final String DATA_PAYMENT_ID = "Data.PaymentId"
+    public static final String AISP_CONSENT_PATH = AISP_PATH + "account-access-consents"
+    public static final String INVALID_CREDENTIALS = "Invalid Credentials"
+    static final String CODE = "code"
+    public static final String INTERACTION_ID = UUID.randomUUID().toString()
 }

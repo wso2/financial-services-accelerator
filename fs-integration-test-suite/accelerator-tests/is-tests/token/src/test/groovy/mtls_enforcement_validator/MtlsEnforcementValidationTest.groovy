@@ -127,7 +127,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         List<String> scopes = [scope.scopeString]
         JWTGenerator generator = new JWTGenerator()
         generator.setScopes(scopes)
-        Response tokenResponse = FSRestAsRequestBuilder.buildRequest()
+        Response tokenResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
@@ -154,7 +154,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         List<String> scopes = [scope.scopeString]
         JWTGenerator generator = new JWTGenerator()
         generator.setScopes(scopes)
-        Response tokenResponse = FSRestAsRequestBuilder.buildRequest()
+        Response tokenResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
@@ -176,7 +176,8 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         List<String> scopes = [scope.scopeString]
         JWTGenerator generator = new JWTGenerator()
         generator.setScopes(scopes)
-        Response tokenResponse = FSRestAsRequestBuilder.buildRequest()
+
+        Response tokenResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header("mutual-auth-cert", TestUtil.getPublicKeyFromTransportKeyStore())
@@ -244,7 +245,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
 
     //TODO: Enable after fixing issue
     @Test (enabled = false, expectedExceptions = SSLHandshakeException.class)
-    void "Validate token request with valid TLS cert in the header and invalid cert in the context" () {
+    void "Validate token request with valid TLS cert in the header and expired cert in the context" () {
 
         String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
                 "expired-certs", "signing-keystore", "signing.jks")
@@ -257,8 +258,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         Response tokenResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
-                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
-                        KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
+                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -273,7 +273,7 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         List<String> scopes = [scope.scopeString]
         JWTGenerator generator = new JWTGenerator()
         generator.setScopes(scopes)
-        Response tokenResponse = FSRestAsRequestBuilder.buildRequest()
+        Response tokenResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
@@ -297,7 +297,6 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         Response tokenResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
-                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -316,7 +315,10 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         List<String> scopes = [scope.scopeString]
         JWTGenerator generator = new JWTGenerator()
         generator.setScopes(scopes)
-        Response tokenResponse = getAccessTokenRequestWithoutCertInContext()
+        Response tokenResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .baseUri(configuration.getISServerUrl())
+                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -372,10 +374,71 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         Response tokenResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
+                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+                .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
+    }
+
+    //TODO: Enable after fixing issue
+    @Test (enabled = false)
+    void "Validate token request with valid TLS cert in the header and revoked cert in the context" () {
+
+        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
+                "revoked-certs", "transport.jks")
+        String password = "wso2carbon"
+
+        List<String> scopes = [scope.scopeString]
+        JWTGenerator generator = new JWTGenerator()
+        generator.setScopes(scopes)
+        Response tokenResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .baseUri(configuration.getISServerUrl())
+                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+                .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
+
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+    }
+
+    @Test (enabled = false)
+    void "Validate token request with cert not bound to application in context when client_transport_cert_as_header disabled" () {
+
+        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
+                "DynamicClientRegistration", "uk", "tpp2", "transport-keystore", "transport.jks")
+        String password = "wso2carbon"
+
+        List<String> scopes = [scope.scopeString]
+        JWTGenerator generator = new JWTGenerator()
+        generator.setScopes(scopes)
+        Response tokenResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .baseUri(configuration.getISServerUrl())
+                .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
+
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+    }
+
+    @Test (enabled = false)
+    void "Validate token request with cert not bound to application in header when client_transport_cert_as_header enabled" () {
+
+        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
+                "DynamicClientRegistration", "uk", "tpp2", "transport-keystore", "transport.jks")
+        String password = "wso2carbon"
+        String alias = "transport"
+
+        List<String> scopes = [scope.scopeString]
+        JWTGenerator generator = new JWTGenerator()
+        generator.setScopes(scopes)
+        Response tokenResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .baseUri(configuration.getISServerUrl())
                 .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT,
                         KeyStore.getPublicKeyFromKeyStore(keystoreLocation, password, alias))
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
+
+        Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
     }
 
     @AfterClass

@@ -16,20 +16,34 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.gateway.test.accounts.Accounts_Initiation_Tests
+package org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Revocation_Tests
 
 import io.restassured.http.ContentType
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.financial.services.accelerator.gateway.test.accounts.util.AbstractAccountsFlow
 
 /**
  * Consent Revocation Request Validation Tests
  */
-class DeleteConsentRequestValidationTests extends AbstractAccountsFlow {
+class DeleteConsentRequestValidationTests extends FSAPIMConnectorTest {
+
+    @BeforeClass
+    void init() {
+        consentPath = ConnectorTestConstants.AISP_CONSENT_PATH
+        initiationPayload = AccountsRequestPayloads.initiationPayload
+        scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.ACCOUNTS_TYPE)
+
+        //Get application access token
+        applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                configuration.getAppInfoClientID(), scopeList)
+    }
 
     @Test
     void "Delete Consent With Empty Consent Id"() {
@@ -97,7 +111,7 @@ class DeleteConsentRequestValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(revokedConsentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "400")
         Assert.assertEquals(TestUtil.parseResponseBody(revokedConsentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.CONSENT_MGT_ERROR)
+                "consent_delete")
     }
 
     @Test
@@ -118,7 +132,7 @@ class DeleteConsentRequestValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(rejectedConsentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "400")
         Assert.assertEquals(TestUtil.parseResponseBody(rejectedConsentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.CONSENT_MGT_ERROR)
+                "consent_delete")
     }
 
     @Test

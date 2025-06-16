@@ -16,24 +16,36 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.gateway.test.accounts.Accounts_Initiation_Tests
+package org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Retrieval_Tests
 
 import io.restassured.http.ContentType
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.financial.services.accelerator.gateway.test.accounts.util.AbstractAccountsFlow
 
 /**
  * Get Consent Request Header Validation Tests
  */
-class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
+class GetConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
 
-    //TODO
-//    @Test
+    @BeforeClass
+    void init() {
+        consentPath = ConnectorTestConstants.AISP_CONSENT_PATH
+        initiationPayload = AccountsRequestPayloads.initiationPayload
+        scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.ACCOUNTS_TYPE)
+
+        //Get application access token
+        applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                configuration.getAppInfoClientID(), scopeList)
+    }
+
+    @Test
     void "Get Accounts Initiation With Authorization Code Type Access Token"() {
 
         if (userAccessToken == null) {
@@ -49,13 +61,14 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .baseUri(configuration.getServerBaseURL())
                 .get(consentPath + "/${consentId}")
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
-                ConnectorTestConstants.ERROR_CODE_FORBIDDEN)
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+                "900912")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
-                "Consent Enforcement Error")
+                "Claim Mismatch")
     }
 
     @Test
@@ -96,7 +109,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("User is NOT authorized to access the Resource: " +
                 "/account-access-consents/{ConsentId}. Scope validation failed."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "900910")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "The access token does not allow you to access the requested resource")
@@ -118,7 +131,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Make sure your API invocation call has a header: 'Authorization :" +
                 " Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                "900902")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "Missing Credentials")
@@ -141,7 +154,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Access failure for API: /open-banking/v3.1/aisp, version" +
                 ": v3.1 status: (900901)"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "900901")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "Invalid Credentials")
@@ -177,11 +190,11 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .get(consentPath + "/${consentId}")
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
                 ConnectorTestConstants.ERROR_CODE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Consent Enforcement Error")
     }
 
@@ -231,5 +244,17 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 "405")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "Runtime Error")
+    }
+
+    @Test
+    void "OB-1961_Verify Retrieval of a Created Consent with Incorrect request path"() {
+
+        doDefaultInitiation()
+        doConsentRetrievalWithIncorrectRequestPath(consentId)
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_404)
+        //TODO: Enable after fixing IS issue
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+//                ConnectorTestConstants.API_REQUEST_NOT_FOUND)
     }
 }

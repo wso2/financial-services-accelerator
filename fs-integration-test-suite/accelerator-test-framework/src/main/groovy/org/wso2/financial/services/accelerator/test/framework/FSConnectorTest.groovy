@@ -69,7 +69,7 @@ class FSConnectorTest extends CommonTest{
 
     public String redirectURL
     protected String consentId
-    String accessToken
+    String accessToken, refreshToken
     String code
     String denyResponse
     Response consentResponse
@@ -1048,4 +1048,5 @@ class FSConnectorTest extends CommonTest{
 
         return consentResponse
     }
+
 }

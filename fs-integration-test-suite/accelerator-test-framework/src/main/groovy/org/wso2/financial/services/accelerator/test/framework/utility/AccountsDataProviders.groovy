@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.test.framework.utility
 
 import org.testng.annotations.DataProvider
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 
 class AccountsDataProviders {
@@ -42,5 +43,30 @@ class AccountsDataProviders {
         validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_BASIC] as Object)
 
         return validPermissions
+    }
+
+    @DataProvider(name = "AccountsResourcesWithoutPermissions")
+    Object[] accountsResourcesWithoutPermissions() {
+
+        def accountsResources = new ArrayList<String[]>()
+        accountsResources.add([ConnectorTestConstants.ACCOUNT_SINGLE_PATH,
+                               AccountsRequestPayloads.initiationPayloadWithoutReadAccountsDetail] as String[])
+        accountsResources.add([ConnectorTestConstants.ACCOUNTS_PATH,
+                               AccountsRequestPayloads.initiationPayloadWithoutReadAccountsDetail] as String[])
+        accountsResources.add([ConnectorTestConstants.BALANCES_SINGLE_PATH,
+                               AccountsRequestPayloads.initiationPayloadWithoutReadAccountBalance] as String[])
+        accountsResources.add([ConnectorTestConstants.TRANSACTIONS_SINGLE_PATH,
+                               AccountsRequestPayloads.initiationPayloadWithoutReadAccountTransactions] as String[])
+
+        return accountsResources
+    }
+
+    @DataProvider(name = "AccountsResources")
+    Object[] accountsResources() {
+        def accountsResources = new ArrayList<>()
+        accountsResources.add(ConnectorTestConstants.BALANCES_SINGLE_PATH as Object)
+        accountsResources.add(ConnectorTestConstants.TRANSACTIONS_SINGLE_PATH as Object)
+
+        return accountsResources
     }
 }

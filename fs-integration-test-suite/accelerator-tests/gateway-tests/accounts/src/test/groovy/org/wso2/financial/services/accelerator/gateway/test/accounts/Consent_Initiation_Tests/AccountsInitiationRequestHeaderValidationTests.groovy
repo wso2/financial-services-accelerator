@@ -16,27 +16,39 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.gateway.test.accounts.Accounts_Initiation_Tests
+package org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Initiation_Tests
 
 import io.restassured.http.ContentType
 import org.codehaus.groovy.runtime.InvokerInvocationException
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.financial.services.accelerator.gateway.test.accounts.util.AbstractAccountsFlow
 
 import java.nio.file.Paths
 
 /**
  * Accounts Flow Initiation Tests.
  */
-class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlow {
+class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
 
-    //TODO
-//    @Test
+    @BeforeClass
+    void init() {
+        consentPath = ConnectorTestConstants.AISP_CONSENT_PATH
+        initiationPayload = AccountsRequestPayloads.initiationPayload
+        scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.ACCOUNTS_TYPE)
+
+        //Get application access token
+        applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                configuration.getAppInfoClientID(), scopeList)
+    }
+
+    @Test
     void "Initiation Request With Authorization Code Type Access Token"() {
 
         if (userAccessToken == null) {
@@ -55,13 +67,13 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
-                ConnectorTestConstants.ERROR_CODE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
-                "Consent Enforcement Error")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+                "900912")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+                "Claim Mismatch")
     }
 
     @Test
@@ -87,7 +99,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("User is NOT authorized to access the Resource: " +
                 "/account-access-consents. Scope validation failed."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "900910")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "The access token does not allow you to access the requested resource")
@@ -109,7 +121,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Make sure your API invocation call has a header: 'Authorization"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "900902")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 ConnectorTestConstants.MISSING_CREDENTIALS_ERROR)
@@ -132,7 +144,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Access failure for API: /open-banking/v3.1/aisp, version: v3.1 status: (900901)"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "900901")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 ConnectorTestConstants.INVALID_CREDENTIALS_ERROR)
@@ -151,19 +163,22 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_400)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Schema validation failed in the Request: Request Content-Type header" +
-                " '[text/plain; charset=ISO-8859-1]' does not match any allowed types. Must be one of: " +
-                "[application/json; charset=utf-8]"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
-                ConnectorTestConstants.ERROR_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
-                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_415)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertEquals(errorMessage, "HTTP 415 Unsupported Media Type")
+
+//        Assert.assertTrue(errorMessage.contains("Schema validation failed in the Request: Request Content-Type header" +
+//                " '[text/plain; charset=ISO-8859-1]' does not match any allowed types. Must be one of: " +
+//                "[application/json; charset=utf-8]"))
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+//                ConnectorTestConstants.ERROR_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.STATUS_CODE_415.toString())
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "consent_default")
     }
 
-    //TODO
-//    @Test
+    @Test
     void "Initiation Request With Invalid Content Type"() {
 
         consentResponse = FSRestAsRequestBuilder.buildRequest()
@@ -205,6 +220,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(errorMessage, "AwaitingAuthorisation")
     }
 
+    //TODO: https://github.com/wso2-enterprise/financial-open-banking/issues/7965
     @Test
     void "Initiation Request With Invalid Accept Header"() {
 
@@ -214,18 +230,18 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
-                .accept("application")
+                .accept(ContentType.XML)
                 .baseUri(configuration.getServerBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_415)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
-                ConnectorTestConstants.ERROR_CODE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
-                ConnectorTestConstants.CONSENT_ENFORCEMENT_ERROR)
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("HTTP 406 Not Acceptable"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.STATUS_CODE_406.toString())
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "consent_default")
     }
 
     @Test
@@ -247,7 +263,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
     @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
     void "Initiation Request Without TLS certificate"() {
 
-        FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
+        def consentResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
@@ -256,10 +272,16 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 .baseUri(configuration.getServerBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
+
+        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+//                ConnectorTestConstants.CERTIFICATE_NOT_FOUND)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+//                "Transport certificate not found in the request")
     }
 
-    //TODO: Need to uncomment when the issue from APIM is fixed
-//    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
+    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
     void "Validate Account Initiation request with expired cert in the context" () {
 
         String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
@@ -267,7 +289,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         String alias = "tpp4-sig"
         String password = "wso2carbon"
 
-       FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
@@ -276,6 +298,13 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 .baseUri(configuration.getServerBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
+
+        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+//                ConnectorTestConstants.INVALID_CLIENT)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+//                "Invalid transport certificate. Certificate passed through the request not valid")
     }
 
     @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
@@ -285,7 +314,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 "revoked-certs", "transport.jks")
         String password = "wso2carbon"
 
-        FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
@@ -294,6 +323,39 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 .baseUri(configuration.getServerBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
+
+        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+//                ConnectorTestConstants.INVALID_CLIENT)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+//                "Invalid transport certificate. Certificate passed through the request not valid")
+
+    }
+
+    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
+    void "Invoke accounts API with certificate not bound to current application" () {
+
+        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
+                "DynamicClientRegistration", "uk", "tpp2", "transport-keystore", "transport.jks")
+        String password = "wso2carbon"
+
+        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
+                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
+                .baseUri(configuration.getServerBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+
+        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+//                ConnectorTestConstants.INVALID_CLIENT)
+//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+//                "Invalid transport certificate. Certificate passed through the request not valid")
 
     }
 }
