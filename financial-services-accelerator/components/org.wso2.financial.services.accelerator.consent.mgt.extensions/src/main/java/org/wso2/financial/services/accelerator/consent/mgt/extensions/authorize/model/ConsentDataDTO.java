@@ -41,7 +41,7 @@ public class ConsentDataDTO {
     private Map<String, Object> basicConsentData;
 
     @Valid
-    private List<PermissionsDTO> permissions;
+    private List<PermissionDTO> permissions;
 
     @Valid
     private List<AccountDTO> initiatedAccountsForConsent;
@@ -65,12 +65,12 @@ public class ConsentDataDTO {
         this.basicConsentData = basicConsentData;
     }
 
-    public List<PermissionsDTO> getPermissions() {
+    public List<PermissionDTO> getPermissions() {
         return permissions;
     }
 
     public void setPermissions(
-            List<PermissionsDTO> permissions) {
+            List<PermissionDTO> permissions) {
         this.permissions = permissions;
     }
 

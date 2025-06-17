@@ -25,7 +25,7 @@ import javax.validation.constraints.NotEmpty;
 /**
  * Permissions object for external API consent retrieval.
  */
-public class PermissionsDTO {
+public class PermissionDTO {
     @NotEmpty
     private List<String> displayValues;
     private List<AccountDTO> initiatedAccounts;
