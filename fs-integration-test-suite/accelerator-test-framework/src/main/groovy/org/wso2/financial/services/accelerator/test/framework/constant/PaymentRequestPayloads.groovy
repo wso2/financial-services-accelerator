@@ -33,10 +33,10 @@ class PaymentRequestPayloads {
     public static String initiationPaymentPayload = """
 		{
             "Data": {
-                "ReadRefundAccount": "Yes",
                 "Initiation": {
                     "InstructionIdentification": "ACME412",
                     "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                    "LocalInstrument": "UK.OBIE.Paym",
                     "InstructedAmount": {
                         "Amount": "165.88",
                         "Currency": "GBP"
@@ -47,27 +47,18 @@ class PaymentRequestPayloads {
                         "Name": "ACME Inc",
                         "SecondaryIdentification": "0002"
                     },
-                    "RemittanceInformation": {
-                        "Reference": "FRESCO-101",
-                        "Unstructured": "Internal ops code 5120101"
+                    "DebtorAccount": {
+                        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+                        "Identification": "08080025612489",
+                        "Name": "Jane Smith",
+                        "SecondaryIdentification": "080801562314789"
+                    },
+                    "SupplementaryData": {
+                        "additionalProp1": {}
                     }
                 }
             },
             "Risk": {
-                "PaymentContextCode": "EcommerceGoods",
-                "MerchantCustomerIdentification": "053598653254",
-                "DeliveryAddress": {
-                    "AddressLine": [
-                        "Flat 7",
-                        "Acacia Lodge"
-                    ],
-                    "StreetName": "Acacia Avenue",
-                    "BuildingNumber": "27",
-                    "PostCode": "GU31 2ZZ",
-                    "TownName": "Sparsholt",
-                    "CountrySubDivision": "Wessex",
-                    "Country": "UK"
-                }
             }
         }
 	""".stripIndent()
@@ -76,28 +67,32 @@ class PaymentRequestPayloads {
         return """{
 			"Data": {
 				"ConsentId": "${consentID}",
-				"ReadRefundAccount": "Yes",
 				"Initiation": {
-					"InstructionIdentification": "ACME412",
-					"EndToEndIdentification": "FRESCO.21302.GFX.20",
-					"InstructedAmount": {
-						"Amount": "165.88",
-						"Currency": "GBP"
-					},
-					"CreditorAccount": {
-						"SchemeName": "OB.SortCodeAccountNumber",
-						"Identification": "08080021325698",
-						"Name": "ACME Inc",
-						"SecondaryIdentification": "0002"
-					},
-					"RemittanceInformation": {
-						"Reference": "FRESCO-101",
-						"Unstructured": "Internal ops code 5120101"
-					}
-				}
+                    "InstructionIdentification": "ACME412",
+                    "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                    "LocalInstrument": "UK.OBIE.Paym",
+                    "InstructedAmount": {
+                        "Amount": "165.88",
+                        "Currency": "GBP"
+                    },
+                    "CreditorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080021325698",
+                        "Name": "ACME Inc",
+                        "SecondaryIdentification": "0002"
+                    },
+                    "DebtorAccount": {
+                        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+                        "Identification": "08080025612489",
+                        "Name": "Jane Smith",
+                        "SecondaryIdentification": "080801562314789"
+                    },
+                    "SupplementaryData": {
+                        "additionalProp1": {}
+                    }
+                }
 			},
 			"Risk": {
-				"PaymentContextCode": "EcommerceMerchantInitiatedPayment"
 			}
 		}
 		""".stripIndent()

@@ -1552,4 +1552,19 @@ class FSAPIMConnectorTest extends CommonTest{
 
         return response
     }
+
+    /**
+     * Payment Consent Initiation Step.
+     */
+    void  doDefaultPaymentInitiation() {
+
+        //initiation
+        consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
+                .body(initiationPayload)
+                .baseUri(configuration.getServerBaseURL())
+                .post(consentPath)
+
+        consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
+    }
 }

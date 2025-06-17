@@ -75,6 +75,7 @@ sed -i -e "s|ISSetup.ISAdminPassword|wso2123|g" ${ACCELERATION_INTEGRATION_TESTS
 
 #----------------- Common -----------------#
 sed -i -e "s|Common.SolutionVersion|1.0.0|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
+sed -i -e "s|Common.IS_Version|7.0.0|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 sed -i -e "s|Common.AccessTokenExpireTime|200|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 sed -i -e "s|Common.TenantDomain|carbon.super|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
 sed -i -e "s|Common.SigningAlgorithm|PS256|g" ${ACCELERATION_INTEGRATION_TESTS_CONFIG}
