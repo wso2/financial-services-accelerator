@@ -40,7 +40,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @BeforeClass
     void init() {
         consentPath = ConnectorTestConstants.PAYMENT_CONSENT_API_PATH
-        initiationPayload = RequestPayloads.initiationPaymentPayload
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
 
         //Get application access token

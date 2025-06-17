@@ -26,6 +26,7 @@ import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTes
 import org.wso2.financial.services.accelerator.test.framework.automation.consent.AuthorizationFlowNavigationAutomationStep
 import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
@@ -41,7 +42,7 @@ class AuthorizationFlowValidationTest extends FSAPIMConnectorTest {
     @BeforeClass
     void init() {
         consentPath = ConnectorTestConstants.PAYMENT_CONSENT_API_PATH
-        initiationPayload = RequestPayloads.initiationPaymentPayload
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
 
         //Get application access token
