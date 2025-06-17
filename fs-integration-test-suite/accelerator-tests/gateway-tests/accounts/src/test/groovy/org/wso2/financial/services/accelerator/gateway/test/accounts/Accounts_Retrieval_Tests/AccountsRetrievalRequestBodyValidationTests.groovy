@@ -74,7 +74,7 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
 
         def resource = params[0]
         def payload = params[1]
-        Response consentResponse = doDefaultAccountInitiationWithUpdatedPayload(payload)
+        Response consentResponse = doDefaultInitiationWithUpdatedPayload(payload)
         consentId = TestUtil.parseResponseBody(consentResponse, "Data.ConsentId")
 
         doAccountConsentAuthorisation()
@@ -114,7 +114,7 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
                 }
             }
             """.stripIndent()
-        Response consentResponse = doDefaultAccountInitiationWithUpdatedPayload(updatedPayload)
+        Response consentResponse = doDefaultInitiationWithUpdatedPayload(updatedPayload)
         consentId = TestUtil.parseResponseBody(consentResponse, "Data.ConsentId")
 
         doAccountConsentAuthorisation()
@@ -179,7 +179,7 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
         accountsPath = ConnectorTestConstants.ACCOUNTS_PATH
 
         def payload = AccountsRequestPayloads.initiationPayloadWithoutReadAccountDetails
-        doDefaultAccountInitiationWithUpdatedPayload(payload)
+        doDefaultInitiationWithUpdatedPayload(payload)
         consentId = TestUtil.parseResponseBody(consentResponse, "Data.ConsentId")
 
         doAccountConsentAuthorisation()

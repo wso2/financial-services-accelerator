@@ -16,30 +16,30 @@
  * under the License.
  */
 
-package org.wso2.financial.services.accelerator.gateway.test.cof.EndToEndTest
+package org.wso2.financial.services.accelerator.gateway.test.payments.EndToEndTest
 
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
-import org.wso2.financial.services.accelerator.test.framework.constant.CofRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
- * End to End Funds Confirmation Flow Tests.
+ * End to End Payments Flow Tests.
  */
-class EndToEndCOFFlowTest extends FSAPIMConnectorTest {
+class EndToEndPaymentsFlowTest extends FSAPIMConnectorTest {
 
     List<ConnectorTestConstants.ApiScope> scopeList
 
     @BeforeClass
     void init() {
-        consentPath = ConnectorTestConstants.COF_CONSENT_API_PATH
-        initiationPayload = CofRequestPayloads.cofInitiationPayload
-        scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.COF_TYPE)
+        consentPath = ConnectorTestConstants.PAYMENT_CONSENT_API_PATH
+        initiationPayload = RequestPayloads.initiationPaymentPayload
+        scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
 
         //Get application access token
         applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
@@ -47,15 +47,15 @@ class EndToEndCOFFlowTest extends FSAPIMConnectorTest {
     }
 
     @Test
-    void "Verify Cof Initiation Request"() {
+    void "Verify Payments Initiation Request"() {
 
         doDefaultInitiation()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
     }
 
-    @Test (dependsOnMethods = "Verify Cof Initiation Request")
-    void "Verify Retrieving for a Created Cof Consent"() {
+    @Test (dependsOnMethods = "Verify Payments Initiation Request")
+    void "Verify Retrieving for a Created Payments Consent"() {
 
         doConsentRetrieval()
         consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID)
@@ -65,11 +65,11 @@ class EndToEndCOFFlowTest extends FSAPIMConnectorTest {
         Assert.assertEquals(consentStatus, "AwaitingAuthorisation")
     }
 
-    @Test (dependsOnMethods = "Verify Retrieving for a Created Cof Consent")
+    @Test (dependsOnMethods = "Verify Retrieving for a Created Payments Consent")
     void "Verify Authorize Consent in AwaitingAuthorisation Status"() {
 
         //Authorise Consent
-        doCofAuthorization(scopeList)
+        doPaymentConsentAuthorisation(scopeList)
 
         Assert.assertNotNull(code)
         Assert.assertNotNull(userAccessToken)
@@ -87,17 +87,22 @@ class EndToEndCOFFlowTest extends FSAPIMConnectorTest {
     }
 
     @Test (dependsOnMethods = "Verify Retrieving for a Created Consent After authorizing")
-    void "Funds Confirmation SCA accept: Submission"() {
+    void "Payments Submission"() {
 
-        doDefaultSubmission()
+        submissionPath = ConnectorTestConstants.PISP_PATH + ConnectorTestConstants.PAYMENT_SUBMISSION_PATH
+        doDefaultPaymentSubmission(PaymentRequestPayloads.getSubmissionPaymentPayload(consentId))
         Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+        paymentID = TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.DATA_PAYMENT_ID)
+
+        Assert.assertNotNull(paymentID)
     }
 
-    @Test (dependsOnMethods = "Funds Confirmation SCA accept: Submission")
-    void "Revoke a Created Consent"() {
+    @Test (dependsOnMethods = "Payments Submission")
+    void "Verify Retrieving Payments"() {
 
-        doConsentRevocation(consentId)
-
-        Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_204)
+        submissionPath = ConnectorTestConstants.PISP_PATH + ConnectorTestConstants.PAYMENT_SUBMISSION_PATH + "/" + paymentID
+        doDefaultPaymentIdRetrieval()
+        Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
+
 }

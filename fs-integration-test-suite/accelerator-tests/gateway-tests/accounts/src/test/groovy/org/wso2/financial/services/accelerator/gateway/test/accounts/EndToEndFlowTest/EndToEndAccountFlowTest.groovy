@@ -34,7 +34,7 @@ class EndToEndAccountFlowTest extends FSAPIMConnectorTest {
 
     @BeforeClass
     void init() {
-        consentPath = ConnectorTestConstants.AISP_PATH + "account-access-consents"
+        consentPath = ConnectorTestConstants.AISP_CONSENT_PATH
         initiationPayload = AccountsRequestPayloads.initiationPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.ACCOUNTS_TYPE)
 

@@ -163,19 +163,15 @@ class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_415)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-        Assert.assertEquals(errorMessage, "HTTP 415 Unsupported Media Type")
-
-//        Assert.assertTrue(errorMessage.contains("Schema validation failed in the Request: Request Content-Type header" +
-//                " '[text/plain; charset=ISO-8859-1]' does not match any allowed types. Must be one of: " +
-//                "[application/json; charset=utf-8]"))
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
-//                ConnectorTestConstants.ERROR_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
-                ConnectorTestConstants.STATUS_CODE_415.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
-                "consent_default")
+        Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_400)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Schema validation failed in the Request: Request Content-Type " +
+                "header '[text/plain; charset=ISO-8859-1]' does not match any allowed types. Must be one of: " +
+                "[application/json; charset=utf-8]., "))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+                ConnectorTestConstants.ERROR_CODE_400.toString())
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
     }
 
     @Test

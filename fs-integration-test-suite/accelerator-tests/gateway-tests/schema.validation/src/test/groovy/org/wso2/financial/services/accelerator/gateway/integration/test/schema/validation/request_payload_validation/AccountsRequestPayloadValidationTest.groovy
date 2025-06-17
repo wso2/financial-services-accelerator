@@ -68,7 +68,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	void "OB-670_API call with missing mandatory params in the payload"() {
 
 		//Do Consent Initiation
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithoutPermissions)
+		consentResponse = doDefaultInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithoutPermissions)
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -81,7 +81,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	@Test
 	void "OB-671_API call with empty json payload"() {
 
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadEmptyJsonPayload)
+		consentResponse = doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadEmptyJsonPayload)
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -93,7 +93,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	@Test
 	void "OB-672_API call with invalid payload format"() {
 
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload("[]")
+		consentResponse = doDefaultInitiationWithUpdatedPayload("[]")
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -107,7 +107,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	void "OB-673_API call without Data param in the payload"() {
 
 		//Do Consent Initiation
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithoutDataProperty)
+		consentResponse = doDefaultInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithoutDataProperty)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -121,7 +121,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	void "OB-674_API call with empty request body"() {
 
 		//Do Consent Initiation
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload("")
+		consentResponse = doDefaultInitiationWithUpdatedPayload("")
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -134,7 +134,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	void "OB-679_API call by passing unsupported enum value in the payload"() {
 
 		//Do Consent Initiation
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithInvalidPermission)
+		consentResponse = doDefaultInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithInvalidPermission)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -149,7 +149,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	void "OB-682_API call by passing payload param with empty array"() {
 
 		//Do Consent Initiation
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithEmptyPermission)
+		consentResponse = doDefaultInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithEmptyPermission)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -163,7 +163,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	void "OB-684_API call by passing array param as a string element"() {
 
 		//Do Consent Initiation
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithoutArrayFormat)
+		consentResponse = doDefaultInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithoutArrayFormat)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
@@ -177,7 +177,7 @@ class AccountsRequestPayloadValidationTest extends FSAPIMConnectorTest {
 	void "OB-686_API call by passing invalid date time for payload param"() {
 
 		//Do Consent Initiation
-		consentResponse = doDefaultAccountInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithInvalidDate)
+		consentResponse = doDefaultInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithInvalidDate)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),

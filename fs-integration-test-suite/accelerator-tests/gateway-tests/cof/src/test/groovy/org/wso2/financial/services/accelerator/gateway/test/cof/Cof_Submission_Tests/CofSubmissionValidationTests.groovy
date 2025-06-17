@@ -1,4 +1,4 @@
-package org.wso2.financial.services.accelerator.gateway.test.cof.Cof_Retrieval_Tests
+package org.wso2.financial.services.accelerator.gateway.test.cof.Cof_Submission_Tests
 
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
@@ -25,7 +25,7 @@ class CofSubmissionValidationTests extends FSAPIMConnectorTest{
     }
 
     @Test
-    void "OBA-797_COF retrieval request with revoked consent"(){
+    void "OBA-797_COF submission request with revoked consent"(){
 
         //Initiate consent
         doDefaultInitiation()
@@ -45,5 +45,34 @@ class CofSubmissionValidationTests extends FSAPIMConnectorTest{
         //COF Submission Request
         def submissionResponse = doDefaultSubmission()
         Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Consent is not in the correct state")
+    }
+
+    @Test
+    void "COF submission request with application access token"(){
+
+        //Initiate consent
+        doDefaultInitiation()
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.CREATED)
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,
+                ConnectorTestConstants.DATA_STATUS).toString(), "AwaitingAuthorisation")
+
+        //Authorise the consent and generate user access token
+        doCofAuthorization(scopeList)
+        Assert.assertNotNull(userAccessToken)
+
+        //COF Submission Request
+        submissionResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .baseUri(configuration.getServerBaseURL())
+                .body(CofRequestPayloads.getCofSubmissionPayload(consentId))
+                .post(ConnectorTestConstants.CBPII_PATH + ConnectorTestConstants.COF_SUBMISSION_PATH)
+
+        Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.MESSAGE),
+                "Claim Mismatch")
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.DESCRIPTION),
+                "The claim configured in the system and the claim provided in the token do not align. Please ensure the claims match.")
     }
 }

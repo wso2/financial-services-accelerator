@@ -350,7 +350,7 @@ class RefreshTokenGrantAccessToken extends FSConnectorTest {
 		Assert.assertNotNull(refreshToken)
 
 		//Revoke the token
-		Response revokeResponse = TokenRequestBuilder.doTokenRevocation(accessToken.toString(),clientId)
+		Response revokeResponse = TokenRequestBuilder.doTokenRevocation(accessToken.toString(),clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
 		Assert.assertEquals(revokeResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
 
 		//Get Refresh Token Grant User Access Token
