@@ -46,7 +46,7 @@ export const specConfigurations =
     };
 export const account_lang = [
     {
-        id: "authorised",
+        id: "Authorised",
         label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: true,
@@ -127,7 +127,7 @@ export const account_lang = [
         }
     },
     {
-        id: "expired,revoked",
+        id: "Expired,Revoked",
         label: "Inactive",
         labelBadgeVariant: "secondary",
         isRevocableConsent: true,
@@ -210,7 +210,7 @@ export const account_lang = [
 ];
 export const cof_lang = [
     {
-        id: "authorised",
+        id: "Authorised",
         label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: true,
@@ -258,7 +258,7 @@ export const cof_lang = [
         profile: {
             confirmation: "View confirmation of consent >"
         },
-        keyDatesInfoLabel: "Key Dates",
+        keyDatesInfoLabel: "Confirmation of Funds Details",
         keyDates: [
             {
                 title: "Account Name",
@@ -300,7 +300,7 @@ export const cof_lang = [
         }
     },
     {
-        id: "expired,revoked",
+        id: "Expired,Revoked",
         label: "Inactive",
         labelBadgeVariant: "secondary",
         description:
@@ -347,7 +347,7 @@ export const cof_lang = [
         profile: {
             confirmation: "View consent expiry confirmation >"
         },
-        keyDatesInfoLabel: "Key Dates",
+        keyDatesInfoLabel: "Confirmation of Funds Details",
         keyDates: [
             {
                 title: "Account Name",
@@ -391,7 +391,96 @@ export const cof_lang = [
 ];
 export const payments_lang = [
     {
-        id: "authorised,consumed,expired,revoked",
+        id: "Authorised",
+        label: "Active",
+        labelBadgeVariant: "success",
+        isRevocableConsent: false,
+        description:
+            "A list of applications that have requested access to your payments.",
+        tableHeaders: [
+            {
+                heading: "Applications",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "softwareClientName",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Status",
+                dataOrigin: dataOrigins.status,
+                dataParameterKey: "currentStatus",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Payment Details",
+        keyDates: [
+            {
+                title: "Amount",
+                type: keyDateTypes.value,
+                valueParameterKey: "receipt.Data.Initiation.InstructedAmount",
+            },
+            {
+                title: "Payer Scheme Name",
+                type: keyDateTypes.value,
+                valueParameterKey: "receipt.Data.Initiation.DebtorAccount.SchemeName",
+            },
+            {
+                title: "Payer Identification",
+                type: keyDateTypes.value,
+                valueParameterKey: "receipt.Data.Initiation.DebtorAccount.Identification",
+            },
+            {
+                title: "Payer Name",
+                type: keyDateTypes.value,
+                valueParameterKey: "receipt.Data.Initiation.DebtorAccount.Name",
+            },
+            {
+                title: "Payee Scheme Name",
+                type: keyDateTypes.value,
+                valueParameterKey: "receipt.Data.Initiation.CreditorAccount.SchemeName",
+            },
+            {
+                title: "Payee Identification",
+                type: keyDateTypes.value,
+                valueParameterKey: "receipt.Data.Initiation.CreditorAccount.Identification",
+            },
+            {
+                title: "Payee Name",
+                type: keyDateTypes.value,
+                valueParameterKey: "receipt.Data.Initiation.CreditorAccount.Name",
+            },
+        ],
+        accountsInfoLabel: "Accounts",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited API consumer application. You can check at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.test.co.uk/",
+            accreditDR: "API Consumer Application:"
+        }
+    },
+    {
+        id: "Consumed,Expired,Revoked",
+        label: "Inactive",
         labelBadgeVariant: "secondary",
         isRevocableConsent: false,
         description:

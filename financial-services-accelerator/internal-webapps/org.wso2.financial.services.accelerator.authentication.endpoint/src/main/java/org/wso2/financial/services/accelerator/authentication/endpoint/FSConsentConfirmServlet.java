@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -68,9 +69,22 @@ public class FSConsentConfirmServlet extends HttpServlet {
     // Suppressed warning count - 1
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        String sessionDataKey = request.getParameter(Constants.SESSION_DATA_KEY_CONSENT);
+        HttpSession session = request.getSession();
+
+        // validating session data key format
+        try {
+            UUID.fromString(sessionDataKey);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid session data key", e);
+            session.invalidate();
+            response.sendRedirect("retry.do?status=Error&statusMsg=Invalid session data key");
+            return;
+        }
+
         fsAuthServletTK = AuthenticationUtils.getAuthExtension();
 
-        HttpSession session = request.getSession();
+
         Map<String, String> metadata = new HashMap<>();
         Map<String, String> browserCookies = new HashMap<>();
         JSONObject consentData = new JSONObject();
@@ -109,7 +123,7 @@ public class FSConsentConfirmServlet extends HttpServlet {
         consentData.put(Constants.METADATA, metadata);
 
         String redirectURL = persistConsentData(
-                consentData, request.getParameter(Constants.SESSION_DATA_KEY_CONSENT), getServletContext());
+                consentData, sessionDataKey, getServletContext());
 
         // Invoke authorize flow
         if (redirectURL != null) {

@@ -126,7 +126,7 @@ class COFConsentValidationFlow extends FSConnectorTest {
                 .baseUri(configuration.getISServerUrl())
                 .post(ConnectorTestConstants.INCORRECT_ACCOUNT_VALIDATE_PATH)
 
-        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_404)
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
     @Test

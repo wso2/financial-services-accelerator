@@ -412,4 +412,32 @@ public class FSConfigParserTests {
                 .getConsentExpiryCronExpression());
     }
 
+    @Test(priority = 56)
+    public void testGetConsentIdExtractionJsonPath() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getConsentIdExtractionJsonPath());
+    }
+
+    @Test(priority = 57)
+    public void testGetConsentIdExtractionRegexPattern() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getConsentIdExtractionRegexPattern());
+    }
+
+    @Test(priority = 58)
+    public void testGetAuthFlowConsentIdSource() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getAuthFlowConsentIdSource());
+    }
+
+    @Test(priority = 59)
+    public void testGetConsentIdExtractionKey() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getConsentIdExtractionKey());
+    }
+
 }

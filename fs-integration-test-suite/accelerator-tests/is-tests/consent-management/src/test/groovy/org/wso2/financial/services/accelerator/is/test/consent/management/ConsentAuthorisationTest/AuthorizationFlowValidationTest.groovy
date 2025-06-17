@@ -19,15 +19,21 @@
 package org.wso2.financial.services.accelerator.is.test.consent.management.ConsentAuthorisationTest
 
 import org.openqa.selenium.By
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.automation.consent.AuthorizationFlowNavigationAutomationStep
+import org.wso2.financial.services.accelerator.test.framework.automation.consent.BasicAuthAutomationStep
 import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PageObjects
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.JWTGenerator
+import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 import org.wso2.bfsi.test.framework.automation.BrowserAutomation
 import org.wso2.bfsi.test.framework.automation.WaitForRedirectAutomationStep
@@ -397,13 +403,100 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
                 ConnectorTestConstants.INVALID_SIG_ALGO_ERROR)
     }
 
+    //TODO: Enable the test by setting [financial_services.consent] is_pre_initiated_consent=false
     @Test (enabled = false)
-    void "Consent authorisation without pre step for consent initiation"() {
+    void "OBA-683_Authorise consent without a pre initiation step"() {
+
+        consentId = ""
+
+        AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
+        String authoriseUrl = acceleratorAuthorisationBuilder.getAuthorizationRequestWithoutIntentId(
+                configuration.getAppInfoClientID(), [ConnectorTestConstants.ApiScope.ACCOUNTS],
+                true).toURI().toString()
+
+        automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
+
+                    WebDriverWait wait = new WebDriverWait(driver, 10)
+                    if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                    }
+
+                    if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                    }
+                    WebElement btnApprove = wait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
+                    btnApprove.click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        code = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    //TODO: Enable the test by setting [financial_services.consent] auth_flow_consent_id_source="requestParam" and
+    // use client id of a non-fapi compliance application to perform the test.
+    @Test (enabled = false)
+    void "OBA-682_Authorise consent by defining auth_flow_consent_id_source=requestParam"() {
+
+        //Create Consent
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        String scope = "ais:" + consentId + " openid"
+        List<String> scopeList = Arrays.asList(scope.split(" "))
 
         //Authorise Consent
-        doConsentAuthorisationWithoutConsentId(configuration.getAppInfoClientID(), true, consentScopes)
+        AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
+        String authoriseUrl = acceleratorAuthorisationBuilder.getAuthorizationRequestWithRequestParams(
+                configuration.getAppInfoClientID(), scope, consentId).toURI().toString()
 
-        Assert.assertNotNull(code)
-        Assert.assertNotNull(TestUtil.getIdTokenFromUrl(automation.currentUrl.get()))
+        automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
+
+                    WebDriverWait wait = new WebDriverWait(driver, 10)
+                    if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                    }
+
+                    if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                    }
+                    WebElement btnApprove = wait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
+                    btnApprove.click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        code = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+
+        JWTGenerator acceleratorJWTGenerator = new JWTGenerator()
+        acceleratorJWTGenerator.setScopes(scopeList)
+        String jwt = acceleratorJWTGenerator.getUserAccessTokenJwt(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, code)
+
+        def tokenResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .body(jwt)
+                .baseUri(configuration.getISServerUrl())
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
+
+        accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+        def refreshToken = TestUtil.parseResponseBody(tokenResponse, "refresh_token")
+        def idToken = TestUtil.parseResponseBody(tokenResponse, "id_token")
+        def responseScope = TestUtil.parseResponseBody(tokenResponse, "scope")
+
+        Assert.assertNotNull(accessToken)
+        Assert.assertNotNull(refreshToken)
+        Assert.assertNotNull(idToken)
+        Assert.assertEquals(responseScope, scope)
     }
 }

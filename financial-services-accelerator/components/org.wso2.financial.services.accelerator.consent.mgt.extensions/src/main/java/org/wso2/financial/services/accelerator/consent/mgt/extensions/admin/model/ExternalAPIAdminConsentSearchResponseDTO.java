@@ -27,11 +27,11 @@ import org.json.JSONArray;
 public class ExternalAPIAdminConsentSearchResponseDTO {
     private JSONArray enrichedSearchResult;
 
-    public JSONArray getResponsePayload() {
+    public JSONArray getEnrichedSearchResult() {
         return enrichedSearchResult;
     }
 
-    public void setResponsePayload(JSONArray enrichedSearchResult) {
+    public void setEnrichedSearchResult(JSONArray enrichedSearchResult) {
         this.enrichedSearchResult = enrichedSearchResult;
     }
 }
