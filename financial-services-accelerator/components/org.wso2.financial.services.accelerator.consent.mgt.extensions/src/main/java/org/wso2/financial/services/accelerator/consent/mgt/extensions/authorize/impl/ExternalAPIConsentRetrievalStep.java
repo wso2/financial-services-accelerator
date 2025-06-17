@@ -116,11 +116,13 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Filter out consent and consumer data
             // Append consumer data to json object to be displayed in consent page
-            jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA, new JSONObject(responseDTO.getConsentData()));
+            jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA, new JSONObject(
+                    objectMapper.writeValueAsString(responseDTO.getConsentData())));
 
             // Append consumer data, if exists, to json object
             if (responseDTO.getConsumerData() != null) {
-                jsonObject.put(ConsentAuthorizeConstants.CONSUMER_DATA, new JSONObject(responseDTO.getConsumerData()));
+                jsonObject.put(ConsentAuthorizeConstants.CONSUMER_DATA, new JSONObject(
+                        objectMapper.writeValueAsString(responseDTO.getConsumerData())));
             }
 
             // Set request parameters as metadata to be used in persistence extension
@@ -141,6 +143,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                     e.getMessage(), consentData.getState());
         } catch (JsonProcessingException e) {
+            log.error("Invalid response received from external call", e);
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
                     e.getMessage(), consentData.getState());
         }

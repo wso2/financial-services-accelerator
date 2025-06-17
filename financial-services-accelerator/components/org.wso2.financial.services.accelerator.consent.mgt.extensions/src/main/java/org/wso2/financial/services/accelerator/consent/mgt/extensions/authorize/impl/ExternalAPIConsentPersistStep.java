@@ -82,20 +82,20 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
 
         // Get request object parameters
         JSONObject requestParameters = new JSONObject();
-        if (consentPersistData.getConsentData() != null && consentPersistData.getConsentData().getMetaDataMap() != null
-                && consentPersistData.getConsentData().getMetaDataMap()
+        if (consentData != null && consentData.getMetaDataMap() != null
+                && consentData.getMetaDataMap()
                 .get(ConsentExtensionConstants.REQUEST_PARAMETERS) != null) {
 
-            requestParameters = (JSONObject) consentPersistData.getConsentData().getMetaDataMap()
+            requestParameters = (JSONObject) consentData.getMetaDataMap()
                     .get(ConsentExtensionConstants.REQUEST_PARAMETERS);
-            consentPersistData.getConsentData().getMetaDataMap().remove(ConsentExtensionConstants.REQUEST_PARAMETERS);
+            consentData.getMetaDataMap().remove(ConsentExtensionConstants.REQUEST_PARAMETERS);
         }
 
         // If there are no request object parameters, add the scope sent as a query parameter.
-        if (requestParameters.isEmpty() && consentPersistData.getConsentData() != null &&
-                consentPersistData.getConsentData().getScopeString() != null) {
+        if (requestParameters.isEmpty() && consentData != null &&
+                consentData.getScopeString() != null) {
             requestParameters.put(FinancialServicesConstants.SCOPE,
-                    consentPersistData.getConsentData().getScopeString());
+                    consentData.getScopeString());
         }
 
         try {
@@ -130,9 +130,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             }
 
             // Append metadata to userGrantedData
-            if (consentPersistData.getConsentData() != null
-                    && consentPersistData.getConsentData().getMetaDataMap() != null
-                    && !consentPersistData.getConsentData().getMetaDataMap().isEmpty()) {
+            if (consentData.getMetaDataMap() != null && !consentData.getMetaDataMap().isEmpty()) {
                 JSONObject metadataJSON;
                 JSONObject consentPersistPayload = consentPersistData.getPayload();
                 if (consentPersistPayload.has(ConsentAuthorizeConstants.METADATA)) {
@@ -141,7 +139,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     metadataJSON = new JSONObject();
                 }
 
-                JSONObject consentMetadataJSON = new JSONObject(consentPersistData.getConsentData().getMetaDataMap());
+                JSONObject consentMetadataJSON = new JSONObject(consentData.getMetaDataMap());
                 consentMetadataJSON.keySet().forEach(k -> metadataJSON.put(k, consentMetadataJSON.get(k)));
 
                 consentPersistPayload.put(ConsentAuthorizeConstants.METADATA, metadataJSON);

@@ -18,7 +18,12 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -28,6 +33,7 @@ import javax.validation.Valid;
 public class ConsumerDataDTO {
     @Valid
     private List<ConsumerAccountDTO> accounts;
+    private final Map<String, Object> additionalProperties = new HashMap<>();
 
     public List<ConsumerAccountDTO> getAccounts() {
         return accounts;
@@ -36,5 +42,15 @@ public class ConsumerDataDTO {
     public void setAccounts(
             List<ConsumerAccountDTO> accounts) {
         this.accounts = accounts;
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperties(String key, Object value) {
+        this.additionalProperties.put(key, value);
     }
 }

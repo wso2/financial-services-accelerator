@@ -18,6 +18,10 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +47,7 @@ public class ConsentDataDTO {
     private List<AccountDTO> initiatedAccountsForConsent;
     private Boolean allowMultipleAccounts;
     private Boolean isReauthorization;
+    private final Map<String, Object> additionalProperties = new HashMap<>();
 
     public String getType() {
         return type;
@@ -92,5 +97,15 @@ public class ConsentDataDTO {
 
     public void setReauthorization(Boolean reauthorization) {
         isReauthorization = reauthorization;
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperties(String key, Object value) {
+        this.additionalProperties.put(key, value);
     }
 }
