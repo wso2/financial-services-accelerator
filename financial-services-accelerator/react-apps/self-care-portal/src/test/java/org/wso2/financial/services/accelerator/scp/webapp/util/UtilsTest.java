@@ -70,8 +70,12 @@ public class UtilsTest {
         configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Map<String, Object> configs = new HashMap<String, Object>();
+        configs.put(Constants.APP_NAME, "software_client_name");
+        configs.put(Constants.LOGO_URL, "software_client_name");
         Mockito.doReturn("admin").when(configParserMock).getAdminUsername();
         Mockito.doReturn("admin").when(configParserMock).getAdminPassword();
+        Mockito.doReturn("software_client_name").when(configParserMock).getAdminPassword();
+        Mockito.doReturn(configs).when(configParserMock).getConfiguration();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
     }
 
@@ -267,6 +271,60 @@ public class UtilsTest {
 
         // assert
         JSONObject response = Utils.sendApplicationRetrievalRequest();
+        Assert.assertNotNull(response);
+    }
+
+    @Test
+    public void testGetAppClientNameMap() throws IOException {
+        // mock
+        StatusLine statusLineMock = Mockito.mock(StatusLine.class);
+        HttpEntity httpEntityMock = Mockito.mock(HttpEntity.class);
+        CloseableHttpResponse httpResponseMock = Mockito.mock(CloseableHttpResponse.class);
+        CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
+
+        Mockito.doReturn(HttpStatus.SC_OK).when(statusLineMock).getStatusCode();
+
+        InputStream inStream = new ByteArrayInputStream(TestConstants.APP_DETAIL_RESPONSE
+                .getBytes(StandardCharsets.UTF_8));
+        Mockito.doReturn(inStream).when(httpEntityMock).getContent();
+
+        Mockito.doReturn(statusLineMock).when(httpResponseMock).getStatusLine();
+        Mockito.doReturn(httpEntityMock).when(httpResponseMock).getEntity();
+
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpPost.class));
+
+        mockedStatic.when(HTTPClientUtils::getHttpsClient).thenReturn(closeableHttpClientMock);
+
+        // assert
+        Map<String, String> response = Utils.getAppClientNameMap();
+        Assert.assertNotNull(response);
+    }
+
+    @Test
+    public void testGetAppLogoUrlMap() throws IOException {
+        // mock
+        StatusLine statusLineMock = Mockito.mock(StatusLine.class);
+        HttpEntity httpEntityMock = Mockito.mock(HttpEntity.class);
+        CloseableHttpResponse httpResponseMock = Mockito.mock(CloseableHttpResponse.class);
+        CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
+
+        Mockito.doReturn(HttpStatus.SC_OK).when(statusLineMock).getStatusCode();
+
+        InputStream inStream = new ByteArrayInputStream(TestConstants.APP_DETAIL_RESPONSE
+                .getBytes(StandardCharsets.UTF_8));
+        Mockito.doReturn(inStream).when(httpEntityMock).getContent();
+
+        Mockito.doReturn(statusLineMock).when(httpResponseMock).getStatusLine();
+        Mockito.doReturn(httpEntityMock).when(httpResponseMock).getEntity();
+
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpPost.class));
+
+        mockedStatic.when(HTTPClientUtils::getHttpsClient).thenReturn(closeableHttpClientMock);
+
+        // assert
+        Map<String, String> response = Utils.getAppLogoUrlMap();
         Assert.assertNotNull(response);
     }
 }

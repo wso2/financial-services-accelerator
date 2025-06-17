@@ -79,6 +79,8 @@ public class FSAdditionalAttributeFilterTest {
         confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_STEP, "2");
         confMap.put(FinancialServicesConstants.POST_APPLICATION_LISTENER, "org.wso2.financial.services.accelerator" +
                 ".identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl");
+        confMap.put(FinancialServicesConstants.DCR_SERVICE_EXTENSION, "org.wso2.financial.services.accelerator" +
+                ".identity.extensions.client.registration.dcr.extension.FSDefaultDCRExtension");
         confMap.put(FinancialServicesConstants.REQUEST_VALIDATOR, "org.wso2.financial.services.accelerator.identity" +
                 ".extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator");
         confMap.put(FinancialServicesConstants.RESPONSE_HANDLER, "org.wso2.financial.services.accelerator.identity" +
@@ -92,7 +94,6 @@ public class FSAdditionalAttributeFilterTest {
         Mockito.when(configurationService.getConfigurations()).thenReturn(confMap);
         Mockito.when(configurationService.getDCRParamsConfig()).thenReturn(getDcrParamConfigs());
         Mockito.when(configurationService.getDCRValidatorsConfig()).thenReturn(getDcrValidatorConfigs());
-        identityExtensionsDataHolder.setConfigurationService(configurationService);
 
         identityExtensionsDataHolderMockedStatic = Mockito.mockStatic(IdentityExtensionsDataHolder.class);
         identityExtensionsDataHolderMockedStatic.when(IdentityExtensionsDataHolder::getInstance)
@@ -103,6 +104,8 @@ public class FSAdditionalAttributeFilterTest {
         doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
         doReturn(new ArrayList<>()).when(configParserMock).getServiceExtensionTypes();
         configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+        identityExtensionsDataHolder.setConfigurationService(configurationService);
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree("{" +
@@ -140,6 +143,36 @@ public class FSAdditionalAttributeFilterTest {
     public void testFilterDCRRegisterAttributes() throws DCRMClientException {
 
         ApplicationRegistrationRequest appRegistrationRequest = gson.fromJson(TestConstants.DCR_APP_REQUEST,
+                ApplicationRegistrationRequest.class);
+        Map<String, Object> resultMap = fsAdditionalAttributeFilter.filterDCRRegisterAttributes(appRegistrationRequest,
+                TestConstants.getSSAParamMap());
+
+        Assert.assertNotNull(resultMap);
+        Assert.assertNotNull(resultMap.get(IdentityCommonConstants.SOFTWARE_ID));
+        Assert.assertNotNull(resultMap.get(IdentityCommonConstants.APPLICATION_TYPE));
+    }
+
+    @Test
+    public void testFilterDCRRegisterAttributesWithoutExtension() throws DCRMClientException {
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+        ApplicationRegistrationRequest appRegistrationRequest = gson.fromJson(TestConstants.DCR_APP_REQUEST,
+                ApplicationRegistrationRequest.class);
+        Map<String, Object> resultMap = fsAdditionalAttributeFilter.filterDCRRegisterAttributes(appRegistrationRequest,
+                TestConstants.getSSAParamMap());
+
+        Assert.assertNotNull(resultMap);
+        Assert.assertFalse(resultMap.isEmpty());
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(true);
+    }
+
+    @Test
+    public void testFilterDCRRegisterAttributesForMCRApps() throws DCRMClientException {
+
+        ApplicationRegistrationRequest appRegistrationRequest = gson.fromJson(TestConstants.DCR_APP_REQUEST_FOR_MCR,
                 ApplicationRegistrationRequest.class);
         Map<String, Object> resultMap = fsAdditionalAttributeFilter.filterDCRRegisterAttributes(appRegistrationRequest,
                 TestConstants.getSSAParamMap());
@@ -190,6 +223,38 @@ public class FSAdditionalAttributeFilterTest {
     }
 
     @Test
+    public void testFilterDCRUpdateAttributesWithoutExtension() throws DCRMClientException {
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+        ApplicationUpdateRequest applicationUpdateRequest = gson.fromJson(TestConstants.DCR_APP_REQUEST,
+                ApplicationUpdateRequest.class);
+        ServiceProviderProperty[] serviceProviderProperties = new ServiceProviderProperty[0];
+        Map<String, Object> resultMap = fsAdditionalAttributeFilter.filterDCRUpdateAttributes(applicationUpdateRequest,
+                TestConstants.getSSAParamMap(), serviceProviderProperties);
+
+        Assert.assertNotNull(resultMap);
+        Assert.assertFalse(resultMap.isEmpty());
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(true);
+    }
+
+    @Test
+    public void testFilterDCRUpdateAttributesForMCRApps() throws DCRMClientException {
+
+        ApplicationUpdateRequest applicationUpdateRequest = gson.fromJson(TestConstants.DCR_APP_REQUEST_FOR_MCR,
+                ApplicationUpdateRequest.class);
+        ServiceProviderProperty[] serviceProviderProperties = new ServiceProviderProperty[0];
+        Map<String, Object> resultMap = fsAdditionalAttributeFilter.filterDCRUpdateAttributes(applicationUpdateRequest,
+                TestConstants.getSSAParamMap(), serviceProviderProperties);
+
+        Assert.assertNotNull(resultMap);
+        Assert.assertNotNull(resultMap.get(IdentityCommonConstants.SOFTWARE_ID));
+        Assert.assertNotNull(resultMap.get(IdentityCommonConstants.APPLICATION_TYPE));
+    }
+
+    @Test
     public void testProcessDCRGetAttributes() throws DCRMClientException {
 
         Map<String, Object> resultMap = fsAdditionalAttributeFilter
@@ -206,7 +271,7 @@ public class FSAdditionalAttributeFilterTest {
         Assert.assertNotNull(resultMap);
         Assert.assertTrue(resultMap.contains(IdentityCommonConstants.SOFTWARE_ID));
         Assert.assertTrue(resultMap.contains(IdentityCommonConstants.APPLICATION_TYPE));
-        Assert.assertTrue(resultMap.contains(IdentityCommonConstants.SCOPE));
+        Assert.assertTrue(resultMap.contains(FinancialServicesConstants.SCOPE));
     }
 
     private static Map<String, Map<String, Object>> getDcrParamConfigs() {

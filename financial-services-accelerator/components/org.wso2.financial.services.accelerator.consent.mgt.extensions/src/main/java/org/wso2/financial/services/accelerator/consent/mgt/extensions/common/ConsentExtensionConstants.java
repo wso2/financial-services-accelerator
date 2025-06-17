@@ -37,6 +37,7 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNT_ID = "account_id";
     public static final String ACCOUNT_ID_CC = "accountId";
     public static final String DATA = "Data";
+    public static final String DATA_CC = "data";
     public static final String CONSENT_TYPE = "consent_type";
     public static final String AWAIT_AUTHORISE_STATUS = "AwaitingAuthorisation";
     public static final String AWAIT_UPLOAD_STATUS = "AwaitingUpload";
@@ -82,6 +83,9 @@ public class ConsentExtensionConstants {
     public static final String AMOUNT = "Amount";
     public static final String AMOUNT_TITLE = "Amount";
     public static final String COMMON_AUTH_ID = "commonAuthId";
+    public static final String FILE_UPLOAD_CREATED_TIME = "FileUploadCreatedTime";
+    public static final String IDEMPOTENCY_KEY = "IdempotencyKey";
+    public static final String FILE_UPLOAD_IDEMPOTENCY_KEY = "FileUploadIdempotencyKey";
 
     //Consent Auth Servlet Constants
     public static final String DEBTOR_ACCOUNT_ID = "AccountId";
@@ -163,6 +167,7 @@ public class ConsentExtensionConstants {
     public static final String PERMISSION = "permission";
     public static final String MAPPING_STATUS = "mappingStatus";
     public static final String MAPPING_RESOURCES = "consentMappingResources";
+    public static final String REQUEST_PARAMETERS = "requestParameters";
 
     //Consent Authorize Constants
     public static final String IS_ERROR = "isError";

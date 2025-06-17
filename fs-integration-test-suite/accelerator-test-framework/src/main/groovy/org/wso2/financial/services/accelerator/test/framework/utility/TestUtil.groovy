@@ -19,6 +19,8 @@
 package org.wso2.financial.services.accelerator.test.framework.utility
 
 import com.fasterxml.uuid.Generators
+import com.nimbusds.jose.crypto.RSADecrypter
+import com.nimbusds.jwt.EncryptedJWT
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
 import org.wso2.bfsi.test.framework.util.CommonTestUtil
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
@@ -30,8 +32,14 @@ import java.nio.charset.Charset
 import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
+import java.security.UnrecoverableEntryException
+import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.CertificateException
+import java.security.cert.X509Certificate
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 /**
  * Accelerator layer class to contain utilities.
@@ -39,6 +47,7 @@ import java.security.cert.CertificateException
 class TestUtil extends CommonTestUtil{
 
     static ConfigurationService configurationService = new ConfigurationService()
+    static Instant dateTimeInstantEnd = Instant.now()
 
     /**
      * Get Basic Auth Header.
@@ -216,5 +225,42 @@ class TestUtil extends CommonTestUtil{
         def idempotency = random.nextInt(max-min) + min
 
         return idempotency
+    }
+
+    /**
+     * Get Current DateTime in HTTP format.
+     * @return datetime
+     */
+    static String getDateTimeInHttpFormat() {
+
+        Calendar calendar = Calendar.getInstance()
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"))
+        return dateFormat.format(calendar.getTime())
+    }
+
+    /**
+     * Get ISO_8601 Standard date time
+     * Eg: 2019-09-30T04:44:05.271Z
+     *
+     * @param addDays Add particular number of days to the datetime now
+     * @return String value of the date time
+     */
+    static String getDateAndTime(int addDays){
+        return dateTimeInstantEnd.plus(addDays, ChronoUnit.DAYS)
+    }
+
+    /**
+     * Get IP Address of the machine.
+     * @return ip address
+     */
+    static String getIpAddress() {
+        return InetAddress.getLocalHost().getHostAddress()
+    }
+  
+    static String getStatusMsgFromUrl(String url) {
+
+        return url.split("statusMsg")[1].split("=")[1].replaceAll("\\+", " ");
     }
 }

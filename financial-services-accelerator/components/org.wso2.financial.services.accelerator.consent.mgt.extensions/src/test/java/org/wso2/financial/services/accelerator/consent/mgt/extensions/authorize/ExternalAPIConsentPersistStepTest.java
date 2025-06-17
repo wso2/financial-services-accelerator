@@ -232,7 +232,6 @@ public class ExternalAPIConsentPersistStepTest {
             new ExternalAPIConsentPersistStep().execute(persistData);
 
             assert consentData.getConsentId() != null;
-            assertEquals(consentData.getType(), "default");
             assertEquals(consentData.getMetaDataMap().get("commonAuthId"), "auth-cookie-id");
 
             verify(consentCoreService).storeDetailedConsentResource(constructed);

@@ -17,16 +17,36 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Open Banking - Accelerator Token Flow Test" parallel="tests" >
-    <test name="Token Flow - Regulatory Application" enabled="true" group-by-instances="true">
+<suite name="WSO2 Open Banking - Accelerator Token Flow Test" parallel="none">
+    <test name="Regulatory Application - MTLS Enforcement" enabled="true" group-by-instances="true" preserve-order="true">
             <classes>
-              <class name="client_authenticator_enforcement.MtlsClientAuthenticationTest"/>
-              <class name="client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>
-              <class name="mtls_enforcement_validator.MtlsEnforcementValidationTest"/>
-              <class name="signature_algorithm_validation.SignatureAlgorithmValidationTest"/>
-              <class name="grant_type_validation.ClientCredentialGrantAccessTokenTest"/>
-              <class name="grant_type_validation.AuthorisationCodeGrantAccessTokenTest"/>
-              <class name="grant_type_validation.RefreshTokenGrantAccessToken"/>
+                <class name="mtls_enforcement_validator.MtlsEnforcementValidationTest"/>
             </classes>
+    </test>
+    <test name="Regulatory Application - Client Authentication" enabled="true" group-by-instances="true" preserve-order="true">
+        <classes>
+            <class name="client_authenticator_enforcement.MtlsClientAuthenticationTest"/>
+            <class name="client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>
+        </classes>
+    </test>
+    <test name="Regulatory Application - Signature Validation" enabled="true" group-by-instances="true" preserve-order="true">
+        <classes>
+            <class name="signature_algorithm_validation.SignatureAlgorithmValidationTest"/>
+        </classes>
+    </test>
+    <test name="Regulatory Application - Client Credential Grant" enabled="true" group-by-instances="true" preserve-order="true">
+        <classes>
+            <class name="grant_type_validation.ClientCredentialGrantAccessTokenTest"/>
+        </classes>
+    </test>
+    <test name="Regulatory Application - Authorization Code Grant" enabled="true" group-by-instances="true" preserve-order="true">
+        <classes>
+            <class name="grant_type_validation.AuthorisationCodeGrantAccessTokenTest"/>
+        </classes>
+    </test>
+    <test name="Regulatory Application - Refresh Token Grant" enabled="true" group-by-instances="true" preserve-order="true">
+        <classes>
+            <class name="grant_type_validation.RefreshTokenGrantAccessToken"/>
+        </classes>
     </test>
 </suite>

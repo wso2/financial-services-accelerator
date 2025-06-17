@@ -104,6 +104,7 @@ public class ErrorConstants {
             " not match with the length defined in the specification";
     public static final String IDEMPOTENCY_KEY_NOT_FOUND = "Idempotency related details should be submitted" +
             " in order to proceed.";
+    public static final String IDEMPOTENCY_KEY_FRAUDULENT = "Idempotency check failed.";
     public static final String MSG_INVALID_DEBTOR_ACC = "Mandatory parameter DebtorAccount object is invalid.";
     public static final String PATH_DEBTOR_ACCOUNT = "Data.Initiation.DebtorAccount";
     public static final String COF_PATH_DEBTOR_ACCOUNT_SCHEME = "Data.DebtorAccount.SchemeName";

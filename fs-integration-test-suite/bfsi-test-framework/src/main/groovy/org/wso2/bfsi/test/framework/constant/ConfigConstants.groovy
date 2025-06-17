@@ -120,5 +120,6 @@ class ConfigConstants {
     public static final String ISSetup = "ISSetup";
     public static final String ISAdminUserName = "ISAdminUserName";
     public static final String ISAdminPassword = "ISAdminPassword";
+    public static final String IS_VERSION = "IS_Version";
 }
 

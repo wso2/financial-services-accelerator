@@ -69,7 +69,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            if (consentData.getConsentId() == null) {
+            if (isPreInitiatedConsent && consentData.getConsentId() == null) {
                 log.error("Consent ID not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Consent ID not available in consent data", consentData.getState());

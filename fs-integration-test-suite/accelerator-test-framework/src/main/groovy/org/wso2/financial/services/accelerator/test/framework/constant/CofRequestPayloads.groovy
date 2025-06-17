@@ -132,6 +132,7 @@ class CofRequestPayloads {
     public static String cofInitiationPayloadWithoutDate = """
 	{
               "Data": {
+                "ExpirationDateTime": "${expirationInstant}",
                 "DebtorAccount": {
                   "SchemeName": "OB.IBAN",
                   "Identification": "${accountID}",

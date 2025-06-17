@@ -37,8 +37,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
-import java.util.UUID;
-
 /**
  * Consent retrieval step default implementation.
  */
@@ -61,6 +59,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         }
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
+        JSONObject requestParameters = ConsentAuthorizeUtil.getRequestObjectJson(requestObject);
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
         JSONArray consentDataJSON;
         ConsentResource consentResource;
@@ -100,8 +99,6 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                 consentDataJSON = ConsentAuthorizeUtil.getConsentDataForPreInitiatedConsent(consentResource);
             } else {
                 // Create a default type consent resource using data from request object.
-                String consentId = UUID.randomUUID().toString();
-                consentData.setConsentId(consentId);
                 String receipt = ConsentAuthorizeUtil.getReceiptFromRequestObject(requestObject);
                 long defaultValidityPeriod = System.currentTimeMillis() / 1000 + 3600;
 
@@ -118,6 +115,9 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
              calling accounts service */
             JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
             jsonObject.put(ConsentExtensionConstants.ACCOUNTS, accountsJSON);
+
+            // Set request parameters as metadata to be used in persistence extension
+            consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
 
         } catch (ConsentManagementException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,

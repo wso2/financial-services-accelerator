@@ -168,16 +168,30 @@
         </Payments>
         <Idempotency>
             {% if financial_services.consent.idempotency.enabled is defined %}
-                <Enabled>{{financial_services.consent.idempotency.enabled}}</Enabled>
+            <Enabled>{{financial_services.consent.idempotency.enabled}}</Enabled>
             {% else %}
-                <IsEnabled>false</IsEnabled>
+            <IsEnabled>false</IsEnabled>
             {% endif %}
-
             {% if financial_services.consent.idempotency.allowed_time_duration is defined %}
-                <AllowedTimeDuration>{{financial_services.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
+            <AllowedTimeDuration>{{financial_services.consent.idempotency.allowed_time_duration}}</AllowedTimeDuration>
             {% else %}
-                <AllowedTimeDuration>1440</AllowedTimeDuration>
+            <AllowedTimeDuration>1440</AllowedTimeDuration>
             {% endif %}
+            {% if financial_services.consent.idempotency.header_name is defined %}
+            <HeaderName>{{financial_services.consent.idempotency.header_name}}</HeaderName>
+            {% else %}
+            <HeaderName>x-idempotency-key</HeaderName>
+            {% endif %}
+            {% if financial_services.consent.idempotency.allowed_for_all_apis is defined %}
+            <AllowedForAllAPIs>{{financial_services.consent.idempotency.allowed_for_all_apis}}</AllowedForAllAPIs>
+            {% else %}
+            <AllowedForAllAPIs>false</AllowedForAllAPIs>
+            {% endif %}
+            <AllowedAPIResources>
+                {% for allowed_api in financial_services.consent.idempotency.allowed_api_resources %}
+                <AllowedAPIResource>{{allowed_api}}</AllowedAPIResource>
+                {% endfor %}
+            </AllowedAPIResources>
         </Idempotency>
         {% if financial_services.consent.preserve_consent_link.enable is defined %}
         <PreserveConsentLink>{{financial_services.consent.preserve_consent_link.enable}}</PreserveConsentLink>
@@ -231,10 +245,15 @@
         {% else %}
         <ConsentIDClaimName>consent_id</ConsentIDClaimName>
         {% endif %}
-        {% if financial_services.identity.append_consent_id_to_id_token is defined %}
-        <AppendConsentIdToIdToken>{{financial_services.identity.append_consent_id_to_id_token}}</AppendConsentIdToIdToken>
+        {% if financial_services.identity.append_consent_id_to_token_id_token is defined %}
+        <AppendConsentIdToTokenIdToken>{{financial_services.identity.append_consent_id_to_token_id_token}}</AppendConsentIdToTokenIdToken>
         {% else %}
-        <AppendConsentIdToIdToken>false</AppendConsentIdToIdToken>
+        <AppendConsentIdToTokenIdToken>false</AppendConsentIdToTokenIdToken>
+        {% endif %}
+        {% if financial_services.identity.append_consent_id_to_authz_id_token is defined %}
+        <AppendConsentIdToAuthzIdToken>{{financial_services.identity.append_consent_id_to_authz_id_token}}</AppendConsentIdToAuthzIdToken>
+        {% else %}
+        <AppendConsentIdToAuthzIdToken>false</AppendConsentIdToAuthzIdToken>
         {% endif %}
         {% if financial_services.identity.append_consent_id_to_access_token is defined %}
         <AppendConsentIdToAccessToken>{{financial_services.identity.append_consent_id_to_access_token}}</AppendConsentIdToAccessToken>
@@ -307,7 +326,6 @@
         {% else %}
         <ConditionalAuthScriptFileName>common.auth.script.js</ConditionalAuthScriptFileName>
         {% endif %}
-        {% if financial_services.app_registration.dcr.params is defined %}
         <DCR>
             <Params>
                 {% for param in financial_services.app_registration.dcr.params %}
@@ -350,8 +368,12 @@
                 <CacheModifiedExpiry>{{financial_services.app_registration.dcr.jti_cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
                 {% endif %}
             </JTICache>
+            <RegulatoryIssuers>
+                {% for iss in financial_services.app_registration.dcr.regulatory_issuers.iss %}
+                   <Issuer>{{iss.name}}</Issuer>
+                {% endfor %}
+            </RegulatoryIssuers>
         </DCR>
-        {% endif %}
     </AppRegistration>
     <HTTPConnectionPool>
         {% if financial_services.http_connection_pool.max_connections is defined %}

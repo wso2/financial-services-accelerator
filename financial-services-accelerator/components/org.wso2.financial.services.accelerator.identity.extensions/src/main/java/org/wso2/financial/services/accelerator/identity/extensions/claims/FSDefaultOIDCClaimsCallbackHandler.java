@@ -23,10 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.openidconnect.DefaultOIDCClaimsCallbackHandler;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
@@ -50,7 +50,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
         The access token property is added to the ID token message context before this method is invoked.
         */
         try {
-            if (FinancialServicesUtils.isRegulatoryApp(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
+            if (IdentityCommonUtils.isRegulatoryApp(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
                     .getClientId())
                     && (tokenReqMessageContext.getProperty(IdentityCommonConstants.ACCESS_TOKEN) == null)) {
 
@@ -70,7 +70,7 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
                 removeConsentIdScope(jwtClaimsSetBuilder, claimsInJwtToken);
                 return jwtClaimsSetBuilder.build();
             }
-        } catch (RequestObjectException e) {
+        } catch (FinancialServicesException e) {
             log.error("Error while handling custom claims", e);
             throw new IdentityOAuth2Exception(e.getMessage(), e);
         }
@@ -81,12 +81,12 @@ public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbac
                                              Map<String, Object> claimsInJwtToken) {
 
         for (Map.Entry<String, Object> claimEntry : claimsInJwtToken.entrySet()) {
-            if (IdentityCommonConstants.SCOPE.equals(claimEntry.getKey())) {
+            if (FinancialServicesConstants.SCOPE.equals(claimEntry.getKey())) {
                 String[] nonInternalScopes = IdentityCommonUtils
                         .removeInternalScopes(claimEntry.getValue().toString()
-                                .split(IdentityCommonConstants.SPACE_SEPARATOR));
-                jwtClaimsSetBuilder.claim(IdentityCommonConstants.SCOPE, StringUtils.join(nonInternalScopes,
-                        IdentityCommonConstants.SPACE_SEPARATOR));
+                                .split(FinancialServicesConstants.SPACE_SEPARATOR));
+                jwtClaimsSetBuilder.claim(FinancialServicesConstants.SCOPE, StringUtils.join(nonInternalScopes,
+                        FinancialServicesConstants.SPACE_SEPARATOR));
             } else {
                 jwtClaimsSetBuilder.claim(claimEntry.getKey(), claimEntry.getValue());
             }

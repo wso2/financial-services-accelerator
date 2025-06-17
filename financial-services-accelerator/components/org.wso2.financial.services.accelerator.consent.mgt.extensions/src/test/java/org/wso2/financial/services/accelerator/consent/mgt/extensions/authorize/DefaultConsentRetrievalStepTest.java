@@ -26,7 +26,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep;
@@ -43,6 +45,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -51,7 +54,6 @@ import static org.testng.Assert.assertTrue;
  */
 public class DefaultConsentRetrievalStepTest {
 
-    private static DefaultConsentRetrievalStep consentRetrievalStep;
     @Mock
     private static ConsentData consentDataMock;
     @Mock
@@ -61,6 +63,7 @@ public class DefaultConsentRetrievalStepTest {
 
     ArrayList<AuthorizationResource> authResources;
     private static MockedStatic<ConsentExtensionsDataHolder> consentExtensionsDataHolder;
+    private static MockedStatic<FinancialServicesUtils> financialServicesUtilsMock;
 
     @BeforeClass
     public void initClass() throws ConsentManagementException {
@@ -82,81 +85,111 @@ public class DefaultConsentRetrievalStepTest {
                 TestConstants.SAMPLE_AUTH_ID));
         doReturn(authResources).when(consentCoreServiceMock).searchAuthorizations(anyString());
 
-        // Create default config parser mock (returns true for isPreInitiatedConsent) for shared tests
-        try (MockedStatic<FinancialServicesConfigParser> configParser =
-                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
-            FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
-            Mockito.doReturn(true).when(configParserMock).isPreInitiatedConsent();
-            configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
-            consentRetrievalStep = new DefaultConsentRetrievalStep();
-        }
+        String consentId = "12345677654321234234";
+        financialServicesUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
+        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(Mockito.any()))
+                .thenReturn(consentId);
+        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromScopesRequestParam(Mockito.any()))
+                .thenReturn(consentId);
     }
 
     @AfterClass
     public void tearDown() {
         // Closing the mockStatic after each test
         consentExtensionsDataHolder.close();
+        financialServicesUtilsMock.close();
     }
 
     @Test
     public void testGetConsentDataSetForNonRegulatory() {
 
-        JSONObject jsonObject = new JSONObject();
-        doReturn(false).when(consentDataMock).isRegulatory();
-        consentRetrievalStep.execute(consentDataMock, jsonObject);
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+            FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
-        assertTrue(jsonObject.isEmpty());
+            JSONObject jsonObject = new JSONObject();
+            doReturn(false).when(consentDataMock).isRegulatory();
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
+
+            assertTrue(jsonObject.isEmpty());
+        }
     }
 
     @Test(expectedExceptions = ConsentException.class)
     public void testConsentRetrievalWithNonJWTRequestObject() {
 
-        JSONObject jsonObject = new JSONObject();
-        doReturn(true).when(consentDataMock).isRegulatory();
-        doReturn("request=non-jwt").when(consentDataMock).getSpQueryParams();
-        consentRetrievalStep.execute(consentDataMock, jsonObject);
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+            FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+            JSONObject jsonObject = new JSONObject();
+            doReturn(true).when(consentDataMock).isRegulatory();
+            doReturn("request=non-jwt").when(consentDataMock).getSpQueryParams();
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
+        }
     }
 
     @Test(expectedExceptions = ConsentException.class)
     public void testConsentRetrievalWithInvalidRequestObject() {
 
-        String request = "request=" + TestConstants.INVALID_REQUEST_OBJECT;
-        JSONObject jsonObject = new JSONObject();
-        doReturn(true).when(consentDataMock).isRegulatory();
-        doReturn(request).when(consentDataMock).getSpQueryParams();
-        consentRetrievalStep.execute(consentDataMock, jsonObject);
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+            FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+            String request = "request=" + TestConstants.INVALID_REQUEST_OBJECT;
+            JSONObject jsonObject = new JSONObject();
+            doReturn(true).when(consentDataMock).isRegulatory();
+            doReturn(request).when(consentDataMock).getSpQueryParams();
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
+        }
     }
 
     @Test
     public void testConsentRetrievalWithValidRequestObject() {
 
-        String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
-        JSONObject jsonObject = new JSONObject();
-        doReturn(true).when(consentDataMock).isRegulatory();
-        doReturn(request).when(consentDataMock).getSpQueryParams();
-
-        consentRetrievalStep.execute(consentDataMock, jsonObject);
-        assertNotNull(jsonObject.get("consentData"));
-        assertNotNull(jsonObject.get("accounts"));
-    }
-
-    @Test
-    public void testConsentRetrievalForNonInitiatedConsents() {
-
-        try (MockedStatic<FinancialServicesConfigParser> localMock =
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
                      Mockito.mockStatic(FinancialServicesConfigParser.class)) {
             FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
-            Mockito.doReturn(false).when(configParserMock).isPreInitiatedConsent();
-            localMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
-
-            DefaultConsentRetrievalStep localStep = new DefaultConsentRetrievalStep();
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
             String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
             JSONObject jsonObject = new JSONObject();
             doReturn(true).when(consentDataMock).isRegulatory();
             doReturn(request).when(consentDataMock).getSpQueryParams();
 
-            localStep.execute(consentDataMock, jsonObject);
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
+            assertNotNull(jsonObject.get("consentData"));
+            assertNotNull(jsonObject.get("accounts"));
+        }
+    }
+
+    @Test
+    public void testConsentRetrievalForNonInitiatedConsents() {
+
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+            FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(false);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+            String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
+            JSONObject jsonObject = new JSONObject();
+            doReturn(true).when(consentDataMock).isRegulatory();
+            doReturn(request).when(consentDataMock).getSpQueryParams();
+
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
 
             assertNotNull(jsonObject.get("consentData"));
             assertNotNull(jsonObject.get("accounts"));
@@ -166,43 +199,69 @@ public class DefaultConsentRetrievalStepTest {
     @Test
     public void testGetConsentDataSetForAccounts() {
 
-        String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
-        doReturn(request).when(consentDataMock).getSpQueryParams();
-        doReturn(true).when(consentDataMock).isRegulatory();
-        JSONObject jsonObject = new JSONObject();
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+            FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
-        consentRetrievalStep.execute(consentDataMock, jsonObject);
-        assertNotNull(jsonObject.get("consentData"));
-        assertNotNull(jsonObject.get("accounts"));
+            String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
+            doReturn(request).when(consentDataMock).getSpQueryParams();
+            doReturn(true).when(consentDataMock).isRegulatory();
+            JSONObject jsonObject = new JSONObject();
+
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
+            assertNotNull(jsonObject.get("consentData"));
+            assertNotNull(jsonObject.get("accounts"));
+        }
     }
 
     @Test
     public void testGetConsentDataSetForPayments() throws ConsentManagementException {
 
-        String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
-        doReturn(request).when(consentDataMock).getSpQueryParams();
-        doReturn(true).when(consentDataMock).isRegulatory();
-        doReturn(TestUtil.getSampleConsentResource(TestConstants.PAYMENTS, TestConstants.PAYMENT_INITIATION,
-                TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock).getConsent(anyString(), anyBoolean());
-        JSONObject jsonObject = new JSONObject();
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+            FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
-        consentRetrievalStep.execute(consentDataMock, jsonObject);
-        assertNotNull(jsonObject.get("consentData"));
-        assertNotNull(jsonObject.get("accounts"));
+            String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
+            doReturn(request).when(consentDataMock).getSpQueryParams();
+            doReturn(true).when(consentDataMock).isRegulatory();
+            doReturn(TestUtil.getSampleConsentResource(TestConstants.PAYMENTS, TestConstants.PAYMENT_INITIATION,
+                    TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock)
+                    .getConsent(anyString(), anyBoolean());
+            JSONObject jsonObject = new JSONObject();
+
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
+            assertNotNull(jsonObject.get("consentData"));
+            assertNotNull(jsonObject.get("accounts"));
+        }
     }
 
     @Test
     public void testGetConsentDataSetForCOF() throws ConsentManagementException {
 
-        String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
-        doReturn(request).when(consentDataMock).getSpQueryParams();
-        doReturn(true).when(consentDataMock).isRegulatory();
-        doReturn(TestUtil.getSampleConsentResource(TestConstants.FUNDS_CONFIRMATIONS, TestConstants.COF_RECEIPT,
-                TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock).getConsent(anyString(), anyBoolean());
-        JSONObject jsonObject = new JSONObject();
+        try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+            FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+            when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+            when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
+            configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
-        consentRetrievalStep.execute(consentDataMock, jsonObject);
-        assertNotNull(jsonObject.get("consentData"));
-        assertNotNull(jsonObject.get("accounts"));
+            String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
+            doReturn(request).when(consentDataMock).getSpQueryParams();
+            doReturn(true).when(consentDataMock).isRegulatory();
+            doReturn(TestUtil.getSampleConsentResource(TestConstants.FUNDS_CONFIRMATIONS, TestConstants.COF_RECEIPT,
+                    TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock)
+                    .getConsent(anyString(), anyBoolean());
+            JSONObject jsonObject = new JSONObject();
+
+            new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
+            assertNotNull(jsonObject.get("consentData"));
+            assertNotNull(jsonObject.get("accounts"));
+        }
     }
 }

@@ -52,7 +52,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -63,6 +62,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     private final ConsentCoreService consentCoreService;
     private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentPersistStep.class);
+    private static final Gson gson = new Gson();
 
     public ExternalAPIConsentPersistStep() {
 
@@ -78,6 +78,25 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         String consentId;
         DetailedConsentResource detailedConsentResource = null;
         ExternalAPIConsentResourceRequestDTO externalAPIConsentResource = null;
+
+        // Get request object parameters
+        JSONObject requestParameters = new JSONObject();
+        if (consentPersistData.getConsentData() != null && consentPersistData.getConsentData().getMetaDataMap() != null
+                && consentPersistData.getConsentData().getMetaDataMap()
+                .get(ConsentExtensionConstants.REQUEST_PARAMETERS) != null) {
+
+            requestParameters = (JSONObject) consentPersistData.getConsentData().getMetaDataMap()
+                    .get(ConsentExtensionConstants.REQUEST_PARAMETERS);
+            consentPersistData.getConsentData().getMetaDataMap().remove(ConsentExtensionConstants.REQUEST_PARAMETERS);
+        }
+
+        // If there are no request object parameters, add the scope sent as a query parameter.
+        if (requestParameters.isEmpty() && consentPersistData.getConsentData() != null &&
+                consentPersistData.getConsentData().getScopeString() != null) {
+            requestParameters.put(FinancialServicesConstants.SCOPE,
+                    consentPersistData.getConsentData().getScopeString());
+        }
+
         try {
             if (consentData == null) {
                 log.error("Consent data is not available");
@@ -100,7 +119,6 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             } else {
                 consentId = UUID.randomUUID().toString();
                 consentData.setConsentId(consentId);
-                consentData.setType(ConsentExtensionConstants.DEFAULT);
 
                 // Getting commonAuthId to add as a consent attribute. This is to find the consent in later stages.
                 if (consentPersistData.getBrowserCookies() != null) {
@@ -110,12 +128,12 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                 }
             }
             // Call external service
-            Map<String, Object> consumerInputData = consentPersistData.getMetadata();
-            consumerInputData.put(ConsentExtensionConstants.PERSIST_PAYLOAD, consentPersistData.getPayload());
-            consumerInputData.put(ConsentExtensionConstants.USER_ID, consentData.getUserId());
+            ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO userGrantedData = new
+                    ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO(consentPersistData.getPayload(),
+                    requestParameters, consentData.getUserId());
 
             ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
-                    consentId, externalAPIConsentResource, consumerInputData, consentPersistData.getApproval());
+                    consentId, externalAPIConsentResource, userGrantedData, consentPersistData.getApproval());
             ExternalAPIPreConsentPersistResponseDTO responseDTO = callExternalService(requestDTO);
             ExternalAPIConsentResourceResponseDTO responseConsentResource = responseDTO.getConsentResource();
             persistConsent(responseConsentResource, consentData);
@@ -161,7 +179,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentPersistResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIPreConsentPersistResponseDTO.class);
     }
 
     /**
