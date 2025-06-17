@@ -65,7 +65,9 @@ public class NbfExpClaimsValidator implements ConstraintValidator<ValidNbfExpCla
                 long currentTimeInMillis = System.currentTimeMillis();
                 // request object should be used on or after nbf value.
                 if ((currentTimeInMillis + timeStampSkewMillis) < notBeforeTimeInMillis) {
-                    errorMessage = "Request object is not valid yet";
+                    // Sync error msg to match with product IS.
+                    errorMessage = "Error occurred while validating request object signature using jwks endpoint: " +
+                            "request object is not valid yet.";
                     log.debug(errorMessage);
                     IdentityCommonUtil.setCustomErrorMessage(constraintValidatorContext, errorMessage);
                     return false;
