@@ -221,7 +221,7 @@ public class FSKeyManagerUtil {
      * @param fsAdditionalProperties Additional Property Map
      * @param propertyName Property Name
      * @return value for given property
-     * @throws APIManagementException
+     * @throws APIManagementException if the property is not found or has no values
      */
     public static String getValueForAdditionalProperty(Map<String, ConfigurationDto> fsAdditionalProperties,
                                                        String propertyName) throws APIManagementException {
