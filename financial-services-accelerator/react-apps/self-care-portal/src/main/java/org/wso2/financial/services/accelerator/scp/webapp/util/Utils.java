@@ -31,6 +31,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
@@ -48,6 +49,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -246,6 +249,66 @@ public class Utils {
             LOG.error("Exception occurred while processing token response. Caused by, ", e);
         }
         return null;
+    }
+
+    /**
+     * Method to retrieve application client name and logo url
+     * @return Map
+     */
+    public static Map<String, String> getAppClientNameMap() {
+        // Retrieving application details to get client name.
+        Map<String, String> appClientNameMap = new HashMap<>();
+        JSONObject applicationDetails = sendApplicationRetrievalRequest();
+        if (applicationDetails != null) {
+            for (Object application : applicationDetails.getJSONArray(Constants.APPLICATIONS)) {
+                JSONObject applicationJson = (JSONObject) application;
+                JSONObject configs = applicationJson.getJSONObject(Constants.ADVANCED_CONFIGURATIONS);
+                JSONArray spData = configs.getJSONArray(Constants.ADDITIONAL_SP_PROPERTIES);
+                String clientName = null;
+                for (Object spDataItem : spData) {
+                    JSONObject spDataItemJson = (JSONObject) spDataItem;
+                    if (spDataItemJson.getString(Constants.NAME).equalsIgnoreCase(
+                            Utils.getParameter(Constants.APP_NAME))) {
+                        String softwareClientName = spDataItemJson.getString(Constants.VALUE);
+                        if (org.apache.commons.lang.StringUtils.isNotEmpty(softwareClientName)) {
+                            clientName = softwareClientName;
+                        }
+                    }
+                }
+                if (clientName == null) {
+                    clientName = applicationJson.getString(Constants.NAME);
+                }
+                appClientNameMap.put(applicationJson.getString(Constants.CLIENT_ID_CC), clientName);
+            }
+        }
+        return appClientNameMap;
+    }
+
+    /**
+     * Method to retrieve application logo url
+     * @return Map
+     */
+    public static Map<String, String> getAppLogoUrlMap() {
+        // Retrieving application details to get client name and logo url.
+        Map<String, String> appLogoUrlMap = new HashMap<>();
+        JSONObject applicationDetails = sendApplicationRetrievalRequest();
+        if (applicationDetails != null) {
+            for (Object application : applicationDetails.getJSONArray(Constants.APPLICATIONS)) {
+                JSONObject applicationJson = (JSONObject) application;
+                JSONObject configs = applicationJson.getJSONObject(Constants.ADVANCED_CONFIGURATIONS);
+                JSONArray spData = configs.getJSONArray(Constants.ADDITIONAL_SP_PROPERTIES);
+                String logoUrl = null;
+                for (Object spDataItem : spData) {
+                    JSONObject spDataItemJson = (JSONObject) spDataItem;
+                    if (spDataItemJson.getString(Constants.NAME).equalsIgnoreCase(
+                            Utils.getParameter(Constants.APP_LOGO_URL))) {
+                        logoUrl = spDataItemJson.getString(Constants.VALUE);
+                    }
+                }
+                appLogoUrlMap.put(applicationJson.getString(Constants.CLIENT_ID_CC), logoUrl);
+            }
+        }
+        return appLogoUrlMap;
     }
 
 }

@@ -28,7 +28,6 @@ import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
-import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.util.HashMap;
@@ -61,11 +60,11 @@ public class FSIntrospectionDataProvider implements IntrospectionDataProvider {
         }
 
         String[] nonInternalScopes = IdentityCommonUtils.removeInternalScopes(oAuth2IntrospectionResponseDTO.getScope()
-                .split(IdentityCommonConstants.SPACE_SEPARATOR));
+                .split(FinancialServicesConstants.SPACE_SEPARATOR));
         oAuth2IntrospectionResponseDTO.setScope(StringUtils.join(nonInternalScopes,
-                IdentityCommonConstants.SPACE_SEPARATOR));
-        additionalDataMap.put(IdentityCommonConstants.SCOPE, StringUtils.join(nonInternalScopes,
-                IdentityCommonConstants.SPACE_SEPARATOR));
+                FinancialServicesConstants.SPACE_SEPARATOR));
+        additionalDataMap.put(FinancialServicesConstants.SCOPE, StringUtils.join(nonInternalScopes,
+                FinancialServicesConstants.SPACE_SEPARATOR));
         oAuth2IntrospectionResponseDTO.setProperties(additionalDataMap);
         return additionalDataMap;
     }
@@ -82,7 +81,7 @@ public class FSIntrospectionDataProvider implements IntrospectionDataProvider {
                 String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
                 additionalClaims.put(consentIdClaimName, IdentityCommonUtils
                         .getConsentIdFromScopesArray(oAuth2IntrospectionResponseDTO.getScope()
-                                .split(IdentityCommonConstants.SPACE_SEPARATOR)));
+                                .split(FinancialServicesConstants.SPACE_SEPARATOR)));
                 return additionalClaims;
             } else {
                 return oAuth2IntrospectionResponseDTO.getProperties();

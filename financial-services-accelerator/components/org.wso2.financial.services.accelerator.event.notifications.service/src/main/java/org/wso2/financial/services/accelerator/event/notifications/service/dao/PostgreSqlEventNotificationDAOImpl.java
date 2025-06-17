@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,6 @@ public class PostgreSqlEventNotificationDAOImpl extends EventNotificationDAOImpl
                     //read event notifications from the result set
                     while (notificationResultSet.next()) {
                         Notification notification = new Notification();
-
                         notification.setNotificationId(notificationResultSet.getString
                                 (EventNotificationConstants.NOTIFICATION_ID));
                         notification.setClientId(notificationResultSet.getString
@@ -81,8 +81,10 @@ public class PostgreSqlEventNotificationDAOImpl extends EventNotificationDAOImpl
                                 (EventNotificationConstants.RESOURCE_ID));
                         notification.setStatus(notificationResultSet.getString
                                 (EventNotificationConstants.STATUS));
-                        notification.setUpdatedTimeStamp((notificationResultSet.getTimestamp(
-                                (EventNotificationConstants.UPDATED_TIMESTAMP)).getTime()));
+                        long updatedTimeInepochSeconds = notificationResultSet.getLong(EventNotificationConstants.
+                                UPDATED_TIMESTAMP);
+                        Timestamp updatedTimestamp = new Timestamp(updatedTimeInepochSeconds * 1000);
+                        notification.setUpdatedTimeStamp(updatedTimestamp.getTime());
 
                         notificationList.add(notification);
                     }

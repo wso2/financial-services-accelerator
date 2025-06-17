@@ -129,13 +129,10 @@ export const getConsentsFromAPIForSearch = (searchObj, user, consent) => {
         if (searchObj.hasOwnProperty(key) && searchObj[key] !== "") {
             if (key === 'userIds') {
                 if (user.role === "customerCareOfficer") {
-                    searchUrl = searchUrl + "&" + key + "=" + searchObj[key];
+                    searchUrl = searchUrl + "&" + key + "=" + userIdAdjustment(searchObj[key]);
                 } else {
                     searchUrl = searchUrl + "&" + key + "=" + currentUserEmail;
                 }
-            } else if (key === 'clientIds') {
-                searchUrl = searchUrl + "&" + key + "=" +
-                    getClientIdsFromSoftwareProvider(searchObj[key], appInfo);
             } else {
                 searchUrl = searchUrl + "&" + key + "=" + searchObj[key];
             }
@@ -173,8 +170,9 @@ export const getConsentsFromAPIForSearch = (searchObj, user, consent) => {
 };
 
 export const getRevokeUrl = (consentId, user) => {
+    let userId = userIdAdjustment(user.email);
     const adminUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentId=${consentId}`;
-    const defaultUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentId=${consentId}&userId=${user.email}`;
+    const defaultUrl = `${CONFIG.BACKEND_URL}/admin/revoke?consentId=${consentId}&userId=${userId}`;
 
     return user.role === 'customerCareOfficer' ? adminUrl : defaultUrl;
 };

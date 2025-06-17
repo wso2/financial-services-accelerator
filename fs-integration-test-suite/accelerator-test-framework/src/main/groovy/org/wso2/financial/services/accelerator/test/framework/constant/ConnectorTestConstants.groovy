@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.test.framework.constant
 
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import org.wso2.bfsi.test.framework.constant.Constants
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 
@@ -79,6 +80,7 @@ class ConnectorTestConstants extends Constants{
     static final String ERROR_ERRORS_MSG = "error.message"
     static final String ERROR_ERRORS_DESCRIPTION = "error.description"
     static final String ERROR_CODE = "errorCode"
+    static final String CODE = "code"
     static final String MESSAGE = "message"
     static final String DESCRIPTION = "description"
     static final String ERROR_MESSAGE = "errorMessage"
@@ -335,5 +337,22 @@ class ConnectorTestConstants extends Constants{
     public static final String PIZZA_SHACK_MENU_PATH = PIZZA_SHACK_PATH + "menu"
     public static final String PIZZA_SHACK_ORDER_PATH = PIZZA_SHACK_PATH + "order"
     public static final String OPENID = "openid"
+    public static final String PAR_ENDPOINT = "oauth2/par"
+    public static final String REQUEST_URI = "request_uri"
+    public static final String RESPONSE_EXPIRES_IN = "expires_in"
+    public static final String RESPONSE_TYPE_CODE_ID_TOKEN = "code id_token"
+    public static final CodeVerifier CODE_VERIFIER = new CodeVerifier()
+    public static final String INVALID_REQUEST_URI = "invalid_request_uri"
+    public static final String UNABLE_TO_DECODE_JWT = "Unable to decode JWT."
+    public static final MISSING_AUD_VALUE= "aud parameter is missing in the request object"
+    public static final String INVALID_REQUEST_OBJECT = "invalid_request_object"
+    public static final MISSING_ISS_VALUE= "Invalid parameters found in the Request Object."
+    public static final MISSING_EXP_VALUE= "Request Object does not contain Expiration Time."
+    public static final MISSING_NBF_VALUE= "Request Object does not contain Not Before Time."
+    public static final INVALID_EXPIRY_TIME = "Request Object expiry time is too far in the future than not before time."
+
+    //File Path
+    static final File CONFIG_FILE = new File(System.getProperty("user.dir").toString()
+            .concat("/../../../accelerator-test-framework/src/main/resources/TestConfiguration.xml"))
 
 }

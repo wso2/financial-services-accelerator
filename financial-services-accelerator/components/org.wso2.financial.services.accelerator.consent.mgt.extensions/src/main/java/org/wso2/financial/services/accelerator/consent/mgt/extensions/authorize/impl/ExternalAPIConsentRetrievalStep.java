@@ -58,6 +58,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
     private final ConsentCoreService consentCoreService;
     private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
+    private static final Gson gson = new Gson();
 
     public ExternalAPIConsentRetrievalStep() {
 
@@ -101,8 +102,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             log.debug("Calling external service to get data to be displayed");
             ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
-            JSONArray consentDataJsonArray = new JSONArray(new Gson().toJson(responseDTO.getConsentData()));
-            JSONArray consumerDataJsonArray = new JSONArray(new Gson().toJson(responseDTO.getConsumerData()));
+            JSONArray consentDataJsonArray = new JSONArray(gson.toJson(responseDTO.getConsentData()));
+            JSONArray consumerDataJsonArray = new JSONArray(gson.toJson(responseDTO.getConsumerData()));
 
             // Set data to json object to be displayed in consent page.
             jsonObject.put("consentData", consentDataJsonArray);
@@ -110,6 +111,11 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
+
+            // Setting consent type as default for scope based consents
+            if (!isPreInitiatedConsent) {
+                consentData.setType(ConsentExtensionConstants.DEFAULT);
+            }
         } catch (FinancialServicesException e) {
             // ToDo: Improve error handling
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
@@ -189,7 +195,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
-        return new Gson().fromJson(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);
+        return gson.fromJson(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);
     }
 
 }

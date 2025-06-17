@@ -22,14 +22,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.identity.oauth2.token.handlers.grant.RefreshGrantHandler;
-import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
@@ -52,7 +49,7 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
     public OAuth2AccessTokenRespDTO issue(OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (FinancialServicesUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
+            if (IdentityCommonUtils.isRegulatoryApp(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId())) {
                 boolean issueRefreshToken = true;
                 if (ServiceExtensionUtils.isInvokeExternalService(
                         ServiceExtensionTypeEnum.ISSUE_REFRESH_TOKEN)) {
@@ -69,11 +66,9 @@ public class FSRefreshGrantHandler extends RefreshGrantHandler {
                 IdentityCommonUtils.addConsentIdToTokenResponse(oAuth2AccessTokenRespDTO);
                 return oAuth2AccessTokenRespDTO;
             }
-        } catch (RequestObjectException e) {
-            throw new IdentityOAuth2Exception(e.getMessage());
         } catch (FinancialServicesException e) {
-            log.error(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR, e);
-            throw new IdentityOAuth2Exception(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
+            log.error(e.getMessage().replaceAll("[\r\n]", ""), e);
+            throw new IdentityOAuth2Exception(e.getMessage());
         }
         return super.issue(tokReqMsgCtx);
     }

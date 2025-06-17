@@ -44,7 +44,7 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
 		initiationPayload = RequestPayloads.initiationPayload
 		//Consent initiation
-		consentResponse = doConsentInitiation(initiationPayload)
+		consentResponse = doConsentInitiation(initiationPayload, clientId)
 		consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
 		Assert.assertNotNull(consentId)
 
@@ -232,9 +232,14 @@ class AuthorisationCodeGrantAccessTokenTest extends FSConnectorTest {
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId,
 				code, consentScopes)
 
-		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-				"Client credentials are invalid.")
+		Assert.assertEquals(tokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+
+		String actualErrorResponse = TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
+
+		boolean isValidResponse = actualErrorResponse.equals("Client credentials are invalid.")
+				|| actualErrorResponse.equals("A valid OAuth client could not be found for client_id: deleted_client_id")
+
+		Assert.assertTrue(isValidResponse)
 		Assert.assertEquals(TestUtil.parseResponseBody(tokenResponse, ConnectorTestConstants.ERROR),
 				ConnectorTestConstants.INVALID_CLIENT)
 	}

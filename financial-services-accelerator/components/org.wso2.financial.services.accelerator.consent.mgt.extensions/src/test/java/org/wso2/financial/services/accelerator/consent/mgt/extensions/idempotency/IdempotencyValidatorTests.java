@@ -40,6 +40,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.C
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
@@ -227,6 +228,53 @@ public class IdempotencyValidatorTests {
         Assert.assertTrue(result.isValid());
         Assert.assertNotNull(result.getConsent());
         Assert.assertEquals(consentId, result.getConsentId());
+    }
+
+    @Test
+    public void testIsIdempotentForFileUploadWithExtensionEnabled()
+            throws ConsentManagementException {
+
+        FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
+        doReturn(configs).when(configParserMock).getConfiguration();
+        doReturn(true).when(configParserMock).isIdempotencyValidationEnabled();
+        doReturn("1").when(configParserMock).getIdempotencyAllowedTime();
+        doReturn(true).when(configParserMock).isIdempotencyAllowedForAllAPIs();
+        doReturn(IdempotencyConstants.X_IDEMPOTENCY_KEY).when(configParserMock).getIdempotencyHeaderName();
+        doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        doReturn(List.of(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE)).when(configParserMock)
+                .getServiceExtensionTypes();
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
+        ConsentExtensionsDataHolder dataHolderMock = mock(ConsentExtensionsDataHolder.class);
+        doReturn(consentCoreServiceImpl).when(dataHolderMock).getConsentCoreService();
+        consentExtensionsDataHolder.when(ConsentExtensionsDataHolder::getInstance).thenReturn(dataHolderMock);
+
+        OffsetDateTime offsetDateTime = OffsetDateTime.now();
+
+        doReturn(consentIdList).when(consentCoreServiceImpl)
+                .getConsentIdByConsentAttributeNameAndValue(anyString(), anyString());
+        doReturn(getConsent(offsetDateTime.toEpochSecond())).when(consentCoreServiceImpl)
+                .getDetailedConsent(anyString());
+        doReturn(getConsentFile()).when(consentCoreServiceImpl).getConsentFile(anyString());
+        headers.put("content-type", "application/xml");
+        doReturn(headers).when(consentManageData).getHeaders();
+        doReturn(CLIENT_ID).when(consentManageData).getClientId();
+        doReturn(FILE_UPLOAD_REQUEST_BODY).when(consentManageData).getPayload();
+        doReturn("/file-payments").when(consentManageData).getRequestPath();
+
+        try (MockedStatic<ExternalAPIConsentManageUtils> mockedStatic = mockStatic(
+                ExternalAPIConsentManageUtils.class)) {
+            ExternalAPIModifiedResponseDTO responseDTO =
+                    new ExternalAPIModifiedResponseDTO();
+            mockedStatic.when(() ->
+                            ExternalAPIConsentManageUtils.callExternalService(
+                                    any(ExternalAPIPostFileUploadRequestDTO.class)))
+                    .thenReturn(responseDTO);
+
+            boolean isIdempotent = new IdempotencyValidator().isIdempotent(consentManageData,
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
+            Assert.assertTrue(isIdempotent);
+        }
     }
 
     @Test

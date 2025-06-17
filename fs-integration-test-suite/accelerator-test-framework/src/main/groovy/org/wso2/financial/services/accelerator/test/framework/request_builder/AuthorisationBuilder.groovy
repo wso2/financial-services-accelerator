@@ -486,6 +486,32 @@ class AuthorisationBuilder {
     }
 
     /**
+     * Get Authorization Request with Request URI
+     * @param requestUri
+     * @param clientID
+     * @param isStateParamPresent
+     * @return
+     */
+    AuthorizationRequest getAuthorizationRequest(URI requestUri, String clientID = getClientID().getValue(),
+                                                 boolean isStateParamPresent = true) {
+
+        if(isStateParamPresent) {
+            request = new AuthorizationRequest.Builder(requestUri, new ClientID(clientID))
+                    .state(getState())
+                    .redirectionURI(configuration.getAppDCRRedirectUri().toURI())
+                    .endpointURI(getEndpoint())
+                    .build()
+        } else {
+            request = new AuthorizationRequest.Builder(requestUri, new ClientID(clientID))
+                    .endpointURI(getEndpoint())
+                    .redirectionURI(configuration.getAppDCRRedirectUri().toURI())
+                    .build()
+        }
+
+        return request
+    }
+
+    /**
      * Get Authorization Request With request Params
      * @param clientId
      * @param scope
@@ -503,10 +529,9 @@ class AuthorisationBuilder {
                 .redirectionURI(getRedirectURI())
                 .scope(new Scope(scope))
                 .requestObject(generator.getSignedAuthRequestObject(scope, new ClientID(clientId),
-                        new Issuer(clientId), consentId))
+                new Issuer(clientId), consentId))
                 .state(getState())
                 .customParameter("nonce", ConnectorTestConstants.NONCE_PARAMETER)
                 .build()
     }
-
 }

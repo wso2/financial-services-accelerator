@@ -49,9 +49,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.util.TokenRev
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -1192,24 +1194,29 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                     ArrayList<AuthorizationResource> authorizationResources = retrievedDetailedConsentResource
                             .getAuthorizationResources();
 
-                    String consentUserID = "";
+                    // Get all users of the consent
+                    Set<String> consentUserIDSet = new HashSet<>();
                     if (authorizationResources != null && !authorizationResources.isEmpty()) {
-                        consentUserID = authorizationResources.get(0).getUserID();
+                        for (AuthorizationResource authorizationResource : authorizationResources) {
+                            consentUserIDSet.add(authorizationResource.getUserID());
+                        }
                     }
 
-                    if (StringUtils.isBlank(consentUserID)) {
-                        log.error(ConsentCoreServiceConstants.USER_ID_MISSING_ERROR_MSG);
-                        throw new ConsentManagementException(ConsentCoreServiceConstants.USER_ID_MISSING_ERROR_MSG);
+                    if (consentUserIDSet.isEmpty()) {
+                        log.error("User ID is required for token revocation, cannot proceed");
+                        throw new ConsentManagementException("User ID is required for token revocation, cannot " +
+                                "proceed");
                     }
 
-                    if (!ConsentCoreServiceUtil.isValidUserID(userID, consentUserID)) {
-                        final String errorMsg = String.format(ConsentCoreServiceConstants.USER_ID_MISMATCH_ERROR_MSG,
-                                userID.replaceAll("[\r\n]", ""),
-                                consentUserID.replaceAll("[\r\n]", ""));
-                        log.error(errorMsg);
+                    if (!isValidUserID(userID, consentUserIDSet)) {
+                        final String errorMsg = "Requested UserID and Consent UserID do not match, cannot proceed.";
+                        log.error(errorMsg + ", request UserID: " + userID.replaceAll("[\r\n]", "") +
+                                " is not a member of the consent user list");
                         throw new ConsentManagementException(errorMsg);
                     }
-                    TokenRevocationUtil.revokeTokens(retrievedDetailedConsentResource, consentUserID);
+                    for (String user : consentUserIDSet) {
+                        TokenRevocationUtil.revokeTokens(retrievedDetailedConsentResource, user);
+                    }
                 }
 
                 ArrayList<ConsentMappingResource> consentMappingResources = retrievedDetailedConsentResource
@@ -2205,5 +2212,13 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
             DatabaseUtils.closeConnection(connection);
         }
+    }
+
+    private boolean isValidUserID(String requestUserID, Set<String> consentUserIDSet) {
+        if (StringUtils.isEmpty(requestUserID)) {
+            // userId not present in request query parameters, can use consentUserID to revoke tokens
+            return true;
+        }
+        return consentUserIDSet.contains(requestUserID);
     }
 }

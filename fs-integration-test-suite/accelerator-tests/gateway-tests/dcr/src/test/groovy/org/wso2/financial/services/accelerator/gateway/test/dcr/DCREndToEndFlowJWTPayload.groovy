@@ -26,12 +26,13 @@ import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.JWTGenerator
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Dynamic Client Registration End to End Flow Tests.
  */
-class DCREndToEndFlow extends FSConnectorTest {
+class DCREndToEndFlowJWTPayload extends FSConnectorTest {
 
     ConfigurationService configuration = new ConfigurationService()
     private String accessToken
@@ -39,21 +40,24 @@ class DCREndToEndFlow extends FSConnectorTest {
     private List<ConnectorTestConstants.ApiScope> scopes = [ConnectorTestConstants.ApiScope.ACCOUNTS]
     private String registrationPath
     String SSA
+    JWTGenerator jwtGenerator = new JWTGenerator()
 
     @BeforeClass(alwaysRun = true)
     void setup() {
 
         registrationPath = configuration.getServerBaseURL() + DCRConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(0)
+        configuration.setTppNumber(1)
         SSA = new File(configuration.getAppDCRSSAPath()).text
     }
 
     @Test(groups = "SmokeTest")
     void "Invoke registration request structured as a JWS"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder.getRegularClaimsForGateway(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestWithClaims(ClientRegistrationRequestBuilder.getRegularClaims(SSA))
-                .when()
+                .buildGatewayRegistrationRequest()
+                .body(payload)
                 .post(registrationPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -82,7 +86,8 @@ class DCREndToEndFlow extends FSConnectorTest {
     void "Retrieve registration details with a valid clientId and access token"() {
 
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(accessToken)
+                .buildGatewayRegistrationRequestForRetrievalAndDelete()
+                .header("Authorization", "Bearer " + accessToken)
                 .get(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
@@ -100,8 +105,11 @@ class DCREndToEndFlow extends FSConnectorTest {
     @Test(groups = "SmokeTest", dependsOnMethods = "Retrieve registration details with a valid clientId and access token")
     void "Update client request with a valid details"() {
 
+        def payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder.getUpdateRegularClaimsForGateway(SSA))
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken, ClientRegistrationRequestBuilder.getUpdateRegularClaims(SSA))
+                .buildGatewayRegistrationRequest()
+                .header("Authorization", "Bearer " + accessToken)
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
@@ -120,7 +128,8 @@ class DCREndToEndFlow extends FSConnectorTest {
     void "Delete client with a valid clientId and access token"() {
 
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(accessToken)
+                .buildGatewayRegistrationRequestForRetrievalAndDelete()
+                .header("Authorization", "Bearer " + accessToken)
                 .delete(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)

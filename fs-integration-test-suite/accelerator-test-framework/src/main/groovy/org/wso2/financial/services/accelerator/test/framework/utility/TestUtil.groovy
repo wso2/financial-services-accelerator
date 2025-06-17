@@ -19,6 +19,8 @@
 package org.wso2.financial.services.accelerator.test.framework.utility
 
 import com.fasterxml.uuid.Generators
+import com.nimbusds.jose.crypto.RSADecrypter
+import com.nimbusds.jwt.EncryptedJWT
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
 import org.wso2.bfsi.test.framework.util.CommonTestUtil
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
@@ -31,6 +33,7 @@ import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
 import java.security.UnrecoverableEntryException
+import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
@@ -254,5 +257,10 @@ class TestUtil extends CommonTestUtil{
      */
     static String getIpAddress() {
         return InetAddress.getLocalHost().getHostAddress()
+    }
+  
+    static String getStatusMsgFromUrl(String url) {
+
+        return url.split("statusMsg")[1].split("=")[1].replaceAll("\\+", " ");
     }
 }

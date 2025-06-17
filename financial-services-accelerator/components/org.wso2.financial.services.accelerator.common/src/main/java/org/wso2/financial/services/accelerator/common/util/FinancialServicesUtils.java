@@ -18,23 +18,28 @@
 
 package org.wso2.financial.services.accelerator.common.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -128,27 +133,6 @@ public class FinancialServicesUtils {
     }
 
     /**
-     * Check whether the client ID belongs to a regulatory app.
-     * 
-     * @param clientId client ID
-     * @return true if the client ID belongs to a regulatory app
-     * @throws RequestObjectException If an error occurs while checking the client ID
-     */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    public static boolean isRegulatoryApp(String clientId) throws RequestObjectException {
-
-        try {
-            return OAuth2Util.isFapiConformantApp(clientId);
-        } catch (InvalidOAuthClientException e) {
-            throw new RequestObjectException(OAuth2ErrorCodes.INVALID_CLIENT, "Could not find an existing app for " +
-                    "clientId: " + clientId, e);
-        } catch (IdentityOAuth2Exception e) {
-            throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
-                    "provider for clientId: " + clientId, e);
-        }
-    }
-
-    /**
      * Method to resolve username from user ID.
      *
      * @param userID   User ID
@@ -198,5 +182,81 @@ public class FinancialServicesUtils {
         DateFormat simple = new SimpleDateFormat(FinancialServicesConstants.ISO_FORMAT);
         Date simpleDateVal = new Date(dateValue * 1000);
         return simple.format(simpleDateVal);
+    }
+
+    /**
+     * Method to obtain basic auth header.
+     *
+     * @param username Username of Auth header
+     * @param password Password of Auth header
+     * @return basic auth header
+     */
+    public static String getBasicAuthHeader(String username, String password) {
+
+        byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON + password)
+                .getBytes(StandardCharsets.UTF_8));
+        return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Extracts the consent ID from the essential claims JSON string.
+     *
+     * @param essentialClaims The essential claims JSON string
+     * @return The consent ID extracted from the essential claims
+     * @throws JsonProcessingException If an error occurs while processing the JSON
+     */
+    public static String getConsentIdFromEssentialClaims(String essentialClaims)
+            throws JsonProcessingException {
+
+        String jsonPath = FinancialServicesConfigParser.getInstance().getConsentIdExtractionJsonPath();
+
+        if (StringUtils.isBlank(essentialClaims) || StringUtils.isBlank(jsonPath)) {
+            return null; // Return null if input is invalid
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(essentialClaims);
+        JsonNode targetNode = node.at(jsonPath);
+        return extractConsentIdFromRegex(targetNode.asText());
+    }
+
+    /**
+     * Extracts the consent ID from the given string using a regex pattern.
+     * @param value The string to extract the consent ID from
+     * @return The extracted consent ID, or null if not found
+     */
+    public static String extractConsentIdFromRegex(String value) {
+
+        if (StringUtils.isBlank(value)) {
+            return value;
+        }
+
+        String patternString = FinancialServicesConfigParser.getInstance().getConsentIdExtractionRegexPattern();
+
+        if (StringUtils.isBlank(patternString)) {
+            return value;
+        }
+
+        Pattern pattern = Pattern.compile(patternString);
+
+        Matcher matcher = pattern.matcher(value);
+        return matcher.find() ? matcher.group(1) : null;
+    }
+
+    /**
+     * Get consent ID from the scopes request parameter.
+     * Used to extract the consent ID from the scopes request parameter. Eg: "pis ais:123456 cbpii"
+     *
+     * @param scopes Scopes
+     * @return Consent ID
+     */
+    public static String getConsentIdFromScopesRequestParam(String[] scopes) {
+
+        StringBuilder scopesString = new StringBuilder();
+        for (String scope : scopes) {
+            scopesString.append(scope).append(FinancialServicesConstants.SPACE_SEPARATOR);
+        }
+
+        return extractConsentIdFromRegex(scopesString.toString().trim());
     }
 }

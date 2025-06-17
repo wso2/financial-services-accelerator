@@ -24,7 +24,7 @@
     <parent>
         <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.0.0-alpha-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -121,6 +121,11 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>org.wso2.financial.services.accelerator.consent.mgt.dao</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.financial.services.accelerator</groupId>
+            <artifactId>org.wso2.financial.services.accelerator.identity.extensions</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

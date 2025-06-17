@@ -18,9 +18,9 @@
 
 package org.wso2.financial.services.accelerator.test.framework
 
+import com.nimbusds.jwt.JWT
 import org.json.JSONObject
 import org.testng.Assert
-import org.testng.annotations.Test
 import org.wso2.bfsi.test.framework.CommonTest
 import org.wso2.bfsi.test.framework.automation.WaitForRedirectAutomationStep
 import org.wso2.bfsi.test.framework.request_builder.SignedObject
@@ -41,6 +41,7 @@ import org.wso2.financial.services.accelerator.test.framework.configuration.Conf
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PageObjects
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.request_builder.JWTGenerator
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ConsentRequestBuilder
@@ -99,6 +100,8 @@ class FSConnectorTest extends CommonTest{
     String subscriptionUpdatePayload
     final String subscriptionPath = ConnectorTestConstants.URL_EVENT_SUBSCRIPTION
     String subscriptionId
+    JWTGenerator generator
+    public String authoriseUrl
     Response subscriptionResponse
     Response subscriptionRetrievalResponse
     Response subscriptionUpdateResponse
@@ -291,9 +294,11 @@ class FSConnectorTest extends CommonTest{
      */
     Response getUserAccessTokenResponse(String authMethodType = ConnectorTestConstants.PKJWT_AUTH_METHOD,
                                         String clientId = configuration.getAppInfoClientID(),
-                                        String authCode, List<ConnectorTestConstants.ApiScope> scopeString) {
+                                        String authCode, List<ConnectorTestConstants.ApiScope> scopeString,
+                                        boolean isCodeVerifierRequired = false) {
         return TokenRequestBuilder.getUserAccessTokenResponse(authMethodType,
-                scopeString.stream().map { it.scopeString }.toList(), clientId, authCode)
+                scopeString.stream().map { it.scopeString }.toList(), clientId, authCode,
+                isCodeVerifierRequired)
     }
 
     RequestSpecification buildKeyManagerRequest(String clientID) {
@@ -409,11 +414,10 @@ class FSConnectorTest extends CommonTest{
      * Account Consent Initiation Step with without ReadAccountsDetail permission .
      * @permissionsList
      */
-    void  doDefaultInitiation(String payload) {
+    void  doDefaultInitiation(String payload, String clientId = configuration.getAppInfoClientID()) {
 
         //initiation without ReadAccountsDetail
-        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(clientId)
                 .body(payload)
                 .baseUri(configuration.getISServerUrl())
                 .post(consentPath)
@@ -512,7 +516,6 @@ class FSConnectorTest extends CommonTest{
 
         consentValidateResponse = consentRequestBuilder.buildKeyManagerRequestForJWT(configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
                 .config(RestAssured.config()
                         .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(
                                 TestUtil.getSslSocketFactory()))
@@ -1037,11 +1040,10 @@ class FSConnectorTest extends CommonTest{
      * Account Consent Initiation Step with without ReadAccountsDetail permission .
      * @permissionsList
      */
-    Response doConsentInitiation(String payload) {
+    Response doConsentInitiation(String payload, String clientId=configuration.getAppInfoClientID()) {
 
         //initiation without ReadAccountsDetail
-        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(clientId)
                 .body(payload)
                 .baseUri(configuration.getISServerUrl())
                 .post(consentPath)
@@ -1049,4 +1051,275 @@ class FSConnectorTest extends CommonTest{
         return consentResponse
     }
 
+    /**
+     * Method for Pushed Authorisation Request
+     * @param requestObjectClaims
+     * @param clientId
+     * @param isStateParamRequired
+     * @param algorithm
+     * @return
+     */
+    Response doPushAuthorisationRequest(List <ConnectorTestConstants.ApiScope> scopeString, String consentId,
+                                        String clientId = configuration.getAppInfoClientID(),
+                                        String algorithm = null,
+                                        String redirectUrl = configuration.getAppDCRRedirectUri(),
+                                        String responseType = ConnectorTestConstants.RESPONSE_TYPE_CODE_ID_TOKEN,
+                                        boolean isStateParamRequired = true) {
+
+        Response parResponse
+        generator = new JWTGenerator()
+
+        //Generate Client Assertion
+        String assertionString = generator.getClientAssertionJwt(clientId)
+        String scopes = scopeString.collect { it.scopeString }.join(' ')
+
+        //Generate Request Object Claim
+        JWT getRequestObjectClaim = generator.getRequestObjectClaim(scopes, consentId, redirectUrl, clientId, responseType,
+                true, UUID.randomUUID().toString())
+
+        def bodyContent = [
+                (ConnectorTestConstants.CLIENT_ID_KEY)            : (clientId),
+                (ConnectorTestConstants.CLIENT_ASSERTION_TYPE_KEY): (ConnectorTestConstants.CLIENT_ASSERTION_TYPE),
+                (ConnectorTestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                (ConnectorTestConstants.REQUEST_KEY)         : getRequestObjectClaim.getParsedString()
+        ]
+
+        if (algorithm != null) {
+            generator.setSigningAlgorithm(algorithm)
+        }
+
+        if (isStateParamRequired) {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        } else {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        }
+
+        return parResponse
+    }
+
+    /**
+     * Method for Consent Authorisation via Request URI
+     * @param requestUri
+     * @param clientId
+     */
+    void doConsentAuthorisationViaRequestUri(URI requestUri, String clientId = null) {
+
+        AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
+
+        if (clientId != null) {
+            authoriseUrl = acceleratorAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = acceleratorAuthorisationBuilder.getAuthorizationRequest(requestUri)
+                    .toURI().toString()
+        }
+
+        automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
+
+                    WebDriverWait wait = new WebDriverWait(driver, 10)
+                    if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                    }
+
+                    if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                    }
+                    WebElement btnApprove = wait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
+                    btnApprove.click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        code = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Method to get User Access Token Response with Code Verifier
+     * @param authMethodType
+     * @param clientId
+     * @param authCode
+     * @param scopeString
+     * @return
+     */
+    Response getUserAccessTokenResponseWithCodeVerifier(String authMethodType = ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                                        String clientId = configuration.getAppInfoClientID(),
+                                        String authCode, List<ConnectorTestConstants.ApiScope> scopeString) {
+        return TokenRequestBuilder.getUserAccessTokenResponse(authMethodType,
+                scopeString.stream().map { it.scopeString }.toList(), clientId, authCode)
+    }
+
+    /**
+     * Method for Pushed Authorisation Request without Client ID
+     * @param scopeString
+     * @param consentId
+     * @param clientId
+     * @param algorithm
+     * @param redirectUrl
+     * @param responseType
+     * @param isStateParamRequired
+     * @return
+     */
+    Response doPushAuthorisationRequestWithoutClientId(List <ConnectorTestConstants.ApiScope> scopeString, String consentId,
+                                        String clientId = configuration.getAppInfoClientID(),
+                                        String algorithm = null,
+                                        String redirectUrl = configuration.getAppDCRRedirectUri(),
+                                        String responseType = ConnectorTestConstants.RESPONSE_TYPE_CODE_ID_TOKEN,
+                                        boolean isStateParamRequired = true) {
+
+        Response parResponse
+        generator = new JWTGenerator()
+
+        //Generate Client Assertion
+        String assertionString = generator.getClientAssertionJwt(clientId)
+        String scopes = scopeString.collect { it.scopeString }.join(' ')
+
+        //Generate Request Object Claim
+        JWT getRequestObjectClaim = generator.getRequestObjectClaim(scopes, consentId, redirectUrl, clientId, responseType,
+                true, UUID.randomUUID().toString())
+
+        def bodyContent = [
+                (ConnectorTestConstants.CLIENT_ASSERTION_TYPE_KEY): (ConnectorTestConstants.CLIENT_ASSERTION_TYPE),
+                (ConnectorTestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                (ConnectorTestConstants.REQUEST_KEY)         : getRequestObjectClaim.getParsedString()
+        ]
+
+        if (algorithm != null) {
+            generator.setSigningAlgorithm(algorithm)
+        }
+
+        if (isStateParamRequired) {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        } else {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        }
+
+        return parResponse
+    }
+
+    /**
+     * Method for Pushed Authorisation Request without Request Object
+     * @param scopeString
+     * @param consentId
+     * @param clientId
+     * @param algorithm
+     * @param redirectUrl
+     * @param responseType
+     * @param isStateParamRequired
+     * @return
+     */
+    Response doPushAuthorisationRequestWithoutRequestObject(List <ConnectorTestConstants.ApiScope> scopeString, String consentId,
+                                        String clientId = configuration.getAppInfoClientID(),
+                                        String algorithm = null,
+                                        String redirectUrl = configuration.getAppDCRRedirectUri(),
+                                        String responseType = ConnectorTestConstants.RESPONSE_TYPE_CODE_ID_TOKEN,
+                                        boolean isStateParamRequired = true) {
+
+        Response parResponse
+        generator = new JWTGenerator()
+
+        //Generate Client Assertion
+        String assertionString = generator.getClientAssertionJwt(clientId)
+        String scopes = scopeString.collect { it.scopeString }.join(' ')
+
+        //Generate Request Object Claim
+        def bodyContent = [
+                (ConnectorTestConstants.CLIENT_ID_KEY)            : (clientId),
+                (ConnectorTestConstants.CLIENT_ASSERTION_TYPE_KEY): (ConnectorTestConstants.CLIENT_ASSERTION_TYPE),
+                (ConnectorTestConstants.CLIENT_ASSERTION_KEY)     : assertionString
+        ]
+
+        if (algorithm != null) {
+            generator.setSigningAlgorithm(algorithm)
+        }
+
+        if (isStateParamRequired) {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        } else {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        }
+
+        return parResponse
+    }
+
+    /**
+     * Method for Pushed Authorisation Request with Request Object Claims
+     * @param requestObjectClaims
+     * @param clientId
+     * @param algorithm
+     * @param isStateParamRequired
+     * @return
+     */
+    Response doPushAuthorisationRequest(JWT requestObjectClaims, String clientId = configuration.getAppInfoClientID(),
+                                        String algorithm = null, boolean isStateParamRequired = true) {
+
+        Response parResponse
+        generator = new JWTGenerator()
+
+        //Generate Client Assertion
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (ConnectorTestConstants.CLIENT_ID_KEY)            : (clientId),
+                (ConnectorTestConstants.CLIENT_ASSERTION_TYPE_KEY): (ConnectorTestConstants.CLIENT_ASSERTION_TYPE),
+                (ConnectorTestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                (ConnectorTestConstants.REQUEST_KEY)         : requestObjectClaims.getParsedString()
+        ]
+
+        if (algorithm != null) {
+            generator.setSigningAlgorithm(algorithm)
+        }
+
+        if (isStateParamRequired) {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        } else {
+
+            parResponse = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.PAR_ENDPOINT)
+        }
+
+        return parResponse
+    }
 }

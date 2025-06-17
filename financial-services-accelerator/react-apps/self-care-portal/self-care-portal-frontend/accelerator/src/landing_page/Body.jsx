@@ -32,7 +32,7 @@ export const Body = () => {
                 <Container className="boxContainer">
                     <div className="box">
                         <div className="titleBar">
-                            <h4 className="titleName">{title}</h4>
+                            <Row><h4 className="titleName">{title}</h4></Row>
                             <Row className="infoSearchRow">
                                 <div className="searchBox">
                                     <AdvanceSearch/>

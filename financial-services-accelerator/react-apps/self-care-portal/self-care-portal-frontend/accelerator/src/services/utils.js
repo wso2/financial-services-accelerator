@@ -16,9 +16,10 @@
  * under the License.
  */
 
-import {specConfigurations, dataTypes} from "../specConfigs";
+import {specConfigurations, dataTypes, consentTypes} from "../specConfigs";
 import moment from "moment";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export function getDisplayName(appInfo, clientId) {
     try {
@@ -106,26 +107,31 @@ export function getExpireTimeFromConsent(consent, format) {
 
 export function generatePDF(consent, applicationName, consentStatus) {
 
-    const pdf = new jsPDF("l", "mm", "a4");
+    const pdf = new jsPDF("p", "mm", "a4");
     let content01 = "";
     let content02 = "";
     let content03 = "";
-    pdf.setFontSize(11);
 
     const input = document.getElementsByClassName('permissionsUL');
 
-    try {
-        content01 = input[0].innerHTML.split("<li>");
-        content01 = content01.join("").split("</li>").join(", ");
-        content01 = content01.slice(0, -2);
-    } catch (e) {
-    }
+    if (input.length > 0) {
+        try {
+            content01 = input[0].innerHTML.split("<li>");
+            content01 = content01.join("").split("</li>");
+            for (let i = 0; i < content01.length; i++) {
+                content01[i] = content01[i].replace(/(<([^>]+)>)/ig, "");
+            }
+        } catch (e) {
+        }
 
-    try {
-        content02 = input[1].innerHTML.split("<li>");
-        content02 = content02.join("").split("</li>").join(", ");
-        content02 = content02.slice(0, -2);
-    } catch (e) {
+        try {
+            content02 = input[1].innerHTML.split("<li>");
+            content02 = content02.join("").split("</li>");
+            for (let i = 0; i < content02.length; i++) {
+                content02[i] = content02[i].replace(/(<([^>]+)>)/ig, "");
+            }
+        } catch (e) {
+        }
     }
 
     try {
@@ -133,22 +139,55 @@ export function generatePDF(consent, applicationName, consentStatus) {
         consent.consentMappingResources.map((account) =>
             account.mappingStatus === "active" ? debtorList.push(account.accountId) : <> </>
         );
-        content03 = debtorList.join(",");
+        content03 = debtorList.join('\n');
     } catch (e) {
     }
 
-    pdf.text(20, 20, 'Consent infomation for consent ID: ' + consent.consentId)
-    pdf.rect(15, 10, 265, 190);
-    pdf.text(20, 30, "Status: " + consentStatus)
-    pdf.text(20, 40, 'API Consumer Application : ' + applicationName)
-    pdf.text(20, 50, 'Create date: ' + moment(new Date((consent.createdTimestamp) * 1000)).format("DD-MMM-YYYY"))
-    pdf.text(20, 60, 'Expire date: ' + getExpireTimeFromConsent(consent, "DD-MMM-YYYY"));
-    pdf.text(20, 70, 'Data we are sharing on: ')
-    pdf.text(30, 80, 'Account name, type and balance: ')
-    pdf.text(40, 90, content01)
-    pdf.text(30, 100, 'Account numbers and features: ')
-    pdf.text(40, 110, content02)
-    pdf.text(20, 120, 'Accounts: ' + content03)
+    pdf.setFontSize(14);
+    pdf.text(20, 20, 'Consent information for consent ID: ' + consent.consentId);
+
+    pdf.setFontSize(11);
+    let expireTime = getExpireTimeFromConsent(consent, "DD-MMM-YYYY");
+    if (expireTime === "" || expireTime === undefined) {
+        expireTime = 'No Expiry';
+    }
+
+    pdf.text(20, 30, 'Basic Consent Details: ')
+    autoTable(pdf, {
+        startY :40,
+        margin: {left: 20, right: 20 },
+        border: {top: 2, right: 2, bottom: 2, left: 2},
+        body: [
+          ['ConsentType', consentTypes.find((type) => type.id === consent.consent_type).label],
+          ['Status', consent.currentStatus],
+          ['API Consumer Application ', applicationName],
+          ['Create date', moment(new Date((consent.createdTimestamp) * 1000)).format("DD-MMM-YYYY")],
+          ['Expire date', expireTime],
+          ['Accounts', content03]
+        ],
+    });
+
+    let body = [];
+
+    if (content01.length > 0) {
+        body.push(['Your Account Details', content01.join('\n')]);
+    }
+    if (content02.length > 0) {
+        body.push(['Permissions', content02.join('\n')]);
+    }
+
+    if (content01.length > 0 || content02.length > 0) {
+        pdf.text(20, 100, 'Data we are sharing on: ');
+        autoTable(pdf, {
+            startY :110,
+            margin: { left: 20, right: 20 },
+            border: {top: 2, right: 2, bottom: 2, left: 2},
+            headStyles: { fillColor: [112, 123, 124] },
+            head: [['Data Sharing Category', 'Data Shared']],
+            body: body,
+        });
+    }
+
     pdf.save("consent.pdf");
 }
 
