@@ -40,7 +40,7 @@ class AccountsDataProviders {
         def validPermissions = new ArrayList<Object[]>()
         validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_BASIC] as Object)
         validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL] as Object)
-        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_BASIC] as Object)
+        validPermissions.add([ConnectorTestConstants.READ_ACCOUNTS_DETAIL, ConnectorTestConstants.READ_TRANSACTIONS_DETAIL] as Object)
 
         return validPermissions
     }

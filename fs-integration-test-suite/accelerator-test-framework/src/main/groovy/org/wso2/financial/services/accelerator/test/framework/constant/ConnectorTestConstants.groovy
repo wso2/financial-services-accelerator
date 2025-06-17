@@ -331,4 +331,9 @@ class ConnectorTestConstants extends Constants{
     public static final String INVALID_CREDENTIALS = "Invalid Credentials"
     static final String CODE = "code"
     public static final String INTERACTION_ID = UUID.randomUUID().toString()
+    public static final String PIZZA_SHACK_PATH = "pizzashack/1.0.0/"
+    public static final String PIZZA_SHACK_MENU_PATH = PIZZA_SHACK_PATH + "menu"
+    public static final String PIZZA_SHACK_ORDER_PATH = PIZZA_SHACK_PATH + "order"
+    public static final String OPENID = "openid"
+
 }

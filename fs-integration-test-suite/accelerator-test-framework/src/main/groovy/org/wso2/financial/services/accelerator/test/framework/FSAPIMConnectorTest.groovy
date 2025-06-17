@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.test.framework
 
 import io.restassured.http.ContentType
 import io.restassured.response.Response
+import io.restassured.specification.RequestSpecification
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.openqa.selenium.By
@@ -66,7 +67,7 @@ class FSAPIMConnectorTest extends CommonTest{
 //
     public String redirectURL
     protected String consentId
-    String accessToken
+    String accessToken, refreshToken
     String code
     String denyResponse
     Response consentResponse
@@ -307,18 +308,18 @@ class FSAPIMConnectorTest extends CommonTest{
 //        return consentRequestBuilder.buildKeyManagerRequest(clientID)
 //    }
 //
-//    /**
-//     * Token Introspection Request.
-//     * @param accessToken
-//     */
-//    static Response getTokenIntrospectionResponse(String accessToken) {
-//
-//        return TokenRequestBuilder.getTokenIntrospectionResponse(accessToken)
-//    }
-//
-//    RequestSpecification buildKeyManagerRequestWithoutAuthorizationHeader(String clientID) {
-//        return consentRequestBuilder.buildKeyManagerRequestWithoutAuthorizationHeader(clientID)
-//    }
+    /**
+     * Token Introspection Request.
+     * @param accessToken
+     */
+    static Response getTokenIntrospectionResponse(String accessToken) {
+
+        return TokenRequestBuilder.getTokenIntrospectionResponse(accessToken)
+    }
+
+    RequestSpecification buildKeyManagerRequestWithoutAuthorizationHeader(String clientID) {
+        return consentRequestBuilder.buildKeyManagerRequestWithoutAuthorizationHeader(clientID)
+    }
 //
     /**
      * Consent Initiation Step.
@@ -1332,11 +1333,27 @@ class FSAPIMConnectorTest extends CommonTest{
     }
 
     /**
-     * Account Consent Initiation Step
+     *  Consent Initiation Step with defined payload
      */
-    Response doDefaultAccountInitiationWithUpdatedPayload(String updatedPayload) {
+    Response doDefaultInitiationWithUpdatedPayload(String updatedPayload) {
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .baseUri(configuration.getServerBaseURL())
+                .body(updatedPayload)
+                .post(consentPath)
+
+        return consentResponse
+    }
+
+    /**
+     * Cof Initiation Step with defined payload
+     * @param updatedPayload
+     * @return
+     */
+    Response doDefaultCofInitiationWithUpdatedPayload(String updatedPayload) {
+        //initiation
+        consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
                 .baseUri(configuration.getServerBaseURL())
                 .body(updatedPayload)
                 .post(consentPath)
@@ -1434,5 +1451,105 @@ class FSAPIMConnectorTest extends CommonTest{
                                         String authCode, List<ConnectorTestConstants.ApiScope> scopeString) {
         return TokenRequestBuilder.getUserAccessTokenResponse(authMethodType,
                 scopeString.stream().map { it.scopeString }.toList(), clientId, authCode)
+    }
+
+    /**
+     * Get Application Access Token for Non-Regulatory App.
+     * @param clientId
+     * @param clientSecret
+     * @param scopeString
+     * @return
+     */
+    String getApplicationAccessTokenForNonRegulatoryApp(String clientId = configuration.getNonRegulatoryAppClientID(),
+                                                        String clientSecret = configuration.getNonRegulatoryAppClientSecret(),
+                                                        List <ConnectorTestConstants.ApiScope> scopeString ) {
+
+        Response response = TokenRequestBuilder.getApplicationAccessTokenForNonRegulatoryApp(scopeString.stream().map { it.scopeString }.toList(),
+                clientId, clientSecret)
+
+        def accessToken = TestUtil.parseResponseBody(response, "access_token")
+        log.info("Got app access token $accessToken")
+
+        if (accessToken != null) {
+            addToContext(ConnectorTestConstants.APP_ACCESS_TKN, accessToken)
+        } else {
+            log.error("Application access Token is null")
+        }
+        return accessToken
+    }
+
+    /**
+     * Cof Authorization Deny scenario.
+     * @param scopes
+     */
+    void doCofConsentDeny(List<ConnectorTestConstants.ApiScope> scopes) {
+
+        AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
+        String authoriseUrl = acceleratorAuthorisationBuilder.getAuthorizationRequest(configuration.getAppInfoClientID(),
+                consentId, scopes, true).toURI().toString()
+
+        automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+
+                    WebDriverWait wait = new WebDriverWait(driver, 60)
+
+                    WebElement btnConfirm = wait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_DENY)))
+                    btnConfirm.click()
+                }
+                .execute()
+
+        // Get User denied message From URL
+        denyResponse = TestUtil.getErrorDescriptionFromUrlWhenDenied(automation.currentUrl.get())
+    }
+
+    /**
+     * Payment Consent Deny scenario.
+     * @param scopes
+     */
+    void doPaymentConsentDeny(List<ConnectorTestConstants.ApiScope> scopes) {
+
+        AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
+        String authoriseUrl = acceleratorAuthorisationBuilder.getAuthorizationRequest(configuration.getAppInfoClientID(),
+                consentId, scopes, true).toURI().toString()
+
+
+        automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+
+                    WebDriverWait wait = new WebDriverWait(driver, 10)
+                    wait = new WebDriverWait(driver, 60)
+                    if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).size != 0) {
+                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                    }
+                    WebElement btnConfirm = wait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_DENY)))
+                    btnConfirm.click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get User denied message From URL
+        denyResponse = TestUtil.getErrorDescriptionFromUrlWhenDenied(automation.currentUrl.get())
+    }
+
+    /**
+     * Method to get Refresh Grant Access Token.
+     * @param authMethodType
+     * @param clientId
+     * @param refreshToken
+     * @param scopeString
+     * @return
+     */
+    Response getRefreshTokenGrantToken(String authMethodType = ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                                     String clientId = configuration.getAppInfoClientID(), String refreshToken,
+                                     List <ConnectorTestConstants.ApiScope> scopeString ) {
+
+        Response response = TokenRequestBuilder.getRefreshGrantTokenResponse(scopeString.stream().map{ it.scopeString }.toList(),
+                clientId, refreshToken, authMethodType)
+
+        return response
     }
 }
