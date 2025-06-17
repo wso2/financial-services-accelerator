@@ -38,7 +38,7 @@ class EndToEndPaymentsFlowTest extends FSAPIMConnectorTest {
     @BeforeClass
     void init() {
         consentPath = ConnectorTestConstants.PAYMENT_CONSENT_API_PATH
-        initiationPayload = RequestPayloads.initiationPaymentPayload
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
 
         //Get application access token
@@ -49,7 +49,7 @@ class EndToEndPaymentsFlowTest extends FSAPIMConnectorTest {
     @Test
     void "Verify Payments Initiation Request"() {
 
-        doDefaultInitiation()
+        doDefaultPaymentInitiation()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
     }
