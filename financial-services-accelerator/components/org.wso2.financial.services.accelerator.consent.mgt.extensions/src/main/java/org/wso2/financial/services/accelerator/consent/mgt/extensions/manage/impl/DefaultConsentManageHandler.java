@@ -60,6 +60,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Consent manage handler default implementation.
@@ -104,6 +105,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
+
+        if (consentManageData.getHeaders().containsKey(ConsentExtensionConstants.INTERACTION_ID_HEADER)) {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    consentManageData.getHeaders().get(ConsentExtensionConstants.INTERACTION_ID_HEADER));
+        } else {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    UUID.randomUUID().toString());
+        }
 
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
@@ -197,6 +206,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
+
+        if (consentManageData.getHeaders().containsKey(ConsentExtensionConstants.INTERACTION_ID_HEADER)) {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    consentManageData.getHeaders().get(ConsentExtensionConstants.INTERACTION_ID_HEADER));
+        } else {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    UUID.randomUUID().toString());
+        }
 
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
@@ -300,6 +317,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
+
+        if (consentManageData.getHeaders().containsKey(ConsentExtensionConstants.INTERACTION_ID_HEADER)) {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    consentManageData.getHeaders().get(ConsentExtensionConstants.INTERACTION_ID_HEADER));
+        } else {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    UUID.randomUUID().toString());
+        }
 
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
@@ -425,6 +450,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handleFileUploadPost(ConsentManageData consentManageData) throws ConsentException {
 
+        if (consentManageData.getHeaders().containsKey(ConsentExtensionConstants.INTERACTION_ID_HEADER)) {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    consentManageData.getHeaders().get(ConsentExtensionConstants.INTERACTION_ID_HEADER));
+        } else {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    UUID.randomUUID().toString());
+        }
+
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID is missing in the request.");
@@ -533,6 +566,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handleFileGet(ConsentManageData consentManageData) throws ConsentException {
+
+        if (consentManageData.getHeaders().containsKey(ConsentExtensionConstants.INTERACTION_ID_HEADER)) {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    consentManageData.getHeaders().get(ConsentExtensionConstants.INTERACTION_ID_HEADER));
+        } else {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    UUID.randomUUID().toString());
+        }
 
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {

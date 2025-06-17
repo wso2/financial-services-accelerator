@@ -696,11 +696,11 @@ components:
       description: "Name of the identification scheme, in a coded form as published in an external list."
       type: "string"
       x-namespaced-enum:
-        - "UK.OBIE.BBAN"
-        - "UK.OBIE.IBAN"
-        - "UK.OBIE.PAN"
-        - "UK.OBIE.Paym"
-        - "UK.OBIE.SortCodeAccountNumber" 
+        - "OB.BBAN"
+        - "OB.IBAN"
+        - "OB.PAN"
+        - "OB.Paym"
+        - "OB.SortCodeAccountNumber"
         
     identification_0:
       description: "Identification assigned by an institution to identify an account. This identification is known by the account owner."
@@ -880,10 +880,10 @@ components:
           type: "object"
           additionalProperties: false
           required:
-            - "consentId"
+            - "ConsentId"
             - "Initiation"
           properties:
-            consentId:
+            ConsentId:
               description: "OB: Unique identification as assigned by the ASPSP to uniquely identify the consent resource."
               type: "string"
               minLength: 1
@@ -976,19 +976,19 @@ components:
           type: "object"
           additionalProperties: false
           required:
-            - "paymentId"
-            - "consentId"
+            - "PaymentId"
+            - "ConsentId"
             - "CreationDateTime"
             - "Status"
             - "StatusUpdateDateTime"
             - "Initiation"
           properties:
-            paymentId:
+            PaymentId:
               description: "OB: Unique identification as assigned by the ASPSP to uniquely identify the payment resource."
               type: "string"
               minLength: 1
               maxLength: 40
-            consentId:
+            ConsentId:
               description: "OB: Unique identification as assigned by the ASPSP to uniquely identify the consent resource."
               type: "string"
               minLength: 1
@@ -1184,13 +1184,13 @@ components:
           type: "object"
           additionalProperties: false
           required:
-            - "consentId"
+            - "ConsentId"
             - "CreationDateTime"
             - "Status"
             - "StatusUpdateDateTime"
             - "Initiation"
           properties:
-            consentId:
+            ConsentId:
               description: "OB: Unique identification as assigned by the ASPSP to uniquely identify the consent resource."
               type: "string"
               minLength: 1

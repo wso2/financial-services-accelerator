@@ -558,7 +558,7 @@ components:
         Data:
           type: "object"
           required:
-            - "consentId"
+            - "ConsentId"
             - "Reference"
             - "InstructedAmount"
           properties:
@@ -642,7 +642,7 @@ components:
         Data:
           type: "object"
           required:
-            - "consentId"
+            - "ConsentId"
             - "CreationDateTime"
             - "Status"
             - "StatusUpdateDateTime"
@@ -718,7 +718,7 @@ components:
           type: "object"
           required:
             - "FundsConfirmationId"
-            - "consentId"
+            - "ConsentId"
             - "CreationDateTime"
             - "FundsAvailable"
             - "Reference"
