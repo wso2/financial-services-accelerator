@@ -1,0 +1,204 @@
+#
+# OPENSSL CSR REQUEST CONFIGURATION FILE
+# ======================================
+#
+# OBWAC qualified client certificate request with PSD2 role: PSP_PI PSP_AI
+#
+# See latest specification: ETSI TS 119 495 V1.2.1 (2018-11)
+# https://www.etsi.org/deliver/etsi_ts/119400_119499/119495/01.02.01_60/ts_119495v010201p.pdf
+#
+oid_section = new_oids
+[ new_oids ]
+# organizationIdentifier = 2.5.4.97
+# OpenSSL may not recognise this OID so need to add.
+[ req ]
+default_bits = 2048
+# RSA key size
+encrypt_key = yes
+# Protect private key: yes or no. yes recommended
+default_md = sha256
+# MD to use. sha256 recommended
+utf8 = yes
+# Input is UTF-8.
+string_mask = utf8only
+# Emit UTF-8 strings
+prompt = no
+# Prompt for DN. yes or no.
+distinguished_name = client_dn
+# DN template. Mandatory to include organizationIdentifier
+req_extensions = client_reqext
+# Desired extensions. Mandatory to include PSD2 QCStatements
+#
+# Subject Distinguished Name format in certificate
+#
+# EG: CN = 0015800001041ReAAI,
+# 2.5.4.97 = PSDGB-OB-Unknown0015800001041ReAAI,
+# O = Open Banking Limited (D), C = GB
+#
+#
+[ client_dn ]
+countryName = GB
+# Country code - see doc above
+organizationName = WSO2 (UK) LIMITED
+# Organizational name
+#
+# organizationIdentifier
+#
+# The organizationIdentifier shall be present in the Subject's
+# Distinguished Name and encoded with legal person syntax
+#
+# EXAMPLE: The organizationIdentifier "PSDPL-PFSA-1234567890"
+# means a certificate issued to a PSP where the authorization
+# number is 1234567890, authorization was granted by the Polish
+# Financial Supervision Authority (identifier after second
+# hyphen-minus is decided by Polish numbering system). Other
+# examples can include use of non-alphanumeric characters such
+# as "PSDBE-NBB-1234.567.890" and "PSDFI-FINFSA-1234567-8" and
+# "PSDMT-MFSA-A 12345" (note space character after "A")
+#
+organizationIdentifier = PSDGB-OB-Unknown0015800001HQQrZAAX
+# Must be in format as shown above
+commonName = 0015800001HQQrZAAX
+# Subject common name
+#
+# Required specific extensions in certificate
+#
+[ client_reqext ]
+keyUsage = critical,digitalSignature,nonRepudiation
+# Must be critical
+#
+subjectKeyIdentifier = hash
+# Hash value to calculate SKI
+#
+#
+# QC-STATEMENT
+#
+# FROM PKIXqualified97 {iso(1) identified-organization(3) dod(6)
+# internet(1) security(5) mechanisms(5) pkix(7) id-mod(0) id-mod-qualified- cert-97(35)};
+# [OID = 1.3.6.1.5.5.7.1.3]
+#
+# Qualified Electronic Certificate Type Statement: QSIGN, QWAC, QSEAL
+#
+#
+# QcType::= SEQUENCE OF OBJECT IDENTIFIER (id-etsi-qct-esign | id-etsi-qct- eseal | id-etsi-qct-web, ...)
+# oid: 0.4.0.1862.1.6
+#
+# -- QC type identifiers
+# id-etsi-qct-esign OBJECT IDENTIFIER ::= { id-etsi-qcs-QcType 1 }
+# -- Certificate for electronic signatures as defined in Regulation (EU) No 910/2014
+# -- oid: 0.4.0.1862.1.6.1
+#
+# id-etsi-qct-eseal OBJECT IDENTIFIER ::= { id-etsi-qcs-QcType 2 }
+# -- Certificate for electronic seals as defined in Regulation (EU) No 910/2014
+# -- oid: 0.4.0.1862.1.6.2
+#
+# id-etsi-qct-web OBJECT IDENTIFIER ::= { id-etsi-qcs-QcType 3 }
+# -- Certificate for website authentication as defined in Regulation (EU) No 910/2014
+# -- oid: 0.4.0.1862.1.6.3
+#
+# PSD2 Qualified Statement
+#
+#
+# NOTE: The following ASN.1 notation is based on the ETSIPSD2Qc profile.
+#
+# ETSIPSD2QcprofileMod { itu-t(0) identified-organization(4) etsi(0)
+# id-qc-statements(19495) idmod(0) id-mod-psd2qcprofile(0) }
+# DEFINITIONS EXPLICIT TAGS ::=
+#
+# BEGIN
+#
+# -- EXPORTS All –-
+# IMPORTS
+# QC-STATEMENT
+# FROM PKIXqualified97 {iso(1) identified-organization(3) dod(6)
+# internet(1) security(5) mechanisms(5) pkix(7) id-mod(0)
+# id-mod-qualified-cert-97(35)};
+# -- statements
+# etsi-psd2-qcStatement QC-STATEMENT ::= {SYNTAX PSD2QcType IDENTIFIED BY id-etsi-psd2-qcStatement }
+# id-etsi-psd2-qcStatement OBJECT IDENTIFIER ::=
+# { itu-t(0) identified-organization(4) etsi(0) psd2(19495) qcstatement(2) }
+# PSD2QcType ::= SEQUENCE{
+# rolesOfPSP RolesOfPSP,
+# nCAName NCAName,
+# nCAId NCAId }
+#
+# NCAName ::= UTF8String (SIZE (1..256))
+# NCAId ::= UTF8String (SIZE (1..256))
+#
+# RolesOfPSP ::= SEQUENCE OF RoleOfPSP
+#
+# RoleOfPSP ::= SEQUENCE{
+# roleOfPspOid RoleOfPspOid,
+# roleOfPspName RoleOfPspName}
+#
+# RoleOfPspOid ::= OBJECT IDENTIFIER
+# -- Object Identifier arc for roles of payment service providers
+# -- defined in the present document
+# etsi-psd2-roles OBJECT IDENTIFIER ::=
+# { itu-t(0) identified-organization(4) etsi(0) psd2(19495) id-roles(1) }
+#
+# -- Account Servicing Payment Service Provider (PSP_AS) role
+# id-psd2-role-psp-as OBJECT IDENTIFIER ::=
+# { itu-t(0) identified-organization(4) etsi(0) psd2(19495) id-roles(1) 1 }
+# -- Payment Initiation Service Provider (PSP_PI) role
+# id-psd2-role-psp-pi OBJECT IDENTIFIER ::=
+# { itu-t(0) identified-organization(4) etsi(0) psd2(19495) id-roles(1) 2 }
+#
+# -- Account Information Service Provider (PSP_AI) role
+# id-psd2-role-psp-ai OBJECT IDENTIFIER ::=
+# { itu-t(0) identified-organization(4) etsi(0) psd2(19495) id-roles(1) 3 }
+# -- Payment Service Provider issuing card-based payment instruments (PSP_IC) role
+# id-psd2-role-psp-ic OBJECT IDENTIFIER ::=
+# { itu-t(0) identified-organization(4) etsi(0) psd2(19495) id-roles(1) 4 }
+# -- Payment Service Provider role name corresponding with OID (i.e. PSP_AS,
+# -- PSP_PI, PSP_AI, PSP_IC)
+# RoleOfPspName ::= UTF8String (SIZE(1..256))
+#
+# END
+#
+#
+# qcStatements DER strings
+# ========================
+#
+# NOTE 1: Uncomment only one qcStatements line, that
+# matches the set of PSD2 roles relevant to your
+# organisation. See Open Banking documentation for
+# more information.
+#
+# NOTE 2: Each qcStatements line in the section below
+# embeds NCAName of "Financial Conduct Authority" and
+# NCAId of "GB-FCA". Please modify them to match the
+# NCA relevant to your organisation. See Open Banking
+# documentation for more information.
+#
+# PSP_AS
+#qcStatements=DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701010c065053505f41530c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_PI
+#qcStatements=DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701020c065053505f50490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AI
+#qcStatements=DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_IC
+#qcStatements=DER:305b3013060604008e4601063009060704008e4601060230440606040081982702303a301330110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AS,PSP_PI
+#qcStatements=DER:306e3013060604008e4601063009060704008e4601060230570606040081982702304d302630110607040081982701010c065053505f415330110607040081982701020c065053505f50490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AS,PSP_AI
+#qcStatements=DER:306e3013060604008e4601063009060704008e4601060230570606040081982702304d302630110607040081982701010c065053505f415330110607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AS,PSP_IC
+#qcStatements=DER:306e3013060604008e4601063009060704008e4601060230570606040081982702304d302630110607040081982701010c065053505f415330110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_PI,PSP_AI
+qcStatements=DER:306e3013060604008e4601063009060704008e4601060230570606040081982702304d302630110607040081982701020c065053505f504930110607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_PI,PSP_IC
+#qcStatements=DER:306e3013060604008e4601063009060704008e4601060230570606040081982702304d302630110607040081982701020c065053505f504930110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AI,PSP_IC
+#qcStatements=DER:306e3013060604008e4601063009060704008e4601060230570606040081982702304d302630110607040081982701030c065053505f414930110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AS,PSP_PI,PSP_AI
+#qcStatements=DER:3081813013060604008e4601063009060704008e46010602306a06060400819827023060303930110607040081982701010c065053505f415330110607040081982701020c065053505f504930110607040081982701030c065053505f41490c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AS,PSP_PI,PSP_IC
+#qcStatements=DER:3081813013060604008e4601063009060704008e46010602306a06060400819827023060303930110607040081982701010c065053505f415330110607040081982701020c065053505f504930110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AS,PSP_AI,PSP_IC
+#qcStatements=DER:3081813013060604008e4601063009060704008e46010602306a06060400819827023060303930110607040081982701010c065053505f415330110607040081982701030c065053505f414930110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_PI,PSP_AI,PSP_IC
+#qcStatements=DER:3081813013060604008e4601063009060704008e46010602306a06060400819827023060303930110607040081982701020c065053505f504930110607040081982701030c065053505f414930110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+# PSP_AS,PSP_PI,PSP_AI,PSP_IC
+#qcStatements=DER:3081943013060604008e4601063009060704008e46010602307d06060400819827023073304c30110607040081982701010c065053505f415330110607040081982701020c065053505f504930110607040081982701030c065053505f414930110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341
+qcStatements=DER:3081813013060604008e4601063009060704008e46010603306a06060400819827023060303930110607040081982701020c065053505f504930110607040081982701030c065053505f414930110607040081982701040c065053505f49430c1b46696e616e6369616c20436f6e6475637420417574686f726974790c0647422d464341

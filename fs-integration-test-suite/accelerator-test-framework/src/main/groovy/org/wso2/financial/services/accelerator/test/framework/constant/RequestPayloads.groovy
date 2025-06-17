@@ -754,4 +754,18 @@ class RequestPayloads {
 		}
 		""".stripIndent()
     }
+
+
+    public static String getPizzaShackOrderPayload() {
+        return """{
+			"customerName": "Jane",
+            "delivered": true,
+            "address": "Colombo",
+            "pizzaType": "Pan Pizza",
+            "creditCardNumber": "1234523456",
+            "quantity": 0,
+            "orderId": "111"
+		}
+		""".stripIndent()
+    }
 }
