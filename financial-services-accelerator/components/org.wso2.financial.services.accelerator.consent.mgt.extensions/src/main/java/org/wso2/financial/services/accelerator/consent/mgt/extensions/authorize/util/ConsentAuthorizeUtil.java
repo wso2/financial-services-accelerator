@@ -462,16 +462,12 @@ public class ConsentAuthorizeUtil {
                         debtorAccount.getString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
                 initiatedAccount.put(ConsentExtensionConstants.SECONDARY_IDENTIFICATION,
                         debtorAccount.getString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
-                // Add secondary identification as account id for cases with no primary identification
-                initiatedAccount.put(ConsentAuthorizeConstants.ACCOUNT_ID,
-                        debtorAccount.getString(ConsentExtensionConstants.SECONDARY_IDENTIFICATION));
             }
 
             //Adding Debtor Account Identification
             if (debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.IDENTIFICATION_TITLE + " : " +
                         debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
-                // Replace with proper identification if exists
                 initiatedAccount.put(ConsentAuthorizeConstants.ACCOUNT_ID,
                         debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
             }

@@ -110,7 +110,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             String responseDTOViolation = fsValidator.getFirstViolation(responseDTO);
 
             if (!StringUtils.isEmpty(responseDTOViolation)) {
-                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
                         responseDTOViolation, consentData.getState());
             }
 

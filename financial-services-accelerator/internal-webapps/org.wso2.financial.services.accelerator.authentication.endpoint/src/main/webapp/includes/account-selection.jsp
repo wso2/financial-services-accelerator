@@ -24,7 +24,7 @@
 
 <c:choose>
     <c:when test="${allowMultipleAccounts}">
-        <div class="${accountSelectorClass} account-selections">
+        <div class="${accountSelectorClass}">
             <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
                 <label for="<c:choose><c:when test='${not empty idSuffix}'>${account['displayName']}-${idSuffix}</c:when><c:otherwise>${account['displayName']}</c:otherwise></c:choose>">
                     <input type="checkbox"
@@ -41,8 +41,9 @@
     </c:when>
 
     <c:otherwise>
-        <div class="${accountSelectorClass} account-selections">
-            <select name="<c:choose><c:when test='${not empty idSuffix}'>accountsOpt-${idSuffix}</c:when><c:otherwise>accountsOpt</c:otherwise></c:choose>">
+        <div class="${accountSelectorClass}">
+            <select class="account-select"
+                name="<c:choose><c:when test='${not empty idSuffix}'>accountsOpt-${idSuffix}</c:when><c:otherwise>accountsOpt</c:otherwise></c:choose>">
                 <option hidden disabled selected value> -- Select an Account  -- </option>
                 <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
                     <option value="${accountIdx.index}">
