@@ -519,9 +519,9 @@ components:
         implicit:
           authorizationUrl: "https://test.com"
           scopes:
-            payments: "Ge neric payment scope"
+            payments: "Generic payment scope"
           x-scopes-bindings:
-            payments: "Internal/subscriber"          
+            payments: "Internal/consumer"
         
   schemas:      
   
