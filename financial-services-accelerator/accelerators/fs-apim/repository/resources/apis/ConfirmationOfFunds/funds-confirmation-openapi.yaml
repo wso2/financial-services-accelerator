@@ -4,7 +4,7 @@ info:
   description: "Swagger for Confirmation of Funds API Specification"
   version: "v3.1"
 servers:
-- url: "/open-banking/{version}/cbpii"
+  - url: "/open-banking/{version}/cbpii"
 paths:
   /funds-confirmation-consents:
     post:
@@ -470,86 +470,39 @@ components:
           $ref: "#/components/schemas/isoDateTime"
       additionalProperties: false
     obError1:
-      type: "object"
+      type: object
       properties:
-        ErrorCode:
-          description: "Low level textual error code, e.g., UK.OBIE.Field.Missing"
-          type: "string"
-          x-namespaced-enum:
-            - "UK.OBIE.Field.Expected"
-            - "UK.OBIE.Field.Invalid"
-            - "UK.OBIE.Field.InvalidDate"
-            - "UK.OBIE.Field.Missing"
-            - "UK.OBIE.Field.Unexpected"
-            - "UK.OBIE.Header.Invalid"
-            - "UK.OBIE.Header.Missing"
-            - "UK.OBIE.Reauthenticate"
-            - "UK.OBIE.Resource.ConsentMismatch"
-            - "UK.OBIE.Resource.InvalidConsentStatus"
-            - "UK.OBIE.Resource.InvalidFormat"
-            - "UK.OBIE.Resource.NotFound"
-            - "UK.OBIE.Rules.AfterCutOffDateTime"
-            - "UK.OBIE.Rules.DuplicateReference"
-            - "UK.OBIE.Signature.Invalid"
-            - "UK.OBIE.Signature.InvalidClaim"
-            - "UK.OBIE.Signature.Malformed"
-            - "UK.OBIE.Signature.Missing"
-            - "UK.OBIE.Signature.MissingClaim"
-            - "UK.OBIE.Signature.Unexpected"
-            - "UK.OBIE.UnexpectedError"
-            - "UK.OBIE.Unsupported.AccountIdentifier"
-            - "UK.OBIE.Unsupported.AccountSecondaryIdentifier"
-            - "UK.OBIE.Unsupported.Currency"
-            - "UK.OBIE.Unsupported.Frequency"
-            - "UK.OBIE.Unsupported.LocalInstrument"
-            - "UK.OBIE.Unsupported.Scheme"
-        Message:
-          description: "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field"
-          type: "string"
+        code:
+          description: 'error code'
+          type: string
+        message:
+          description: >-
+            A description of the error that occurred. e.g., 'A mandatory field
+            isn't supplied' or 'RequestedExecutionDateTime must be in future'
+          type: string
           minLength: 1
           maxLength: 500
-        Path:
-          description: "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency"
-          type: "string"
+        description:
+          description: >-
+            A description of the error that occurred. e.g., 'A mandatory field
+            isn't supplied' or 'RequestedExecutionDateTime must be in future'
+          type: string
           minLength: 1
-          maxLength: 500
-        Url:
-          description: "URL to help remediate the problem, or provide more information, or to API Reference, or help etc"
-          type: "string"
+          maxLength: 1000
       required:
-        - "ErrorCode"
-        - "Message"
+        - code
+        - message
+        - description
       additionalProperties: false
       minProperties: 1
     obErrorResponse1:
-      description: "An array of detail error codes, and messages, and URLs to documentation to help remediation."
-      type: "object"
+      type: object
       properties:
-        Code:
-          description: "High level textual error code, to help categorize the errors."
-          type: "string"
-          minLength: 1
-          maxLength: 40
-        Id:
-          description: "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors."
-          type: "string"
-          minLength: 1
-          maxLength: 40
-        Message:
-          description: "Brief Error message, e.g., 'There is something wrong with the request parameters provided'"
-          type: "string"
-          minLength: 1
-          maxLength: 500
-        Errors:
+        errors:
+          type: array
           items:
-            $ref: "#/components/schemas/obError1"
-          type: "array"
+            $ref: '#/components/schemas/obError1'
           minItems: 1
-      required:
-        - "Code"
-        - "Message"
-        - "Errors"
-      additionalProperties: false
     obFundsConfirmation1:
       type: "object"
       required:
@@ -558,7 +511,7 @@ components:
         Data:
           type: "object"
           required:
-            - "consentId"
+            - "ConsentId"
             - "Reference"
             - "InstructedAmount"
           properties:
@@ -642,7 +595,7 @@ components:
         Data:
           type: "object"
           required:
-            - "consentId"
+            - "ConsentId"
             - "CreationDateTime"
             - "Status"
             - "StatusUpdateDateTime"
@@ -718,7 +671,7 @@ components:
           type: "object"
           required:
             - "FundsConfirmationId"
-            - "consentId"
+            - "ConsentId"
             - "CreationDateTime"
             - "FundsAvailable"
             - "Reference"

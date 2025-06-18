@@ -568,7 +568,7 @@ enabled=false
 allowed_time_duration=1440
 header_name="x-idempotency-key"
 allowed_for_all_apis=false
-allowed_api_resources=["domestic-payment-consents"]
+allowed_api_resources=["payment-consents"]
 
 [financial_services.consent.preserve_consent_link]
 enabled=false
