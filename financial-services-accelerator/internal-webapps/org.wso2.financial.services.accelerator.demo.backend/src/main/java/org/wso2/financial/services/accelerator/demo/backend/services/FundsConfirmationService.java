@@ -24,6 +24,8 @@ import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.wso2.financial.services.accelerator.demo.backend.BankException;
 
+import java.util.UUID;
+
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -54,6 +56,10 @@ public class FundsConfirmationService {
             request = (JSONObject) parser.parse(requestString);
         } catch (ParseException e) {
             throw new BankException("Error in casting JSON body " + e);
+        }
+
+        if (xFapiInteractionId == null || xFapiInteractionId.isEmpty()) {
+            xFapiInteractionId = UUID.randomUUID().toString();
         }
 
         String consentId = ((JSONObject) request.get("Data")).getAsString("ConsentId");
