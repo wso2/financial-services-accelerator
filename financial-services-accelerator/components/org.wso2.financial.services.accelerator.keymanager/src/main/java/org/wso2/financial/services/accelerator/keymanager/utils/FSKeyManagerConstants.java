@@ -18,8 +18,6 @@
 
 package org.wso2.financial.services.accelerator.keymanager.utils;
 
-import java.util.Map;
-
 /**
  * FS Key Manager Constants.
  */
@@ -34,11 +32,24 @@ public class FSKeyManagerConstants {
     public static final String APP_MGMT_API_URL = "/api/server/v1/applications/";
     public static final String DCR_EP = "/api/identity/oauth2/dcr/v1.1/register/";
     public static final String SP_CERTIFICATE = "sp_certificate";
-
-    public static final Map<String, String> APP_CONFIG_MAPPING = Map.of(
-            "ext_refresh_token_lifetime", "refresh_token_expiry_time",
-            "ext_id_token_lifetime", "id_token_expiry_time",
-            "ext_application_token_lifetime", "application_access_token_expiry_time",
-            "ext_user_token_lifetime", "user_access_token_expiry_time");
+    public static final String NULL = "null";
+    public static final String APP_CREATE_REQUEST = "AppCreateRequest";
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
+    public static final String DISPLAY_NAME = "DisplayName";
+    public static final String TOKEN_SCOPE = "tokenScope";
+    public static final String NAME = "name";
+    public static final String VALUE = "value";
+    public static final String CLIENT_ID = "clientId";
+    public static final String FILTER = "filter";
+    public static final String FILTER_KEY = "clientId eq ";
+    public static final String TYPE = "type";
+    public static final String PEM = "PEM";
+    public static final String CERTIFICATE = "certificate";
+    public static final String ADVANCED_CONFIGURATIONS = "advancedConfigurations";
+    public static final String CLIENT_NAME = "client_name";
+    public static final String TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS = "tls_client_certificate_bound_access_tokens";
+    public static final String ADDITIONAL_ATTRIBUTES = "additionalAttributes";
+    public static final String ADDITIONAL_SP_PROPERTIES = "additionalSpProperties";
 
 }

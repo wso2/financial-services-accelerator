@@ -47,13 +47,22 @@ import java.util.Map;
  */
 public class IdentityServerUtils {
 
+    /**
+     * Method to get the application ID from the client ID. Uses Application Management API in IS
+     * (https://localhost:9446/api/server/v1/applications/) with filter 'clientId eq clientId_value'
+     * to fetch the application ID.
+     *
+     * @param clientId  Client ID of the application
+     * @return          Application ID if found, otherwise null
+     * @throws FinancialServicesException If an error occurs while fetching the application ID
+     */
     @SuppressFBWarnings("HTTP_PARAMETER_POLLUTION")
     public static String getAppIdFromClientId(String clientId) throws FinancialServicesException {
 
         try {
             String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL;
             URIBuilder builder = new URIBuilder(url);
-            builder.addParameter("filter", "clientId eq " + clientId);
+            builder.addParameter(FSKeyManagerConstants.FILTER, FSKeyManagerConstants.FILTER_KEY + clientId);
             URI uri = builder.build();
             HttpGet httpGet = new HttpGet(uri);
 
@@ -77,6 +86,14 @@ public class IdentityServerUtils {
         }
     }
 
+    /**
+     * Method to get the SP application details from the client ID. Uses Application Management API in IS
+     * (https://localhost:9446/api/server/v1/applications/app_id) to retrieve the SP Application.
+     *
+     * @param clientId   Client ID of the application
+     * @return           JSONObject containing the SP application details
+     * @throws FinancialServicesException  If an error occurs while fetching the SP application details
+     */
     public static JSONObject getSPApplicationFromClientId(String clientId) throws FinancialServicesException {
 
         String appId = getAppIdFromClientId(clientId);
@@ -102,6 +119,14 @@ public class IdentityServerUtils {
         }
     }
 
+    /**
+     * Method to update the SP application in the Identity server with the provided certificate. Uses Application
+     * Management API in IS (https://localhost:9446/api/server/v1/applications/).
+     *
+     * @param clientId      Client ID of the application
+     * @param certificate   Certificate content in PEM format to be updated in the SP application
+     * @throws FinancialServicesException  If an error occurs while updating the SP application
+     */
     public static void updateSPApplication(String clientId, String certificate)
             throws FinancialServicesException {
 
@@ -140,18 +165,20 @@ public class IdentityServerUtils {
      * @return  JSONObject containing the payload for updating the SP application
      */
     private static JSONObject constructAppUpdatePayload(String certificateContent) {
+
         JSONObject appUpdatePayload = new JSONObject();
         JSONObject advancedConfigurations = new JSONObject();
         JSONObject certificate = new JSONObject();
-        certificate.put("type", "PEM");
-        certificate.put("value", certificateContent);
-        advancedConfigurations.put("certificate", certificate);
-        appUpdatePayload.put("advancedConfigurations", advancedConfigurations);
+        certificate.put(FSKeyManagerConstants.TYPE, FSKeyManagerConstants.PEM);
+        certificate.put(FSKeyManagerConstants.VALUE, certificateContent);
+        advancedConfigurations.put(FSKeyManagerConstants.CERTIFICATE, certificate);
+        appUpdatePayload.put(FSKeyManagerConstants.ADVANCED_CONFIGURATIONS, advancedConfigurations);
         return appUpdatePayload;
     }
 
     /**
-     * Method to update the DCR application in the Identity server.
+     * Method to update the DCR application in the Identity server. Used DCR API in IS
+     * ("https://localhost:9446/api/identity/oauth2/dcr/v1.1/register/").
      *
      * @param clientId                Client ID of the application
      * @param appName                 Application name
@@ -195,9 +222,12 @@ public class IdentityServerUtils {
     private static JSONObject constructDCRUpdatePayload(String appName, Map<String, Object> attributes) {
 
         JSONObject spApplication = new JSONObject();
-        spApplication.put("client_name", appName);
-        spApplication.put("tls_client_certificate_bound_access_tokens", true);
-        spApplication.put("additionalAttributes", attributes);
+        spApplication.put(FSKeyManagerConstants.CLIENT_NAME, appName);
+        spApplication.put(FSKeyManagerConstants.ADDITIONAL_ATTRIBUTES, attributes);
+        if (attributes.containsKey(FinancialServicesConstants.REGULATORY) &&
+                Boolean.parseBoolean(attributes.get(FinancialServicesConstants.REGULATORY).toString())) {
+            spApplication.put(FSKeyManagerConstants.TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS, true);
+        }
 
         return spApplication;
     }
@@ -224,13 +254,21 @@ public class IdentityServerUtils {
                 .getFirstProperty(FSKeyManagerConstants.API_KEY_VALIDATOR_URL).split(FSKeyManagerConstants.SERVICE)[0];
     }
 
+    /**
+     * Method to construct the service provider properties list from the SP properties and additional properties.
+     *
+     * @param spProperties          JSONArray containing SP properties
+     * @param additionalProperties  HashMap containing additional properties
+     * @return   Map containing the constructed service provider properties
+     */
     public static Map<String, Object> constructSPPropertiesList(JSONArray spProperties,
                                                                 HashMap<String, String> additionalProperties) {
         // Implementation goes here
         Map<String, Object> serviceProviderProperties = new HashMap<>();
         for (int i = 0; i < spProperties.length(); i++) {
             JSONObject property = spProperties.getJSONObject(i);
-            serviceProviderProperties.put(property.getString("name"), property.getString("value"));
+            serviceProviderProperties.put(property.getString(FSKeyManagerConstants.NAME),
+                    property.getString(FSKeyManagerConstants.VALUE));
         }
         serviceProviderProperties.putAll(additionalProperties);
 
@@ -245,10 +283,10 @@ public class IdentityServerUtils {
      */
     public static JSONArray getSPMetadataFromSPApp(JSONObject appData) {
         JSONArray spData = new JSONArray();
-        if (appData.has("advancedConfigurations")) {
-            JSONObject configs = appData.getJSONObject("advancedConfigurations");
-            if (configs.has("additionalSpProperties")) {
-                spData = configs.getJSONArray("additionalSpProperties");
+        if (appData.has(FSKeyManagerConstants.ADVANCED_CONFIGURATIONS)) {
+            JSONObject configs = appData.getJSONObject(FSKeyManagerConstants.ADVANCED_CONFIGURATIONS);
+            if (configs.has(FSKeyManagerConstants.ADDITIONAL_SP_PROPERTIES)) {
+                spData = configs.getJSONArray(FSKeyManagerConstants.ADDITIONAL_SP_PROPERTIES);
             }
         }
         return spData;
@@ -266,22 +304,31 @@ public class IdentityServerUtils {
 
         for (int i = 0; i < spData.length(); i++) {
             JSONObject spObj = spData.getJSONObject(i);
-            if (spObj.has("name") && spObj.getString("name").equals("regulatory")) {
-                regulatoryProperty = spObj.getString("value");
+            if (spObj.has(FSKeyManagerConstants.NAME) &&
+                    spObj.getString(FSKeyManagerConstants.NAME).equals(FinancialServicesConstants.REGULATORY)) {
+                regulatoryProperty = spObj.getString(FSKeyManagerConstants.VALUE);
                 break;
             }
         }
         return regulatoryProperty;
     }
 
+    /**
+     * Method to get a specific SP property from the SP metadata.
+     *
+     * @param propertyName  Name of the property to retrieve
+     * @param spProperties  JSONArray containing SP properties
+     * @return property value if found, otherwise null
+     */
     public static String getSpPropertyFromSPMetaData(String propertyName, JSONArray spProperties) {
 
         String propertyValue = null;
 
         for (int i = 0; i < spProperties.length(); i++) {
             JSONObject spObj = spProperties.getJSONObject(i);
-            if (spObj.has("name") && spObj.getString("name").equals(propertyName)) {
-                propertyValue = spObj.getString("value");
+            if (spObj.has(FSKeyManagerConstants.NAME) &&
+                    spObj.getString(FSKeyManagerConstants.NAME).equals(propertyName)) {
+                propertyValue = spObj.getString(FSKeyManagerConstants.VALUE);
                 break;
             }
         }

@@ -114,7 +114,7 @@ public class FSKeyManagerUtil {
         } catch (JSONException e) {
             log.error(String.format("%s of the OAuth app %s is not a JSON object",
                     APIConstants.JSON_ADDITIONAL_PROPERTIES.replaceAll("[\r\n]", ""),
-                            oauthAppRequest.getOAuthApplicationInfo().getClientId().replaceAll("[\r\n]", "")), e);
+                    oauthAppRequest.getOAuthApplicationInfo().getClientId().replaceAll("[\r\n]", "")), e);
             throw new APIManagementException(ExceptionCodes.JSON_PARSE_ERROR.getErrorMessage(), e,
                     ExceptionCodes.JSON_PARSE_ERROR);
         }
@@ -221,7 +221,7 @@ public class FSKeyManagerUtil {
      * @param fsAdditionalProperties Additional Property Map
      * @param propertyName Property Name
      * @return value for given property
-     * @throws APIManagementException
+     * @throws APIManagementException if the property is not found or has no values
      */
     public static String getValueForAdditionalProperty(Map<String, ConfigurationDto> fsAdditionalProperties,
                                                        String propertyName) throws APIManagementException {
