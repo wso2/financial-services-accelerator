@@ -110,6 +110,10 @@ public class PaymentService {
             throw new BankException("Error in casting JSON body " + e);
         }
 
+        if (fid == null || fid.isEmpty()) {
+            fid = UUID.randomUUID().toString();
+        }
+
         JSONObject additionalConsentInfo = (JSONObject) accountRequestInformation.get("additionalConsentInfo");
 
         JSONObject response = cacheAndGetPaymentResponse(jsonObject, additionalConsentInfo);
