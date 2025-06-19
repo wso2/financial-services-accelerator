@@ -299,7 +299,7 @@ class TokenRequestBuilder {
         RestAssured.baseURI = configuration.getISServerUrl()
         Response response = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+//                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
                 .body(payload)
                 .post(ConnectorTestConstants.INTROSPECTION_ENDPOINT)
@@ -314,7 +314,6 @@ class TokenRequestBuilder {
 
         def authToken = "${configuration.getAppInfoClientID()}:${configuration.getAppInfoClientSecret()}"
         def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
-
 
         JWTGenerator generator = new JWTGenerator()
         generator.setScopes(scopes)
@@ -383,16 +382,46 @@ class TokenRequestBuilder {
      * Token Revocation Request.
      * @param accessToken
      */
-    static Response doTokenRevocation(String accessToken, String clientId) {
+    static Response doTokenRevocation(String accessToken, String clientId, String tokenType = "access_token",
+                                      String authMethodType = ConnectorTestConstants.PKJWT_AUTH_METHOD) {
 
-        def payload  = "token=$accessToken&token_type_hint=access_token" +
+        def payload  = "token=$accessToken&token_type_hint=$tokenType" +
                 "&client_id=$clientId"
 
-        Response response = FSRestAsRequestBuilder.buildRequest()
-                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .body(payload)
-                .baseUri(configuration.getISServerUrl())
-                .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
+        Response response
+        JWTGenerator generator = new JWTGenerator()
+
+        if(authMethodType == ConnectorTestConstants.TLS_AUTH_METHOD){
+            response = FSRestAsRequestBuilder.buildRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+                    .body(payload)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
+
+            return response
+        }
+        //Adding Client Assertion for other Auth Method types
+        else{
+
+            SignedObject signedObject = new SignedObject()
+
+            JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
+                    .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
+
+            String singedAccessTokenJWT = signedObject.getSignedRequest(clientAssertion.toString())
+
+            String accessTokenJWT = new PayloadGenerator().addClientAsType().addClientAssertion(singedAccessTokenJWT)
+                    .addClientID(clientId).addCustomValue("token", accessToken)
+                    .addCustomValue("token_type_hint", tokenType).getPayload()
+
+            response = FSRestAsRequestBuilder.buildBasicRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .body(accessTokenJWT)
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
+            return response
+        }
 
         return response
     }
@@ -498,5 +527,33 @@ class TokenRequestBuilder {
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         return tokenResponse
+    }
+
+    /**
+     * Method to get application access token for non-regulatory applications.
+     * @param scopes
+     * @param clientId
+     * @param clientSecret
+     * @return
+     */
+    static Response getApplicationAccessTokenForNonRegulatoryApp(List<String> scopes, String clientId, String clientSecret) {
+
+        JWTGenerator acceleratorJWTGenerator = new JWTGenerator()
+        acceleratorJWTGenerator.setScopes(scopes)
+
+        def authToken = "${clientId}:${clientSecret}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        RestAssured.baseURI = configuration.getISServerUrl()
+        Response response
+
+        response = FSRestAsRequestBuilder.buildBasicRequest()
+                    .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
+                    .body("grant_type=client_credentials")
+                    .baseUri(configuration.getISServerUrl())
+                    .post(ConnectorTestConstants.TOKEN_ENDPOINT)
+
+        return response
     }
 }

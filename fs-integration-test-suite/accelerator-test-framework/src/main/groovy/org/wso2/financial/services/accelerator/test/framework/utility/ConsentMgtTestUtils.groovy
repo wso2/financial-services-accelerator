@@ -25,16 +25,16 @@ class ConsentMgtTestUtils {
     public static List<ConnectorTestConstants.ApiScope> getApiScopesForConsentType(String consentType) {
         switch (consentType) {
             case ConnectorTestConstants.ACCOUNTS_TYPE:
-                return [ConnectorTestConstants.ApiScope.ACCOUNTS]
+                return [ConnectorTestConstants.ApiScope.ACCOUNTS, ConnectorTestConstants.ApiScope.OPEN_ID]
                 break
             case ConnectorTestConstants.COF_TYPE:
-                return [ConnectorTestConstants.ApiScope.COF]
+                return [ConnectorTestConstants.ApiScope.COF, ConnectorTestConstants.ApiScope.OPEN_ID]
                 break
             case ConnectorTestConstants.PAYMENTS_TYPE:
-                return [ConnectorTestConstants.ApiScope.PAYMENTS]
+                return [ConnectorTestConstants.ApiScope.PAYMENTS, ConnectorTestConstants.ApiScope.OPEN_ID]
                 break
             default:
-                return [ConnectorTestConstants.ApiScope.DEFAULT]
+                return [ConnectorTestConstants.ApiScope.OPEN_ID]
         }
     }
 }

@@ -40,7 +40,6 @@ class ConsentManageEndpointValidationTest extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         consentResponse = buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
                 .body(initiationPayload)
                 .baseUri(configuration.getISServerUrl())
                 .put(consentPath + "/${consentId}")
@@ -58,7 +57,6 @@ class ConsentManageEndpointValidationTest extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         Response response = buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
                 .body(initiationPayload)
                 .baseUri(configuration.getISServerUrl())
                 .patch(consentPath + "/${consentId}")

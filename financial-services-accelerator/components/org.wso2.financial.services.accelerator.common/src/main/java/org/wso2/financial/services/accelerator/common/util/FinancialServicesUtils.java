@@ -24,10 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
@@ -36,8 +34,10 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -133,27 +133,6 @@ public class FinancialServicesUtils {
     }
 
     /**
-     * Check whether the client ID belongs to a regulatory app.
-     * 
-     * @param clientId client ID
-     * @return true if the client ID belongs to a regulatory app
-     * @throws RequestObjectException If an error occurs while checking the client ID
-     */
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    public static boolean isRegulatoryApp(String clientId) throws RequestObjectException {
-
-        try {
-            return OAuth2Util.isFapiConformantApp(clientId);
-        } catch (InvalidOAuthClientException e) {
-            throw new RequestObjectException(OAuth2ErrorCodes.INVALID_CLIENT, "Could not find an existing app for " +
-                    "clientId: " + clientId, e);
-        } catch (IdentityOAuth2Exception e) {
-            throw new RequestObjectException(OAuth2ErrorCodes.SERVER_ERROR, "Error while obtaining the service " +
-                    "provider for clientId: " + clientId, e);
-        }
-    }
-
-    /**
      * Method to resolve username from user ID.
      *
      * @param userID   User ID
@@ -203,6 +182,20 @@ public class FinancialServicesUtils {
         DateFormat simple = new SimpleDateFormat(FinancialServicesConstants.ISO_FORMAT);
         Date simpleDateVal = new Date(dateValue * 1000);
         return simple.format(simpleDateVal);
+    }
+
+    /**
+     * Method to obtain basic auth header.
+     *
+     * @param username Username of Auth header
+     * @param password Password of Auth header
+     * @return basic auth header
+     */
+    public static String getBasicAuthHeader(String username, char[] password) {
+
+        byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON +
+                String.valueOf(password)).getBytes(StandardCharsets.UTF_8));
+        return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
     }
 
     /**
