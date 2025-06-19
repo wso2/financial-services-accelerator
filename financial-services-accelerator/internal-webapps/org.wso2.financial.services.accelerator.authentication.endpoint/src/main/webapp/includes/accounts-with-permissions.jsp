@@ -59,7 +59,6 @@
                         </jsp:include>
                     </c:when>
                     <c:otherwise>
-                        <!-- 2 -->
                         <b>No consumer accounts provided for authroization.</b>
                     </c:otherwise>
                 </c:choose>

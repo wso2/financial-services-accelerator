@@ -53,6 +53,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -130,7 +131,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             }
 
             // Append metadata to userGrantedData
-            if (consentData.getMetaDataMap() != null && !consentData.getMetaDataMap().isEmpty()) {
+            Map<String, Object> consentMetadata = consentData.getMetaDataMap();
+            if (consentMetadata != null && !consentMetadata.isEmpty()) {
                 JSONObject metadataJSON;
                 JSONObject consentPersistPayload = consentPersistData.getPayload();
                 if (consentPersistPayload.has(ConsentAuthorizeConstants.METADATA)) {
@@ -139,7 +141,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     metadataJSON = new JSONObject();
                 }
 
-                JSONObject consentMetadataJSON = new JSONObject(consentData.getMetaDataMap());
+                JSONObject consentMetadataJSON = new JSONObject(consentMetadata);
                 consentMetadataJSON.keySet().forEach(k -> metadataJSON.put(k, consentMetadataJSON.get(k)));
 
                 consentPersistPayload.put(ConsentAuthorizeConstants.METADATA, metadataJSON);
