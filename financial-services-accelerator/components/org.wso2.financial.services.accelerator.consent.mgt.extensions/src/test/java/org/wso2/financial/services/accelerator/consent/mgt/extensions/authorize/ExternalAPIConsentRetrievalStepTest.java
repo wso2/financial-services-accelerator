@@ -19,6 +19,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -34,8 +35,11 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentRetrievalStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
@@ -43,10 +47,13 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestC
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -55,6 +62,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -103,6 +111,12 @@ public class ExternalAPIConsentRetrievalStepTest {
                 .thenReturn("dummyJWT");
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
                 .thenReturn("consent123");
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.buildConsentDataJSON(any()))
+                .thenCallRealMethod();
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.buildConsumerDataJSON(any()))
+                .thenCallRealMethod();
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.addAuthorizedDataObject(any(), any()))
+                .thenCallRealMethod();
 
         // ConsentResource
         ConsentResource consentResource = new ConsentResource();
@@ -332,4 +346,217 @@ public class ExternalAPIConsentRetrievalStepTest {
         assertTrue(jsonObject.has("consumerData"));
     }
 
+    @Test
+    public void testAddAuthorizedDataObject_withPermissionsAndSelectedConsumerAccounts() throws Exception {
+        // Setup permissions
+        PermissionDTO permission = new PermissionDTO();
+        permission.setDisplayValues(Collections.singletonList("ReadAccounts"));
+
+        // Setup consumer account
+        ConsumerAccountDTO consumerAcc = new ConsumerAccountDTO();
+        consumerAcc.setAccountId("acc-user-1");
+
+        // Build hashes
+        String permissionHash = UUID.nameUUIDFromBytes(
+                new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
+        String accountHash = UUID.nameUUIDFromBytes(
+                new ObjectMapper().writeValueAsString(consumerAcc).getBytes(StandardCharsets.UTF_8)).toString();
+
+        // Build metadata map
+        Map<String, Object> retrieved = new HashMap<>();
+        retrieved.put("permissions", Collections.singletonList(permission));
+        retrieved.put("consumerAccounts", Collections.singletonList(consumerAcc));
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        accountPermissionParams.put("permission-0", permissionHash);
+        accountPermissionParams.put("accounts-0", new JSONArray(Collections.singletonList(accountHash)));
+        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has("permissions"));
+        assertEquals(authEntry.getJSONArray("permissions").getString(0), "ReadAccounts");
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 selected
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withPermissionsAndPermissionInitiatedAccounts() throws Exception {
+        // Setup permissions
+        PermissionDTO permission = new PermissionDTO();
+        permission.setDisplayValues(Collections.singletonList("ReadAccounts"));
+        AccountDTO initiatedAcc = new AccountDTO();
+        initiatedAcc.setAccountId("acc-init-1");
+        permission.setInitiatedAccounts(Collections.singletonList(initiatedAcc));
+
+        // Build hashes
+        String permissionHash = UUID.nameUUIDFromBytes(
+                new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
+
+        // Build metadata map
+        Map<String, Object> retrieved = new HashMap<>();
+        retrieved.put("permissions", Collections.singletonList(permission));
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        accountPermissionParams.put("permission-0", permissionHash);
+        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has("permissions"));
+        assertEquals(authEntry.getJSONArray("permissions").getString(0), "ReadAccounts");
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 permission initiated
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withPermissionsAndConsentInitiatedAccounts() throws Exception {
+        // Setup permissions
+        PermissionDTO permission = new PermissionDTO();
+        permission.setDisplayValues(Collections.singletonList("ReadAccounts"));
+
+        // Setup consent initiated accounts
+        AccountDTO initiatedAcc = new AccountDTO();
+        initiatedAcc.setAccountId("acc-init-1");
+
+        // Build hashes
+        String permissionHash = UUID.nameUUIDFromBytes(
+                new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
+
+        // Build metadata map
+        Map<String, Object> retrieved = new HashMap<>();
+        retrieved.put("permissions", Collections.singletonList(permission));
+        retrieved.put("initiatedAccountsForConsent", Collections.singletonList(initiatedAcc));
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        accountPermissionParams.put("permission-0", permissionHash);
+        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has("permissions"));
+        assertEquals(authEntry.getJSONArray("permissions").getString(0), "ReadAccounts");
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 consent initiated
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withoutPermissionsWithConsumerAccounts() throws Exception {
+        // Setup consumer account
+        ConsumerAccountDTO consumerAcc = new ConsumerAccountDTO();
+        consumerAcc.setAccountId("acc-user-1");
+
+        // Build hashes
+        String accountHash = UUID.nameUUIDFromBytes(
+                new ObjectMapper().writeValueAsString(consumerAcc).getBytes(StandardCharsets.UTF_8)).toString();
+
+        // Build metadata map
+        Map<String, Object> retrieved = new HashMap<>();
+        retrieved.put("consumerAccounts", Collections.singletonList(consumerAcc));
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        accountPermissionParams.put("accounts", new JSONArray(Collections.singletonList(accountHash)));
+        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertFalse(authEntry.has("permissions"));
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 selected
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withoutPermissionsWithConsentInitiatedAccounts() throws Exception {
+        // Setup consent initiated accounts
+        AccountDTO initiatedAcc = new AccountDTO();
+        initiatedAcc.setAccountId("acc-init-1");
+
+        // Build metadata map
+        Map<String, Object> retrieved = new HashMap<>();
+        retrieved.put("initiatedAccountsForConsent", Collections.singletonList(initiatedAcc));
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertFalse(authEntry.has("permissions"));
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 consent initiated
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withoutPermissionsWithoutAccounts() throws Exception {
+
+        // Build metadata map
+        Map<String, Object> retrieved = new HashMap<>();
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        assertTrue(inputPayload.getJSONArray("authorizedData").isEmpty());
+    }
 }
