@@ -46,12 +46,17 @@
                                         <div class="col-md-12 ui box">
                                         
                                             <%--Display consent page header--%>
-                                            <jsp:include page="includes/consent-header.jsp"/>
+                                            <h3 class="ui header">
+                                                <strong>${app}</strong> requests following details.
+                                            </h3>
 
                                             <h4 class="section-heading-5 ui subheading">Data requested:</h4>
 
                                             <%--Display basic consent data--%>
                                             <jsp:include page="includes/basic-consent-data.jsp"/>
+                                            
+                                            <%--Display re-authentication disclaimer--%>
+                                            <jsp:include page="includes/re-authentication-disclaimer.jsp"/>
 
                                             <c:if test="${not empty permissions}">
                                                 <%-- If permissions are specified --%>
