@@ -56,7 +56,7 @@
                         <jsp:include page="account-selection.jsp">
                             <jsp:param name="accountSelectorClass" value="padding-left padding-top"/>
                             <jsp:param name="idSuffix" value="${permissionLoop.index}"/>
-                            <jsp:param name="ignorePreSelect" value="true"/>
+                            <jsp:param name="ignorePreSelect" value="${hasMultiplePermissions}"/>
                         </jsp:include>
                     </c:when>
                     <c:otherwise>

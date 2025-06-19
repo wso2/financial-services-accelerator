@@ -232,6 +232,8 @@ public class Utils {
         attributeMap.put(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, allowMultipleAccounts);
         attributeMap.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, isReauthorization);
         attributeMap.put(ConsentAuthorizeConstants.TYPE, type);
+        attributeMap.put(ConsentAuthorizeConstants.HAS_MULTIPLE_PERMISSIONS,
+                (permissions != null && permissions.size() > 1));
 
         return attributeMap;
     }

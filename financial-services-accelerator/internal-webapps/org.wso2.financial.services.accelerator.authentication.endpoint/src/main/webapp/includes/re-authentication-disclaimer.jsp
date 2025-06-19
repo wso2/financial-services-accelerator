@@ -21,7 +21,7 @@
 <c:if test="${isReauthorization eq true}">
     <h5 class="ui header">
         <strong>
-            You are about to re-authorize an intent which had been authorized before.
+            You are about to re-authorize an intent which has been authorized before.
         </strong>
     </h5>
 </c:if>
