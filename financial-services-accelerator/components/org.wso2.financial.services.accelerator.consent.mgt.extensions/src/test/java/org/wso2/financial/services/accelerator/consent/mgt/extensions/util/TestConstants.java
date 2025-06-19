@@ -428,56 +428,52 @@ public class TestConstants {
             "h-FE59928Wf16BkGaKfBRW0fDEn3CKzU4ENhrT6WIJ5DiMldc1oN-nbAhqfFSQY6Aqo8qD0gQdXMaNROGgHEVYUBsiCfu7aqMXVDZEcm" +
             "8e6rXQCHwbTaGLMFhUY3zg-_suWDss8bBcMv6mGw4fwQAT4WNoxWfud3de3JGeJ4mQw";
 
-    public static final String ACCOUNT_PERSIST_PAYLOAD = " " +
-            "{\n" +
-            "  \"approval\": true,\n" +
-            "  \"type\": \"accounts\",\n" +
-            "  \"isReauthorization\": false,\n" +
-            "  \"authorizedData\": [\n" +
-            "    {\n" +
-            "      \"accounts\": [\n" +
-            "        {\n" +
-            "          \"displayName\": \"account_1\",\n" +
-            "          \"accountId\": \"30080012343456\",\n" +
-            "          \"selected\": false\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
+    public static final String PERSIST_ACCOUNT = "{\n" +
+            "  \"displayName\" : \"account-1\",\n" +
+            "  \"accountId\" : \"account-id-1\"\n" +
+            "}";
+
+    public static final String PERSIST_PERMISSION = "{\n" +
+            "  \"displayValues\" : [\n" +
+            "    \"ReadProducts\",\n" +
+            "    \"ReadOffers\"\n" +
             "  ]\n" +
-            "}\n";
+            "}";
+
+    public static final String ACCOUNT_PERSIST_PAYLOAD_WITH_ACCOUNT = "{\n" +
+            "  \"consentType\": \"accounts\",\n" +
+            "  \"isReauthorization\": false,\n" +
+            "  \"requestAccountPermissionParameters\": {\n" +
+            "    \"permission-0\": \"%s\",\n" +
+            "    \"accounts-0\": [\n" +
+            "      \"%s\"\n" +
+            "    ]\n" +
+            "  }\n" +
+            "}";
+
+    public static final String ACCOUNT_PERSIST_PAYLOAD_WITHOUT_ACCOUNT = "{\n" +
+            "  \"consentType\": \"accounts\",\n" +
+            "  \"isReauthorization\": false,\n" +
+            "  \"requestAccountPermissionParameters\": {\n" +
+            "    \"permission-0\": \"%s\"\n" +
+            "  }\n" +
+            "}";
 
     public static final String COF_PERSIST_PAYLOAD = "{\n" +
-            "  \"approval\": true,\n" +
-            "  \"type\": \"funds-confirmation\",\n" +
+            "  \"consentType\": \"funds-confirmation\",\n" +
             "  \"isReauthorization\": false,\n" +
-            "  \"authorizedData\": [\n" +
-            "    {\n" +
-            "      \"accounts\": [\n" +
-            "        {\n" +
-            "          \"displayName\": \"Account1\",\n" +
-            "          \"accountId\": \"1234\"\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}\n";
+            "  \"requestAccountPermissionParameters\": {}\n" +
+            "}";
 
-    public static final String PAYMENT_PERSIST_PAYLOAD =
-            "{\n" +
-                    "  \"approval\": true,\n" +
-                    "  \"type\": \"payment\",\n" +
-                    "  \"isReauthorization\": false,\n" +
-                    "  \"authorizedData\": [\n" +
-                    "    {\n" +
-                    "      \"accounts\": [\n" +
-                    "        {\n" +
-                    "          \"displayName\": \"ACME Inc\",\n" +
-                    "          \"accountId\": \"08080021325698\"\n" +
-                    "        }\n" +
-                    "      ]\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}\n";
+    public static final String PAYMENT_PERSIST_PAYLOAD = "{\n" +
+            "  \"consentType\": \"payments\",\n" +
+            "  \"isReauthorization\": false,\n" +
+            "  \"requestAccountPermissionParameters\": {\n" +
+            "    \"accounts\": [\n" +
+            "      \"%s\"\n" +
+            "    ]\n" +
+            "  }\n" +
+            "}";
 
     public static final String ADMIN_SEARCH_RESPONSE = "{\n" +
             "   \"metadata\":{\n" +

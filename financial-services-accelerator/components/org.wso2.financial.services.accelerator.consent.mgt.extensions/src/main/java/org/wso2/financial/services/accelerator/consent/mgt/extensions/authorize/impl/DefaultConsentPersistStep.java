@@ -37,9 +37,13 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Consent persist step default implementation.
@@ -131,7 +135,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             }
         }
         consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(), authorizationId,
-                getConsentedAccounts(payload, isApproved), authStatus, consentStatus);
+                getConsentedAccounts(payload, consentData.getMetaDataMap(), isApproved), authStatus, consentStatus);
     }
 
     /**
@@ -140,23 +144,88 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
      * @param persistPayload payload to persist
      * @return Account data map
      */
-    private static Map<String, ArrayList<String>> getConsentedAccounts(JSONObject persistPayload, boolean isApproved) {
+    private static Map<String, ArrayList<String>> getConsentedAccounts(JSONObject persistPayload,
+                                                                       Map<String, Object> metaDataMap,
+                                                                       boolean isApproved) {
 
         Map<String, ArrayList<String>> accountIDsMapWithPermissions = new HashMap<>();
         ArrayList<String> permissionsDefault = new ArrayList<>();
         permissionsDefault.add(ConsentExtensionConstants.PRIMARY);
         boolean hasAuthorizedAccounts = false;
 
-        if (persistPayload.has(ConsentAuthorizeConstants.AUTHORIZED_DATA)) {
-            JSONArray authorizedData = persistPayload.getJSONArray(ConsentAuthorizeConstants.AUTHORIZED_DATA);
+        // Extract accounts and permissions in metadata
+        Map<String, Object> retrievedAccountsPermissions = (Map<String, Object>) metaDataMap
+                .get(ConsentAuthorizeConstants.RETRIEVED_ACCOUNTS_AND_PERMISSIONS);
 
-            for (Object authorizedObj : authorizedData) {
-                for (Object account : ((JSONObject) authorizedObj).getJSONArray(ConsentAuthorizeConstants.ACCOUNTS)) {
-                    hasAuthorizedAccounts = true;
-                    accountIDsMapWithPermissions.put(
-                            ((JSONObject) account).getString(ConsentAuthorizeConstants.ACCOUNT_ID), permissionsDefault);
+        // Extract and separate permissions, consumer accounts and consent initiated accounts
+        JSONArray permissions = (JSONArray) retrievedAccountsPermissions
+                .getOrDefault(ConsentAuthorizeConstants.PERMISSIONS, null);
+        JSONArray consumerAccounts = (JSONArray) retrievedAccountsPermissions
+                .getOrDefault(ConsentAuthorizeConstants.CONSUMER_ACCOUNTS, null);
+        JSONArray initiatedAccountsForConsent = (JSONArray) retrievedAccountsPermissions
+                .getOrDefault(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, null);
+
+        // Build consumer hash to consumer account map
+        Map<String, JSONObject> accountHashToObjectMap = new HashMap<>();
+        if (consumerAccounts != null) {
+            for (Object consumerAccount: consumerAccounts) {
+                JSONObject consumerAccountJSON = (JSONObject) consumerAccount;
+                String consumerAccountHash = UUID.nameUUIDFromBytes(consumerAccountJSON.toString().getBytes(
+                        StandardCharsets.UTF_8)).toString();
+                accountHashToObjectMap.put(consumerAccountHash, consumerAccountJSON);
+            }
+        }
+
+        // JSONArray of all accounts to map
+        JSONArray allAccountsToMap = new JSONArray();
+
+        // Append all consent initiated accounts
+        if (initiatedAccountsForConsent != null) {
+            allAccountsToMap.putAll(initiatedAccountsForConsent);
+        }
+
+        // Append all permission initiated accounts
+        if (permissions != null) {
+            Set<JSONObject> allAccountsSet = new HashSet<>();
+            for (Object permission: permissions) {
+                JSONObject permissionJSON = (JSONObject) permission;
+                JSONArray initiatedAccounts = permissionJSON.optJSONArray(ConsentAuthorizeConstants.INITIATED_ACCOUNTS);
+                if (initiatedAccounts != null) {
+                    for (Object initiatedAccount : initiatedAccounts) {
+                        JSONObject initiatedAccountJSON = (JSONObject) initiatedAccount;
+                        allAccountsSet.add(initiatedAccountJSON);
+                    }
                 }
             }
+            allAccountsToMap.putAll(allAccountsSet);
+        }
+
+        // Append all selected consumer accounts
+        JSONObject accountPermissionParameters =
+                persistPayload.optJSONObject(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS);
+        if (accountPermissionParameters != null) {
+            for (String key: accountPermissionParameters.keySet()) {
+                if (key.contains("accounts")) {
+                    JSONArray accounts = accountPermissionParameters.optJSONArray(key);
+                    if (accounts != null) {
+                        for (Object account: accounts) {
+                            String accountHash = (String) account;
+                            JSONObject accountJSON = accountHashToObjectMap.get(accountHash);
+                            if (accountJSON != null) {
+                                allAccountsToMap.put(accountJSON);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Map all accounts to default permission
+        for (Object account: allAccountsToMap) {
+            JSONObject accountJSON = (JSONObject) account;
+            hasAuthorizedAccounts = true;
+            accountIDsMapWithPermissions.put(accountJSON.getString(ConsentAuthorizeConstants.ACCOUNT_ID),
+                    permissionsDefault);
         }
 
         if (!hasAuthorizedAccounts && isApproved) {
@@ -164,7 +233,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             throw new ConsentException(ResponseStatus.BAD_REQUEST,
                     ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
         } else {
-            // in case a consent is denied without selecting an account
+            // in case a consent is denied with no account mappings
             accountIDsMapWithPermissions.put("n/a", permissionsDefault);
         }
 

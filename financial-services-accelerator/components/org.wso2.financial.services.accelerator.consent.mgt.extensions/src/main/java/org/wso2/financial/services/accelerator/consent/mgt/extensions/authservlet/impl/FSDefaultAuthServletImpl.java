@@ -19,7 +19,6 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl;
 
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils;
 
@@ -34,22 +33,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
 
-    private final FinancialServicesConfigParser configParser;
-    private final boolean isPreInitiatedConsent;
-
-    public FSDefaultAuthServletImpl() {
-        configParser = FinancialServicesConfigParser.getInstance();
-        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
-    }
+    public FSDefaultAuthServletImpl() {}
 
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest request, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
         // Format all entries of basic consent data to be JSONArrays
         Utils.formatBasicConsentData(dataSet);
-
-        // Append encoded accounts permissions data to build persist payload in ConsentConfirmServlet
-        Utils.appendEncodedAccountsPermissionsData(dataSet);
 
         // Extracts a map of attributes to push to the JSP
         return Utils.returnAttributesFromDataSet(dataSet);

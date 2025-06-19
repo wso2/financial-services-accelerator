@@ -49,11 +49,13 @@ public class ConsentAuthorizeConstants {
     public static final String INITIATED_ACCOUNTS = "initiatedAccounts";
     public static final String ALLOW_MULTIPLE_ACCOUNTS = "allowMultipleAccounts";
     public static final String CONSUMER_ACCOUNTS = "consumerAccounts";
-    public static final String ENCODED_ACCOUNTS_PERMISSIONS_DATA = "encodedAccountsPermissionsData";
 
     // For payload to persist authorized consent
-    public static final String IS_APPROVED = "isApproved";
-    public static final String CONSENT_TYPE = "consentType";
+    public static final String REQUEST_ACCOUNT_PERMISSION_PARAMETERS = "requestAccountPermissionParameters";
     public static final String AUTHORIZED_DATA = "authorizedData";
     public static final String METADATA = "metadata";
+    public static final String UUID = "uuid";
+
+    // For permissions accounts map in consent metadata
+    public static final String RETRIEVED_ACCOUNTS_AND_PERMISSIONS = "retrievedAccountsAndPermissions";
 }

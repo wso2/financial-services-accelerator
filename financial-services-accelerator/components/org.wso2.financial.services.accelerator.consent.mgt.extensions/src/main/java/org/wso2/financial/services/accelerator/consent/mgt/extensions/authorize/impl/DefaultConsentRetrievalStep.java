@@ -127,6 +127,9 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
 
+            // Storing consent metadata for attribute retrieval at persistence
+            consentData.setMetaDataMap(ConsentAuthorizeUtil.getConsentMapFromJSONObject(jsonObject));
+
         } catch (ConsentManagementException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                     "Exception occurred while getting consent data", consentData.getState());
