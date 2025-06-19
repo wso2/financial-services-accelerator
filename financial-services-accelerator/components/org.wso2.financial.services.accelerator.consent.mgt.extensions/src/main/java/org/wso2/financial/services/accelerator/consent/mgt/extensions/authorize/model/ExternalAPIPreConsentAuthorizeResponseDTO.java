@@ -17,30 +17,48 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import java.util.List;
 import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * Wrapper for pre consent authorize flow external response data.
  */
 public class ExternalAPIPreConsentAuthorizeResponseDTO {
 
-    private List<Map<String, Object>> consentData;
-    private List<Map<String, Object>> consumerData;
+    @Valid
+    @NotNull
+    private ConsentDataDTO consentData;
 
-    public List<Map<String, Object>> getConsentData() {
+    @Valid
+    private ConsumerDataDTO consumerData;
+
+    private Map<String, Object> metadata;
+
+    public ConsentDataDTO getConsentData() {
         return consentData;
     }
 
-    public void setConsentData(List<Map<String, Object>> consentData) {
+    public void setConsentData(
+            ConsentDataDTO consentData) {
         this.consentData = consentData;
     }
 
-    public List<Map<String, Object>> getConsumerData() {
+    public ConsumerDataDTO getConsumerData() {
         return consumerData;
     }
 
-    public void setConsumerData(List<Map<String, Object>> consumerData) {
+    public void setConsumerData(
+            ConsumerDataDTO consumerData) {
         this.consumerData = consumerData;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
     }
 }

@@ -40,6 +40,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -52,6 +53,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -81,20 +83,20 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
 
         // Get request object parameters
         JSONObject requestParameters = new JSONObject();
-        if (consentPersistData.getConsentData() != null && consentPersistData.getConsentData().getMetaDataMap() != null
-                && consentPersistData.getConsentData().getMetaDataMap()
+        if (consentData != null && consentData.getMetaDataMap() != null
+                && consentData.getMetaDataMap()
                 .get(ConsentExtensionConstants.REQUEST_PARAMETERS) != null) {
 
-            requestParameters = (JSONObject) consentPersistData.getConsentData().getMetaDataMap()
+            requestParameters = (JSONObject) consentData.getMetaDataMap()
                     .get(ConsentExtensionConstants.REQUEST_PARAMETERS);
-            consentPersistData.getConsentData().getMetaDataMap().remove(ConsentExtensionConstants.REQUEST_PARAMETERS);
+            consentData.getMetaDataMap().remove(ConsentExtensionConstants.REQUEST_PARAMETERS);
         }
 
         // If there are no request object parameters, add the scope sent as a query parameter.
-        if (requestParameters.isEmpty() && consentPersistData.getConsentData() != null &&
-                consentPersistData.getConsentData().getScopeString() != null) {
+        if (requestParameters.isEmpty() && consentData != null &&
+                consentData.getScopeString() != null) {
             requestParameters.put(FinancialServicesConstants.SCOPE,
-                    consentPersistData.getConsentData().getScopeString());
+                    consentData.getScopeString());
         }
 
         try {
@@ -127,6 +129,24 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     consentData.getMetaDataMap().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
                 }
             }
+
+            // Append metadata to userGrantedData
+            Map<String, Object> consentMetadata = consentData.getMetaDataMap();
+            if (consentMetadata != null && !consentMetadata.isEmpty()) {
+                JSONObject metadataJSON;
+                JSONObject consentPersistPayload = consentPersistData.getPayload();
+                if (consentPersistPayload.has(ConsentAuthorizeConstants.METADATA)) {
+                    metadataJSON = consentPersistPayload.getJSONObject(ConsentAuthorizeConstants.METADATA);
+                } else {
+                    metadataJSON = new JSONObject();
+                }
+
+                JSONObject consentMetadataJSON = new JSONObject(consentMetadata);
+                consentMetadataJSON.keySet().forEach(k -> metadataJSON.put(k, consentMetadataJSON.get(k)));
+
+                consentPersistPayload.put(ConsentAuthorizeConstants.METADATA, metadataJSON);
+            }
+
             // Call external service
             ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO userGrantedData = new
                     ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO(consentPersistData.getPayload(),

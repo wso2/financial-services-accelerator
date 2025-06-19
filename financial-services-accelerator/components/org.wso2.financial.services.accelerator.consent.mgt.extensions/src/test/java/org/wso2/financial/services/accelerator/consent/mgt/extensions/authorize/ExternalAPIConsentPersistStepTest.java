@@ -53,6 +53,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
+/**
+ * Unit test class for ExternalAPIConsentPersistStep.
+ */
 public class ExternalAPIConsentPersistStepTest {
 
     private static class MockContext {

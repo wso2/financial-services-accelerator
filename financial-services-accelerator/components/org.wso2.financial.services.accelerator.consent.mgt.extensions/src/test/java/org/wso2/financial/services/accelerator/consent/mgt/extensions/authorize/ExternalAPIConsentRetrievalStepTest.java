@@ -39,6 +39,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.net.URI;
@@ -56,6 +57,9 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Unit test class for ExternalAPIConsentRetrievalStep.
+ */
 public class ExternalAPIConsentRetrievalStepTest {
 
     private ExternalAPIConsentRetrievalStep consentRetrievalStep;
@@ -113,16 +117,12 @@ public class ExternalAPIConsentRetrievalStepTest {
         when(consentCoreService.searchAuthorizations(anyString())).thenReturn(authList);
 
         // External service success response
-        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-        List<Map<String, Object>> consentDataList = new ArrayList<>();
-        consentDataList.add(Map.of("field", "value"));
-        List<Map<String, Object>> consumerDataList = new ArrayList<>();
-        consumerDataList.add(Map.of("account", "123"));
-
-        responseDTO.setConsentData(consentDataList);
-        responseDTO.setConsumerData(consumerDataList);
-
         ObjectMapper mapper = new ObjectMapper();
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO;
+
+        responseDTO = mapper.readValue(TestConstants.ACCOUNT_AUTH_SERVLET_DATA,
+                ExternalAPIPreConsentAuthorizeResponseDTO.class);
+
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
 
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
@@ -193,9 +193,9 @@ public class ExternalAPIConsentRetrievalStepTest {
         consentRetrievalStep.execute(realConsentData, jsonObject);
 
         assertTrue(jsonObject.has("consentData"));
-        assertTrue(jsonObject.has("accounts"));
-        assertEquals(jsonObject.getJSONArray("consentData").getJSONObject(0).getString("field"), "value");
-        assertEquals(jsonObject.getJSONArray("accounts").getJSONObject(0).getString("account"), "123");
+        assertTrue(jsonObject.has("consumerData"));
+        assertEquals(jsonObject.getJSONObject("consentData").getString("type"), "accounts");
+        assertTrue(jsonObject.getJSONObject("consentData").getBoolean("allowMultipleAccounts"));
     }
 
 
@@ -259,22 +259,11 @@ public class ExternalAPIConsentRetrievalStepTest {
         return resource;
     }
 
-    private static ExternalServiceResponse getExternalServiceResponse() {
-        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-
-        List<Map<String, Object>> consentDataList = new ArrayList<>();
-        Map<String, Object> consentEntry = new HashMap<>();
-        consentEntry.put("field", "value");
-        consentDataList.add(consentEntry);
-
-        List<Map<String, Object>> consumerDataList = new ArrayList<>();
-        Map<String, Object> consumerEntry = new HashMap<>();
-        consumerEntry.put("account", "123");
-        consumerDataList.add(consumerEntry);
-
-        responseDTO.setConsentData(consentDataList);
-        responseDTO.setConsumerData(consumerDataList);
+    private static ExternalServiceResponse getExternalServiceResponse() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO;
+        responseDTO = mapper.readValue(TestConstants.ACCOUNT_AUTH_SERVLET_DATA,
+                ExternalAPIPreConsentAuthorizeResponseDTO.class);
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
 
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
@@ -340,7 +329,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         Mockito.verify(spyConsentData).setAuthResource(any(AuthorizationResource.class));
 
         assertTrue(jsonObject.has("consentData"));
-        assertTrue(jsonObject.has("accounts"));
+        assertTrue(jsonObject.has("consumerData"));
     }
 
 }
