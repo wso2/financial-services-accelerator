@@ -19,6 +19,7 @@
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 
 <c:choose>
+    <%-- View consent initiated accounts --%>
     <c:when test="${not empty initiatedAccountsForConsent}">
         <h5 class="ui body col-md-12">
             Access to following accounts shall be authorized:
@@ -31,6 +32,7 @@
             </ul>
         </b>
     </c:when>
+    <%-- View consumer accounts when no consent initiated accounts are found --%>
     <c:when test="${not empty consumerAccounts}">
         <h5 class="ui body col-md-12">
             Select the accounts to which you wish to authorize access:
@@ -40,8 +42,8 @@
             <jsp:param name="ignorePreSelect" value="false"/>
         </jsp:include>
     </c:when>
+    <%-- Display error --%>
     <c:otherwise>
-        <!-- 3 -->
         <b>No consumer accounts provided for authroization.</b>
     </c:otherwise>
 </c:choose>

@@ -501,6 +501,9 @@ class = "org.wso2.financial.services.accelerator.identity.extensions.client.regi
 enable = true
 priority = 9
 
+[[financial_services.app_registration.dcr.regulatory_issuers.iss]]
+name = "OpenBanking Ltd"
+
 #================consent management==============
 [financial_services.consent]
 is_pre_initiated_consent=true # Set to true if the consent is pre-initiated by the TPP
@@ -565,7 +568,7 @@ enabled=false
 allowed_time_duration=1440
 header_name="x-idempotency-key"
 allowed_for_all_apis=false
-allowed_api_resources=["domestic-payment-consents"]
+allowed_api_resources=["payment-consents"]
 
 [financial_services.consent.preserve_consent_link]
 enabled=false

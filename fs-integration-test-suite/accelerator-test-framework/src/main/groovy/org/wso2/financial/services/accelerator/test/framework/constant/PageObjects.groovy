@@ -55,4 +55,5 @@ class PageObjects extends CommonPageObjects{
     public static final String ACCOUNTS_PAGE_TXT = "//h5[contains(@class,'ui body')]"
     static final String PAYMENTS_SELECT_XPATH = """//option[@value="35ee3215-bde0-30b1-b007-c243beb78ab3"]"""
     public static final String LBL_REDIRECT_ERROR = "//h3/following-sibling::p"
+    static final String SUBMIT_XPATH = """//*[@id="approve"]"""
 }

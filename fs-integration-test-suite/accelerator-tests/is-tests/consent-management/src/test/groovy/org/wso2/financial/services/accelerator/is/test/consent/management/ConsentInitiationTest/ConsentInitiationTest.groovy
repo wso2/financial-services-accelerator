@@ -178,7 +178,6 @@ class ConsentInitiationTest extends FSConnectorTest {
     void "Verify Creation of a consent without client ID"() {
 
         consentResponse = buildKeyManagerRequest("")
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
                 .body(initiationPayload)
                 .baseUri(configuration.getISServerUrl())
                 .post(consentPath)
@@ -194,7 +193,6 @@ class ConsentInitiationTest extends FSConnectorTest {
     void "Verify Create Consent Without the Payload Body"() {
 
         consentResponse = buildKeyManagerRequest(configuration.getAppInfoClientID())
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${GenerateBasicHeader()}")
                 .body("")
                 .baseUri(configuration.getISServerUrl())
                 .post(consentPath)

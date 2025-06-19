@@ -387,7 +387,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
 
         //Authorise Consent
         AuthorisationBuilder authorisationBuilder = new AuthorisationBuilder()
-        String authoriseUrl = authorisationBuilder.getAuthorizationRequest(configuration.getAppInfoClientID(),
+        String authoriseUrl = authorisationBuilder.getAuthorizationRequestWithCustomAlgorithm(configuration.getAppInfoClientID(),
                 consentId, [ConnectorTestConstants.ApiScope.ACCOUNTS], true).toURI().toString()
 
         BrowserAutomation.AutomationContext automation
@@ -401,16 +401,6 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
 
         Assert.assertEquals(TestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
                 ConnectorTestConstants.INVALID_SIG_ALGO_ERROR)
-    }
-
-    @Test (enabled = false)
-    void "Consent authorisation without pre step for consent initiation"() {
-
-        //Authorise Consent
-        doConsentAuthorisationWithoutConsentId(configuration.getAppInfoClientID(), true, consentScopes)
-
-        Assert.assertNotNull(code)
-        Assert.assertNotNull(TestUtil.getIdTokenFromUrl(automation.currentUrl.get()))
     }
 
     //TODO: Enable the test by setting [financial_services.consent] is_pre_initiated_consent=false
@@ -458,7 +448,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
-        String scope = "openid ais:" + consentId
+        String scope = "ais:" + consentId + " openid"
         List<String> scopeList = Arrays.asList(scope.split(" "))
 
         //Authorise Consent
@@ -469,6 +459,19 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
         automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
+                    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
+
+                    WebDriverWait wait = new WebDriverWait(driver, 10)
+                    if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                    }
+
+                    if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
+                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                    }
+                    WebElement btnApprove = wait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
+                    btnApprove.click()
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()

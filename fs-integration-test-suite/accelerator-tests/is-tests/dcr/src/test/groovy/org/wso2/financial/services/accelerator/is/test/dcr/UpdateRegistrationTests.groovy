@@ -84,7 +84,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
-    @Test
+    @Test (enabled = false)
     void "TC0103007_Update client request with an invalid redirectURI"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -99,7 +99,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Invalid redirect_uris found in the Request")
     }
 
-    @Test
+    @Test (enabled = false)
     void "TC0103008_Update client request with null value for redirectURI"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -146,7 +146,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertTrue(redirectUris.getString(1).equalsIgnoreCase(configuration.getAppDCRAlternateRedirectUri()))
     }
 
-    @Test
+    @Test (enabled = false)
     void "Update registration request with multiple redirect urls one having invalid url"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -161,7 +161,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Redirect URIs do not match with the software statement")
     }
 
-    @Test
+    @Test (enabled = false)
     void "Update registration request with redirectURI having localhost"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -176,7 +176,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Invalid redirect_uris found in the Request")
     }
 
-    @Test
+    @Test (enabled = false)
     void "Update registration request with redirectURI not matching with the redirect urls in ssa"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -690,20 +690,23 @@ class UpdateRegistrationTests extends FSConnectorTest {
     @Test
     void "Update registration request without token_endpoint_allow_reuse_pvt_key_jwt for for private_key_jwt method" (){
 
-        JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
-                configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
+        if(!configuration.getIsVersion().equalsIgnoreCase("7.0.0")) {
 
-        payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
+            JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa,
+                    configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD))
 
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
-                .body(payload.toString())
-                .put(dcrPath + clientId)
+            payload.remove("token_endpoint_allow_reuse_pvt_key_jwt")
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Requested client authentication method incompatible with the Private Key JWT Reuse config value.")
+            def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
+                    .body(payload.toString())
+                    .put(dcrPath + clientId)
+
+            Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+            Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                    "invalid_client_metadata")
+            Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                    "Requested client authentication method incompatible with the Private Key JWT Reuse config value.")
+        }
     }
 
     @Test

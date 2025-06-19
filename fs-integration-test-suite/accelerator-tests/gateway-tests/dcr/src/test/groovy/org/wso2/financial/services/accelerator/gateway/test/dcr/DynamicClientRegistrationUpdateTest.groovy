@@ -28,6 +28,7 @@ import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.JWTGenerator
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 import java.time.Instant
@@ -46,6 +47,7 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     String SSA
     private String invalidClientId = "invalid_client_id"
     private String invalidAccessToken = "invalid_token"
+    JWTGenerator jwtGenerator = new JWTGenerator()
 
     @BeforeClass(alwaysRun = true)
     void setup() {
@@ -55,9 +57,12 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
         configuration.setTppNumber(1)
         SSA = new File(configuration.getAppDCRSSAPath()).text
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestWithClaims(ClientRegistrationRequestBuilder.getRegularClaims(SSA))
-                .when()
+                .buildGatewayRegistrationRequest()
+                .body(payload)
                 .post(registrationPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -70,29 +75,39 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update client request with an invalid clientId"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getUpdateRegularClaimsForGateway(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken, ClientRegistrationRequestBuilder.getUpdateRegularClaims(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + invalidClientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Token is not bound to the client id sent in the request")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "unauthorized_request")
+                "unauthorized")
     }
 
     @Test
     void "Update client request with an invalid access token"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getUpdateRegularClaimsForGateway(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(invalidAccessToken, ClientRegistrationRequestBuilder.getUpdateRegularClaims(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${invalidAccessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.DESCRIPTION),
                 "Access failure for API: /open-banking/v3.3.0, version: v3.3.0 status: (900901) - Invalid " +
                         "Credentials. Make sure you have provided the correct security credentials")
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.CODE),
                 "900901")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.MESSAGE),
                 "Invalid Credentials")
@@ -101,52 +116,51 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update client request with a clientId that does not match with the access token"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getUpdateRegularClaimsForGateway(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken, ClientRegistrationRequestBuilder.getUpdateRegularClaims(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + configClientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Token is not bound to the client id sent in the request")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "unauthorized_request")
-    }
-
-    @Test
-    void "Update registration request with a valid request payload not structured as JWS"() {
-
-        def registrationResponse = ClientRegistrationRequestBuilder
-                .buildPlainRequest(ClientRegistrationRequestBuilder.getUpdateRegularClaims(SSA))
-                .put(registrationPath + "/" + clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Malformed request JWT")
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_request")
+                "unauthorized")
     }
 
     @Test
     void "Update registration request with invalid redirectURI"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsWithInvalidRedirectURI(SSA, "invalid_redirect_uri"))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithInvalidRedirectURI(SSA, "invalid_redirect_uri"))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+                "invalid_redirect_uri")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Redirect URIs do not match with the software statement")
+                "Invalid redirect_uris found in the Request")
     }
 
     @Test
     void "Update registration request with null value for redirectURI"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithInvalidRedirectURI(SSA, null))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithInvalidRedirectURI(SSA, null))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -159,9 +173,13 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request without redirectURI"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithoutRedirectURI(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithoutRedirectURI(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -174,39 +192,51 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid token_endpoint_auth_method"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(), "invalid"))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA,
-                        configuration.getAppDCRSoftwareId(), "invalid"))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid token endpoint authentication method requested.")
+                "'invalid' Token endpoint authentication method is not allowed.")
     }
 
     @Test
     void "Update registration request with null value for token_endpoint_auth_method"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(), null))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA,
-                        configuration.getAppDCRSoftwareId(), null))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid token endpoint authentication method requested.")
+                "'null' Token endpoint authentication method is not allowed.")
     }
 
     @Test
     void "Update registration request without token_endpoint_auth_method"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithoutTokenEndpointAuthMethod(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithoutTokenEndpointAuthMethod(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -219,9 +249,13 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid grant_type"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithInvalidGrantTypes(SSA, "invalid_grant_type"))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithInvalidGrantTypes(SSA, "invalid_grant_type"))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -234,23 +268,32 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request with null value for grant_type"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithInvalidGrantTypes(SSA, null))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithInvalidGrantTypes(SSA, null))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Required parameter grantTypes cannot be empty")
+                "Invalid grantTypes provided")
     }
 
     @Test
     void "Update registration request without grant_type"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithoutGrantType(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaimsWithoutGrantType(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -263,8 +306,13 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request with invalid SSA"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway("invalid_ssa"))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims("invalid_ssa"))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -278,8 +326,13 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     void "Update registration request with unverifiable SSA"() {
 
         String SELF_SIGNED_SSA = new File(configuration.getAppDCRSelfSignedSSAPath()).text
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SELF_SIGNED_SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SELF_SIGNED_SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -292,8 +345,13 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request with null value for SSA"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(null))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(null))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -306,57 +364,76 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request without SSA"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithoutSSA())
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaimsWithoutSSA())
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_software_statement")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Required parameter software statement cannot be null")
+                "Required parameter softwareStatement not found in the request")
     }
 
     @Test
     void "Update registration request with an invalid id_token_signed_response_alg"() {
 
-        def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA,
-                        configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD,
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(),
+                        ConnectorTestConstants.PKJWT_AUTH_METHOD,
                         Instant.now().toEpochMilli(), ConnectorTestConstants.ALG_PS256,
                         "invalid-algorithm"))
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid signature algorithm requested")
+                "'invalid-algorithm' Signing Algorithm is not allowed.")
     }
 
     @Test
     void "Update registration request with null value for id_token_signed_response_alg"() {
 
-        def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA,
-                        configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD,
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(),
+                        ConnectorTestConstants.PKJWT_AUTH_METHOD,
                         Instant.now().toEpochMilli(), ConnectorTestConstants.ALG_PS256,
                         null))
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid signature algorithm requested")
+                "'null' Signing Algorithm is not allowed.")
     }
 
     @Test
     void "Update registration request without id_token_signed_response_alg"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithoutIdTokenSignedResponseAlg(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithoutIdTokenSignedResponseAlg(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -366,81 +443,115 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
                 "Required parameter idTokenSignatureAlgorithm not found in the request")
     }
 
-//    @Test
-//    void "TC0101019_Update registration request with an invalid application_type"() {
-//
-//        def registrationResponse = ClientRegistrationRequestBuilder
-//                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getClaimsWithInvalidApplication_type())
-//                .put(registrationPath + "/" + clientId)
-//
-//        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-//                "invalid_client_metadata")
-//    }
-
-//    @Test
-//    void "TC0101020_Update registration request with null value for application_type"() {
-//
-//        def registrationResponse = ClientRegistrationRequestBuilder
-//                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getClaimsWithNullApplication_type())
-//                .put(registrationPath + "/" + clientId)
-//
-//        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-//                "invalid_client_metadata")
-//    }
-
-//    @Test
-//    void "TC0101021_Update registration request without application_type"() {
-//
-//        def registrationResponse = ClientRegistrationRequestBuilder
-//                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getClaimsWithoutApplication_type())
-//                .put(registrationPath + "/" + clientId)
-//
-//        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-//                "invalid_client_metadata")
-//    }
-
     @Test
-    void "Update registration request with an invalid request_object_signing_alg"() {
+    void "TC0101019_Update registration request with an invalid application_type"() {
+
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithInvalidApplicationType(SSA, "test"))
 
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA, configuration.getAppDCRSoftwareId(),
-                        ConnectorTestConstants.PKJWT_AUTH_METHOD, Instant.now().toEpochMilli(),
-                        ConnectorTestConstants.ALG_PS256, ConnectorTestConstants.ALG_PS256, "invalid_algorithm"))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid signature algorithm requested")
+                "Invalid applicationType provided")
+    }
+
+    @Test
+    void "TC0101020_Update registration request with null value for application_type"() {
+
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithInvalidApplicationType(SSA, null))
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
+                .put(registrationPath + "/" + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Invalid applicationType provided")
+    }
+
+    @Test
+    void "TC0101021_Update registration request without application_type"() {
+
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithoutApplicationType(SSA))
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
+                .put(registrationPath + "/" + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "Required parameter applicationType not found in the request")
+    }
+
+    @Test
+    void "Update registration request with an invalid request_object_signing_alg"() {
+
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                        Instant.now().toEpochMilli(), ConnectorTestConstants.ALG_PS256,
+                        ConnectorTestConstants.ALG_PS256, "invalid_algorithm"))
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
+                .put(registrationPath + "/" + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
+                "invalid_client_metadata")
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+                "'invalid_algorithm' Signing Algorithm is not allowed.")
     }
 
     @Test
     void "Update registration request with null value for request_object_signing_alg"() {
 
-        def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA,
-                        configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD,
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD,
                         Instant.now().toEpochMilli(), ConnectorTestConstants.ALG_PS256,
                         ConnectorTestConstants.ALG_PS256, null))
+
+        def registrationResponse = ClientRegistrationRequestBuilder
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid signature algorithm requested")
+                "'null' Signing Algorithm is not allowed.")
     }
 
     @Test
     void "Update registration request without request_object_signing_alg"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGatewayWithoutReqObjSignedAlg(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken, ClientRegistrationRequestBuilder
-                        .getRegularClaimsWithoutRequestObjSigningAlg(SSA))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -453,9 +564,13 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request with invalid iss claim"() {
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, "invalid_iss"))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA,
-                        "invalid_iss"))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
@@ -468,34 +583,43 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @Test
     void "Update registration request with an invalid token_endpoint_auth_signing_alg" (){
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(),
+                        ConnectorTestConstants.PKJWT_AUTH_METHOD, Instant.now().toEpochMilli(),
+                        "invalid_token_endpoint_auth_signing_alg"))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder.getRegularClaims(SSA,
-                        configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD,
-                        Instant.now().toEpochMilli(), "invalid_token_endpoint_auth_signing_alg"))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid signature algorithm requested")
+                "'invalid_token_endpoint_auth_signing_alg' Signing Algorithm is not allowed.")
     }
 
     @Test
     void "Update registration request with an null token_endpoint_auth_signing_alg" (){
 
+        String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA, configuration.getAppDCRSoftwareId(),
+                        ConnectorTestConstants.PKJWT_AUTH_METHOD, Instant.now().toEpochMilli(),
+                        null))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForUpdate(accessToken,  ClientRegistrationRequestBuilder
-                        .getRegularClaims(SSA, configuration.getAppDCRSoftwareId(),
-                                ConnectorTestConstants.PKJWT_AUTH_METHOD, Instant.now().toEpochMilli(),
-                                null))
+                .buildGatewayRegistrationRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
+                .body(payload)
                 .put(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Invalid signature algorithm requested")
+                "'null' Signing Algorithm is not allowed.")
     }
 
 //    @Test
@@ -534,7 +658,8 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
     @AfterClass(alwaysRun = true)
     void tearDown() {
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(accessToken)
+                .buildGatewayRegistrationRequestForRetrievalAndDelete()
+                .header("Authorization", "Bearer " + accessToken)
                 .delete(registrationPath + "/" + clientId)
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }

@@ -23,9 +23,11 @@
 <c:set var="ignorePreSelect" value="${param.ignorePreSelect}" />
 
 <c:choose>
+    <%-- Check if multiple accounts can be selected --%>
     <c:when test="${allowMultipleAccounts}">
         <div class="${accountSelectorClass}">
             <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
+                <%-- Display checkboxes for each account if multiple account selection is allowed --%>
                 <label for="<c:choose><c:when test='${not empty idSuffix}'>${account.uuid}-${idSuffix}</c:when><c:otherwise>${account.uuid}</c:otherwise></c:choose>">
                     <input type="checkbox"
                         id="<c:choose><c:when test='${not empty idSuffix}'>${account.uuid}-${idSuffix}</c:when><c:otherwise>${account.uuid}</c:otherwise></c:choose>"
@@ -42,6 +44,7 @@
 
     <c:otherwise>
         <div class="${accountSelectorClass}">
+            <%-- Display an account select for all accounts if multiple account selection is not allowed --%>
             <select class="account-select"
                 name="<c:choose><c:when test='${not empty idSuffix}'>accounts-${idSuffix}</c:when><c:otherwise>accounts</c:otherwise></c:choose>">
                 <option hidden disabled selected value> -- Select an Account  -- </option>
