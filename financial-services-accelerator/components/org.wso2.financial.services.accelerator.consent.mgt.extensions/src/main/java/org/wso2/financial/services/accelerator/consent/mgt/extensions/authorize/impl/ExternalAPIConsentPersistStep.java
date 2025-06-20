@@ -137,6 +137,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             if (consentMetadata != null && !consentMetadata.isEmpty()) {
                 // Reconstruct authorizedData
                 ConsentAuthorizeUtil.addAuthorizedDataObject(consentPersistPayload, consentMetadata);
+                ConsentAuthorizeUtil.addIsReauthorization(consentPersistPayload, consentMetadata);
 
                 // Remove attributes only used for reconstructing authorizedData object
                 ConsentAuthorizeUtil.trimPersistPayload(consentPersistPayload);

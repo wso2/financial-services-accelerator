@@ -91,11 +91,11 @@ public class ConsentDataDTO {
         this.allowMultipleAccounts = allowMultipleAccounts;
     }
 
-    public Boolean getReauthorization() {
+    public Boolean getIsReauthorization() {
         return isReauthorization;
     }
 
-    public void setReauthorization(Boolean reauthorization) {
+    public void setIsReauthorization(Boolean reauthorization) {
         isReauthorization = reauthorization;
     }
 

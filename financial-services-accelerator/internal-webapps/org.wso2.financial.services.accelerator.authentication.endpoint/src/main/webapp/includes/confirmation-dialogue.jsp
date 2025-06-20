@@ -39,6 +39,5 @@
         <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
         <input type="hidden" name="consent" id="consent" value="false"/>
         <input type="hidden" name="type" id="type" value="${type}"/>
-        <input type="hidden" name="isReauthorization" id="type" value="${isReauthorization}"/>
     </div>
 </div>

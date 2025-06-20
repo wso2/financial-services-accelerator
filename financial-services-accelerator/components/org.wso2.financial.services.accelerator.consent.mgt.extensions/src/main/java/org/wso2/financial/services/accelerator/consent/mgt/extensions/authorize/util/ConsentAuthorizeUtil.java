@@ -931,6 +931,7 @@ public class ConsentAuthorizeUtil {
      */
     public static void trimConsentMetaData(Map<String, Object> metaDataMap) {
         metaDataMap.remove(ConsentAuthorizeConstants.RETRIEVED_ACCOUNTS_AND_PERMISSIONS);
+        metaDataMap.remove(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
     }
 
     /**
@@ -992,5 +993,16 @@ public class ConsentAuthorizeUtil {
         }
 
         return metadataMap;
+    }
+
+    /**
+     * Adds isReauthorization parameter from consent metadata to consent persist payload.
+     *
+     * @param consentPersistPayload payload sent to consent persistence
+     * @param consentMetadata consent metadata map
+     */
+    public static void addIsReauthorization(JSONObject consentPersistPayload, Map<String, Object> consentMetadata) {
+        consentPersistPayload.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION,
+                Boolean.TRUE.equals(consentMetadata.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION)));
     }
 }

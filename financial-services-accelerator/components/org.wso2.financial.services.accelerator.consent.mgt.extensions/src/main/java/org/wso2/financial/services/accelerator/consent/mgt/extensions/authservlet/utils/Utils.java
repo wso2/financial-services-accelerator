@@ -252,10 +252,6 @@ public class Utils {
     public static Map<String, Object> buildResponseMap(HttpServletRequest request) {
         Map<String, Object> persistMap = new HashMap<>();
 
-        // Add is reauthorization
-        persistMap.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION,
-                String.valueOf(true).equals(request.getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION)));
-
         // Add account and permission request parameters
         persistMap.put(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS,
                 filterAccountPermissionParameters(request));

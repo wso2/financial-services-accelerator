@@ -157,10 +157,6 @@ public class FSDefaultAuthServletImplTest {
 
     @Test
     public void testUpdateConsentData() {
-        // isReauthorization = "true"
-        doReturn("true").when(httpServletRequestMock)
-                .getParameter(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
-
         // Set request parameters
         Map<String, String[]> parameterMap = new HashMap<>();
         parameterMap.put("permission-1", new String[]{"p3rm1ss10nH4sh0", "p3rm1ss10nH4sh1"});
@@ -172,9 +168,6 @@ public class FSDefaultAuthServletImplTest {
         Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
 
         assertFalse(consentData.isEmpty());
-
-        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
-        assertEquals(consentData.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION), true);
 
         assertTrue(consentData.containsKey(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS));
         JSONObject filteredParameters = (JSONObject) consentData
