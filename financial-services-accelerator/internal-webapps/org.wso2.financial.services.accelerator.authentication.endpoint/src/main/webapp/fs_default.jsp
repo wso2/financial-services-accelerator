@@ -54,9 +54,6 @@
 
                                             <%--Display basic consent data--%>
                                             <jsp:include page="includes/basic-consent-data.jsp"/>
-                                            
-                                            <%--Display re-authentication disclaimer--%>
-                                            <jsp:include page="includes/re-authentication-disclaimer.jsp"/>
 
                                             <c:if test="${not empty permissions}">
                                                 <%-- If permissions are specified --%>

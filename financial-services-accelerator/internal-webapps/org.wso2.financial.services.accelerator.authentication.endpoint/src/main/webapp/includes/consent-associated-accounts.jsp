@@ -17,6 +17,9 @@
 --%>
 
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+             
+<%--Display re-authentication disclaimer--%>
+<jsp:include page="re-authentication-disclaimer.jsp"/>
 
 <c:choose>
     <%-- View consent initiated accounts --%>

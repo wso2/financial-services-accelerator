@@ -18,13 +18,10 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * Consumer account object for external API consent retrieval.
  */
 public class ConsumerAccountDTO extends AccountDTO {
-    @NotNull
     private Boolean selected;
 
     public Boolean getSelected() {

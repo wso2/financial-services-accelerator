@@ -67,3 +67,6 @@
         </c:choose>
     </div>
 </c:forEach>
+                                            
+<%--Display re-authentication disclaimer--%>
+<jsp:include page="re-authentication-disclaimer.jsp"/>
