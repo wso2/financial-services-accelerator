@@ -27,10 +27,15 @@ import org.json.JSONObject;
 import org.owasp.encoder.Encode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
@@ -156,6 +161,15 @@ public class Utils {
         // Convert JSON object to map
         Map<String, Object> dataSetMap = jsonObjectToMap(dataSet);
 
+        appendCustomizationAttributes(dataSetMap, attributeMap);
+        appendI18nAttributes(dataSetMap, attributeMap);
+
+        return attributeMap;
+    }
+
+    private static void appendCustomizationAttributes(Map<String, Object> dataSetMap,
+                                                      Map<String, Object> attributeMap) {
+
         Map<String, Object> consentData = (Map<String, Object>) dataSetMap.get(ConsentAuthorizeConstants.CONSENT_DATA);
         Map<String, Object> consumerData = (Map<String, Object>)
                 dataSetMap.get(ConsentAuthorizeConstants.CONSUMER_DATA);
@@ -197,8 +211,16 @@ public class Utils {
         attributeMap.put(ConsentAuthorizeConstants.TYPE, type);
         attributeMap.put(ConsentAuthorizeConstants.HAS_MULTIPLE_PERMISSIONS,
                 (permissions != null && permissions.size() > 1));
+    }
 
-        return attributeMap;
+    private static void appendI18nAttributes(Map<String, Object> dataSetMap, Map<String, Object> attributeMap) {
+        Map<String, String> dataFromResourceBundle =
+                (Map<String, String>) dataSetMap.getOrDefault(Constants.RESOURCE_BUNDLE_DATA, null);
+        if (dataFromResourceBundle == null) {
+            return;
+        }
+
+        attributeMap.putAll(dataFromResourceBundle);
     }
 
     /**
@@ -233,5 +255,107 @@ public class Utils {
             return "/" + configuredPath;
         }
         return configuredPath;
+    }
+
+    /**
+     * Adds resource bundle parameters as request attributes for the JSP dispatch.
+     *
+     * @param dataSet   dataSet to append
+     * @param resourceBundle    retrieved resource bundle
+     */
+    public static void appendResourceBundleParams(JSONObject dataSet,
+                                                  ResourceBundle resourceBundle) {
+        JSONObject dataFromResourceBundle = dataSet.optJSONObject(Constants.RESOURCE_BUNDLE_DATA);
+        if (dataFromResourceBundle == null) {
+            dataFromResourceBundle = new JSONObject();
+            dataSet.put(Constants.RESOURCE_BUNDLE_DATA, dataFromResourceBundle);
+        }
+
+        dataFromResourceBundle.put(Constants.APP_REQUESTS_DETAILS,
+                MessageFormat.format(i18n(resourceBundle, Constants.APP_REQUESTS_DETAILS_KEY),
+                        dataSet.getString("application")));
+        dataFromResourceBundle.put(Constants.DATA_REQUESTED, i18n(resourceBundle, Constants.DATA_REQUESTED_KEY));
+        dataFromResourceBundle.put(Constants.REQUESTED_PERMISSIONS, i18n(resourceBundle,
+                Constants.REQUESTED_PERMISSIONS_KEY));
+        dataFromResourceBundle.put(Constants.ON_FOLLOWING_ACCOUNTS, i18n(resourceBundle,
+                Constants.ON_FOLLOWING_ACCOUNTS_KEY));
+        dataFromResourceBundle.put(Constants.SELECT_ACCOUNTS, i18n(resourceBundle, Constants.SELECT_ACCOUNTS_KEY));
+        dataFromResourceBundle.put(Constants.SELECT_DEFAULT, i18n(resourceBundle, Constants.SELECT_DEFAULT_KEY));
+        dataFromResourceBundle.put(Constants.NO_CONSUMER_ACCOUNTS, i18n(resourceBundle,
+                Constants.NO_CONSUMER_ACCOUNTS_KEY));
+        dataFromResourceBundle.put(Constants.RE_AUTHENTICATION_DISCLAIMER, i18n(resourceBundle,
+                Constants.RE_AUTHENTICATION_DISCLAIMER_KEY));
+        dataFromResourceBundle.put(Constants.IF_STOP_DATA_SHARING, i18n(resourceBundle,
+                Constants.IF_STOP_DATA_SHARING_KEY));
+        dataFromResourceBundle.put(Constants.DO_YOU_CONFIRM,
+                MessageFormat.format(i18n(resourceBundle, Constants.DO_YOU_CONFIRM_KEY),
+                        dataSet.getString("application")));
+    }
+
+    /**
+     * Appends language options based on locale.
+     *
+     * @param dataSet   dataSet to append
+     * @param request   server request
+     */
+    public static void appendLanguageOptions(JSONObject dataSet, HttpServletRequest request) {
+        JSONObject dataFromResourceBundle = dataSet.optJSONObject(Constants.RESOURCE_BUNDLE_DATA);
+        if (dataFromResourceBundle == null) {
+            dataFromResourceBundle = new JSONObject();
+            dataSet.put(Constants.RESOURCE_BUNDLE_DATA, dataFromResourceBundle);
+        }
+
+        // default text direction
+        String direction = "ltr";
+
+        String[] langParts = getLanguagePropertiesForLocale(request.getLocale());
+        if (langParts != null && langParts.length >= 3) {
+            direction = langParts[2].trim().toLowerCase();
+        }
+
+        dataFromResourceBundle.put("textDirection", direction);
+    }
+
+    /**
+     * Return language properties based on locale.
+     *
+     * @param locale    request locale
+     * @return  fetched language property (with fallback)
+     */
+    public static String[] getLanguagePropertiesForLocale(Locale locale) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("LanguageOptions.properties")) {
+
+            if (inputStream == null) {
+                return null; // No config file
+            }
+
+            Properties langOptions = new Properties();
+            langOptions.load(inputStream);
+
+            // Attempt full locale match (e.g., en_US)
+            String fullKey = "lang.switch." + locale.toString();
+            if (langOptions.containsKey(fullKey)) {
+                return langOptions.getProperty(fullKey).split(",");
+            }
+
+            // Attempt language-only fallback (e.g., en)
+            String langKey = "lang.switch." + locale.getLanguage();
+            if (langOptions.containsKey(langKey)) {
+                return langOptions.getProperty(langKey).split(",");
+            }
+
+            // Fallback: return first entry (assumed default)
+            for (String key : langOptions.stringPropertyNames()) {
+                if (key.startsWith("lang.switch.")) {
+                    return langOptions.getProperty(key).split(",");
+                }
+            }
+
+        } catch (IOException e) {
+            log.error("Failed to load language options", e); // Log in production
+        }
+
+        return null;
     }
 }
