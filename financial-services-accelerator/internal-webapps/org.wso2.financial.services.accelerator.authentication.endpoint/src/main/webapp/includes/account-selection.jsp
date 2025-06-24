@@ -16,6 +16,7 @@
 ~ under the License.
 --%>
 
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="accountSelectorClass" value="${param.accountSelectorClass}" />
@@ -47,7 +48,7 @@
             <%-- Display an account select for all accounts if multiple account selection is not allowed --%>
             <select class="account-select"
                 name="<c:choose><c:when test='${not empty idSuffix}'>accounts-${idSuffix}</c:when><c:otherwise>accounts</c:otherwise></c:choose>">
-                <option hidden disabled selected value> -- Select an Account  -- </option>
+                <option hidden disabled selected value>${defaultSelect}</option>
                 <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
                     <option value="${account.displayName}">
                         ${account['displayName']}

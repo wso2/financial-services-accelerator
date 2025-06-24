@@ -18,10 +18,9 @@
 
 <div class="form-group ui form">
     <div class="col-md-12 ui box">
-        If you want to stop sharing data, you can request us to stop sharing data on your data sharing
-        dashboard.
+        ${ifStopDataSharing}
         </br>
-        Do you confirm that we can share your data with ${app}?
+        ${doYouConfirm}
     </div>
 </div>
 
