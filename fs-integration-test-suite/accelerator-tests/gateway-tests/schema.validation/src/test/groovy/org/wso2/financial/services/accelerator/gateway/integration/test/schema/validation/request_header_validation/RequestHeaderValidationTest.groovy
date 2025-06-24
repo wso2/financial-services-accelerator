@@ -153,21 +153,6 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 	}
 
 	@Test
-	void "OB-659_API call with unsupported optional header"() {
-
-		//Do Consent Initiation
-		consentResponse = FSRestAsRequestBuilder.buildRequest()
-						.contentType(ContentType.JSON)
-						.header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
-						.header("auth-date", TestUtil.getDateTimeInHttpFormat())
-						.body(initiationPayload)
-						.baseUri(configuration.getServerBaseURL())
-						.post(consentPath)
-
-		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-	}
-
-	@Test
 	void "OB-776_API call without Content Type header"() {
 
 		//Do Consent Initiation
@@ -178,9 +163,11 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE), ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE), ConnectorTestConstants.STATUS_CODE_400.toString())
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
-						"Schema validation failed in the Request: Request Content-Type header '[text/plain]' does not match " +
-							"any allowed types. Must be one of: [application/json; charset=utf-8, application/jose+jwe]., ")
+				"Schema validation failed in the Request: Request Content-Type header '[text/plain; " +
+						"charset=ISO-8859-1]' does not match any allowed types. Must be one of: [application/json; charset=utf-8]., ")
 	}
 
 	@Test

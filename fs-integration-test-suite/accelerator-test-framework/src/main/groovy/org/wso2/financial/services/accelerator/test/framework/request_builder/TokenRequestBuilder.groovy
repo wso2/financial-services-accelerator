@@ -556,4 +556,32 @@ class TokenRequestBuilder {
 
         return response
     }
+
+    /**
+     * Method to get access token in APIM for Key Manager Admin user.
+     * @param clientId
+     * @param clientSecret
+     * @param scope
+     * @return
+     */
+    static Response getAccessTokenInApim(String clientId, String clientSecret, List<String> scope){
+
+        def authToken = "${clientId}:${clientSecret}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        String accessTokenBody = new PayloadGenerator().addGrantType("password")
+                .addScopes(scope)
+                .addUserName(configuration.getUserIsAsKeyManagerAdminName())
+                .addPassword(configuration.getUserIsAsKeyManagerAdminPWD()).getPayload()
+
+
+        Response response = FSRestAsRequestBuilder.buildBasicRequest()
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
+                .body(accessTokenBody)
+                .baseUri(configuration.getApimServerUrl())
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
+
+        return response
+    }
 }

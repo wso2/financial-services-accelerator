@@ -88,11 +88,11 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
                 .get(resource)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-//        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//        Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
                 ConnectorTestConstants.ERROR_CODE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
                 "Consent Enforcement Error")
     }
 
@@ -126,11 +126,11 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
         doDefaultAccountRetrieval()
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Provided consent is expired"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
                 "Consent Enforcement Error")
 
     }
@@ -163,11 +163,11 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
                 .get(ConnectorTestConstants.ACCOUNTS_PATH)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//        Assert.assertTrue(errorMessage.contains("Consent is not in the correct state"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Consent is not in the correct state"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
                 "Consent Enforcement Error")
 
     }

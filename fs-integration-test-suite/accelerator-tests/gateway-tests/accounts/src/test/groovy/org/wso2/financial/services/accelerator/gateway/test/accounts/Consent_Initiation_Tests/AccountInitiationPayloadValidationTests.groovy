@@ -121,20 +121,6 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 .contains("ExpirationDateTime should be a future date"))
     }
 
-//    @Test
-//    void "Accounts Initiation Without Specifying Transaction To Date Time"() {
-//
-//        consentResponse = doDefaultAccountInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithoutTransactionToDate)
-//
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-//                ConnectorTestConstants.ERROR_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
-//                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-//        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//                .contains("Schema validation failed in the Request:"))
-//    }
-//
     @Test
     void "Accounts Initiation With Invalid Transaction To Date Time Format"() {
 
@@ -148,20 +134,6 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
                 .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z], "))
     }
-
-//    @Test
-//    void "Accounts Initiation Without Specifying Transaction From Date Time"() {
-//
-//        consentResponse = doDefaultAccountInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithoutTransactionFromDate)
-//
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
-//                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
-//                ConnectorTestConstants.CONSENT_MGT_ERROR)
-//        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//                .contains("TransactionFromDateTime is invalid"))
-//    }
 
     @Test
     void "Accounts Initiation With Invalid Transaction From Date Time Format"() {

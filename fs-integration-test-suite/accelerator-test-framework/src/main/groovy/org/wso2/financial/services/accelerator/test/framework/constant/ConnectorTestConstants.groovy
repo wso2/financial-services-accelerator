@@ -331,7 +331,6 @@ class ConnectorTestConstants extends Constants{
     public static final String DATA_PAYMENT_ID = "Data.PaymentId"
     public static final String AISP_CONSENT_PATH = AISP_PATH + "account-access-consents"
     public static final String INVALID_CREDENTIALS = "Invalid Credentials"
-    static final String CODE = "code"
     public static final String INTERACTION_ID = UUID.randomUUID().toString()
     public static final String PIZZA_SHACK_PATH = "pizzashack/1.0.0/"
     public static final String PIZZA_SHACK_MENU_PATH = PIZZA_SHACK_PATH + "menu"
@@ -354,5 +353,15 @@ class ConnectorTestConstants extends Constants{
     //File Path
     static final File CONFIG_FILE = new File(System.getProperty("user.dir").toString()
             .concat("/../../../accelerator-test-framework/src/main/resources/TestConfiguration.xml"))
+    static final String INTERNAL_APIM_DCR_ENDPOINT = "/client-registration/v0.17/register"
+    static final String INTERNAL_APIM_ADMIN_ENDPOINT_V4 = "/api/am/admin/v4"
+    static final String INTERNAL_APIM_SCIME2_USER_ENDPOINT = "/scim2/Users"
+    static final String INTERNAL_APIM_SCIME2_ROLES_ENDPOINT = "/scim2/v2/Roles"
+    static final String INTERNAL_APIM_DEVPORTAL_ENDPOINT = "/api/am/devportal/v3"
+    public static final String REST_API_PUBLISHER_ENDPOINT = "/api/am/publisher/v4"
+
+    static final String ERROR_ERRORS_0_CODE = "errors[0].code"
+    static final String ERROR_ERRORS_0_MSG = "errors[0].message"
+    static final String ERROR_ERRORS_0_DESCRIPTION = "errors[0].description"
 
 }

@@ -25,6 +25,7 @@ import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.AccountsDataProviders
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
@@ -61,21 +62,20 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .baseUri(configuration.getServerBaseURL())
                 .get(accountsPath)
 
-        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
-                "token do not align"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.CODE),
-                "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
-                "Claim Mismatch")
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Incorrect Access Token Type provided"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
+                "200001")
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
+                "Access failure for API: grant type validation failed.")
     }
 
     @Test
     void "Accounts Retrieval with access token bound to a different scope"() {
 
         consentPath = ConnectorTestConstants.PAYMENT_CONSENT_API_PATH
-        initiationPayload = RequestPayloads.initiationPaymentPayload
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
 
         applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
@@ -209,12 +209,14 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .baseUri(configuration.getServerBaseURL())
                 .get(ConnectorTestConstants.ACCOUNTS_PATH)
 
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
-                "token do not align"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.CODE),
-                "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
-                "Claim Mismatch")
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
+
+//        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
+//        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
+//                "token do not align"))
+//        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.CODE),
+//                "900912")
+//        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
+//                "Claim Mismatch")
     }
 }

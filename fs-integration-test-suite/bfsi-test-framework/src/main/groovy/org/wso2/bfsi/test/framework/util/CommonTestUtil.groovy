@@ -433,14 +433,14 @@ class CommonTestUtil {
     static void writeXMLContent(String xmlFile, String parentNode, String childNode,
                                 String value, Integer tppNumber) throws TestFrameworkException {
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance()
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder()
-            Document document = documentBuilder.parse(xmlFile);
-            NodeList parentnode = document.getElementsByTagName(parentNode);
-            Element nodeElement = (Element) parentnode.item(tppNumber);
+            Document document = documentBuilder.parse(xmlFile)
+            NodeList parentnode = document.getElementsByTagName(parentNode)
+            Element nodeElement = (Element) parentnode.item(tppNumber)
             // Update value of status tag
-            Element statusTag = (Element) nodeElement.getElementsByTagName(childNode).item(0);
-            statusTag.setTextContent(String.valueOf(value));
+            Element statusTag = (Element) nodeElement.getElementsByTagName(childNode).item(0)
+            statusTag.setTextContent(String.valueOf(value))
 
             saveXMLContent(document, xmlFile);
 

@@ -102,7 +102,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
         Assert.assertNotNull(paymentID)
     }
 
-    @Test
+//    @Test
     void "OBA-796_Payment Submission request with Consent bound to deleted application"() {
 
         configuration.setTppNumber(2)

@@ -87,23 +87,8 @@ class FSAPIMConnectorTest extends CommonTest{
     String clientId
     String submissionPath
     String submissionPayload
+    JWTGenerator generator
 
-    String eventCreationPayload
-    final String eventCreationPath = ConnectorTestConstants.URL_EVENT_CREATE
-    Response eventCreationResponse
-    String resourceID
-    String pollingPayload
-    final String pollingPath = ConnectorTestConstants.URL_EVENT_POLLING
-    Response pollingResponse
-    String subscriptionPayload
-    String subscriptionUpdatePayload
-    final String subscriptionPath = ConnectorTestConstants.URL_EVENT_SUBSCRIPTION
-    String subscriptionId
-    Response subscriptionResponse
-    Response subscriptionRetrievalResponse
-    Response subscriptionUpdateResponse
-    Response subscriptionDeletionResponse
-    String ssa
     ClientRegistrationRequestBuilder registrationRequestBuilder
     String applicationAccessToken
     String consentStatus
@@ -113,6 +98,7 @@ class FSAPIMConnectorTest extends CommonTest{
     List<ConnectorTestConstants.ApiScope> scopeList
     Response retrievalResponse
     String accountsPath
+    Response publisherResponse
 
 //    //Consent scopes
 //    public List<ConnectorTestConstants.ApiScope> consentScopes = [
@@ -1128,6 +1114,7 @@ class FSAPIMConnectorTest extends CommonTest{
     Response doDefaultPaymentInitiationWithUpdatedPayload(String updatedPayload) {
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .baseUri(configuration.getServerBaseURL())
                 .body(updatedPayload)
                 .post(consentPath)
@@ -1203,7 +1190,7 @@ class FSAPIMConnectorTest extends CommonTest{
                 .baseUri(configuration.getServerBaseURL())
                 .post(submissionPath)
 
-        paymentID = TestUtil.parseResponseBody(submissionResponse, "Data.DomesticPaymentId")
+        paymentID = TestUtil.parseResponseBody(submissionResponse, "Data.PaymentId")
         consentStatus = TestUtil.parseResponseBody(submissionResponse, "Data.Status")
     }
 
@@ -1274,6 +1261,7 @@ class FSAPIMConnectorTest extends CommonTest{
         submissionResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
                 .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil
                         .generateXjwsSignature(jwsSignatureRequestBuilder.requestHeader, payload))
+                .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .body(payload)
                 .baseUri(configuration.getServerBaseURL())
                 .post(submissionPath)
@@ -1405,7 +1393,7 @@ class FSAPIMConnectorTest extends CommonTest{
      */
     void doDefaultPaymentIdRetrieval() {
 
-        submissionResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
+        submissionResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .baseUri(configuration.getServerBaseURL())
                 .get(submissionPath)
     }
@@ -1566,5 +1554,16 @@ class FSAPIMConnectorTest extends CommonTest{
                 .post(consentPath)
 
         consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
+    }
+
+    /**
+     * Account Retrieval Step with defined access token.
+     * @param accessToken
+     */
+    void doAccountRetrievalWithDefinedAccessToken(String accessToken) {
+        // Check consent valid status
+        retrievalResponse = consentRequestBuilder.buildBasicRequest(accessToken)
+                .baseUri(configuration.getServerBaseURL())
+                .get(accountsPath)
     }
 }
