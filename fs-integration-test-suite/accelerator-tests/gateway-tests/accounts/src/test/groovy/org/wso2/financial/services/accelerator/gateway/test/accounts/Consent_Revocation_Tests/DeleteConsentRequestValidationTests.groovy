@@ -64,7 +64,7 @@ class DeleteConsentRequestValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_405)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Method not allowed for given API resource"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "405")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "Runtime Error")
@@ -87,7 +87,7 @@ class DeleteConsentRequestValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_405)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Method not allowed for given API resource"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "405")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "Runtime Error")

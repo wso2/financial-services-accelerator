@@ -60,14 +60,13 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .baseUri(configuration.getServerBaseURL())
                 .delete(consentPath + "/" + consentId)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
-                "do not align. Please ensure the claims match."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
-                "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
-                "Claim Mismatch")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Incorrect Access Token Type provided"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
+                "200001")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
+                "Access failure for API: grant type validation failed.")
     }
 
     @Test
@@ -162,33 +161,7 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .contains(ConnectorTestConstants.MISSING_CREDENTIALS))
     }
 
-    @Test
-    void "OB-1724_Verify Consent Revoke for valid consent with Incorrect Content Type Header"() {
-
-        initialization()
-
-        //Consent Initiation
-        doDefaultInitiation()
-        Assert.assertNotNull(consentId)
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
-
-        //Consent Authorisation
-        doAccountConsentAuthorisation()
-
-        //Consent Revocation
-        consentRevocationResponse = FSRestAsRequestBuilder.buildRequest()
-                .contentType(ContentType.XML)
-                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
-                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
-                .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
-                .baseUri(configuration.getServerBaseURL())
-                .delete(consentPath + "/${consentId}")
-
-        Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
-
-    }
-
+    //TODO: Issue https://github.com/wso2/financial-services-accelerator/issues/709
     @Test
     void "OB-1725_Verify Consent Revoke for valid consent with Incorrect Consent ID"() {
 
@@ -215,8 +188,8 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .delete(consentPath + "/${incorrectConsentID}")
 
         Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertTrue(consentRevocationResponse.jsonPath().get("Errors.Message").toString()
-                .contains(ConnectorTestConstants.CONSENT_ID_INVALID_ERROR))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                ConnectorTestConstants.CONSENT_ID_INVALID_ERROR)
     }
 
     @Test

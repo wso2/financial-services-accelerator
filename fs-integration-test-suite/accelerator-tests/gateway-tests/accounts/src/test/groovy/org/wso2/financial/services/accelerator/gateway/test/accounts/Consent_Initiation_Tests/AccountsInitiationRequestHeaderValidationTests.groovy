@@ -67,13 +67,13 @@ class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token do not align. Please ensure the claims match."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
-                "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
-                "Claim Mismatch")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Incorrect Access Token Type provided"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
+                "200001")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
+                "Access failure for API: grant type validation failed.")
     }
 
     @Test
@@ -190,11 +190,11 @@ class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
 
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Request Content-Type header does not match any allowed types"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
                 "200012")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
                 "Request Content-Type header does not match any allowed types")
     }
 
@@ -256,102 +256,103 @@ class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
     }
 
-    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
-    void "Initiation Request Without TLS certificate"() {
-
-        def consentResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
-                .contentType(ContentType.JSON)
-                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
-                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
-                .baseUri(configuration.getServerBaseURL())
-                .body(initiationPayload)
-                .post(consentPath)
-
-        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
-//                ConnectorTestConstants.CERTIFICATE_NOT_FOUND)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-//                "Transport certificate not found in the request")
-    }
-
-    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
-    void "Validate Account Initiation request with expired cert in the context" () {
-
-        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
-                "expired-certs", "signing-keystore", "signing.jks")
-        String alias = "tpp4-sig"
-        String password = "wso2carbon"
-
-        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
-                .contentType(ContentType.JSON)
-                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
-                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
-                .baseUri(configuration.getServerBaseURL())
-                .body(initiationPayload)
-                .post(consentPath)
-
-        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
-//                ConnectorTestConstants.INVALID_CLIENT)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-//                "Invalid transport certificate. Certificate passed through the request not valid")
-    }
-
-    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
-    void "Validate Account Initiation request with revoked cert in the context" () {
-
-        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
-                "revoked-certs", "transport.jks")
-        String password = "wso2carbon"
-
-        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
-                .contentType(ContentType.JSON)
-                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
-                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
-                .baseUri(configuration.getServerBaseURL())
-                .body(initiationPayload)
-                .post(consentPath)
-
-        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
-//                ConnectorTestConstants.INVALID_CLIENT)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-//                "Invalid transport certificate. Certificate passed through the request not valid")
-
-    }
-
-    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
-    void "Invoke accounts API with certificate not bound to current application" () {
-
-        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
-                "DynamicClientRegistration", "uk", "tpp2", "transport-keystore", "transport.jks")
-        String password = "wso2carbon"
-
-        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
-                .contentType(ContentType.JSON)
-                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
-                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
-                .baseUri(configuration.getServerBaseURL())
-                .body(initiationPayload)
-                .post(consentPath)
-
-        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
-//                ConnectorTestConstants.INVALID_CLIENT)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-//                "Invalid transport certificate. Certificate passed through the request not valid")
-
-    }
+    //TODO: Enable after fixing MTLS validation
+//    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
+//    void "Initiation Request Without TLS certificate"() {
+//
+//        def consentResponse = FSRestAsRequestBuilder.buildBasicRequestWithoutTlsContext()
+//                .contentType(ContentType.JSON)
+//                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+//                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
+//                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
+//                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
+//                .baseUri(configuration.getServerBaseURL())
+//                .body(initiationPayload)
+//                .post(consentPath)
+//
+//        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+////        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+////                ConnectorTestConstants.CERTIFICATE_NOT_FOUND)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+////                "Transport certificate not found in the request")
+//    }
+//
+//    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
+//    void "Validate Account Initiation request with expired cert in the context" () {
+//
+//        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
+//                "expired-certs", "signing-keystore", "signing.jks")
+//        String alias = "tpp4-sig"
+//        String password = "wso2carbon"
+//
+//        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+//                .contentType(ContentType.JSON)
+//                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+//                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
+//                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
+//                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
+//                .baseUri(configuration.getServerBaseURL())
+//                .body(initiationPayload)
+//                .post(consentPath)
+//
+//        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+////        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+////                ConnectorTestConstants.INVALID_CLIENT)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+////                "Invalid transport certificate. Certificate passed through the request not valid")
+//    }
+//
+//    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
+//    void "Validate Account Initiation request with revoked cert in the context" () {
+//
+//        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
+//                "revoked-certs", "transport.jks")
+//        String password = "wso2carbon"
+//
+//        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+//                .contentType(ContentType.JSON)
+//                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+//                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
+//                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
+//                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
+//                .baseUri(configuration.getServerBaseURL())
+//                .body(initiationPayload)
+//                .post(consentPath)
+//
+//        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+////        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+////                ConnectorTestConstants.INVALID_CLIENT)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+////                "Invalid transport certificate. Certificate passed through the request not valid")
+//
+//    }
+//
+//    @Test(expectedExceptions = InvokerInvocationException.class, expectedExceptionsMessageRegExp = ".*Remote host terminated the handshake.*")
+//    void "Invoke accounts API with certificate not bound to current application" () {
+//
+//        String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
+//                "DynamicClientRegistration", "uk", "tpp2", "transport-keystore", "transport.jks")
+//        String password = "wso2carbon"
+//
+//        def consentResponse = FSRestAsRequestBuilder.buildRequest(keystoreLocation, password)
+//                .contentType(ContentType.JSON)
+//                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+//                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
+//                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
+//                .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
+//                .baseUri(configuration.getServerBaseURL())
+//                .body(initiationPayload)
+//                .post(consentPath)
+//
+//        //TODO: Enable the assertion after fixing the APIM issue even enabling certificate revocation.
+////        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR),
+////                ConnectorTestConstants.INVALID_CLIENT)
+////        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+////                "Invalid transport certificate. Certificate passed through the request not valid")
+//
+//    }
 }

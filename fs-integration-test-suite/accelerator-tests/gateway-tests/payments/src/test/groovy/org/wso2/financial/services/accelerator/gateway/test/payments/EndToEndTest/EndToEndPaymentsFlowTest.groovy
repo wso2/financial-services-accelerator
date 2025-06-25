@@ -22,6 +22,7 @@ import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
+import org.wso2.financial.services.accelerator.test.framework.constant.CofRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads

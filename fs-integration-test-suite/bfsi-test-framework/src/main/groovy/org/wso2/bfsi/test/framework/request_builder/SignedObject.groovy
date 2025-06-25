@@ -32,7 +32,11 @@ import org.wso2.bfsi.test.framework.configuration.CommonConfigurationService
 import org.wso2.bfsi.test.framework.exception.TestFrameworkException
 import org.wso2.bfsi.test.framework.keystore.KeyStore
 
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.security.Key
+import java.security.KeyFactory
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
 import java.security.PrivateKey
@@ -40,6 +44,7 @@ import java.security.Security
 import java.security.UnrecoverableEntryException
 import java.security.cert.Certificate
 import java.security.cert.CertificateException
+import java.security.spec.PKCS8EncodedKeySpec
 
 /**
  * Class for get Signed objects
@@ -155,6 +160,59 @@ class SignedObject {
             JWSObject jwsObject = new JWSObject(header, new Payload(payload.toString()));
             jwsObject.sign(signer);
             return jwsObject.serialize();
+
+        } catch (IOException e) {
+            throw new TestFrameworkException("Failed to load Keystore file from the location", e);
+        } catch (CertificateException e) {
+            throw new TestFrameworkException("Failed to load Certificate from the keystore", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new TestFrameworkException("Failed to identify the Algorithm ", e);
+        } catch (KeyStoreException e) {
+            throw new TestFrameworkException("Failed to initialize the Keystore ", e);
+        } catch (UnrecoverableEntryException e) {
+            throw new TestFrameworkException("Error occurred while retrieving values from KeyStore ", e);
+        } catch (JOSEException e) {
+            throw new TestFrameworkException("Failed to sign the object ", e);
+        }
+    }
+
+    /**
+     * Generate a sign JWT for request object with defined PEM certificate.
+     * @param claims
+     * @param signingAlg
+     * @param certLocation
+     * @return
+     * @throws TestFrameworkException
+     */
+    static String getSignedRequestObjectWithDefinedPemCert(String claims, String signingAlg, String certLocation)
+            throws TestFrameworkException {
+        try {
+
+            // Load RSA private key
+            String key = new String(Files.readAllBytes(Paths.get(certLocation)), StandardCharsets.UTF_8);
+            key = key.replaceAll("-----BEGIN (.*)-----", "")
+                    .replaceAll("-----END (.*)-----", "")
+                    .replaceAll("\\s+", "");
+            byte[] decoded = Base64.getDecoder().decode(key);
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded)
+
+            PrivateKey privateKey = KeyFactory.getInstance("RSA").generatePrivate(spec)
+
+            // Create signer
+            JWSSigner signer = new RSASSASigner(privateKey)
+            Security.addProvider(new BouncyCastleProvider())
+
+            // Create JWS header
+            JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(signingAlg))
+                    .type(JOSEObjectType.JWT)
+                    .build()
+
+            Payload payload = new Payload(claims)
+
+            // Create the JWS object
+            JWSObject jwsObject = new JWSObject(header, new Payload(payload.toString()))
+            jwsObject.sign(signer)
+            return jwsObject.serialize()
 
         } catch (IOException e) {
             throw new TestFrameworkException("Failed to load Keystore file from the location", e);

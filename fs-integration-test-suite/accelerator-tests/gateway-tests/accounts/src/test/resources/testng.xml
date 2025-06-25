@@ -17,7 +17,7 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Open Banking - Gateway Account Flow Test">
+<suite name="WSO2 Open Banking - Gateway Account Flow Test" parallel="none" preserve-order="true">
     <test name="Accounts End to End Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.EndToEndFlowTest.EndToEndAccountFlowTest" />
@@ -27,7 +27,15 @@
         <classes>
             <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Initiation_Tests.AccountInitiationPayloadValidationTests" />
             <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Initiation_Tests.AccountsInitiationRequestHeaderValidationTests" />
+        </classes>
+    </test>
+    <test name="Accounts Consent Retrieval Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
             <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Retrieval_Tests.GetConsentRequestHeaderValidationTests" />
+        </classes>
+    </test>
+    <test name="Accounts Consent Delete Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
             <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Revocation_Tests.DeleteConsentRequestHeaderValidationTests" />
             <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Revocation_Tests.DeleteConsentRequestValidationTests" />
         </classes>

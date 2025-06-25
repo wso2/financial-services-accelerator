@@ -54,7 +54,7 @@ class AuthorizationFlowValidationTest extends FSAPIMConnectorTest {
     void "Deny consent in consent authorisation"() {
 
         //Create Consent
-        doDefaultInitiation()
+        doDefaultPaymentInitiation()
         Assert.assertNotNull(consentId)
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
@@ -63,7 +63,7 @@ class AuthorizationFlowValidationTest extends FSAPIMConnectorTest {
         Assert.assertEquals(denyResponse, "User+denied+the+consent")
 
         //Retrieve Consent Status
-        doAccountConsentRetrieval()
+        doConsentRetrieval()
         Assert.assertEquals(consentStatus, "Rejected")
     }
 }

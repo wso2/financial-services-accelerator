@@ -43,7 +43,7 @@ class AuthorisationCodeGrantAccessTokenTest extends FSAPIMConnectorTest {
 	void authoriseConsent() {
 
 		//Get Application Access Token
-		applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.TLS_AUTH_METHOD,
+		applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
 				configuration.getAppInfoClientID(), scopeList)
 
 		//Consent initiation

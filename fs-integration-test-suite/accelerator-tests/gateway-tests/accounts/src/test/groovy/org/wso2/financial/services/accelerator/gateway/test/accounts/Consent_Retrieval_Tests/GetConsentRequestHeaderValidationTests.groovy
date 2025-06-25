@@ -61,14 +61,13 @@ class GetConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .baseUri(configuration.getServerBaseURL())
                 .get(consentPath + "/${consentId}")
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
-                "do not align. Please ensure the claims match."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
-                "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
-                "Claim Mismatch")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Incorrect Access Token Type provided"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
+                "200001")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
+                "Access failure for API: grant type validation failed.")
     }
 
     @Test
@@ -176,7 +175,7 @@ class GetConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
     }
 
     //TODO: Uncomment after fixing: https://github.com/wso2-enterprise/financial-open-banking/issues/7965
-//    @Test
+    @Test
     void "Get Accounts Initiation With Invalid Accept Header"() {
 
         doDefaultAccountInitiation()
@@ -217,7 +216,7 @@ class GetConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_405)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Method not allowed for given API resource"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "405")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "Runtime Error")
@@ -240,7 +239,7 @@ class GetConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_405)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Method not allowed for given API resource"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
                 "405")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
                 "Runtime Error")

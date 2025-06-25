@@ -848,4 +848,26 @@ class JWTGenerator {
         }
         return payload.toString()
     }
+
+    /**
+     * Get Signed Request Object with defined PEM certificate.
+     * @param scopeString
+     * @param consentId
+     * @param certLocation
+     * @param clientId
+     * @param redirectUrl
+     * @return
+     */
+    JWT getSignedRequestObjectWithDefinedPemCert(String scopeString, String consentId, String certLocation,
+                                              String clientId = acceleratorConfiguration.getAppInfoClientID(),
+                                              String redirectUrl = acceleratorConfiguration.getAppInfoRedirectURL()) {
+
+        JWTGenerator generator = new JWTGenerator()
+        String getRequestObjectClaim = generator.getRequestObjectClaimString(scopeString, consentId,
+                redirectUrl, clientId, ConnectorTestConstants.RESPONSE_TYPE_CODE_ID_TOKEN.toString(), true,
+                UUID.randomUUID().toString())
+
+        return SignedJWT.parse(SignedObject.getSignedRequestObjectWithDefinedPemCert(getRequestObjectClaim,
+                acceleratorConfiguration.getCommonSigningAlgorithm(), certLocation))
+    }
 }
