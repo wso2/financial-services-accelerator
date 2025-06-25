@@ -137,6 +137,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             if (consentMetadata != null && !consentMetadata.isEmpty()) {
                 // Reconstruct authorizedData
                 ConsentAuthorizeUtil.addAuthorizedDataObject(consentPersistPayload, consentMetadata);
+
+                // Add additional properties
                 ConsentAuthorizeUtil.addIsReauthorization(consentPersistPayload, consentMetadata);
 
                 // Remove attributes only used for reconstructing authorizedData object
@@ -146,14 +148,17 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                 // Append metadata to userGrantedData
                 JSONObject metadataJSON;
                 if (consentPersistPayload.has(ConsentAuthorizeConstants.METADATA)) {
+                    // Metadata from consent confirm servlet
                     metadataJSON = consentPersistPayload.getJSONObject(ConsentAuthorizeConstants.METADATA);
                 } else {
                     metadataJSON = new JSONObject();
                 }
 
+                // Consent metadata from populate consent page api call
                 JSONObject consentMetadataJSON = new JSONObject(consentMetadata);
                 consentMetadataJSON.keySet().forEach(k -> metadataJSON.put(k, consentMetadataJSON.get(k)));
 
+                // Add all metadata to persist payload
                 consentPersistPayload.put(ConsentAuthorizeConstants.METADATA, metadataJSON);
             }
 

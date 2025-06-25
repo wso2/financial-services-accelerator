@@ -29,9 +29,12 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentPersistStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AmendedResources;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
@@ -76,6 +79,14 @@ public class ExternalAPIConsentPersistStepTest {
             data.setAuthResource(auth);
         }
         return data;
+    }
+
+    private static Map<String, Object> getValidMetadataMap() {
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setInitiatedAccountsForConsent(List.of(new AccountDTO()));
+        responseDTO.setConsentData(consentData);
+        return new HashMap<>(Map.of("externalAPIPreConsentAuthorizeResponse", responseDTO));
     }
 
     private static ConsentPersistData createPersistData(ConsentData consentData) {
@@ -211,6 +222,7 @@ public class ExternalAPIConsentPersistStepTest {
         ConsentData consentData = new ConsentData("sessionKey", "user2", "req", "scope", "appX", new HashMap<>());
         consentData.setRedirectURI(new URI("https://localhost/return"));
         consentData.setState("state-x");
+        consentData.setMetaDataMap(getValidMetadataMap());
         ConsentPersistData persistData = createPersistData(consentData);
 
         ExternalAPIConsentResourceResponseDTO responseConsent = new ExternalAPIConsentResourceResponseDTO();

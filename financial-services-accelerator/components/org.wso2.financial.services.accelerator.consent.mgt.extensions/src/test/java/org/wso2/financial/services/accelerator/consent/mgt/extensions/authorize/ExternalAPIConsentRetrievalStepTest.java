@@ -37,7 +37,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentRes
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
@@ -363,12 +365,16 @@ public class ExternalAPIConsentRetrievalStepTest {
                 new ObjectMapper().writeValueAsString(consumerAcc).getBytes(StandardCharsets.UTF_8)).toString();
 
         // Build metadata map
-        Map<String, Object> retrieved = new HashMap<>();
-        retrieved.put("permissions", Collections.singletonList(permission));
-        retrieved.put("consumerAccounts", Collections.singletonList(consumerAcc));
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setPermissions(Collections.singletonList(permission));
+        responseDTO.setConsentData(consentData);
+        ConsumerDataDTO consumerData = new ConsumerDataDTO();
+        consumerData.setAccounts(Collections.singletonList(consumerAcc));
+        responseDTO.setConsumerData(consumerData);
 
         Map<String, Object> metaDataMap = new HashMap<>();
-        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
 
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
@@ -405,11 +411,13 @@ public class ExternalAPIConsentRetrievalStepTest {
                 new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
 
         // Build metadata map
-        Map<String, Object> retrieved = new HashMap<>();
-        retrieved.put("permissions", Collections.singletonList(permission));
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setPermissions(Collections.singletonList(permission));
+        responseDTO.setConsentData(consentData);
 
         Map<String, Object> metaDataMap = new HashMap<>();
-        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
 
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
@@ -446,12 +454,14 @@ public class ExternalAPIConsentRetrievalStepTest {
                 new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
 
         // Build metadata map
-        Map<String, Object> retrieved = new HashMap<>();
-        retrieved.put("permissions", Collections.singletonList(permission));
-        retrieved.put("initiatedAccountsForConsent", Collections.singletonList(initiatedAcc));
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setPermissions(Collections.singletonList(permission));
+        consentData.setInitiatedAccountsForConsent(Collections.singletonList(initiatedAcc));
+        responseDTO.setConsentData(consentData);
 
         Map<String, Object> metaDataMap = new HashMap<>();
-        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
 
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
@@ -484,11 +494,15 @@ public class ExternalAPIConsentRetrievalStepTest {
                 new ObjectMapper().writeValueAsString(consumerAcc).getBytes(StandardCharsets.UTF_8)).toString();
 
         // Build metadata map
-        Map<String, Object> retrieved = new HashMap<>();
-        retrieved.put("consumerAccounts", Collections.singletonList(consumerAcc));
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        responseDTO.setConsentData(consentData);
+        ConsumerDataDTO consumerData = new ConsumerDataDTO();
+        consumerData.setAccounts(Collections.singletonList(consumerAcc));
+        responseDTO.setConsumerData(consumerData);
 
         Map<String, Object> metaDataMap = new HashMap<>();
-        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
 
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
@@ -516,11 +530,13 @@ public class ExternalAPIConsentRetrievalStepTest {
         initiatedAcc.setAccountId("acc-init-1");
 
         // Build metadata map
-        Map<String, Object> retrieved = new HashMap<>();
-        retrieved.put("initiatedAccountsForConsent", Collections.singletonList(initiatedAcc));
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setInitiatedAccountsForConsent(Collections.singletonList(initiatedAcc));
+        responseDTO.setConsentData(consentData);
 
         Map<String, Object> metaDataMap = new HashMap<>();
-        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
 
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
@@ -544,9 +560,12 @@ public class ExternalAPIConsentRetrievalStepTest {
     public void testAddAuthorizedDataObject_withoutPermissionsWithoutAccounts() throws Exception {
 
         // Build metadata map
-        Map<String, Object> retrieved = new HashMap<>();
+        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        responseDTO.setConsentData(consentData);
+
         Map<String, Object> metaDataMap = new HashMap<>();
-        metaDataMap.put("retrievedAccountsAndPermissions", retrieved);
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
 
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();

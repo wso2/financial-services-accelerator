@@ -44,7 +44,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -617,52 +616,6 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Generates consent map with required parameters from the external response.
-     *
-     * @param responseDTO   response received from the external service call
-     * @return  consent metadata map
-     */
-    public static Map<String, Object> getConsentMapFromResponse(ExternalAPIPreConsentAuthorizeResponseDTO responseDTO)
-            throws JsonProcessingException {
-        Map<String, Object> consentMetaDataMap;
-
-        // Append metadata sent from toolkit
-        if (responseDTO.getMetadata() != null) {
-            consentMetaDataMap = responseDTO.getMetadata();
-        } else {
-            consentMetaDataMap = new HashMap<>();
-        }
-
-        // Build accounts and permissions object to append
-        Map<String, Object> accountsAndPermissionsMap = new HashMap<>();
-
-        // Append permissions
-        if (responseDTO.getConsentData().getPermissions() != null) {
-            accountsAndPermissionsMap.put(ConsentAuthorizeConstants.PERMISSIONS,
-                    responseDTO.getConsentData().getPermissions());
-        }
-
-        // Append consent initiated accounts
-        if (responseDTO.getConsentData().getInitiatedAccountsForConsent() != null) {
-            accountsAndPermissionsMap.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT,
-                    responseDTO.getConsentData().getInitiatedAccountsForConsent());
-        }
-
-        // Append consumer accounts
-        if (responseDTO.getConsumerData() != null && responseDTO.getConsumerData().getAccounts() != null) {
-            accountsAndPermissionsMap.put(ConsentAuthorizeConstants.CONSUMER_ACCOUNTS,
-                    responseDTO.getConsumerData().getAccounts());
-        }
-
-        if (!accountsAndPermissionsMap.isEmpty()) {
-            consentMetaDataMap.put(ConsentAuthorizeConstants.RETRIEVED_ACCOUNTS_AND_PERMISSIONS,
-                    accountsAndPermissionsMap);
-        }
-
-        return consentMetaDataMap;
-    }
-
-    /**
      * Builds consent data JSON to be sent.
      *
      * @param responseDTO response DTO from external service call
@@ -740,28 +693,25 @@ public class ConsentAuthorizeUtil {
     // securely created consents
     // Suppressed warning count - 2
     public static void addAuthorizedDataObject(JSONObject consentPersistPayload, Map<String, Object> metaDataMap)
-            throws JsonProcessingException {
-        Map<String, Object> retrievedAccountsPermissions;  // retrieved accounts and permissions from consent metadata
+            throws JsonProcessingException { // retrieved accounts and permissions from consent metadata
         Map<String, Integer> permissionHashToIndex = new HashMap<>(); // permission hashes to permission indices
         Map<String, ConsumerAccountDTO> accountHashToObject = new HashMap<>();  // account hashes to accounts map
         // metadata permission indices to selected account hashes map (-1 index for accounts selected for consent)
         Map<Integer, Set<JSONObject>> permissionIdxToAccountsMap = new HashMap<>();
-        List<JSONObject> accountsForConsent = new ArrayList<>();
-
-        // If permissions and accounts were not added to the consent metadata
-        retrievedAccountsPermissions = (Map<String, Object>) metaDataMap
-                .get(ConsentAuthorizeConstants.RETRIEVED_ACCOUNTS_AND_PERMISSIONS);
-        if (retrievedAccountsPermissions == null) {
-            return;
-        }
 
         // Extract and separate permissions, consumer accounts and consent initiated accounts
-        List<PermissionDTO> permissions = (List<PermissionDTO>) retrievedAccountsPermissions
-                .getOrDefault(ConsentAuthorizeConstants.PERMISSIONS, null);
-        List<ConsumerAccountDTO> consumerAccounts = (List<ConsumerAccountDTO>) retrievedAccountsPermissions
-                .getOrDefault(ConsentAuthorizeConstants.CONSUMER_ACCOUNTS, null);
-        List<AccountDTO> initiatedAccountsForConsent = (List<AccountDTO>) retrievedAccountsPermissions
-                .getOrDefault(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, null);
+        List<PermissionDTO> permissions;
+        List<ConsumerAccountDTO> consumerAccounts = null;
+        List<AccountDTO> initiatedAccountsForConsent;
+        ExternalAPIPreConsentAuthorizeResponseDTO populateResponseDTO =
+                (ExternalAPIPreConsentAuthorizeResponseDTO) metaDataMap
+                        .get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
+        permissions = populateResponseDTO.getConsentData().getPermissions();
+        if (populateResponseDTO.getConsumerData() != null) {
+            consumerAccounts = populateResponseDTO.getConsumerData().getAccounts();
+        }
+        initiatedAccountsForConsent = populateResponseDTO.getConsentData().getInitiatedAccountsForConsent();
+
 
         // Map permission hashes to their indexes
         if (permissions != null) {
@@ -925,13 +875,23 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Utility method to remove retrieved accounts and permissions from metaDataMap.
+     * Utility method to remove populate-consent-authorize-screen response from metaDataMap.
      *
      * @param metaDataMap payload sent to consent persistence
      */
     public static void trimConsentMetaData(Map<String, Object> metaDataMap) {
-        metaDataMap.remove(ConsentAuthorizeConstants.RETRIEVED_ACCOUNTS_AND_PERMISSIONS);
-        metaDataMap.remove(ConsentAuthorizeConstants.IS_REAUTHORIZATION);
+        // Add all metadata from the external api response to metaDataMap
+        if (metaDataMap.containsKey(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE)) {
+            ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = (ExternalAPIPreConsentAuthorizeResponseDTO)
+                    metaDataMap.get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
+
+            if (responseDTO.getMetadata() != null) {
+                metaDataMap.putAll(responseDTO.getMetadata());
+            }
+        }
+
+        // Remove rest of the stored object
+        metaDataMap.remove(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
     }
 
     /**

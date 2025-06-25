@@ -50,6 +50,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.C
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -134,11 +135,10 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                 consentData.setType(ConsentExtensionConstants.DEFAULT);
             }
 
-            // Storing consent metadata for attribute retrieval at persistence
-            Map<String, Object> metadataMap = ConsentAuthorizeUtil.getConsentMapFromResponse(responseDTO);
-            // Append isReauthorization parameter to metadata
-            metadataMap.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION,
-                    Boolean.TRUE.equals(responseDTO.getConsentData().getIsReauthorization()));
+            // Storing complete response as metadata for attribute retrieval at persistence
+            Map<String, Object> metadataMap = new HashMap<>();
+            metadataMap.put(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE, responseDTO);
+            metadataMap.putAll(consentData.getMetaDataMap());
             consentData.setMetaDataMap(metadataMap);
 
         } catch (FinancialServicesException e) {

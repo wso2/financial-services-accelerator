@@ -59,4 +59,5 @@ public class ConsentAuthorizeConstants {
     // For permissions accounts map in consent metadata
     public static final String RETRIEVED_ACCOUNTS_AND_PERMISSIONS = "retrievedAccountsAndPermissions";
     public static final String HAS_MULTIPLE_PERMISSIONS = "hasMultiplePermissions";
+    public static final String EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE = "externalAPIPreConsentAuthorizeResponse";
 }
