@@ -1578,12 +1578,12 @@ class ClientRegistrationRequestBuilder {
      * @param keyManagerUserName
      * @return
      */
-    static String getApimDcrClaims(String keyManagerUserName) {
+    static String getApimDcrClaims(String keyManagerUserName, String clientName) {
 
         return """
              {
                 "callbackUrl":"www.google.lk",
-                "clientName":"rest_api_admin",
+                "clientName":"$clientName",
                 "owner":"$keyManagerUserName",
                 "grantType":"client_credentials password refresh_token",
                 "saasApp":true

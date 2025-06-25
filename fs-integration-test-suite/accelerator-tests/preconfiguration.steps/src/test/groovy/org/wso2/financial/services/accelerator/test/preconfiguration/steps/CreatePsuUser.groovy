@@ -54,17 +54,16 @@ class CreatePsuUser extends FSAPIMConnectorTest{
     @Test
     void "Create User in carbon console"() {
 
-//        Response scimUserResponse = FSRestAsRequestBuilder.buildBasicRequest()
-//                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
-//                .contentType("application/scim+json; charset=UTF-8")
-//                .accept("application/scim+json")
-//                .body(RequestPayloads.createUserPayload())
-//                .post(scime2Userurl)
-//
-//        Assert.assertEquals(scimUserResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-//        userId = scimUserResponse.jsonPath().getString("id")
-//        Assert.assertNotNull(userId, "User ID should not be null")
-        userId = "e9ca0c05-7740-48b2-9e39-a328c3528c79"
+        Response scimUserResponse = FSRestAsRequestBuilder.buildBasicRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+                .contentType("application/scim+json; charset=UTF-8")
+                .accept("application/scim+json")
+                .body(RequestPayloads.createUserPayload())
+                .post(scime2Userurl)
+
+        Assert.assertEquals(scimUserResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
+        userId = scimUserResponse.jsonPath().getString("id")
+        Assert.assertNotNull(userId, "User ID should not be null")
     }
 
     @Test(dependsOnMethods = "Create User in carbon console")

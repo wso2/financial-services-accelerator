@@ -18,11 +18,11 @@
 
 package org.wso2.financial.services.accelerator.test.framework.request_builder
 
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
 import org.testng.Assert
-import org.testng.annotations.BeforeClass
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.APIConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
@@ -35,110 +35,182 @@ import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
  */
 class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
 
-    static ConfigurationService configurationService = new ConfigurationService()
+    static ConfigurationService configurationService
     static APIConfigurationService apiConfiguration
-    String publisherUrl
-    List<String> mediationPolicyID = new ArrayList<>()
-    List<String> revisionID = new ArrayList<>()
-    ArrayList<String> apiFilePaths
+    String revisionID
 
-    @BeforeClass
-    void init() {
-        FSRestAsRequestBuilder.init()
+    String publisherUrl
+
+    ApiPublisherRequestBuilder() {
+        configurationService = new ConfigurationService()
         apiConfiguration = new APIConfigurationService()
-        publisherUrl = configurationService.getApimServerUrl() + publisherUrl
-        apiFilePaths = apiConfiguration.getApiFilePath()
+
+        publisherUrl = configurationService.getApimServerUrl() + ConnectorTestConstants.REST_API_PUBLISHER_ENDPOINT
     }
 
-        /**
-         * Create API
-         * @param accessToken
-         * @return
-         */
-        List<String> createAPIs(String accessToken) {
-            URI apiEndpoint = new URI("${configurationService.getApimServerUrl()}" + publisherUrl + "/apis/import-openapi")
-            List<String> apiIDs = new ArrayList<String>()
+    /**
+     * Create Common Policy for the API.
+     * @param accessToken
+     * @return
+     */
+    Map<String, String> createCommonOperationPolicy(String accessToken) {
 
-            def apis = apiFilePaths.size()
-            for (int i = 0; i < apis; i++) {
+        List<Map> policyList = apiConfiguration.getPolicyList()
+        Map<String, String> policyIdMap = [:]
 
-                //If selecting Dynamic Endpoint
-                if (apiConfiguration.getApiEndpointType()[i] == "default") {
+        policyList.each { policy ->
+            String policyName = policy.get("policyName")
+            List<Map> policyAttributes = (List<Map>) policy.get("policyAttribute")
 
-                    def response = FSRestAsRequestBuilder.buildRequest()
-                            .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + accessToken)
-                            .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
-                            .multiPart("file", new File(apiFilePaths[i]))
-                            .multiPart("additionalProperties", getAdditionalProperties(apiConfiguration.getApiName()[i],
-                                    "v" + apiConfiguration.getApiProperty()[i]["ob-api-version"].toString().substring(0, 3),
-                                    apiConfiguration.getApiContext()[i],
-                                    apiConfiguration.getApiEndpointType()[i],
-                                    apiConfiguration.getEnableSchemaValidation()[i]))
-                            .post apiEndpoint.toString()
+            String workingDir = new File(".").getCanonicalPath()
+            String policyPath = policy.get("policyFilePath").toString()
+            File file = new File(workingDir, policyPath)
 
-                    Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
-                    Assert.assertEquals(TestUtil.parseResponseBody(response, "name"), apiConfiguration.getApiName()[i])
-                    apiIDs.add(TestUtil.parseResponseBody(response, "id"))
+            publisherResponse = FSRestAsRequestBuilder.buildRequest()
+                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                    .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
+                    .multiPart("synapsePolicyDefinitionFile", file)
+                    .multiPart("policySpecFile", new Gson().toJson(buildAllPolicyPayloads(policyName, policyAttributes)))
+                    .post(publisherUrl + "/operation-policies")
 
-                } else {
-
-                    //If selecting HTTP/Rest Endpoint
-                    def response = FSRestAsRequestBuilder.buildRequest()
-                            .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + accessToken)
-                            .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
-                            .multiPart("file", new File(apiFilePaths[i]))
-                            .multiPart("additionalProperties", getAdditionalProperties(apiConfiguration.getApiName()[i],
-                                    apiConfiguration.getApiProperty()[i]["ob-api-version"].toString(),
-                                    apiConfiguration.getApiContext()[i],
-                                    apiConfiguration.getApiEndpointType()[i],
-                                    apiConfiguration.getEnableSchemaValidation()[i],
-                                    apiConfiguration.getSandboxEndpoint()[i],
-                                    apiConfiguration.getProductionEndpoint()[i]))
-                            .post apiEndpoint.toString()
-
-                    Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
-                    Assert.assertEquals(TestUtil.parseResponseBody(response, "name"), apiConfiguration.getApiName()[i])
-                    apiIDs.add(TestUtil.parseResponseBody(response, "id"))
-                }
-            }
-            return apiIDs
+            String policyId = TestUtil.parseResponseBody(publisherResponse, "id")
+            policyIdMap.put(policyName, policyId)
         }
+
+        return policyIdMap
+    }
+
+    /**
+     * Build all policy payloads based on the api-config-provisioning.yaml.
+     * @return
+     */
+    static JsonObject buildAllPolicyPayloads(String policyName, List<Map> policyAttributes) {
+
+        JsonObject payload = new JsonObject()
+        payload.addProperty("category", "Mediation")
+        payload.addProperty("name", policyName)
+        payload.addProperty("displayName", policyName)
+        payload.addProperty("version", "v1")
+        payload.addProperty("description", policyName)
+
+        JsonArray applicableFlows = new JsonArray()
+        applicableFlows.add("request")
+        payload.add("applicableFlows", applicableFlows)
+
+        JsonArray supportedApiTypes = new JsonArray()
+        supportedApiTypes.add("HTTP")
+        payload.add("supportedApiTypes", supportedApiTypes)
+
+        JsonArray supportedGateways = new JsonArray()
+        supportedGateways.add("Synapse")
+        payload.add("supportedGateways", supportedGateways)
+
+        JsonArray attributesArray = new JsonArray()
+        policyAttributes.each { attr ->
+            JsonObject attribute = new JsonObject()
+            attribute.addProperty("name", attr.get("name"))
+            attribute.addProperty("displayName", attr.get("name"))
+            attribute.add("version", null)
+            attribute.addProperty("description", attr.get("description") ?: "")
+            // Convert required string ('true'/'false') to boolean
+            def requiredValue = attr.get("required")
+            def requiredStr = requiredValue != null ? requiredValue.toString().toLowerCase() : ""
+            attribute.addProperty("required", requiredStr == "true")
+            attribute.addProperty("type", attr.get("type") ?: "String")
+            attribute.add("allowedValues", new JsonArray())
+            attributesArray.add(attribute)
+        }
+        payload.add("policyAttributes", attributesArray)
+
+        return payload
+    }
+
+    /**
+     * Create API
+     * @param accessToken
+     * @return
+     */
+    String createAPIs(String accessToken, Map<String, Object> apiInfo) {
+
+        String apiID
+        def response
+
+        String workingDir = new File(".").getCanonicalPath()
+        String apiPath = apiInfo.get("apiFilePath").toString()
+        File apiSwaggerFile = new File(workingDir, apiPath)
+
+        String apiName = apiInfo.get("apiName").toString()
+        String apiContext = apiInfo.get("context").toString()
+        String apiVersion = apiInfo.get("apiVersion").toString()
+        String endpointType = apiInfo.get("endpointType").toString()
+        String isSchemaEnabled = apiInfo.get("enableSchemaValidation").toString()
+        List<Map> apiProperties = (List<Map>) apiInfo["apiProperty"]
+
+        //If selecting Dynamic Endpoint
+        if (endpointType == "default") {
+
+            response = FSRestAsRequestBuilder.buildRequest()
+                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                    .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
+                    .multiPart("file", apiSwaggerFile)
+                    .multiPart("additionalProperties", getApiPayload(apiName, apiVersion, apiContext, endpointType,
+                            isSchemaEnabled, apiProperties))
+                    .post(publisherUrl + "/apis/import-openapi")
+
+        } else {
+            String productionEndpoint = apiInfo.get("productionEndpoint").toString()
+            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString()
+
+            response = FSRestAsRequestBuilder.buildRequest()
+                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                    .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
+                    .multiPart("file", apiSwaggerFile)
+                    .multiPart("additionalProperties", getApiPayload(apiName, apiVersion, apiContext, endpointType,
+                            isSchemaEnabled, apiProperties, productionEndpoint, sandboxEndpoint))
+                    .post(publisherUrl + "/apis/import-openapi")
+        }
+
+        Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, "name"), apiName)
+        apiID = TestUtil.parseResponseBody(response, "id")
+        return apiID
+    }
+
 
     /**
      * Create mediation policy by referring the api-config-provisioning.yaml.
      * @param accessToken
      */
-    void createRevision(String accessToken, List<String> apiIDs) {
-        for (int i = 0; i < apiIDs.size(); i++) {
-            URI apiEndpoint = new URI("${configurationService.getApimServerUrl()}" + publisherUrl + apiIDs.get(i) + "/revisions")
-            def response = FSRestAsRequestBuilder.buildRequest()
-                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + accessToken)
-                    .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
-                    .body(getCreateRevisionPayload("revision1"))
-                    .post(apiEndpoint)
-            Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
-            revisionID.add(TestUtil.parseResponseBody(response, "id"))
+    String createRevision(String accessToken, String apiIDs) {
 
-        }
+        URI apiEndpoint = new URI(publisherUrl + "/apis/" + apiIDs + "/revisions")
+        def response = FSRestAsRequestBuilder.buildRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(getCreateRevisionPayload("revision1"))
+                .post(apiEndpoint)
+
+        Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
+        revisionID = TestUtil.parseResponseBody(response, "id")
+        return revisionID
     }
 
     /**
      * Deploy revision by referring the api-config-provisioning.yaml.
      * @param accessToken
      */
-    void deployRevision(String accessToken, List<String> apiIDs) {
-        for (int i = 0; i < apiIDs.size(); i++) {
-            URI apiEndpoint = new URI("${configurationService.getServerGatewayURL()}" + publisherUrl + apiIDs.get(i) + "/deploy-revision")
-            String apimHostname = apiEndpoint.getHost()
-            apimHostname = apimHostname.startsWith("www.") ? apimHostname.substring(4) : apimHostname;
-            def response = FSRestAsRequestBuilder.buildRequest()
-                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + accessToken)
-                    .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
-                    .queryParam("revisionId", revisionID.get(i))
-                    .body(getDeployRevisionPayload(apimHostname, revisionID.get(i)))
-                    .post(apiEndpoint)
-            Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
-        }
+    void deployRevision(String accessToken, String apiID, String revisionID) {
+
+        URI apiEndpoint = new URI(publisherUrl + "/apis/" + apiID + "/deploy-revision")
+        String apimHostname = apiEndpoint.getHost()
+        def response = FSRestAsRequestBuilder.buildRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .queryParam("revisionId", revisionID)
+                .body(getDeployRevisionPayload("localhost", revisionID))
+                .post(apiEndpoint)
+
+        Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
     }
 
     /**
@@ -146,62 +218,18 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      * @param accessToken
      * @param apiIDs
      */
-    void publishAPI(String accessToken, List<String> apiIDs) {
-        for (int i = 0; i < apiIDs.size(); i++) {
-            URI apiEndpoint = new URI("${configurationService.getServerGatewayURL()}" + publisherUrl + "change-lifecycle")
-            def response = FSRestAsRequestBuilder.buildRequest()
-                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + accessToken)
-                    .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
-                    .queryParam("apiId", apiIDs.get(i))
-                    .queryParam("action", "Publish")
-                    .post(apiEndpoint)
+    void publishAPI(String accessToken, String apiID) {
 
-            Assert.assertEquals(response.statusCode(), HTTPResponse.SC_OK)
-        }
-    }
+        URI apiEndpoint = new URI(publisherUrl + "/apis/change-lifecycle")
 
-        /**
-         * Get the additional properties for the API creation.
-         * @param api_name
-         * @param api_version
-         * @param api_context
-         * @param api_endpoint_type
-         * @param isSchemaEnabled
-         * @param sandbox_endpoints
-         * @param production_endpoints
-         * @return
-         */
-    static String getAdditionalProperties(String api_name, String api_version, String api_context, String api_endpoint_type,
-                                          String isSchemaEnabled, String sandbox_endpoints = "default",
-                                          String production_endpoints = "default") {
+        def response = FSRestAsRequestBuilder.buildRequest()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .queryParam("apiId", apiID)
+                .queryParam("action", "Publish")
+                .post(apiEndpoint)
 
-        if (!api_endpoint_type.equalsIgnoreCase("default")) {
-            sandbox_endpoints = configurationService.getISServerUrl() + sandbox_endpoints
-            production_endpoints = configurationService.getISServerUrl() + production_endpoints
-        }
-
-        return """
-            {
-              "name": "$api_name",
-              "version": "$api_version",
-              "context": "$api_context",
-              "gatewayType": "wso2/synapse",
-              "enableSchemaValidation": $isSchemaEnabled,
-              "policies": [
-                "Unlimited"
-              ],
-              "apiThrottlingPolicy": "Unlimited",
-              "endpointConfig": {
-                "endpoint_type": "$api_endpoint_type",
-                "sandbox_endpoints": {
-                  "url": "$sandbox_endpoints"
-                },
-                "production_endpoints": {
-                  "url": "$production_endpoints"
-                }
-              }
-            }
-            """.stripIndent()
+        Assert.assertEquals(response.statusCode(), HTTPResponse.SC_OK)
     }
 
     /**
@@ -233,107 +261,150 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
              """.stripIndent()
     }
 
-    private static JsonObject getPolicySpecFileDefinition(String policyName, JsonArray policyAttribute) {
-
-        JsonObject policySpecObject = new JsonObject()
-        policySpecObject.addProperty("category", "Mediation")
-        policySpecObject.addProperty("name", policyName)
-        policySpecObject.addProperty("displayName", policyName)
-        policySpecObject.addProperty("version", "v1")
-        policySpecObject.addProperty("description", policyName)
-        JsonArray applicableFlows = new JsonArray()
-        applicableFlows.add("request")
-        policySpecObject.add("applicableFlows", applicableFlows)
-        JsonArray supportedApiTypes = new JsonArray()
-        supportedApiTypes.add("HTTP")
-        policySpecObject.add("supportedApiTypes", supportedApiTypes)
-        JsonArray supportedGateways = new JsonArray()
-        supportedGateways.add("Synapse")
-        policySpecObject.add("supportedGateways", supportedGateways)
-        JsonArray policyAttributes = new JsonArray()
-        policySpecObject.add("policyAttributes", policyAttributes)
-        return policySpecObject
-    }
-
-
     /**
-     * Build all policy payloads based on the api-config-provisioning.yaml.
+     * Generate API payload based on the api-config-provisioning.yaml.
+     * @param api_name
+     * @param api_version
+     * @param api_context
+     * @param api_endpoint_type
+     * @param isSchemaEnabled
+     * @param sandbox_endpoints
+     * @param production_endpoints
      * @return
      */
-    static Map<String, JsonObject> buildAllPolicyPayloads(String policyName, List<Map> policyAttributes) {
+    static String getApiPayload(String api_name, String api_version, String api_context, String api_endpoint_type,
+                                          String isSchemaEnabled, List<Map> apiProperties, String sandbox_endpoints = "default",
+                                          String production_endpoints = "default") {
 
-        List<Map> policyList = apiConfiguration.getPolicyList()
-        Map<String, JsonObject> payloadMap = [:]
+        // Generate operations JSON string
+        String operationsJson = new Gson().toJson(generateOperations(apiProperties))
 
-        policyList.each { policy ->
-            policyName = policy.get("policyName")
-            policyAttributes = (List<Map>) policy.get("policyAttribute")
+        if (!api_endpoint_type.equalsIgnoreCase("default")) {
+            sandbox_endpoints = configurationService.getISServerUrl() + sandbox_endpoints
+            production_endpoints = configurationService.getISServerUrl() + production_endpoints
+        }
 
-            JsonObject payload = new JsonObject()
-            payload.addProperty("category", "Mediation")
-            payload.addProperty("name", policyName)
-            payload.addProperty("displayName", policyName)
-            payload.addProperty("version", "v1")
-            payload.addProperty("description", policyName)
+        String payload = """
+            {
+                "name": "$api_name",
+                "context": "$api_context",
+                "version": "$api_version",
+                "gatewayType": "wso2/synapse",
+                "gatewayVendor": "wso2",
+                "policies":["Unlimited"],
+                "enableSchemaValidation": $isSchemaEnabled,
+                "apiThrottlingPolicy": "Unlimited",
+                "endpointConfig": {
+                  "endpoint_type": "$api_endpoint_type",
+                  "sandbox_endpoints": {
+                    "url": "$sandbox_endpoints"
+                  },
+                  "production_endpoints": {
+                    "url": "$production_endpoints"
+                  }
+                },
+                "apiPolicies": {
+                    "request": [{
+                        "policyName": "MTLSEnforcement",
+                        "parameters": {
+                            "transportCertHeaderName": "x-wso2-client-certificate"
+                        }
+                    }]
+                },
+                "operations": $operationsJson,
+                "lifeCycleStatus": "CREATED",
+                "visibility": "PUBLIC"
+              }
+            """.stripIndent()
 
-            JsonArray applicableFlows = new JsonArray()
-            applicableFlows.add("request")
-            payload.add("applicableFlows", applicableFlows)
+        return payload
+    }
 
-            JsonArray supportedApiTypes = new JsonArray()
-            supportedApiTypes.add("HTTP")
-            payload.add("supportedApiTypes", supportedApiTypes)
+    /**
+     * Generate operations for the API based on the api-properties.
+     * @param apiProperties
+     * @return
+     */
+    static JsonArray generateOperations(List<Map> apiProperties) {
+        JsonArray operations = new JsonArray()
 
-            JsonArray supportedGateways = new JsonArray()
-            supportedGateways.add("Synapse")
-            payload.add("supportedGateways", supportedGateways)
+        apiProperties.each { resource ->
+            String apiResource = resource['api-resource']
+            String requestType = resource['requestType']
+            List<Map> policies = (List<Map>) resource['policy']
 
-            JsonArray attributesArray = new JsonArray()
-            policyAttributes.each { attr ->
-                JsonObject attribute = new JsonObject()
-                attribute.addProperty("name", attr.get("name"))
-                attribute.addProperty("displayName", attr.get("name"))
-                attribute.add("version", null)
-                attribute.addProperty("description", attr.get("description") ?: "")
-                // Convert required string ('true'/'false') to boolean
-                def requiredValue = attr.get("required")
-                def requiredStr = requiredValue != null ? requiredValue.toString().toLowerCase() : ""
-                attribute.addProperty("required", requiredStr == "true")
-                attribute.addProperty("type", attr.get("type") ?: "String")
-                attribute.add("allowedValues", new JsonArray())
-                attributesArray.add(attribute)
+            JsonObject operation = new JsonObject()
+            operation.addProperty("target", apiResource)
+            operation.addProperty("verb", requestType.toUpperCase())
+
+            JsonObject operationPolicies = new JsonObject()
+            JsonArray requestPolicyArray = new JsonArray()
+
+            policies.each { policy ->
+                JsonObject policyJson = new JsonObject()
+                policyJson.addProperty("policyName", policy["name"])
+
+                JsonObject parameters = new JsonObject()
+                List<Map> attributes = (List<Map>) policy["policyAttributes"]
+                attributes.each { attr ->
+                    String attrName = attr["attribute"]
+                    String attrValue = attr["attributeValue"]
+                    parameters.addProperty(attrName, "null".equals(attrValue) ? null : attrValue)
+                }
+
+                policyJson.add("parameters", parameters)
+                requestPolicyArray.add(policyJson)
             }
-            payload.add("policyAttributes", attributesArray)
 
-            payloadMap[policyName] = payload
+            operationPolicies.add("request", requestPolicyArray)
+            operation.add("operationPolicies", operationPolicies)
+            operations.add(operation)
         }
 
-        return payloadMap
+        return operations
     }
 
     /**
-     * Create Common Policy for the API.
+     * Update API with the given API information.
      * @param accessToken
-     * @param filePath
-     * @param payload
+     * @param apiInfo
+     * @param apiId
      * @return
      */
-    String createCommonOperationPolicy(String accessToken, String filePath) {
+    List<String> updateAPIs(String accessToken, Map<String, Object> apiInfo, String apiId) {
 
-        List<Map> policyList = apiConfiguration.getPolicyList()
+        def response
 
-        policyList.each { policy ->
-            String policyName = policy.get("policyName")
-            List<Map> policyAttributes = (List<Map>) policy.get("policyAttribute")
+        String apiName = apiInfo.get("apiName").toString()
+        String apiContext = apiInfo.get("context").toString()
+        String apiVersion = apiInfo.get("apiVersion").toString()
+        String endpointType = apiInfo.get("endpointType").toString()
+        String isSchemaEnabled = apiInfo.get("enableSchemaValidation").toString()
+        List<Map> apiProperties = (List<Map>) apiInfo["apiProperty"]
 
-            publisherResponse = FSRestAsRequestBuilder.buildRequest()
-                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + accessToken)
-                    .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
-                    .multiPart("synapsePolicyDefinitionFile", new File(filePath))
-                    .multiPart("policySpecFile", buildAllPolicyPayloads(policyName, policyAttributes))
-                    .post(publisherUrl + "operation-policies")
+        //If selecting Dynamic Endpoint
+        if (endpointType == "default") {
 
-            return TestUtil.parseResponseBody(publisherResponse, "id")
+            response = FSRestAsRequestBuilder.buildRequest()
+                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                    .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
+                    .body(getApiPayload(apiName, apiVersion, apiContext, endpointType,
+                            isSchemaEnabled, apiProperties))
+                    .put(publisherUrl + "/apis/$apiId")
+
+        } else {
+            String productionEndpoint = apiInfo.get("productionEndpoint").toString()
+            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString()
+
+            response = FSRestAsRequestBuilder.buildRequest()
+                    .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
+                    .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
+                    .body(getApiPayload(apiName, apiVersion, apiContext, endpointType,
+                            isSchemaEnabled, apiProperties, productionEndpoint, sandboxEndpoint))
+                    .put(publisherUrl + "/apis/$apiId")
         }
+
+        Assert.assertEquals(response.statusCode(), HTTPResponse.SC_OK)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, "name"), apiName)
     }
 }

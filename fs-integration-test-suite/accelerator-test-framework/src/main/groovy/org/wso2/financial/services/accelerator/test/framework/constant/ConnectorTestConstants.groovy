@@ -363,5 +363,7 @@ class ConnectorTestConstants extends Constants{
     static final String ERROR_ERRORS_0_CODE = "errors[0].code"
     static final String ERROR_ERRORS_0_MSG = "errors[0].message"
     static final String ERROR_ERRORS_0_DESCRIPTION = "errors[0].description"
+    static final String ADMIN_PORTAL_CLIENT_NAME = "rest_api_admin"
+    static final String PUBLISHER_CLIENT_NAME = "rest_api_publisher"
 
 }

@@ -69,7 +69,7 @@ class CreateKeyManager extends FSAPIMConnectorTest{
 
         def registrationResponse = ClientRegistrationRequestBuilder
                 .buildIsAsKeyManagerRegistrationRequest()
-                .body(ClientRegistrationRequestBuilder.getApimDcrClaims(adminUserName))
+                .body(ClientRegistrationRequestBuilder.getApimDcrClaims(adminUserName, ConnectorTestConstants.ADMIN_PORTAL_CLIENT_NAME))
                 .post(dcrPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)

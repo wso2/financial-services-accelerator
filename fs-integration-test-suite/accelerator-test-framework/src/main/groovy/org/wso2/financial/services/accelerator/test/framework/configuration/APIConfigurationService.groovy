@@ -166,4 +166,14 @@ class APIConfigurationService extends CommonConfigurationService {
         Map<String, Object> lstYamlConfigs = readProvisioningConfigs()
         return (List<Map>) lstYamlConfigs.get("policy")
     }
+
+    /**
+     * Get API List
+     * @return
+     */
+    public List<Map> getApiList() {
+
+        Map<String, Object> lstYamlConfigs = readProvisioningConfigs()
+        return (List<Map>) lstYamlConfigs.get("apis")
+    }
 }

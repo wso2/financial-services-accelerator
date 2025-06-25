@@ -32,6 +32,7 @@ import org.testng.annotations.BeforeClass
 import org.wso2.bfsi.test.framework.CommonTest
 import org.wso2.bfsi.test.framework.automation.WaitForRedirectAutomationStep
 import org.wso2.financial.services.accelerator.test.framework.automation.consent.BasicAuthAutomationStep
+import org.wso2.financial.services.accelerator.test.framework.configuration.APIConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.CofRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
@@ -99,6 +100,7 @@ class FSAPIMConnectorTest extends CommonTest{
     Response retrievalResponse
     String accountsPath
     Response publisherResponse
+    APIConfigurationService apiConfiguration
 
 //    //Consent scopes
 //    public List<ConnectorTestConstants.ApiScope> consentScopes = [
