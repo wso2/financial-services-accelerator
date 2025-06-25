@@ -2030,9 +2030,7 @@ components:
               description: Structured list of explanatory consent text. Key corresponds to section title where the value is an array of strings to be displayed as bulletpoints under the title.
               additionalProperties:
                 items:
-                  type: array
-                  items:
-                    type: string
+                  type: string
             permissions:
               type: array
               description: List of permissions for the consent (optional)
@@ -2113,7 +2111,7 @@ components:
                   $ref: '#/components/schemas/Account'
         cookies:
           type: object
-          description: Map of browser cookies
+          description: Map of cookie values, if needed
           additionalProperties: true
     Account:
       type: object
