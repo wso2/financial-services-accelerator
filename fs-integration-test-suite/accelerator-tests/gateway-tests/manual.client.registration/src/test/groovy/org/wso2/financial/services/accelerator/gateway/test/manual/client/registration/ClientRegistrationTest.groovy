@@ -22,7 +22,9 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.bfsi.test.framework.automation.BrowserAutomation
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
+import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ManualClientRegistrationRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
  * Test class for manual client registration in WSO2 API Manager.
@@ -31,10 +33,12 @@ class ClientRegistrationTest extends FSAPIMConnectorTest{
 
     String apimDevportalUrl
     String userId
+    File xmlFile = ConnectorTestConstants.CONFIG_FILE
 
     @BeforeClass
     void init() {
         apimDevportalUrl = configuration.getApimServerUrl() + "/devportal"
+        xmlFile = ConnectorTestConstants.CONFIG_FILE
     }
 
     @Test
@@ -44,14 +48,22 @@ class ClientRegistrationTest extends FSAPIMConnectorTest{
                 .addStep(new ManualClientRegistrationRequestBuilder(apimDevportalUrl, "TestApplication1",
                         true))
                 .execute()
+
+        //Write Client Id and Client Secret of TTP1 to config file.
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                configuration.getTppNumber())
     }
 
-//    @Test
+    @Test
     void "Manual client Registration non-regulatory application"() {
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY, false)
                 .addStep(new ManualClientRegistrationRequestBuilder(apimDevportalUrl, "Non_Regulatory_Application1",
                         false))
                 .execute()
+
+        //Write Client Id and Client Secret of TTP1 to config file.
+        TestUtil.writeXMLContent(xmlFile.toString(), "NonRegulatoryApplication", "ClientID", clientId,
+                configuration.getTppNumber())
     }
 }

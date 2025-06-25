@@ -97,7 +97,6 @@ PROJECT_HOME=`pwd`
 
 echo "--- Go to fs-integration-test-suite folder"
 cd fs-integration-test-suite
-APIS_HOME=${PROJECT_HOME}/financial-services-accelerator/accelerators/fs-apim/repository/resources/apis
 ACCELERATOR_TESTS_HOME=${PROJECT_HOME}/fs-integration-test-suite
 TEST_FRAMEWORK_HOME=${ACCELERATOR_TESTS_HOME}/accelerator-test-framework
 TEST_CONFIG_FILE=${TEST_FRAMEWORK_HOME}/src/main/resources/TestConfiguration.xml
@@ -111,134 +110,119 @@ cp ${TEST_FRAMEWORK_HOME}/src/main/resources/TestConfigurationExample.xml ${TEST
 #--------------Server Configurations-----------------#
 sed -i -e "s|Common.IS_Version|7.1.0|g" $TEST_CONFIG_FILE
 
-sed -i -e "s|Server.ISServerUrl|https://$(get_prop "IsHostname"):9446|g" $TEST_CONFIG_FILE
-sed -i -e "s|Server.BaseUrl|https://$(get_prop "ApimHostname"):8243|g" $TEST_CONFIG_FILE
-sed -i -e "s|Server.APIMServerUrl|https://$(get_prop "ApimHostname"):9443|g" $TEST_CONFIG_FILE
+##----------------set hostnames for sequences -----------#
+sed -i -e "s|{AM_HOST}|$(get_prop "ApimHostname")|g" $TEST_CONFIG_FILE
+sed -i -e "s|{IS_HOST}|$(get_prop "IamHostname")|g" $TEST_CONFIG_FILE
 
-#--------------Application Configurations-----------------#
-sed -i -e "s|AppConfig.Application.KeyStore.Location|${TEST_ARTIFACTS}/dynamic-client-registration/uk/sample-client-resources/signing-keystore/signing.jks|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.Application.KeyStore.Alias|signing|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.Application.KeyStore.Password|wso2carbon|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.Application.KeyStore.SigningKid|5dBuoFxTMIrwWd9hzUMVgF2jMbk|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|AppConfig.Transport.MTLSEnabled|true|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.Transport.KeyStore.Location|${TEST_ARTIFACTS}/dynamic-client-registration/uk/sample-client-resources/transport-keystore/transport.jks|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.Transport.KeyStore.Password|wso2carbon|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.Transport.KeyStore.Alias|transport|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|AppConfig.DCR.SoftwareId|jFQuQ4eQbNCMSqdCog21nF|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.DCR.RedirectUri|https://www.google.com/redirects/redirect1|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.DCR.AlternateRedirectUri|https://www.google.com/redirects/redirect2|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.DCR.DCRAPIVersion|0.1|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|AppConfig.Application.ClientID|Application.ClientID|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.Application.RedirectURL|https://www.google.com/redirects/redirect1|g" $TEST_CONFIG_FILE
-
-#--------------Application Configurations App 2-----------------#
-sed -i -e "s|AppConfig2.Application.KeyStore.Location|${TEST_ARTIFACTS}/dynamic-client-registration/uk/sample-client-resources-2/signing-keystore/signing.jks|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.Application.KeyStore.Alias|signing|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.Application.KeyStore.Password|wso2carbon|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.Application.KeyStore.SigningKid|sCekNgSWIauQ34klRhDGqfwpjc4|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|AppConfig2.Transport.MTLSEnabled|true|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.Transport.KeyStore.Location|${TEST_ARTIFACTS}/dynamic-client-registration/uk/sample-client-resources-2/transport-keystore/transport.jks|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.Transport.KeyStore.Password|wso2carbon|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.Transport.KeyStore.Alias|transport|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|AppConfig2.DCR.SoftwareId|oQ4KoaavpOuoE7rvQsZEOV|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.DCR.RedirectUri|https://www.google.com/redirects/redirect1|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.DCR.AlternateRedirectUri|https://www.google.com/redirects/redirect2|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.DCR.DCRAPIVersion|0.1|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|AppConfig2.Application.ClientID|Application.ClientID|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig2.Application.RedirectURL|https://www.google.com/redirects/redirect1|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|Transport.Truststore.Location|${TEST_ARTIFACTS}/client-truststore/client-truststore.jks|g" $TEST_CONFIG_FILE
-sed -i -e "s|Transport.Truststore.Password|wso2carbon|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|NonRegulatoryApplication.RedirectURL|https://www.google.com/redirects/redirect1|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|BrowserAutomation.BrowserPreference|firefox|g" $TEST_CONFIG_FILE
-sed -i -e "s|BrowserAutomation.HeadlessEnabled|true|g" $TEST_CONFIG_FILE
-sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_ARTIFACTS}/selenium-libs/geckodriver|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|Common.SigningAlgorithm|PS256|g" $TEST_CONFIG_FILE
-sed -i -e "s|Common.TestArtifactLocation|${TEST_ARTIFACTS}|g" $TEST_CONFIG_FILE
-
-sed -i -e "s|ConsentApi.AudienceValue|https://$(get_prop "IsHostname"):9446/oauth2/token|g" $TEST_CONFIG_FILE
-
-#--------------Gateway Integration Specific Test Configurations-----------------#
-
-#--------------Server Configurations-----------------#
-sed -i -e "s|Server.BaseUrl|https://$(get_prop "ApimHostname"):8243|g" $TEST_CONFIG_FILE
-sed -i -e "s|Server.APIMServerUrl|https://$(get_prop "ApimHostname"):9443|g" $TEST_CONFIG_FILE
+##----------------set Directory Path-----------#
+sed -i -e "s|{TestSuiteDirectoryPath}|${ACCELERATOR_TESTS_HOME}|g" $TEST_CONFIG_FILE
 
 #--------------Provisioning Configurations-----------------#
 sed -i -e "s|Provisioning.Enabled|true|g" $TEST_CONFIG_FILE
-sed -i -e "s|Provisioning.ProvisionFilePath|${ACCELERATOR_TESTS_HOME}/ob-gateway-integration-tests/common.integration.test/src/test/resources/provisioningFiles/api-config-provisioning.yaml|g" $TEST_CONFIG_FILE
+sed -i -e "s|Provisioning.ProvisionFilePath|${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps/src/test/resources/api-config-provisioning.yaml|g" $TEST_CONFIG_FILE
 
-#--------------DCR Configurations App 1-----------------#
-sed -i -e "s|AppConfig.DCR.SSAPath|${TEST_ARTIFACTS}/dynamic-client-registration/uk/sample-client-resources/ssa.txt|g" $TEST_CONFIG_FILE
-sed -i -e "s|AppConfig.DCR.SelfSignedSSAPath|${TEST_ARTIFACTS}/dynamic-client-registration/uk/sample-client-resources/self_ssa.txt|g" $TEST_CONFIG_FILE
-
-#--------------DCR Configurations App 2-----------------#
-sed -i -e "s|AppConfig2.DCR.SSAPath|${TEST_ARTIFACTS}/dynamic-client-registration/uk/sample-client-resources-2/ssa.txt|g" $TEST_CONFIG_FILE
-
-#----------------Set hostnames for sequences -----------#
-#__replace hostname before deploy
-sed -i -e "s|localhost:9446|$(get_prop "IsHostname"):9446|g" ${APIS_HOME}/Accounts/accounts-dynamic-endpoint-insequence.xml
-
+# Set Web Browser Configuration
+sed -i -e "s|BrowserAutomation.HeadlessEnabled|$(get_prop "BrowserAutomation.HeadlessEnabled")|g" $TEST_CONFIG_FILE
+if [ $(get_prop "OSName") == "mac" ]; then
+    sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_ARTIFACTS}/selenium-libs/mac/geckodriver|g" $TEST_CONFIG_FILE
+else
+    sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver|g" $TEST_CONFIG_FILE
+fi
 
 #----------------Install geckodriver------------------------#
 export DEBIAN_FRONTEND=noninteractive
 wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz
 tar xvzf geckodriver*
 cp geckodriver ${TEST_ARTIFACTS}/selenium-libs/
-chmod +x ${TEST_ARTIFACTS}/selenium-libs/geckodriver
+chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 
 #--------------Build the test framework-----------------#
-mvn clean install -Dprofile=open-banking-test-suite -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+cd ${TEST_FRAMEWORK_HOME}
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 #--------------API Publish and Subscribe Step-----------------#
-cd ${GATEWAY_INTEGRATION_TEST_HOME}/common.integration.test
+cd ${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 MVNSTATE=$?
 
-#=== FUNCTION ==================================================================
-# NAME: get_test_prop
-# DESCRIPTION: Retrieve specific property from test.properties file
-# PARAMETER 1: property_value
-#===============================================================================
-function get_test_prop {
-    local prop=$(grep -w "${1}" "target/test.properties" | cut -d'=' -f2)
-    echo $prop
-}
-
-CLIENT_ID=$(get_test_prop ClientID)
-CLIENT_SECRET=$(get_test_prop ClientSecret)
-
-if [ "$(get_test_prop "ClientID")" == "" ]; then
-    mkdir -p ${OUTPUT_DIR}/scenarios/com.wso2.openbanking.common.integration.test
-    find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/com.wso2.openbanking.common.integration.test \;
-    return
-fi
-
-sed -i -e "s|NonRegulatoryApplication.ClientID|${CLIENT_ID}|g" $IS_TEST_CONFIG_FILE $GATEWAY_TEST_CONFIG_FILE
-sed -i -e "s|NonRegulatoryApplication.ClientSecret|${CLIENT_SECRET}|g" $IS_TEST_CONFIG_FILE $GATEWAY_TEST_CONFIG_FILE
-
 #--------------run IS tests-----------------#
-cd ${IS_TEST_HOME}
-mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae
+cd ${IS_TEST_HOME}/dcr
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
 MVNSTATE=$((MVNSTATE+$?))
-mkdir -p ${OUTPUT_DIR}/scenarios/com.wso2.openbanking.is.accelerator.test
-find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/com.wso2.openbanking.is.accelerator.test \;
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/dcr
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/dcr \;
+
+cd ${IS_TEST_HOME}/token
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/token
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/token \;
+
+cd ${IS_TEST_HOME}/pre-configuration-step
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/pre-configuration-step
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/pre-configuration-step \;
+
+cd ${IS_TEST_HOME}/consent-management
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/consent-management
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/consent-management \;
+
+cd ${IS_TEST_HOME}/event-notification
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/event-notification
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/event-notification \;
 
 sleep 30m
 
 #--------------run Gateway tests-----------------#
-cd ${GATEWAY_INTEGRATION_TEST_HOME}
-mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/manual.client.registration
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
 MVNSTATE=$((MVNSTATE+$?))
-mkdir -p ${OUTPUT_DIR}/scenarios/com.wso2.openbanking.apim.accelerator.test
-find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/com.wso2.openbanking.apim.accelerator.test \;
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/manual.client.registration
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/manual.client.registration \;
 
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/dcr
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/dcr
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/dcr \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/accounts
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/accounts
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/accounts \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/cof
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/cof
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/cof \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/payments
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/payments
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/payments \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/schema.validation
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/schema.validation
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/schema.validation \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/token
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/token
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/token \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/non.regulatory.scenarios
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios \;
