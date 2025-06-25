@@ -57,11 +57,11 @@
 
                                             <c:if test="${not empty permissions}">
                                                 <%-- If permissions are specified --%>
-                                                <jsp:include page="includes/permissions-associated-accounts.jsp"/>
+                                                <jsp:include page="includes/accounts-with-permissions.jsp"/>
                                             </c:if>
                                             <c:if test="${empty permissions}">
                                                 <%-- If permissions are not specified --%>
-                                                <jsp:include page="includes/consent-associated-accounts.jsp"/>
+                                                <jsp:include page="includes/accounts.jsp"/>
                                             </c:if>
                                         </div>
                                     </div>
