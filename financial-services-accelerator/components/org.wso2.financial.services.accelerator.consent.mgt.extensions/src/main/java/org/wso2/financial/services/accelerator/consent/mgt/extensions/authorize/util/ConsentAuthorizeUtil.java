@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Util class for consent authorize operations.
@@ -616,37 +615,6 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Builds consent data JSON to be sent.
-     *
-     * @param responseDTO response DTO from external service call
-     * @return built consent data JSON
-     */
-    public static JSONObject buildConsentDataJSON(PopulateConsentAuthorizeScreenDTO responseDTO)
-            throws JsonProcessingException {
-        JSONObject consentDataJSON = new JSONObject(objectMapper.writeValueAsString(responseDTO.getConsentData()));
-
-        // If permissions exist, rebuild permission objects with their UUIDs (SHA-1) for identification at persistence
-        if (responseDTO.getConsentData().getPermissions() != null) {
-            JSONArray permissions = new JSONArray();
-            for (PermissionDTO permission : responseDTO.getConsentData().getPermissions()) {
-                // permission JSON without UUID
-                String permissionString = objectMapper.writeValueAsString(permission);
-                JSONObject permissionJSON = new JSONObject(permissionString);
-
-                // Append deterministic UUID (SHA-1 based) to each permission
-                permissionJSON.put(ConsentAuthorizeConstants.UUID,
-                        UUID.nameUUIDFromBytes(permissionString.getBytes(StandardCharsets.UTF_8)));
-
-                // Put permission with UUID into permissions
-                permissions.put(permissionJSON);
-            }
-            consentDataJSON.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
-        }
-
-        return consentDataJSON;
-    }
-
-    /**
      * Builds authorized data object from account and permission parameters.
      *
      * @param consentPersistPayload payload sent to consent persistence
@@ -659,7 +627,7 @@ public class ConsentAuthorizeUtil {
     // Suppressed warning count - 1
     public static void addAuthorizedDataObject(JSONObject consentPersistPayload, Map<String, Object> metaDataMap)
             throws JsonProcessingException { // retrieved accounts and permissions from consent metadata
-        Map<String, Integer> permissionHashToIndex = new HashMap<>(); // permission hashes to permission indices
+        Map<String, Integer> permissionJSONToIndex = new HashMap<>(); // permission hashes to permission indices
         Map<String, ConsumerAccountDTO> accountNameToObject = new HashMap<>();  // account hashes to accounts map
         // metadata permission indices to selected account hashes map (-1 index for accounts selected for consent)
         Map<Integer, Set<JSONObject>> permissionIdxToAccountsMap = new HashMap<>();
@@ -682,8 +650,7 @@ public class ConsentAuthorizeUtil {
         if (permissions != null) {
             for (int i = 0; i < permissions.size(); i++) {
                 String serialized = objectMapper.writeValueAsString(permissions.get(i));
-                String hash = UUID.nameUUIDFromBytes(serialized.getBytes(StandardCharsets.UTF_8)).toString();
-                permissionHashToIndex.put(hash, i);
+                permissionJSONToIndex.put(serialized, i);
             }
         }
 
@@ -735,8 +702,8 @@ public class ConsentAuthorizeUtil {
                         } else {
                             // Accounts selected for permission
                             // Get permission index for retrieved permission
-                            String permissionHash = indexToPermissionHashMap.get(Integer.parseInt(keyIndexPair[1]));
-                            Integer retrievedPermissionIdx = permissionHashToIndex.get(permissionHash);
+                            String permissionJSON = indexToPermissionHashMap.get(Integer.parseInt(keyIndexPair[1]));
+                            Integer retrievedPermissionIdx = permissionJSONToIndex.get(permissionJSON);
 
                             Set<JSONObject> accountSetForPermission = permissionIdxToAccountsMap
                                     .computeIfAbsent(retrievedPermissionIdx, k -> new HashSet<>());
@@ -858,8 +825,7 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Extracts attributes necessary for constructing authorizedData object.
-     * And append UUIDs to each permission and consumer account object.
+     * Appends response from external call to consent metadata
      *
      * @param jsonObject    jsonObject in retrieval step
      * @return  map of attributes required to reconstruct authorizedData object at persistence
@@ -867,21 +833,10 @@ public class ConsentAuthorizeUtil {
     public static Map<String, Object> getConsentMapFromJSONObject(JSONObject jsonObject)
             throws JsonProcessingException {
         Map<String, Object> metadataMap = new HashMap<>();
+
+        // Append response from external API call to metadata map
         metadataMap.put(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE,
                 objectMapper.readValue(jsonObject.toString(), PopulateConsentAuthorizeScreenDTO.class));
-
-        JSONObject consentData = jsonObject.getJSONObject(ConsentAuthorizeConstants.CONSENT_DATA);
-        // Append permissions
-        JSONArray permissions = consentData.optJSONArray(ConsentAuthorizeConstants.PERMISSIONS);
-        if (permissions != null) {
-            for (Object permission: permissions) {
-                JSONObject permissionJSON = (JSONObject) permission;
-                String permissionHash = UUID.nameUUIDFromBytes(
-                        permissionJSON.toString().getBytes(StandardCharsets.UTF_8)).toString();
-                // Append deterministic UUID for each permission
-                permissionJSON.put(ConsentAuthorizeConstants.UUID, permissionHash);
-            }
-        }
 
         return metadataMap;
     }

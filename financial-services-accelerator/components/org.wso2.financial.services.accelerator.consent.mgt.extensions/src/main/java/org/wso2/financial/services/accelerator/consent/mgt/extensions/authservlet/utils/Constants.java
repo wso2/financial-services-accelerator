@@ -49,4 +49,5 @@ public class Constants {
     public static final String DENY = "deny";
 
     public static final String CONSUMER_ACCOUNTS = "consumerAccounts";
+    public static final String ESCAPED_JSON = "escapedJson";
 }

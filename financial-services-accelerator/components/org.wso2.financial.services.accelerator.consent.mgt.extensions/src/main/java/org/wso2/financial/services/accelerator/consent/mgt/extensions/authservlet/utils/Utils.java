@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -238,13 +239,31 @@ public class Utils {
         // Append all included permission and selected accounts to authorizedData Object
         for (Map.Entry<String, String[]> parameter: request.getParameterMap().entrySet()) {
             if (parameter.getKey().contains("permission")) {
-                // Permission for a specific index should not have multiple hashes
-                filteredParameters.put(parameter.getKey(), parameter.getValue()[0]);
+                // Permission for a specific index should not have multiple values
+                filteredParameters.put(parameter.getKey(), StringEscapeUtils.unescapeHtml4(parameter.getValue()[0]));
             } else if (parameter.getKey().contains("accounts")) {
                 filteredParameters.put(parameter.getKey(), new JSONArray(parameter.getValue()));
             }
         }
 
         return filteredParameters;
+    }
+
+    /**
+     * Appends HTML escaped JSON object of permissions as an attribute of each permission.
+     *
+     * @param dataSet   dataSet received from the execution of retrieval steps
+     */
+    public static void appendEscapedPermissionJSONsToPermissions(JSONObject dataSet) {
+        JSONObject consentData = dataSet.optJSONObject(ConsentAuthorizeConstants.CONSENT_DATA);
+        if (consentData != null) {
+            JSONArray permissions = consentData.optJSONArray(ConsentAuthorizeConstants.PERMISSIONS);
+            if (permissions != null) {
+                for (int i = 0; i < permissions.length(); i++) {
+                    JSONObject permission = permissions.getJSONObject(i);
+                    permission.put(Constants.ESCAPED_JSON, StringEscapeUtils.escapeHtml4(permission.toString()));
+                }
+            }
+        }
     }
 }

@@ -113,8 +113,6 @@ public class ExternalAPIConsentRetrievalStepTest {
                 .thenReturn("dummyJWT");
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
                 .thenReturn("consent123");
-        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.buildConsentDataJSON(any()))
-                .thenCallRealMethod();
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.addAuthorizedDataObject(any(), any()))
                 .thenCallRealMethod();
 
@@ -358,8 +356,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         consumerAcc.setDisplayName("acc-user-1");
 
         // Build hashes
-        String permissionHash = UUID.nameUUIDFromBytes(
-                new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
+        String permissionJSON = new ObjectMapper().writeValueAsString(permission);
         String accountName = consumerAcc.getDisplayName();
 
         // Build metadata map
@@ -377,7 +374,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
         JSONObject accountPermissionParams = new JSONObject();
-        accountPermissionParams.put("permission-0", permissionHash);
+        accountPermissionParams.put("permission-0", permissionJSON);
         accountPermissionParams.put("accounts-0", new JSONArray(Collections.singletonList(accountName)));
         inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
 
