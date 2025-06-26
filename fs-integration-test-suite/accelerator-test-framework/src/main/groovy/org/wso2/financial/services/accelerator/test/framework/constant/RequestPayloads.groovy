@@ -493,31 +493,35 @@ class RequestPayloads {
 
     public static String initiationPaymentPayload = """
 		{
-			"Data": {
-				"ReadRefundAccount": "Yes",
-				"Initiation": {
-					"InstructionIdentification": "ACME412",
-					"EndToEndIdentification": "FRESCO.21302.GFX.20",
-					"InstructedAmount": {
-						"Amount": "165.88",
-						"Currency": "GBP"
-					},
-					"CreditorAccount": {
-						"SchemeName": "OB.SortCodeAccountNumber",
-						"Identification": "08080021325698",
-						"Name": "ACME Inc",
-						"SecondaryIdentification": "0002"
-					},
-					"RemittanceInformation": {
-						"Reference": "FRESCO-101",
-						"Unstructured": "Internal ops code 5120101"
-					}
-				}
-			},
-			"Risk": {
-				"PaymentContextCode": "EcommerceMerchantInitiatedPayment"
-			}
-		}
+            "Data": {
+                "Initiation": {
+                    "InstructionIdentification": "ACME412",
+                    "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                    "LocalInstrument": "OB.Paym",
+                    "InstructedAmount": {
+                        "Amount": "165.88",
+                        "Currency": "GBP"
+                    },
+                    "CreditorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080021325698",
+                        "Name": "ACME Inc",
+                        "SecondaryIdentification": "0002"
+                    },
+                    "DebtorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080025612489",
+                        "Name": "Jane Smith",
+                        "SecondaryIdentification": "080801562314789"
+                    },
+                    "SupplementaryData": {
+                        "additionalProp1": {}
+                    }
+                }
+            },
+            "Risk": {
+            }
+        }
 	""".stripIndent()
 
     public static String initiationPaymentPayloadModified = """
