@@ -1555,6 +1555,15 @@ components:
         requireTokenRevocation:
           type: string
           description: Require access token to be revoked
+    SuccessResponseForResponseAlternationData:
+      type: object
+      properties:
+        responseHeaders:
+          type: object
+          description: Headers to be included in the response.
+        modifiedResponse:
+          type: object
+          description: Generated custom response body
     SuccessResponseForConsentSearchData:
       type: object
       properties:
