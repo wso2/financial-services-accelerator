@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Wrapper for pre consent authorize flow external response data.
  */
-public class ExternalAPIPreConsentAuthorizeResponseDTO {
+public class PopulateConsentAuthorizeScreenDTO {
 
     @Valid
     @NotNull

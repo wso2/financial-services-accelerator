@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -130,6 +131,10 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             // Storing consent metadata for attribute retrieval at persistence
             consentData.setMetaDataMap(ConsentAuthorizeUtil.getConsentMapFromJSONObject(jsonObject));
 
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage().replaceAll("\n\r", ""), e);
+            throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                    e.getMessage().replaceAll("\n\r", ""), consentData.getState());
         } catch (ConsentManagementException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                     "Exception occurred while getting consent data", consentData.getState());

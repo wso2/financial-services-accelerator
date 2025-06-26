@@ -34,8 +34,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
@@ -82,7 +82,7 @@ public class ExternalAPIConsentPersistStepTest {
     }
 
     private static Map<String, Object> getValidMetadataMap() {
-        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
         ConsentDataDTO consentData = new ConsentDataDTO();
         consentData.setInitiatedAccountsForConsent(List.of(new AccountDTO()));
         responseDTO.setConsentData(consentData);

@@ -32,8 +32,6 @@ import javax.validation.constraints.NotEmpty;
 public class AccountDTO {
     @NotEmpty
     private String displayName;
-
-    @NotEmpty
     private String accountId;
     
     private final Map<String, Object> additionalProperties = new HashMap<>();
