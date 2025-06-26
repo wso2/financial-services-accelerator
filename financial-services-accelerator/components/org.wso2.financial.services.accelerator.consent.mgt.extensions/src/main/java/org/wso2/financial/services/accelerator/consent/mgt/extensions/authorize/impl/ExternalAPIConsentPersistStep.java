@@ -180,6 +180,10 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             log.error("A JSON object mapping has failed", e);
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
                     e.getMessage(), consentData.getState());
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage().replaceAll("\n\r", ""), e);
+            throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
+                    e.getMessage().replaceAll("\n\r", ""), consentData.getState());
         }
     }
 

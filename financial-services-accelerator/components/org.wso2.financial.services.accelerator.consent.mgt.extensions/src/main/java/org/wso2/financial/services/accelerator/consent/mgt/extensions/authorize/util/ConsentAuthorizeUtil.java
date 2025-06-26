@@ -627,9 +627,9 @@ public class ConsentAuthorizeUtil {
     // Suppressed warning count - 1
     public static void addAuthorizedDataObject(JSONObject consentPersistPayload, Map<String, Object> metaDataMap)
             throws JsonProcessingException { // retrieved accounts and permissions from consent metadata
-        Map<String, Integer> permissionJSONToIndex = new HashMap<>(); // permission hashes to permission indices
-        Map<String, ConsumerAccountDTO> accountNameToObject = new HashMap<>();  // account hashes to accounts map
-        // metadata permission indices to selected account hashes map (-1 index for accounts selected for consent)
+        Map<String, Integer> permissionJSONToIndex = new HashMap<>(); // permission objects to permission indices
+        Map<String, ConsumerAccountDTO> accountNameToObject = new HashMap<>();  // account names to accounts map
+        // metadata permission indices to selected account map (-1 index for accounts selected for consent)
         Map<Integer, Set<JSONObject>> permissionIdxToAccountsMap = new HashMap<>();
 
         // Extract and separate permissions, consumer accounts and consent initiated accounts
@@ -646,7 +646,7 @@ public class ConsentAuthorizeUtil {
         initiatedAccountsForConsent = populateResponseDTO.getConsentData().getInitiatedAccountsForConsent();
 
 
-        // Map permission hashes to their indexes
+        // Map permission objects to their indexes
         if (permissions != null) {
             for (int i = 0; i < permissions.size(); i++) {
                 String serialized = objectMapper.writeValueAsString(permissions.get(i));
@@ -662,14 +662,16 @@ public class ConsentAuthorizeUtil {
         }
 
         // Process consumer accounts
-        // Map permission hashes to selected account hashes from JSP
+        // Map permission objects to selected account objects from JSP
+        Boolean allowMultipleAccounts = populateResponseDTO.getConsentData().getAllowMultipleAccounts();
+        allowMultipleAccounts = allowMultipleAccounts != null && allowMultipleAccounts;
         JSONObject requestParameters = consentPersistPayload
                 .optJSONObject(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS);
 
         if (requestParameters != null && !accountNameToObject.isEmpty()) {
             Map<Integer, String> indexToPermissionHashMap = new HashMap<>();
 
-            // Map permission indices from request to hashes
+            // Map permission indices from request to objects
             for (String key: requestParameters.keySet()) {
                 String[] keyIndexPair = key.trim().split("-");
 
@@ -686,6 +688,13 @@ public class ConsentAuthorizeUtil {
                 String[] keyIndexPair = key.trim().split("-");
 
                 if ("accounts".equals(keyIndexPair[0])) {
+
+                    // allowMultipleAccounts validation
+                    if (!allowMultipleAccounts && requestParameters.getJSONArray(key).length() > 1) {
+                        throw new IllegalStateException("Found multiple account selections " +
+                                "when only one is allowed");
+                    }
+
                     for (Object account: requestParameters.getJSONArray(key)) {
                         // Check if account selected for a permission or for consent
                         if (keyIndexPair.length < 2) {
@@ -825,7 +834,7 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Appends response from external call to consent metadata
+     * Appends response from external call to consent metadata.
      *
      * @param jsonObject    jsonObject in retrieval step
      * @return  map of attributes required to reconstruct authorizedData object at persistence

@@ -97,8 +97,13 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             consentPersist(consentPersistData, consentResource);
 
         } catch (ConsentManagementException e) {
+            log.error(e.getMessage().replaceAll("\n\r", ""), e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while persisting consent");
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage().replaceAll("\n\r", ""), e);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    e.getMessage().replaceAll("\n\r", ""));
         }
     }
 
@@ -157,17 +162,17 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         boolean hasAuthorizedAccounts = false;
 
         // Extract accounts and permissions in metadata
-        PopulateConsentAuthorizeScreenDTO responseFromMetadataDTO = (PopulateConsentAuthorizeScreenDTO) metaDataMap
+        PopulateConsentAuthorizeScreenDTO populateResponseDTO = (PopulateConsentAuthorizeScreenDTO) metaDataMap
                 .get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
 
         // Extract and separate permissions, consumer accounts and consent initiated accounts
-        List<PermissionDTO> permissions = responseFromMetadataDTO.getConsentData()
+        List<PermissionDTO> permissions = populateResponseDTO.getConsentData()
                 .getPermissions();
-        List<AccountDTO> initiatedAccountsForConsent = responseFromMetadataDTO.getConsentData()
+        List<AccountDTO> initiatedAccountsForConsent = populateResponseDTO.getConsentData()
                 .getInitiatedAccountsForConsent();
         List<ConsumerAccountDTO> consumerAccounts = null;
-        if (responseFromMetadataDTO.getConsumerData() != null) {
-            consumerAccounts = responseFromMetadataDTO.getConsumerData().getAccounts();
+        if (populateResponseDTO.getConsumerData() != null) {
+            consumerAccounts = populateResponseDTO.getConsumerData().getAccounts();
         }
 
         // Build consumer hash to consumer account map
@@ -199,11 +204,21 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         }
 
         // Append all selected consumer accounts
+        Boolean allowMultipleAccounts = populateResponseDTO.getConsentData().getAllowMultipleAccounts();
+        allowMultipleAccounts = allowMultipleAccounts != null && allowMultipleAccounts;
+        boolean foundOneAccount = false;
         JSONObject accountPermissionParameters =
                 persistPayload.optJSONObject(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS);
         if (accountPermissionParameters != null) {
             for (String key: accountPermissionParameters.keySet()) {
                 if (key.contains("accounts")) {
+
+                    // allowMultipleAccounts validation
+                    if (foundOneAccount && !allowMultipleAccounts) {
+                        throw new IllegalStateException("Found multiple account selections when only one is allowed");
+                    }
+
+                    foundOneAccount = true;
                     JSONArray accounts = accountPermissionParameters.optJSONArray(key);
                     if (accounts != null) {
                         for (Object account: accounts) {
