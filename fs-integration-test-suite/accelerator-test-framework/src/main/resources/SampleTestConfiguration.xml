@@ -41,7 +41,7 @@
         <!-- Sample Values: https://<IS_HOST>:9446 -->
         <ISServerUrl>https://{IS_HOST}:9446</ISServerUrl>
         <!-- Sample Values: https://<AM_HOST>:9443 -->
-        <APIMServerUrl>https://{IS_HOST}:9443</APIMServerUrl>
+        <APIMServerUrl>https://{AM_HOST}:9443</APIMServerUrl>
     </Server>
 
     <!-- Provisioning Info -->

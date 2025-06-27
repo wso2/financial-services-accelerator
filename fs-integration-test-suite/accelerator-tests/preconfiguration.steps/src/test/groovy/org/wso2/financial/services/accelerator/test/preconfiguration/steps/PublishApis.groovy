@@ -95,14 +95,5 @@ class PublishApis extends FSAPIMConnectorTest {
             //Publish API
             apiPublisherRequestBuilder.publishAPI(accessToken, apiId)
         }
-
-        //Update APIs to add operation level policies
-//        apiPublisherRequestBuilder.createAPIs(accessToken)
-
-
-
-//        apiPublisherRequestBuilder.createRevision(accessToken, apiIds)
-//        apiPublisherRequestBuilder.deployRevision(accessToken, apiIds)
-//        apiPublisherRequestBuilder.publishAPI(accessToken, apiIds)
     }
 }

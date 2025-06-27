@@ -310,14 +310,14 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .baseUri(configuration.getServerBaseURL())
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Incorrect Access Token Type provided"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
-                "200001" +
-                        "")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
-                "Access failure for API: grant type validation failed.")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "900912")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "Claim Mismatch")
     }
 
     @Test
@@ -337,13 +337,14 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.UNAUTHORIZED)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
                         "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG)
                 .contains("Missing Credentials"))
     }
 
+    //TODO: https://github.com/wso2/financial-services-accelerator/issues/681
     @Test
     void "Validate Payments Initiation With Invalid Content-type"() {
 
@@ -360,10 +361,10 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals("200012",
-                TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE))
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_MSG)
+                TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG)
                 .contains("Request Content-Type header does not match any allowed types"))
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Request Content-Type header does not match any allowed types"))
     }
 
@@ -564,9 +565,9 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG)
                 .contains(ConnectorTestConstants.ERROR_CODE_BAD_REQUEST))
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION).contains(
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Schema validation failed in the Request: Header parameter 'x-idempotency-key' is required on path " +
                         "'/payment-consents' but not found in request., "))
     }

@@ -124,12 +124,12 @@ class AuthorisationCodeGrantAccessTokenTest extends FSAPIMConnectorTest {
 		Assert.assertEquals(revocationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
 	}
 
-	@Test (dependsOnMethods = "Introspection call for user access token")
+	@Test (dependsOnMethods = "Revoke user access token")
 	void "Send Account Retrieval request using revoked access token"() {
 
 		accountsPath = ConnectorTestConstants.AISP_PATH + "accounts"
 		doDefaultAccountRetrieval()
 
-		Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+		Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
 	}
 }

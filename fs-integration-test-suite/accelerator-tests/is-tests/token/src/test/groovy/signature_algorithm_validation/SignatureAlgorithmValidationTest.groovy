@@ -85,6 +85,8 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
     @Test
     void "Validate token request contains client assertion signed with unsupported signature algorithm"() {
 
+        authoriseConsent(clientId)
+
         JWTGenerator acceleratorJWTGenerator = new JWTGenerator()
         acceleratorJWTGenerator.setScopes(consentScopes)
         acceleratorJWTGenerator.setSigningAlgorithm("RS256")

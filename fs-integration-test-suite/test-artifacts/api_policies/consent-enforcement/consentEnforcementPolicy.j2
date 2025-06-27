@@ -16,9 +16,11 @@
  ~ under the License.
  -->
 
-<!-- Storing the original body for future reference -->
+<!-- Storing the original request parameters for future reference -->
 <property name="originalRequestJsonBody" expression="json-eval($)" scope="default" type="STRING"/>
 <property name="originalRequestBody" expression="$body"/>
+<property name="originalAcceptHeader" expression="$trp:Accept"/>
+<property name="originalContentTypeHeader" expression="$trp:Content-Type"/>
 
 <!-- This class mediator is responsible for generating the payload for the consent validation service and is stored in the property 'consentEnforcementJwtPayload' -->
 <class name="org.wso2.financial.services.apim.mediation.policies.consent.enforcement.ConsentEnforcementPayloadMediator">
@@ -36,6 +38,7 @@
 <!-- Set the request headers required for calling the consent validation service -->
 <header name="Authorization" scope="transport" value="Basic {{consentServiceBasicAuthCredentials}}"/>
 <header name="Content-Type" scope="transport" value="application/jwt"/>
+<header name="Accept" scope="transport" value="application/json"/>
 
 <!-- Set the 'messageType' property required by the axis2 layer, this property controls how Synapse serializes the request body -->
 <property name="messageType" scope="axis2" value="application/jwt"/>
@@ -49,6 +52,9 @@
         <http method="POST" uri-template="{{consentServiceBaseUrl}}/api/fs/consent/validate/validate"/>
     </endpoint>
 </call>
+
+<header name="Accept" scope="transport" expression="$ctx:originalAcceptHeader"/>
+<header name="Content-Type" scope="transport" expression="$ctx:originalContentTypeHeader"/>
 
 <!-- Extract required attributes from the response JSON into properties -->
 <property name="isValid" expression="json-eval($.isValid)" scope="default" type="STRING"/>

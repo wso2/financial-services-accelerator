@@ -20,10 +20,10 @@
 <suite name="WSO2 Open Banking - Gateway Account Flow Test">
     <test name="Pre Configuration Steps" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
-            <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.CreateKeyManager" />
-            <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.CreatePsuUser" />
             <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.AddUserRole" />
+            <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.CreateKeyManager" />
             <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.PublishApis" />
+            <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.CreatePsuUser" />
         </classes>
     </test>
 </suite>

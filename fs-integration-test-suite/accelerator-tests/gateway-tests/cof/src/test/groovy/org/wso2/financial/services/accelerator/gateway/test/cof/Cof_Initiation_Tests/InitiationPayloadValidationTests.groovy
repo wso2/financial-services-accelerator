@@ -51,11 +51,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.emptyInitiationPayload)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: A request body is required but none found., "))
     }
 
@@ -65,11 +65,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.emptyJsonInitiationPayload)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: Object has missing required properties ([\"Data\"]), "))
     }
 
@@ -79,11 +79,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.emptyStringInitiationPayload)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: Instance type (string) does not match any " +
                         "allowed primitive type (allowed: [\"object\"]), "))
     }
@@ -94,11 +94,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.cofInitiationPayloadWithInvalidDate)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z], "))
     }
 
@@ -145,11 +145,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.initiationPayloadWithoutIdentification)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: [Path '/Data/DebtorAccount'] Object has missing " +
                         "required properties ([\"Identification\"]), "))
     }
@@ -169,11 +169,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.initiationPayloadWithInvalidIdentification)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: [Path '/Data/DebtorAccount/Identification'] " +
                         "String \"Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1" +
                         "Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1" +
@@ -187,11 +187,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.initiationPayloadWithInvalidName)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("is too long (length: 557, maximum allowed: 350), "))
     }
 
@@ -201,11 +201,11 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultCofInitiationWithUpdatedPayload(CofRequestPayloads.initiationPayloadWithInvalidSecondaryIdentification)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("is too long (length: 56, maximum allowed: 34), "))
     }
 
@@ -217,8 +217,6 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "consent_default")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
-                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("ExpirationDateTime should be a future date"))
     }

@@ -52,9 +52,9 @@ class PaymentRequestPayloadValidationTest extends FSAPIMConnectorTest {
 		doDefaultPaymentInitiationWithUpdatedPayload(initiationPayload)
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
 			.contains("does not match input string \"-1\""))
 	}
 
@@ -78,9 +78,9 @@ class PaymentRequestPayloadValidationTest extends FSAPIMConnectorTest {
 		doDefaultPaymentInitiationWithUpdatedPayload(initiationPayload)
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
 			.contains("String \"\" is too short (length: 0, required minimum: 1)"))
 	}
 
@@ -94,9 +94,9 @@ class PaymentRequestPayloadValidationTest extends FSAPIMConnectorTest {
 		doDefaultPaymentInitiationWithUpdatedPayload(initiationPayload)
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
 			.contains("is too long (length: 77, maximum allowed: 35),"))
 	}
 
@@ -109,9 +109,9 @@ class PaymentRequestPayloadValidationTest extends FSAPIMConnectorTest {
 		doDefaultPaymentInitiationWithUpdatedPayload(initiationPayload)
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
 				"Schema validation failed in the Request: [Path '/Data/Initiation/InstructedAmount/Currency'] ECMA " +
 						"262 regex \"^[A-Z]{3,3}\$\" does not match input string \"RUPEE\", ")
 	}
@@ -125,7 +125,7 @@ class PaymentRequestPayloadValidationTest extends FSAPIMConnectorTest {
 		doDefaultPaymentInitiationWithUpdatedPayload(initiationPayload)
 
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
 	}
 }

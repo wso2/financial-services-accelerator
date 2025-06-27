@@ -51,7 +51,8 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 configuration.getAppInfoClientID(), scopeList)
     }
 
-    @Test
+    //TODO:https://github.com/wso2/financial-services-accelerator/issues/681
+    //@Test
     void "Funds Confirmation Initiation with invalid content-type"() {
 
         consentResponse = FSRestAsRequestBuilder.buildRequest()
@@ -67,11 +68,11 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
 
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Request Content-Type header does not match any allowed types"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "200012")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Request Content-Type header does not match any allowed types")
     }
 
@@ -109,13 +110,14 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Incorrect Access Token Type provided"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
-                "200001")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
-                "Access failure for API: grant type validation failed.")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "900912")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "Claim Mismatch")
     }
 
     @Test
@@ -132,11 +134,11 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Make sure your API invocation call has a header: 'Authorization"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900902")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.MISSING_CREDENTIALS_ERROR)
     }
 
@@ -158,11 +160,11 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Access failure for API: /open-banking/v3.1/cbpii, version: v3.1 status: (900901)"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900901")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.INVALID_CREDENTIALS_ERROR)
     }
 

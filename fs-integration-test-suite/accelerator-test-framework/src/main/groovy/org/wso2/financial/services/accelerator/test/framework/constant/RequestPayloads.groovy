@@ -776,10 +776,10 @@ class RequestPayloads {
     static String keyManagerPayload() {
 
         return """{
-            "name":"OBKM",
-            "displayName":"OBKM",
+            "name":"FSKM",
+            "displayName":"FSKM",
             "type":"fsKeyManager",
-            "description":"OBKM",
+            "description":"FSKM",
             "wellKnownEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/token/.well-known/openid-configuration",
             "introspectionEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/introspect",
             "clientRegistrationEndpoint":"${acceleratorConfiguration.getISServerUrl()}/api/identity/oauth2/dcr/v1.1/register",
@@ -822,8 +822,8 @@ class RequestPayloads {
             }],
             "enabled":true,
             "additionalProperties":{
-                "Username":"${acceleratorConfiguration.getISAdminUserName()}",
-                "Password":"${acceleratorConfiguration.getISAdminPassword()}",
+                "Username":"${acceleratorConfiguration.getUserKeyManagerAdminName()}",
+                "Password":"${acceleratorConfiguration.getUserKeyManagerAdminPWD()}",
                 "api_resource_management_endpoint":"${acceleratorConfiguration.getISServerUrl()}/api/server/v1/api-resources",
                 "is7_roles_endpoint":"${acceleratorConfiguration.getISServerUrl()}/scim2/v2/Roles",
                 "enable_roles_creation":true

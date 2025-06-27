@@ -144,6 +144,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
         String apiVersion = apiInfo.get("apiVersion").toString()
         String endpointType = apiInfo.get("endpointType").toString()
         String isSchemaEnabled = apiInfo.get("enableSchemaValidation").toString()
+        String scope = apiInfo.get("scope").toString()
         List<Map> apiProperties = (List<Map>) apiInfo["apiProperty"]
 
         //If selecting Dynamic Endpoint
@@ -154,7 +155,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
                     .multiPart("file", apiSwaggerFile)
                     .multiPart("additionalProperties", getApiPayload(apiName, apiVersion, apiContext, endpointType,
-                            isSchemaEnabled, apiProperties))
+                            isSchemaEnabled, apiProperties, scope))
                     .post(publisherUrl + "/apis/import-openapi")
 
         } else {
@@ -166,7 +167,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
                     .multiPart("file", apiSwaggerFile)
                     .multiPart("additionalProperties", getApiPayload(apiName, apiVersion, apiContext, endpointType,
-                            isSchemaEnabled, apiProperties, productionEndpoint, sandboxEndpoint))
+                            isSchemaEnabled, apiProperties, scope, productionEndpoint, sandboxEndpoint))
                     .post(publisherUrl + "/apis/import-openapi")
         }
 
@@ -273,11 +274,11 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      * @return
      */
     static String getApiPayload(String api_name, String api_version, String api_context, String api_endpoint_type,
-                                          String isSchemaEnabled, List<Map> apiProperties, String sandbox_endpoints = "default",
-                                          String production_endpoints = "default") {
+                                String isSchemaEnabled, List<Map> apiProperties, String scope,
+                                String sandbox_endpoints = "default", String production_endpoints = "default") {
 
         // Generate operations JSON string
-        String operationsJson = new Gson().toJson(generateOperations(apiProperties))
+        String operationsJson = new Gson().toJson(generateOperations(apiProperties, scope))
 
         if (!api_endpoint_type.equalsIgnoreCase("default")) {
             sandbox_endpoints = configurationService.getISServerUrl() + sandbox_endpoints
@@ -311,6 +312,17 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                         }
                     }]
                 },
+                "scopes":[{
+                    "scope":{
+                        "id":null,
+                        "name":"$scope",
+                        "displayName":"$scope",
+                        "description":"$scope",
+                        "bindings":["Internal/consumer"],
+                        "usageCount":null
+                    },
+                    "shared":false
+                }],
                 "operations": $operationsJson,
                 "lifeCycleStatus": "CREATED",
                 "visibility": "PUBLIC"
@@ -325,7 +337,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      * @param apiProperties
      * @return
      */
-    static JsonArray generateOperations(List<Map> apiProperties) {
+    static JsonArray generateOperations(List<Map> apiProperties, String scope) {
         JsonArray operations = new JsonArray()
 
         apiProperties.each { resource ->
@@ -336,6 +348,10 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
             JsonObject operation = new JsonObject()
             operation.addProperty("target", apiResource)
             operation.addProperty("verb", requestType.toUpperCase())
+
+            JsonArray scopesArray = new JsonArray()
+            scopesArray.add(scope)
+            operation.add("scopes", scopesArray)
 
             JsonObject operationPolicies = new JsonObject()
             JsonArray requestPolicyArray = new JsonArray()
@@ -380,6 +396,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
         String apiVersion = apiInfo.get("apiVersion").toString()
         String endpointType = apiInfo.get("endpointType").toString()
         String isSchemaEnabled = apiInfo.get("enableSchemaValidation").toString()
+        String scope = apiInfo.get("scope").toString()
         List<Map> apiProperties = (List<Map>) apiInfo["apiProperty"]
 
         //If selecting Dynamic Endpoint
@@ -389,7 +406,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                     .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
                     .body(getApiPayload(apiName, apiVersion, apiContext, endpointType,
-                            isSchemaEnabled, apiProperties))
+                            isSchemaEnabled, apiProperties, scope))
                     .put(publisherUrl + "/apis/$apiId")
 
         } else {
@@ -400,7 +417,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                     .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
                     .body(getApiPayload(apiName, apiVersion, apiContext, endpointType,
-                            isSchemaEnabled, apiProperties, productionEndpoint, sandboxEndpoint))
+                            isSchemaEnabled, apiProperties, scope, productionEndpoint, sandboxEndpoint))
                     .put(publisherUrl + "/apis/$apiId")
         }
 

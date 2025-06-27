@@ -268,4 +268,40 @@ class PaymentRequestPayloads {
             }
         }
 	""".stripIndent()
+
+    static String getModifiedSubmissionPaymentPayload(String consentID) {
+
+        return """{
+			"Data": {
+				"ConsentId": "${consentID}",
+				"Initiation": {
+                    "InstructionIdentification": "ACME412",
+                    "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                    "LocalInstrument": "OB.Paym",
+                    "InstructedAmount": {
+                        "Amount": "170.90",
+                        "Currency": "USD"
+                    },
+                    "CreditorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080021325698",
+                        "Name": "ACME Inc",
+                        "SecondaryIdentification": "0002"
+                    },
+                    "DebtorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080025612489",
+                        "Name": "Jane Smith",
+                        "SecondaryIdentification": "080801562314789"
+                    },
+                    "SupplementaryData": {
+                        "additionalProp1": {}
+                    }
+                }
+			},
+			"Risk": {
+			}
+		}
+		""".stripIndent()
+    }
 }

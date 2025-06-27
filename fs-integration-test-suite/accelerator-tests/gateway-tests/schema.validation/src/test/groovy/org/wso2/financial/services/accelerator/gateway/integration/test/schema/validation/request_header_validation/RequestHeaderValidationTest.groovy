@@ -70,9 +70,9 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.MISSING_CREDENTIALS)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
 				"Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
 						"Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'")
 	}
@@ -109,9 +109,9 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.MISSING_CREDENTIALS)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
 						"Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
 								"Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'")
 	}
@@ -128,9 +128,9 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.MISSING_CREDENTIALS)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
 				"Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : Bearer " +
 						"ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'")
 	}
@@ -148,7 +148,7 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION).contains(
+		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
 						"Schema validation failed in the Request: ECMA 262 regex \"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)"))
 	}
 
@@ -163,9 +163,11 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE), ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE), ConnectorTestConstants.STATUS_CODE_400.toString())
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+				ConnectorTestConstants.STATUS_CODE_400.toString())
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
 				"Schema validation failed in the Request: Request Content-Type header '[text/plain; " +
 						"charset=ISO-8859-1]' does not match any allowed types. Must be one of: [application/json; charset=utf-8]., ")
 	}
@@ -182,9 +184,9 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.INVALID_CREDENTIALS)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
 						"Access failure for API: /open-banking/v3.1/aisp, version: v3.1 status: (900901) - " +
 										"Invalid Credentials. Make sure you have provided the correct security credentials")
 	}
@@ -201,9 +203,9 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.INVALID_CREDENTIALS)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
 						"Invalid Credentials. Make sure you have provided the correct security credentials")
 	}
 }

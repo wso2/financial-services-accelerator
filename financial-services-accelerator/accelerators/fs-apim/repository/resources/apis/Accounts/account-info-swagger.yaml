@@ -395,6 +395,7 @@ responses:
     headers:
       x-fapi-interaction-id:
         type: string
+        required: true
         description: An RFC4122 UID used as a correlation id.
     schema:
       $ref: '#/definitions/OBReadTransaction5'
@@ -470,7 +471,7 @@ securityDefinitions:
       accounts: Ability to read Accounts information
     description: TPP client credential authorisation flow with the ASPSP
     x-scopes-bindings:
-      accounts: Internal/subscriber
+      accounts: Internal/consumer
   PSUOAuth2Security:
     type: oauth2
     flow: accessCode
@@ -482,7 +483,7 @@ securityDefinitions:
       OAuth flow, it is required when the PSU needs to perform SCA with the
       ASPSP when a TPP wants to access an ASPSP resource owned by the PSU
     x-scopes-bindings:
-      accounts: Internal/subscriber
+      accounts: Internal/consumer
   default:
     type: oauth2
     authorizationUrl: 'https://test.com'
@@ -490,7 +491,7 @@ securityDefinitions:
     scopes:
       accounts: Ability to read Accounts information
     x-scopes-bindings:
-      accounts: Internal/subscriber
+      accounts: Internal/consumer
 definitions:
   OBReadConsent1:
     type: object
@@ -1474,4 +1475,4 @@ x-wso2-security:
       - name: accounts
         description: This scope will group the AccountAPI related operations.
         key: accounts
-        roles: Internal/subscriber
+        roles: Internal/consumer

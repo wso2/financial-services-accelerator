@@ -267,7 +267,7 @@ class TokenRequestBuilder {
         RestAssured.baseURI = configuration.getISServerUrl()
         Response response
         if (ConnectorTestConstants.TLS_AUTH_METHOD == authMethodType) {
-            response = FSRestAsRequestBuilder.buildRequest()
+            response = FSRestAsRequestBuilder.buildBasicRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .body(jwt)
@@ -415,7 +415,7 @@ class TokenRequestBuilder {
                     .addClientID(clientId).addCustomValue("token", accessToken)
                     .addCustomValue("token_type_hint", tokenType).getPayload()
 
-            response = FSRestAsRequestBuilder.buildBasicRequest()
+            response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(accessTokenJWT)
                     .baseUri(configuration.getISServerUrl())

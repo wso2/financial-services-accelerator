@@ -45,11 +45,11 @@ class CofSubmissionValidationTests extends FSAPIMConnectorTest{
         //COF Submission Request
         def submissionResponse = doDefaultSubmission()
         Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Consent is not in the correct state")
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_0_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Consent Enforcement Error")
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_0_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
     }
 
@@ -73,12 +73,13 @@ class CofSubmissionValidationTests extends FSAPIMConnectorTest{
                 .body(CofRequestPayloads.getCofSubmissionPayload(consentId))
                 .post(ConnectorTestConstants.CBPII_PATH + ConnectorTestConstants.COF_SUBMISSION_PATH)
 
-        Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        def errorMessage = TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_0_DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Incorrect Access Token Type provided"))
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse,ConnectorTestConstants.ERROR_ERRORS_0_CODE),
-                "200001")
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse,ConnectorTestConstants.ERROR_ERRORS_0_MSG),
-                "Access failure for API: grant type validation failed.")
+        Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "900912")
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "Claim Mismatch")
     }
 }
