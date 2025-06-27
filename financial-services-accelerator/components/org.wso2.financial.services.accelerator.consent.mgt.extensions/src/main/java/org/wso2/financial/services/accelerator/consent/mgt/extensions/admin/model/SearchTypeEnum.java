@@ -19,7 +19,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model;
 
 /**
- * Search type enum
+ * Search type enum.
  */
 
 public enum SearchTypeEnum {

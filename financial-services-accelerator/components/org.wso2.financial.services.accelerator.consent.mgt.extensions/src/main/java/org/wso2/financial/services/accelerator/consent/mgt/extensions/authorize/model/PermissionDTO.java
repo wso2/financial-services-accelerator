@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -15,32 +15,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
 import java.util.List;
-import java.util.Map;
+
+import javax.validation.constraints.NotEmpty;
 
 /**
- * Wrapper for pre consent authorize flow external response data.
+ * Permissions object for external API consent retrieval.
  */
-public class ExternalAPIPreConsentAuthorizeResponseDTO {
+public class PermissionDTO {
+    @NotEmpty
+    private List<String> displayValues;
+    private List<AccountDTO> initiatedAccounts;
 
-    private List<Map<String, Object>> consentData;
-    private List<Map<String, Object>> consumerData;
-
-    public List<Map<String, Object>> getConsentData() {
-        return consentData;
+    public List<String> getDisplayValues() {
+        return displayValues;
     }
 
-    public void setConsentData(List<Map<String, Object>> consentData) {
-        this.consentData = consentData;
+    public void setDisplayValues(List<String> displayValues) {
+        this.displayValues = displayValues;
     }
 
-    public List<Map<String, Object>> getConsumerData() {
-        return consumerData;
+    public List<AccountDTO> getInitiatedAccounts() {
+        return initiatedAccounts;
     }
 
-    public void setConsumerData(List<Map<String, Object>> consumerData) {
-        this.consumerData = consumerData;
+    public void setInitiatedAccounts(
+            List<AccountDTO> initiatedAccounts) {
+        this.initiatedAccounts = initiatedAccounts;
     }
 }
