@@ -2022,13 +2022,9 @@ components:
       description: Request headers sent by the TPP. Filtered set of headers are sent to the external service.
     SuccessResponsePopulateConsentAuthorizeScreenData:
       type: object
-      required:
-        - consentData
       properties:
         consentData:
           type: object
-          required:
-            - basicConsentData
           additionalProperties: true
           properties:
             type:
@@ -2036,7 +2032,7 @@ components:
               description: The type of consent
             basicConsentData:
               type: object
-              description: Structured list of explanatory consent text. Key corresponds to section title where the value is an array of strings to be displayed as bulletpoints under the title.
+              description: Structured descriptive text shown on the consent page, split into sections. Each key is a section title, and its value is a list of bullet points displayed under that section.
               additionalProperties:
                 items:
                   type: string
@@ -2085,10 +2081,6 @@ components:
                 description: Whether the account is selected by default
     AuthorizedResources:
       type: object
-      required:
-        - approval
-        - authorizedData
-        - cookies
       additionalProperties: true
       properties:
         approval:
@@ -2118,10 +2110,6 @@ components:
                 description: Accounts selected for the permissions
                 items:
                   $ref: '#/components/schemas/Account'
-        cookies:
-          type: object
-          description: Map of cookie values, if needed
-          additionalProperties: true
     Account:
       type: object
       description: A user account or resource representation
