@@ -86,9 +86,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
 
         // Get request object parameters
         JSONObject requestParameters = new JSONObject();
-        if (consentData != null && consentData.getMetaDataMap() != null
-                && consentData.getMetaDataMap()
-                .get(ConsentExtensionConstants.REQUEST_PARAMETERS) != null) {
+        if (consentData != null && consentData.getMetaDataMap()
+                .getOrDefault(ConsentExtensionConstants.REQUEST_PARAMETERS, null) != null) {
 
             requestParameters = (JSONObject) consentData.getMetaDataMap()
                     .get(ConsentExtensionConstants.REQUEST_PARAMETERS);

@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 /**
  * Consent data object for external API consent retrieval.
@@ -37,7 +36,6 @@ public class ConsentDataDTO {
     private String type;
 
     @Valid
-    @NotNull
     private Map<String, Object> basicConsentData;
 
     @Valid

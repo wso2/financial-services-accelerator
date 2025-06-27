@@ -50,7 +50,9 @@
                                                 <strong>${app}</strong> requests following details.
                                             </h3>
 
-                                            <h4 class="section-heading-5 ui subheading">Data requested:</h4>
+                                            <c:if test="${not empty permissions or not empty basicConsentData}">
+                                                <h4 class="section-heading-5 ui subheading">Data requested:</h4>
+                                            </c:if>
 
                                             <%--Display basic consent data--%>
                                             <jsp:include page="includes/basic-consent-data.jsp"/>

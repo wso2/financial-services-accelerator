@@ -20,7 +20,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 import java.util.Map;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 /**
  * Wrapper for pre consent authorize flow external response data.
@@ -28,7 +27,6 @@ import javax.validation.constraints.NotNull;
 public class PopulateConsentAuthorizeScreenDTO {
 
     @Valid
-    @NotNull
     private ConsentDataDTO consentData;
 
     @Valid

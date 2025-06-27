@@ -29,6 +29,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedCo
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
@@ -166,10 +167,10 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                 .get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
 
         // Extract and separate permissions, consumer accounts and consent initiated accounts
-        List<PermissionDTO> permissions = populateResponseDTO.getConsentData()
-                .getPermissions();
-        List<AccountDTO> initiatedAccountsForConsent = populateResponseDTO.getConsentData()
-                .getInitiatedAccountsForConsent();
+        ConsentDataDTO consentData = populateResponseDTO.getConsentData();
+
+        List<PermissionDTO> permissions = consentData.getPermissions();
+        List<AccountDTO> initiatedAccountsForConsent = consentData.getInitiatedAccountsForConsent();
         List<ConsumerAccountDTO> consumerAccounts = null;
         if (populateResponseDTO.getConsumerData() != null) {
             consumerAccounts = populateResponseDTO.getConsumerData().getAccounts();
@@ -204,7 +205,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         }
 
         // Append all selected consumer accounts
-        Boolean allowMultipleAccounts = populateResponseDTO.getConsentData().getAllowMultipleAccounts();
+        Boolean allowMultipleAccounts = consentData.getAllowMultipleAccounts();
         allowMultipleAccounts = allowMultipleAccounts != null && allowMultipleAccounts;
         boolean foundOneAccount = false;
         JSONObject accountPermissionParameters =

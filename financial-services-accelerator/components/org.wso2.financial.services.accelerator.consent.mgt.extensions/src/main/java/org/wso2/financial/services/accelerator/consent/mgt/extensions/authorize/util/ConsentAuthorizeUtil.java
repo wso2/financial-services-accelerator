@@ -32,6 +32,7 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
@@ -633,17 +634,24 @@ public class ConsentAuthorizeUtil {
         Map<Integer, Set<JSONObject>> permissionIdxToAccountsMap = new HashMap<>();
 
         // Extract and separate permissions, consumer accounts and consent initiated accounts
-        List<PermissionDTO> permissions;
+        List<PermissionDTO> permissions = null;
         List<ConsumerAccountDTO> consumerAccounts = null;
-        List<AccountDTO> initiatedAccountsForConsent;
+        List<AccountDTO> initiatedAccountsForConsent = null;
         PopulateConsentAuthorizeScreenDTO populateResponseDTO =
                 (PopulateConsentAuthorizeScreenDTO) metaDataMap
                         .get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
-        permissions = populateResponseDTO.getConsentData().getPermissions();
+
+        // Set consent data related attributes
+        ConsentDataDTO consentData = populateResponseDTO.getConsentData();
+        if (consentData != null) {
+            permissions = consentData.getPermissions();
+            initiatedAccountsForConsent = consentData.getInitiatedAccountsForConsent();
+        }
+
+        // Set consumer data related attributes
         if (populateResponseDTO.getConsumerData() != null) {
             consumerAccounts = populateResponseDTO.getConsumerData().getAccounts();
         }
-        initiatedAccountsForConsent = populateResponseDTO.getConsentData().getInitiatedAccountsForConsent();
 
 
         // Map permission objects to their indexes
@@ -663,7 +671,7 @@ public class ConsentAuthorizeUtil {
 
         // Process consumer accounts
         // Map permission objects to selected account objects from JSP
-        Boolean allowMultipleAccounts = populateResponseDTO.getConsentData().getAllowMultipleAccounts();
+        Boolean allowMultipleAccounts = (consentData == null) ? null : consentData.getAllowMultipleAccounts();
         allowMultipleAccounts = allowMultipleAccounts != null && allowMultipleAccounts;
         JSONObject requestParameters = consentPersistPayload
                 .optJSONObject(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS);
@@ -854,10 +862,19 @@ public class ConsentAuthorizeUtil {
      * Adds isReauthorization parameter from consent metadata to consent persist payload.
      *
      * @param consentPersistPayload payload sent to consent persistence
-     * @param consentMetadata consent metadata map
+     * @param metaDataMap consent metadata map
      */
-    public static void addIsReauthorization(JSONObject consentPersistPayload, Map<String, Object> consentMetadata) {
-        consentPersistPayload.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION,
-                Boolean.TRUE.equals(consentMetadata.get(ConsentAuthorizeConstants.IS_REAUTHORIZATION)));
+    public static void addIsReauthorization(JSONObject consentPersistPayload, Map<String, Object> metaDataMap) {
+        PopulateConsentAuthorizeScreenDTO populateResponseDTO =
+                (PopulateConsentAuthorizeScreenDTO) metaDataMap
+                        .get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
+
+        // Set consent data related attributes
+        ConsentDataDTO consentData = populateResponseDTO.getConsentData();
+
+        Boolean isReauthorization = (consentData == null) ? null : consentData.getIsReauthorization();
+        isReauthorization = isReauthorization != null && isReauthorization;
+
+        consentPersistPayload.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, Boolean.TRUE.equals(isReauthorization));
     }
 }
