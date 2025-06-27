@@ -20,7 +20,9 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservl
 
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Constants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 
 import java.util.Collections;
 import java.util.Map;
@@ -68,6 +70,7 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
     @Override
     public String getJSPPath() {
 
-        return "/fs_default.jsp";
+        return (String) ConsentExtensionsDataHolder.getInstance().getConfigurationService()
+                .getConfigurations().get(Constants.CONSENT_AUTHORIZE_JSP_PATH);
     }
 }

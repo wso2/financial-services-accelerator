@@ -50,4 +50,6 @@ public class Constants {
 
     public static final String CONSUMER_ACCOUNTS = "consumerAccounts";
     public static final String ESCAPED_JSON = "escapedJson";
+
+    public static final String CONSENT_AUTHORIZE_JSP_PATH = "Consent.AuthorizeJSP.Path";
 }

@@ -27,10 +27,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Constants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
 import java.util.HashMap;
@@ -42,6 +44,7 @@ import javax.servlet.http.HttpSession;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
@@ -57,6 +60,8 @@ public class FSDefaultAuthServletImplTest {
     HttpServletRequest httpServletRequestMock;
     @Mock
     ResourceBundle resourceBundle;
+    ConsentExtensionsDataHolder mockHolder;
+    FinancialServicesConfigurationService mockConfigService;
 
     private static MockedStatic<FinancialServicesConfigParser> configParser;
 
@@ -65,6 +70,8 @@ public class FSDefaultAuthServletImplTest {
 
         httpServletRequestMock = mock(HttpServletRequest.class);
         resourceBundle = mock(ResourceBundle.class);
+        mockHolder = mock(ConsentExtensionsDataHolder.class);
+        mockConfigService = mock(FinancialServicesConfigurationService.class);
         configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Map<String, Object> configs = new HashMap<String, Object>();
@@ -189,7 +196,17 @@ public class FSDefaultAuthServletImplTest {
 
     @Test
     public void testGetJSPPath() {
+        try (MockedStatic<ConsentExtensionsDataHolder> mockedStatic =
+                     Mockito.mockStatic(ConsentExtensionsDataHolder.class)) {
+            mockedStatic.when(ConsentExtensionsDataHolder::getInstance).thenReturn(mockHolder);
 
-        assertEquals("/fs_default.jsp", servletImpl.getJSPPath());
+            Map<String, Object> configMap = new HashMap<>();
+            configMap.put(Constants.CONSENT_AUTHORIZE_JSP_PATH, "/fs_default.jsp");
+
+            when(mockHolder.getConfigurationService()).thenReturn(mockConfigService);
+            when(mockConfigService.getConfigurations()).thenReturn(configMap);
+
+            assertEquals(servletImpl.getJSPPath(), "/fs_default.jsp");
+        }
     }
 }
