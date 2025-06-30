@@ -574,7 +574,7 @@ allowed_api_resources=["payment-consents"]
 enabled=false
 
 [financial_services.consent.authorize_jsp]
-path="/fs_default.jsp"
+path="fs_default.jsp"
 
 [financial_services.identity]
 consent_id_claim_name="consent_id"

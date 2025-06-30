@@ -266,4 +266,17 @@ public class Utils {
             }
         }
     }
+
+    /**
+     * Adds optional backslash if it's missing from configured jsp path.
+     *
+     * @param configuredPath    JSP path retrieved from configuration file
+     * @return  correctly formatted path as required
+     */
+    public static String formatPath(String configuredPath) {
+        if (configuredPath.charAt(0) != '/') {
+            return "/" + configuredPath;
+        }
+        return configuredPath;
+    }
 }

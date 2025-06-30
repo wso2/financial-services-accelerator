@@ -70,7 +70,7 @@ public class FSDefaultAuthServletImpl implements FSAuthServletInterface {
     @Override
     public String getJSPPath() {
 
-        return (String) ConsentExtensionsDataHolder.getInstance().getConfigurationService()
-                .getConfigurations().get(Constants.CONSENT_AUTHORIZE_JSP_PATH);
+        return Utils.formatPath((String) ConsentExtensionsDataHolder.getInstance().getConfigurationService()
+                .getConfigurations().getOrDefault(Constants.CONSENT_AUTHORIZE_JSP_PATH, "/fs_default.jsp"));
     }
 }
