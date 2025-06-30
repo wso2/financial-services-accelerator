@@ -49,13 +49,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestC
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -348,6 +346,7 @@ public class ExternalAPIConsentRetrievalStepTest {
     public void testAddAuthorizedDataObject_withPermissionsAndSelectedConsumerAccounts() throws Exception {
         // Setup permissions
         PermissionDTO permission = new PermissionDTO();
+        permission.setUid("permission-uid");
         permission.setDisplayValues(Collections.singletonList("ReadAccounts"));
 
         // Setup consumer account
@@ -374,9 +373,8 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
         JSONObject accountPermissionParams = new JSONObject();
-        accountPermissionParams.put("permission-0", permissionJSON);
-        accountPermissionParams.put("accounts-0", new JSONArray(Collections.singletonList(accountName)));
-        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+        accountPermissionParams.put("permission-uid", new JSONArray(Collections.singletonList(accountName)));
+        inputPayload.put("requestParameters", accountPermissionParams);
 
         ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
 
@@ -401,10 +399,6 @@ public class ExternalAPIConsentRetrievalStepTest {
         initiatedAcc.setAccountId("acc-init-1");
         permission.setInitiatedAccounts(Collections.singletonList(initiatedAcc));
 
-        // Build hashes
-        String permissionHash = UUID.nameUUIDFromBytes(
-                new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
-
         // Build metadata map
         PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
         ConsentDataDTO consentData = new ConsentDataDTO();
@@ -417,8 +411,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
         JSONObject accountPermissionParams = new JSONObject();
-        accountPermissionParams.put("permission-0", permissionHash);
-        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+        inputPayload.put("requestParameters", accountPermissionParams);
 
         ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
 
@@ -444,10 +437,6 @@ public class ExternalAPIConsentRetrievalStepTest {
         AccountDTO initiatedAcc = new AccountDTO();
         initiatedAcc.setAccountId("acc-init-1");
 
-        // Build hashes
-        String permissionHash = UUID.nameUUIDFromBytes(
-                new ObjectMapper().writeValueAsString(permission).getBytes(StandardCharsets.UTF_8)).toString();
-
         // Build metadata map
         PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
         ConsentDataDTO consentData = new ConsentDataDTO();
@@ -461,8 +450,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
         JSONObject accountPermissionParams = new JSONObject();
-        accountPermissionParams.put("permission-0", permissionHash);
-        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+        inputPayload.put("requestParameters", accountPermissionParams);
 
         ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
 
@@ -503,7 +491,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         JSONObject inputPayload = new JSONObject();
         JSONObject accountPermissionParams = new JSONObject();
         accountPermissionParams.put("accounts", new JSONArray(Collections.singletonList(accountName)));
-        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+        inputPayload.put("requestParameters", accountPermissionParams);
 
         ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
 
@@ -536,7 +524,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
         JSONObject accountPermissionParams = new JSONObject();
-        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+        inputPayload.put("requestParameters", accountPermissionParams);
 
         ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
 
@@ -565,7 +553,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Build input payload with hashed permission and account
         JSONObject inputPayload = new JSONObject();
         JSONObject accountPermissionParams = new JSONObject();
-        inputPayload.put("requestAccountPermissionParameters", accountPermissionParams);
+        inputPayload.put("requestParameters", accountPermissionParams);
 
         ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
 

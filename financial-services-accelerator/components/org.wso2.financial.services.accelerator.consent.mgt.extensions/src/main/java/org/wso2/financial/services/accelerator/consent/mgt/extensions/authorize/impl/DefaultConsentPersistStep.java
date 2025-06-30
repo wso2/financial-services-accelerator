@@ -206,12 +206,24 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         // Append all selected consumer accounts
         boolean allowMultipleAccounts = Boolean.TRUE.equals(consentData.getAllowMultipleAccounts());
-        boolean foundOneAccount = false;
-        JSONObject accountPermissionParameters =
-                persistPayload.optJSONObject(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS);
-        if (accountPermissionParameters != null) {
-            for (String key: accountPermissionParameters.keySet()) {
-                if (key.contains("accounts")) {
+        JSONObject requestParameters =
+                persistPayload.optJSONObject(ConsentAuthorizeConstants.REQUEST_PARAMETERS);
+        if (requestParameters != null) {
+            for (String key: requestParameters.keySet()) {
+
+                JSONArray parameterValues = requestParameters.optJSONArray(key);
+                if (parameterValues == null) {
+                    continue;
+                }
+
+                boolean foundOneAccount = false;
+                for (int i = 0; i < parameterValues.length(); i++) {
+
+                    ConsumerAccountDTO accountObject = accountNameToObjectMap.getOrDefault(parameterValues.getString(i),
+                            null);
+                    if (accountObject == null) {
+                        continue;
+                    }
 
                     // allowMultipleAccounts validation
                     if (foundOneAccount && !allowMultipleAccounts) {
@@ -219,16 +231,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                     }
 
                     foundOneAccount = true;
-                    JSONArray accounts = accountPermissionParameters.optJSONArray(key);
-                    if (accounts != null) {
-                        for (Object account: accounts) {
-                            String accountName = (String) account;
-                            AccountDTO accountObject = accountNameToObjectMap.get(accountName);
-                            if (accountObject != null) {
-                                allAccountsSet.add(accountObject);
-                            }
-                        }
-                    }
+                    allAccountsSet.add(accountObject);
                 }
             }
         }

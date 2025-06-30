@@ -443,9 +443,8 @@ public class TestConstants {
     public static final String ACCOUNT_PERSIST_PAYLOAD_WITH_ACCOUNT = "{\n" +
             "  \"consentType\": \"accounts\",\n" +
             "  \"isReauthorization\": false,\n" +
-            "  \"requestAccountPermissionParameters\": {\n" +
-            "    \"permission-0\": \"%s\",\n" +
-            "    \"accounts-0\": [\n" +
+            "  \"requestParameters\": {\n" +
+            "    \"%s\": [\n" +
             "      \"%s\"\n" +
             "    ]\n" +
             "  }\n" +
@@ -454,21 +453,20 @@ public class TestConstants {
     public static final String ACCOUNT_PERSIST_PAYLOAD_WITHOUT_ACCOUNT = "{\n" +
             "  \"consentType\": \"accounts\",\n" +
             "  \"isReauthorization\": false,\n" +
-            "  \"requestAccountPermissionParameters\": {\n" +
-            "    \"permission-0\": \"%s\"\n" +
+            "  \"requestParameters\": {\n" +
             "  }\n" +
             "}";
 
     public static final String COF_PERSIST_PAYLOAD = "{\n" +
             "  \"consentType\": \"funds-confirmation\",\n" +
             "  \"isReauthorization\": false,\n" +
-            "  \"requestAccountPermissionParameters\": {}\n" +
+            "  \"requestParameters\": {}\n" +
             "}";
 
     public static final String PAYMENT_PERSIST_PAYLOAD = "{\n" +
             "  \"consentType\": \"payments\",\n" +
             "  \"isReauthorization\": false,\n" +
-            "  \"requestAccountPermissionParameters\": {\n" +
+            "  \"requestParameters\": {\n" +
             "    \"accounts\": [\n" +
             "      \"%s\"\n" +
             "    ]\n" +

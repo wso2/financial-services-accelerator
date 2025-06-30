@@ -17,14 +17,46 @@
  */
 
 function denyConsent() {
+    updateAccountNamesFromPermissions();
     document.getElementById('consent').value = false;
     document.getElementById("oauth2_authz_confirm").submit();
 }
 
 // Confirm sharing data
 function approvedConsent() {
+    updateAccountNamesFromPermissions();
     document.getElementById('consent').value = true;
     document.getElementById("oauth2_authz_confirm").submit();
+}
+
+// Set permission uids as names for account inputs before submission
+function updateAccountNamesFromPermissions() {
+    const hiddenPermissions = document.querySelectorAll('input[type="hidden"][name^="permission-"]');
+
+    hiddenPermissions.forEach(permissionInput => {
+        const nameParts = permissionInput.name.split('-');
+        const index = nameParts[1];
+        const newName = permissionInput.value;
+
+        // Find corresponding account elements
+        const accountElements = document.querySelectorAll(`[name="accounts-${index}"]`);
+        accountElements.forEach(accountChoice => {
+            accountChoice.setAttribute('name', newName);
+        });
+
+        // Remove the permission input
+        permissionInput.remove();
+    });
+
+    // Handle unindexed "accounts"
+    const standalonePermission = document.querySelector('input[type="hidden"][name="permission"]');
+    const standaloneAccounts = document.querySelectorAll('[name="accounts"]');
+    if (standalonePermission && standaloneAccount.length > 0) {
+        standaloneAccounts.forEach(standaloneAccount => {
+            standaloneAccount.setAttribute('name', standalonePermission.value);
+        });
+        standalonePermission.remove();
+    }
 }
 
 function approvedDefaultClaim() {

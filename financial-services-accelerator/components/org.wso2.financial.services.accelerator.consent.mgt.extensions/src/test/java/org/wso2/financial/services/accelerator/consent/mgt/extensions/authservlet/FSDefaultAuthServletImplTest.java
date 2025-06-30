@@ -166,8 +166,7 @@ public class FSDefaultAuthServletImplTest {
     public void testUpdateConsentData() {
         // Set request parameters
         Map<String, String[]> parameterMap = new HashMap<>();
-        parameterMap.put("permission-1", new String[]{"p3rm1ss10nH4sh0", "p3rm1ss10nH4sh1"});
-        parameterMap.put("accounts-1", new String[]{"4cc0untH4sh0", "4cc0untH4sh0"});
+        parameterMap.put("permission-uid", new String[]{"acc-1", "acc-2"});
 
         doReturn(parameterMap).when(httpServletRequestMock).getParameterMap();
 
@@ -176,14 +175,12 @@ public class FSDefaultAuthServletImplTest {
 
         assertFalse(consentData.isEmpty());
 
-        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS));
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.REQUEST_PARAMETERS));
         JSONObject filteredParameters = (JSONObject) consentData
-                .get(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS);
-        assertEquals(filteredParameters.length(), 2);
-        assertTrue(filteredParameters.has("permission-1"));
-        assertTrue(filteredParameters.has("accounts-1"));
-        assertTrue(filteredParameters.get("permission-1") instanceof String);
-        assertTrue(filteredParameters.get("accounts-1") instanceof JSONArray);
+                .get(ConsentAuthorizeConstants.REQUEST_PARAMETERS);
+        assertEquals(filteredParameters.length(), 1);
+        assertTrue(filteredParameters.has("permission-uid"));
+        assertTrue(filteredParameters.get("permission-uid") instanceof JSONArray);
     }
 
     @Test

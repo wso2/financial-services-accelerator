@@ -27,6 +27,8 @@ import javax.validation.constraints.NotEmpty;
  */
 public class PermissionDTO {
     @NotEmpty
+    private String uid;
+    @NotEmpty
     private List<String> displayValues;
     private List<AccountDTO> initiatedAccounts;
 
@@ -45,5 +47,13 @@ public class PermissionDTO {
     public void setInitiatedAccounts(
             List<AccountDTO> initiatedAccounts) {
         this.initiatedAccounts = initiatedAccounts;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

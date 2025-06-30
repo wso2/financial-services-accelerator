@@ -19,7 +19,6 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -209,7 +208,7 @@ public class Utils {
      * @return a map of attributes to forward to retrieval
      */
     @SuppressFBWarnings("SERVLET_PARAMETER")
-    // Suppressed content - request.getParameter("isReauthorization")
+    // Suppressed content - request.getParameterMap().entrySet()
     // Suppression reason - False Positive : These endpoints are secured with access control
     // as defined in the IS deployment.toml file
     // Suppressed warning count - 1
@@ -217,54 +216,10 @@ public class Utils {
         Map<String, Object> persistMap = new HashMap<>();
 
         // Add account and permission request parameters
-        persistMap.put(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS,
-                filterAccountPermissionParameters(request));
+        persistMap.put(ConsentAuthorizeConstants.REQUEST_PARAMETERS,
+                new JSONObject(request.getParameterMap()));
 
         return persistMap;
-    }
-
-    /**
-     * Filters only accounts and permissions from the JSP response.
-     * @param request server request
-     * @return request parameter object
-     */
-    @SuppressFBWarnings("SERVLET_PARAMETER")
-    // Suppressed content - request.getParameterMap().entrySet()
-    // Suppression reason - False Positive : These endpoints are secured with access control
-    // as defined in the IS deployment.toml file
-    // Suppressed warning count - 1
-    private static JSONObject filterAccountPermissionParameters(HttpServletRequest request) {
-        JSONObject filteredParameters =  new JSONObject();
-
-        // Append all included permission and selected accounts to authorizedData Object
-        for (Map.Entry<String, String[]> parameter: request.getParameterMap().entrySet()) {
-            if (parameter.getKey().contains("permission")) {
-                // Permission for a specific index should not have multiple values
-                filteredParameters.put(parameter.getKey(), StringEscapeUtils.unescapeHtml4(parameter.getValue()[0]));
-            } else if (parameter.getKey().contains("accounts")) {
-                filteredParameters.put(parameter.getKey(), new JSONArray(parameter.getValue()));
-            }
-        }
-
-        return filteredParameters;
-    }
-
-    /**
-     * Appends HTML escaped JSON object of permissions as an attribute of each permission.
-     *
-     * @param dataSet   dataSet received from the execution of retrieval steps
-     */
-    public static void appendEscapedPermissionJSONsToPermissions(JSONObject dataSet) {
-        JSONObject consentData = dataSet.optJSONObject(ConsentAuthorizeConstants.CONSENT_DATA);
-        if (consentData != null) {
-            JSONArray permissions = consentData.optJSONArray(ConsentAuthorizeConstants.PERMISSIONS);
-            if (permissions != null) {
-                for (int i = 0; i < permissions.length(); i++) {
-                    JSONObject permission = permissions.getJSONObject(i);
-                    permission.put(Constants.ESCAPED_JSON, StringEscapeUtils.escapeHtml4(permission.toString()));
-                }
-            }
-        }
     }
 
     /**
