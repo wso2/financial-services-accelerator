@@ -176,37 +176,36 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             consumerAccounts = populateResponseDTO.getConsumerData().getAccounts();
         }
 
-        // Build consumer hash to consumer account map
-        Map<String, ConsumerAccountDTO> accountNameToObject = new HashMap<>();
+        // Build consumer account name to consumer account object map
+        Map<String, ConsumerAccountDTO> accountNameToObjectMap = new HashMap<>();
         if (consumerAccounts != null) {
             for (ConsumerAccountDTO consumerAccount: consumerAccounts) {
-                accountNameToObject.put(consumerAccount.getDisplayName(), consumerAccount);
+                accountNameToObjectMap.put(consumerAccount.getDisplayName(), consumerAccount);
             }
         }
 
-        // Set of all accounts to map
-        Set<AccountDTO> allAccountsToMap = new HashSet<>();
+        // Set of all accounts to map with default permission
+        Set<AccountDTO> allAccountsSet = new HashSet<>();
 
         // Append all consent initiated accounts
         if (initiatedAccountsForConsent != null) {
-            allAccountsToMap.addAll(initiatedAccountsForConsent);
+            allAccountsSet.addAll(initiatedAccountsForConsent);
         }
 
         // Append all permission initiated accounts
         if (permissions != null) {
-            Set<AccountDTO> allAccountsSet = new HashSet<>();
+            Set<AccountDTO> allAccountsWithPermissionsSet = new HashSet<>();
             for (PermissionDTO permission: permissions) {
                 List<AccountDTO> initiatedAccounts = permission.getInitiatedAccounts();
                 if (initiatedAccounts != null) {
-                    allAccountsSet.addAll(initiatedAccounts);
+                    allAccountsWithPermissionsSet.addAll(initiatedAccounts);
                 }
             }
-            allAccountsToMap.addAll(allAccountsSet);
+            allAccountsSet.addAll(allAccountsWithPermissionsSet);
         }
 
         // Append all selected consumer accounts
-        Boolean allowMultipleAccounts = consentData.getAllowMultipleAccounts();
-        allowMultipleAccounts = allowMultipleAccounts != null && allowMultipleAccounts;
+        boolean allowMultipleAccounts = Boolean.TRUE.equals(consentData.getAllowMultipleAccounts());
         boolean foundOneAccount = false;
         JSONObject accountPermissionParameters =
                 persistPayload.optJSONObject(ConsentAuthorizeConstants.REQUEST_ACCOUNT_PERMISSION_PARAMETERS);
@@ -224,9 +223,9 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                     if (accounts != null) {
                         for (Object account: accounts) {
                             String accountName = (String) account;
-                            AccountDTO accountObject = accountNameToObject.get(accountName);
+                            AccountDTO accountObject = accountNameToObjectMap.get(accountName);
                             if (accountObject != null) {
-                                allAccountsToMap.add(accountObject);
+                                allAccountsSet.add(accountObject);
                             }
                         }
                     }
@@ -234,8 +233,8 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             }
         }
 
-        // Map all accounts to default permission
-        for (AccountDTO account: allAccountsToMap) {
+        // Map accounts in the set of all accounts to default permission
+        for (AccountDTO account: allAccountsSet) {
             hasAuthorizedAccounts = true;
             accountIDsMapWithPermissions.put(account.getAccountId(), permissionsDefault);
         }
