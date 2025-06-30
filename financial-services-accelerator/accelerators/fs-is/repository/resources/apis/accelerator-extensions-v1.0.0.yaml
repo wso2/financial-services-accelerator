@@ -2042,8 +2042,12 @@ components:
               items:
                 type: object
                 required:
+                  - uid
                   - displayValues
                 properties:
+                  uid:
+                    type: string
+                    description: Unique ID for the permission
                   displayValues:
                     type: array
                     description: Permission display values
