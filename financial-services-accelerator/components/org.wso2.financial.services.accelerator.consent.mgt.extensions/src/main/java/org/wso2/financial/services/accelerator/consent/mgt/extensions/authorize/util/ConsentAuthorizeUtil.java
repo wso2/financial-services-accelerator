@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Util class for consent authorize operations.
@@ -357,6 +358,7 @@ public class ConsentAuthorizeUtil {
         JSONArray displayValues = data.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
         if (displayValues != null) {
             JSONObject permission = new JSONObject();
+            permission.put(ConsentAuthorizeConstants.UID, UUID.randomUUID());
             permission.put(ConsentAuthorizeConstants.DISPLAY_VALUES, displayValues);
             permissions.put(permission);
         }
