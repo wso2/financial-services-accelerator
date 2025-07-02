@@ -750,6 +750,8 @@ class FSAPIMConnectorTest extends CommonTest{
 
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil.generateXjwsSignature(jwsSignatureRequestBuilder.requestHeader,
+                        initiationPayload))
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .body(initiationPayload)
                 .baseUri(configuration.getServerBaseURL())

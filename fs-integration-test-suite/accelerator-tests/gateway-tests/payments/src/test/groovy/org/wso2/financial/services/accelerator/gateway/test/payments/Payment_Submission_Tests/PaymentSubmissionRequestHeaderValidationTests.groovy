@@ -28,13 +28,18 @@ package org.wso2.financial.services.accelerator.gateway.test.payments.Payment_Su
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.bfsi.test.framework.keystore.KeyStore
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
+import org.wso2.financial.services.accelerator.test.framework.utility.PaymentsDataProviders
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
+import org.wso2.financial.services.accelerator.test.framework.utility.JWSHeaders
+
+import java.time.Instant
 
 /**
  * Tests for validating the request headers in payment submission requests.
@@ -85,7 +90,9 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
 
         Assert.assertEquals(submissionResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_MSG)
-                .contains(ConnectorTestConstants.X_JWS_SIGNATURE_MISSING))
+                .contains(ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR))
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Empty JWS Signature")
     }
 
     @Test
@@ -155,7 +162,11 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "unrecognised critical parameter")
     }
 
@@ -168,15 +179,19 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
         consentResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil.generateXjwsSignature(
-                        jwsSignatureRequestBuilder.getRequestHeader(ConnectorTestConstants.RS256),
+                        jwsSignatureRequestBuilder.getRequestHeader(ConnectorTestConstants.ALG_RS512),
                         submissionPayload))
                 .body(submissionPayload)
                 .baseUri(configuration.getServerBaseURL())
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
-                .contains("The RS256 algorithm is not supported"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION) ,
+                "The RS512 algorithm is not supported")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
     }
 
     @Test
@@ -195,8 +210,12 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
-                .contains("kid does not resolve to a valid signing certificate"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE)
+                .contains(ConnectorTestConstants.ERROR_CODE_BAD_REQUEST))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG)
+                .contains(ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "kid does not resolve to a valid signing certificate")
     }
 
     @Test
@@ -216,8 +235,12 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
-                .contains("Error due to iss claim validation failed"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE)
+                .contains(ConnectorTestConstants.ERROR_CODE_BAD_REQUEST))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG)
+                .contains(ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Error due to iss claim validation failed")
     }
 
     @Test
@@ -238,7 +261,11 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE)
+                .contains(ConnectorTestConstants.ERROR_CODE_BAD_REQUEST))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Error occurred due to invalid type"))
     }
 
@@ -261,7 +288,11 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Error occurred due to invalid cty claim"))
     }
 
@@ -288,12 +319,12 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test
     void "US-918_Payment Submission with x-jws-signature header having future date for iat"() {
 
+        prePaymentSubmissionStep()
+        Assert.assertNotNull(code)
+
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().plus(2).toString())
-
-        prePaymentSubmissionStep()
-        Assert.assertNotNull(code)
 
         consentResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
@@ -303,7 +334,11 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("iat claim cannot be a future date"))
     }
 
@@ -342,8 +377,12 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION) ,
                 "unrecognised critical parameter")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
     }
 
     @Test
@@ -361,7 +400,11 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Error occurred due to invalid tan claim")
     }
 
@@ -379,24 +422,35 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
-                ConnectorTestConstants.OBIE_ERROR_SIGNATURE_MISSING_CLAIM)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION) ,
+                "required critical parameters missing")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
     }
 
-    @Test(dataProvider = "jwsHeadersWithInvalidClaims", dataProviderClass = PaymentsDataProviders.class)
-    void "Submission request with invalid claims in x-jws-signature header"(String jwsHeader) {
+    @Test
+    void "Submission request with invalid iat claims in x-jws-signature header"() {
 
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
         consentResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
-                .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil.generateXjwsSignature(jwsHeader, submissionPayload))
+                .header(ConnectorTestConstants.X_JWS_SIGNATURE,
+                        TestUtil.generateXjwsSignature(JWSHeaders.jwsHeaderWithInvalidIat, submissionPayload))
                 .body(submissionPayload)
                 .baseUri(configuration.getServerBaseURL())
                 .post(submissionPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE)
+                .contains(ConnectorTestConstants.ERROR_CODE_BAD_REQUEST))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+                .contains("iat claim should be a valid timestamp"))
     }
 
     @Test
@@ -424,5 +478,28 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 "Consent Enforcement Error")
         Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Initiation payloads does not match")
+    }
+
+    @Test
+    void "Payment Submission Request with missing kid claim in x-jws-signature header"() {
+
+        prePaymentSubmissionStep()
+        Assert.assertNotNull(code)
+
+        consentResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
+                .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
+                .header(ConnectorTestConstants.X_JWS_SIGNATURE,
+                        TestUtil.generateXjwsSignature(JWSHeaders.jwsHeaderWithMissingKid, submissionPayload))
+                .body(submissionPayload)
+                .baseUri(configuration.getServerBaseURL())
+                .post(submissionPath)
+
+        Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+                .contains("kid does not resolve to a valid signing certificate"))
     }
 }

@@ -219,10 +219,10 @@ class KeyStore {
         try {
             RSAKey rsaKey = RSAKey.parse(certificate);
 
-            RSAKey key = new SpanNearQuery.Builder(rsaKey)
+            RSAKey key = new RSAKey.Builder(rsaKey)
                     .keyUse(KeyUse.ENCRYPTION)
                     .keyIDFromThumbprint()
-                    .build();
+                    .build()
             return key.getKeyID();
         } catch (JOSEException e) {
             log.error("Error occurred while parsing Certificate ", e);
