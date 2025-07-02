@@ -272,6 +272,8 @@ public class OpenBankingConstants {
     public static final String IDEMPOTENCY_ALLOWED_TIME = "Consent.Idempotency.AllowedTimeDuration";
     public static final String DOT_SEPARATOR = ".";
     public static final String MANDATE_NBF_CLAIM = "Identity.RequestObject.MandateNBF";
+    public static final String ENABLE_SETTING_AUTHENTICATORS_ON_APP_UPDATE =
+            "SCA.AuthenticatorConfig.EnableSettingAuthenticatorsOnAppUpdate";
 
     // CIBA Constants
     public static final String CIBA_AUTHENTICATION_REDIRECT_ENDPOINT =
