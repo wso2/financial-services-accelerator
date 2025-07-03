@@ -428,6 +428,11 @@ ssa_property_value_for_production = "production"
 #[[open_banking.signature_validation.allowed_algorithms]]
 #name = "PS256"
 
+# Default: true. If true, authenticators will be set/updated automatically when an application is updated.
+# If false, authenticators will not be set/updated automatically when an app is updated. (Carbon console or DCR update).
+[open_banking.sca.authenticator_config]
+enable_setting_authenticators_on_app_update = true
+
 #[open_banking.sca.primaryauth]
 #name = "IdentifierExecutor"
 #display = "ob-identifier-first"

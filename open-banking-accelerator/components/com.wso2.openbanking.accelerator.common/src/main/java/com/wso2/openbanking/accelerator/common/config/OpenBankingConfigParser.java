@@ -1598,4 +1598,16 @@ public class OpenBankingConfigParser {
         }
         return headersMap;
     }
+
+    /**
+     * Method to check whether authenticators on app update is enabled.
+     *
+     * @return boolean value indicating whether authenticators on app update is enabled
+     */
+    public boolean isSetAuthenticatorsOnAppUpdateEnabled() {
+
+        return getConfigElementFromKey(OpenBankingConstants.ENABLE_SETTING_AUTHENTICATORS_ON_APP_UPDATE) == null ||
+                Boolean.parseBoolean(((String) getConfigElementFromKey(
+                        OpenBankingConstants.ENABLE_SETTING_AUTHENTICATORS_ON_APP_UPDATE)).trim());
+    }
 }
