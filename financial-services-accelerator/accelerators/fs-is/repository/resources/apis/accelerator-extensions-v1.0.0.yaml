@@ -1118,6 +1118,9 @@ components:
   schemas:
     Response200ForErrorMapper:
       type: object
+      required:
+        - responseId
+        - data
       properties:
         responseId:
           type: string
@@ -1128,6 +1131,9 @@ components:
           description: Defines the custom error response.
     ErrorMapperRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1255,6 +1261,9 @@ components:
           description: The receipt used by Third parties which includes detailed information on data access request
     SuccessResponse:
       type: object
+      required:
+        - responseId
+        - status
       properties:
         responseId:
           type: string
@@ -1264,6 +1273,10 @@ components:
             - SUCCESS
     SuccessResponseConsentRevocation:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1275,6 +1288,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseConsentRevocationData'
     SuccessResponsePopulateConsentAuthorizeScreen:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1286,6 +1303,10 @@ components:
           $ref: '#/components/schemas/SuccessResponsePopulateConsentAuthorizeScreenData'
     SuccessResponseForResponseAlternation:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1297,6 +1318,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseForResponseAlternationData'
     SuccessResponseForConsentSearch:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1308,6 +1333,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseForConsentSearchData'
     SuccessResponsePreProcessConsentCreation:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1319,6 +1348,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseWithDetailedConsentData'
     SuccessResponsePreProcessFileUpload:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1330,11 +1363,14 @@ components:
           $ref: '#/components/schemas/SuccessResponsePreProcessFileUploadData'
     FailedResponse:
       required:
+        - responseId
         - data
         - errorCode
         - status
       type: object
       properties:
+        responseId:
+          type: string
         status:
           type: string
           description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
@@ -1348,6 +1384,10 @@ components:
           description: :"Custom error object to response back"
     FailedResponseInConsentAuthorize:
       type: object
+      required:
+        - responseId
+        - data
+        - status
       properties:
         responseId:
           type: string
@@ -1371,10 +1411,13 @@ components:
           description: New consent status to be set to the consent
     ErrorResponse:
       required:
+        - responseId
         - data
         - status
       type: object
       properties:
+        responseId:
+          type: string
         status:
           type: string
           description: "Indicates the outcome of the request. For an error operation, this should be set to ERROR."
@@ -1385,6 +1428,9 @@ components:
           description: :"Custom error object to response back"
     PreProcessConsentCreationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1394,6 +1440,9 @@ components:
           $ref: '#/components/schemas/Request'
     EnrichConsentCreationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1403,6 +1452,9 @@ components:
           $ref: '#/components/schemas/RequestForEnrichConsentCreationResponse'
     EnrichFileUploadResponseRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1412,6 +1464,9 @@ components:
           $ref: '#/components/schemas/RequestForEnrichFileUploadResponse'
     PreProcessFileUploadRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1421,6 +1476,9 @@ components:
           $ref: '#/components/schemas/RequestForPreProcessFileUpload'
     PreProcessConsentRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1430,6 +1488,9 @@ components:
           $ref: '#/components/schemas/PreProcessConsentRetrievalData'
     EnrichConsentSearchRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1439,6 +1500,9 @@ components:
           $ref: '#/components/schemas/ConsentSearchData'
     PopulateConsentAuthorizeScreenRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1447,6 +1511,9 @@ components:
           $ref: '#/components/schemas/PopulateConsentAuthorizeScreenData'
     ValidateConsentAccessRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1456,6 +1523,9 @@ components:
           $ref: '#/components/schemas/ValidateConsentAccessData'
     IssueRefreshTokenRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1503,6 +1573,10 @@ components:
         - $ref: '#/components/schemas/FailedResponse'
     SuccessResponseIssueRefreshToken:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1526,6 +1600,9 @@ components:
         - $ref: '#/components/schemas/FailedResponse'
     ValidateAuthorizationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1586,6 +1663,9 @@ components:
           description: "Id of the user doing the file upload. Used for auditing purposes."
     PersistAuthorizedConsentRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1618,6 +1698,10 @@ components:
         - $ref: '#/components/schemas/FailedResponseInConsentAuthorize'
     SuccessResponsePersistAuthorizedConsent:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1824,6 +1908,9 @@ components:
         - $ref: '#/components/schemas/FailedResponseClientProcess'
     ClientProcessRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1846,6 +1933,10 @@ components:
       description: Defines the context data related to the client registration.
     SuccessResponseClientProcess:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1892,6 +1983,9 @@ components:
           description: Offers a detailed explanation of the error.
     EventSubscriptionRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1916,6 +2010,9 @@ components:
           description: Event Subscription Payload
     EventCreationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1931,6 +2028,9 @@ components:
           description: Event creation Payload
     EventPollingRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1963,6 +2063,10 @@ components:
         - $ref: '#/components/schemas/FailedResponse'
     SuccessResponseForEventWithDetails:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1985,6 +2089,10 @@ components:
             type: string
     SuccessResponseForEnrichEventSubscription:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -2002,6 +2110,10 @@ components:
           description: Event Subscription Response
     SuccessResponseForEnrichEventPolling:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
