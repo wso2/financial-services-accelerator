@@ -36,7 +36,7 @@ class PaymentRequestPayloads {
                 "Initiation": {
                     "InstructionIdentification": "ACME412",
                     "EndToEndIdentification": "FRESCO.21302.GFX.20",
-                    "LocalInstrument": "UK.OBIE.Paym",
+                    "LocalInstrument": "OB.Paym",
                     "InstructedAmount": {
                         "Amount": "165.88",
                         "Currency": "GBP"
@@ -48,7 +48,7 @@ class PaymentRequestPayloads {
                         "SecondaryIdentification": "0002"
                     },
                     "DebtorAccount": {
-                        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+                        "SchemeName": "OB.SortCodeAccountNumber",
                         "Identification": "08080025612489",
                         "Name": "Jane Smith",
                         "SecondaryIdentification": "080801562314789"
@@ -70,7 +70,7 @@ class PaymentRequestPayloads {
 				"Initiation": {
                     "InstructionIdentification": "ACME412",
                     "EndToEndIdentification": "FRESCO.21302.GFX.20",
-                    "LocalInstrument": "UK.OBIE.Paym",
+                    "LocalInstrument": "OB.Paym",
                     "InstructedAmount": {
                         "Amount": "165.88",
                         "Currency": "GBP"
@@ -82,7 +82,7 @@ class PaymentRequestPayloads {
                         "SecondaryIdentification": "0002"
                     },
                     "DebtorAccount": {
-                        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+                        "SchemeName": "OB.SortCodeAccountNumber",
                         "Identification": "08080025612489",
                         "Name": "Jane Smith",
                         "SecondaryIdentification": "080801562314789"

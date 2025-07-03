@@ -18,17 +18,17 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.owasp.encoder.Encode;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -89,204 +89,149 @@ public class Utils {
     }
 
     /**
-     * Method to populate accounts data to be sent to consent page.
+     * Recursively converts jsonObject to a Map.
      *
-     * @param request  HttpServletRequest
-     * @param dataSet  Request payload JSONObject
-     * @return  Map of Accounts data
+     * @param jsonObject JSONObject to be converted to a Map
+     * @return jsonObject converted to a nested HashMap
      */
-    public static Map<String, Object> populateAccountsData(HttpServletRequest request, JSONObject dataSet) {
+    public static Map<String, Object> jsonObjectToMap(JSONObject jsonObject) {
+        Map<String, Object> map = new HashMap<>();
 
-        Map<String, Object> returnMaps = new HashMap<>();
+        for (String key : jsonObject.keySet()) {
+            Object value = jsonObject.get(key);
 
-        //Sets "data_requested" that contains the human-readable scope-requested information
-        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
-        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
-
-        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
-            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
-            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
-
-            ArrayList<String> listData = new ArrayList<>();
-            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
-                listData.add(dataArray.get(dataIndex).toString());
+            if (value == JSONObject.NULL) {
+                map.put(key, null);
+            } else if (value instanceof JSONObject) {
+                map.put(key, jsonObjectToMap((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                map.put(key, jsonArrayToList((JSONArray) value));
+            } else {
+                map.put(key, value);
             }
-            dataRequested.put(title, listData);
         }
-        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
 
-        // add accounts list
-        request.setAttribute(ConsentExtensionConstants.ACCOUNT_DATA, addAccList(dataSet));
-        request.setAttribute(ConsentExtensionConstants.CONSENT_TYPE, ConsentExtensionConstants.ACCOUNTS);
-
-        return returnMaps;
-
+        return map;
     }
 
     /**
-     * Method to populate Confirmation of Funds data to be sent to consent page.
+     * Recursively converts jsonObject to a Map.
      *
-     * @param httpServletRequest  HttpServletRequest
-     * @param dataSet  Request payload JSONObject
-     * @return  Map of Confirmation of Funds data
+     * @param jsonArray jsonArray to be converted to a Map
+     * @return jsonArray converted to a nested ArrayList
      */
-    public static Map<String, Object> populateCoFData(HttpServletRequest httpServletRequest, JSONObject dataSet) {
+    private static List<Object> jsonArrayToList(JSONArray jsonArray) {
+        List<Object> list = new ArrayList<>();
 
-        Map<String, Object> returnMaps = new HashMap<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            Object value = jsonArray.get(i);
 
-        //Sets "data_requested" that contains the human-readable scope-requested information
-        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
-        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
-
-        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
-            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
-            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
-
-            ArrayList<String> listData = new ArrayList<>();
-            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
-                listData.add(dataArray.get(dataIndex).toString());
+            if (value == JSONObject.NULL) {
+                list.add(null);
+            } else if (value instanceof JSONObject) {
+                list.add(jsonObjectToMap((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                list.add(jsonArrayToList((JSONArray) value));
+            } else {
+                list.add(value);
             }
-            dataRequested.put(title, listData);
-
-        }
-        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
-
-        //Assigning value of the "Debtor Account" key in the map to the variable "selectedAccount".
-        if (dataRequested.containsKey("Debtor Account")) {
-            httpServletRequest.setAttribute(ConsentExtensionConstants.DEBTOR_ACCOUNT_ID,
-                    getDebtorAccFromConsentData(dataRequestedJsonArray));
         }
 
-        httpServletRequest.setAttribute(ConsentExtensionConstants.CONSENT_TYPE,
-                ConsentExtensionConstants.FUNDS_CONFIRMATIONS);
-        return returnMaps;
+        return list;
     }
 
     /**
-     * Method to populate payments data to be sent to consent page.
+     * Expand sub-attributes within the retrieved payload.
      *
-     * @param request  HttpServletRequest
-     * @param dataSet  Request payload JSONObject
-     * @return Map of Payments data
+     * @param dataSet dataSet received from the execution of retrieval steps
+     * @return updated request attribute map
      */
-    public static Map<String, Object> populatePaymentsData(HttpServletRequest request, JSONObject dataSet) {
+    public static Map<String, Object> extractAttributesFromDataSet(JSONObject dataSet) {
+        Map<String, Object> attributeMap = new HashMap<>();
 
-        String selectedAccount = null;
-        Map<String, Object> returnMaps = new HashMap<>();
-
-        //Sets "data_requested" that contains the human-readable scope-requested information
-        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
-        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
-
-        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
-            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
-            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
-
-            ArrayList<String> listData = new ArrayList<>();
-            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
-                listData.add(dataArray.getString(dataIndex));
-            }
-            dataRequested.put(title, listData);
-        }
-        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
-
-        //Assigning value of the "Debtor Account" key in the map to the variable "selectedAccount".
-        if (dataRequested.containsKey("Debtor Account")) {
-            selectedAccount = getDebtorAccFromConsentData(dataRequestedJsonArray);
-        } else {
-            // add accounts list
-            request.setAttribute(ConsentExtensionConstants.ACCOUNT_DATA, addAccList(dataSet));
+        if (dataSet == null) {
+            return attributeMap;
         }
 
-        request.setAttribute(ConsentExtensionConstants.SELECTED_ACCOUNT, selectedAccount);
-        request.setAttribute(ConsentExtensionConstants.CONSENT_TYPE, ConsentExtensionConstants.PAYMENTS);
+        // Convert JSON object to map
+        Map<String, Object> dataSetMap = jsonObjectToMap(dataSet);
 
-        return returnMaps;
+        Map<String, Object> consentData = (Map<String, Object>) dataSetMap.get(ConsentAuthorizeConstants.CONSENT_DATA);
+        Map<String, Object> consumerData = (Map<String, Object>)
+                dataSetMap.get(ConsentAuthorizeConstants.CONSUMER_DATA);
 
+        Map<String, List<String>> basicConsentData = null;
+        List<Map<String, Object>> permissions = null;
+        List<Object> initiatedAccountsForConsent = null;
+        Boolean isReauthorization = false;
+        Boolean allowMultipleAccounts = false;
+        String type = null;
+
+        if (consentData != null) {
+            basicConsentData = (Map<String, List<String>>) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.BASIC_CONSENT_DATA, null);
+            permissions = (List<Map<String, Object>>) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.PERMISSIONS, null);
+            initiatedAccountsForConsent = (List<Object>) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, null);
+            isReauthorization = (Boolean) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.IS_REAUTHORIZATION, false);
+            allowMultipleAccounts = (Boolean) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, false);
+            type = (String) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.TYPE, null);
+        }
+
+        List<Map<String, Object>> consumerAccounts = null;
+        if (consumerData != null) {
+            consumerAccounts = (List<Map<String, Object>>) consumerData.get(
+                    ConsentAuthorizeConstants.ACCOUNTS);
+        }
+
+        attributeMap.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
+        attributeMap.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
+        attributeMap.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, initiatedAccountsForConsent);
+        attributeMap.put(Constants.CONSUMER_ACCOUNTS, consumerAccounts);
+        attributeMap.put(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, allowMultipleAccounts);
+        attributeMap.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, isReauthorization);
+        attributeMap.put(ConsentAuthorizeConstants.TYPE, type);
+        attributeMap.put(ConsentAuthorizeConstants.HAS_MULTIPLE_PERMISSIONS,
+                (permissions != null && permissions.size() > 1));
+
+        return attributeMap;
     }
 
     /**
-     * Method to populate data to be sent to consent page in non-initiated consent scenarios.
+     * Builds response map from request retrieved from consent page.
      *
-     * @param request  HttpServletRequest
-     * @param dataSet  Request payload JSONObject
-     * @return  Map of Accounts data
+     * @param request request retrieved from consent page
+     * @return a map of attributes to forward to retrieval
      */
-    public static Map<String, Object> populateResourceData(HttpServletRequest request, JSONObject dataSet) {
+    @SuppressFBWarnings("SERVLET_PARAMETER")
+    // Suppressed content - request.getParameterMap().entrySet()
+    // Suppression reason - False Positive : These endpoints are secured with access control
+    // as defined in the IS deployment.toml file
+    // Suppressed warning count - 1
+    public static Map<String, Object> buildResponseMap(HttpServletRequest request) {
+        Map<String, Object> persistMap = new HashMap<>();
 
-        Map<String, Object> returnMaps = new HashMap<>();
+        // Add account and permission request parameters
+        persistMap.put(ConsentAuthorizeConstants.REQUEST_PARAMETERS,
+                new JSONObject(request.getParameterMap()));
 
-        //Sets "data_requested" that contains the human-readable scope-requested information
-        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
-        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
-
-        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
-            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
-            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
-
-            ArrayList<String> listData = new ArrayList<>();
-            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
-                listData.add(dataArray.get(dataIndex).toString());
-            }
-            dataRequested.put(title, listData);
-        }
-        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
-
-        // add accounts list
-        request.setAttribute(ConsentExtensionConstants.ACCOUNT_DATA, addAccList(dataSet));
-        request.setAttribute(ConsentExtensionConstants.CONSENT_TYPE, ConsentExtensionConstants.DEFAULT);
-
-        return returnMaps;
-
+        return persistMap;
     }
 
     /**
-     * Method to retrieve debtor account from consent data object.
+     * Adds optional backslash if it's missing from configured jsp path.
      *
-     * @param consentDataObject Object containing consent related data
-     * @return Debtor account
+     * @param configuredPath    JSP path retrieved from configuration file
+     * @return  correctly formatted path as required
      */
-    public static String getDebtorAccFromConsentData(JSONArray consentDataObject) {
-
-        for (int requestedDataIndex = 0; requestedDataIndex < consentDataObject.length(); requestedDataIndex++) {
-            JSONObject dataObj = consentDataObject.getJSONObject(requestedDataIndex);
-            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
-
-            if (ConsentExtensionConstants.DEBTOR_ACC_TITLE.equals(title)) {
-                JSONArray dataArray = dataObj.getJSONArray(StringUtils.lowerCase(ConsentExtensionConstants.DATA));
-
-                for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
-                    String data = dataArray.getString(dataIndex);
-                    if (data.contains(ConsentExtensionConstants.IDENTIFICATION_TITLE)) {
-
-                        //Values are set to the array as {name:value} Strings in Consent Retrieval step,
-                        // hence splitting by : and getting the 2nd element to get the value
-                        return ((dataArray.getString(dataIndex)).split(":")[1]).trim();
-                    }
-                }
-            }
+    public static String formatPath(String configuredPath) {
+        if (configuredPath.charAt(0) != '/') {
+            return "/" + configuredPath;
         }
-        return null;
-    }
-
-    private static List<Map<String, String>>  addAccList (JSONObject dataSet) {
-        // add accounts list
-        List<Map<String, String>> accountData = new ArrayList<>();
-        JSONArray accountsArray = dataSet.getJSONArray("accounts");
-        for (int accountIndex = 0; accountIndex < accountsArray.length(); accountIndex++) {
-            JSONObject object = accountsArray.getJSONObject(accountIndex);
-            String accountId = object.getString(ConsentExtensionConstants.ACCOUNT_ID);
-            String displayName = object.getString(ConsentExtensionConstants.DISPLAY_NAME);
-            Map<String, String> data = new HashMap<>();
-            data.put(ConsentExtensionConstants.AUTH_ACCOUNT_ID, accountId);
-            data.put(ConsentExtensionConstants.DISPLAY_NAME, displayName);
-            accountData.add(data);
-        }
-
-        return accountData;
+        return configuredPath;
     }
 }

@@ -66,7 +66,7 @@ public class PeriodicalConsentJobScheduler {
     }
 
     /**
-     * Initialize the scheduler
+     * Initialize the scheduler.
      */
     @SuppressFBWarnings("PATH_TRAVERSAL_IN")
     // Suppressed content - Paths.get(CarbonUtils.getCarbonConfigDirPath()).toString() + "/" + QUARTZ_PROPERTY_FILE;
@@ -99,7 +99,7 @@ public class PeriodicalConsentJobScheduler {
     }
 
     /**
-     * Returns the scheduler
+     * Returns the scheduler.
      *
      * @return Scheduler scheduler.
      */

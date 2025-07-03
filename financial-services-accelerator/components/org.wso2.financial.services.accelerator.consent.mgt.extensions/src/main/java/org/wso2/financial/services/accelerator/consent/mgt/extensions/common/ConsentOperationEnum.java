@@ -19,7 +19,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 
 /**
- * Consent operation enum
+ * Consent operation enum.
  */
 public enum ConsentOperationEnum {
 
