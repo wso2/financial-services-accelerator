@@ -1378,7 +1378,7 @@ components:
             - ERROR
         errorCode:
           type: integer
-          description: If any custom error code to return.
+          description: If any HTTP error code to return.
         data:
           type: object
           description: :"Custom error object to response back"
@@ -1965,7 +1965,7 @@ components:
             - ERROR
         errorCode:
           type: integer
-          description: If any custom error code to return.
+          description: If any HTTP error code to return.
         data:
           $ref: '#/components/schemas/FailedResponseClientProcess_data'
     FailedResponseClientProcess_data:
