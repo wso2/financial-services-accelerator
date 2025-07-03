@@ -202,9 +202,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException | JSONException e) {
-            log.error("Error Occurred while handling the request", e);
+            log.error("Error Occurred while retrieving the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_RETRIEVE);
+                    "Error Occurred while retrieving the consent", ConsentOperationEnum.CONSENT_RETRIEVE);
         }
     }
 
@@ -312,9 +312,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
 
         } catch (ConsentManagementException e) {
-            log.error("Error Occurred while handling the request", e);
+            log.error("Error Occurred while creating the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_CREATE);
+                    "Error Occurred while creating the consent", ConsentOperationEnum.CONSENT_CREATE);
         }
 
     }
@@ -558,7 +558,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException e) {
-            log.error("Error Occurred while handling the request", e);
+            log.error("Error Occurred while uploading consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
@@ -638,9 +638,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponsePayload(consentFile.getConsentFile());
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException | JSONException e) {
-            log.error("Error Occurred while handling the request", e);
+            log.error("Error Occurred while retrieving consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+                    "Error Occurred while retrieving consent file", ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
     }
 
