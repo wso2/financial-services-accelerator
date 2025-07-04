@@ -66,8 +66,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 responseId: Ec1wMjmiG8
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                status: ERROR
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -76,8 +78,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 responseId: Ec1wMjmiG8
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                status: ERROR
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-client-creation:
     post:
       tags:
@@ -134,7 +138,7 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: Bad request
+                  errorMessage: Bad Request
                   errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
@@ -205,7 +209,7 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: Bad request
+                  errorMessage: Bad Request
                   errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
@@ -272,7 +276,7 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: Bad request
+                  errorMessage: Bad Request
                   errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
@@ -314,8 +318,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -325,8 +329,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-consent-creation-response:
     post:
       tags:
@@ -354,8 +359,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -365,8 +371,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-consent-file-upload:
     post:
       tags:
@@ -395,8 +402,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -406,8 +413,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-consent-file-response:
     post:
       tags:
@@ -435,8 +443,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -446,8 +455,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-consent-retrieval:
     post:
       tags:
@@ -475,8 +485,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -486,8 +497,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-consent-file-retrieval:
     post:
       tags:
@@ -515,8 +527,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -526,8 +539,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-consent-revoke:
     post:
       tags:
@@ -555,8 +569,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -566,8 +581,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-consent-search-response:
     post:
       tags:
@@ -595,8 +611,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -606,8 +623,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /populate-consent-authorize-screen:
     post:
       tags:
@@ -634,8 +652,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Permissions are missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -645,8 +664,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /persist-authorized-consent:
     post:
       tags:
@@ -671,12 +691,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-consent-access:
     post:
       tags:
@@ -708,7 +740,7 @@ paths:
                     errorCode: 401
                     data:
                       errorMessage: invalid_permissions
-                      erroreDescription: "The requested  permissions are invalid, unknown"
+                      erroDescription: "The requested  permissions are invalid, unknown"
         "400":
           description: Bad Request
           content:
@@ -719,8 +751,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Permissions are missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -731,8 +763,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: server_error
-                  errorDescription: Failed to process the response
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /issue-refresh-token:
     post:
       tags:
@@ -760,8 +792,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Permissions are missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -771,8 +804,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-authorization-request:
     post:
       tags:
@@ -803,8 +837,9 @@ paths:
                   value:
                     status: ERROR
                     errorCode: 401
-                    errorMessage: invalid_permissions
-                    errorDescription: "The requested  permissions are invalid, unknown"
+                    data:
+                      errorMessage: invalid_permissions
+                      erroDescription: "The requested  permissions are invalid, unknown"
         "400":
           description: Bad Request
           content:
@@ -814,8 +849,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Permissions are missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -825,8 +861,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-event-subscription:
     post:
       tags:
@@ -879,8 +916,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -890,8 +927,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-event-subscription-response:
     post:
       tags:
@@ -935,8 +973,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -946,8 +985,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-event-creation:
     post:
       tags:
@@ -990,8 +1030,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -1001,8 +1041,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-event-polling:
     post:
       tags:
@@ -1045,8 +1086,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -1056,8 +1097,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-event-polling-response:
     post:
       tags:
@@ -1101,8 +1143,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -1112,8 +1155,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
 components:
   schemas:
     Response200ForErrorMapper:
