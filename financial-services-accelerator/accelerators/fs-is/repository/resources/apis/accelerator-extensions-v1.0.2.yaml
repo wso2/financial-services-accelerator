@@ -2223,19 +2223,23 @@ components:
               type: boolean
               description: Indicates if this is a reauthorization flow (optional)
         consumerData:
-          type: array
-          description: List of all user accounts/resources selectable in the UI
-          items:
-            type: object
-            required:
-              - displayName
-              - selected
-            allOf:
-              - $ref: '#/components/schemas/Account'
-            properties:
-              selected:
-                type: boolean
-                description: Whether the account is selected by default
+          type: object
+          description: Consumer related data fetched from the banking backend.
+          properties:
+            accounts:
+              type: array
+              description: List of all user accounts/resources selectable in the UI
+              items:
+                type: object
+                required:
+                  - displayName
+                  - selected
+                allOf:
+                  - $ref: '#/components/schemas/Account'
+                properties:
+                  selected:
+                    type: boolean
+                    description: Whether the account is selected by default
     AuthorizedResources:
       type: object
       additionalProperties: true
