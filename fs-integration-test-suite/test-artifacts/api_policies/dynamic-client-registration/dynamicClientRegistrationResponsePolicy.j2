@@ -17,7 +17,12 @@
  -->
 
 <!-- Remove unnecessary properties from the response -->
-<enrich>
-    <source clone="true" xpath="json-eval($.token_type_extension,$.client_name,$.require_signed_request_object,$.tls_client_certificate_bound_access_tokens,$.jwks_uri,$.ext_application_display_name,$.token_endpoint_allow_reuse_pvt_key_jwt)"/>
-    <target type="body" action="remove"/>
-</enrich>
+<property name="HttpStatus" expression="get-property('axis2', 'HTTP_SC')"/>
+<filter source="$ctx:HttpStatus" regex="^(200|201)$">
+    <then>
+        <enrich>
+            <source clone="true" xpath="json-eval($.token_type_extension,$.client_name,$.require_signed_request_object,$.tls_client_certificate_bound_access_tokens,$.jwks_uri,$.ext_application_display_name,$.token_endpoint_allow_reuse_pvt_key_jwt)"/>
+            <target type="body" action="remove"/>
+        </enrich>
+    </then>
+</filter>

@@ -18,29 +18,14 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="WSO2 Open Banking - Gateway Account Flow Test">
-    <test name="Accounts End to End Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
+    <test name="Manual Client Registration" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.EndToEndFlowTest.EndToEndAccountFlowTest" />
+            <class name="org.wso2.financial.services.accelerator.gateway.test.manual.client.registration.ClientRegistrationTest" />
         </classes>
     </test>
-    <test name="Accounts Initiation Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
+    <test name="Subscribe to APIs" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Initiation_Tests.AccountInitiationPayloadValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Initiation_Tests.AccountsInitiationRequestHeaderValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Retrieval_Tests.GetConsentRequestHeaderValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Revocation_Tests.DeleteConsentRequestHeaderValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Revocation_Tests.DeleteConsentRequestValidationTests" />
-        </classes>
-    </test>
-    <test name="Accounts Authorisation Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
-        <classes>
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Authorisation_Tests.AuthorizationFlowValidationTest" />
-            </classes>
-    </test>
-    <test name="Accounts Retrieval Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
-        <classes>
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Accounts_Retrieval_Tests.AccountsRetrievalRequestBodyValidationTests" />
-            <class name="org.wso2.financial.services.accelerator.gateway.test.accounts.Accounts_Retrieval_Tests.AccountsRetrievalRequestHeaderValidationTests" />
+            <class name="org.wso2.financial.services.accelerator.gateway.test.manual.client.registration.ApiSubscriptionTest" />
         </classes>
     </test>
 </suite>

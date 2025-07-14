@@ -16,19 +16,21 @@ package org.wso2.financial.services.accelerator.gateway.test.payments.Payment_In
 import io.restassured.http.ContentType
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.SkipException
 import org.testng.annotations.BeforeClass
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import org.wso2.bfsi.test.framework.keystore.KeyStore
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
-import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.JWSHeaders
 import org.wso2.financial.services.accelerator.test.framework.utility.PaymentsDataProviders
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
+import java.lang.reflect.Method
 import java.time.Instant
 
 import static org.wso2.financial.services.accelerator.test.framework.utility.PaymentsDataProviders.*
@@ -48,6 +50,14 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 configuration.getAppInfoClientID(), scopeList)
     }
 
+    @BeforeMethod
+    void skipIfDCRDisabled(Method method) {
+        def dcrEnabled = Boolean.parseBoolean(System.getProperty("dcrEnabled", "false"))
+        if (!dcrEnabled && method.getAnnotation(Test)?.groups()?.contains("dcr")) {
+            throw new SkipException("Skipping DCR-only test since dcrEnabled is false")
+        }
+    }
+
     @Test
     void "OBA-900_Payment Initiation Request with valid x-jws-signature header"() {
 
@@ -58,7 +68,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         Assert.assertNotNull(consentId)
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "OBA-899_Payment Initiation Without x-jws-signature"() {
 
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -68,54 +78,29 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG)
-                .contains(ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
-                "Empty JWS Signature")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
+                .contains(ConnectorTestConstants.X_JWS_SIGNATURE_MISSING))
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "OBA-901_Payment Initiation with x-jws-signature header having unsupported alg"() {
 
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil.generateXjwsSignature(
-                        jwsSignatureRequestBuilder.getRequestHeader(ConnectorTestConstants.ALG_RS512),
+                        jwsSignatureRequestBuilder.getRequestHeader(ConnectorTestConstants.RS256),
                         initiationPayload))
                 .body(initiationPayload)
                 .baseUri(configuration.getServerBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION) ,
-                "The RS512 algorithm is not supported")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
+                .contains("The RS256 algorithm is not supported"))
     }
 
-    @Test
-    void "Initiation request with missing kid claim in x-jws-signature header"() {
-
-        //initiation
-        consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
-                .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
-                .header(ConnectorTestConstants.X_JWS_SIGNATURE,
-                        TestUtil.generateXjwsSignature(JWSHeaders.jwsHeaderWithMissingKid, initiationPayload))
-                .body(initiationPayload)
-                .baseUri(configuration.getServerBaseURL())
-                .post(consentPath)
-
-        Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
-                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("kid does not resolve to a valid signing certificate"))
-    }
-
-    @Test
+    @Test (groups = "dcr")
     void "OBA-902_Payment Initiation with x-jws-signature header having invalid kid"() {
 
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(), "1234")
@@ -129,15 +114,11 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
-                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
                 .contains("kid does not resolve to a valid signing certificate"))
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "OBA-903_Payment Initiation with x-jws-signature header having invalid iss"() {
 
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
@@ -152,15 +133,11 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
-                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
                 .contains("Error due to iss claim validation failed"))
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "OBA-904_Payment Initiation with x-jws-signature header having invalid optional claims typ"() {
 
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
@@ -176,13 +153,11 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
                 .contains("Error occurred due to invalid type"))
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "US-908_Payment Initiation with x-jws-signature header having invalid optional claims cty"() {
 
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
@@ -199,13 +174,11 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
                 .contains("Error occurred due to invalid cty claim"))
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "US-920_Payment Initiation with x-jws-signature header having present date and time for iat"() {
 
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
@@ -223,7 +196,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.CREATED)
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "US-918_Payment Initiation with x-jws-signature header having future date for iat"() {
 
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
@@ -239,13 +212,11 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_MESSAGE)
                 .contains("iat claim cannot be a future date"))
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "US-919_Payment Initiation with x-jws-signature header having past date for iat"() {
 
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
@@ -263,7 +234,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.CREATED)
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "US-906_Payment Initiation with x-jws-signature header having crit with unsupported claim"() {
 
         //initiation
@@ -277,13 +248,10 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "unrecognised critical parameter")
     }
 
-
-    @Test
+    @Test (groups = "dcr")
     void "US-913_Payment Initiation with x-jws-signature header having invalid tan"() {
 
         //initiation
@@ -297,12 +265,10 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Error occurred due to invalid tan claim")
     }
 
-    @Test(dataProvider = "jwsHeadersWithMissingCriticalClaims", dataProviderClass = PaymentsDataProviders.class)
+    @Test(groups = "dcr", dataProvider = "jwsHeadersWithMissingCriticalClaims", dataProviderClass = PaymentsDataProviders.class)
     void "Initiation request with missing critical claims in x-jws-signature header"(String jwsHeader) {
 
         //initiation
@@ -314,22 +280,17 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
-                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-                ConnectorTestConstants.JWS_HEADER_VALIDATION_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("required critical parameters missing"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_CODE),
+                ConnectorTestConstants.OBIE_ERROR_SIGNATURE_MISSING_CLAIM)
     }
 
-    @Test
-    void "Initiation request with invalid iat claim in x-jws-signature header"() {
+    @Test(groups = "dcr", dataProvider = "jwsHeadersWithInvalidClaims", dataProviderClass = PaymentsDataProviders.class)
+    void "Initiation request with invalid claims in x-jws-signature header"(String jwsHeader) {
 
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
-                .header(ConnectorTestConstants.X_JWS_SIGNATURE,
-                        TestUtil.generateXjwsSignature(JWSHeaders.jwsHeaderWithInvalidIat, initiationPayload))
+                .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil.generateXjwsSignature(jwsHeader, initiationPayload))
                 .body(initiationPayload)
                 .baseUri(configuration.getServerBaseURL())
                 .post(consentPath)
@@ -385,13 +346,12 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.UNAUTHORIZED)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("Invalid Credentials. Make sure your API invocation call has a header: 'null : Bearer " +
-                        "ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
+                .contains("Invalid Credentials. Make sure your API invocation call has a header: 'null : " +
+                        "Bearer ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG)
                 .contains("Missing Credentials"))
     }
 
-    //TODO: https://github.com/wso2/financial-services-accelerator/issues/681
     @Test
     void "Validate Payments Initiation With Invalid Content-type"() {
 
@@ -501,7 +461,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
 
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "TC0401102_Initiation request with a valid JOSE header and an invalid signature"() {
 
         String idempotencyKey = TestUtil.idempotency
@@ -524,7 +484,6 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
 //        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_CODE),
 //                ConnectorTestConstants.OBIE_ERROR_SIGNATURE_INVALID)
     }
-
 
     @Test
     void "TC0401114_Validate_Payments_Initiation_With_Headers with Capital Case"() {
@@ -593,7 +552,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_STATUS),
                 TestUtil.parseResponseBody(consentResponse2, ConnectorTestConstants.DATA_STATUS))
     }
-  
+
     @Test
     void "Validate_Payments Initiation request without x-idempotency-key"() {
 

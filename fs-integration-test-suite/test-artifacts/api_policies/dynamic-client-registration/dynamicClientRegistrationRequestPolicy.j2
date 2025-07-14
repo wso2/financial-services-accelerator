@@ -47,7 +47,10 @@
                         {"client_name": {$ctx:clientName},
                         "jwks_uri": {$ctx:jwksUri},
                         "ext_application_display_name": {$ctx:extAppName},
-                        "token_endpoint_allow_reuse_pvt_key_jwt": {$ctx:tokenEPReusePvtKeyJWT}}
+                        "token_endpoint_allow_reuse_pvt_key_jwt": {$ctx:tokenEPReusePvtKeyJWT},
+                        "token_type_extension" : true,
+                        "require_signed_request_object": true,
+                        "tls_client_certificate_bound_access_tokens": true}
                     </source>
                     <target action="child" xpath="json-eval($)"/>
                 </enrich>
@@ -57,7 +60,10 @@
                     <source clone="true" type="inline">
                         {"client_name": {$ctx:clientName},
                         "jwks_uri": {$ctx:jwksUri},
-                        "ext_application_display_name": {$ctx:extAppName}}
+                        "ext_application_display_name": {$ctx:extAppName},
+                        "token_type_extension" : true,
+                        "require_signed_request_object": true,
+                        "tls_client_certificate_bound_access_tokens": true}
                     </source>
                     <target action="child" xpath="json-eval($)"/>
                </enrich>

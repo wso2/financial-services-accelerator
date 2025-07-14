@@ -267,7 +267,7 @@ class TokenRequestBuilder {
         RestAssured.baseURI = configuration.getISServerUrl()
         Response response
         if (ConnectorTestConstants.TLS_AUTH_METHOD == authMethodType) {
-            response = FSRestAsRequestBuilder.buildBasicRequest()
+            response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .body(jwt)
@@ -394,7 +394,7 @@ class TokenRequestBuilder {
         if(authMethodType == ConnectorTestConstants.TLS_AUTH_METHOD){
             response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                    .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+//                    .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .body(payload)
                     .baseUri(configuration.getISServerUrl())
                     .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
@@ -416,12 +416,28 @@ class TokenRequestBuilder {
                     .addCustomValue("token_type_hint", tokenType).getPayload()
 
             response = FSRestAsRequestBuilder.buildRequest()
+//                    .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(accessTokenJWT)
                     .baseUri(configuration.getISServerUrl())
                     .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
             return response
         }
+
+//        def authToken = "${configuration.getAppInfoClientID()}:${configuration.getAppInfoClientSecret()}"
+//        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+//
+//        String accessTokenJWT = new PayloadGenerator()
+//                .addCustomValue("token", accessToken)
+//                .addCustomValue("token_type_hint", tokenType).getPayload()
+//
+//        response = FSRestAsRequestBuilder.buildBasicRequest()
+//                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+//                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
+//                .formParam("token", accessToken)
+//                .formParam("token_type_hint", tokenType)
+//                .baseUri(configuration.getISServerUrl())
+//                .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
 
         return response
     }

@@ -30,7 +30,8 @@ class PaymentRequestPayloads {
 
     static ConfigurationService acceleratorConfiguration = new ConfigurationService()
 
-    public static String initiationPaymentPayload = """{
+    public static String initiationPaymentPayload = """
+		{
             "Data": {
                 "Initiation": {
                     "InstructionIdentification": "ACME412",
@@ -53,84 +54,18 @@ class PaymentRequestPayloads {
                         "SecondaryIdentification": "080801562314789"
                     },
                     "SupplementaryData": {
-                        "additionalProp1": {
-                        }
+                        "additionalProp1": {}
                     }
                 }
             },
             "Risk": {
             }
-        }""".stripIndent()
-
-//    public static String initiationPaymentPayload = "{\n" +
-//    "            \"Data\": {\n" +
-//    "                \"Initiation\": {\n" +
-//    "                    \"InstructionIdentification\": \"ACME412\",\n" +
-//    "                    \"EndToEndIdentification\": \"FRESCO.21302.GFX.20\",\n" +
-//    "                    \"LocalInstrument\": \"OB.Paym\",\n" +
-//    "                    \"InstructedAmount\": {\n" +
-//    "                        \"Amount\": \"165.88\",\n" +
-//    "                        \"Currency\": \"GBP\"\n" +
-//    "                    },\n" +
-//    "                    \"CreditorAccount\": {\n" +
-//    "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//    "                        \"Identification\": \"08080021325698\",\n" +
-//    "                        \"Name\": \"ACME Inc\",\n" +
-//    "                        \"SecondaryIdentification\": \"0002\"\n" +
-//    "                    },\n" +
-//    "                    \"DebtorAccount\": {\n" +
-//    "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//    "                        \"Identification\": \"08080025612489\",\n" +
-//    "                        \"Name\": \"Jane Smith\",\n" +
-//    "                        \"SecondaryIdentification\": \"080801562314789\"\n" +
-//    "                    },\n" +
-//    "                    \"SupplementaryData\": {\n" +
-//    "                        \"additionalProp1\": {\n" +
-//    "                        }\n" +
-//    "                    }\n" +
-//    "                }\n" +
-//    "            },\n" +
-//    "            \"Risk\": {\n" +
-//    "            }\n" +
-//    "        }";
-
-//    static String getSubmissionPaymentPayload(String consentID) {
-//        return "{\n" +
-//                "\"Data\": {\n" +
-//                "\"ConsentId\": \"${consentID}\",\n" +
-//                "\"Initiation\": {\n" +
-//                "                    \"InstructionIdentification\": \"ACME412\",\n" +
-//                "                    \"EndToEndIdentification\": \"FRESCO.21302.GFX.20\",\n" +
-//                "                    \"LocalInstrument\": \"OB.Paym\",\n" +
-//                "                    \"InstructedAmount\": {\n" +
-//                "                        \"Amount\": \"165.88\",\n" +
-//                "                        \"Currency\": \"GBP\"\n" +
-//                "                    },\n" +
-//                "                    \"CreditorAccount\": {\n" +
-//                "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//                "                        \"Identification\": \"08080021325698\",\n" +
-//                "                        \"Name\": \"ACME Inc\",\n" +
-//                "                        \"SecondaryIdentification\": \"0002\"\n" +
-//                "                    },\n" +
-//                "                    \"DebtorAccount\": {\n" +
-//                "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//                "                        \"Identification\": \"08080025612489\",\n" +
-//                "                        \"Name\": \"Jane Smith\",\n" +
-//                "                        \"SecondaryIdentification\": \"080801562314789\"\n" +
-//                "                    },\n" +
-//                "                    \"SupplementaryData\": {\n" +
-//                "                        \"additionalProp1\": {}\n" +
-//                "                    }\n" +
-//                "                }\n" +
-//                "},\n" +
-//                "\"Risk\": {\n" +
-//                "}\n" +
-//                "}"
-//    }
+        }
+	""".stripIndent()
 
     static String getSubmissionPaymentPayload(String consentID) {
-        return """{ 
-            "Data": {
+        return """{
+			"Data": {
 				"ConsentId": "${consentID}",
 				"Initiation": {
                     "InstructionIdentification": "ACME412",
@@ -159,7 +94,8 @@ class PaymentRequestPayloads {
 			},
 			"Risk": {
 			}
-		}""".stripIndent()
+		}
+		""".stripIndent()
     }
 
     /**
@@ -198,13 +134,15 @@ class PaymentRequestPayloads {
                 "electedResource": "${requestUri}",
                 "clientId": "${clientId}",
                 "body": ${getSubmissionPaymentPayload(consentId)}
-            }""".stripIndent()
+            }
+            """.stripIndent()
         return initiationPayload
     }
 
     static String initiationPayloadPayloadWithModifiableParams(def parameterMap)  {
 
-        String initiationPayloadDomesticStandingOrder = """{
+        String initiationPayloadDomesticStandingOrder = """
+            {
             "Data": {
                 "Initiation": {
                     "InstructionIdentification": "${this.getParameterValue("InstructionIdentification", parameterMap)}",
@@ -233,7 +171,8 @@ class PaymentRequestPayloads {
             },
             "Risk": {
             }
-        }""".stripIndent()
+        }
+        """.stripIndent()
 
         return initiationPayloadDomesticStandingOrder
     }
@@ -297,7 +236,8 @@ class PaymentRequestPayloads {
             "LocalInstrument": "OB.Paym"
     ]
 
-    public static String modifiedInitiationPaymentPayload = """{
+    public static String modifiedInitiationPaymentPayload = """
+		{
             "Data": {
                 "Initiation": {
                     "InstructionIdentification": "ACME412",
@@ -326,38 +266,8 @@ class PaymentRequestPayloads {
             },
             "Risk": {
             }
-        }""".stripIndent()
-
-//    public static String modifiedInitiationPaymentPayload = "{\n" +
-//            "            \"Data\": {\n" +
-//            "                \"Initiation\": {\n" +
-//            "                    \"InstructionIdentification\": \"ACME412\",\n" +
-//            "                    \"EndToEndIdentification\": \"FRESCO.21302.GFX.20\",\n" +
-//            "                    \"LocalInstrument\": \"OB.Paym\",\n" +
-//            "                    \"InstructedAmount\": {\n" +
-//            "                        \"Amount\": \"180.88\",\n" +
-//            "                        \"Currency\": \"GBP\"\n" +
-//            "                    },\n" +
-//            "                    \"CreditorAccount\": {\n" +
-//            "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//            "                        \"Identification\": \"08080021325698\",\n" +
-//            "                        \"Name\": \"ACME Inc\",\n" +
-//            "                        \"SecondaryIdentification\": \"0002\"\n" +
-//            "                    },\n" +
-//            "                    \"DebtorAccount\": {\n" +
-//            "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//            "                        \"Identification\": \"08080025612489\",\n" +
-//            "                        \"Name\": \"Jane Smith\",\n" +
-//            "                        \"SecondaryIdentification\": \"080801562314789\"\n" +
-//            "                    },\n" +
-//            "                    \"SupplementaryData\": {\n" +
-//            "                        \"additionalProp1\": {}\n" +
-//            "                    }\n" +
-//            "                }\n" +
-//            "            },\n" +
-//            "            \"Risk\": {\n" +
-//            "            }\n" +
-//            "        }"
+        }
+	""".stripIndent()
 
     static String getModifiedSubmissionPaymentPayload(String consentID) {
 
@@ -391,41 +301,7 @@ class PaymentRequestPayloads {
 			},
 			"Risk": {
 			}
-		}""".stripIndent()
+		}
+		""".stripIndent()
     }
-
-//    static String getModifiedSubmissionPaymentPayload(String consentID) {
-//
-//        return "{\n" +
-//                "\"Data\": {\n" +
-//                "\"ConsentId\": \"${consentID}\",\n" +
-//                "\"Initiation\": {\n" +
-//                "                    \"InstructionIdentification\": \"ACME412\",\n" +
-//                "                    \"EndToEndIdentification\": \"FRESCO.21302.GFX.20\",\n" +
-//                "                    \"LocalInstrument\": \"OB.Paym\",\n" +
-//                "                    \"InstructedAmount\": {\n" +
-//                "                        \"Amount\": \"170.90\",\n" +
-//                "                        \"Currency\": \"USD\"\n" +
-//                "                    },\n" +
-//                "                    \"CreditorAccount\": {\n" +
-//                "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//                "                        \"Identification\": \"08080021325698\",\n" +
-//                "                        \"Name\": \"ACME Inc\",\n" +
-//                "                        \"SecondaryIdentification\": \"0002\"\n" +
-//                "                    },\n" +
-//                "                    \"DebtorAccount\": {\n" +
-//                "                        \"SchemeName\": \"OB.SortCodeAccountNumber\",\n" +
-//                "                        \"Identification\": \"08080025612489\",\n" +
-//                "                        \"Name\": \"Jane Smith\",\n" +
-//                "                        \"SecondaryIdentification\": \"080801562314789\"\n" +
-//                "                    },\n" +
-//                "                    \"SupplementaryData\": {\n" +
-//                "                        \"additionalProp1\": {}\n" +
-//                "                    }\n" +
-//                "                }\n" +
-//                "},\n" +
-//                "\"Risk\": {\n" +
-//                "}\n" +
-//                "}"
-//    }
 }

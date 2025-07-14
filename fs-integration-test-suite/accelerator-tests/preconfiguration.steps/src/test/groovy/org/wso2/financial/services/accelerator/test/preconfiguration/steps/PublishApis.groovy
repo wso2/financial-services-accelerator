@@ -1,5 +1,6 @@
 package org.wso2.financial.services.accelerator.test.preconfiguration.steps
 
+import groovy.json.JsonOutput
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
@@ -7,10 +8,14 @@ import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.APIConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ApiPublisherRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
+
+import java.nio.charset.Charset
 
 /**
  * This class contains tests to publish APIs in the WSO2 Financial Services Accelerator (FSA) environment.

@@ -43,7 +43,7 @@ class RefreshTokenGrantAccessToken extends FSAPIMConnectorTest {
     ConnectorTestConstants.ApiScope scope = ConnectorTestConstants.ApiScope.ACCOUNTS
     private ConfigurationService configuration = new ConfigurationService()
 
-    void authoriseConsent() {
+    void authoriseConsent(String client_id) {
 
 		//Get Application Access Token
 		applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
@@ -71,7 +71,7 @@ class RefreshTokenGrantAccessToken extends FSAPIMConnectorTest {
 	@Test
 	void "Generate refresh token grant access token with pkjwt authentication"() {
 
-		authoriseConsent()
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, code, scopeList)
@@ -136,7 +136,7 @@ class RefreshTokenGrantAccessToken extends FSAPIMConnectorTest {
 	void "OB-1135_Generate refresh token grant access token for a revoked user access token"() {
 
 		//Consent initiation and authorisation
-		authoriseConsent()
+		authoriseConsent(clientId)
 
 		//Get User Access Token
 		Response tokenResponse = getUserAccessTokenResponse(ConnectorTestConstants.PKJWT_AUTH_METHOD, clientId, code, scopeList)

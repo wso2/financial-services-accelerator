@@ -61,15 +61,23 @@ class FSAPIMConnectorTest extends CommonTest{
     ConsentRequestBuilder consentRequestBuilder = new ConsentRequestBuilder()
     JWSSignatureRequestBuilder jwsSignatureRequestBuilder = new JWSSignatureRequestBuilder()
 
+    public String redirectURL
     protected String consentId
     String accessToken, refreshToken
     String code
     String denyResponse
     Response consentResponse
     Response consentRevocationResponse
+    Response consentValidateResponse
+    Response accountValidationResponse
     String consentPath
     String initiationPayload
+    String initiationIncorrectPayload = RequestPayloads.initiationIncorrectPayload
+    String initiationPayloadPayloadWithoutReadAccountsDetail = RequestPayloads.initiationPayloadWithoutReadAccountsDetail
+    String initiationPayloadWithoutReadTransactionsDetail = RequestPayloads.initiationPayloadWithoutReadTransactionsDetail
+    String initiationPayloadPayloadWithoutReadBalances = RequestPayloads.initiationPayloadWithoutReadBalances
     final String incorrectConsentPath = ConnectorTestConstants.INCORRECT_CONSENT_PATH
+    final userId = "${configuration.getUserPSUName()}"
     def automation
     String dcrPath
     String clientId
@@ -77,6 +85,7 @@ class FSAPIMConnectorTest extends CommonTest{
     String submissionPayload
     JWTGenerator generator
 
+    ClientRegistrationRequestBuilder registrationRequestBuilder
     String applicationAccessToken
     String consentStatus
     String userAccessToken
@@ -750,8 +759,6 @@ class FSAPIMConnectorTest extends CommonTest{
 
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
-                .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil.generateXjwsSignature(jwsSignatureRequestBuilder.requestHeader,
-                        initiationPayload))
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .body(initiationPayload)
                 .baseUri(configuration.getServerBaseURL())

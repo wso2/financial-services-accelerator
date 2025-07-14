@@ -19,8 +19,9 @@
 <!-- Storing the original request parameters for future reference -->
 <property name="originalRequestJsonBody" expression="json-eval($)" scope="default" type="STRING"/>
 <property name="originalRequestBody" expression="$body"/>
-<property name="originalAcceptHeader" expression="$trp:Accept"/>
+<property name="originalAuthorizationHeader" expression="$trp:Authorization"/>
 <property name="originalContentTypeHeader" expression="$trp:Content-Type"/>
+<property name="originalAcceptHeader" expression="$trp:Accept"/>
 
 <!-- This class mediator is responsible for generating the payload for the consent validation service and is stored in the property 'consentEnforcementJwtPayload' -->
 <class name="org.wso2.financial.services.apim.mediation.policies.consent.enforcement.ConsentEnforcementPayloadMediator">
@@ -53,8 +54,9 @@
     </endpoint>
 </call>
 
-<header name="Accept" scope="transport" expression="$ctx:originalAcceptHeader"/>
+<header name="Authorization" scope="transport" expression="$ctx:originalAuthorizationHeader"/>
 <header name="Content-Type" scope="transport" expression="$ctx:originalContentTypeHeader"/>
+<header name="Accept" scope="transport" expression="$ctx:originalAcceptHeader"/>
 
 <!-- Extract required attributes from the response JSON into properties -->
 <property name="isValid" expression="json-eval($.isValid)" scope="default" type="STRING"/>

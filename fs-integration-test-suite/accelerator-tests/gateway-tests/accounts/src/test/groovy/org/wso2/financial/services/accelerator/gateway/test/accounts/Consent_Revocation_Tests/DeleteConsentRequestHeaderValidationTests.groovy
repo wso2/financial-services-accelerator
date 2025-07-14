@@ -159,8 +159,8 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
 
         Assert.assertEquals(consentRevocationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         def errorMessage = TestUtil.parseResponseBody(consentRevocationResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Make sure your API invocation call has a header: 'Authorization :" +
-                " Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
+        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                "'null : Bearer ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
         Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900902")
         Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),

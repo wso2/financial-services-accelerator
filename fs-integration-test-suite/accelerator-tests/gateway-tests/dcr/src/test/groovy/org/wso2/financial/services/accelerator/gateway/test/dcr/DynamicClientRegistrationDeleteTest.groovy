@@ -51,7 +51,7 @@ class DynamicClientRegistrationDeleteTest extends FSConnectorTest {
 
         configClientId = configuration.getAppInfoClientID(0)
         registrationPath = configuration.getServerBaseURL() + DCRConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(1)
+        configuration.setTppNumber(0)
         SSA = new File(configuration.getAppDCRSSAPath()).text
 
         String payload = (new JWTGenerator()).getSignedRequestObject(ClientRegistrationRequestBuilder
