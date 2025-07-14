@@ -66,8 +66,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 responseId: Ec1wMjmiG8
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                status: ERROR
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -76,8 +78,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 responseId: Ec1wMjmiG8
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                status: ERROR
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-client-creation:
     post:
       tags:
@@ -134,7 +138,7 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: Bad request
+                  errorMessage: Bad Request
                   errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
@@ -205,7 +209,7 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: Bad request
+                  errorMessage: Bad Request
                   errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
@@ -272,7 +276,7 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: Bad request
+                  errorMessage: Bad Request
                   errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
@@ -314,8 +318,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -325,8 +329,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-consent-creation-response:
     post:
       tags:
@@ -354,8 +359,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -365,8 +371,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-consent-file-upload:
     post:
       tags:
@@ -395,8 +402,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -406,8 +413,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-consent-file-response:
     post:
       tags:
@@ -435,8 +443,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -446,8 +455,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-consent-retrieval:
     post:
       tags:
@@ -475,8 +485,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -486,8 +497,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-consent-file-retrieval:
     post:
       tags:
@@ -515,8 +527,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -526,8 +539,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /pre-process-consent-revoke:
     post:
       tags:
@@ -555,8 +569,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -566,8 +581,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-consent-search-response:
     post:
       tags:
@@ -595,8 +611,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -606,8 +623,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /populate-consent-authorize-screen:
     post:
       tags:
@@ -634,8 +652,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Permissions are missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -645,8 +664,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /persist-authorized-consent:
     post:
       tags:
@@ -671,12 +691,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                responseId: Ec1wMjmiG8
+                status: ERROR
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-consent-access:
     post:
       tags:
@@ -708,7 +740,7 @@ paths:
                     errorCode: 401
                     data:
                       errorMessage: invalid_permissions
-                      erroreDescription: "The requested  permissions are invalid, unknown"
+                      erroDescription: "The requested  permissions are invalid, unknown"
         "400":
           description: Bad Request
           content:
@@ -719,8 +751,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Permissions are missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -731,8 +763,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: server_error
-                  errorDescription: Failed to process the response
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /issue-refresh-token:
     post:
       tags:
@@ -760,8 +792,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Permissions are missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -771,8 +804,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-authorization-request:
     post:
       tags:
@@ -803,8 +837,9 @@ paths:
                   value:
                     status: ERROR
                     errorCode: 401
-                    errorMessage: invalid_permissions
-                    errorDescription: "The requested  permissions are invalid, unknown"
+                    data:
+                      errorMessage: invalid_permissions
+                      erroDescription: "The requested  permissions are invalid, unknown"
         "400":
           description: Bad Request
           content:
@@ -814,8 +849,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Permissions are missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -825,8 +861,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-event-subscription:
     post:
       tags:
@@ -879,8 +916,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -890,8 +927,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-event-subscription-response:
     post:
       tags:
@@ -935,8 +973,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -946,8 +985,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-event-creation:
     post:
       tags:
@@ -990,8 +1030,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -1001,8 +1041,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /validate-event-polling:
     post:
       tags:
@@ -1045,8 +1086,8 @@ paths:
                 responseId: Ec1wMjmiG8
                 status: ERROR
                 data:
-                  errorMessage: invalid_request
-                  errorDescription: Data is missing
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -1056,8 +1097,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
   /enrich-event-polling-response:
     post:
       tags:
@@ -1101,8 +1143,9 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: invalid_request
-                errorDescription: Data is missing
+                data:
+                  errorMessage: Bad Request
+                  errorDescription: Request does not comply with the schema
         "500":
           description: Server Error
           content:
@@ -1112,12 +1155,16 @@ paths:
               example:
                 responseId: Ec1wMjmiG8
                 status: ERROR
-                errorMessage: server_error
-                errorDescription: Failed to process the response
+                data:
+                  errorMessage: Internal server error
+                  errorDescription: Error occurred while handling the request
 components:
   schemas:
     Response200ForErrorMapper:
       type: object
+      required:
+        - responseId
+        - data
       properties:
         responseId:
           type: string
@@ -1128,6 +1175,9 @@ components:
           description: Defines the custom error response.
     ErrorMapperRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1255,6 +1305,9 @@ components:
           description: The receipt used by Third parties which includes detailed information on data access request
     SuccessResponse:
       type: object
+      required:
+        - responseId
+        - status
       properties:
         responseId:
           type: string
@@ -1264,6 +1317,10 @@ components:
             - SUCCESS
     SuccessResponseConsentRevocation:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1275,6 +1332,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseConsentRevocationData'
     SuccessResponsePopulateConsentAuthorizeScreen:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1286,6 +1347,10 @@ components:
           $ref: '#/components/schemas/SuccessResponsePopulateConsentAuthorizeScreenData'
     SuccessResponseForResponseAlternation:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1297,6 +1362,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseForResponseAlternationData'
     SuccessResponseForConsentSearch:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1308,6 +1377,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseForConsentSearchData'
     SuccessResponsePreProcessConsentCreation:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1319,6 +1392,10 @@ components:
           $ref: '#/components/schemas/SuccessResponseWithDetailedConsentData'
     SuccessResponsePreProcessFileUpload:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1330,11 +1407,14 @@ components:
           $ref: '#/components/schemas/SuccessResponsePreProcessFileUploadData'
     FailedResponse:
       required:
+        - responseId
         - data
         - errorCode
         - status
       type: object
       properties:
+        responseId:
+          type: string
         status:
           type: string
           description: "Indicates the outcome of the request. For a failed operation, this should be set to ERROR."
@@ -1342,12 +1422,16 @@ components:
             - ERROR
         errorCode:
           type: integer
-          description: If any custom error code to return.
+          description: If any HTTP error code to return.
         data:
           type: object
           description: :"Custom error object to response back"
     FailedResponseInConsentAuthorize:
       type: object
+      required:
+        - responseId
+        - data
+        - status
       properties:
         responseId:
           type: string
@@ -1385,6 +1469,9 @@ components:
           description: :"Custom error object to response back"
     PreProcessConsentCreationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1394,6 +1481,9 @@ components:
           $ref: '#/components/schemas/Request'
     EnrichConsentCreationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1403,6 +1493,9 @@ components:
           $ref: '#/components/schemas/RequestForEnrichConsentCreationResponse'
     EnrichFileUploadResponseRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1412,6 +1505,9 @@ components:
           $ref: '#/components/schemas/RequestForEnrichFileUploadResponse'
     PreProcessFileUploadRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1421,6 +1517,9 @@ components:
           $ref: '#/components/schemas/RequestForPreProcessFileUpload'
     PreProcessConsentRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1430,6 +1529,9 @@ components:
           $ref: '#/components/schemas/PreProcessConsentRetrievalData'
     EnrichConsentSearchRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1439,6 +1541,9 @@ components:
           $ref: '#/components/schemas/ConsentSearchData'
     PopulateConsentAuthorizeScreenRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1447,6 +1552,9 @@ components:
           $ref: '#/components/schemas/PopulateConsentAuthorizeScreenData'
     ValidateConsentAccessRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1456,6 +1564,9 @@ components:
           $ref: '#/components/schemas/ValidateConsentAccessData'
     IssueRefreshTokenRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1503,6 +1614,10 @@ components:
         - $ref: '#/components/schemas/FailedResponse'
     SuccessResponseIssueRefreshToken:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1526,6 +1641,9 @@ components:
         - $ref: '#/components/schemas/FailedResponse'
     ValidateAuthorizationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1555,15 +1673,6 @@ components:
         requireTokenRevocation:
           type: string
           description: Require access token to be revoked
-    SuccessResponsePopulateConsentAuthorizeScreenData:
-      type: object
-      properties:
-        consentData:
-          type: object
-          description: consent data to be populated on consent grant UI
-        consumerData:
-          type: object
-          description: Data provider's backend data
     SuccessResponseForResponseAlternationData:
       type: object
       properties:
@@ -1595,6 +1704,9 @@ components:
           description: "Id of the user doing the file upload. Used for auditing purposes."
     PersistAuthorizedConsentRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1618,7 +1730,7 @@ components:
         requestParameters:
           type: object
         authorizedResources:
-          type: object
+          $ref: '#/components/schemas/AuthorizedResources'
         userId:
           type: string
     Response200ForPersistAuthorizedConsent:
@@ -1627,6 +1739,10 @@ components:
         - $ref: '#/components/schemas/FailedResponseInConsentAuthorize'
     SuccessResponsePersistAuthorizedConsent:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1833,6 +1949,9 @@ components:
         - $ref: '#/components/schemas/FailedResponseClientProcess'
     ClientProcessRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1855,6 +1974,10 @@ components:
       description: Defines the context data related to the client registration.
     SuccessResponseClientProcess:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1883,7 +2006,7 @@ components:
             - ERROR
         errorCode:
           type: integer
-          description: If any custom error code to return.
+          description: If any HTTP error code to return.
         data:
           $ref: '#/components/schemas/FailedResponseClientProcess_data'
     FailedResponseClientProcess_data:
@@ -1901,6 +2024,9 @@ components:
           description: Offers a detailed explanation of the error.
     EventSubscriptionRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1925,6 +2051,9 @@ components:
           description: Event Subscription Payload
     EventCreationRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1940,6 +2069,9 @@ components:
           description: Event creation Payload
     EventPollingRequestBody:
       type: object
+      required:
+        - requestId
+        - data
       properties:
         requestId:
           type: string
@@ -1972,6 +2104,10 @@ components:
         - $ref: '#/components/schemas/FailedResponse'
     SuccessResponseForEventWithDetails:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -1994,6 +2130,10 @@ components:
             type: string
     SuccessResponseForEnrichEventSubscription:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -2011,6 +2151,10 @@ components:
           description: Event Subscription Response
     SuccessResponseForEnrichEventPolling:
       type: object
+      required:
+        - responseId
+        - status
+        - data
       properties:
         responseId:
           type: string
@@ -2029,6 +2173,111 @@ components:
     RequestHeaders:
       type: object
       description: Request headers sent by the TPP. Filtered set of headers are sent to the external service.
+    SuccessResponsePopulateConsentAuthorizeScreenData:
+      type: object
+      properties:
+        consentData:
+          type: object
+          additionalProperties: true
+          properties:
+            type:
+              type: string
+              description: The type of consent
+            basicConsentData:
+              type: object
+              description: Structured descriptive text shown on the consent page, split into sections. Each key is a section title, and its value is a list of bullet points displayed under that section.
+              additionalProperties:
+                items:
+                  type: string
+            permissions:
+              type: array
+              description: List of permissions for the consent (optional)
+              items:
+                type: object
+                required:
+                  - uid
+                  - displayValues
+                properties:
+                  uid:
+                    type: string
+                    description: Unique ID for the permission
+                  displayValues:
+                    type: array
+                    description: Permission display values
+                    items:
+                      type: string
+                  initiatedAccounts:
+                    type: array
+                    description: Accounts initiated with this permission
+                    items:
+                      $ref: '#/components/schemas/Account'
+            initiatedAccountsForConsent:
+              type: array
+              description: Initialized accounts for the overall consent (optional)
+              items:
+                $ref: '#/components/schemas/Account'
+            allowMultipleAccounts:
+              type: boolean
+              description: Indicates if multiple consumer accounts can be selected per consent / permission
+            isReauthorization:
+              type: boolean
+              description: Indicates if this is a reauthorization flow (optional)
+        consumerData:
+          type: array
+          description: List of all user accounts/resources selectable in the UI
+          items:
+            type: object
+            required:
+              - displayName
+              - selected
+            allOf:
+              - $ref: '#/components/schemas/Account'
+            properties:
+              selected:
+                type: boolean
+                description: Whether the account is selected by default
+    AuthorizedResources:
+      type: object
+      additionalProperties: true
+      properties:
+        approval:
+          type: boolean
+          description: Whether the user approved the consent
+        isReauthorization:
+          type: boolean
+          description: Indicates if this was a reauthorization flow (optional)
+        type:
+          type: string
+          description: Type of consent granted (e.g., 'accounts', 'payments', etc.)
+        authorizedData:
+          type: array
+          description: List of granted permissions and corresponding user-selected account data
+          items:
+            type: object
+            required:
+              - accounts
+            properties:
+              permissions:
+                type: array
+                description: Granted permissions (optional if no permissions exist)
+                items:
+                  type: string
+              accounts:
+                type: array
+                description: Accounts selected for the permissions
+                items:
+                  $ref: '#/components/schemas/Account'
+    Account:
+      type: object
+      description: A user account or resource representation
+      required:
+        - displayName
+      properties:
+        displayName:
+          type: string
+          description: Account display name
+      additionalProperties: true
+
   securitySchemes:
     BasicAuth:
       type: http
