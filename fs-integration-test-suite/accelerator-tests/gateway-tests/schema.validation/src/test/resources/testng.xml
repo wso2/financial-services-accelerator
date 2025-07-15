@@ -17,12 +17,19 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Financial Solutions - OB Accelerator Schema Validation Test">
-  <test name="Schema Validation Test Scenarios" parallel="false" enabled="true" group-by-instances="true">
+<suite name="WSO2 Financial Solutions - OB Accelerator Schema Validation Test" parallel="none" preserve-order="true">
+  <test name="Schema Validation Test Scenarios - Header Validation" parallel="false" enabled="true" group-by-instances="true">
     <classes>
       <class name="org.wso2.financial.services.accelerator.gateway.integration.test.schema.validation.request_header_validation.RequestHeaderValidationTest"/>
+      </classes>
+  </test>
+  <test name="Schema Validation Test Scenarios - Payload Validation" parallel="false" enabled="true" group-by-instances="true">
+    <classes>
       <class name="org.wso2.financial.services.accelerator.gateway.integration.test.schema.validation.request_payload_validation.AccountsRequestPayloadValidationTest"/>
-      <class name="org.wso2.financial.services.accelerator.gateway.integration.test.schema.validation.request_payload_validation.PaymentRequestPayloadValidationTest"/>
+      <class name="org.wso2.financial.services.accelerator.gateway.integration.test.schema.validation.request_payload_validation.PaymentRequestPayloadValidationTest"/></classes>
+  </test>
+  <test name="Schema Validation Test Scenarios - Resource Path Validation" parallel="false" enabled="true" group-by-instances="true">
+    <classes>
       <class name="org.wso2.financial.services.accelerator.gateway.integration.test.schema.validation.resource_path_validation.ResourcePathValidationTest"/>
     </classes>
   </test>

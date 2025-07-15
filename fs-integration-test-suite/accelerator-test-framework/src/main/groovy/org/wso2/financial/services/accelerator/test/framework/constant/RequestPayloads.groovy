@@ -71,7 +71,7 @@ class RequestPayloads {
     /**
      * Consent Initiation Payload generation
      */
-    public static String  generateConsentInitiationPayload (ArrayList<String> permissionsList) {
+    public static String generateConsentInitiationPayload(ArrayList<String> permissionsList) {
 
         return """
             {
@@ -458,37 +458,37 @@ class RequestPayloads {
     }
 
     static final def defaultValueMap = [
-            "Permission": "Create",
-            "Amount":"30.80",
-            "Currency":"GBP",
-            "CreditorSchemeName":"OB.SortCodeAccountNumber",
-            "CreditorIdentification":"08080021325698",
-            "CreditorAccountName":"ACME Inc",
-            "CreditorSecondaryIdentification":"0002",
-            "DebtorSchemeName":"OB.SortCodeAccountNumber",
-            "DebtorIdentification":"30080012343456",
-            "DebtorName":"Andrea Smith",
-            "DebtorSecondaryIdentification":"30080012343456",
-            "Frequency": "EvryDay",
-            "Reference": "Pocket money for Damien",
-            "NumberOfPayments" : "10",
-            "FirstPaymentAmount": "6.66",
-            "FirstPaymentCurrency": "GBP",
-            "RecurringPaymentAmount": "7.00",
-            "RecurringPaymentCurrency": "GBP",
-            "FinalPaymentAmount": "12.00",
-            "FinalPaymentCurrency": "GBP",
-            "AuthorisationType": "Any",
-            "PaymentContextCode":"EcommerceGoods",
-            "MerchantCategoryCode":"5967",
-            "MerchantCustomerIdentification":"053598653254",
-            "AddressLine":"[\"Flat 7\",\"Acacia Lodge\"]",
-            "StreetName":"Acacia Avenue",
-            "BuildingNumber":"27",
-            "PostCode":"GU31 2ZZ",
-            "TownName":"Sparsholt",
-            "CountrySubDivision":"\"Wessex\"",
-            "Country":"UK"
+            "Permission"                     : "Create",
+            "Amount"                         : "30.80",
+            "Currency"                       : "GBP",
+            "CreditorSchemeName"             : "OB.SortCodeAccountNumber",
+            "CreditorIdentification"         : "08080021325698",
+            "CreditorAccountName"            : "ACME Inc",
+            "CreditorSecondaryIdentification": "0002",
+            "DebtorSchemeName"               : "OB.SortCodeAccountNumber",
+            "DebtorIdentification"           : "30080012343456",
+            "DebtorName"                     : "Andrea Smith",
+            "DebtorSecondaryIdentification"  : "30080012343456",
+            "Frequency"                      : "EvryDay",
+            "Reference"                      : "Pocket money for Damien",
+            "NumberOfPayments"               : "10",
+            "FirstPaymentAmount"             : "6.66",
+            "FirstPaymentCurrency"           : "GBP",
+            "RecurringPaymentAmount"         : "7.00",
+            "RecurringPaymentCurrency"       : "GBP",
+            "FinalPaymentAmount"             : "12.00",
+            "FinalPaymentCurrency"           : "GBP",
+            "AuthorisationType"              : "Any",
+            "PaymentContextCode"             : "EcommerceGoods",
+            "MerchantCategoryCode"           : "5967",
+            "MerchantCustomerIdentification" : "053598653254",
+            "AddressLine"                    : "[\"Flat 7\",\"Acacia Lodge\"]",
+            "StreetName"                     : "Acacia Avenue",
+            "BuildingNumber"                 : "27",
+            "PostCode"                       : "GU31 2ZZ",
+            "TownName"                       : "Sparsholt",
+            "CountrySubDivision"             : "\"Wessex\"",
+            "Country"                        : "UK"
     ]
 
     public static String initiationPaymentPayload = """
@@ -580,7 +580,7 @@ class RequestPayloads {
 		""".stripIndent()
     }
 
-    public static String initiationPaymentPayloadWithCustomValues(def parameterMap)  {
+    public static String initiationPaymentPayloadWithCustomValues(def parameterMap) {
 
         String initiationPayloadDomesticStandingOrder = """
             {
@@ -643,7 +643,7 @@ class RequestPayloads {
         return initiationPayloadDomesticStandingOrder
     }
 
-    public static String initiationPayloadWithIntegerValueForString(def parameterMap)  {
+    public static String initiationPayloadWithIntegerValueForString(def parameterMap) {
 
         String initiationPayloadDomesticStandingOrder = """
             {
@@ -717,7 +717,7 @@ class RequestPayloads {
                 return TestUtil.getDateAndTime()
             } else if (parameter == "RecurringPaymentDateTime") {
                 return TestUtil.getDateAndTime()
-            } else if(parameter == "FinalPaymentDateTime") {
+            } else if (parameter == "FinalPaymentDateTime") {
                 return TestUtil.getDateAndTime()
             } else if (parameter == "CompletionDateTime") {
                 return DateTimeFormatter.ISO_INSTANT.format(ConnectorTestConstants.DATE_TIME)
@@ -768,4 +768,137 @@ class RequestPayloads {
 		}
 		""".stripIndent()
     }
+
+    /**
+     * Key Manager Payload for FSKM
+     * @return
+     */
+    static String keyManagerPayload() {
+
+        return """{
+            "name":"FSKM",
+            "displayName":"FSKM",
+            "type":"fsKeyManager",
+            "description":"FSKM",
+            "wellKnownEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/token/.well-known/openid-configuration",
+            "introspectionEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/introspect",
+            "clientRegistrationEndpoint":"${acceleratorConfiguration.getISServerUrl()}/api/identity/oauth2/dcr/v1.1/register",
+            "tokenEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/token",
+            "displayTokenEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/token",
+            "revokeEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/revoke",
+            "displayRevokeEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/revoke",
+            "userInfoEndpoint":"${acceleratorConfiguration.getISServerUrl()}/scim2/Me",
+            "authorizeEndpoint":"${acceleratorConfiguration.getISServerUrl()}/oauth2/authorize",
+            "endpoints":[],
+            "certificates":{
+                "type":"JWKS",
+                "value":"${acceleratorConfiguration.getISServerUrl()}/oauth2/jwks"
+            },
+            "issuer":"${acceleratorConfiguration.getISServerUrl()}/oauth2/token",
+            "alias":"",
+            "scopeManagementEndpoint":"${acceleratorConfiguration.getISServerUrl()}/api/identity/oauth2/v1.0/scopes",
+            "availableGrantTypes":[
+                "refresh_token",
+                "client_credentials",
+                "authorization_code",
+                "urn:ietf:params:oauth:grant-type:jwt-bearer"
+            ],
+            "enableTokenGeneration":true,
+            "enableTokenEncryption":false,
+            "enableTokenHashing":false,
+            "enableMapOAuthConsumerApps":true,
+            "enableOAuthAppCreation":true,
+            "enableSelfValidationJWT":true,
+            "claimMapping":[],
+            "consumerKeyClaim":"azp",
+            "scopesClaim":"scope",
+            "tokenValidation":[{
+                "id":1,
+                "type":"JWT",
+                "value":{
+                    "body":{}
+                },
+                "enable":true
+            }],
+            "enabled":true,
+            "additionalProperties":{
+                "Username":"${acceleratorConfiguration.getUserKeyManagerAdminName()}",
+                "Password":"${acceleratorConfiguration.getUserKeyManagerAdminPWD()}",
+                "api_resource_management_endpoint":"${acceleratorConfiguration.getISServerUrl()}/api/server/v1/api-resources",
+                "is7_roles_endpoint":"${acceleratorConfiguration.getISServerUrl()}/scim2/v2/Roles",
+                "enable_roles_creation":true
+            },
+            "permissions":null,
+            "tokenType":"DIRECT",
+            "allowedOrganizations":["ALL"]
+        }
+        """.stripIndent()
+    }
+
+    /**
+     * Payload to create an user
+     * @return
+     */
+    static String createUserPayload() {
+        return """{
+            "userName": "PRIMARY/${acceleratorConfiguration.getUserPSUName()}",
+            "name": {
+                "givenName": "Roi",
+                "familyName": "Mark"
+            },
+            "active": true,
+            "emails": [
+                {
+                    "value": "${acceleratorConfiguration.getUserPSUName()}",
+                    "primary": true
+                }
+            ],
+            "password": "${acceleratorConfiguration.getUserPSUPWD()}"
+        }""".stripIndent()
+    }
+
+    static String assignUserRole(String roleName, String userId, String permissions) {
+        return """{
+              "displayName": "${roleName}",
+              "users": [
+                {
+                  "value": "${userId}"
+                }
+              ],
+              "groups": [
+                {
+                  
+                }
+              ],
+              "permissions": [
+                ${permissions}
+              ]
+        }""".stripIndent()
+    }
+
+    static String getScimRolePayload(String roleName) {
+        return """{
+                "schemas": [
+                    "urn:ietf:params:scim:api:messages:2.0:SearchRequest"
+            ],
+            "startIndex": 1,
+            "filter": "displayName eq ${roleName}"
+        }""".stripIndent()
+    }
+
+    /**
+     * Payload to create an API subscription
+     * @param applicationId
+     * @param apiId
+     * @return
+     */
+    static String getApiSubscriptionPayload(String applicationId, String apiId) {
+        return """{
+              "applicationId": "$applicationId",
+              "apiId": "$apiId",
+              "throttlingPolicy": "Unlimited",
+              "requestedThrottlingPolicy": "Gold"
+        }""".stripIndent()
+    }
+
 }

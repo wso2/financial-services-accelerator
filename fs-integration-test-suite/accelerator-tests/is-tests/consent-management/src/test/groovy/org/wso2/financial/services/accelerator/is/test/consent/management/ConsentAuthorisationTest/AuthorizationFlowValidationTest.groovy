@@ -249,9 +249,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
     void "Generate authorization code when Request Object is signed with expired certificate"() {
 
         String appKeystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
-                "expired-certs", "signing-keystore", "signing.jks")
-        String password = "wso2carbon"
-        String alias = "tpp4-sig"
+                "expired-certs", "signing-keystore", "sgsMuc8ACBgBzinpr8oJ8B.key")
 
         //Create Consent
         doDefaultInitiation()
@@ -260,8 +258,8 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
 
         //Authorise Consent
         AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
-        String authoriseUrl = acceleratorAuthorisationBuilder.getOAuthRequestWithDefinedCert(configuration.getAppInfoClientID(),
-                consentScopes, appKeystoreLocation, password, alias, consentId).toURI().toString()
+        String authoriseUrl = acceleratorAuthorisationBuilder.getOAuthRequestWithDefinedPemCert(configuration.getAppInfoClientID(),
+                consentScopes, appKeystoreLocation, consentId).toURI().toString()
 
         automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
                 .addStep(new AuthorizationFlowNavigationAutomationStep(authoriseUrl))
@@ -396,8 +394,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
                 .addStep { driver, context ->
                     driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
                 }
-                .addStep(new WaitForRedirectAutomationStep())
-                .execute()
+               .execute()
 
         Assert.assertEquals(TestUtil.getErrorDescriptionFromUrl(URLDecoder.decode(automation.currentUrl.get())),
                 ConnectorTestConstants.INVALID_SIG_ALGO_ERROR)

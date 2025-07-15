@@ -36,7 +36,7 @@ class PaymentRequestPayloads {
                 "Initiation": {
                     "InstructionIdentification": "ACME412",
                     "EndToEndIdentification": "FRESCO.21302.GFX.20",
-                    "LocalInstrument": "UK.OBIE.Paym",
+                    "LocalInstrument": "OB.Paym",
                     "InstructedAmount": {
                         "Amount": "165.88",
                         "Currency": "GBP"
@@ -48,7 +48,7 @@ class PaymentRequestPayloads {
                         "SecondaryIdentification": "0002"
                     },
                     "DebtorAccount": {
-                        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+                        "SchemeName": "OB.SortCodeAccountNumber",
                         "Identification": "08080025612489",
                         "Name": "Jane Smith",
                         "SecondaryIdentification": "080801562314789"
@@ -70,7 +70,7 @@ class PaymentRequestPayloads {
 				"Initiation": {
                     "InstructionIdentification": "ACME412",
                     "EndToEndIdentification": "FRESCO.21302.GFX.20",
-                    "LocalInstrument": "UK.OBIE.Paym",
+                    "LocalInstrument": "OB.Paym",
                     "InstructedAmount": {
                         "Amount": "165.88",
                         "Currency": "GBP"
@@ -82,7 +82,7 @@ class PaymentRequestPayloads {
                         "SecondaryIdentification": "0002"
                     },
                     "DebtorAccount": {
-                        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+                        "SchemeName": "OB.SortCodeAccountNumber",
                         "Identification": "08080025612489",
                         "Name": "Jane Smith",
                         "SecondaryIdentification": "080801562314789"
@@ -139,64 +139,39 @@ class PaymentRequestPayloads {
         return initiationPayload
     }
 
-    static String initiationPayloadDomesticStandingOrderPayment(def parameterMap)  {
+    static String initiationPayloadPayloadWithModifiableParams(def parameterMap)  {
 
         String initiationPayloadDomesticStandingOrder = """
             {
-                "Data": {
-                    "Permission": "${this.getParameterValue("Permission", parameterMap)}",
-                    "Authorisation": {
-                          "AuthorisationType": "${this.getParameterValue("AuthorisationType", parameterMap)}",
-                          "CompletionDateTime": "${this.getParameterValue("CompletionDateTime", parameterMap)}"
+            "Data": {
+                "Initiation": {
+                    "InstructionIdentification": "${this.getParameterValue("InstructionIdentification", parameterMap)}",
+                    "EndToEndIdentification": "${this.getParameterValue("EndToEndIdentification", parameterMap)}",
+                    "LocalInstrument": "${this.getParameterValue("LocalInstrument", parameterMap)}",
+                    "InstructedAmount": {
+                        "Amount": "${this.getParameterValue("Amount", parameterMap)}",
+                        "Currency": "${this.getParameterValue("Currency", parameterMap)}"
                     },
-                    "Initiation": {
-                          "Frequency": "${this.getParameterValue("Frequency", parameterMap)}",
-                          "Reference": "${this.getParameterValue("Reference", parameterMap)}",
-                          "NumberOfPayments" : "${this.getParameterValue("NumberOfPayments", parameterMap)}",
-                          "FirstPaymentDateTime": "${this.getParameterValue("FirstPaymentDateTime", parameterMap)}",
-                          "RecurringPaymentDateTime": "${this.getParameterValue("RecurringPaymentDateTime", parameterMap)}",
-                          "FirstPaymentAmount": {
-                                "Amount": "${this.getParameterValue("FirstPaymentAmount", parameterMap)}",
-                                "Currency": "${this.getParameterValue("FirstPaymentCurrency", parameterMap)}"
-                          },
-                          "RecurringPaymentAmount": {
-                                "Amount": "${this.getParameterValue("RecurringPaymentAmount", parameterMap)}",
-                                "Currency": "${this.getParameterValue("RecurringPaymentCurrency", parameterMap)}"
-                          },
-                          "FinalPaymentDateTime": "${this.getParameterValue("FinalPaymentDateTime", parameterMap)}",
-                          "FinalPaymentAmount": {
-                                "Amount": "${this.getParameterValue("FinalPaymentAmount", parameterMap)}",
-                                "Currency": "${this.getParameterValue("FinalPaymentCurrency", parameterMap)}"
-                          },
-                          "DebtorAccount": {
-                                "SchemeName": "${this.getParameterValue("DebtorSchemeName", parameterMap)}",
-                                "Identification": "${this.getParameterValue("DebtorIdentification", parameterMap)}",
-                                "Name": "${this.getParameterValue("DebtorName", parameterMap)}",
-                                "SecondaryIdentification": "${this.getParameterValue("DebtorSecondaryIdentification", parameterMap)}"
-                          },
-                          "CreditorAccount": {
-                                "SchemeName": "${this.getParameterValue("CreditorSchemeName", parameterMap)}",
-                                "Identification": "${this.getParameterValue("CreditorIdentification", parameterMap)}",
-                                "Name": "${this.getParameterValue("CreditorAccountName", parameterMap)}",
-                                "SecondaryIdentification": "${this.getParameterValue("CreditorSecondaryIdentification", parameterMap)}"
-                          }
-                    }
-                },
-                "Risk": {
-                    "PaymentContextCode": "${this.getParameterValue("PaymentContextCode", parameterMap)}",
-                    "MerchantCategoryCode": "${this.getParameterValue("MerchantCategoryCode", parameterMap)}",
-                    "MerchantCustomerIdentification": "${this.getParameterValue("MerchantCustomerIdentification", parameterMap)}",
-                    "DeliveryAddress": {
-                          "AddressLine": ${this.getParameterValue("AddressLine", parameterMap)},
-                          "StreetName": "${this.getParameterValue("StreetName", parameterMap)}",
-                          "BuildingNumber": "${this.getParameterValue("BuildingNumber", parameterMap)}",
-                          "PostCode": "${this.getParameterValue("PostCode", parameterMap)}",
-                          "TownName": "${this.getParameterValue("TownName", parameterMap)}",
-                          "CountrySubDivision": ${this.getParameterValue("CountrySubDivision", parameterMap)},
-                          "Country": "${this.getParameterValue("Country", parameterMap)}"
+                    "CreditorAccount": {
+                        "SchemeName": "${this.getParameterValue("CreditorSchemeName", parameterMap)}",
+                        "Identification": "${this.getParameterValue("CreditorIdentification", parameterMap)}",
+                        "Name": "${this.getParameterValue("CreditorAccountName", parameterMap)}",
+                        "SecondaryIdentification": "${this.getParameterValue("CreditorSecondaryIdentification", parameterMap)}"
+                    },
+                    "DebtorAccount": {
+                        "SchemeName": "${this.getParameterValue("DebtorSchemeName", parameterMap)}",
+                        "Identification": "${this.getParameterValue("DebtorIdentification", parameterMap)}",
+                        "Name": "${this.getParameterValue("DebtorName", parameterMap)}",
+                        "SecondaryIdentification": "${this.getParameterValue("DebtorSecondaryIdentification", parameterMap)}"
+                    },
+                    "SupplementaryData": {
+                        "additionalProp1": {}
                     }
                 }
+            },
+            "Risk": {
             }
+        }
         """.stripIndent()
 
         return initiationPayloadDomesticStandingOrder
@@ -228,11 +203,11 @@ class PaymentRequestPayloads {
             "Permission": "Create",
             "Amount":"30.80",
             "Currency":"GBP",
-            "CreditorSchemeName":"UK.OBIE.SortCodeAccountNumber",
+            "CreditorSchemeName":"OB.SortCodeAccountNumber",
             "CreditorIdentification":"08080021325698",
             "CreditorAccountName":"ACME Inc",
             "CreditorSecondaryIdentification":"0002",
-            "DebtorSchemeName":"UK.OBIE.SortCodeAccountNumber",
+            "DebtorSchemeName":"OB.SortCodeAccountNumber",
             "DebtorIdentification":"30080012343456",
             "DebtorName":"Andrea Smith",
             "DebtorSecondaryIdentification":"30080012343456",
@@ -255,48 +230,78 @@ class PaymentRequestPayloads {
             "PostCode":"GU31 2ZZ",
             "TownName":"Sparsholt",
             "CountrySubDivision":"\"Wessex\"",
-            "Country":"UK"
+            "Country":"UK",
+            "InstructionIdentification": "ACME412",
+            "EndToEndIdentification": "FRESCO.21302.GFX.20",
+            "LocalInstrument": "OB.Paym"
     ]
 
     public static String modifiedInitiationPaymentPayload = """
 		{
             "Data": {
-                "ReadRefundAccount": "Yes",
                 "Initiation": {
                     "InstructionIdentification": "ACME412",
                     "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                    "LocalInstrument": "OB.Paym",
                     "InstructedAmount": {
-                        "Amount": "170.25",
+                        "Amount": "180.88",
                         "Currency": "GBP"
                     },
                     "CreditorAccount": {
                         "SchemeName": "OB.SortCodeAccountNumber",
-                        "Identification": "080800213256912",
+                        "Identification": "08080021325698",
                         "Name": "ACME Inc",
                         "SecondaryIdentification": "0002"
                     },
-                    "RemittanceInformation": {
-                        "Reference": "FRESCO-101",
-                        "Unstructured": "Internal ops code 5120101"
+                    "DebtorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080025612489",
+                        "Name": "Jane Smith",
+                        "SecondaryIdentification": "080801562314789"
+                    },
+                    "SupplementaryData": {
+                        "additionalProp1": {}
                     }
                 }
             },
             "Risk": {
-                "PaymentContextCode": "EcommerceGoods",
-                "MerchantCustomerIdentification": "053598653254",
-                "DeliveryAddress": {
-                    "AddressLine": [
-                        "Flat 7",
-                        "Acacia Lodge"
-                    ],
-                    "StreetName": "Acacia Avenue",
-                    "BuildingNumber": "20",
-                    "PostCode": "GU31 2ZZ",
-                    "TownName": "Sparsholt",
-                    "CountrySubDivision": "Wessex",
-                    "Country": "UK"
-                }
             }
         }
 	""".stripIndent()
+
+    static String getModifiedSubmissionPaymentPayload(String consentID) {
+
+        return """{
+			"Data": {
+				"ConsentId": "${consentID}",
+				"Initiation": {
+                    "InstructionIdentification": "ACME412",
+                    "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                    "LocalInstrument": "OB.Paym",
+                    "InstructedAmount": {
+                        "Amount": "170.90",
+                        "Currency": "USD"
+                    },
+                    "CreditorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080021325698",
+                        "Name": "ACME Inc",
+                        "SecondaryIdentification": "0002"
+                    },
+                    "DebtorAccount": {
+                        "SchemeName": "OB.SortCodeAccountNumber",
+                        "Identification": "08080025612489",
+                        "Name": "Jane Smith",
+                        "SecondaryIdentification": "080801562314789"
+                    },
+                    "SupplementaryData": {
+                        "additionalProp1": {}
+                    }
+                }
+			},
+			"Risk": {
+			}
+		}
+		""".stripIndent()
+    }
 }

@@ -45,8 +45,12 @@ class CofSubmissionValidationTests extends FSAPIMConnectorTest{
         //COF Submission Request
         def submissionResponse = doDefaultSubmission()
         Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Consent is not in the correct state")
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "Consent Enforcement Error")
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
     }
 
     @Test
@@ -69,10 +73,13 @@ class CofSubmissionValidationTests extends FSAPIMConnectorTest{
                 .body(CofRequestPayloads.getCofSubmissionPayload(consentId))
                 .post(ConnectorTestConstants.CBPII_PATH + ConnectorTestConstants.COF_SUBMISSION_PATH)
 
-        Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(submissionResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "900912")
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Claim Mismatch")
-        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.DESCRIPTION),
-                "The claim configured in the system and the claim provided in the token do not align. Please ensure the claims match.")
     }
 }

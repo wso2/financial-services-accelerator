@@ -83,7 +83,6 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
         Response tokenResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .baseUri(configuration.getISServerUrl())
-                .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .body(generator.getAppAccessTokenJwt(ConnectorTestConstants.TLS_AUTH_METHOD, clientId))
                 .post(ConnectorTestConstants.TOKEN_ENDPOINT_URL)
 
@@ -444,6 +443,6 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
     @AfterClass
     void cleanup() {
         //Delete the application created for the test
-        deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
+//        deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
     }
 }
