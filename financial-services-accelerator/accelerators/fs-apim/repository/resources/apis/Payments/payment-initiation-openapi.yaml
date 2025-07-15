@@ -522,9 +522,7 @@ components:
             payments: "Generic payment scope"
           x-scopes-bindings:
             payments: "Internal/consumer"
-
   schemas:
-
     secondaryIdentification:
       description: "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination)."
       type: "string"
@@ -586,7 +584,6 @@ components:
         - description
       additionalProperties: false
       minProperties: 1
-
     obErrorResponse1:
       type: object
       properties:
@@ -595,7 +592,6 @@ components:
           items:
             $ref: '#/components/schemas/obError1'
           minItems: 1
-
     obWriteFundsConfirmationResponse1:
       type: "object"
       additionalProperties: false
@@ -654,7 +650,6 @@ components:
         - "OB.PAN"
         - "OB.Paym"
         - "OB.SortCodeAccountNumber"
-
     identification_0:
       description: "Identification assigned by an institution to identify an account. This identification is known by the account owner."
       type: "string"

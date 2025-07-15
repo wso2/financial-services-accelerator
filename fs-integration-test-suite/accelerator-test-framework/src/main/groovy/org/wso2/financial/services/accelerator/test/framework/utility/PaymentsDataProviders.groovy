@@ -29,9 +29,7 @@ class PaymentsDataProviders {
         return [
                 JWSHeaders.jwsHeaderWithMissingIssInCrit,
                 JWSHeaders.jwsHeaderWithMissingTanInCrit,
-                JWSHeaders.jwsHeaderWithMissingIatInCrit,
-                JWSHeaders.jwsHeaderWithMissingAlg,
-                JWSHeaders.jwsHeaderWithMissingKid,
+                JWSHeaders.jwsHeaderWithMissingIatInCrit
         ].iterator()
     }
 

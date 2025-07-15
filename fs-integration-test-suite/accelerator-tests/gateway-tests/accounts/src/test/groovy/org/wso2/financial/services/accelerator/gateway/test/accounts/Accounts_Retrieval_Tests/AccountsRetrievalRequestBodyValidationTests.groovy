@@ -88,8 +88,8 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
                 .get(resource)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-//        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//        Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Permission mismatch. Consent does not contain necessary permissions"))
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_FORBIDDEN)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
@@ -132,7 +132,6 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Consent Enforcement Error")
-
     }
 
     @Test
@@ -163,13 +162,12 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
                 .get(ConnectorTestConstants.ACCOUNTS_PATH)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//        Assert.assertTrue(errorMessage.contains("Consent is not in the correct state"))
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Consent is not in the correct state"))
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Consent Enforcement Error")
-
     }
 
     @Test (groups = ["3.1.5", "3.1.6", "3.1.7", "3.1.8", "3.1.9", "3.1.10", "3.1.11"])

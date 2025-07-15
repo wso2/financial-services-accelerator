@@ -66,8 +66,10 @@ class ResourcePathValidationTest extends FSAPIMConnectorTest {
 						.post("open-banking/v3.1/pisp/account-access-consents")
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_404)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 						"No matching resource found for given API Request")
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+				"Runtime Error")
 	}
 
 	@Test
@@ -81,7 +83,9 @@ class ResourcePathValidationTest extends FSAPIMConnectorTest {
 						.get(consentPath)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_405)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 						"Method not allowed for given API resource")
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+				"Runtime Error")
 	}
 }

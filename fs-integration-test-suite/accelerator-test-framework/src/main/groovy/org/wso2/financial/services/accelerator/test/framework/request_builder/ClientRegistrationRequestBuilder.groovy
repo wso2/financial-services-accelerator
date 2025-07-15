@@ -1557,4 +1557,40 @@ class ClientRegistrationRequestBuilder {
                 .baseUri(configurationService.getISServerUrl())
     }
 
+    /**
+     * Build IS as Key Manager Registration Request.
+     * @return dcr request
+     */
+    static RequestSpecification buildIsAsKeyManagerRegistrationRequest() {
+
+        def authToken = "${configurationService.getUserIsAsKeyManagerAdminName()}:" +
+                "${configurationService.getUserIsAsKeyManagerAdminPWD()}"
+
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        return FSRestAsRequestBuilder.buildBasicRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
+    }
+
+    /**
+     * Get DCR Claims for APIM Internal Application.
+     * @param keyManagerUserName
+     * @return
+     */
+    static String getApimDcrClaims(String keyManagerUserName, String clientName) {
+
+        return """
+             {
+                "callbackUrl":"www.google.lk",
+                "clientName":"$clientName",
+                "owner":"$keyManagerUserName",
+                "grantType":"client_credentials password refresh_token",
+                "saasApp":true
+        }
+         """
+    }
+
+
+
 }

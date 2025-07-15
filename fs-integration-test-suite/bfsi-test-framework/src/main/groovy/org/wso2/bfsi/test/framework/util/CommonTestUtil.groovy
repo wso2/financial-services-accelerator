@@ -24,6 +24,7 @@ import com.nimbusds.jose.JWSHeader
 import io.restassured.http.Header
 import io.restassured.response.Response
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.math3.stat.inference.TestUtils
 import org.apache.http.NameValuePair
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.conn.ssl.SSLSocketFactory
@@ -53,6 +54,7 @@ import javax.xml.transform.stream.StreamResult
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.security.Key
+import java.security.KeyFactory
 import java.security.KeyStoreException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -60,6 +62,7 @@ import java.security.PrivateKey
 import java.security.Signature
 import java.security.UnrecoverableEntryException
 import java.security.interfaces.RSAPrivateKey
+import java.security.spec.PKCS8EncodedKeySpec
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -379,8 +382,8 @@ class CommonTestUtil {
      * @return x-jws-signature
      */
     static String generateXjwsSignature(String header, String requestBody) {
-        return generateXjwsSignatureWithKey(header, requestBody
-                , obConfiguration.getAppKeyStorePWD(), obConfiguration.getAppKeyStoreAlias())
+        return generateXjwsSignatureWithKey(header, requestBody, obConfiguration.getAppKeyStorePWD(),
+                obConfiguration.getAppKeyStoreAlias())
     }
 
     /**
@@ -433,14 +436,14 @@ class CommonTestUtil {
     static void writeXMLContent(String xmlFile, String parentNode, String childNode,
                                 String value, Integer tppNumber) throws TestFrameworkException {
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance()
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder()
-            Document document = documentBuilder.parse(xmlFile);
-            NodeList parentnode = document.getElementsByTagName(parentNode);
-            Element nodeElement = (Element) parentnode.item(tppNumber);
+            Document document = documentBuilder.parse(xmlFile)
+            NodeList parentnode = document.getElementsByTagName(parentNode)
+            Element nodeElement = (Element) parentnode.item(tppNumber)
             // Update value of status tag
-            Element statusTag = (Element) nodeElement.getElementsByTagName(childNode).item(0);
-            statusTag.setTextContent(String.valueOf(value));
+            Element statusTag = (Element) nodeElement.getElementsByTagName(childNode).item(0)
+            statusTag.setTextContent(String.valueOf(value))
 
             saveXMLContent(document, xmlFile);
 
