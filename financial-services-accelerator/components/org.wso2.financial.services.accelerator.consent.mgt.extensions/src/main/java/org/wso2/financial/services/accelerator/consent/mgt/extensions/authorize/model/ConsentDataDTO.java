@@ -45,6 +45,7 @@ public class ConsentDataDTO {
     private List<AccountDTO> initiatedAccountsForConsent;
     private Boolean allowMultipleAccounts;
     private Boolean isReauthorization;
+    private Map<String, Object> consentMetadata;
     private final Map<String, Object> additionalProperties = new HashMap<>();
 
     public String getType() {
@@ -95,6 +96,14 @@ public class ConsentDataDTO {
 
     public void setIsReauthorization(Boolean reauthorization) {
         isReauthorization = reauthorization;
+    }
+
+    public Map<String, Object> getConsentMetadata() {
+        return consentMetadata;
+    }
+
+    public void setConsentMetadata(Map<String, Object> consentMetadata) {
+        this.consentMetadata = consentMetadata;
     }
 
     @JsonAnyGetter

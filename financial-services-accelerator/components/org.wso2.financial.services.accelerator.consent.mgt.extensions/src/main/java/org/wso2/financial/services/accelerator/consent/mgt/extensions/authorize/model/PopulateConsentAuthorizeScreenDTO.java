@@ -17,8 +17,6 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import java.util.Map;
-
 import javax.validation.Valid;
 
 /**
@@ -31,8 +29,6 @@ public class PopulateConsentAuthorizeScreenDTO {
 
     @Valid
     private ConsumerDataDTO consumerData;
-
-    private Map<String, Object> metadata;
 
     public ConsentDataDTO getConsentData() {
         return consentData;
@@ -50,13 +46,5 @@ public class PopulateConsentAuthorizeScreenDTO {
     public void setConsumerData(
             ConsumerDataDTO consumerData) {
         this.consumerData = consumerData;
-    }
-
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
     }
 }

@@ -829,8 +829,8 @@ public class ConsentAuthorizeUtil {
             PopulateConsentAuthorizeScreenDTO responseDTO = (PopulateConsentAuthorizeScreenDTO)
                     metaDataMap.get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
 
-            if (responseDTO.getMetadata() != null) {
-                metaDataMap.putAll(responseDTO.getMetadata());
+            if (responseDTO.getConsentData().getConsentMetadata() != null) {
+                metaDataMap.putAll(responseDTO.getConsentData().getConsentMetadata());
             }
         }
 

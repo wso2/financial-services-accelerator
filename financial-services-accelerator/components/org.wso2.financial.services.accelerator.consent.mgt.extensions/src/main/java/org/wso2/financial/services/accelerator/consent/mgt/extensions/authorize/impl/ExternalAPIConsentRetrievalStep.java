@@ -119,8 +119,13 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             // Filter out consent and consumer data
             // Append consumer data to json object to be displayed in consent page
             if (responseDTO.getConsentData() != null) {
-                jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA,
-                        new JSONObject(objectMapper.writeValueAsString(responseDTO.getConsentData())));
+                JSONObject consentDataJSON =
+                        new JSONObject(objectMapper.writeValueAsString(responseDTO.getConsentData()));
+
+                // Remove consent metadata
+                consentDataJSON.remove(ConsentAuthorizeConstants.CONSENT_METADATA);
+
+                jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA, consentDataJSON);
             }
 
             // Append consumer data, if exists, to json object
