@@ -168,6 +168,7 @@ public class ConsentExtensionConstants {
     public static final String MAPPING_STATUS = "mappingStatus";
     public static final String MAPPING_RESOURCES = "consentMappingResources";
     public static final String REQUEST_PARAMETERS = "requestParameters";
+    public static final String INTERACTION_ID_HEADER = "x-fapi-interaction-id";
 
     //Consent Authorize Constants
     public static final String IS_ERROR = "isError";

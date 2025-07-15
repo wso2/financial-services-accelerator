@@ -18,12 +18,14 @@
 
 package org.wso2.financial.services.accelerator.gateway.test.accounts.EndToEndFlowTest
 
+import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
@@ -122,4 +124,22 @@ class EndToEndAccountFlowTest extends FSAPIMConnectorTest {
 
         Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }
+
+    //TODO:Delete
+//    @Test
+//    void "Verify Account Initiation Request With All Permissions"() {
+//
+//        Response revokeResponse = TokenRequestBuilder.doTokenRevocation(applicationAccessToken.toString(), clientId,
+//                "access_token", ConnectorTestConstants.PKJWT_AUTH_METHOD)
+//        Assert.assertEquals(revokeResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+//
+//        //Introspect the access token to verify it is revoked
+//        Response introspectResponse = getTokenIntrospectionResponse(applicationAccessToken)
+//        Assert.assertEquals(introspectResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+//        Assert.assertEquals(TestUtil.parseResponseBody(introspectResponse, "active"), "false")
+//
+//        doDefaultAccountInitiation()
+//        Assert.assertNotNull(consentId)
+//        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+//    }
 }

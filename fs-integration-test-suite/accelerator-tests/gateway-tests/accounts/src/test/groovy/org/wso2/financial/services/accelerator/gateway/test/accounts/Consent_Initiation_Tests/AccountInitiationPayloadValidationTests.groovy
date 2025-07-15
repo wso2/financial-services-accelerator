@@ -52,11 +52,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         consentResponse = doDefaultInitiationWithUpdatedPayload(RequestPayloads.initiationPayloadWithoutPermissions)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.BAD_REQUEST.toString())
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: [Path '/Data'] Object has missing required " +
                         "properties ([\"Permissions\"]), "))
     }
@@ -69,11 +69,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultAccountInitiation()
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("not found in enum (possible values: [\"ReadAccountsBasic\",\"ReadAccountsDetail\"," +
                         "\"ReadBalances\",\"ReadTransactionsDetail\"]), "))
     }
@@ -98,11 +98,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         consentResponse = doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithInvalidExpirationDate)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, " +
                         "yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z]"))
     }
@@ -121,47 +121,19 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 .contains("ExpirationDateTime should be a future date"))
     }
 
-//    @Test
-//    void "Accounts Initiation Without Specifying Transaction To Date Time"() {
-//
-//        consentResponse = doDefaultAccountInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithoutTransactionToDate)
-//
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
-//                ConnectorTestConstants.ERROR_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
-//                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-//        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//                .contains("Schema validation failed in the Request:"))
-//    }
-//
     @Test
     void "Accounts Initiation With Invalid Transaction To Date Time Format"() {
 
         consentResponse = doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithInvalidTransactionToDate)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z], "))
     }
-
-//    @Test
-//    void "Accounts Initiation Without Specifying Transaction From Date Time"() {
-//
-//        consentResponse = doDefaultAccountInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithoutTransactionFromDate)
-//
-//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
-//                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
-//                ConnectorTestConstants.CONSENT_MGT_ERROR)
-//        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-//                .contains("TransactionFromDateTime is invalid"))
-//    }
 
     @Test
     void "Accounts Initiation With Invalid Transaction From Date Time Format"() {
@@ -169,11 +141,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         consentResponse = doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithInvalidTransactionFromDate)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z], "))
     }
 
@@ -201,11 +173,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         consentResponse = doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadEmptyPayload)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: A request body is required but none found., "))
     }
 
@@ -219,11 +191,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         consentResponse = doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadEmptyJsonPayload)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: Object has missing required properties ([\"Data\",\"Risk\"]), "))
     }
 
@@ -237,11 +209,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         consentResponse = doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithEmptyString)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: Instance type (string) does not match any allowed " +
                         "primitive type (allowed: [\"object\"]), "))
     }
@@ -260,11 +232,11 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         doDefaultInitiationWithUpdatedPayload(AccountsRequestPayloads.initiationPayloadWithoutArrayFormat)
 
         Assert.assertEquals(consentResponse.statusCode(),ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.STATUS_CODE_400.toString())
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: [Path '/Data/Permissions'] Instance type (string) " +
                         "does not match any allowed primitive type (allowed: [\"array\"]), "))
     }
