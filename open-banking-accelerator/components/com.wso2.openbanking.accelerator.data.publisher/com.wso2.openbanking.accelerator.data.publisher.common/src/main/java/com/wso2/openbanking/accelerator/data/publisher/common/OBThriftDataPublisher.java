@@ -34,6 +34,7 @@ import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.databridge.commons.exception.TransportException;
 import org.wso2.carbon.databridge.commons.utils.DataBridgeCommonsUtils;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,7 @@ public class OBThriftDataPublisher implements OpenBankingDataPublisher {
         event.setMetaData(null);
         event.setCorrelationData(null);
         event.setPayloadData(payload);
+        event.setTimeStamp(Instant.now().toEpochMilli());
 
         try {
             // Try to publish event with timeout
