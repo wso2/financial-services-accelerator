@@ -2222,8 +2222,12 @@ components:
             isReauthorization:
               type: boolean
               description: Indicates if this is a reauthorization flow (optional)
+            consentMetadata:
+              type: object
+              description: Hidden consent metadata to be forwarded to consent persistence.
         consumerData:
           type: object
+          additionalProperties: true
           description: Consumer related data fetched from the banking backend.
           properties:
             accounts:
@@ -2271,6 +2275,9 @@ components:
                 description: Accounts selected for the permissions
                 items:
                   $ref: '#/components/schemas/Account'
+        metadata:
+          type: object
+          description: Consent authorization related metadata.
     Account:
       type: object
       description: A user account or resource representation
