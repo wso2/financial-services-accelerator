@@ -29,14 +29,7 @@ import org.wso2.carbon.apimgt.api.ExceptionCodes;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
-import org.wso2.carbon.identity.base.IdentityRuntimeException;
-import org.wso2.carbon.user.api.TenantManager;
-import org.wso2.carbon.user.api.UserRealm;
-import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.UserCoreConstants;
-import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -52,7 +45,6 @@ import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplica
 import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplicationCreationResponseDTO;
 import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplicationUpdateRequestDTO;
 import org.wso2.financial.services.accelerator.keymanager.dto.ExternalAPIApplicationUpdateResponseDTO;
-import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.security.cert.X509Certificate;
@@ -138,82 +130,6 @@ public class FSKeyManagerUtil {
 
         return org.wso2.carbon.identity.application.mgt.ApplicationConstants.APPLICATION_DOMAIN +
                 UserCoreConstants.DOMAIN_SEPARATOR + applicationName;
-    }
-
-    /**
-     * Add the application role to the admin so that admin can manipulate app data.
-     * @param applicationName Application Name
-     * @throws APIManagementException
-     */
-    @Generated(message = "excluding from coverage because it is a void method with external calls")
-    public static void addApplicationRoleToAdmin(String applicationName) throws APIManagementException {
-
-        APIManagerConfiguration config = KeyManagerDataHolder.getInstance().getApiManagerConfigurationService()
-                .getAPIManagerConfiguration();
-        String adminUsername = config.getFirstProperty(APIConstants.API_KEY_VALIDATOR_USERNAME);
-        String roleName = getAppRoleName(applicationName);
-        String[] newRoles = {roleName};
-
-        try {
-            // assign new application role to the user.
-            UserRealm realm = getUserRealm(adminUsername);
-            if (realm != null) {
-                if (((AbstractUserStoreManager) realm.getUserStoreManager()).isUserInRole(adminUsername, roleName)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("The user: %s is already having the role: %s",
-                                adminUsername.replaceAll("[\r\n]", ""), roleName.replaceAll("[\r\n]", "")));
-                    }
-                } else {
-                    realm.getUserStoreManager().updateRoleListOfUser(adminUsername, null, newRoles);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Assigning application role : %s to the user : %s",
-                                roleName.replaceAll("[\r\n]", ""), adminUsername.replaceAll("[\r\n]", "")));
-                    }
-                }
-            }
-        } catch (UserStoreException e) {
-            String errorMessage = String.format("Error while assigning application role: %s to the user: %s",
-                    roleName.replaceAll("[\r\n]", ""), adminUsername.replaceAll("[\r\n]", ""));
-            throw new APIManagementException(errorMessage, e);
-        }
-    }
-
-    @Generated(message = "separated for unit testing purposes")
-    protected static UserRealm getUserRealm(String username) throws APIManagementException {
-
-        try {
-            int tenantId = getTenantIdOfUser(username);
-            return KeyManagerDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
-        } catch (UserStoreException e) {
-            throw new APIManagementException("Error while obtaining user realm for user: " + username, e);
-        }
-    }
-
-    /**
-     * Get the tenant id of the user.
-     * @param username
-     * @return
-     * @throws IdentityRuntimeException
-     */
-    @Generated(message = "Excluding since it involves an external call")
-    public static int getTenantIdOfUser(String username) throws IdentityRuntimeException {
-        int tenantId = -1;
-        String domainName = MultitenantUtils.getTenantDomain(username);
-        if (domainName != null) {
-            try {
-                TenantManager tenantManager = KeyManagerDataHolder.getInstance().getRealmService().getTenantManager();
-                tenantId = tenantManager.getTenantId(domainName);
-            } catch (UserStoreException e) {
-                String errorMsg = "Error when getting the tenant id from the tenant domain : " + domainName;
-                throw IdentityRuntimeException.error(errorMsg, e);
-            }
-        }
-
-        if (tenantId == -1) {
-            throw IdentityRuntimeException.error("Invalid tenant domain of user " + username);
-        } else {
-            return tenantId;
-        }
     }
 
     /**

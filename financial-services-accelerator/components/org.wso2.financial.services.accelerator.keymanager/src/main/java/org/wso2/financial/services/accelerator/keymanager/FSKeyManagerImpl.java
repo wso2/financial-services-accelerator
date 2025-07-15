@@ -210,8 +210,6 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
         OAuthApplicationInfo oAuthApplicationInfo = super.createApplication(oauthAppRequest);
         // Need to get the application name after creating the application to obtain the generated app name
         String appName = oAuthApplicationInfo.getClientName();
-        // Admin needs to have application role to retrieve and edit the app
-//        FSKeyManagerUtil.addApplicationRoleToAdmin(appName);
 
         try {
             JSONObject serviceProviderAppData = IdentityServerUtils.getSPApplicationFromClientId(
