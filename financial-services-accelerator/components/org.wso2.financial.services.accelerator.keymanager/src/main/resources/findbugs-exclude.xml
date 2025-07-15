@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
  ~
@@ -16,7 +17,5 @@
  ~ under the License.
  -->
 
-<sequence name="jsonConverter" xmlns="http://ws.apache.org/ns/synapse">
-    <property name="messageType" value="application/json" scope="axis2"/>
-    <property name="error_message_type" value="application/json"/>
-</sequence>
+<FindBugsFilter>
+</FindBugsFilter>

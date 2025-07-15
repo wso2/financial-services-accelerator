@@ -4,7 +4,7 @@ info:
   description: "Swagger for Confirmation of Funds API Specification"
   version: "v3.1"
 servers:
-- url: "/open-banking/{version}/cbpii"
+  - url: "/open-banking/{version}/cbpii"
 paths:
   /funds-confirmation-consents:
     post:
