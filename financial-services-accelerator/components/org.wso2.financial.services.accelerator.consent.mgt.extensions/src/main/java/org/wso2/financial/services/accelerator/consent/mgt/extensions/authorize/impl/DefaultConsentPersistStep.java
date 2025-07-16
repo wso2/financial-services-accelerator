@@ -101,10 +101,6 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             log.error(e.getMessage().replaceAll("\n\r", ""), e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while persisting consent");
-        } catch (IllegalStateException e) {
-            log.error(e.getMessage().replaceAll("\n\r", ""), e);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                    e.getMessage().replaceAll("\n\r", ""));
         }
     }
 
@@ -227,7 +223,9 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
                     // allowMultipleAccounts validation
                     if (foundOneAccount && !allowMultipleAccounts) {
-                        throw new IllegalStateException("Found multiple account selections when only one is allowed");
+                        log.error("Found multiple account selections when only one is allowed");
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                                "Found multiple account selections when only one is allowed");
                     }
 
                     foundOneAccount = true;
