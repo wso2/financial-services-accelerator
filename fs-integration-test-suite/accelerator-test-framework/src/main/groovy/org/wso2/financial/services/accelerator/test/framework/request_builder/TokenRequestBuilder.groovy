@@ -394,7 +394,7 @@ class TokenRequestBuilder {
         if(authMethodType == ConnectorTestConstants.TLS_AUTH_METHOD){
             response = FSRestAsRequestBuilder.buildRequest()
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                    .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
+//                    .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .body(payload)
                     .baseUri(configuration.getISServerUrl())
                     .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
@@ -415,13 +415,29 @@ class TokenRequestBuilder {
                     .addClientID(clientId).addCustomValue("token", accessToken)
                     .addCustomValue("token_type_hint", tokenType).getPayload()
 
-            response = FSRestAsRequestBuilder.buildBasicRequest()
+            response = FSRestAsRequestBuilder.buildRequest()
+//                    .header(ConnectorTestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                     .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .body(accessTokenJWT)
                     .baseUri(configuration.getISServerUrl())
                     .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
             return response
         }
+
+//        def authToken = "${configuration.getAppInfoClientID()}:${configuration.getAppInfoClientSecret()}"
+//        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+//
+//        String accessTokenJWT = new PayloadGenerator()
+//                .addCustomValue("token", accessToken)
+//                .addCustomValue("token_type_hint", tokenType).getPayload()
+//
+//        response = FSRestAsRequestBuilder.buildBasicRequest()
+//                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+//                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
+//                .formParam("token", accessToken)
+//                .formParam("token_type_hint", tokenType)
+//                .baseUri(configuration.getISServerUrl())
+//                .post(ConnectorTestConstants.OAUTH2_REVOKE_ENDPOINT)
 
         return response
     }
@@ -553,6 +569,34 @@ class TokenRequestBuilder {
                     .body("grant_type=client_credentials")
                     .baseUri(configuration.getISServerUrl())
                     .post(ConnectorTestConstants.TOKEN_ENDPOINT)
+
+        return response
+    }
+
+    /**
+     * Method to get access token in APIM for Key Manager Admin user.
+     * @param clientId
+     * @param clientSecret
+     * @param scope
+     * @return
+     */
+    static Response getAccessTokenInApim(String clientId, String clientSecret, List<String> scope){
+
+        def authToken = "${clientId}:${clientSecret}"
+        def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
+
+        String accessTokenBody = new PayloadGenerator().addGrantType("password")
+                .addScopes(scope)
+                .addUserName(configuration.getUserIsAsKeyManagerAdminName())
+                .addPassword(configuration.getUserIsAsKeyManagerAdminPWD()).getPayload()
+
+
+        Response response = FSRestAsRequestBuilder.buildBasicRequest()
+                .contentType(ConnectorTestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${basicHeader}")
+                .body(accessTokenBody)
+                .baseUri(configuration.getApimServerUrl())
+                .post(ConnectorTestConstants.TOKEN_ENDPOINT)
 
         return response
     }

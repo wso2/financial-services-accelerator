@@ -534,4 +534,21 @@ class AuthorisationBuilder {
                 .customParameter("nonce", ConnectorTestConstants.NONCE_PARAMETER)
                 .build()
     }
+
+    AuthorizationRequest getOAuthRequestWithDefinedPemCert(String clientId, List<ConnectorTestConstants.ApiScope> scopes,
+                                                        String appKeystoreLocation, String consentId) {
+
+        JWTGenerator generator = new JWTGenerator()
+        return new AuthorizationRequest.Builder(new ResponseType(params.get(ConnectorTestConstants.RESPONSE_TYPE_PARAMETER)),
+                new ClientID(clientId))
+                .responseType(new ResponseType(params.get(ConnectorTestConstants.RESPONSE_TYPE_PARAMETER)))
+                .endpointURI(new URI(params.get(ConnectorTestConstants.ENDPOINT_PARAMETER)))
+                .redirectionURI(new URI(params.get(ConnectorTestConstants.REDIRECT_URI_PARAMETER)))
+                .requestObject(generator.getSignedRequestObjectWithDefinedPemCert(getScopeString(scopes),
+                        consentId, appKeystoreLocation))
+                .scope(new Scope(params.get(ConnectorTestConstants.SCOPE_PARAMETER)))
+                .state(new State(params.get(ConnectorTestConstants.STATE_PARAMETER)))
+                .customParameter("nonce", params.get(ConnectorTestConstants.NONCE_PARAMETER))
+                .build()
+    }
 }

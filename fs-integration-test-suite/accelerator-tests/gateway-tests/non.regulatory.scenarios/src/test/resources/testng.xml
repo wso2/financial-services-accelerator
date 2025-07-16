@@ -17,7 +17,7 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Open Banking - Gateway Account Flow Test">
+<suite name="WSO2 Open Banking - Gateway Account Flow Test" parallel="none" preserve-order="true">
     <test name="Non Regulatory Scenario Tests" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.gateway.non.regulatory.scenarios.NonRegulatoryApiAndNonRegulatoryApplication" />

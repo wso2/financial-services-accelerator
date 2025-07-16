@@ -36,12 +36,13 @@ import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 class NonRegulatoryApiAndNonRegulatoryApplication extends FSAPIMConnectorTest {
 
     def orderId
+    String clientSecret
 
     @BeforeClass
     void init() {
 
         clientId = configuration.getNonRegulatoryAppClientID()
-        String clientSecret = configuration.getNonRegulatoryAppClientSecret()
+        clientSecret = configuration.getNonRegulatoryAppClientSecret()
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.OPENID)
 
         //Get application access token
@@ -50,6 +51,8 @@ class NonRegulatoryApiAndNonRegulatoryApplication extends FSAPIMConnectorTest {
 
     @Test
     void "Invoke Get endpoint in Non-Regulatory API"() {
+
+        applicationAccessToken = getApplicationAccessTokenForNonRegulatoryApp(clientId, clientSecret, scopeList)
 
         def response = FSRestAsRequestBuilder.buildBasicRequest()
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
@@ -121,14 +124,13 @@ class NonRegulatoryApiAndNonRegulatoryApplication extends FSAPIMConnectorTest {
         initiationPayload = AccountsRequestPayloads.initiationPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.OPENID)
 
-        applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
-                configuration.getNonRegulatoryAppClientID(), scopeList)
+        applicationAccessToken = getApplicationAccessTokenForNonRegulatoryApp(clientId, clientSecret, scopeList)
 
         doDefaultAccountInitiation()
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "The access token does not allow you to access the requested resource")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "User is NOT authorized to access the Resource: /account-access-consents. Scope validation failed.")
     }
 }

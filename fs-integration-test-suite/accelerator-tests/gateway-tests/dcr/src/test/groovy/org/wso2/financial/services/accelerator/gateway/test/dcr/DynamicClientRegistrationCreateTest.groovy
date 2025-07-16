@@ -45,7 +45,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
     void setup() {
 
         registrationPath = configuration.getServerBaseURL() + DCRConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(1)
+        configuration.setTppNumber(0)
         SSA = new File(configuration.getAppDCRSSAPath()).text
     }
 
@@ -117,7 +117,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Token endpoint authentication method is not allowed"))
+                .contains("Invalid token endpoint authentication method requested."))
     }
 
     @Test
@@ -135,7 +135,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Token endpoint authentication method is not allowed."))
+                .contains("Invalid token endpoint authentication method requested."))
     }
 
     @Test
@@ -301,7 +301,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Signing Algorithm is not allowed"))
+                .contains("Invalid signature algorithm requested"))
     }
 
     @Test
@@ -321,7 +321,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Signing Algorithm is not allowed"))
+                .contains("Invalid signature algorithm requested"))
     }
 
     @Test
@@ -415,7 +415,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Signing Algorithm is not allowed"))
+                .contains("Invalid signature algorithm requested"))
     }
 
     @Test
@@ -435,7 +435,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Signing Algorithm is not allowed"))
+                .contains("Invalid signature algorithm requested"))
     }
 
     @Test
@@ -490,7 +490,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Signing Algorithm is not allowed"))
+                .contains("Invalid signature algorithm requested"))
     }
 
     @Test
@@ -510,7 +510,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
                 "invalid_client_metadata")
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION)
-                .contains("Signing Algorithm is not allowed"))
+                .contains("Invalid signature algorithm requested"))
     }
 
 //    @Test

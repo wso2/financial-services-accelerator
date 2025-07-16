@@ -44,7 +44,7 @@ class ConsentDataProviders {
         cofParameterMap.put("consentType", ConnectorTestConstants.COF_TYPE)
         cofParameterMap.put("submissionPath", ConnectorTestConstants.COF_SUBMISSION_PATH)
 
-        paymentsParameterMap.put("initiationPayload", RequestPayloads.initiationPaymentPayload)
+        paymentsParameterMap.put("initiationPayload", PaymentRequestPayloads.initiationPaymentPayload)
         paymentsParameterMap.put("initiationPath", ConnectorTestConstants.PAYMENT_CONSENT_PATH)
         paymentsParameterMap.put("consentType", ConnectorTestConstants.PAYMENTS_TYPE)
         paymentsParameterMap.put("submissionPath", ConnectorTestConstants.PAYMENT_SUBMISSION_PATH)
