@@ -16,59 +16,47 @@
  * under the License.
  */
 
-
-// Update the selected account list according to the selected checkbox values.
-function updateAcc() {
-    var accIds = "";
-    var accNames = "";
-    //Get values from checked checkboxes
-    $("input:checkbox[name=chkAccounts]:checked").each(function(){
-        accIds =  accIds.concat(":", $(this).val());
-        accNames =  accNames.concat(":", $(this).attr("id"));
-    });
-    accIds = accIds.replace(/^\:/, '');
-    accNames = accNames.replace(/^\:/, '');
-    document.getElementById('account').value = accIds;
-    document.getElementById('accountName').value = accNames;
-}
-
-function deny() {
+function denyConsent() {
+    updateAccountNamesFromPermissions();
     document.getElementById('consent').value = false;
     document.getElementById("oauth2_authz_confirm").submit();
 }
 
 // Confirm sharing data
 function approvedConsent() {
+    updateAccountNamesFromPermissions();
     document.getElementById('consent').value = true;
-    validateFrm();
+    document.getElementById("oauth2_authz_confirm").submit();
 }
 
-// Submit data sharing from
-function validateFrm() {
-    if (document.getElementById('type').value === "accounts") {
-        document.getElementById("oauth2_authz_confirm").submit();
-    }
+// Set permission uids as names for account inputs before submission
+function updateAccountNamesFromPermissions() {
+    const hiddenPermissions = document.querySelectorAll('input[type="hidden"][name^="permission-"]');
 
-    if (document.getElementById('type').value === "payments") {
-        if (document.getElementById('selectedAccount').value === "" ||
-            document.getElementById('selectedAccount').value === "default") {
-            $(".acc-err").show();
-            return false;
-        } else {
-            document.getElementById('paymentAccount').value =
-                document.getElementById('selectedAccount').value;
-            document.getElementById("oauth2_authz_confirm").submit();
-        }
-    }
+    hiddenPermissions.forEach(permissionInput => {
+        const nameParts = permissionInput.name.split('-');
+        const index = nameParts[1];
+        const newName = permissionInput.value;
 
-    if (document.getElementById('type').value === "fundsconfirmations") {
-        document.getElementById("oauth2_authz_confirm").submit();
-    }
+        // Find corresponding account elements
+        const accountElements = document.querySelectorAll(`[name="accounts-${index}"]`);
+        accountElements.forEach(accountChoice => {
+            accountChoice.setAttribute('name', newName);
+        });
 
-    if (document.getElementById('type').value === "default") {
-            document.getElementById("oauth2_authz_confirm").submit();
-    }
+        // Remove the permission input
+        permissionInput.remove();
+    });
 
+    // Handle unindexed "accounts"
+    const standalonePermission = document.querySelector('input[type="hidden"][name="permission"]');
+    const standaloneAccounts = document.querySelectorAll('[name="accounts"]');
+    if (standalonePermission && standaloneAccount.length > 0) {
+        standaloneAccounts.forEach(standaloneAccount => {
+            standaloneAccount.setAttribute('name', standalonePermission.value);
+        });
+        standalonePermission.remove();
+    }
 }
 
 function approvedDefaultClaim() {
