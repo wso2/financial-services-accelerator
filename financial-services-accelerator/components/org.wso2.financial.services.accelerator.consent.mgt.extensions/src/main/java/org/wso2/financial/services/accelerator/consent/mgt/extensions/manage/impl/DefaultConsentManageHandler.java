@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
@@ -62,8 +61,6 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Consent manage handler default implementation.
@@ -71,7 +68,6 @@ import java.util.regex.Pattern;
 public class DefaultConsentManageHandler implements ConsentManageHandler {
 
     private static final Log log = LogFactory.getLog(DefaultConsentManageHandler.class);
-    Pattern uuidPattern = Pattern.compile(FinancialServicesConstants.UUID_REGEX);
     ConsentCoreService consentCoreService;
     boolean isExtensionsEnabled;
     boolean isExternalPreConsentRetrievalEnabled;
@@ -134,25 +130,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
-        if (consentManageData.getRequestPath() == null) {
-            log.error("Resource Path Not Found");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
-        }
-
-        // Retrieve first UUID in request path as consent id
-        String consentId = null;
         String resourcePath = consentManageData.getRequestPath();
-        Matcher uuidMatcher = uuidPattern.matcher(resourcePath);
-        if (uuidMatcher.find()) {
-            consentId = uuidMatcher.group();
-        }
-
-        if (consentId == null) {
-            log.error("Invalid Request Path. Valid consent id not found.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid Request Path. Valid consent id not found.",
+        if (resourcePath == null) {
+            log.error("Resource path not found in the request");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_RETRIEVE);
 
         try {
             ConsentResource consent = consentCoreService.getConsent(consentId, false);
@@ -352,19 +337,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
                     ConsentOperationEnum.CONSENT_DELETE);
         }
-
-        // Retrieve first UUID in request path as consent id
-        String consentId = null;
-        Matcher uuidMatcher = uuidPattern.matcher(resourcePath);
-        if (uuidMatcher.find()) {
-            consentId = uuidMatcher.group();
-        }
-
-        if (consentId == null) {
-            log.error("Invalid Request Path. Valid consent id not found.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid Request Path. Valid consent id not found.",
-                    ConsentOperationEnum.CONSENT_DELETE);
-        }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_DELETE);
 
         try {
             boolean consentRevocationSuccess;
@@ -466,24 +440,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
 
-        // Retrieve first UUID in request path as consent id
-        String consentId = null;
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource path not found in the request");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
-        } else {
-            Matcher uuidMatcher = uuidPattern.matcher(resourcePath);
-            if (uuidMatcher.find()) {
-                consentId = uuidMatcher.group();
-            }
         }
-        if (consentId == null) {
-            log.error("Invalid Request Path. Valid consent id not found.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid Request Path. Valid consent id not found.",
-                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
-        }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_DELETE);
 
         //Perform idempotency validation
         if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
@@ -582,24 +546,14 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
 
-        // Retrieve first UUID in request path as consent id
-        String consentId = null;
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource path not found in the request");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
-                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
-        } else {
-            Matcher uuidMatcher = uuidPattern.matcher(resourcePath);
-            if (uuidMatcher.find()) {
-                consentId = uuidMatcher.group();
-            }
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
-        if (consentId == null) {
-            log.error("Invalid Request Path. Valid consent id not found.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid Request Path. Valid consent id not found.",
-                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
-        }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
 
         try {
             ConsentResource consent = consentCoreService.getConsent(consentId, false);
