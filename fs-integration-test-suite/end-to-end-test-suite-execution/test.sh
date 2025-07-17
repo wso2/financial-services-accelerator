@@ -138,6 +138,8 @@ if [ $(get_prop "InstallGeckodriver") == true ]; then
     chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 fi
 
+sleep 45m
+
 #--------------Build the test framework-----------------#
 cd ${TEST_FRAMEWORK_HOME}
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
