@@ -82,7 +82,7 @@ public class ConsentAuthorizeUtil {
      * @return consentId
      * @throws ConsentException Consent Exception
      */
-    public static String extractConsentId(String requestObject) throws ConsentException {
+    public static String extractConsentIdFromRequestObject(String requestObject) throws ConsentException {
 
         String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
 
@@ -105,7 +105,7 @@ public class ConsentAuthorizeUtil {
         }
 
         if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
-            return getConsentIdFromRequestParam(ConsentAuthorizeUtil.getRequestObjectJson(requestObject));
+            return extractConsentIdFromRequestParam(ConsentAuthorizeUtil.getRequestObjectJson(requestObject));
         }
 
         return null;
@@ -117,7 +117,7 @@ public class ConsentAuthorizeUtil {
      * @param requestParameters Request parameters
      * @return consentId
      */
-    public static String getConsentIdFromRequestParam(JSONObject requestParameters) {
+    public static String extractConsentIdFromRequestParam(JSONObject requestParameters) {
 
         String key = configParser.getConsentIdExtractionKey();
 
@@ -169,6 +169,33 @@ public class ConsentAuthorizeUtil {
             requestObjectJson = new JSONObject();
         }
         return requestObjectJson;
+    }
+
+    /**
+     * Method to build query params into a json object.
+     *
+     * @param queryParams String of query parameters from request
+     * @return a json object of query parameters
+     */
+    public static JSONObject getQueryParamJson(String queryParams) {
+        JSONObject json = new JSONObject();
+
+        if (queryParams == null || queryParams.trim().isEmpty()) {
+            return json;
+        }
+
+        String[] pairs = queryParams.split("&");
+
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=", 2);
+            if (keyValue.length == 2) {
+                json.put(keyValue[0], keyValue[1]);
+            } else if (keyValue.length == 1) {
+                json.put(keyValue[0], "");
+            }
+        }
+
+        return json;
     }
 
     /**

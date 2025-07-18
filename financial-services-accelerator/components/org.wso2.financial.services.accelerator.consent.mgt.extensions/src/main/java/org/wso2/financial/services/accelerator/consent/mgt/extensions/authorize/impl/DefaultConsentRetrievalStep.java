@@ -67,7 +67,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         try {
             if (isPreInitiatedConsent) {
 
-                String consentId = ConsentAuthorizeUtil.extractConsentId(requestObject);
+                String consentId = ConsentAuthorizeUtil.extractConsentIdFromRequestObject(requestObject);
                 if (consentId == null) {
                     log.error("intent_id not found in request object");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "intent_id not found in request object");
