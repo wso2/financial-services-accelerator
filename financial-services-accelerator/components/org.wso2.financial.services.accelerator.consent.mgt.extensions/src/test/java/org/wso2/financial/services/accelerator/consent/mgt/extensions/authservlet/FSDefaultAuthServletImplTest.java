@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -26,8 +27,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Constants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
 import java.util.HashMap;
@@ -37,11 +42,12 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -54,6 +60,8 @@ public class FSDefaultAuthServletImplTest {
     HttpServletRequest httpServletRequestMock;
     @Mock
     ResourceBundle resourceBundle;
+    ConsentExtensionsDataHolder mockHolder;
+    FinancialServicesConfigurationService mockConfigService;
 
     private static MockedStatic<FinancialServicesConfigParser> configParser;
 
@@ -62,6 +70,8 @@ public class FSDefaultAuthServletImplTest {
 
         httpServletRequestMock = mock(HttpServletRequest.class);
         resourceBundle = mock(ResourceBundle.class);
+        mockHolder = mock(ConsentExtensionsDataHolder.class);
+        mockConfigService = mock(FinancialServicesConfigurationService.class);
         configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Map<String, Object> configs = new HashMap<String, Object>();
@@ -86,7 +96,12 @@ public class FSDefaultAuthServletImplTest {
                 accountObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(requestAttributes.containsKey(Constants.CONSUMER_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT));
     }
 
     @Test
@@ -98,7 +113,12 @@ public class FSDefaultAuthServletImplTest {
                 cofObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(requestAttributes.containsKey(Constants.CONSUMER_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT));
     }
 
     @Test
@@ -112,7 +132,12 @@ public class FSDefaultAuthServletImplTest {
                 paymentObj, resourceBundle);
 
         assertFalse(requestAttributes.isEmpty());
-        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.DATA_REQUESTED));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.PERMISSIONS));
+        assertTrue(requestAttributes.containsKey(Constants.CONSUMER_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.IS_REAUTHORIZATION));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT));
     }
 
     @Test
@@ -123,7 +148,9 @@ public class FSDefaultAuthServletImplTest {
         Map<String, Object> requestAttributes = servletImpl.updateRequestAttribute(httpServletRequestMock,
                 object, resourceBundle);
 
-        assertTrue(requestAttributes.isEmpty());
+        assertTrue(requestAttributes.containsKey(ConsentExtensionConstants.TYPE));
+        assertNull(requestAttributes.get(ConsentExtensionConstants.TYPE));
+        assertTrue(requestAttributes.containsKey(ConsentAuthorizeConstants.BASIC_CONSENT_DATA));
     }
 
     @Test
@@ -137,17 +164,23 @@ public class FSDefaultAuthServletImplTest {
 
     @Test
     public void testUpdateConsentData() {
+        // Set request parameters
+        Map<String, String[]> parameterMap = new HashMap<>();
+        parameterMap.put("permission-uid", new String[]{"acc-1", "acc-2"});
 
-        String param = "Test_parameter";
-        doReturn(param).when(httpServletRequestMock).getParameter(anyString());
-        HttpSession session = mock(HttpSession.class);
-        doReturn(session).when(httpServletRequestMock).getSession();
+        doReturn(parameterMap).when(httpServletRequestMock).getParameterMap();
 
+        // Call the method
         Map<String, Object> consentData = servletImpl.updateConsentData(httpServletRequestMock);
+
         assertFalse(consentData.isEmpty());
-        assertTrue(consentData.containsKey(ConsentExtensionConstants.ACCOUNT_IDS));
-        assertTrue(consentData.containsKey(ConsentExtensionConstants.PAYMENT_ACCOUNT));
-        assertTrue(consentData.containsKey(ConsentExtensionConstants.COF_ACCOUNT));
+
+        assertTrue(consentData.containsKey(ConsentAuthorizeConstants.REQUEST_PARAMETERS));
+        JSONObject filteredParameters = (JSONObject) consentData
+                .get(ConsentAuthorizeConstants.REQUEST_PARAMETERS);
+        assertEquals(filteredParameters.length(), 1);
+        assertTrue(filteredParameters.has("permission-uid"));
+        assertTrue(filteredParameters.get("permission-uid") instanceof JSONArray);
     }
 
     @Test
@@ -160,7 +193,17 @@ public class FSDefaultAuthServletImplTest {
 
     @Test
     public void testGetJSPPath() {
+        try (MockedStatic<ConsentExtensionsDataHolder> mockedStatic =
+                     Mockito.mockStatic(ConsentExtensionsDataHolder.class)) {
+            mockedStatic.when(ConsentExtensionsDataHolder::getInstance).thenReturn(mockHolder);
 
-        assertEquals("/fs_default.jsp", servletImpl.getJSPPath());
+            Map<String, Object> configMap = new HashMap<>();
+            configMap.put(Constants.CONSENT_AUTHORIZE_JSP_PATH, "/fs_default.jsp");
+
+            when(mockHolder.getConfigurationService()).thenReturn(mockConfigService);
+            when(mockConfigService.getConfigurations()).thenReturn(configMap);
+
+            assertEquals(servletImpl.getJSPPath(), "/fs_default.jsp");
+        }
     }
 }

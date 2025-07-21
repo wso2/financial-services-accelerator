@@ -23,7 +23,7 @@ import org.json.JSONObject;
 import java.util.Map;
 
 /**
- * ExternalAPIAdminConsentSearchRequestDTO -Request DTO for extension of admin consent search
+ * ExternalAPIAdminConsentSearchRequestDTO -Request DTO for extension of admin consent search.
  */
 public class ExternalAPIAdminConsentSearchRequestDTO {
     private String searchType;

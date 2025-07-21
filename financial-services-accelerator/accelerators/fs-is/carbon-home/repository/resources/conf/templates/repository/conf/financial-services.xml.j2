@@ -103,6 +103,11 @@
                 {% endif %}
             </Persist>
         </AuthorizeSteps>
+        {% if financial_services.consent.authorize_jsp.path is defined %}
+        <AuthorizeJSP>
+            <Path>{{financial_services.consent.authorize_jsp.path}}</Path>
+        </AuthorizeJSP>
+        {% endif %}
         <Validation>
             {% if financial_services.consent.validation.validator is defined %}
             <Validator>{{financial_services.consent.validation.validator}}</Validator>

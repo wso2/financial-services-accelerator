@@ -22,7 +22,7 @@ import org.json.JSONArray;
 
 
 /**
- * ExternalAPIAdminConsentSearchResponseDTO -Response DTO for extension of admin consent search
+ * ExternalAPIAdminConsentSearchResponseDTO -Response DTO for extension of admin consent search.
  */
 public class ExternalAPIAdminConsentSearchResponseDTO {
     private JSONArray enrichedSearchResult;

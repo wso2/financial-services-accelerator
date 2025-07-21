@@ -43,6 +43,9 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+/**
+ * Unit test class for ExternalAPIUtil.
+ */
 public class ExternalAPIUtilTest {
 
     private static ExternalServiceResponse createErrorResponse(int code, ObjectNode dataNode) {

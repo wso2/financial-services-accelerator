@@ -236,7 +236,7 @@ public class ExternalAPIConsentResourceRequestDTO {
     }
 
     /**
-     * Authorization
+     * Authorization.
      */
     public static class Authorization {
 
@@ -288,7 +288,7 @@ public class ExternalAPIConsentResourceRequestDTO {
     }
 
     /**
-     * Consent Mapping Resource
+     * Consent Mapping Resource.
      */
     public static class Resource {
 

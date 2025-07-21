@@ -385,7 +385,12 @@
             <dependency>
                 <groupId>org.apache.taglibs</groupId>
                 <artifactId>taglibs-standard-impl</artifactId>
-                <version>${taglibs-standard-impl.version}</version>
+                <version>${taglibs-standard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.taglibs</groupId>
+                <artifactId>taglibs-standard-spec</artifactId>
+                <version>${taglibs-standard.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
@@ -619,7 +624,7 @@
         <orbit.version.commons.httpclient>4.5.13.wso2v1</orbit.version.commons.httpclient>
         <orbit.httpcore.version>4.3.3.wso2v1</orbit.httpcore.version>
         <commons.io.version>2.15.1.wso2v1</commons.io.version>
-        <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
+        <taglibs-standard.version>1.2.5</taglibs-standard.version>
         <apache.tomcat-catalina.version>9.0.11</apache.tomcat-catalina.version>
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
         <quartz.version>2.3.2.wso2v1</quartz.version>
