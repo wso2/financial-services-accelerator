@@ -82,8 +82,8 @@ public class ConsentAuthorizeUtil {
      * @return consentId
      * @throws ConsentException Consent Exception
      */
-    public static String extractConsentId(String requestObject) throws ConsentException {
-
+    public static String extractConsentIdFromRequestObject(String requestObject) throws ConsentException {
+        log.debug("Extracting consent ID from request object");
         String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
 
         try {
@@ -105,7 +105,7 @@ public class ConsentAuthorizeUtil {
         }
 
         if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
-            return getConsentIdFromRequestParam(ConsentAuthorizeUtil.getRequestObjectJson(requestObject));
+            return extractConsentIdFromRequestParam(ConsentAuthorizeUtil.getRequestObjectJson(requestObject));
         }
 
         return null;
@@ -117,8 +117,8 @@ public class ConsentAuthorizeUtil {
      * @param requestParameters Request parameters
      * @return consentId
      */
-    public static String getConsentIdFromRequestParam(JSONObject requestParameters) {
-
+    public static String extractConsentIdFromRequestParam(JSONObject requestParameters) {
+        log.debug("Extracting consent ID from request parameters");
         String key = configParser.getConsentIdExtractionKey();
 
         // TODO: need to support other request parameters based on requirements
@@ -169,6 +169,35 @@ public class ConsentAuthorizeUtil {
             requestObjectJson = new JSONObject();
         }
         return requestObjectJson;
+    }
+
+    /**
+     * Method to build query params into a json object.
+     *
+     * @param queryParams String of query parameters from request
+     * @return a json object of query parameters
+     */
+    public static JSONObject getQueryParamJson(String queryParams) {
+        JSONObject json = new JSONObject();
+
+        if (queryParams == null || queryParams.trim().isEmpty()) {
+            log.debug("Request query parameters are null or empty");
+            return json;
+        }
+
+        String[] pairs = queryParams.split("&");
+
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=", 2);
+            if (keyValue.length == 2) {
+                json.put(keyValue[0], keyValue[1]);
+            } else if (keyValue.length == 1) {
+                log.debug(String.format("Query parameter '%s' has no value", keyValue[0]));
+                json.put(keyValue[0], "");
+            }
+        }
+
+        return json;
     }
 
     /**
