@@ -77,6 +77,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
         // Load params from request object or query
         String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
+        log.debug("Consent ID source from config: " + authFlowConsentIdSource);
+
         JSONObject requestParameters;
         String consentId;
         if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {

@@ -83,7 +83,7 @@ public class ConsentAuthorizeUtil {
      * @throws ConsentException Consent Exception
      */
     public static String extractConsentIdFromRequestObject(String requestObject) throws ConsentException {
-
+        log.debug("Extracting consent ID from request object");
         String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
 
         try {
@@ -118,7 +118,7 @@ public class ConsentAuthorizeUtil {
      * @return consentId
      */
     public static String extractConsentIdFromRequestParam(JSONObject requestParameters) {
-
+        log.debug("Extracting consent ID from request parameters");
         String key = configParser.getConsentIdExtractionKey();
 
         // TODO: need to support other request parameters based on requirements
@@ -181,6 +181,7 @@ public class ConsentAuthorizeUtil {
         JSONObject json = new JSONObject();
 
         if (queryParams == null || queryParams.trim().isEmpty()) {
+            log.debug("Request query parameters are null or empty");
             return json;
         }
 
@@ -191,6 +192,7 @@ public class ConsentAuthorizeUtil {
             if (keyValue.length == 2) {
                 json.put(keyValue[0], keyValue[1]);
             } else if (keyValue.length == 1) {
+                log.debug(String.format("Query parameter '%s' has no value", keyValue[0]));
                 json.put(keyValue[0], "");
             }
         }
