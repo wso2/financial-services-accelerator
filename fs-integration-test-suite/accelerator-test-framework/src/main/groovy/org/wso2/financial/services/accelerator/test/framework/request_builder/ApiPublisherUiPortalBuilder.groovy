@@ -33,7 +33,7 @@ import org.wso2.financial.services.accelerator.test.framework.constant.PageObjec
 import java.util.concurrent.TimeUnit
 
 /**
- * Class to contain steps to create a user role in API Manager Console.
+ * Class to contain steps to create a user role in API Publisher Portal.
  */
 class ApiPublisherUiPortalBuilder implements BrowserAutomationStep{
 
