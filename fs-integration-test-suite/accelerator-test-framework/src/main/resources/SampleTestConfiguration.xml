@@ -132,8 +132,8 @@
 
             <!-- Application Info -->
             <Application>
-                <ClientID>dydi2AXzMx_fDJHlTSBkGcHFHCsa</ClientID>
-                <ClientSecret>6f9tlVHMuXQcEqheeQ6cjqMUyGBL2oKyDz5OzQ3nsmca</ClientSecret>
+                <ClientID>AppConfig1.Application.ClientID</ClientID>
+                <ClientSecret>AppConfig1.Application.ClientSecret</ClientSecret>
                 <!--Sample Value: https://www.google.com/redirects/redirect1 -->
                 <RedirectURL>https://www.google.com/redirects/redirect1</RedirectURL>
             </Application>
@@ -236,8 +236,8 @@
 
     <!-- Non-Regulatory Application Info -->
     <NonRegulatoryApplication>
-        <ClientID>rQGoeFfwIJJzik1yV837ayaS3zYa</ClientID>
-        <ClientSecret>jPVab36nxwBw0TECdzvygiDFIqO0SwEBe3ijLIwH1Cwa</ClientSecret>
+        <ClientID>NonRegulatoryApplication.ClientID</ClientID>
+        <ClientSecret>NonRegulatoryApplication.ClientSecret</ClientSecret>
 
         <!--Sample Value: https://www.google.com/redirects/redirect1 -->
         <RedirectURL>https://www.google.com/redirects/redirect1</RedirectURL>
