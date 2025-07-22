@@ -18,24 +18,24 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="WSO2 Open Banking - Gateway Account Flow Test" parallel="none" preserve-order="true">
-<!--    <test name="Payments End to End Flow Tests" parallel="tests" enabled="true" group-by-instances="true">-->
-<!--        <classes>-->
-<!--            <class name="org.wso2.financial.services.accelerator.gateway.test.payments.EndToEndTest.EndToEndPaymentsFlowTest" />-->
-<!--        </classes>-->
-<!--    </test>-->
+    <test name="Payments End to End Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.payments.EndToEndTest.EndToEndPaymentsFlowTest" />
+        </classes>
+    </test>
     <test name="Payment Initiation Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.gateway.test.payments.Payment_Initiation_Tests.PaymentsInitiationRequestHeaderValidationTests" />
         </classes>
     </test>
-<!--    <test name="Payments Authorisation Flow Tests" parallel="tests" enabled="true" group-by-instances="true">-->
-<!--        <classes>-->
-<!--            <class name="org.wso2.financial.services.accelerator.gateway.test.payments.Consent_Authorisation_Tests.AuthorizationFlowValidationTest" />-->
-<!--            </classes>-->
-<!--    </test>-->
-<!--    <test name="Payment Submission Flow Tests" parallel="tests" enabled="true" group-by-instances="true">-->
-<!--        <classes>-->
-<!--            <class name="org.wso2.financial.services.accelerator.gateway.test.payments.Payment_Submission_Tests.PaymentSubmissionRequestHeaderValidationTests" />-->
-<!--        </classes>-->
-<!--    </test>-->
+    <test name="Payments Authorisation Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.payments.Consent_Authorisation_Tests.AuthorizationFlowValidationTest" />
+            </classes>
+    </test>
+    <test name="Payment Submission Flow Tests" parallel="tests" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.payments.Payment_Submission_Tests.PaymentSubmissionRequestHeaderValidationTests" />
+        </classes>
+    </test>
 </suite>
