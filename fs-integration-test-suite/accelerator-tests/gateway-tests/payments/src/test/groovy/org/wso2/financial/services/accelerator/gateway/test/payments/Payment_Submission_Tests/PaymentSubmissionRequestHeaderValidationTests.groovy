@@ -61,11 +61,12 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
         submissionPath = ConnectorTestConstants.PISP_PATH + ConnectorTestConstants.PAYMENT_SUBMISSION_PATH
     }
 
-    @BeforeMethod
-    void skipIfDCRDisabled(Method method) {
-        def dcrEnabled = Boolean.parseBoolean(System.getProperty("dcrEnabled", "false"))
-        if (!dcrEnabled && method.getAnnotation(Test)?.groups()?.contains("dcr")) {
-            throw new SkipException("Skipping DCR-only test since dcrEnabled is false")
+    //Skip JWS Signature Validation tests if dcrEnabled is false
+    void skipIfDCRDisabled(String testName) {
+        boolean dcrEnabled = Boolean.parseBoolean(System.getProperty("dcrEnabled", "false"))
+        if (!dcrEnabled) {
+            println "⚠️ Skipping DCR test: $testName"
+            throw new SkipException("Skipping DCR test: $testName because dcrEnabled=false")
         }
     }
 
@@ -87,9 +88,10 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
         submissionPayload = PaymentRequestPayloads.getSubmissionPaymentPayload(consentId)
     }
 
-    @Test
+    @Test (groups = "dcr")
     void "OBA-915_Payment Submission Without x-jws-signature"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
@@ -118,9 +120,10 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
         Assert.assertNotNull(paymentID)
     }
 
-//    @Test
+    @Test (groups = "dcr")
     void "OBA-796_Payment Submission request with Consent bound to deleted application"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         configuration.setTppNumber(2)
         registrationPath = configuration.getServerBaseURL() + ConnectorTestConstants.REGISTRATION_ENDPOINT
         SSA = new File(configuration.getAppDCRSSAPath()).text
@@ -159,6 +162,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "Payment submission with x-jws-signature header having crit with unsupported claim"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
@@ -178,6 +182,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "Payment submission with x-jws-signature header having unsupported alg"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
@@ -198,6 +203,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "Payment Submission with x-jws-signature header having invalid kid"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(), "1234")
 
         prePaymentSubmissionStep()
@@ -218,6 +224,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "Payment Submission with x-jws-signature header having invalid iss"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), "CN=0123456789HQQrZAAX")
 
@@ -239,6 +246,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "Payment Submission with x-jws-signature header having invalid optional claims typ"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().minus(2).toString(), "JSON")
@@ -261,6 +269,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "US-908_Payment Submission with x-jws-signature header having invalid optional claims cty"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().minus(2).toString(),
@@ -284,6 +293,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "US-920_Payment Submission with x-jws-signature header having present date and time for iat"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().toString())
@@ -304,6 +314,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "US-918_Payment Submission with x-jws-signature header having future date for iat"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().plus(2).toString())
@@ -326,6 +337,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "US-919_Payment Submission with x-jws-signature header having past date for iat"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().minus(2).toString())
@@ -346,6 +358,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "US-906_Payment Submission with x-jws-signature header having crit with unsupported claim"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
@@ -365,6 +378,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test (groups = "dcr")
     void "US-913_Payment Submission with x-jws-signature header having invalid tan"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
@@ -384,6 +398,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test(groups = "dcr", dataProvider = "jwsHeadersWithMissingCriticalClaims", dataProviderClass = PaymentsDataProviders.class)
     void "Submission request with missing critical claims in x-jws-signature header"(String jwsHeader) {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
@@ -402,6 +417,7 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     @Test(groups = "dcr", dataProvider = "jwsHeadersWithInvalidClaims", dataProviderClass = PaymentsDataProviders.class)
     void "Submission request with invalid claims in x-jws-signature header"(String jwsHeader) {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 

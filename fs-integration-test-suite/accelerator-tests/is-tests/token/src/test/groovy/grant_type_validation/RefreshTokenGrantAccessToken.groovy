@@ -330,7 +330,10 @@ class  RefreshTokenGrantAccessToken extends FSConnectorTest {
 		Assert.assertNotNull(refreshToken)
 
 		//Get Refresh Token Grant User Access Token
-		Response refreshTokenResponse = TokenRequestBuilder.getRefreshGrantTokenResponseWithoutClientId(consentScopes,
+//		Response refreshTokenResponse = TokenRequestBuilder.getRefreshGrantTokenResponseWithoutClientId(consentScopes,
+//				refreshToken.toString())
+
+		Response refreshTokenResponse = getRefreshGrantTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, null, [scope],
 				refreshToken.toString())
 
 		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)

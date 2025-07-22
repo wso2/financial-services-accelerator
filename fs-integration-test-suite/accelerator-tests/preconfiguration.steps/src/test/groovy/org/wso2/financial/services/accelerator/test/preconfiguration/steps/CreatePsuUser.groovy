@@ -66,8 +66,7 @@ class CreatePsuUser extends FSAPIMConnectorTest{
         Assert.assertNotNull(userId, "User ID should not be null")
     }
 
-    //TODO: Need to publish the API before
-//    @Test(dependsOnMethods = "Create User in carbon console")
+    @Test(dependsOnMethods = "Create User in carbon console")
     void "Assign role to user"(){
 
         def roleName = "consumer"

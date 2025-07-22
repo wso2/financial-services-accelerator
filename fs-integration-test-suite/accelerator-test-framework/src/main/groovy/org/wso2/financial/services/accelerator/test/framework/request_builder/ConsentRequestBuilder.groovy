@@ -68,7 +68,7 @@ class ConsentRequestBuilder {
 
         return FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
-                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+//                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${accessToken}")
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)

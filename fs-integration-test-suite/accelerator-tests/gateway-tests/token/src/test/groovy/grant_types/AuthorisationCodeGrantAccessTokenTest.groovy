@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package grant_type_validation
+package grant_types
 
 import io.restassured.response.Response
 import org.testng.Assert

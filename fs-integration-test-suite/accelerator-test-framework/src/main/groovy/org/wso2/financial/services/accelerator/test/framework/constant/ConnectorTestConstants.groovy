@@ -362,6 +362,7 @@ class ConnectorTestConstants extends Constants{
 
     static final String ADMIN_PORTAL_CLIENT_NAME = "rest_api_admin"
     static final String PUBLISHER_CLIENT_NAME = "rest_api_publisher"
+    static final String DEVPORTAL_CLIENT_NAME = "rest_api_devportal"
     static final String MTLS_ENFORCEMENT_ERROR = "MTLS Enforcement Error"
 
     static final String JWS_HEADER_VALIDATION_ERROR = "JWS Header Validation Error"

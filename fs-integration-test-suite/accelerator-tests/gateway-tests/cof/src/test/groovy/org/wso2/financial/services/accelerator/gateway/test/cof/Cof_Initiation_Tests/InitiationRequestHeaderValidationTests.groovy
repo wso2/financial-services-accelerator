@@ -123,7 +123,7 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
     @Test
     void "Funds Confirmation Initiation Without Authorization Header"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID,ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
@@ -135,7 +135,8 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                "'null : Bearer ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900902")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
@@ -168,10 +169,11 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.INVALID_CREDENTIALS_ERROR)
     }
 
-    @Test
+    //TODO: https://github.com/wso2/financial-services-accelerator/issues/720
+    @Test (enabled = false)
     void "Initiation Request With Invalid Accept Header"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID,ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)

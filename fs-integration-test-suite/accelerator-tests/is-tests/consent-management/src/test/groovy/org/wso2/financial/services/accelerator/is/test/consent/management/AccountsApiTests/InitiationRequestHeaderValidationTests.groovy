@@ -117,7 +117,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
     @Test
     void "Initiation Request Without Authorization Header"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
@@ -171,7 +171,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
     @Test
     void "Initiation Request With Invalid Content Type"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.XML)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())

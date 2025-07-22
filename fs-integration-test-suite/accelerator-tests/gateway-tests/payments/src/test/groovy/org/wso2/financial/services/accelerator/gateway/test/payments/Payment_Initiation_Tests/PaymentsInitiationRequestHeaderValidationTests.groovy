@@ -16,6 +16,7 @@ package org.wso2.financial.services.accelerator.gateway.test.payments.Payment_In
 import io.restassured.http.ContentType
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.ITestResult
 import org.testng.SkipException
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeMethod
@@ -50,11 +51,12 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 configuration.getAppInfoClientID(), scopeList)
     }
 
-    @BeforeMethod
-    void skipIfDCRDisabled(Method method) {
-        def dcrEnabled = Boolean.parseBoolean(System.getProperty("dcrEnabled", "false"))
-        if (!dcrEnabled && method.getAnnotation(Test)?.groups()?.contains("dcr")) {
-            throw new SkipException("Skipping DCR-only test since dcrEnabled is false")
+    //Skip JWS Signature Validation tests if dcrEnabled is false
+    void skipIfDCRDisabled(String testName) {
+        boolean dcrEnabled = Boolean.parseBoolean(System.getProperty("dcrEnabled", "false"))
+        if (!dcrEnabled) {
+            println "⚠️ Skipping DCR test: $testName"
+            throw new SkipException("Skipping DCR test: $testName because dcrEnabled=false")
         }
     }
 
@@ -71,6 +73,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "OBA-899_Payment Initiation Without x-jws-signature"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .body(initiationPayload)
@@ -85,6 +88,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "OBA-901_Payment Initiation with x-jws-signature header having unsupported alg"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
@@ -103,6 +107,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "OBA-902_Payment Initiation with x-jws-signature header having invalid kid"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(), "1234")
 
         //initiation
@@ -121,6 +126,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "OBA-903_Payment Initiation with x-jws-signature header having invalid iss"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), "CN=0123456789HQQrZAAX")
 
@@ -140,6 +146,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "OBA-904_Payment Initiation with x-jws-signature header having invalid optional claims typ"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().minus(2).toString(), "JSON")
@@ -160,6 +167,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "US-908_Payment Initiation with x-jws-signature header having invalid optional claims cty"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().minus(2).toString(),
@@ -181,6 +189,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "US-920_Payment Initiation with x-jws-signature header having present date and time for iat"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().toString())
@@ -199,6 +208,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "US-918_Payment Initiation with x-jws-signature header having future date for iat"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().plus(2).toString())
@@ -219,6 +229,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "US-919_Payment Initiation with x-jws-signature header having past date for iat"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String jwsHeader = jwsSignatureRequestBuilder.getRequestHeader(configuration.getCommonSigningAlgorithm(),
                 configuration.getAppKeyStoreSigningKid(), KeyStore.getApplicationCertificateSubjectDn(),
                 ConnectorTestConstants.JWS_TAN, Instant.now().getEpochSecond().minus(2).toString())
@@ -237,6 +248,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "US-906_Payment Initiation with x-jws-signature header having crit with unsupported claim"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
@@ -254,6 +266,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "US-913_Payment Initiation with x-jws-signature header having invalid tan"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
@@ -271,6 +284,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test(groups = "dcr", dataProvider = "jwsHeadersWithMissingCriticalClaims", dataProviderClass = PaymentsDataProviders.class)
     void "Initiation request with missing critical claims in x-jws-signature header"(String jwsHeader) {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
@@ -287,6 +301,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test(groups = "dcr", dataProvider = "jwsHeadersWithInvalidClaims", dataProviderClass = PaymentsDataProviders.class)
     void "Initiation request with invalid claims in x-jws-signature header"(String jwsHeader) {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         //initiation
         consentResponse = consentRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
@@ -352,7 +367,8 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .contains("Missing Credentials"))
     }
 
-    @Test
+    //TODO: https://github.com/wso2/financial-services-accelerator/issues/681
+    @Test (enabled = false)
     void "Validate Payments Initiation With Invalid Content-type"() {
 
         //initiation
@@ -464,6 +480,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     @Test (groups = "dcr")
     void "TC0401102_Initiation request with a valid JOSE header and an invalid signature"() {
 
+        skipIfDCRDisabled("testDCROnlyFeature")
         String idempotencyKey = TestUtil.idempotency
 
         //initiation

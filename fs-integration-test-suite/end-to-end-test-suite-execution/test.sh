@@ -138,62 +138,103 @@ if [ $(get_prop "InstallGeckodriver") == true ]; then
     chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 fi
 
-sleep 45m
+#--------------Build the test framework and the project-----------------#
+cd ${PROJECT_HOME}
+mvn clean install -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-#--------------Build the test framework-----------------#
-cd ${TEST_FRAMEWORK_HOME}
-mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-#--------------API Publish and Subscribe Step-----------------#
+##--------------API Publish and Subscribe Step-----------------#
 cd ${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 MVNSTATE=$?
 
-##--------------run IS tests-----------------#
-#cd ${IS_TEST_HOME}/dcr
-#mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
-#MVNSTATE=$((MVNSTATE+$?))
-#mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/dcr
-#find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/dcr \;
+echo "-----------------Executing IS tests----------------"
+cd ${IS_TEST_HOME}/dcr
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/dcr
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/dcr \;
+
+cd ${IS_TEST_HOME}/token
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/token
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/token \;
+
+cd ${IS_TEST_HOME}/pre-configuration-step
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/pre-configuration-step
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/pre-configuration-step \;
+
+cd ${IS_TEST_HOME}/consent-management
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/consent-management
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/consent-management \;
+
+cd ${IS_TEST_HOME}/event-notification
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/event-notification
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/event-notification \;
+
+echo "-----------------End of IS tests----------------"
+
+echo "-----------------Executing Gateway tests----------------"
+echo "-----------------Executing Accelerator Scenarios with Dynamic Client Registration----------------"
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/dcr
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/dcr
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/dcr \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/accounts
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/accounts
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/accounts \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/cof
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/cof
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/cof \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/payments
+mvn clean install -DdcrEnabled=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/payments
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/payments \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/schema.validation
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/schema.validation
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/schema.validation \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/token
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/token
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/token \;
+
+cd ${GATEWAY_INTEGRATION_TEST_HOME}/non.regulatory.scenarios
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+MVNSTATE=$((MVNSTATE+$?))
+mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios \;
+
+echo "-----------------End of Accelerator Scenarios with Dynamic Client Registration----------------"
+
+
+##--------Accelerator Scenarios with Manual Client Registration---------
+#echo "-----------------Executing Accelerator Scenarios with Manual Client Registration----------------"
 #
-#cd ${IS_TEST_HOME}/token
-#mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
-#MVNSTATE=$((MVNSTATE+$?))
-#mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/token
-#find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/token \;
-#
-#cd ${IS_TEST_HOME}/pre-configuration-step
-#mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
-#MVNSTATE=$((MVNSTATE+$?))
-#mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/pre-configuration-step
-#find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/pre-configuration-step \;
-#
-#cd ${IS_TEST_HOME}/consent-management
-#mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
-#MVNSTATE=$((MVNSTATE+$?))
-#mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/consent-management
-#find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/consent-management \;
-#
-#cd ${IS_TEST_HOME}/event-notification
-#mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
-#MVNSTATE=$((MVNSTATE+$?))
-#mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/event-notification
-#find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/event-notification \;
-#
-#sleep 30m
-#
-##--------------run Gateway tests-----------------#
 #cd ${GATEWAY_INTEGRATION_TEST_HOME}/manual.client.registration
 #mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
 #MVNSTATE=$((MVNSTATE+$?))
 #mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/manual.client.registration
 #find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/manual.client.registration \;
-#
-#cd ${GATEWAY_INTEGRATION_TEST_HOME}/dcr
-#mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
-#MVNSTATE=$((MVNSTATE+$?))
-#mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/dcr
-#find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/dcr \;
 #
 #cd ${GATEWAY_INTEGRATION_TEST_HOME}/accounts
 #mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
@@ -208,7 +249,7 @@ MVNSTATE=$?
 #find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/cof \;
 #
 #cd ${GATEWAY_INTEGRATION_TEST_HOME}/payments
-#mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
+#mvn clean install -DdcrEnabled=false -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
 #MVNSTATE=$((MVNSTATE+$?))
 #mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/payments
 #find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/payments \;
@@ -230,3 +271,6 @@ MVNSTATE=$?
 #MVNSTATE=$((MVNSTATE+$?))
 #mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios
 #find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios \;
+#
+#echo "-----------------End of Accelerator Scenarios with Manual Client Registration----------------"
+echo "-----------------End of Gateway tests----------------"

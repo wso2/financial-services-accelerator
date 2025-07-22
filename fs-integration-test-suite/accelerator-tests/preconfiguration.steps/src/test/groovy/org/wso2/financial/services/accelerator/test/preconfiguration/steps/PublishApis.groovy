@@ -47,6 +47,9 @@ class PublishApis extends FSAPIMConnectorTest {
                 "apim:subscription_approval_view apim:subscription_approval_manage apim:llm_provider_read")
     }
 
+    /**
+     * Create an internal application to access api-m publisher portal
+     */
     @Test
     void "Create Application"() {
 
@@ -60,6 +63,9 @@ class PublishApis extends FSAPIMConnectorTest {
         clientSecret = TestUtil.parseResponseBody(registrationResponse, "clientSecret")
     }
 
+    /**
+     * Generate access token to access api-m publisher portal
+     */
     @Test(dependsOnMethods = "Create Application")
     void "Generate Access Token"(){
 
