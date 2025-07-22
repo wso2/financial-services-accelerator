@@ -226,3 +226,5 @@ find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios
 
 echo "-----------------End of Accelerator Scenarios with Dynamic Client Registration----------------"
 echo "-----------------End of Gateway tests----------------"
+
+find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios \;
