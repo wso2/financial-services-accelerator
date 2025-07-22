@@ -126,6 +126,7 @@ class ConnectorTestConstants extends Constants{
 
     static final String IS_CARBON_URL = configurationService.getISServerUrl() + "/carbon"
     static final String DEVPORTAL_URL = configurationService.getApimServerUrl() + "/devportal"
+    static final String PUBLISHER_URL = configurationService.getApimServerUrl() + "/publisher"
 
     //Token Payload Constants
     static final String KID = "kid"
