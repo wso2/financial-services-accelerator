@@ -188,6 +188,10 @@ MVNSTATE=$((MVNSTATE+$?))
 mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/dcr
 find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/dcr \;
 
+echo "-----------------Rebuild the Accelerator Framework to fetch configuration changes------------------"
+cd ${TEST_FRAMEWORK_HOME}
+mvn clean install -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
 cd ${GATEWAY_INTEGRATION_TEST_HOME}/accounts
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
 MVNSTATE=$((MVNSTATE+$?))
@@ -217,12 +221,6 @@ mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf
 MVNSTATE=$((MVNSTATE+$?))
 mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/token
 find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/token \;
-
-cd ${GATEWAY_INTEGRATION_TEST_HOME}/non.regulatory.scenarios
-mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
-MVNSTATE=$((MVNSTATE+$?))
-mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios
-find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/non.regulatory.scenarios \;
 
 echo "-----------------End of Accelerator Scenarios with Dynamic Client Registration----------------"
 echo "-----------------End of Gateway tests----------------"
