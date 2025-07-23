@@ -395,10 +395,13 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
             String apiResource = resource['api-resource']
             String requestType = resource['requestType']
             List<Map> policies = (List<Map>) resource['policy']
+            String authType = resource['authType']
 
             JsonObject operation = new JsonObject()
             operation.addProperty("target", apiResource)
             operation.addProperty("verb", requestType.toUpperCase())
+            operation.addProperty("authType", authType)
+            operation.addProperty("throttlingPolicy", "Unlimited")
 
             if(!scope.contains("[]")) {
                 JsonArray scopesArray = new JsonArray()
