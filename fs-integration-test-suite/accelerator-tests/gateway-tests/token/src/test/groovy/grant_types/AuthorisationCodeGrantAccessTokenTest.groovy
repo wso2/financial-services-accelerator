@@ -119,7 +119,7 @@ class AuthorisationCodeGrantAccessTokenTest extends FSAPIMConnectorTest {
 //		Assert.assertNull(mapPayload.get(ConnectorTestConstants.CONSENT_ID))
 //	}
 
-	@Test (dependsOnMethods = "Validate additional claims not binding to the id_token of user access token")
+	@Test (dependsOnMethods = "Validate additional claim binding to the user access token jwt")
 	void "Introspection call for user access token"() {
 
 		Response tokenResponse = TokenRequestBuilder.getTokenIntrospectionResponse(userAccessToken)
