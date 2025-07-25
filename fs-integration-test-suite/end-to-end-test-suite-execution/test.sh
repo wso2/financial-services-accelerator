@@ -130,12 +130,14 @@ else
 fi
 
 #----------------Install geckodriver------------------------#
+export DEBIAN_FRONTEND=noninteractive
 if [ $(get_prop "InstallGeckodriver") == true ]; then
-    export DEBIAN_FRONTEND=noninteractive
     wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz
     tar xvzf geckodriver*
-    cp geckodriver ${TEST_ARTIFACTS}/selenium-libs/
+    cp geckodriver ${TEST_ARTIFACTS}/selenium-libs/ubuntu/
     chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
+else
+        echo "Not Required to install geckodriver"
 fi
 
 #--------------Build the test framework and the project-----------------#
