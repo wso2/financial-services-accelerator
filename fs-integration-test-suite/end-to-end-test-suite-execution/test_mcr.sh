@@ -139,7 +139,7 @@ if [ $(get_prop "InstallGeckodriver") == true ]; then
 fi
 
 #--------------Build the test framework and the project-----------------#
-cd ${PROJECT_HOME}
+cd ${ACCELERATOR_TESTS_HOME}
 mvn clean install -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 ##--------------API Publish and Subscribe Step-----------------#
