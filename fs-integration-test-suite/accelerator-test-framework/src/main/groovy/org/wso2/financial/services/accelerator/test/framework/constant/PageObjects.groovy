@@ -86,4 +86,11 @@ class PageObjects extends CommonPageObjects{
     static final String TXT_CONSUMER_KEY = """//input[@id="consumer-key"]"""
     static final String TXT_CONSUMER_SECRET = """//input[@id="consumer-secret"]"""
 
+    //APIM Publisher
+    static final String PUBLISHER_TXT_USERNAME = """//input[@id="username"]"""
+    static final String PUBLISHER_TXT_PASSWORD = """//input[@id="password"]"""
+    static final String BTN_PUBLISHER_CONTINUE = """//button[contains(text(),'Continue')]"""
+    static final String BTN_CREATE_API = """//button[@id='itest-create-api-menu-button']"""
+    static final String BTN_DEPLOY_SAMPLE_API = """//button[@id='itest-id-deploy-sample']"""
+    static final String LBL_API_NAME = """//h1[@id='itest-api-name-version']"""
 }

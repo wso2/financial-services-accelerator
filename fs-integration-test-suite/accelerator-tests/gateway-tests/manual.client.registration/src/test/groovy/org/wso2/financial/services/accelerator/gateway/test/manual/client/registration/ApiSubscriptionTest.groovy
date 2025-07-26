@@ -45,7 +45,7 @@ class ApiSubscriptionTest extends FSAPIMConnectorTest{
     void init() {
         dcrPath = configuration.getApimServerUrl() + ConnectorTestConstants.INTERNAL_APIM_DCR_ENDPOINT
         adminUrl = configuration.getApimServerUrl() + ConnectorTestConstants.INTERNAL_APIM_ADMIN_ENDPOINT_V4
-        adminUserName = configuration.getUserIsAsKeyManagerAdminName()
+        adminUserName = configuration.getUserKeyManagerAdminName()
 
         scopesList = Arrays.asList("apim:admin", "apim:api_key", "apim:app_import_export",
                 "apim:app_manage", "apim:store_settings", "apim:sub_alert_manage", "apim:sub_manage",
@@ -60,7 +60,7 @@ class ApiSubscriptionTest extends FSAPIMConnectorTest{
 
         def registrationResponse = ClientRegistrationRequestBuilder
                 .buildIsAsKeyManagerRegistrationRequest()
-                .body(ClientRegistrationRequestBuilder.getApimDcrClaims(adminUserName))
+                .body(ClientRegistrationRequestBuilder.getApimDcrClaims(adminUserName, ConnectorTestConstants.DEVPORTAL_CLIENT_NAME))
                 .post(dcrPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)

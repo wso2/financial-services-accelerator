@@ -5,11 +5,14 @@ import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.bfsi.test.framework.automation.BrowserAutomation
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.APIConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.request_builder.ApiConsoleRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ApiPublisherRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.ApiPublisherUiPortalBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
@@ -22,7 +25,7 @@ import java.nio.charset.Charset
  */
 class PublishApis extends FSAPIMConnectorTest {
 
-    String adminUserName, clientId, clientSecret, publisherUrl
+    String adminUserName, clientId, clientSecret, publisherUrl, publisherPortalUrl
     String accessToken
     List<String> scopesList
     ApiPublisherRequestBuilder apiPublisherRequestBuilder
@@ -31,6 +34,7 @@ class PublishApis extends FSAPIMConnectorTest {
     void init() {
         dcrPath = configuration.getApimServerUrl() + ConnectorTestConstants.INTERNAL_APIM_DCR_ENDPOINT
         publisherUrl = configuration.getApimServerUrl() + ConnectorTestConstants.REST_API_PUBLISHER_ENDPOINT
+        publisherPortalUrl = ConnectorTestConstants.PUBLISHER_URL
         adminUserName = configuration.getUserIsAsKeyManagerAdminName()
         apiConfiguration = new APIConfigurationService()
         apiPublisherRequestBuilder = new ApiPublisherRequestBuilder()
@@ -47,6 +51,9 @@ class PublishApis extends FSAPIMConnectorTest {
                 "apim:subscription_approval_view apim:subscription_approval_manage apim:llm_provider_read")
     }
 
+    /**
+     * Create an internal application to access api-m publisher portal
+     */
     @Test
     void "Create Application"() {
 
@@ -60,6 +67,9 @@ class PublishApis extends FSAPIMConnectorTest {
         clientSecret = TestUtil.parseResponseBody(registrationResponse, "clientSecret")
     }
 
+    /**
+     * Generate access token to access api-m publisher portal
+     */
     @Test(dependsOnMethods = "Create Application")
     void "Generate Access Token"(){
 
@@ -100,5 +110,17 @@ class PublishApis extends FSAPIMConnectorTest {
             //Publish API
             apiPublisherRequestBuilder.publishAPI(accessToken, apiId)
         }
+    }
+
+    /**
+     * Publish Pizza Shack API to verify Non-Regulatory API Scenarios
+     */
+    @Test(dependsOnMethods = "Create and Publish APIs")
+    void "Publish Pizza Shack API"() {
+
+        //Log into Publisher And Deploy Sample API
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY, false)
+                .addStep(new ApiPublisherUiPortalBuilder(publisherPortalUrl))
+                .execute()
     }
 }

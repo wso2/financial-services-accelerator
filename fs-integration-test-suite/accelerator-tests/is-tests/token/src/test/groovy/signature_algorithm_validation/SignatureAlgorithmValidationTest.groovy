@@ -126,7 +126,7 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
 
         String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
                 "expired-certs", "signing-keystore", "signing.jks")
-        String alias = "tpp4-sig"
+        String alias = "tpp6-signing"
         String password = "wso2carbon"
 
         def tokenResponse = TokenRequestBuilder.getUserAccessTokenWithDefinedCert(configuration.getCommonSigningAlgorithm(),

@@ -443,6 +443,6 @@ class MtlsEnforcementValidationTest extends FSConnectorTest {
     @AfterClass
     void cleanup() {
         //Delete the application created for the test
-//        deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
+        deleteApplication(clientId, ConnectorTestConstants.TLS_AUTH_METHOD)
     }
 }

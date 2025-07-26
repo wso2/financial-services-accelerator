@@ -122,7 +122,7 @@ class JWTGenerator {
 
         Certificate certificate = KeyStore.getApplicationCertificate()
         String thumbprint = KeyStore.getJwkThumbPrintForSHA1(certificate)
-        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse("RS512"))
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse("PS512"))
                 .keyID(thumbprint).type(JOSEObjectType.JWT).build()
         Key signingKey = KeyStore.getApplicationSigningKey()
 

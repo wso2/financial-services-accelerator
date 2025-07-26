@@ -23,9 +23,13 @@
                 <class name="mtls_enforcement_validator.MtlsEnforcementValidationTest"/>
             </classes>
     </test>
-    <test name="Regulatory Application - Client Authentication" enabled="true" group-by-instances="true" preserve-order="true">
+    <test name="Regulatory Application - MTLS Client Authentication" enabled="true" group-by-instances="true" preserve-order="true">
         <classes>
             <class name="client_authenticator_enforcement.MtlsClientAuthenticationTest"/>
+        </classes>
+    </test>
+    <test name="Regulatory Application - PKJWT Client Authentication" enabled="true" group-by-instances="true" preserve-order="true">
+        <classes>
             <class name="client_authenticator_enforcement.PkjwtClientAuthenticationTest"/>
         </classes>
     </test>

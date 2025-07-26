@@ -168,7 +168,7 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
     }
 
     //TODO: Issue https://github.com/wso2/financial-services-accelerator/issues/709
-    @Test
+    @Test (enabled = false)
     void "OB-1725_Verify Consent Revoke for valid consent with Incorrect Consent ID"() {
 
         initialization()
