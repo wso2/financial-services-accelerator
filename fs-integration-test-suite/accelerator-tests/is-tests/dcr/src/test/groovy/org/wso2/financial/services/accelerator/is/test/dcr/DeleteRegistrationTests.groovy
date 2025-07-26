@@ -72,7 +72,7 @@ class DeleteRegistrationTests extends FSConnectorTest {
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest(basicHeader)
                 .delete(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
     @AfterClass
