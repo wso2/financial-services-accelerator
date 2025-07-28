@@ -210,13 +210,16 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      */
     void deployRevision(String accessToken, String apiID, String revisionID) {
 
+        URL url = new URL(publisherUrl);
+        String host = url.getHost()
+
         URI apiEndpoint = new URI(publisherUrl + "/apis/" + apiID + "/deploy-revision")
         String apimHostname = apiEndpoint.getHost()
         def response = FSRestAsRequestBuilder.buildRequest()
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .queryParam("revisionId", revisionID)
-                .body(getDeployRevisionPayload("localhost", revisionID))
+                .body(getDeployRevisionPayload(host, revisionID))
                 .post(apiEndpoint)
 
         Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
@@ -480,8 +483,13 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .put(publisherUrl + "/apis/$apiId")
 
         } else {
-            String productionEndpoint = apiInfo.get("productionEndpoint").toString()
-            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString()
+            //Extract IS Server Hostname]
+            URI isUri = new URI(configurationService.getISServerUrl())
+            String isHostName = isUri.getHost()
+
+            //Replace the hostname of the endpoint url with IS HostName
+            String productionEndpoint = apiInfo.get("productionEndpoint").toString().replace("localhost", isHostName)
+            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString().replace("localhost", isHostName)
 
             response = FSRestAsRequestBuilder.buildRequest()
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
