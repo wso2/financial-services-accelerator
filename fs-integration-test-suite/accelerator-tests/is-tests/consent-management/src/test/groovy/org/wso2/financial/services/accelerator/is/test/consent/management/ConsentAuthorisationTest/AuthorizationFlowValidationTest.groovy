@@ -249,7 +249,7 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
     void "Generate authorization code when Request Object is signed with expired certificate"() {
 
         String appKeystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
-                "expired-certs", "signing-keystore", "sgsMuc8ACBgBzinpr8oJ8B.key")
+                "expired-certs", "signing-keystore", "obsigning.key")
 
         //Create Consent
         doDefaultInitiation()

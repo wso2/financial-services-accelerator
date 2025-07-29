@@ -624,11 +624,11 @@ class CommonConfigurationService {
     }
 
     String getUserIsAsKeyManagerAdminName() {
-        return configuration.get(ConfigConstants.KEY_MANAGER + "." + ConfigConstants.USERS_USER_NAME)
+        return configuration.get(ConfigConstants.IS_AS_KEY_MANAGER + "." + ConfigConstants.USERS_USER_NAME)
     }
 
     String getUserIsAsKeyManagerAdminPWD() {
-        return configuration.get(ConfigConstants.KEY_MANAGER + "." + ConfigConstants.USERS_PWD)
+        return configuration.get(ConfigConstants.IS_AS_KEY_MANAGER + "." + ConfigConstants.USERS_PWD)
     }
 
 
