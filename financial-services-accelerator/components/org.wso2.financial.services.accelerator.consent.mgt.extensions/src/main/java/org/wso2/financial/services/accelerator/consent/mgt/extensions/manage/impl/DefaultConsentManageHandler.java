@@ -130,77 +130,66 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
-        if (consentManageData.getRequestPath() == null) {
-            log.error("Resource Path Not Found");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
-        }
-
         String resourcePath = consentManageData.getRequestPath();
-        String[] requestPathArray = resourcePath.split("/");
-        if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
-            log.error("Invalid Request Path");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid Request Path",
+        if (resourcePath == null) {
+            log.error("Resource path not found in the request");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
-        String consentId = consentManageData.getRequestPath().split("/")[1];
-        if (ConsentExtensionUtils.isConsentIdValid(consentId)) {
-            try {
-                ConsentResource consent = consentCoreService.getConsent(consentId, false);
-                if (consent == null) {
-                    log.error("Consent not found");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
-                            ConsentOperationEnum.CONSENT_RETRIEVE);
-                }
-                // Check whether the client id is matching
-                if (!consent.getClientID().equals(consentManageData.getClientId())) {
-                    log.error("Client ID mismatch");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
-                            ConsentOperationEnum.CONSENT_RETRIEVE);
-                }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_RETRIEVE);
 
-                if (isExtensionsEnabled && isExternalPreConsentRetrievalEnabled) {
-                    // Call external service before retrieving consent.
-                    Map<String, String> consentAttributes =
-                            consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
-                    consent.setConsentAttributes(consentAttributes);
-                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
-                            new ExternalAPIConsentResourceRequestDTO(consent);
-                    ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
-                            externalAPIConsentResource, consentManageData);
-                    ExternalAPIModifiedResponseDTO responseDTO = ExternalAPIConsentManageUtils.
-                            callExternalService(requestDTO);
-                    if (responseDTO.getModifiedResponse() != null) {
-                        consentManageData.setResponsePayload(responseDTO.getModifiedResponse());
-                    } else {
-                        consentManageData.setResponsePayload(new JSONObject());
-                    }
-                    if (responseDTO.getResponseHeaders() != null) {
-                        consentManageData.setResponseHeaders(responseDTO.getResponseHeaders());
-                    } else {
-                        consentManageData.setResponseHeaders(new HashMap<>());
-                    }
-                } else {
-                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-                    if (!consentType.equals(consent.getConsentType())) {
-                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
-                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
-                    }
-                    JSONObject receiptJSON = new JSONObject(consent.getReceipt());
-                    consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(
-                            receiptJSON, consent));
-                }
-                consentManageData.setResponseStatus(ResponseStatus.OK);
-            } catch (ConsentManagementException | JSONException e) {
-                log.error("Error Occurred while handling the request", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_RETRIEVE);
+        try {
+            ConsentResource consent = consentCoreService.getConsent(consentId, false);
+            if (consent == null) {
+                log.error("Consent not found");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                        ConsentOperationEnum.CONSENT_RETRIEVE);
             }
-        } else {
-            log.error("Invalid consent Id found");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid consent Id found",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+            // Check whether the client id is matching
+            if (!consent.getClientID().equals(consentManageData.getClientId())) {
+                log.error("Client ID mismatch");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
+                        ConsentOperationEnum.CONSENT_RETRIEVE);
+            }
+
+            if (isExtensionsEnabled && isExternalPreConsentRetrievalEnabled) {
+                // Call external service before retrieving consent.
+                Map<String, String> consentAttributes =
+                        consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                consent.setConsentAttributes(consentAttributes);
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(consent);
+                ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
+                        externalAPIConsentResource, consentManageData);
+                ExternalAPIModifiedResponseDTO responseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(requestDTO);
+                if (responseDTO.getModifiedResponse() != null) {
+                    consentManageData.setResponsePayload(responseDTO.getModifiedResponse());
+                } else {
+                    consentManageData.setResponsePayload(new JSONObject());
+                }
+                if (responseDTO.getResponseHeaders() != null) {
+                    consentManageData.setResponseHeaders(responseDTO.getResponseHeaders());
+                } else {
+                    consentManageData.setResponseHeaders(new HashMap<>());
+                }
+            } else {
+                String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                if (!consentType.equals(consent.getConsentType())) {
+                    log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                            CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
+                }
+                JSONObject receiptJSON = new JSONObject(consent.getReceipt());
+                consentManageData.setResponsePayload(ConsentExtensionUtils.getInitiationRetrievalResponse(
+                        receiptJSON, consent));
+            }
+            consentManageData.setResponseStatus(ResponseStatus.OK);
+        } catch (ConsentManagementException | JSONException e) {
+            log.error("Error Occurred while retrieving the consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error Occurred while retrieving the consent", ConsentOperationEnum.CONSENT_RETRIEVE);
         }
     }
 
@@ -308,9 +297,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
 
         } catch (ConsentManagementException e) {
-            log.error("Error Occurred while handling the request", e);
+            log.error("Error Occurred while creating the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_CREATE);
+                    "Error Occurred while creating the consent", ConsentOperationEnum.CONSENT_CREATE);
         }
 
     }
@@ -342,93 +331,79 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_DELETE);
         }
 
-        String[] requestPathArray;
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource Path Not Found");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
                     ConsentOperationEnum.CONSENT_DELETE);
-        } else {
-            requestPathArray = resourcePath.split("/");
         }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_DELETE);
 
-        if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
-            log.error("Invalid Request Path");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid Request Path",
-                    ConsentOperationEnum.CONSENT_DELETE);
-        }
-        String consentId = requestPathArray[1];
-        if (ConsentExtensionUtils.isConsentIdValid(consentId)) {
-            try {
-                boolean consentRevocationSuccess;
-                boolean shouldRevokeTokens;
-                String revocationStatusName;
-                ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+        try {
+            boolean consentRevocationSuccess;
+            boolean shouldRevokeTokens;
+            String revocationStatusName;
+            ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
 
-                if (consentResource == null) {
-                    log.error("Consent not found");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
-                            ConsentOperationEnum.CONSENT_DELETE);
-                }
-
-                if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
-                    //Throwing this error in a generic manner since client will not be able to identify if consent
-                    // exists if consent does not belong to them
-                    log.error(ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR, ConsentOperationEnum.CONSENT_DELETE);
-                }
-
-                if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
-                    // Call external service before revoking consent.
-                    Map<String, String> consentAttributes =
-                            consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
-                    consentResource.setConsentAttributes(consentAttributes);
-                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
-                            new ExternalAPIConsentResourceRequestDTO(consentResource);
-                    ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(
-                            externalAPIConsentResource, resourcePath, consentManageData.getAllowedExtensionHeaders());
-                    ExternalAPIConsentRevokeResponseDTO responseDTO = ExternalAPIConsentManageUtils.
-                            callExternalService(requestDTO);
-                    shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
-                    revocationStatusName = responseDTO.getRevocationStatusName();
-                } else {
-                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-                    if (!consentType.equals(consentResource.getConsentType())) {
-                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
-                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_DELETE);
-                    }
-
-                    if (ConsentExtensionConstants.REVOKED_STATUS.equals(consentResource.getCurrentStatus()) ||
-                            ConsentExtensionConstants.REJECTED_STATUS.equals(consentResource.getCurrentStatus())) {
-                        log.error("Consent is already in revoked or rejected state");
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                                "Consent is already in revoked or rejected state", ConsentOperationEnum.CONSENT_DELETE);
-                    }
-                    shouldRevokeTokens = ConsentExtensionConstants.AUTHORIZED_STATUS.equals(
-                            consentResource.getCurrentStatus());
-                    revocationStatusName = ConsentExtensionConstants.REVOKED_STATUS;
-                }
-                consentRevocationSuccess = consentCoreService.revokeConsent(consentId,
-                        revocationStatusName, null, shouldRevokeTokens);
-                if (!consentRevocationSuccess) {
-                    log.error("Token revocation unsuccessful");
-                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                            "Token revocation unsuccessful", ConsentOperationEnum.CONSENT_DELETE);
-                }
-                consentManageData.setResponseStatus(ResponseStatus.NO_CONTENT);
-            } catch (ConsentManagementException e) {
-                log.error(e.getMessage().replaceAll("[\r\n]+", ""));
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        e.getMessage().replaceAll("[\r\n]+", ""), ConsentOperationEnum.CONSENT_DELETE);
+            if (consentResource == null) {
+                log.error("Consent not found");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                        ConsentOperationEnum.CONSENT_DELETE);
             }
-        } else {
-            log.error("Request Path Invalid");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Request Path Invalid",
-                    ConsentOperationEnum.CONSENT_DELETE);
-        }
 
+            if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
+                //Throwing this error in a generic manner since client will not be able to identify if consent
+                // exists if consent does not belong to them
+                log.error(ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                        ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR, ConsentOperationEnum.CONSENT_DELETE);
+            }
+
+            if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
+                // Call external service before revoking consent.
+                Map<String, String> consentAttributes =
+                        consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                consentResource.setConsentAttributes(consentAttributes);
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(consentResource);
+                ExternalAPIConsentRevokeRequestDTO requestDTO = new ExternalAPIConsentRevokeRequestDTO(
+                        externalAPIConsentResource, resourcePath, consentManageData.getAllowedExtensionHeaders());
+                ExternalAPIConsentRevokeResponseDTO responseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(requestDTO);
+                shouldRevokeTokens = responseDTO.getRequireTokenRevocation();
+                revocationStatusName = responseDTO.getRevocationStatusName();
+            } else {
+                String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                if (!consentType.equals(consentResource.getConsentType())) {
+                    log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                            CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_DELETE);
+                }
+
+                if (ConsentExtensionConstants.REVOKED_STATUS.equals(consentResource.getCurrentStatus()) ||
+                        ConsentExtensionConstants.REJECTED_STATUS.equals(consentResource.getCurrentStatus())) {
+                    log.error("Consent is already in revoked or rejected state");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                            "Consent is already in revoked or rejected state", ConsentOperationEnum.CONSENT_DELETE);
+                }
+                shouldRevokeTokens = ConsentExtensionConstants.AUTHORIZED_STATUS.equals(
+                        consentResource.getCurrentStatus());
+                revocationStatusName = ConsentExtensionConstants.REVOKED_STATUS;
+            }
+            consentRevocationSuccess = consentCoreService.revokeConsent(consentId,
+                    revocationStatusName, null, shouldRevokeTokens);
+            if (!consentRevocationSuccess) {
+                log.error("Token revocation unsuccessful");
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Token revocation unsuccessful", ConsentOperationEnum.CONSENT_DELETE);
+            }
+            consentManageData.setResponseStatus(ResponseStatus.NO_CONTENT);
+        } catch (ConsentManagementException e) {
+            log.error(e.getMessage().replaceAll("[\r\n]+", ""));
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    e.getMessage().replaceAll("[\r\n]+", ""), ConsentOperationEnum.CONSENT_DELETE);
+        }
     }
 
     @Override
@@ -464,26 +439,15 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
-        String[] requestPathArray;
+
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource path not found in the request");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
-        } else {
-            requestPathArray = resourcePath.split("/");
         }
-        if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
-            log.error("Invalid Request Path");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid",
-                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
-        }
-        String consentId = requestPathArray[1];
-        if (!ConsentExtensionUtils.isConsentIdValid(consentId)) {
-            log.error("Invalid Request Path. Consent Id format is not valid.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid",
-                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
-        }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_DELETE);
 
         //Perform idempotency validation
         if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
@@ -558,7 +522,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException e) {
-            log.error("Error Occurred while handling the request", e);
+            log.error("Error Occurred while uploading consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
@@ -581,68 +545,56 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
                     ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
-        String[] requestPathArray;
+
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource path not found in the request");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource path not found in the request",
                     ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
-        } else {
-            requestPathArray = resourcePath.split("/");
         }
-        if (requestPathArray.length < 2 || StringUtils.isEmpty(requestPathArray[0])) {
-            log.error("Invalid Request Path");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided request path is invalid",
-                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
-        }
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
+                ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
 
-        String consentId = requestPathArray[1];
-        if (ConsentExtensionUtils.isConsentIdValid(consentId)) {
-            try {
-                ConsentResource consent = consentCoreService.getConsent(consentId, false);
-                if (consent == null) {
-                    log.error("Consent not found");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
-                            ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
-                }
-                // Check whether the client id is matching
-                if (!consent.getClientID().equals(consentManageData.getClientId())) {
-                    log.error("Client ID mismatch");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
-                            ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
-                }
-                ConsentFile consentFile = consentCoreService.getConsentFile(consentId);
-
-                if (isExtensionsEnabled && isExternalPreFileRetrievalEnabled) {
-                    // Call external service before sending response.
-                    Map<String, String> consentAttributes =
-                            consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
-                    consent.setConsentAttributes(consentAttributes);
-                    ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
-                            new ExternalAPIConsentResourceRequestDTO(consent);
-                    ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
-                            externalAPIConsentResource, consentManageData);
-                    // Following line is executed to handle failure scenarios.
-                    ExternalAPIConsentManageUtils.callExternalServiceForFileRetrieval(requestDTO);
-                } else {
-                    String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
-                    if (!consentType.equals(consent.getConsentType())) {
-                        log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
-                                CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
-                    }
-                }
-                consentManageData.setResponsePayload(consentFile.getConsentFile());
-                consentManageData.setResponseStatus(ResponseStatus.OK);
-            } catch (ConsentManagementException | JSONException e) {
-                log.error("Error Occurred while handling the request", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Error Occurred while handling the request", ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+        try {
+            ConsentResource consent = consentCoreService.getConsent(consentId, false);
+            if (consent == null) {
+                log.error("Consent not found");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                        ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
             }
-        } else {
-            log.error("Invalid consent-id found");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Invalid consent-id found",
-                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+            // Check whether the client id is matching
+            if (!consent.getClientID().equals(consentManageData.getClientId())) {
+                log.error("Client ID mismatch");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
+                        ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+            }
+            ConsentFile consentFile = consentCoreService.getConsentFile(consentId);
+
+            if (isExtensionsEnabled && isExternalPreFileRetrievalEnabled) {
+                // Call external service before sending response.
+                Map<String, String> consentAttributes =
+                        consentCoreService.getConsentAttributes(consentId).getConsentAttributes();
+                consent.setConsentAttributes(consentAttributes);
+                ExternalAPIConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIConsentResourceRequestDTO(consent);
+                ExternalAPIConsentRetrieveRequestDTO requestDTO = new ExternalAPIConsentRetrieveRequestDTO(
+                        externalAPIConsentResource, consentManageData);
+                // Following line is executed to handle failure scenarios.
+                ExternalAPIConsentManageUtils.callExternalServiceForFileRetrieval(requestDTO);
+            } else {
+                String consentType = ConsentExtensionUtils.getConsentType(consentManageData.getRequestPath());
+                if (!consentType.equals(consent.getConsentType())) {
+                    log.error(ConsentManageConstants.CONSENT_TYPE_MISMATCH_ERROR);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.
+                            CONSENT_TYPE_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+                }
+            }
+            consentManageData.setResponsePayload(consentFile.getConsentFile());
+            consentManageData.setResponseStatus(ResponseStatus.OK);
+        } catch (ConsentManagementException | JSONException e) {
+            log.error("Error Occurred while retrieving consent file", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error Occurred while retrieving consent file", ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
     }
 
