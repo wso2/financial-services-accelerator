@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import static org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.utils.Utils.i18n;
 
 /**
- * ISDefaultAuthServletImpl
+ * ISDefaultAuthServletImpl.
  */
 public class ISDefaultAuthServletImpl implements FSAuthServletInterface {
 
