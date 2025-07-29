@@ -97,7 +97,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         authorizeUtilMockedStatic = mockStatic(ConsentAuthorizeUtil.class);
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractRequestObject(anyString()))
                 .thenReturn("dummyJWT");
-        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
                 .thenReturn("consent123");
 
         // ConsentResource
@@ -167,7 +167,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Mock ConsentAuthorizeUtil statics
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractRequestObject(anyString()))
                 .thenReturn("dummyJWT");
-        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
                 .thenReturn("consent123");
 
         ConsentResource mockConsentResource = getMockConsentResource();
@@ -326,7 +326,7 @@ public class ExternalAPIConsentRetrievalStepTest {
                 .thenReturn("dummyJWT");
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.getRequestObjectJson(anyString()))
                 .thenReturn(new JSONObject());
-        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
                 .thenReturn("consent123");
 
         // Execute
