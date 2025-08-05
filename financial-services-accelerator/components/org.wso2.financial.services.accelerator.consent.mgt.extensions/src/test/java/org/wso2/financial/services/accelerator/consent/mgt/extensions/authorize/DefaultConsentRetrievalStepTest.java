@@ -154,7 +154,7 @@ public class DefaultConsentRetrievalStepTest {
         }
     }
 
-//    @Test
+    @Test
     public void testConsentRetrievalWithValidRequestObject() {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
@@ -197,7 +197,7 @@ public class DefaultConsentRetrievalStepTest {
         }
     }
 
-//    @Test
+    @Test
     public void testGetConsentDataSetForAccounts() {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
@@ -218,7 +218,7 @@ public class DefaultConsentRetrievalStepTest {
         }
     }
 
-//    @Test
+    @Test
     public void testGetConsentDataSetForPayments() throws ConsentManagementException {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
@@ -242,7 +242,7 @@ public class DefaultConsentRetrievalStepTest {
         }
     }
 
-//    @Test
+    @Test
     public void testGetConsentDataSetForCOF() throws ConsentManagementException {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
