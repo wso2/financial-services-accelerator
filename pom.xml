@@ -21,7 +21,7 @@
     <groupId>org.wso2.financial.services.accelerator</groupId>
     <artifactId>financial-services</artifactId>
     <packaging>pom</packaging>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.1</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -385,7 +385,12 @@
             <dependency>
                 <groupId>org.apache.taglibs</groupId>
                 <artifactId>taglibs-standard-impl</artifactId>
-                <version>${taglibs-standard-impl.version}</version>
+                <version>${taglibs-standard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.taglibs</groupId>
+                <artifactId>taglibs-standard-spec</artifactId>
+                <version>${taglibs-standard.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
@@ -493,6 +498,16 @@
                 <groupId>org.wso2.carbon.apimgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.common.gateway</artifactId>
                 <version>${org.wso2.carbon.apimgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.apimgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.api</artifactId>
+                <version>${org.wso2.carbon.apimgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.km.ext.wso2is</groupId>
+                <artifactId>wso2is7.key.manager</artifactId>
+                <version>${wso2.is7.key.manager.version}</version>
             </dependency>
             <!-- Accelerator Dependencies -->
             <dependency>
@@ -609,7 +624,7 @@
         <orbit.version.commons.httpclient>4.5.13.wso2v1</orbit.version.commons.httpclient>
         <orbit.httpcore.version>4.3.3.wso2v1</orbit.httpcore.version>
         <commons.io.version>2.15.1.wso2v1</commons.io.version>
-        <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
+        <taglibs-standard.version>1.2.5</taglibs-standard.version>
         <apache.tomcat-catalina.version>9.0.11</apache.tomcat-catalina.version>
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
         <quartz.version>2.3.2.wso2v1</quartz.version>
@@ -621,8 +636,9 @@
         <identity.inbound.auth.oauth.version>7.0.229</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.oauth.version.range>[6.13.0, 7.1.0)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
+        <wso2.is7.key.manager.version>2.0.5</wso2.is7.key.manager.version>
         <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>
-        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.30.100)</org.wso2.carbon.apimgt.version.range>
+        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.31.100)</org.wso2.carbon.apimgt.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>
         <mockito.version>5.3.1</mockito.version>

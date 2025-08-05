@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>financial-services</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.1.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,6 +38,7 @@
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.extensions</module>
         <module>components/org.wso2.financial.services.accelerator.identity.extensions</module>
         <module>components/org.wso2.financial.services.accelerator.gateway</module>
+        <module>components/org.wso2.financial.services.accelerator.keymanager</module>
         <module>components/org.wso2.financial.services.accelerator.event.notifications.service</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.consent.mgt.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.authentication.endpoint</module>

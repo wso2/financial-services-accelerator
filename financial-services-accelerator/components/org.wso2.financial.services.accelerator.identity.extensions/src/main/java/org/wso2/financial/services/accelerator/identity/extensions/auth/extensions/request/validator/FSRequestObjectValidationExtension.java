@@ -28,13 +28,13 @@ import org.wso2.carbon.identity.openidconnect.model.RequestObject;
 import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.FSRequestObject;
 import org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.models.ValidationResponse;
 import org.wso2.financial.services.accelerator.identity.extensions.internal.IdentityExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityServiceExtensionUtils;
 
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public class FSRequestObjectValidationExtension extends RequestObjectValidatorIm
             throws RequestObjectException {
 
         try {
-            if (FinancialServicesUtils.isRegulatoryApp(oAuth2Parameters.getClientId())) {
+            if (IdentityCommonUtils.isRegulatoryApp(oAuth2Parameters.getClientId())) {
 
                 FSRequestObject fsRequestObject = new FSRequestObject(initialRequestObject);
 

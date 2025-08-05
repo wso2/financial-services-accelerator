@@ -20,11 +20,17 @@
 <suite name="WSO2 Open Banking - Dynamic Client Registration Flow Test">
     <test name="Dynamic Client Registration Flow" parallel="false" enabled="true" group-by-instances="true">
         <classes>
-            <class name="org.wso2.financial.services.accelerator.test.dcr.DCREndToEndFlow"/>
-            <class name="org.wso2.financial.services.accelerator.test.dcr.DynamicClientRegistrationCreateTest"/>
-            <class name="org.wso2.financial.services.accelerator.test.dcr.DynamicClientRegistrationRetrievalTest"/>
-            <class name="org.wso2.financial.services.accelerator.test.dcr.DynamicClientRegistrationUpdateTest"/>
-            <class name="org.wso2.financial.services.accelerator.test.dcr.DynamicClientRegistrationDeleteTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.dcr.DCREndToEndFlowJWTPayload"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.dcr.DCREndToEndFlowJSONPayload"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.dcr.DynamicClientRegistrationCreateTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.dcr.DynamicClientRegistrationRetrievalTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.dcr.DynamicClientRegistrationUpdateTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.dcr.DynamicClientRegistrationDeleteTest"/>
+        </classes>
+    </test>
+    <test name="Client Registration Step For Scenario Test" parallel="false" enabled="true" group-by-instances="true">
+        <classes>
+            <class name="org.wso2.financial.services.accelerator.gateway.test.dcr.CommonDcrApplicationRegistration"/>
         </classes>
     </test>
 </suite>

@@ -62,6 +62,7 @@ class CommonApplicationCreation extends FSConnectorTest {
                 .post(dcrPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+        def clientSecret = TestUtil.parseResponseBody(registrationResponse, "client_secret")
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_id"))
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"client_secret"))
@@ -75,8 +76,11 @@ class CommonApplicationCreation extends FSConnectorTest {
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"))
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"))
 
-        //Write Client Id and Client Secret of TTP2 to config file.
+        //Write Client Id and Client Secret of TTP1 to config file.
         TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                configuration.getTppNumber())
+
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientSecret", clientSecret,
                 configuration.getTppNumber())
     }
 }

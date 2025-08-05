@@ -20,24 +20,38 @@ package org.wso2.financial.services.accelerator.gateway.test.accounts.Accounts_R
 
 import io.restassured.http.ContentType
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
+import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
+import org.wso2.financial.services.accelerator.test.framework.utility.AccountsDataProviders
+import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 import org.wso2.financial.services.accelerator.test.framework.utility.FSRestAsRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
-import org.wso2.financial.services.accelerator.gateway.test.accounts.util.AbstractAccountsFlow
-import org.wso2.financial.services.accelerator.gateway.test.accounts.util.AccountConstants
-import org.wso2.financial.services.accelerator.gateway.test.accounts.util.AccountsDataProviders
 
 /**
  * Accounts Flow Retrieval Tests.
  */
-class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow {
+class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest {
 
-    String payload
+    void initialization() {
+        consentPath = ConnectorTestConstants.AISP_CONSENT_PATH
+        initiationPayload = AccountsRequestPayloads.initiationPayload
+        scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.ACCOUNTS_TYPE)
+        accountsPath = ConnectorTestConstants.ACCOUNTS_PATH
 
-    //TODO
-//    @Test
+        //Get application access token
+        applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                configuration.getAppInfoClientID(), scopeList)
+    }
+
+    @Test
     void "Accounts Retrieval with client credentials access token"() {
+
+        initialization()
 
         def retrievalResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
@@ -49,39 +63,47 @@ class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow
                 .get(accountsPath)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
-                "token do not align"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_CODE),
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Claim Mismatch")
     }
 
-//    @Test
-//    void "Accounts Retrieval with access token bound to a different scope"() {
-//
-//        List<ConnectorTestConstants.ApiScope> scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
-//        String accessTokenBoundToPaymentScope = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
-//                configuration.getAppInfoClientID(), scopeList)
-//
-//        paymentInitiation(accessTokenBoundToPaymentScope)
-//        def paymentConsentId = TestUtil.parseResponseBody(consentResponse, "Data.ConsentId")
-//        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, UKConstants.DATA_STATUS),
-//                "AwaitingAuthorisation")
-//
-//        paymentAuthorization(paymentConsentId)
-//        def paymentUserAccessToken = UKRequestBuilder.getUserToken(code)
-//
-//        def retrievalResponse = TestSuite.buildRequest()
-//                .header(UKConstants.X_FAPI_FINANCIAL_ID, UKConstants.X_FAPI_FINANCIAL_ID_VALUE)
-//                .header(UKConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${paymentUserAccessToken}")
-//                .accept(UKConstants.CONTENT_TYPE)
-//                .header(UKConstants.CHARSET, UKConstants.CHARSET_TYPE)
-//                .get(AccountsConstants.ACCOUNTS_PATH)
-//
-//        Assert.assertEquals(retrievalResponse.statusCode(), 403)
-//    }
+    @Test
+    void "Accounts Retrieval with access token bound to a different scope"() {
+
+        consentPath = ConnectorTestConstants.PAYMENT_CONSENT_API_PATH
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
+        scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
+
+        applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
+                configuration.getAppInfoClientID(), scopeList)
+
+        //Payment Consent Initiation
+        doDefaultInitiationForPayments(applicationAccessToken, initiationPayload)
+        Assert.assertNotNull(consentId)
+
+        //Payment Consent Authorisation
+        doPaymentConsentAuthorisation(scopeList)
+        Assert.assertNotNull(code)
+        Assert.assertNotNull(userAccessToken)
+
+        //Send Account Retrieval Request with Payment Consent Access Token
+        accountsPath = ConnectorTestConstants.AISP_PATH + "accounts"
+
+        retrievalResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
+                .baseUri(configuration.getServerBaseURL())
+                .get(accountsPath)
+
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "The access token does not allow you to access the requested resource")
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "User is NOT authorized to access the Resource: /accounts. Scope validation failed.")
+    }
 
     /*
      * This test case calls all the bulk account endpoints and submits without authorization header
@@ -91,10 +113,11 @@ class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow
     @Test(dataProvider = "AccountsResources", dataProviderClass = AccountsDataProviders.class)
     void "Accounts Retrieval without authorisation header"(String resource) {
 
-        if (userAccessToken == null) {
-            doDefaultAccountInitiation()
-            doAccountConsentAuthorisation()
-        }
+        initialization()
+
+        doDefaultAccountInitiation()
+        doAccountConsentAuthorisation()
+
         def retrievalResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
@@ -104,14 +127,12 @@ class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow
                 .get(resource)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header:" +
-                " 'Authorization"))
-        Assert.assertTrue(errorMessage.contains("Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or " +
-                "'ApiKey : API_KEY'"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_CODE),
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                "'null : Bearer ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900902")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Missing Credentials")
     }
 
@@ -122,10 +143,10 @@ class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow
     @Test(dataProvider = "AccountsResources", dataProviderClass = AccountsDataProviders.class)
     void "Accounts Retrieval with an invalid authorisation header"(String resource) {
 
-        if (userAccessToken == null) {
-            doDefaultAccountInitiation()
-            doAccountConsentAuthorisation()
-        }
+        initialization()
+        doDefaultAccountInitiation()
+        doAccountConsentAuthorisation()
+
         def retrievalResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
@@ -136,12 +157,12 @@ class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow
                 .get(resource)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Access failure for API: /open-banking/v3.1/aisp, version: v3.1" +
+        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+                .contains("Access failure for API: /open-banking/v3.1/aisp, version: v3.1" +
                 " status: (900901) - Invalid Credentials. Make sure you have provided the correct security credentials"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900901")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Invalid Credentials")
     }
 
@@ -152,17 +173,17 @@ class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow
     @Test
     void "Accounts Retrieval without accept header"() {
 
-        if (userAccessToken == null) {
-            doDefaultAccountInitiation()
-            doAccountConsentAuthorisation()
-        }
+        initialization()
+        doDefaultAccountInitiation()
+        doAccountConsentAuthorisation()
+
         def retrievalResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${userAccessToken}")
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
                 .baseUri(configuration.getServerBaseURL())
-                .get(AccountConstants.ACCOUNTS_PATH)
+                .get(ConnectorTestConstants.ACCOUNTS_PATH)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
@@ -173,25 +194,28 @@ class AccountsRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow
      */
     @Test
     void "Accounts Retrieval with an unsupported accept header"() {
-        if (userAccessToken == null) {
-            doDefaultAccountInitiation()
-            doAccountConsentAuthorisation()
-        }
+
+        initialization()
+        doDefaultAccountInitiation()
+        doAccountConsentAuthorisation()
+
         def retrievalResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${userAccessToken}")
-                .accept("application")
+                .accept(ContentType.XML)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
                 .baseUri(configuration.getServerBaseURL())
-                .get(AccountConstants.ACCOUNTS_PATH)
+                .get(ConnectorTestConstants.ACCOUNTS_PATH)
 
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
-                "token do not align"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_CODE),
-                "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
-                "Claim Mismatch")
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
+
+//        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTOR)
+//        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
+//                "token do not align"))
+//        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+//                "900912")
+//        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+//                "Claim Mismatch")
     }
 }

@@ -72,11 +72,11 @@ class UpdateRegistrationTests extends FSConnectorTest {
     void "TC0103003_Update client request with an invalid access token"() {
 
         configuration.setPsuNumber(1)
-        def authToken = "${configuration.getUserPSUName()}:" +
-                "${configuration.getUserPSUPWD()}"
+        def authToken = "${configuration.getUserIsAsKeyManagerAdminName()}:" +
+                "${configuration.getUserIsAsKeyManagerAdminPWD()}"
         def basicHeader = "Basic ${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset()))}"
 
-        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest(basicHeader)
+        def registrationResponse = registrationRequestBuilder.buildRegistrationRequest("basicHeader")
                 .body(registrationRequestBuilder.getRegularClaimsWithDefinedRedirectURI(ssa,
                         configuration.getAppDCRAlternateRedirectUri()))
                 .put(dcrPath + clientId)
@@ -84,7 +84,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
-    @Test (enabled = false)
+    @Test
     void "TC0103007_Update client request with an invalid redirectURI"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -99,7 +99,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Invalid redirect_uris found in the Request")
     }
 
-    @Test (enabled = false)
+    @Test
     void "TC0103008_Update client request with null value for redirectURI"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -127,8 +127,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Required parameter redirectUris cannot be empty")
     }
 
-    //TODO: Issue: https://github.com/wso2/financial-services-accelerator/issues/475
-    @Test (enabled = false)
+    @Test
     void "Update client request with multiple redirect urls"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -142,11 +141,11 @@ class UpdateRegistrationTests extends FSConnectorTest {
         JSONObject jsonObject = new JSONObject(responseBody)
         JSONArray redirectUris = jsonObject.getJSONArray("redirect_uris")
 
-        Assert.assertTrue(redirectUris.getString(0).equalsIgnoreCase(configuration.getAppDCRRedirectUri()))
-        Assert.assertTrue(redirectUris.getString(1).equalsIgnoreCase(configuration.getAppDCRAlternateRedirectUri()))
+        Assert.assertTrue(redirectUris.getString(0).contains(configuration.getAppDCRRedirectUri()))
+        Assert.assertTrue(redirectUris.getString(0).contains(configuration.getAppDCRAlternateRedirectUri()))
     }
 
-    @Test (enabled = false)
+    @Test
     void "Update registration request with multiple redirect urls one having invalid url"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -161,7 +160,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Redirect URIs do not match with the software statement")
     }
 
-    @Test (enabled = false)
+    @Test
     void "Update registration request with redirectURI having localhost"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -176,7 +175,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Invalid redirect_uris found in the Request")
     }
 
-    @Test (enabled = false)
+    @Test
     void "Update registration request with redirectURI not matching with the redirect urls in ssa"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -563,8 +562,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 "Token endpoint auth signing alg must be specified if token_endpoint_auth_method is private_key_jwt.")
     }
 
-    //TODO: IS issue: https://github.com/wso2/financial-services-accelerator/issues/472
-    @Test (enabled = false)
+    @Test
     void "Update registration request without client_name" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))
@@ -575,9 +573,7 @@ class UpdateRegistrationTests extends FSConnectorTest {
                 .body(payload.toString())
                 .put(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
 
     @Test

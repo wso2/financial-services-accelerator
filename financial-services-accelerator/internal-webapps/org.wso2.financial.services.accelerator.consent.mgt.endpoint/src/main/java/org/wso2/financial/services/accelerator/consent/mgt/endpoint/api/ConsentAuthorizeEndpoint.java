@@ -27,11 +27,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
-import org.wso2.carbon.identity.oauth2.RequestObjectException;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentCache;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentConstants;
@@ -47,6 +47,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtils;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -207,8 +208,8 @@ public class ConsentAuthorizeEndpoint {
         consentData.setState(state);
 
         try {
-            consentData.setRegulatory(FinancialServicesUtils.isRegulatoryApp(clientId));
-        } catch (RequestObjectException e) {
+            consentData.setRegulatory(IdentityCommonUtils.isRegulatoryApp(clientId));
+        } catch (FinancialServicesException e) {
             log.error("Error while getting regulatory data", e);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
                     "Error while obtaining regulatory data", state);

@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -40,6 +41,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -52,6 +55,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -75,26 +79,26 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
 
         ConsentData consentData = consentPersistData.getConsentData();
+        JSONObject consentPersistPayload = consentPersistData.getPayload();
         String consentId;
         DetailedConsentResource detailedConsentResource = null;
         ExternalAPIConsentResourceRequestDTO externalAPIConsentResource = null;
 
         // Get request object parameters
         JSONObject requestParameters = new JSONObject();
-        if (consentPersistData.getConsentData() != null && consentPersistData.getConsentData().getMetaDataMap() != null
-                && consentPersistData.getConsentData().getMetaDataMap()
-                .get(ConsentExtensionConstants.REQUEST_PARAMETERS) != null) {
+        if (consentData != null && consentData.getMetaDataMap()
+                .getOrDefault(ConsentExtensionConstants.REQUEST_PARAMETERS, null) != null) {
 
-            requestParameters = (JSONObject) consentPersistData.getConsentData().getMetaDataMap()
+            requestParameters = (JSONObject) consentData.getMetaDataMap()
                     .get(ConsentExtensionConstants.REQUEST_PARAMETERS);
-            consentPersistData.getConsentData().getMetaDataMap().remove(ConsentExtensionConstants.REQUEST_PARAMETERS);
+            consentData.getMetaDataMap().remove(ConsentExtensionConstants.REQUEST_PARAMETERS);
         }
 
         // If there are no request object parameters, add the scope sent as a query parameter.
-        if (requestParameters.isEmpty() && consentPersistData.getConsentData() != null &&
-                consentPersistData.getConsentData().getScopeString() != null) {
+        if (requestParameters.isEmpty() && consentData != null &&
+                consentData.getScopeString() != null) {
             requestParameters.put(FinancialServicesConstants.SCOPE,
-                    consentPersistData.getConsentData().getScopeString());
+                    consentData.getScopeString());
         }
 
         try {
@@ -127,9 +131,39 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                     consentData.getMetaDataMap().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
                 }
             }
+
+            Map<String, Object> consentMetadata = consentData.getMetaDataMap();
+            if (consentMetadata != null && !consentMetadata.isEmpty()) {
+                // Reconstruct authorizedData
+                ConsentAuthorizeUtil.addAuthorizedDataObject(consentPersistPayload, consentMetadata);
+
+                // Add additional properties
+                ConsentAuthorizeUtil.addIsReauthorization(consentPersistPayload, consentMetadata);
+
+                // Remove attributes only used for reconstructing authorizedData object
+                ConsentAuthorizeUtil.trimPersistPayload(consentPersistPayload);
+                ConsentAuthorizeUtil.trimConsentMetaData(consentMetadata);
+
+                // Append metadata to userGrantedData
+                JSONObject metadataJSON;
+                if (consentPersistPayload.has(ConsentAuthorizeConstants.METADATA)) {
+                    // Metadata from consent confirm servlet
+                    metadataJSON = consentPersistPayload.getJSONObject(ConsentAuthorizeConstants.METADATA);
+                } else {
+                    metadataJSON = new JSONObject();
+                }
+
+                // Consent metadata from populate consent page api call
+                JSONObject consentMetadataJSON = new JSONObject(consentMetadata);
+                consentMetadataJSON.keySet().forEach(k -> metadataJSON.put(k, consentMetadataJSON.get(k)));
+
+                // Add all metadata to persist payload
+                consentPersistPayload.put(ConsentAuthorizeConstants.METADATA, metadataJSON);
+            }
+
             // Call external service
             ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO userGrantedData = new
-                    ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO(consentPersistData.getPayload(),
+                    ExternalAPIPreConsentPersistRequestDTO.UserGrantedDataDTO(consentPersistPayload,
                     requestParameters, consentData.getUserId());
 
             ExternalAPIPreConsentPersistRequestDTO requestDTO = new ExternalAPIPreConsentPersistRequestDTO(
@@ -141,6 +175,14 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         } catch (FinancialServicesException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                     e.getMessage(), consentData.getState());
+        } catch (JsonProcessingException e) {
+            log.error("A JSON object mapping has failed", e);
+            throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
+                    e.getMessage(), consentData.getState());
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage().replaceAll("\n\r", ""), e);
+            throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
+                    e.getMessage().replaceAll("\n\r", ""), consentData.getState());
         }
     }
 

@@ -28,6 +28,7 @@ import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.JWTGenerator
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 /**
@@ -50,12 +51,15 @@ class DynamicClientRegistrationRetrievalTest extends FSConnectorTest {
 
         configClientId = configuration.getAppInfoClientID(0)
         registrationPath = configuration.getServerBaseURL() + DCRConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(1)
+        configuration.setTppNumber(0)
         SSA = new File(configuration.getAppDCRSSAPath()).text
 
+        String payload = (new JWTGenerator()).getSignedRequestObject(ClientRegistrationRequestBuilder
+                .getRegularClaimsForGateway(SSA))
+
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestWithClaims(ClientRegistrationRequestBuilder.getRegularClaims(SSA))
-                .when()
+                .buildGatewayRegistrationRequest()
+                .body(payload)
                 .post(registrationPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
@@ -69,30 +73,32 @@ class DynamicClientRegistrationRetrievalTest extends FSConnectorTest {
     void "Retrieve registration details with invalid clientId"() {
 
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(accessToken)
+                .buildGatewayRegistrationRequestForRetrievalAndDelete()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
                 .get(registrationPath + "/" + invalidClientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Token is not bound to the client id sent in the request")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "unauthorized_request")
+                "unauthorized")
     }
 
     @Test
     void "Retrieve registration details with an invalid access token"() {
 
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(invalidAccessToken)
+                .buildGatewayRegistrationRequestForRetrievalAndDelete()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${invalidAccessToken}")
                 .get(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Access failure for API: /open-banking/v3.3.0, version: v3.3.0 status: (900901) - Invalid " +
                         "Credentials. Make sure you have provided the correct security credentials")
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900901")
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Invalid Credentials")
     }
 
@@ -100,20 +106,22 @@ class DynamicClientRegistrationRetrievalTest extends FSConnectorTest {
     void "Retrieve registration details with a clientId that does not match with the access token"() {
 
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(accessToken)
+                .buildGatewayRegistrationRequestForRetrievalAndDelete()
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "${ConnectorTestConstants.BEARER} ${accessToken}")
                 .get(registrationPath + "/" + configClientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Token is not bound to the client id sent in the request")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "unauthorized_request")
+                "unauthorized")
     }
 
     @AfterClass(alwaysRun = true)
     void tearDown() {
         def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(accessToken)
+                .buildGatewayRegistrationRequestForRetrievalAndDelete()
+                .header("Authorization", "Bearer " + accessToken)
                 .delete(registrationPath + "/" + clientId)
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
     }

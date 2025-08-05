@@ -20,7 +20,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 
 /**
- * ExternalAPIPreConsentPersistResponseDTO
+ * ExternalAPIPreConsentPersistResponseDTO.
  */
 public class ExternalAPIPreConsentPersistResponseDTO {
 

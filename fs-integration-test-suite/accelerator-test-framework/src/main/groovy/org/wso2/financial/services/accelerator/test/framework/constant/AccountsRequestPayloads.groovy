@@ -537,4 +537,60 @@ class AccountsRequestPayloads {
                 }
             }
 """.stripIndent()
+
+    public static String initiationPayloadWithoutReadAccountBasic = """
+        {
+            "Data":{
+            "Permissions": ${JsonOutput.toJson([permissionsArray[0], permissionsArray[1], permissionsArray[2], permissionsArray[3]])},
+            "ExpirationDateTime":"${ConnectorTestConstants.expirationInstant}",
+            "TransactionFromDateTime":"${ConnectorTestConstants.fromInstant}",
+            "TransactionToDateTime":"${ConnectorTestConstants.toInstant}"
+        },
+            "Risk":{
+
+            }
+        }
+    """.stripIndent()
+
+    public static String initiationPayloadWithoutReadAccountDetails = """
+        {
+            "Data":{
+            "Permissions": ${JsonOutput.toJson([permissionsArray[0], permissionsArray[2], permissionsArray[3]])},
+            "ExpirationDateTime":"${ConnectorTestConstants.expirationInstant}",
+            "TransactionFromDateTime":"${ConnectorTestConstants.fromInstant}",
+            "TransactionToDateTime":"${ConnectorTestConstants.toInstant}"
+        },
+            "Risk":{
+
+            }
+        }
+    """.stripIndent()
+
+    public static String initiationPayloadWithoutReadAccountBalance = """
+        {
+            "Data":{
+            "Permissions": ${JsonOutput.toJson([permissionsArray[0], permissionsArray[1], permissionsArray[3]])},
+            "ExpirationDateTime":"${ConnectorTestConstants.expirationInstant}",
+            "TransactionFromDateTime":"${ConnectorTestConstants.fromInstant}",
+            "TransactionToDateTime":"${ConnectorTestConstants.toInstant}"
+        },
+            "Risk":{
+
+            }
+        }
+    """.stripIndent()
+
+    public static String initiationPayloadWithoutReadAccountTransactions = """
+        {
+            "Data":{
+            "Permissions": ${JsonOutput.toJson([permissionsArray[0], permissionsArray[1], permissionsArray[2]])},
+            "ExpirationDateTime":"${ConnectorTestConstants.expirationInstant}",
+            "TransactionFromDateTime":"${ConnectorTestConstants.fromInstant}",
+            "TransactionToDateTime":"${ConnectorTestConstants.toInstant}"
+        },
+            "Risk":{
+
+            }
+        }
+    """.stripIndent()
 }

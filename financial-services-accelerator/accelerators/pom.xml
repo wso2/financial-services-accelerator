@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>financial-services</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.1.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -33,7 +33,6 @@
     <url>http://wso2.org</url>
 
     <modules>
-        <module>fs-apim</module>
         <module>fs-is</module>
     </modules>
 </project>
