@@ -17,11 +17,11 @@
  */
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
@@ -32,13 +32,15 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
+import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeRequestDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -48,6 +50,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.C
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -59,7 +63,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
     private final boolean isPreInitiatedConsent;
     private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
-    private static final Gson gson = new Gson();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    static FinancialServicesValidator fsValidator = FinancialServicesValidator.getInstance();
 
     public ExternalAPIConsentRetrievalStep() {
 
@@ -116,13 +121,33 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                     consentData, externalAPIConsentResource, requestParameters);
 
             log.debug("Calling external service to get data to be displayed");
-            ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = callExternalService(requestDTO);
-            JSONArray consentDataJsonArray = new JSONArray(gson.toJson(responseDTO.getConsentData()));
-            JSONArray consumerDataJsonArray = new JSONArray(gson.toJson(responseDTO.getConsumerData()));
+            PopulateConsentAuthorizeScreenDTO responseDTO = callExternalService(requestDTO);
 
-            // Set data to json object to be displayed in consent page.
-            jsonObject.put("consentData", consentDataJsonArray);
-            jsonObject.put("accounts", consumerDataJsonArray);
+            // Validating object
+            String responseDTOViolation = fsValidator.getFirstViolation(responseDTO);
+
+            if (!StringUtils.isEmpty(responseDTOViolation)) {
+                throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
+                        responseDTOViolation, consentData.getState());
+            }
+
+            // Filter out consent and consumer data
+            // Append consumer data to json object to be displayed in consent page
+            if (responseDTO.getConsentData() != null) {
+                JSONObject consentDataJSON =
+                        new JSONObject(objectMapper.writeValueAsString(responseDTO.getConsentData()));
+
+                // Remove consent metadata
+                consentDataJSON.remove(ConsentAuthorizeConstants.CONSENT_METADATA);
+
+                jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA, consentDataJSON);
+            }
+
+            // Append consumer data, if exists, to json object
+            if (responseDTO.getConsumerData() != null) {
+                jsonObject.put(ConsentAuthorizeConstants.CONSUMER_DATA,
+                        new JSONObject(objectMapper.writeValueAsString(responseDTO.getConsumerData())));
+            }
 
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
@@ -131,9 +156,20 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             if (!isPreInitiatedConsent) {
                 consentData.setType(ConsentExtensionConstants.DEFAULT);
             }
+
+            // Storing complete response as metadata for attribute retrieval at persistence
+            Map<String, Object> metadataMap = new HashMap<>();
+            metadataMap.put(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE, responseDTO);
+            metadataMap.putAll(consentData.getMetaDataMap());
+            consentData.setMetaDataMap(metadataMap);
+
         } catch (FinancialServicesException e) {
-            // ToDo: Improve error handling
+            log.error(e.getMessage().replaceAll("\n\r", ""), e);
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
+                    e.getMessage().replaceAll("\n\r", ""), consentData.getState());
+        } catch (JsonProcessingException e) {
+            log.error("Invalid response received from external call", e);
+            throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.INVALID_REQUEST,
                     e.getMessage(), consentData.getState());
         }
     }
@@ -187,8 +223,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
      * @param requestDTO request data
      * @return ExternalAPIConsentRetrievalResponseDTO
      */
-    private ExternalAPIPreConsentAuthorizeResponseDTO callExternalService(
-            ExternalAPIPreConsentAuthorizeRequestDTO requestDTO) throws FinancialServicesException {
+    private PopulateConsentAuthorizeScreenDTO callExternalService(
+            ExternalAPIPreConsentAuthorizeRequestDTO requestDTO)
+            throws FinancialServicesException, JsonProcessingException {
 
         ExternalServiceRequest externalServiceRequest = createExternalServiceRequest(requestDTO);
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
@@ -210,7 +247,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                     .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
         }
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
-        return gson.fromJson(responseJson.toString(), ExternalAPIPreConsentAuthorizeResponseDTO.class);
+        return objectMapper.readValue(responseJson.toString(), PopulateConsentAuthorizeScreenDTO.class);
     }
+    
 
 }

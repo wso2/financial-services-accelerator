@@ -36,6 +36,9 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit test class for ExpiredConsentStatusUpdateJob.
+ */
 public class ExpiredConsentStatusUpdateJobTests {
 
     private static MockedStatic<FinancialServicesConfigParser> mockedConfigParser;

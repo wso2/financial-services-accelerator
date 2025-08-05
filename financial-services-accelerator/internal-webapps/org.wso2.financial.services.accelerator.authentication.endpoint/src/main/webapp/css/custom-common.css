@@ -346,6 +346,10 @@ img.idp-image {
   padding: 20px;
 }
 
+.padding-left-triple {
+  padding-left: 30px;
+}
+
 .margin-left {
   margin-left: 10px;
 }
@@ -594,4 +598,10 @@ li.sub {
 li.sub::before {
     content: "\2192";
     margin-left: -1em;
+}
+
+.account-select {
+    background: #10222a;
+    padding: 5;
+    border-radius: 5px;
 }

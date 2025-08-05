@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -15,29 +15,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
+
+package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
 /**
- * ExternalAPIValidateFileUploadResponseDTO.
+ * Consumer account object for external API consent retrieval.
  */
-public class ExternalAPIPreFileUploadResponseDTO {
+public class ConsumerAccountDTO extends AccountDTO {
+    private Boolean selected;
 
-    private String consentStatus;
-    private String userId;
-
-    public String getConsentStatus() {
-        return consentStatus;
+    public Boolean getSelected() {
+        return selected;
     }
 
-    public void setConsentStatus(String newConsentStatus) {
-        this.consentStatus = consentStatus;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
     }
 }
